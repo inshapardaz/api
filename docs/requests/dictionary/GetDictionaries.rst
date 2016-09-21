@@ -1,4 +1,4 @@
-..  index:: requests; Dictionary, Get
+..  index:: requests; Dictionary, GetDictionaries
 
 ## Dictionaries
 

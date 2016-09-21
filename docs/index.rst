@@ -38,7 +38,12 @@ API will expose only the links that can be allowed for the user in context. If n
     :glob:
     :caption: Requests
 
-    /requests/*
+    /requests/**/*
+    /requests/dictionary/dictionaries
+    /requests/dictionary/words
+    /requests/dictionary/word-detail
+    /requests/dictionary/relationship
+
 
 ..  toctree::
     :maxdepth: 2

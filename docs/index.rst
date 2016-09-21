@@ -33,16 +33,16 @@ API will expose only the links that can be allowed for the user in context. If n
     Authentication
 
 ..  toctree::
-    :maxdepth: 2
+    :maxdepth: 3
     :hidden:
     :glob:
     :caption: Requests
 
-    /requests/**/*
-    /requests/dictionary/dictionaries
-    /requests/dictionary/words
-    /requests/dictionary/word-detail
-    /requests/dictionary/relationship
+    /requests/dictionary/GetDictonaries
+    /requests/dictionary/CreateDictionary
+    /requests/dictionary/GetDictionary
+    /requests/dictionary/UpdateDictionary
+    /requests/dictionary/DeleteDictionary
 
 
 ..  toctree::

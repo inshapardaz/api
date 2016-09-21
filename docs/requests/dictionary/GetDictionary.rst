@@ -61,8 +61,8 @@ Content-Type: application/json
 }
 ```
 
-### Error Responses ###
-
+Response Codes 
+----------------
 
     :code 200: Success
     :code 403: Unauthorised

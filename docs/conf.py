@@ -17,10 +17,10 @@ add_function_parentheses = True
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
-project = u'Music for Geeks and Nerds'
-copyright = u'2012, Pedro Kroger'
+project = u'Inshapardaz API'
+copyright = u'2016, Omar Faruk'
 
-version = ''
+version = '0.0.1'
 release = ''
 
 ################################################################################

@@ -34,7 +34,7 @@ Returns the list of all dictionaries available to user. Please review [Dictionar
     Content-Type: application/json
 
 
-..  code-block:: JSON
+..  code-block:: json
     {
         links : [{
             href = "..."

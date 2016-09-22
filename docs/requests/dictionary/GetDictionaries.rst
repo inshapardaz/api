@@ -5,14 +5,16 @@ Get Dictionaries
 
 ..  default-domain:: http
 
-..  get:: /api/dictionaries
+..  code-block:: text
+    get:: /api/dictionaries
 
 Retrieves all dictionaries available to user.
 
 Request
 -------
 
-..  GET /api/dictionaries HTTP/1.1
+..  code-block:: text
+    GET /api/dictionaries HTTP/1.1
     Accept: application/json
     Authorization: OAuth2 ...
 
@@ -27,10 +29,12 @@ Response
 
 Returns the list of all dictionaries available to user. Please review [Dictionary Resource](DictoanryResource) for details on the individual items in array.
 
-..  HTTP/1.1 200 OK
+..  code-block:: text
+    HTTP/1.1 200 OK
     Content-Type: application/json
 
-.. code-block:: javascript
+
+..  code-block:: JSON
     {
         links : [{
             href = "..."

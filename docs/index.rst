@@ -29,9 +29,7 @@ API will expose only the links that can be allowed for the user in context. If n
     :glob:
     :caption: Inshapardaz REST API
 
-    gettingStarted
-    Authentication
-    standard
+    *
 
 ..  toctree::
     :maxdepth: 3

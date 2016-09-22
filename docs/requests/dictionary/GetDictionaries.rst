@@ -16,6 +16,12 @@ Request
     Accept: application/json
     Authorization: OAuth2 ...
 
+:reqheader Accept:
+        An **mime type** specifying the desired format of response. Supported formats are **application/json** and **application/xml**.
+
+:reqheader Authorization:
+        An OAuth2 token to authosrise user. No token needed if the call is made as guest user.
+
 Response
 ---------
 

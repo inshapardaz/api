@@ -38,7 +38,7 @@ API will expose only the links that can be allowed for the user in context. If n
     :glob:
     :caption: Requests
 
-    /requests/dictionary/GetDictonaries
+    /requests/dictionary/GetDictionaries
     /requests/dictionary/CreateDictionary
     /requests/dictionary/GetDictionary
     /requests/dictionary/UpdateDictionary

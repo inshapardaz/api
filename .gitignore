@@ -1,0 +1,18 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+**/bin
+**/obj
+.vs
+*.suo
+*.user
+*.log
+*.dbmdl
+/packages/
+/TestResults
+*.Cache
+**/bower_components
+**/node_modules
+**/Staging/*
+Client/Web/project.lock.json

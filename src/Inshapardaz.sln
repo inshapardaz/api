@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "src", "web\src.csproj", "{DBD849B2-9F85-409F-B6A5-680511FE34F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Web", "web\Inshapardaz.Web.csproj", "{DBD849B2-9F85-409F-B6A5-680511FE34F3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Domain", "Domain\Inshapardaz.Domain.csproj", "{76B037AC-8EEA-4BAB-9BE9-AFEBC3DE776E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{DBD849B2-9F85-409F-B6A5-680511FE34F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBD849B2-9F85-409F-B6A5-680511FE34F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBD849B2-9F85-409F-B6A5-680511FE34F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76B037AC-8EEA-4BAB-9BE9-AFEBC3DE776E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76B037AC-8EEA-4BAB-9BE9-AFEBC3DE776E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76B037AC-8EEA-4BAB-9BE9-AFEBC3DE776E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76B037AC-8EEA-4BAB-9BE9-AFEBC3DE776E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

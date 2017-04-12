@@ -1,6 +1,0 @@
-C:\Users\omarf\Code\github\inshapardaz\src\web\bin\Debug\netcoreapp1.1\Inshapardaz.Web.deps.json
-C:\Users\omarf\Code\github\inshapardaz\src\web\bin\Debug\netcoreapp1.1\Inshapardaz.Web.runtimeconfig.json
-C:\Users\omarf\Code\github\inshapardaz\src\web\bin\Debug\netcoreapp1.1\Inshapardaz.Web.runtimeconfig.dev.json
-C:\Users\omarf\Code\github\inshapardaz\src\web\bin\Debug\netcoreapp1.1\Inshapardaz.Web.dll
-C:\Users\omarf\Code\github\inshapardaz\src\web\obj\Debug\netcoreapp1.1\Inshapardaz.Web.csprojResolveAssemblyReference.cache
-C:\Users\omarf\Code\github\inshapardaz\src\web\obj\Debug\netcoreapp1.1\Inshapardaz.Web.AssemblyInfo.cs

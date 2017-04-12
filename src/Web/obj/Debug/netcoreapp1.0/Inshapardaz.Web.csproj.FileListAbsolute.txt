@@ -1,0 +1,8 @@
+C:\Users\omarf\code\github\inshapardaz\src\Web\bin\Debug\netcoreapp1.0\Inshapardaz.Web.deps.json
+C:\Users\omarf\code\github\inshapardaz\src\Web\bin\Debug\netcoreapp1.0\Inshapardaz.Web.runtimeconfig.json
+C:\Users\omarf\code\github\inshapardaz\src\Web\bin\Debug\netcoreapp1.0\Inshapardaz.Web.runtimeconfig.dev.json
+C:\Users\omarf\code\github\inshapardaz\src\Web\bin\Debug\netcoreapp1.0\Inshapardaz.Web.dll
+C:\Users\omarf\code\github\inshapardaz\src\Web\bin\Debug\netcoreapp1.0\Inshapardaz.Web.pdb
+C:\Users\omarf\code\github\inshapardaz\src\Web\obj\Debug\netcoreapp1.0\Inshapardaz.Web.AssemblyInfo.cs
+C:\Users\omarf\code\github\inshapardaz\src\Web\obj\Debug\netcoreapp1.0\Inshapardaz.Web.dll
+C:\Users\omarf\code\github\inshapardaz\src\Web\obj\Debug\netcoreapp1.0\Inshapardaz.Web.pdb

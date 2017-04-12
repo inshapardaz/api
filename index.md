@@ -2,7 +2,7 @@
 
 Inshapardaz APIs are a way to consume inshapardaz data store. The basic aim this API to let any application access the processed entities stored in the application.
 
-Service is a standard REST API using HATEAOS. The main entry point is the [entry] (entry) you can follow  to get access to other resources.
+Service is a standard REST API using HATEAOS. The main entry point is the [entry] (docs/entry.md) you can follow  to get access to other resources.
 
 ## API Key
 

@@ -9,10 +9,10 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class UpdateWordDetailCommandHandler : RequestHandler<UpdateWordDetailCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
 
-        public UpdateWordDetailCommandHandler(IDatabase database,
+        public UpdateWordDetailCommandHandler(IDatabaseContext database,
             IQueryProcessor queryProcessor)
         {
             _database = database;

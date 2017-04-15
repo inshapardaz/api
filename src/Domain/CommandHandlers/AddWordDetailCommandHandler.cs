@@ -8,10 +8,10 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class AddWordDetailCommandHandler : RequestHandler<AddWordDetailCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
 
-        public AddWordDetailCommandHandler(IDatabase database,
+        public AddWordDetailCommandHandler(IDatabaseContext database,
             IQueryProcessor queryProcessor)
         {
             _database = database;

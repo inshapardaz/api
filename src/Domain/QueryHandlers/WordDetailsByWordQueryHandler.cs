@@ -9,9 +9,9 @@ namespace Inshapardaz.Domain.QueryHandlers
 {
     public class WordDetailsByWordQueryHandler : QueryHandler<WordDetailsByWordQuery, WordDetailsByWordQuery.Response>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public WordDetailsByWordQueryHandler(IDatabase database)
+        public WordDetailsByWordQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }

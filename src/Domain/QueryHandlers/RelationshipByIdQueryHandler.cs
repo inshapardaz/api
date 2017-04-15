@@ -6,9 +6,9 @@ namespace Inshapardaz.Domain.QueryHandlers
 {
     public class RelationshipByIdQueryHandler : QueryHandler<RelationshipByIdQuery, RelationshipByIdQuery.Response>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public RelationshipByIdQueryHandler(IDatabase database)
+        public RelationshipByIdQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }

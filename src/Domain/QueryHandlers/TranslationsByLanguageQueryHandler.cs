@@ -6,9 +6,9 @@ namespace Inshapardaz.Domain.QueryHandlers
 {
     public class TranslationsByLanguageQueryHandler : QueryHandler<TranslationsByLanguageQuery, TranslationsByLanguageQuery.Response>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public TranslationsByLanguageQueryHandler(IDatabase database)
+        public TranslationsByLanguageQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }

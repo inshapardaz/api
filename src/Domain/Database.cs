@@ -13,21 +13,17 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Inshapardaz.Domain
 {
-    public class Database : DbContext, IDatabase
+    public class DatabaseContext : DbContext, IDatabaseContext
     {
-        private readonly DatabaseFactory _factory;
-
-        public Database(DatabaseFactory factory)
+        public DatabaseContext()
         {
-            _factory = factory;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options)
+            : base(options)
         {
-            options.UseSqlServer(_factory.ConnectionString, o => o.UseRowNumberForPaging());
         }
-
-
+                
         public virtual DbSet<Dictionary> Dictionaries { get; set; }
         public virtual DbSet<Meaning> Meanings { get; set; }
         public virtual DbSet<Translation> Translations { get; set; }

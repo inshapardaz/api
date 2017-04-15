@@ -7,9 +7,9 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class DeleteDictionaryCommandHandler : RequestHandler<DeleteDictionaryCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public DeleteDictionaryCommandHandler(IDatabase database)
+        public DeleteDictionaryCommandHandler(IDatabaseContext database)
         {
             _database = database;
         }

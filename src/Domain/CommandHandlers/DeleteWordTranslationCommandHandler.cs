@@ -9,11 +9,11 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class DeleteWordTranslationCommandHandler : RequestHandler<DeleteWordTranslationCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
 
         public DeleteWordTranslationCommandHandler(
-            IDatabase database, IQueryProcessor queryProcessor)
+            IDatabaseContext database, IQueryProcessor queryProcessor)
         {
             _database = database;
             _queryProcessor = queryProcessor;

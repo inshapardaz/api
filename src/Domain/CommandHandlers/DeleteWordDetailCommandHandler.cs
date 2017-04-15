@@ -8,10 +8,10 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class DeleteWordDetailCommandHandler : RequestHandler<DeleteWordDetailCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
 
-        public DeleteWordDetailCommandHandler(IDatabase database,
+        public DeleteWordDetailCommandHandler(IDatabaseContext database,
             IQueryProcessor queryProcessor)
         {
             _database = database;

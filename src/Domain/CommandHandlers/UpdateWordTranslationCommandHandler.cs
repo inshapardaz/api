@@ -8,11 +8,11 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class UpdateWordTranslationCommandHandler : RequestHandler<UpdateWordTranslationCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
 
         public UpdateWordTranslationCommandHandler(
-            IDatabase database, 
+            IDatabaseContext database, 
             IQueryProcessor queryProcessor)
         {
             _database = database;

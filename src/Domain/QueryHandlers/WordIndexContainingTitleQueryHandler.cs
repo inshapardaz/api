@@ -10,9 +10,9 @@ namespace Inshapardaz.Domain.QueryHandlers
 {
     public class WordIndexContainingTitleQueryHandler : QueryHandler<WordContainingTitleQuery, WordContainingTitleQuery.Response>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public WordIndexContainingTitleQueryHandler(IDatabase database)
+        public WordIndexContainingTitleQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }

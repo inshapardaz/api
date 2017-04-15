@@ -7,9 +7,9 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class DeleteWordCommandHandler : RequestHandler<DeleteWordCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public DeleteWordCommandHandler(IDatabase database)
+        public DeleteWordCommandHandler(IDatabaseContext database)
         {
             _database = database;
         }

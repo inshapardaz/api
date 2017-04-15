@@ -7,10 +7,10 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class AddWordTranslationCommandHandler : RequestHandler<AddWordTranslationCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
 
-        public AddWordTranslationCommandHandler(IDatabase database, IQueryProcessor queryProcessor)
+        public AddWordTranslationCommandHandler(IDatabaseContext database, IQueryProcessor queryProcessor)
         {
             _database = database;
             _queryProcessor = queryProcessor;

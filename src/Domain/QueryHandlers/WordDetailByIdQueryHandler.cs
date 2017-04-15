@@ -6,9 +6,9 @@ namespace Inshapardaz.Domain.QueryHandlers
 {
     public class WordDetailByIdQueryHandler : QueryHandler<WordDetailByIdQuery, WordDetailByIdQuery.Response>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public WordDetailByIdQueryHandler(IDatabase database)
+        public WordDetailByIdQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }

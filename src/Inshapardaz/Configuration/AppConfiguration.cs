@@ -88,12 +88,9 @@ namespace Inshapardaz.Configuration
         {
             var connectionString = configuration["Data:DefaultConnection:ConnectionString"];
 
-            services.AddSingleton(new Domain.DatabaseFactory(connectionString));
             services.AddEntityFrameworkSqlServer()
-                    .AddDbContext<Domain.Database>(options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
-
-
-            services.AddTransient<Domain.IDatabase, Domain.Database>();
+                    .AddDbContext<Domain.DatabaseContext>(options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
+            services.AddTransient<Domain.IDatabaseContext, Domain.DatabaseContext>();
 
             services.AddTransient<AddDictionaryCommandHandler>();
             services.AddTransient<AddWordCommandHandler>();

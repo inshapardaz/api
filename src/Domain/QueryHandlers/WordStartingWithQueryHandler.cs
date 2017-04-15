@@ -11,9 +11,9 @@ namespace Inshapardaz.Domain.QueryHandlers
 {
     public class WordStartingWithQueryHandler : QueryHandler<WordStartingWithQuery, WordStartingWithQuery.Response>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public WordStartingWithQueryHandler(IDatabase database)
+        public WordStartingWithQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }

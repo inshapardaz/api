@@ -8,11 +8,11 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class DeleteWordRelationCommandHandler : RequestHandler<DeleteWordRelationCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
 
         public DeleteWordRelationCommandHandler(
-            IDatabase database,
+            IDatabaseContext database,
             IQueryProcessor queryProcessor)
         {
             _database = database;

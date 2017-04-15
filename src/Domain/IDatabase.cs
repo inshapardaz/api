@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain
 {
-    public interface IDatabase
+    public interface IDatabaseContext
     {
         DbSet<Dictionary> Dictionaries { get; set; }
         DbSet<Word> Words { get; set; }

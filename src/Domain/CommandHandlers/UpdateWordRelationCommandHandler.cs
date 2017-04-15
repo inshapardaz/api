@@ -8,11 +8,11 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class UpdateWordRelationCommandHandler : RequestHandler<UpdateWordRelationCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
 
         public UpdateWordRelationCommandHandler(
-            IDatabase database,
+            IDatabaseContext database,
             IQueryProcessor queryProcessor)
         {
             _database = database;

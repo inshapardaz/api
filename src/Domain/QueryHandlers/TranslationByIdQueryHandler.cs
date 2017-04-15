@@ -6,9 +6,9 @@ namespace Inshapardaz.Domain.QueryHandlers
 {
     public class TranslationByIdQueryHandler : QueryHandler<TranslationByIdQuery, TranslationByIdQuery.Response>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public TranslationByIdQueryHandler(IDatabase database)
+        public TranslationByIdQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }

@@ -7,9 +7,9 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class UpdateWordCommandHandler : RequestHandler<UpdateWordCommand>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public UpdateWordCommandHandler(IDatabase database)
+        public UpdateWordCommandHandler(IDatabaseContext database)
         {
             _database = database;
         }

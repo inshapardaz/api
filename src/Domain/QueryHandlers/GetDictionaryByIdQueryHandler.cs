@@ -10,9 +10,9 @@ namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetDictionaryByIdQueryHandler : QueryHandler<GetDictionaryByIdQuery, GetDictionaryByIdQuery.Response>
     {
-        private readonly IDatabase _database;
+        private readonly IDatabaseContext _database;
 
-        public GetDictionaryByIdQueryHandler(IDatabase database)
+        public GetDictionaryByIdQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }

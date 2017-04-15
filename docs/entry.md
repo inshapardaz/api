@@ -1,6 +1,6 @@
 # Entry
 
-Entry is the root of the HATEAOS REST API. It provide links to follow for other resources exposed by the API
+Entry is the root of the api. It provide links to resources available for user.
 
 ## GET
 

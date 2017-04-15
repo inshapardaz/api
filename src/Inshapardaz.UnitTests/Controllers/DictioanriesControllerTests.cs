@@ -37,7 +37,7 @@ namespace Inshapardaz.UnitTests.Controllers
         [Fact]
         public void WhenAnonymousCall_ShouldQueryDictionariesPublicUser()
         {
-            _fakeQueryProcessor.SetupResultFor<GetDictionariesByUserQuery>(new GetDictionariesByUserQuery.Response(new Collection<Dictionary>()));
+            _fakeQueryProcessor.SetupResultFor<GetDictionariesByUserQuery, GetDictionariesByUserQuery.Response>(new GetDictionariesByUserQuery.Response(new Collection<Dictionary>()));
 
             _controller.Get();
 
@@ -49,7 +49,7 @@ namespace Inshapardaz.UnitTests.Controllers
         {
             var userId = "user1234";
             _fakeUserHelper.WithUserId(userId);
-            _fakeQueryProcessor.SetupResultFor<GetDictionariesByUserQuery>(new GetDictionariesByUserQuery.Response(new Collection<Dictionary>()));
+            _fakeQueryProcessor.SetupResultFor<GetDictionariesByUserQuery, GetDictionariesByUserQuery.Response>(new GetDictionariesByUserQuery.Response(new Collection<Dictionary>()));
 
             _controller.Get();
 
@@ -60,7 +60,7 @@ namespace Inshapardaz.UnitTests.Controllers
         public void WhenAnonymousCall_ShouldQueryDictionaryAsPublicUser()
         {
             var dictionaryId = 2332;
-            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery>(new GetDictionaryByIdQuery.Response(new Dictionary()));
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, GetDictionaryByIdQuery.Response>(new GetDictionaryByIdQuery.Response(new Dictionary()));
 
             _controller.Get(dictionaryId);
 
@@ -73,7 +73,7 @@ namespace Inshapardaz.UnitTests.Controllers
             var userId = "user1234";
             var dictionaryId = 2332;
             _fakeUserHelper.WithUserId(userId);
-            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery>(new GetDictionaryByIdQuery.Response(new Dictionary()));
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, GetDictionaryByIdQuery.Response>(new GetDictionaryByIdQuery.Response(new Dictionary()));
 
             _controller.Get(dictionaryId);
 

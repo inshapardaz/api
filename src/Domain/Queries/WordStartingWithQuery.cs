@@ -4,7 +4,7 @@ using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class WordStartingWithQuery : IQueryRequest<WordStartingWithQuery.Response>
+    public class WordStartingWithQuery : IQuery<WordStartingWithQuery.Response>
     {
         public string Title { get; set; }
 
@@ -12,7 +12,7 @@ namespace Inshapardaz.Domain.Queries
 
         public int PageSize { get; set; }
 
-        public class Response : IQueryResponse
+        public class Response
         {
             public Page<Word> Page { get; set; } 
         }

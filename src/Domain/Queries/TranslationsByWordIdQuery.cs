@@ -4,11 +4,11 @@ using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class  TranslationsByWordIdQuery : IQueryRequest<TranslationsByWordIdQuery.Response>
+    public class  TranslationsByWordIdQuery : IQuery<TranslationsByWordIdQuery.Response>
     {
         public int WordId { get; set; }
 
-        public class Response : IQueryResponse
+        public class Response
         {
             public IEnumerable<Translation> Translations { get; set; }
         }

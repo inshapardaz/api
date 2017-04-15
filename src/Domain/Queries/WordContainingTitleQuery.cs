@@ -3,7 +3,7 @@ using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class WordContainingTitleQuery : IQueryRequest<WordContainingTitleQuery.Response>
+    public class WordContainingTitleQuery : IQuery<WordContainingTitleQuery.Response>
     {
         public string SearchTerm { get; set; }
 
@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Queries
 
         public int PageSize { get; set; }
 
-        public class Response : IQueryResponse
+        public class Response
         {
             public Page<Word> Page { get; set; }
         }

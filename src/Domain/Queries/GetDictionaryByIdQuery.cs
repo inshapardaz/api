@@ -4,12 +4,12 @@ using Darker;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class GetDictionaryByIdQuery : IQueryRequest<GetDictionaryByIdQuery.Response>
+    public class GetDictionaryByIdQuery : IQuery<GetDictionaryByIdQuery.Response>
     {
         public string UserId { get; set; }
 
         public int DictionaryId { get; set; }
-        public class Response : IQueryResponse
+        public class Response
         {
             public Model.Dictionary Dictionary { get; }
 

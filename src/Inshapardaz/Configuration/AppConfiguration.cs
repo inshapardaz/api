@@ -227,8 +227,7 @@ namespace Inshapardaz.Configuration
 
             var queryProcessor = Darker.Builder.QueryProcessorBuilder.With()
                 .Handlers(config.HandlerRegistry, config, config)
-                .DefaultPolicies()
-                .InMemoryRequestContextFactory()
+                .InMemoryQueryContextFactory()
                 .Build();
 
             services.AddSingleton<Darker.IQueryProcessor>(queryProcessor);

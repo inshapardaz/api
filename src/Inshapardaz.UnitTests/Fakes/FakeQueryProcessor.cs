@@ -5,49 +5,50 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
+using System.Threading;
 
 namespace Inshapardaz.UnitTests.Fakes
 {
     public class FakeQueryProcessor : IQueryProcessor
     {
-        private readonly IDictionary<Type, IDictionary<Predicate<IQueryRequest>, IQueryResponse>> _results;
-        private readonly IDictionary<Type, IDictionary<Predicate<IQueryRequest>, Exception>> _exceptions;
+        private readonly IDictionary<Type, IDictionary<Predicate<IQuery>, object>> _results;
+        private readonly IDictionary<Type, IDictionary<Predicate<IQuery>, Exception>> _exceptions;
 
-        public IList<IQueryRequest> ExecutedQueries { get; }
+        public IList<IQuery> ExecutedQueries { get; }
 
         public FakeQueryProcessor()
         {
-            _results = new Dictionary<Type, IDictionary<Predicate<IQueryRequest>, IQueryResponse>>();
-            _exceptions = new Dictionary<Type, IDictionary<Predicate<IQueryRequest>, Exception>>();
+            _results = new Dictionary<Type, IDictionary<Predicate<IQuery>, object>>();
+            _exceptions = new Dictionary<Type, IDictionary<Predicate<IQuery>, Exception>>();
 
-            ExecutedQueries = new List<IQueryRequest>();
+            ExecutedQueries = new List<IQuery>();
         }
 
-        public TResponse Execute<TResponse>(IQueryRequest<TResponse> request) where TResponse : IQueryResponse
+        public TResult Execute<TResult>(IQuery<TResult> query)
         {
-            ExecutedQueries.Add(request);
+            ExecutedQueries.Add(query);
 
-            var queryType = request.GetType();
+            var queryType = query.GetType();
             if (_exceptions.ContainsKey(queryType))
             {
-                var exception = _exceptions[queryType].Where(r => r.Key(request)).Select(r => r.Value).FirstOrDefault();
+                var exception = _exceptions[queryType].Where(r => r.Key(query)).Select(r => r.Value).FirstOrDefault();
                 if (exception != null)
                     throw exception;
             }
 
             if (!_results.ContainsKey(queryType))
-                return default(TResponse);
+                return default(TResult);
 
-            var result = _results[queryType].Where(r => r.Key(request)).Select(r => r.Value).FirstOrDefault();
+            var result = _results[queryType].Where(r => r.Key(query)).Select(r => r.Value).FirstOrDefault();
             if (result == null)
-                return default(TResponse);
+                return default(TResult);
 
-            return (TResponse)result;
+            return (TResult)result;
         }
 
-        public Task<TResponse> ExecuteAsync<TResponse>(IQueryRequest<TResponse> request) where TResponse : IQueryResponse
+        public Task<TResult> ExecuteAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.FromResult(Execute(request));
+            return Task.FromResult(Execute(query));
         }
 
         public IEnumerable<T> GetExecutedQueries<T>()
@@ -55,62 +56,62 @@ namespace Inshapardaz.UnitTests.Fakes
             return ExecutedQueries.Where(q => q is T).Cast<T>();
         }
 
-        public void SetupResultFor<TRequest>(Predicate<TRequest> predicate, IQueryResponse result)
-            where TRequest : IQueryRequest
+        public void SetupResultFor<TRequest, TResponse>(Predicate<TRequest> predicate, TResponse result)
+            where TRequest : IQuery
         {
             var queryType = typeof(TRequest);
-            var resultType = typeof(IQueryRequest<>).MakeGenericType(result.GetType());
+            var resultType = typeof(IQuery<>).MakeGenericType(result.GetType());
             if (!resultType.IsAssignableFrom(queryType))
                 throw new InvalidOperationException("Request and response types don't match");
 
             if (!_results.ContainsKey(queryType))
-                _results.Add(queryType, new Dictionary<Predicate<IQueryRequest>, IQueryResponse>());
+                _results.Add(queryType, new Dictionary<Predicate<IQuery>, object>());
 
-            Predicate<IQueryRequest> untypedPredicate = r => predicate((TRequest)r);
+            Predicate<IQuery> untypedPredicate = r => predicate((TRequest)r);
             _results[queryType].Add(untypedPredicate, result);
         }
 
-        public void SetupResultFor<TRequest>(IQueryResponse result)
-            where TRequest : IQueryRequest
+        public void SetupResultFor<TRequest, TResponse>(TResponse result)
+            where TRequest : IQuery
         {
             var queryType = typeof(TRequest);
-            var resultType = typeof(IQueryRequest<>).MakeGenericType(result.GetType());
+            var resultType = typeof(IQuery<>).MakeGenericType(result.GetType());
             if (!resultType.IsAssignableFrom(queryType))
                 throw new InvalidOperationException("Request and response types don't match");
 
             if (!_results.ContainsKey(queryType))
-                _results.Add(queryType, new Dictionary<Predicate<IQueryRequest>, IQueryResponse>());
+                _results.Add(queryType, new Dictionary<Predicate<IQuery>, object>());
 
             _results[queryType].Add(_ => true, result);
         }
 
         public void SetupExceptionFor<TRequest>(Predicate<TRequest> predicate, Exception exception)
-            where TRequest : IQueryRequest
+            where TRequest : IQuery
         {
             var queryType = typeof(TRequest);
             if (!_exceptions.ContainsKey(queryType))
-                _exceptions.Add(queryType, new Dictionary<Predicate<IQueryRequest>, Exception>());
+                _exceptions.Add(queryType, new Dictionary<Predicate<IQuery>, Exception>());
 
-            Predicate<IQueryRequest> untypedPredicate = r => predicate((TRequest)r);
+            Predicate<IQuery> untypedPredicate = r => predicate((TRequest)r);
             _exceptions[queryType].Add(untypedPredicate, exception);
         }
 
         public void SetupExceptionFor<TRequest>(Exception exception)
-            where TRequest : IQueryRequest
+            where TRequest : IQuery
         {
             var queryType = typeof(TRequest);
             if (!_exceptions.ContainsKey(queryType))
-                _exceptions.Add(queryType, new Dictionary<Predicate<IQueryRequest>, Exception>());
+                _exceptions.Add(queryType, new Dictionary<Predicate<IQuery>, Exception>());
 
             _exceptions[queryType].Add(_ => true, exception);
         }
 
-        public void ShouldHaveExecuted<T>() where T : IQueryRequest
+        public void ShouldHaveExecuted<T>() where T : IQuery
         {
             Assert.True(ExecutedQueries.Any(q => q is T));
         }
 
-        public void ShouldHaveExecuted<T>(Predicate<T> predicate) where T : IQueryRequest
+        public void ShouldHaveExecuted<T>(Predicate<T> predicate) where T : IQuery
         {
             Assert.True(ExecutedQueries.Any(q => q is T && predicate((T)q)));
         }

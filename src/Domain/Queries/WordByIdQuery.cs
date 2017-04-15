@@ -3,11 +3,11 @@ using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class WordByIdQuery : IQueryRequest<WordByIdQuery.Response>
+    public class WordByIdQuery : IQuery<WordByIdQuery.Response>
     {
         public int Id { get; set; }
 
-        public class Response : IQueryResponse
+        public class Response
         {
             public Word Word { get; set; }
         }

@@ -22,8 +22,7 @@ namespace Inshapardaz.Configuration
         }
 
         public void Register<TRequest, TResponse, THandler>()
-            where TRequest : IQueryRequest<TResponse>
-            where TResponse : IQueryResponse
+            where TRequest : IQuery<TResponse>
             where THandler : IQueryHandler<TRequest, TResponse>
         {
             HandlerRegistry.Register<TRequest, TResponse, THandler>();
@@ -48,8 +47,8 @@ namespace Inshapardaz.Configuration
 
         public void RegisterDefaultDecorators()
         {
-            _services.AddTransient(typeof(RequestLoggingDecorator<,>));
-            _services.AddTransient(typeof(RetryableQueryDecorator<,>));
+            //_services.AddTransient(typeof(QueryLoggingDecorator<,>));
+            //_services.AddTransient(typeof(RetryableQueryDecorator<,>));
             _services.AddTransient(typeof(FallbackPolicyDecorator<,>));
         }
 

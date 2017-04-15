@@ -27,9 +27,36 @@ Content-Type: application/json
         rel = "self"
     }, {
         href = "..."
-        rel = "dictionary"
-    } 
+        rel = "dictionaries"
+    }, {
+    
+      "href": "...",
+      "rel": "languages"
+    },
+    {
+      "href": "...",
+      "rel": "attributes"
+    },
+    {
+      "href": "...",
+      "rel": "relationshiptypes"
+    },
+    {
+      "href": "...",
+      "rel": "thesaurus"
+    }
     // Other links can be added later
     ]
 }
 ```
+
+
+### Links
+|Link|Details|
+|----|----|
+|self|Link to current resource|
+|dictionaries|Link to resource for all dictionaries available to user|
+|languages|Link to language resource|
+|attributes|Link to word attribute resource|
+|relationshiptypes|Link to relationship types resource|
+|thesaurus|Link to thesaurus resource|

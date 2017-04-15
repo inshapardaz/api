@@ -1,0 +1,24 @@
+<div id="page-container" class="header-navbar-fixed enable-cookies"
+    [class.header-navbar-transparent] = "isHome"
+    [class.side-scroll] = "!isHome">
+    <!--[class.sidebar-r] = "!isHome"
+    [class.sidebar-o] = "!isHome"-->
+    <header id="header-navbar" class="content-mini content-mini-full"  [miniHeader] = "!isHome">
+    </header>
+
+    <main id="main-container">
+        <router-outlet></router-outlet>
+    </main>
+
+    <footer id="page-footer" 
+        [class.bg-white] = "isHome"
+        [class.content-mini] = "!isHome"
+        [class.content-mini-full] = "!isHome"
+        [class.font-s12] = "!isHome"
+        [class.bg-gray-lighter] = "!isHome"
+        [class.clearfix] = "!isHome"
+        [miniFooter]="!isHome" >
+    </footer>
+
+    <app-modal *ngIf="!isHome" [currentRoute]="currentRoute"></app-modal>
+</div>

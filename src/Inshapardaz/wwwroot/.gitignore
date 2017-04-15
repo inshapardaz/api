@@ -1,0 +1,8 @@
+.sass-cache/
+.tscache/
+node_modules/.bin/grunt
+node_modules/
+typings/
+deploylocation/
+app/**/*.js
+app/**/*.map

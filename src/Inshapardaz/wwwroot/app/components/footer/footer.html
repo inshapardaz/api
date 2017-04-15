@@ -1,0 +1,61 @@
+<div class="content content-boxed" *ngIf="!miniFooter">
+    <!-- Footer Navigation -->
+    <div class="row push-30-t items-push-2x">
+        <div class="col-sm-4">
+            <h3 class="h5 font-w600 text-uppercase push-20">Integrations</h3>
+            <ul class="list list-simple-mini font-s13">
+                <li>
+                    <a class="font-w600" href="javascript:void(0)">Data Downloads</a>
+                </li>
+                <li>
+                    <a class="font-w600" href="javascript:void(0)">APIs</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-4">
+            <h3 class="h5 font-w600 text-uppercase push-20">Resources</h3>
+            <ul class="list list-simple-mini font-s13">
+                <li>
+                    <a class="font-w600" href="javascript:void(0)">Fonts</a>
+                </li>
+                <li>
+                    <a class="font-w600" href="javascript:void(0)">Blogs</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-4">
+            <h3 class="h5 font-w600 text-uppercase push-20">Help</h3>
+            <ul class="list list-simple-mini font-s13">
+                <li>
+                    <a class="font-w600" href="javascript:void(0)">About</a>
+                </li>
+                <li>
+                    <a class="font-w600" href="javascript:void(0)">Help & Support</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- END Footer Navigation -->
+
+    <!-- Copyright Info -->
+    <div class="font-s12 push-20 clearfix">
+        <hr class="remove-margin-t">
+        <div class="pull-right">
+            version 0.0.1 (Aplha)
+        </div>
+        <div class="pull-left">
+            <a class="font-w600" href="/" target="_blank">
+                inshapardaz
+            </a> &copy; <span class="js-year-copy"></span>
+        </div>
+    </div>
+    <!-- END Copyright Info -->
+</div>
+
+
+<div class="pull-right" *ngIf="miniFooter">
+    version 0.0.1 (Aplha)
+</div>
+<div class="pull-left" *ngIf="miniFooter">
+    <a class="font-w600" href="/" target="_blank">Inshapardaz</a> &copy; <span class="js-year-copy"></span>
+</div>

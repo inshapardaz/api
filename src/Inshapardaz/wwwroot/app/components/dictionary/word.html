@@ -1,0 +1,102 @@
+<div class="block">
+    <div class="content content-boxed">
+        <div class="row">
+            <div class="block">
+                <!-- Basic Info -->
+                <div class="block-content text-center overflow-hidden">
+                    <div class="push-30 animated fadeInUp">
+                        <h1 class="h1 font-s48 rtl push-5">
+                            {{word?.title}}
+                        </h1>
+                        <h3 class="h5 text-muted">{{word?.description}}</h3>
+                    </div>
+                </div>
+                <!-- END Basic Info -->
+
+                <!-- Stats -->
+                <div class="block-content text-center bg-gray-lighter">
+                    <div class="row items-push text-uppercase">
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="font-s12 text-gray-darker animated fadeIn">Pronunciation</div>
+                            <a class="h2 font-s16 text-primary animated flipInX" href="javascript:void(0)">{{word?.pronunciation}}</a>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="font-s12 text-gray-darker animated fadeIn">Alternates</div>
+                            <a class="h2 font-s16 text-primary animated flipInX" href="javascript:void(0)">{{word?.titleWithMovements}}</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- END Stats -->
+            </div>
+        </div>
+        <div class="block" *ngFor="let detail of details">
+            <div class="block-header bg-gray-lighter rtl">
+                <h3 class="block-title">{{detail.attributes}} - {{detail.language}}</h3>
+            </div>
+            <div class="block-content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="block block-bordered" *ngFor="let context of detail.meanings">
+                            <div class="block-header rtl">
+                                <h3 class="block-title">{{context.context}}</h3>
+                            </div>
+                            <div class="block-content block-content-full rtl" *ngFor="let meaning of context.meanings">
+                                <div class="h4 push-5">{{meaning.value}}</div>
+                                <address>
+                                    {{meaning.example}}
+                                </address>
+                            </div>
+
+                            <div class="block block-bordered">
+                                <div class="block-header rtl">
+                                    <h3 class="block-title">Translations</h3>
+                                </div>
+
+                                <table class="table table-borderless table-striped table-vcenter">
+                                    <tbody>
+                                        <tr *ngFor="let translation of detail.translations">
+                                            <td class="text-right">
+                                                <span>{{translation.value}}</span>
+                                            </td>
+                                            <td class="text-center" style="width: 100px;">
+                                                <div class="btn-group btn-group-xs">
+                                                    <a href="base_pages_ecom_order.html" data-toggle="tooltip" title="View" class="btn btn-default"><i class="fa fa-pencil"></i></a>
+                                                    <a href="javascript:void(0)" data-toggle="tooltip" title="Delete" class="btn btn-default"><i class="fa fa-times text-danger"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END Addresses -->
+
+        <div class="block">
+            <div class="block-header bg-gray-lighter rtl">
+                <h3 class="block-title">Related Words</h3>
+            </div>
+            <div class="block-content">
+                <div class="row">
+                    <div class="col-sm-6 col-lg-4" *ngFor="let relation of relations">
+                        <a class="block block-rounded block-bordered block-link-hover3" [routerLink]="['/dictionary/word/', relation.relatedWordId]">
+                            <div class="block-content block-content-full clearfix">
+                                <div class="pull-right rtl">
+                                    <div class="font-s26 push-5">{{relation.relatedWord}}</div>
+                                    <div class="text-muted">{{relation.relationType}}</div>
+                                </div>
+                                <div class="pull-left push-10-t">
+                                    <i class="fa fa-pencil"></i>
+                                    <i class="fa fa-remove"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,113 @@
+{
+	"variables": [],
+	"info": {
+		"name": "IP",
+		"_postman_id": "5eb19e19-fe21-6e55-9f5f-27d506084b13",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET Entry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "var jsonData = JSON.parse(responseBody);\ntests[\"Has Links\"] = jsonData.links !== null;\ntests[\"Has Self Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"self\"; }).length === 1;\ntests[\"Has Dictionary Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"dictionary\"; }).length === 1;\ntests[\"Has Languages Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"languages\"; }).length === 1;\ntests[\"Has Attributes Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"attributes\"; }).length === 1;\ntests[\"Has Relation Types Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"relationshiptypes\"; }).length === 1;\ntests[\"Has Thesaurus Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"thesaurus\"; }).length === 1;"
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:53509/api/entry",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GET Dictionary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "var jsonData = JSON.parse(responseBody);\ntests[\"Has Links\"] = jsonData.links !== null;\ntests[\"Has Self Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"self\"; }).length === 1;\ntests[\"Has Index Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"index\"; }).length === 1;\ntests[\"Has Start With Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"startwith\"; }).length === 1;\ntests[\"Has Search Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"search\"; }).length === 1;\ntests[\"Has Words Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"words\"; }).length === 1;\ntests[\"Has Word Link\"] = $.grep(jsonData.links, function(o){ return o.rel === \"word\"; }).length === 1;"
+					}
+				}
+			],
+			"request": {
+				"url": "http://{{serverAddress}}/api/dictionary",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GET Dictionary Index",
+			"request": {
+				"url": "http://{{serverAddress}}/api/dictionary/index",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GET Word Starting With",
+			"request": {
+				"url": "http://{{serverAddress}}/api/words/startWith/%D8%A2",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GET Word Details",
+			"request": {
+				"url": "http://{{serverAddress}}/api/word/2/Details",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GET Word Relationships",
+			"request": {
+				"url": "http://{{serverAddress}}/api/word/2/Relationships",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

@@ -15,4 +15,11 @@
 **/bower_components
 **/node_modules
 **/Staging/*
-Client/Web/project.lock.json
+**.lock.json
+.vs
+.vscode
+*.jfm
+
+#Specific files
+oneui.min.js
+custom.css

@@ -1,0 +1,105 @@
+<!-- Page Header -->
+<div class="content bg-gray-lighter">
+    <div class="row items-push">
+        <div class="col-sm-7">
+            <h1 class="page-heading">
+                Search <small>Showing results for '{{searchText}}' </small>
+            </h1>
+        </div>
+        <div class="col-sm-5 text-right hidden-xs">
+            <ol class="breadcrumb push-10-t">
+                <li>Generic</li>
+                <li><a class="link-effect" href="">Blank</a></li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="input-group input-group-lg">
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-default" [routerLink]="['/search/', searchText]"><i class="fa fa-search"></i></button>
+        </div>
+        <input class="form-control rtl" type="text" (keyup.enter)="onSearch()" [(ngModel)]="searchText" placeholder="Search...">
+    </div>
+</div>
+
+<div class="content">
+    <div class="block" [class.block-opt-refresh]="isLoading">
+        <ul class="nav nav-tabs" data-toggle="tabs">
+            <li class="active">
+                <a href="#search-words">Words</a>
+            </li>
+            <li>
+                <a href="#search-translations">Translations</a>
+            </li>
+        </ul>
+        <div class="block-content tab-content bg-white">
+            <div class="tab-pane fade fade-up in active" id="search-words">
+                    <nav>
+                <ul class="pagination pagination-lg">
+                    <li *ngIf="pageNumber > 1">
+                        <a [routerLink]="['/search/', searchText, 1]"><i class="fa fa-angle-double-left"></i></a>
+                    </li>
+                    <li *ngIf="pageNumber > 1">
+                        <a [routerLink]="['/search/', searchText, pageNumber - 1]"><i class="fa fa-angle-left"></i></a>
+                    </li>
+                    <li *ngFor="let page of pages" [class.active]="page.number === pageNumber">
+                        <a [routerLink]="['/search/', searchText, page.number]">{{page.number}}</a>
+                    </li>
+                    <li *ngIf="pageNumber > 0 && pageNumber <= pageCount">
+                        <a  [routerLink]="['/search/', searchText, pageNumber + 1]" ><i class="fa fa-angle-right"></i></a>
+                    </li>
+                    <li *ngIf="pageNumber > 0 && pageNumber <= pageCount">
+                        <a  [routerLink]="['/search/', searchText, pageCount]" ><i class="fa fa-angle-double-right"></i></a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="block">
+                <div class="block-content">
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-4" *ngFor="let word of words">
+                            <a class="block block-rounded block-bordered block-link-hover3" [routerLink]="['/dictionary/word/', word.id]">
+                                <div class="block-content block-content-full clearfix">
+                                    <div class="pull-right rtl">
+                                        <div class="font-s26 push-5">{{word.title}}</div>
+                                        <!--<div class="text-muted">{{word.description}}</div>-->
+                                    </div>
+                                    <div class="pull-left push-10-t">
+                                        <i class="fa fa-pencil"></i>
+                                        <i class="fa fa-remove"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav>
+                <ul class="pagination pagination-lg">
+                    <li *ngIf="pageNumber > 1">
+                        <a [routerLink]="['/search/', searchText, 1]"><i class="fa fa-angle-double-left"></i></a>
+                    </li>
+                    <li *ngIf="pageNumber > 1">
+                        <a [routerLink]="['/search/', searchText, pageNumber - 1]"><i class="fa fa-angle-left"></i></a>
+                    </li>
+                    <li *ngFor="let page of pages" [class.active]="page.number === pageNumber">
+                        <a [routerLink]="['/search/', searchText, page.number]">{{page.number}}</a>
+                    </li>
+                    <li *ngIf="pageNumber > 0 && pageNumber <= pageCount">
+                        <a  [routerLink]="['/search/', searchText, pageNumber + 1]" ><i class="fa fa-angle-right"></i></a>
+                    </li>
+                    <li *ngIf="pageNumber > 0 && pageNumber <= pageCount">
+                        <a  [routerLink]="['/search/', searchText, pageCount]" ><i class="fa fa-angle-double-right"></i></a>
+                    </li>
+                </ul>
+            </nav>
+            </div>
+
+            <div class="tab-pane fade fade-up" id="search-translations">
+
+            </div>
+        </div>
+    </div>
+</div>

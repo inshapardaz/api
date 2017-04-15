@@ -8,19 +8,8 @@ Language Services for Urdu
 3. Front-End
 
 ## Tools and Frameworks requires
-
-### API
 - Dotnet Core (https://www.microsoft.com/net/core)
 - SQL Server 2016
-- Node JS for client & UI develoment
-
-## Building
-
-### Front End
-
-`npm install`
-
-`grunt`
 
 ### Rest Service and WebSite
 Checkout code and 

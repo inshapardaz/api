@@ -7,6 +7,8 @@ namespace Inshapardaz.Domain.Queries
     {
         public int Id { get; set; }
 
+        public string UserId { get; set; }
+
         public class Response
         {
             public Word Word { get; set; }

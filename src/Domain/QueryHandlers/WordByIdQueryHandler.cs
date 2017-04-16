@@ -15,7 +15,8 @@ namespace Inshapardaz.Domain.QueryHandlers
 
         public override WordByIdQuery.Response Execute(WordByIdQuery query)
         {
-            return new WordByIdQuery.Response {Word = _database.Words.SingleOrDefault(w => w.Id == query.Id)};
+            var word = _database.Words.SingleOrDefault(w => w.Id == query.Id && (w.Dictionary.IsPublic || w.Dictionary.UserId == query.UserId));
+            return new WordByIdQuery.Response { Word = word };
         }
     }
 }

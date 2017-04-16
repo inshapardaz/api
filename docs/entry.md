@@ -1,4 +1,4 @@
- # Entry
+# Entry
 
 Entry is the root of the api. It provide links to resources available for user.
 

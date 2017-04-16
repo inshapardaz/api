@@ -1,6 +1,6 @@
-Gets List of all attribute types used in application. This is a lookup resource and represent the attribute values returned in various resources. This resource should be used as resource. Each bit represent a different type of attribute.
+Gets List of all attribute types used in application. This is a lookup resource and represent the attribute values returned in various resources.
 
-## Gets
+## Url
 `api/attributes`
 
 
@@ -43,3 +43,5 @@ Content-Type: application/json
         // Other values here
     ]
 ```
+
+This value field  resource should be used as flag. Each bit represent a different type of attribute. For example a word can be used for female and make so both bis would be on for the value `000000011`;

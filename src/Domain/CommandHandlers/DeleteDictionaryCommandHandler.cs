@@ -16,14 +16,14 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override DeleteDictionaryCommand Handle(DeleteDictionaryCommand command)
         {
-            var w = _database.Dictionaries.SingleOrDefault(x => x.Id == command.DictionaryId);
+            var d = _database.Dictionaries.SingleOrDefault(x => x.Id == command.DictionaryId && x.UserId == command.UserId);
 
-            if (w == null || w.Id != command.DictionaryId)
+            if (d == null || d.Id != command.DictionaryId)
             {
                 throw new RecordNotFoundException();
             }
 
-            _database.Dictionaries.Remove(w);
+            _database.Dictionaries.Remove(d);
 
             _database.SaveChanges();
 

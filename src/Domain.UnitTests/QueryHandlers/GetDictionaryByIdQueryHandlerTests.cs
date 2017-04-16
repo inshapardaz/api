@@ -7,18 +7,12 @@ using Xunit;
 
 namespace Domain.UnitTests.QueryHandlers
 {
-    public class GetDictionaryByIdQueryHandlerTests
+    public class GetDictionaryByIdQueryHandlerTests : DatabaseTestFixture
     {
         private GetDictionaryByIdQueryHandler _handler;
-        private DatabaseContext _database;
 
         public GetDictionaryByIdQueryHandlerTests()
         {
-            var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
-               .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-               .Options;
-
-            _database = new DatabaseContext(inMemoryDataContextOptions);
             _handler = new GetDictionaryByIdQueryHandler(_database);
 
             _database.Dictionaries.Add(new Dictionary { Id = 1, IsPublic = true, UserId = "1" });
@@ -26,13 +20,6 @@ namespace Domain.UnitTests.QueryHandlers
             _database.Dictionaries.Add(new Dictionary { Id = 3, IsPublic = false, UserId = "2" });
             _database.Dictionaries.Add(new Dictionary { Id = 4, IsPublic = false, UserId = "1" });
             _database.SaveChanges();
-
-            _database.Database.EnsureCreated();
-        }
-
-        public void Dispose()
-        {
-            _database.Database.EnsureDeleted();
         }
 
         [Fact]

@@ -16,7 +16,7 @@ Authorization: OAuth2 ...
 
 ### Response
 
-Returns the list of all dictionaries available to user. Please review [Dictionary Resource](DictoanryResource) for details on the individual items in array.
+Returns the list of all dictionaries available to user. Please review [Dictionary Resource](../resources/dictionary.md) for details on the individual items in array.
 
 ```
 HTTP/1.1 200 OK
@@ -26,34 +26,15 @@ Content-Type: application/json
 ``` javascript
 {
     links : [{
-        href = "..."
-        rel = "self"
+        href : "..."
+        rel : "self"
     }, {
-        href = "..."
-        rel = "create"
+        href : "..."
+        rel : "create"
     }],
-    items : [{
-        id : 12,
-        name : 'dictionary name',
-        description : 'dictionary description',
-        language : 34,
-        isPublic : true,
-        links : [{
-            href : '...',
-            rel : 'self'
-        },{
-            href : '...'
-            rel : 'update'
-        },{
-            href : '...',
-            rel : 'delete'
-        }, {
-            href : '...',
-            rel : 'create-word'
-        }, {
-            href : '...',
-            rel : 'reference-types'
-        }]
+    items : [
+        // Dictionary resources
+    ]
     }]
 }
 ```
@@ -111,7 +92,7 @@ Content-Type: application/json
 }
 ```
 
-- If a dictioanry is created successfully, a object representing newly created dictionary is returned in response. Please review the [Dictioanry Resource](DictioanryResource) for detials on object.
+- If a dictioanry is created successfully, a object representing newly created dictionary is returned in response. Please review the [Dictionary Resource](../resources/dictionary.md) for detials on object.
 
 - By default all dictionaries are public unless specified.
 

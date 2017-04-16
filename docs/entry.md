@@ -23,27 +23,27 @@ Content-Type: application/json
 ``` javascript
 {
     links : [{
-        href = "..."
-        rel = "self"
+        href : "..."
+        rel : "self"
     }, {
-        href = "..."
-        rel = "dictionaries"
+        href : "..."
+        rel : "dictionaries"
     }, {
     
-      "href": "...",
-      "rel": "languages"
+      href: "...",
+      rel: "languages"
     },
     {
-      "href": "...",
-      "rel": "attributes"
+      href: "...",
+      rel: "attributes"
     },
     {
-      "href": "...",
-      "rel": "relationshiptypes"
+      href: "...",
+      rel: "relationshiptypes"
     },
     {
-      "href": "...",
-      "rel": "thesaurus"
+      href: "...",
+      rel: "thesaurus"
     }
     // Other links can be added later
     ]
@@ -52,11 +52,12 @@ Content-Type: application/json
 
 
 ### Links
+
 | Link | Details |
 | ---- | ---- |
 | self | Link to current resource |
-| dictionaries | Link to resource for all dictionaries available to user |
-| languages | Link to language resource |
-| attributes | Link to word attribute resource |
-| relationshiptypes | Link to relationship types resource |
+| [dictionaries](dictionary/dictionaries.md) | Link to resource for all dictionaries available to user |
+| [languages](languages.md) | Link to language resource |
+| [attributes](attributes.md) | Link to word attribute resource |
+| [relationshiptypes](relationshipTypes.md) | Link to relationship types resource |
 | thesaurus | Link to thesaurus resource |

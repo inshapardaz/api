@@ -6,4 +6,4 @@ Service is a standard REST API using [HATEAOS](https://en.wikipedia.org/wiki/HAT
 
 ## Authorisation
 
-API will expose only the links that can be allowed for the user in context. If no user context is provided a guest user is assumed.
+API will expose only the links that can be allowed for the user in context. If no user context is provided a guest user is assumed. Details on authorising with api can be found [here](docs/autorisation.md).

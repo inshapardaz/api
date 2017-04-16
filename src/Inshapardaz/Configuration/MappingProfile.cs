@@ -15,8 +15,9 @@ namespace Inshapardaz.Configuration
                 .ForMember(s => s.IsPublic, o => o.MapFrom(d => d.IsPublic))
                 .ForMember(s => s.UserId, o => o.MapFrom(d => d.UserId))
                 .ForMember(s => s.Links, o => o.Ignore())
+                .ForMember(s => s.WordCount, o => o.Ignore())
                 .ReverseMap()
-                    .ForMember(s => s.Word, o => o.Ignore());
+                    .ForMember(s => s.Words, o => o.Ignore());
 
             CreateMap<Word, WordView>()
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))

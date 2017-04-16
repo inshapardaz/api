@@ -7,7 +7,7 @@ namespace Inshapardaz.Domain.Model
     {
         public Dictionary()
         {
-            Word = new HashSet<Word>();
+            Words = new HashSet<Word>();
         }
 
         public int Id { get; set; }
@@ -20,6 +20,6 @@ namespace Inshapardaz.Domain.Model
 
         public string UserId { get; set; }
 
-        public virtual ICollection<Word> Word { get; set; }
+        public virtual ICollection<Word> Words { get; set; }
     }
 }

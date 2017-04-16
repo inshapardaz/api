@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="ad228e12-f1b6-4e0a-ba8c-565b835fec00" ChangeDateTime="04/16/2017 07:40:07">
+    <Property Name="ElementName" Value="[Inshapardaz].[Dictionary].[Title]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[Inshapardaz].[Dictionary]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Name" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="142c0b7c-8d55-40b2-857b-247f6f05faa7" ChangeDateTime="04/16/2017 07:40:15">
+    <Property Name="ElementName" Value="[Inshapardaz].[Dictionary].[Description]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[Inshapardaz].[Dictionary]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Language" />
+  </Operation>
+</Operations>

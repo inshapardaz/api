@@ -1,6 +1,8 @@
 ﻿CREATE TABLE [Inshapardaz].[Dictionary]
 (
     [Id] INT NOT NULL PRIMARY KEY IDENTITY, 
-    [Title] NVARCHAR(255) NULL, 
-    [Description] NVARCHAR(MAX) NULL
+    [Name] NVARCHAR(255) NULL, 
+    [Language] INT NULL, 
+    [IsPublic] BIT NULL, 
+    [UserId] NVARCHAR(50) NULL
 )

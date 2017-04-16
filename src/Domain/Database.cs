@@ -67,7 +67,7 @@ namespace Inshapardaz.Domain
                 entity.Property(e => e.DictionaryId).HasDefaultValue(1);
 
                 entity.HasOne(d => d.Dictionary)
-                      .WithMany(p => p.Word)
+                      .WithMany(p => p.Words)
                       .HasForeignKey(d => d.DictionaryId);
             });
 

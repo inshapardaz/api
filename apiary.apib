@@ -1,0 +1,124 @@
+FORMAT: 1A
+HOST: http://localost:5000/
+
+# Inshapardaz
+
+A simple API to create and manage dictionaries
+
+## Entry [/entry]
+
+### List All root resources [GET]
+
++ Request
+    + Headers
+        Accept: application/json
+        Authorization: OAuth2 sometoken
+
++ Response 200 (application/json)
+    
+        {
+            "links":[
+                {
+                    "href" : "http://localhost:5000/api/entry",
+                    "rel":"self"
+                }, {
+                    "href": "http://localhost:5000/api/dictionaries",
+                    "rel":"dictionaries"
+                }, {
+                    "href":"http://localhost:5000/api/languages",
+                    "rel":"languages"
+                }, {
+                    "href":"http://localhost:5000/api/attributes",
+                    "rel":"attributes"
+                }, {
+                    "href":"http://localhost:5000/api/relationtypes",
+                    "rel":"relationshiptypes"
+                }, {
+                    "href":"http://localhost:5000/api/thesauruses",
+                    "rel":"thesauruses"
+                }
+            ]
+        }
+
+## Dictionaries Collection [/dictionaries]
+
+### List All Dictionaries [GET]
+
++ Response 200 (application/json)
+
+        {
+            "links": [
+            {
+                "href": "http://localhost:5000/api/dictionary/index",
+                "rel": "self"
+            }, {
+                "href": "http://localhost:5000/api/dictionary/index",
+                "rel": "create"
+            }],
+            "items": [
+            {
+              "id": 1,
+              "name": "Main Urdu Dictionary",
+              "author": null,
+              "language": 2,
+              "userId": "0",
+              "isPublic": true,
+              "wordCount": 0,
+              "links": [ {
+                  "href": "http://localhost:5000/api/dictionaries/1",
+                  "rel": "self"
+                }, {
+                    "href": "http://localhost:5000/api/dictionaries/1",
+                    "rel": "update"
+                }, {
+                    "href": "http://localhost:5000/api/dictionaries/1",
+                    "rel": "delete"
+                }]
+            }
+          ]
+        }
+
+
+### Create a New Dictionary [POST]
+
+You may create your own dictionary. This dictionary will be private to you. Public dictionaries cannot be created using this API.
+
++ Request (application/json)
+
+        {
+            "question": "Favourite programming language?",
+            "choices": [
+                "Swift",
+                "Python",
+                "Objective-C",
+                "Ruby"
+            ]
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /questions/2
+
+    + Body
+
+            {
+                "question": "Favourite programming language?",
+                "published_at": "2015-08-05T08:40:51.620Z",
+                "choices": [
+                    {
+                        "choice": "Swift",
+                        "votes": 0
+                    }, {
+                        "choice": "Python",
+                        "votes": 0
+                    }, {
+                        "choice": "Objective-C",
+                        "votes": 0
+                    }, {
+                        "choice": "Ruby",
+                        "votes": 0
+                    }
+                ]
+            }

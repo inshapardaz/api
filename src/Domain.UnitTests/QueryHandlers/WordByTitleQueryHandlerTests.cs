@@ -27,44 +27,44 @@ namespace Domain.UnitTests.QueryHandlers
         [Fact]
         public void WhenCallingForWordFromPublicDictionary_ShouldReturnWord()
         {
-            var result = _handler.Execute(new WordByTitleQuery { Title = "word2", UserId = "1" });
+            var word = _handler.Execute(new WordByTitleQuery { Title = "word2", UserId = "1" });
 
-            Assert.NotNull(result.Word);
-            Assert.Equal(result.Word.Id, 23);
+            Assert.NotNull(word);
+            Assert.Equal(word.Id, 23);
         }
 
         [Fact]
         public void WhenCallingForWordFromPrivateDictionary_ShouldReturnWord()
         {
-            var result = _handler.Execute(new WordByTitleQuery { Title = "word1", UserId = "1" });
+            var word = _handler.Execute(new WordByTitleQuery { Title = "word1", UserId = "1" });
 
-            Assert.NotNull(result.Word);
-            Assert.Equal(result.Word.Id, 22);
+            Assert.NotNull(word);
+            Assert.Equal(word.Id, 22);
         }
 
         [Fact]
         public void WhenCallingForWordFromPublicDictionaryAsAnonymousUser_ShouldReturnWord()
         {
-            var result = _handler.Execute(new WordByTitleQuery { Title = "word2" });
+            var word = _handler.Execute(new WordByTitleQuery { Title = "word2" });
 
-            Assert.NotNull(result.Word);
-            Assert.Equal(result.Word.Id, 23);
+            Assert.NotNull(word);
+            Assert.Equal(word.Id, 23);
         }
 
         [Fact]
         public void WhenCallingForWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
         {
-            var result = _handler.Execute(new WordByTitleQuery { Title = "word 1" });
+            var word = _handler.Execute(new WordByTitleQuery { Title = "word 1" });
 
-            Assert.Null(result.Word);
+            Assert.Null(word);
         }
 
         [Fact]
         public void WhenCallingForInvalidWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
         {
-            var result = _handler.Execute(new WordByTitleQuery { Title = "somethingNew" });
+            var word = _handler.Execute(new WordByTitleQuery { Title = "somethingNew" });
 
-            Assert.Null(result.Word);
+            Assert.Null(word);
         }
 
     }

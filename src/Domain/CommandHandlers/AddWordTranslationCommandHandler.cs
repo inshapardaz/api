@@ -20,7 +20,7 @@ namespace Inshapardaz.Domain.CommandHandlers
         {
 
             var detail = _queryProcessor.Execute(new WordDetailByIdQuery {Id = command.WordDetailId});
-            detail.WordDetail.Translations.Add(command.Translation);
+            detail.Translations.Add(command.Translation);
 
             _database.SaveChanges();
 

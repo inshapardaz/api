@@ -13,6 +13,7 @@ using Inshapardaz.Domain.Commands;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Inshapardaz.Configuration;
+using System.Collections.Generic;
 
 namespace Inshapardaz.UnitTests.Controllers
 {
@@ -43,7 +44,7 @@ namespace Inshapardaz.UnitTests.Controllers
         [Fact]
         public void WhenAnonymousCall_ShouldQueryDictionariesPublicUser()
         {
-            _fakeQueryProcessor.SetupResultFor<GetDictionariesByUserQuery, GetDictionariesByUserQuery.Response>(new GetDictionariesByUserQuery.Response(new Collection<Dictionary>()));
+            _fakeQueryProcessor.SetupResultFor<GetDictionariesByUserQuery, IEnumerable<Dictionary>>(new Collection<Dictionary>());
 
             _controller.Get();
 
@@ -55,7 +56,7 @@ namespace Inshapardaz.UnitTests.Controllers
         {
             var userId = "user1234";
             _fakeUserHelper.WithUserId(userId);
-            _fakeQueryProcessor.SetupResultFor<GetDictionariesByUserQuery, GetDictionariesByUserQuery.Response>(new GetDictionariesByUserQuery.Response(new Collection<Dictionary>()));
+            _fakeQueryProcessor.SetupResultFor<GetDictionariesByUserQuery, IEnumerable<Dictionary>>(new Collection<Dictionary>());
 
             _controller.Get();
 
@@ -66,7 +67,7 @@ namespace Inshapardaz.UnitTests.Controllers
         public void WhenAnonymousCall_ShouldQueryDictionaryAsPublicUser()
         {
             var dictionaryId = 2332;
-            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, GetDictionaryByIdQuery.Response>(new GetDictionaryByIdQuery.Response(new Dictionary()));
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
 
             _controller.Get(dictionaryId);
 
@@ -79,7 +80,7 @@ namespace Inshapardaz.UnitTests.Controllers
             var userId = "user1234";
             var dictionaryId = 2332;
             _fakeUserHelper.WithUserId(userId);
-            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, GetDictionaryByIdQuery.Response>(new GetDictionaryByIdQuery.Response(new Dictionary()));
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
 
             _controller.Get(dictionaryId);
 
@@ -134,7 +135,7 @@ namespace Inshapardaz.UnitTests.Controllers
                 Name = "test dictionary"
             };
             _fakeDictionaryRenderer.WithLink("self", new System.Uri("http://link.test/123"));
-            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, GetDictionaryByIdQuery.Response>(new GetDictionaryByIdQuery.Response(new Dictionary()));
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
 
             var result = _controller.Put(dictionaryId, dictionaryView);
 
@@ -153,7 +154,7 @@ namespace Inshapardaz.UnitTests.Controllers
             var userId = "user1234";
             var dictionaryId = 344;
             _fakeUserHelper.WithUserId(userId);
-            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, GetDictionaryByIdQuery.Response>(new GetDictionaryByIdQuery.Response(null));
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(null);
 
             var dictionaryView = new Model.DictionaryView
             {
@@ -180,7 +181,7 @@ namespace Inshapardaz.UnitTests.Controllers
         public void WhenDeleted_ShouldRemoveDictionary()
         {
             const int dictionaryId = 23;
-            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, GetDictionaryByIdQuery.Response>(new GetDictionaryByIdQuery.Response(new Dictionary()));
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
 
             var result = _controller.Delete(dictionaryId);
 
@@ -195,7 +196,7 @@ namespace Inshapardaz.UnitTests.Controllers
         public void WhenDeletingNonExistingDictionary_ShouldReturnNotFound()
         {
             const int dictionaryId = 23;
-            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, GetDictionaryByIdQuery.Response>(new GetDictionaryByIdQuery.Response(null));
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(null);
 
             var result = _controller.Delete(dictionaryId);
 

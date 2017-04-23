@@ -2,10 +2,12 @@
 using Darker;
 using Inshapardaz.Domain.Queries;
 using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Model;
+using System.Collections.Generic;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class RelationshipByWordIdQueryHandler : QueryHandler<RelationshipByWordIdQuery, RelationshipByWordIdQuery.Response>
+    public class RelationshipByWordIdQueryHandler : QueryHandler<RelationshipByWordIdQuery, IEnumerable<WordRelation>>
     {
         private readonly IDatabaseContext _database;
 
@@ -14,15 +16,12 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override RelationshipByWordIdQuery.Response Execute(RelationshipByWordIdQuery query)
+        public override IEnumerable<WordRelation> Execute(RelationshipByWordIdQuery query)
         {
-            return new RelationshipByWordIdQuery.Response
-            {
-                Relations = _database.WordRelations
+            return _database.WordRelations
                     .Include(r => r.RelatedWord)
                     .Where(t => t.SourceWordId == query.WordId)
-                    .ToList()
-            };
+                    .ToList();
         }
     }
 }

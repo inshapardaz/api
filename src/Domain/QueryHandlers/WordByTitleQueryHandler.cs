@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using Darker;
 using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordByTitleQueryHandler : QueryHandler<WordByTitleQuery, WordByTitleQuery.Response>
+    public class WordByTitleQueryHandler : QueryHandler<WordByTitleQuery, Word>
     {
         private readonly IDatabaseContext _database;
 
@@ -13,12 +14,9 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override WordByTitleQuery.Response Execute(WordByTitleQuery query)
+        public override Word Execute(WordByTitleQuery query)
         {
-            return new WordByTitleQuery.Response
-            {
-                Word = _database.Words.SingleOrDefault(x => x.Title == query.Title)
-            };
+            return _database.Words.SingleOrDefault(x => x.Title == query.Title);
         }
     }
 }

@@ -6,7 +6,7 @@ using Inshapardaz.Domain.Queries;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordQueryHandler : QueryHandler<WordQuery, WordQuery.Response>
+    public class WordQueryHandler : QueryHandler<WordQuery, Page<Word>>
     {
         private readonly IDatabaseContext _database;
 
@@ -15,7 +15,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override WordQuery.Response Execute(WordQuery query)
+        public override Page<Word> Execute(WordQuery query)
         {
             var words = _database.Words;
             var count = words.Count();
@@ -24,15 +24,12 @@ namespace Inshapardaz.Domain.QueryHandlers
                             .Paginate(query.PageNumber, query.PageSize)
                             .ToList();
 
-            return new WordQuery.Response
+            return new Page<Word>
             {
-                Page = new Page<Word>
-                {
-                    PageNumber = query.PageNumber,
-                    PageSize = query.PageSize,
-                    TotalCount = count,
-                    Data = data
-                }
+                PageNumber = query.PageNumber,
+                PageSize = query.PageSize,
+                TotalCount = count,
+                Data = data
             };
         }
     }

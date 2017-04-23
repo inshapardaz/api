@@ -20,15 +20,15 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override DeleteWordDetailCommand Handle(DeleteWordDetailCommand command)
         {
-            var w = _queryProcessor.Execute(new WordDetailByIdQuery { Id = command.WordDetailId });
+            var details = _queryProcessor.Execute(new WordDetailByIdQuery { Id = command.WordDetailId });
 
 
-            if (w == null)
+            if (details == null)
             {
                 throw new RecordNotFoundException();
             }
 
-            _database.WordDetails.Remove(w.WordDetail);
+            _database.WordDetails.Remove(details);
             _database.SaveChanges();
 
             return base.Handle(command);

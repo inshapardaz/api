@@ -36,9 +36,9 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             var relation = new WordRelation
             {
-                SourceWord = word.Word,
+                SourceWord = word,
                 SourceWordId = command.SourceWordId,
-                RelatedWord = relatedWord.Word,
+                RelatedWord = relatedWord,
                 RelatedWordId = command.RelatedWordId,
                 RelationType = command.RelationType
             };

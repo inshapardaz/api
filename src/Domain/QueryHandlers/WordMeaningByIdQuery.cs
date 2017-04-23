@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordMeaningByIdQueryHandler : QueryHandler<WordMeaningByIdQuery, WordMeaningByIdQuery.Response>
+    public class WordMeaningByIdQueryHandler : QueryHandler<WordMeaningByIdQuery, Meaning>
     {
         private readonly IDatabaseContext _database;
 
@@ -14,12 +14,9 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override WordMeaningByIdQuery.Response Execute(WordMeaningByIdQuery query)
+        public override Meaning Execute(WordMeaningByIdQuery query)
         {
-            return new WordMeaningByIdQuery.Response
-            {
-                Meaning = _database.Meanings.SingleOrDefault(t => t.Id == query.Id)
-            };
+            return _database.Meanings.SingleOrDefault(t => t.Id == query.Id);
         }
     }
 }

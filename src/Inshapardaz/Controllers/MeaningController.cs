@@ -32,21 +32,20 @@ namespace Inshapardaz.Controllers
         [HttpGet("{id}", Name = "GetMeaningById")]
         public IActionResult Get(int id)
         {
-            var response = _queryProcessor.Execute(new WordMeaningByIdQuery {Id = id});
+            var meaning = _queryProcessor.Execute(new WordMeaningByIdQuery {Id = id});
 
-            if (response.Meaning == null)
+            if (meaning == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(_meaningRenderer.Render(response.Meaning));
+            return new ObjectResult(_meaningRenderer.Render(meaning));
         }
 
         [Route("api/word/{id}/Meaning", Name = "GetWordMeaningById")]
         public IEnumerable<MeaningView> GetMeaningForWord(int id)
         {
             return _queryProcessor.Execute(new WordMeaningByWordQuery { WordId = id } )
-                                  .Meanings
                                   .Select(x => _meaningRenderer.Render(x));
         }
 
@@ -60,7 +59,6 @@ namespace Inshapardaz.Controllers
             }
 
             return _queryProcessor.Execute(new WordMeaningByWordQuery { WordId = id, Context = finalContext })
-                                   .Meanings
                                    .Select(x => _meaningRenderer.Render(x));
         }
 
@@ -86,7 +84,7 @@ namespace Inshapardaz.Controllers
 
             var response = _queryProcessor.Execute(new WordMeaningByIdQuery { Id = id });
 
-            if (response.Meaning == null || response.Meaning.Id != meaning.Id)
+            if (response == null || response.Id != meaning.Id)
             {
                 return NotFound();
             }
@@ -101,12 +99,12 @@ namespace Inshapardaz.Controllers
         {
             var response = _queryProcessor.Execute(new WordMeaningByIdQuery { Id = id });
 
-            if (response.Meaning == null || response.Meaning.Id != id)
+            if (response == null || response.Id != id)
             {
                 return NotFound();
             }
 
-            _commandProcessor.Send(new DeleteWordMeaningCommand { Meaning = response.Meaning });
+            _commandProcessor.Send(new DeleteWordMeaningCommand { Meaning = response });
 
             return Ok();
         }

@@ -6,7 +6,7 @@ using Inshapardaz.Domain.Queries;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordRelationsByTitleQueryHandler : QueryHandler<WordRelationsByTitleQuery, WordRelationsByTitleQuery.Response>
+    public class WordRelationsByTitleQueryHandler : QueryHandler<WordRelationsByTitleQuery, Page<Word>>
     {
         private readonly IDatabaseContext _database;
 
@@ -15,7 +15,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override WordRelationsByTitleQuery.Response Execute(WordRelationsByTitleQuery request)
+        public override Page<Word> Execute(WordRelationsByTitleQuery request)
         {
             var relations = _database.Words
                             .Where(x => x.Title == request.Title)
@@ -29,15 +29,12 @@ namespace Inshapardaz.Domain.QueryHandlers
                             .Paginate(request.PageNumber, request.PageSize)
                             .ToList();
 
-            return new WordRelationsByTitleQuery.Response()
+            return new Page<Word>
             {
-                Page = new Page<Word>
-                {
-                    PageNumber = request.PageNumber,
-                    PageSize = request.PageSize,
-                    TotalCount = count,
-                    Data = data
-                }
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize,
+                TotalCount = count,
+                Data = data
             };
         }
     }

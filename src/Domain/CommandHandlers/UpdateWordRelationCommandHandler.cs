@@ -21,15 +21,15 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override UpdateWordRelationCommand Handle(UpdateWordRelationCommand command)
         {
-            var response = _queryProcessor.Execute(new RelationshipByIdQuery { Id = command.Relation.Id });
-            if (response.Relation == null)
+            var relation = _queryProcessor.Execute(new RelationshipByIdQuery { Id = command.Relation.Id });
+            if (relation == null)
             {
                 throw new RecordNotFoundException();
             }
 
-            response.Relation.RelatedWordId = command.Relation.RelatedWordId;
-            response.Relation.SourceWordId = command.Relation.SourceWordId;
-            response.Relation.RelationType = command.Relation.RelationType;
+            relation.RelatedWordId = command.Relation.RelatedWordId;
+            relation.SourceWordId = command.Relation.SourceWordId;
+            relation.RelationType = command.Relation.RelationType;
 
             _database.SaveChanges();
 

@@ -1,10 +1,12 @@
 ﻿using System.Linq;
 using Darker;
 using Inshapardaz.Domain.Queries;
+using System.Collections.Generic;
+using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class TranslationsByLanguageQueryHandler : QueryHandler<TranslationsByLanguageQuery, TranslationsByLanguageQuery.Response>
+    public class TranslationsByLanguageQueryHandler : QueryHandler<TranslationsByLanguageQuery, IEnumerable<Translation>>
     {
         private readonly IDatabaseContext _database;
 
@@ -13,14 +15,11 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override TranslationsByLanguageQuery.Response Execute(TranslationsByLanguageQuery query)
+        public override IEnumerable<Translation> Execute(TranslationsByLanguageQuery query)
         {
-            return new TranslationsByLanguageQuery.Response
-            {
-                Translations = _database.Translations
+            return _database.Translations
                     .Where(t => t.WordDetail.WordInstanceId == query.WordId && t.Language == query.Language)
-                    .ToList()
-            };
+                    .ToList();
         }
     }
 }

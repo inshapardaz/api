@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordDetailsByWordQueryHandler : QueryHandler<WordDetailsByWordQuery, WordDetailsByWordQuery.Response>
+    public class WordDetailsByWordQueryHandler : QueryHandler<WordDetailsByWordQuery, IEnumerable<WordDetail>>
     {
         private readonly IDatabaseContext _database;
 
@@ -16,7 +16,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override WordDetailsByWordQuery.Response  Execute(WordDetailsByWordQuery query)
+        public override IEnumerable<WordDetail> Execute(WordDetailsByWordQuery query)
         {
             IEnumerable<WordDetail> result;
 
@@ -37,7 +37,7 @@ namespace Inshapardaz.Domain.QueryHandlers
                     .ToList();
             }
             
-            return new WordDetailsByWordQuery.Response { WordDetail = result};
+            return result;
         }
     }
 }

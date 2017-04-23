@@ -21,14 +21,14 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override DeleteWordRelationCommand Handle(DeleteWordRelationCommand command)
         {
-            var response = _queryProcessor.Execute(new RelationshipByIdQuery { Id = command.RelationId });
+            var relation = _queryProcessor.Execute(new RelationshipByIdQuery { Id = command.RelationId });
 
-            if (response.Relation == null)
+            if (relation == null)
             {
                 throw new RecordNotFoundException();
             }
 
-            _database.WordRelations.Remove(response.Relation);
+            _database.WordRelations.Remove(relation);
             _database.SaveChanges();
 
             return base.Handle(command);

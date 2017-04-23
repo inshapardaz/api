@@ -27,8 +27,8 @@ namespace Domain.UnitTests.QueryHandlers
         {
             var result = _handler.Execute(new Inshapardaz.Domain.Queries.GetDictionaryByIdQuery { DictionaryId = 2 });
 
-            Assert.NotNull(result.Dictionary);
-            Assert.True(result.Dictionary.IsPublic);
+            Assert.NotNull(result);
+            Assert.True(result.IsPublic);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Domain.UnitTests.QueryHandlers
         {
             var result = _handler.Execute(new Inshapardaz.Domain.Queries.GetDictionaryByIdQuery { DictionaryId = 3 });
 
-            Assert.Null(result.Dictionary);
+            Assert.Null(result);
         }
 
 
@@ -45,8 +45,8 @@ namespace Domain.UnitTests.QueryHandlers
         {
             var result = _handler.Execute(new Inshapardaz.Domain.Queries.GetDictionaryByIdQuery { UserId = "2", DictionaryId = 3 });
 
-            Assert.NotNull(result.Dictionary);
-            Assert.False(result.Dictionary.IsPublic);
+            Assert.NotNull(result);
+            Assert.False(result.IsPublic);
         }
 
         [Fact]
@@ -54,9 +54,9 @@ namespace Domain.UnitTests.QueryHandlers
         {
             var result = _handler.Execute(new Inshapardaz.Domain.Queries.GetDictionaryByIdQuery { UserId = "2", DictionaryId = 1 });
 
-            Assert.NotNull(result.Dictionary);
-            Assert.True(result.Dictionary.IsPublic);
-            Assert.NotEqual(result.Dictionary.UserId, "2");
+            Assert.NotNull(result);
+            Assert.True(result.IsPublic);
+            Assert.NotEqual(result.UserId, "2");
         }
     }
 }

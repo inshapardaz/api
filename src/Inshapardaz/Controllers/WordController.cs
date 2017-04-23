@@ -30,13 +30,13 @@ namespace Inshapardaz.Controllers
         [HttpGet("{id}", Name = "GetWordById")]
         public IActionResult Get(int id)
         {
-            var response = _queryProcessor.Execute(new WordByIdQuery { Id = id });
-            if (response.Word == null)
+            var word = _queryProcessor.Execute(new WordByIdQuery { Id = id });
+            if (word == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(_wordRenderer.Render(response.Word));
+            return new ObjectResult(_wordRenderer.Render(word));
         }
 
         [HttpGet("/api/word/exists/{word}")]
@@ -44,7 +44,7 @@ namespace Inshapardaz.Controllers
         {
             var result = _queryProcessor.Execute(new WordByTitleQuery { Title = word });
 
-            if (result.Word == null)
+            if (result == null)
             {
                 return NotFound();
             }
@@ -83,7 +83,7 @@ namespace Inshapardaz.Controllers
 
             var response = _queryProcessor.Execute(new WordByIdQuery { Id = id });
 
-            if (response.Word == null)
+            if (response == null)
             {
                 return NotFound();
             }
@@ -96,14 +96,14 @@ namespace Inshapardaz.Controllers
         [HttpDelete("/api/word/{id}", Name="DeleteWord")]
         public IActionResult Delete(int id)
         {
-            var response = _queryProcessor.Execute(new WordByIdQuery {Id =  id});
+            var word = _queryProcessor.Execute(new WordByIdQuery {Id =  id});
 
-            if (response.Word == null)
+            if (word == null)
             {
                 return NotFound();
             }
 
-            _commandProcessor.Send(new DeleteWordCommand { Word = response.Word });
+            _commandProcessor.Send(new DeleteWordCommand { Word = word });
 
             return Ok();
         }

@@ -26,11 +26,11 @@ namespace Domain.UnitTests.QueryHandlers
         {
             var result = _handler.Execute(new GetDictionariesByUserQuery());
 
-            Assert.Equal(result.Dictionaries.Count(), 2);
-            Assert.Equal(result.Dictionaries.ElementAt(0).Id, 1);
-            Assert.True(result.Dictionaries.ElementAt(0).IsPublic);
-            Assert.Equal(result.Dictionaries.ElementAt(1).Id, 2);
-            Assert.True(result.Dictionaries.ElementAt(1).IsPublic);
+            Assert.Equal(result.Count(), 2);
+            Assert.Equal(result.ElementAt(0).Id, 1);
+            Assert.True(result.ElementAt(0).IsPublic);
+            Assert.Equal(result.ElementAt(1).Id, 2);
+            Assert.True(result.ElementAt(1).IsPublic);
         }
 
         [Fact]
@@ -38,16 +38,16 @@ namespace Domain.UnitTests.QueryHandlers
         {
             var result = _handler.Execute(new GetDictionariesByUserQuery { UserId = "2" });
 
-            Assert.Equal(result.Dictionaries.Count(), 3);
+            Assert.Equal(result.Count(), 3);
 
-            Assert.Equal(result.Dictionaries.ElementAt(0).Id, 1);
-            Assert.True(result.Dictionaries.ElementAt(0).IsPublic);
+            Assert.Equal(result.ElementAt(0).Id, 1);
+            Assert.True(result.ElementAt(0).IsPublic);
 
-            Assert.Equal(result.Dictionaries.ElementAt(1).Id, 2);
-            Assert.True(result.Dictionaries.ElementAt(1).IsPublic);
+            Assert.Equal(result.ElementAt(1).Id, 2);
+            Assert.True(result.ElementAt(1).IsPublic);
 
-            Assert.Equal(result.Dictionaries.ElementAt(2).Id, 3);
-            Assert.False(result.Dictionaries.ElementAt(2).IsPublic);
+            Assert.Equal(result.ElementAt(2).Id, 3);
+            Assert.False(result.ElementAt(2).IsPublic);
         }
     }
 }

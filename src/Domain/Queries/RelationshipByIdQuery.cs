@@ -3,13 +3,8 @@ using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class RelationshipByIdQuery : IQuery<RelationshipByIdQuery.Response>
+    public class RelationshipByIdQuery : IQuery<WordRelation>
     {
         public long Id { get; set; }
-
-        public class Response
-        {
-            public WordRelation Relation { get; set; }
-        }
     }
 }

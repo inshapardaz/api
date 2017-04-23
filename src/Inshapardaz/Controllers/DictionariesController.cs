@@ -44,7 +44,7 @@ namespace Inshapardaz.Controllers
             string userId = _userHelper.GetUserId();
 
             var results = _queryProcessor.Execute(new GetDictionariesByUserQuery { UserId = userId });
-            return Ok(_dictionariesRenderer.Render(results.Dictionaries));
+            return Ok(_dictionariesRenderer.Render(results));
         }
 
         [HttpGet("/api/dictionaries/{id}", Name = "GetDictionaryById")]
@@ -58,7 +58,7 @@ namespace Inshapardaz.Controllers
                 return NotFound();
             }
 
-            return Ok(_dictionaryRenderer.Render(result.Dictionary));
+            return Ok(_dictionaryRenderer.Render(result));
         }
 
         [Authorize]
@@ -88,7 +88,7 @@ namespace Inshapardaz.Controllers
 
             var result = _queryProcessor.Execute(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
-            if (result.Dictionary == null)
+            if (result == null)
             {
                 AddDictionaryCommand addDictionaryCommand = new AddDictionaryCommand
                 {
@@ -124,7 +124,7 @@ namespace Inshapardaz.Controllers
             string userId = _userHelper.GetUserId();
             var result = _queryProcessor.Execute(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
-            if (result.Dictionary == null)
+            if (result == null)
             {
                 return NotFound();
             }

@@ -34,19 +34,18 @@ namespace Inshapardaz.Controllers
         {
             var response = _queryProcessor.Execute(new TranslationByIdQuery { Id = id });
 
-            if (response.Translation == null)
+            if (response == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(_renderer.Render(response.Translation));
+            return new ObjectResult(_renderer.Render(response));
         }
 
         [Route("/api/word/{id}/Translations", Name = "GetWordTranslationsById")]
         public IEnumerable<TranslationView> GetTranslationForWord(int id)
         {
             return _queryProcessor.Execute(new TranslationsByWordIdQuery { WordId = id })
-                                  .Translations
                                   .Select(t => _renderer.Render(t));
         }
 
@@ -54,7 +53,6 @@ namespace Inshapardaz.Controllers
         public IEnumerable<TranslationView> GetTranslationForWord(int id, Languages language)
         {
             return _queryProcessor.Execute(new TranslationsByLanguageQuery { WordId = id, Language = language})
-                                  .Translations
                                   .Select(t => _renderer.Render(t));
         }
 
@@ -86,7 +84,7 @@ namespace Inshapardaz.Controllers
 
             var response = _queryProcessor.Execute(new TranslationByIdQuery { Id = translationId });
 
-            if (response.Translation == null)
+            if (response == null)
             {
                 return NotFound();
             }
@@ -101,7 +99,7 @@ namespace Inshapardaz.Controllers
         {
             var response = _queryProcessor.Execute(new TranslationByIdQuery { Id = id });
 
-            if (response.Translation == null )
+            if (response == null )
             {
                 return NotFound();
             }

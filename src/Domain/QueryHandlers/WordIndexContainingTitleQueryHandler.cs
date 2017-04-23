@@ -8,7 +8,7 @@ using Inshapardaz.Domain.Queries;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordIndexContainingTitleQueryHandler : QueryHandler<WordContainingTitleQuery, WordContainingTitleQuery.Response>
+    public class WordIndexContainingTitleQueryHandler : QueryHandler<WordContainingTitleQuery, Page<Word>>
     {
         private readonly IDatabaseContext _database;
 
@@ -17,7 +17,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override WordContainingTitleQuery.Response Execute(WordContainingTitleQuery query)
+        public override Page<Word> Execute(WordContainingTitleQuery query)
         {
             var wordIndices = _database.Words.Where(x => x.Title.StartsWith(query.SearchTerm));
 
@@ -28,15 +28,12 @@ namespace Inshapardaz.Domain.QueryHandlers
                             .Paginate(query.PageNumber, query.PageSize)
                             .ToList();
 
-            return new WordContainingTitleQuery.Response
+            return new Page<Word>
             {
-                Page = new Page<Word>
-                {
-                    PageNumber = query.PageNumber,
-                    PageSize = query.PageSize,
-                    TotalCount = count,
-                    Data = data
-                }
+                PageNumber = query.PageNumber,
+                PageSize = query.PageSize,
+                TotalCount = count,
+                Data = data
             };
         }
     }

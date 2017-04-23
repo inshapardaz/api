@@ -34,14 +34,14 @@ namespace Inshapardaz.Controllers
         [Route("/api/Word/Details/{id}", Name = "GetDetailsById")]
         public IActionResult Get(int id)
         {
-            var response = _queryProcessor.Execute(new WordDetailByIdQuery {Id = id});
+            var details = _queryProcessor.Execute(new WordDetailByIdQuery {Id = id});
 
-            if (response.WordDetail == null)
+            if (details == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(_wordDetailRenderer.Render(response.WordDetail));
+            return new ObjectResult(_wordDetailRenderer.Render(details));
         }
 
         [HttpGet]
@@ -55,7 +55,6 @@ namespace Inshapardaz.Controllers
             };
 
             return _queryProcessor.Execute(query)
-                                  .WordDetail
                                   .Select(w => _wordDetailRenderer.Render(w));
         }
 
@@ -70,7 +69,7 @@ namespace Inshapardaz.Controllers
 
             var response = _queryProcessor.Execute(new WordByIdQuery{ Id = id});
 
-            if (response.Word == null)
+            if (response == null)
             {
                 return BadRequest();
             }
@@ -94,9 +93,9 @@ namespace Inshapardaz.Controllers
                 return BadRequest();
             }
 
-            var response = _queryProcessor.Execute(new WordDetailByIdQuery { Id = wordDetailId });
+            var details = _queryProcessor.Execute(new WordDetailByIdQuery { Id = wordDetailId });
 
-            if (response.WordDetail == null || response.WordDetail.Id != wordDetail.Id)
+            if (details == null || details.Id != wordDetail.Id)
             {
                 return BadRequest();
             }
@@ -114,9 +113,9 @@ namespace Inshapardaz.Controllers
         [HttpDelete("/api/word/{id}/Details/{wordDetailId}", Name = "DeleteWordDetail")]
         public IActionResult Delete(int id, int wordDetailId)
         {
-            var response = _queryProcessor.Execute(new WordDetailByIdQuery {Id = wordDetailId});
+            var details = _queryProcessor.Execute(new WordDetailByIdQuery {Id = wordDetailId});
 
-            if (response.WordDetail == null || response.WordDetail.Id != id)
+            if (details == null || details.Id != id)
             {
                 return NotFound();
             }

@@ -4,15 +4,10 @@ using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class TranslationsByLanguageQuery : IQuery<TranslationsByLanguageQuery.Response>
+    public class TranslationsByLanguageQuery : IQuery<IEnumerable<Translation>>
     {
         public int WordId { get; set; }
 
         public Languages Language { get; set; }
-
-        public class Response
-        {
-            public IEnumerable<Translation> Translations { get; set; }
-        }
     }
 }

@@ -9,7 +9,7 @@ using System;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordStartingWithQueryHandler : QueryHandler<WordStartingWithQuery, WordStartingWithQuery.Response>
+    public class WordStartingWithQueryHandler : QueryHandler<WordStartingWithQuery, Page<Word>>
     {
         private readonly IDatabaseContext _database;
 
@@ -18,7 +18,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override WordStartingWithQuery.Response Execute(WordStartingWithQuery request)
+        public override Page<Word> Execute(WordStartingWithQuery request)
         {
             var wordIndices = _database.Words.Where(x => x.Title.StartsWith(request.Title));
 
@@ -29,15 +29,12 @@ namespace Inshapardaz.Domain.QueryHandlers
                             .Paginate(request.PageNumber, request.PageSize)
                             .ToList();
 
-            return new WordStartingWithQuery.Response()
+            return new Page<Word>
             {
-                Page = new Page<Word>
-                {
-                    PageNumber = request.PageNumber,
-                    PageSize = request.PageSize,
-                    TotalCount = count,
-                    Data = data
-                }
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize,
+                TotalCount = count,
+                Data = data
             };
         }
     }

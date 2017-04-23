@@ -33,34 +33,34 @@ namespace Inshapardaz.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var response = _queryProcessor.Execute(new RelationshipByIdQuery { Id = id });
+            var relations = _queryProcessor.Execute(new RelationshipByIdQuery { Id = id });
 
-            if (response.Relation == null)
+            if (relations == null)
             {
                 return NotFound();
             }
             
-            return new ObjectResult(_relationRender.Render(response.Relation));
+            return new ObjectResult(_relationRender.Render(relations));
         }
 
         [Route("/api/word/{id}/Relationships", Name = "GetWordRelationsById")]
         public IActionResult GetRelationshipForWord(int id)
         {
             var relations = _queryProcessor.Execute(new RelationshipByWordIdQuery { WordId = id });
-            return new ObjectResult(_relationsRenderer.Render(relations.Relations));
+            return new ObjectResult(_relationsRenderer.Render(relations));
         }
 
         [HttpPost("/api/word/{id}/Relation", Name = "AddRelation")]
         public IActionResult Post(int id, [FromBody]RelationshipView relationship)
         {
-            var response = _queryProcessor.Execute(new WordByIdQuery {Id = id});
-            if (response.Word == null)
+            var word = _queryProcessor.Execute(new WordByIdQuery {Id = id});
+            if (word == null)
             {
                 return NotFound();
             }
 
             var relatedWord = _queryProcessor.Execute( new WordByIdQuery {Id = relationship.RelatedWordId});
-            if (relatedWord.Word == null)
+            if (relatedWord == null)
             {
                 return NotFound();
             }
@@ -83,9 +83,9 @@ namespace Inshapardaz.Controllers
                 return BadRequest();
             }
 
-            var response = _queryProcessor.Execute(new RelationshipByIdQuery { Id = relationship.Id });
+            var relations = _queryProcessor.Execute(new RelationshipByIdQuery { Id = relationship.Id });
 
-            if (response.Relation == null)
+            if (relations == null)
             {
                 return Ok();
             }
@@ -98,9 +98,9 @@ namespace Inshapardaz.Controllers
         [HttpDelete("/api/word/{id}/Relation/{relatedWith}", Name = "DeleteRelation")]
         public IActionResult Delete(int id)
         {
-            var response = _queryProcessor.Execute(new RelationshipByIdQuery { Id = id });
+            var relations = _queryProcessor.Execute(new RelationshipByIdQuery { Id = id });
 
-            if (response.Relation == null || response.Relation.Id != id)
+            if (relations == null || relations.Id != id)
             {
                 return NotFound();
             }

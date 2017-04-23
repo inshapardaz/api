@@ -8,7 +8,7 @@ using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetDictionaryByIdQueryHandler : QueryHandler<GetDictionaryByIdQuery, GetDictionaryByIdQuery.Response>
+    public class GetDictionaryByIdQueryHandler : QueryHandler<GetDictionaryByIdQuery, Dictionary>
     {
         private readonly IDatabaseContext _database;
 
@@ -17,7 +17,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override GetDictionaryByIdQuery.Response Execute(GetDictionaryByIdQuery request)
+        public override Dictionary Execute(GetDictionaryByIdQuery request)
         {
             IQueryable<Dictionary> result;
             if (!string.IsNullOrWhiteSpace(request.UserId))
@@ -29,7 +29,7 @@ namespace Inshapardaz.Domain.QueryHandlers
                 result = _database.Dictionaries.Where(d => d.Id == request.DictionaryId && d.IsPublic);
             }
 
-            return new GetDictionaryByIdQuery.Response(result.SingleOrDefault());
+            return result.SingleOrDefault();
         }
     }
 }

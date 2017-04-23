@@ -75,9 +75,6 @@ namespace Inshapardaz.UnitTests.Fakes
             where TRequest : IQuery
         {
             var queryType = typeof(TRequest);
-            var resultType = typeof(IQuery<>).MakeGenericType(result.GetType());
-            if (!resultType.IsAssignableFrom(queryType))
-                throw new InvalidOperationException("Request and response types don't match");
 
             if (!_results.ContainsKey(queryType))
                 _results.Add(queryType, new Dictionary<Predicate<IQuery>, object>());

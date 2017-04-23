@@ -1,10 +1,6 @@
-﻿using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Model;
+﻿using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Domain.UnitTests.QueryHandlers
@@ -27,44 +23,44 @@ namespace Domain.UnitTests.QueryHandlers
         [Fact]
         public void WhenCallingForWordFromPublicDictionary_ShouldReturnWord()
         {
-            var result = _handler.Execute(new WordByIdQuery { Id = 23, UserId = "1" });
+            var word = _handler.Execute(new WordByIdQuery { Id = 23, UserId = "1" });
 
-            Assert.NotNull(result.Word);
-            Assert.Equal(result.Word.Id, 23);
+            Assert.NotNull(word);
+            Assert.Equal(word.Id, 23);
         }
 
         [Fact]
         public void WhenCallingForWordFromPrivateDictionary_ShouldReturnWord()
         {
-            var result = _handler.Execute(new WordByIdQuery { Id = 22, UserId = "1" });
+            var word = _handler.Execute(new WordByIdQuery { Id = 22, UserId = "1" });
 
-            Assert.NotNull(result.Word);
-            Assert.Equal(result.Word.Id, 22);
+            Assert.NotNull(word);
+            Assert.Equal(word.Id, 22);
         }
 
         [Fact]
         public void WhenCallingForWordFromPublicDictionaryAsAnonymousUser_ShouldReturnWord()
         {
-            var result = _handler.Execute(new WordByIdQuery { Id = 23 });
+            var word = _handler.Execute(new WordByIdQuery { Id = 23 });
 
-            Assert.NotNull(result.Word);
-            Assert.Equal(result.Word.Id, 23);
+            Assert.NotNull(word);
+            Assert.Equal(word.Id, 23);
         }
 
         [Fact]
         public void WhenCallingForWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
         {
-            var result = _handler.Execute(new WordByIdQuery { Id = 22 });
+            var word = _handler.Execute(new WordByIdQuery { Id = 22 });
 
-            Assert.Null(result.Word);
+            Assert.Null(word);
         }
 
         [Fact]
         public void WhenCallingForInvalidWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
         {
-            var result = _handler.Execute(new WordByIdQuery { Id = 223 });
+            var word = _handler.Execute(new WordByIdQuery { Id = 223 });
 
-            Assert.Null(result.Word);
+            Assert.Null(word);
         }
 
     }

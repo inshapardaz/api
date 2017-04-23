@@ -38,7 +38,7 @@ namespace Inshapardaz.Controllers
             var pageRenderArgs = new PageRendererArgs<Word>
             {
                 RouteName = "GetWordsListStartWith",
-                Page = results.Page
+                Page = results
             };
 
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));

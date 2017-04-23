@@ -40,7 +40,7 @@ namespace Inshapardaz.Controllers
             var pageRenderArgs = new PageRendererArgs<Word>()
                                      {
                                          RouteName = "GetWordsListStartWith",
-                                         Page = results.Page
+                                         Page = results
             };
 
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
@@ -66,7 +66,7 @@ namespace Inshapardaz.Controllers
             var pageRenderArgs = new PageRendererArgs<Word>()
             {
                 RouteName = "WordSearch",
-                Page = response.Page
+                Page = response
             };
 
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
@@ -87,7 +87,7 @@ namespace Inshapardaz.Controllers
             var pageRenderArgs = new PageRendererArgs<Word>()
             {
                 RouteName = "GetWords",
-                Page = results.Page
+                Page = results
             };
 
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));

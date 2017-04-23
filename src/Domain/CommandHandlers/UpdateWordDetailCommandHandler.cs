@@ -21,7 +21,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override UpdateWordDetailCommand Handle(UpdateWordDetailCommand command)
         {
-            var detail = _queryProcessor.Execute(new WordDetailByIdQuery {Id =  command.WordDetail.Id}).WordDetail;
+            var detail = _queryProcessor.Execute(new WordDetailByIdQuery {Id =  command.WordDetail.Id});
 
             if (detail == null)
             {

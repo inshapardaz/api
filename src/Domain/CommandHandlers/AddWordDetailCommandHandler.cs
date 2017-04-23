@@ -27,7 +27,7 @@ namespace Inshapardaz.Domain.CommandHandlers
                 throw new RecordNotFoundException();
             }
 
-            word.Word.WordDetails.Add(command.WordDetail);
+            word.WordDetails.Add(command.WordDetail);
             _database.SaveChanges();
 
             return base.Handle(command);

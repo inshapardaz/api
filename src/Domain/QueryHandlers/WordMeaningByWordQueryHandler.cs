@@ -6,7 +6,7 @@ using Inshapardaz.Domain.Queries;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordMeaningByWordQueryHandler : QueryHandler<WordMeaningByWordQuery, WordMeaningByWordQuery.Response>
+    public class WordMeaningByWordQueryHandler : QueryHandler<WordMeaningByWordQuery, IEnumerable<Meaning>>
     {
         private readonly IDatabaseContext _database;
 
@@ -15,7 +15,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override WordMeaningByWordQuery.Response Execute(WordMeaningByWordQuery args)
+        public override IEnumerable<Meaning> Execute(WordMeaningByWordQuery args)
         {
             IEnumerable<Meaning> meanings;
             if (string.IsNullOrWhiteSpace(args.Context))
@@ -31,7 +31,7 @@ namespace Inshapardaz.Domain.QueryHandlers
                     .ToList();
             }
 
-            return new WordMeaningByWordQuery.Response {Meanings = meanings };
+            return meanings;
         }
     }
 }

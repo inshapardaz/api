@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using Darker;
 using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class TranslationByIdQueryHandler : QueryHandler<TranslationByIdQuery, TranslationByIdQuery.Response>
+    public class TranslationByIdQueryHandler : QueryHandler<TranslationByIdQuery, Translation>
     {
         private readonly IDatabaseContext _database;
 
@@ -13,12 +14,9 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override TranslationByIdQuery.Response Execute(TranslationByIdQuery args)
+        public override Translation Execute(TranslationByIdQuery args)
         {
-            return new TranslationByIdQuery.Response
-            {
-                Translation = _database.Translations.SingleOrDefault(t => t.Id == args.Id)
-            };
+            return _database.Translations.SingleOrDefault(t => t.Id == args.Id);
         }
     }
 }

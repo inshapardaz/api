@@ -23,13 +23,13 @@ namespace Inshapardaz.Domain.CommandHandlers
         {
             var translation = _queryProcessor.Execute(new TranslationByIdQuery {Id = command.Translation.Id});
 
-            if (translation.Translation == null)
+            if (translation == null)
             {
                 throw new RecordNotFoundException();
             }
 
-            translation.Translation.Language = command.Translation.Language;
-            translation.Translation.Value = command.Translation.Value;
+            translation.Language = command.Translation.Language;
+            translation.Value = command.Translation.Value;
 
             _database.SaveChanges();
 

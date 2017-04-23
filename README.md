@@ -1,6 +1,10 @@
 # inshapardaz
 Language Services for Urdu
 
+# Build Status
+
+[![Build status](https://ci.appveyor.com/api/projects/status/hmtcrynhyxbtxdno?svg=true)](https://ci.appveyor.com/project/umerfaruk/api)
+
 # Components
 
 1. Rest API

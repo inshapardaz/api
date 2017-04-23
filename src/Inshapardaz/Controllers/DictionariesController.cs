@@ -12,6 +12,8 @@ using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
 using paramore.brighter.commandprocessor;
 using Inshapardaz.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace Inshapardaz.Controllers
 {
@@ -37,56 +39,103 @@ namespace Inshapardaz.Controllers
         }
 
         [HttpGet("/api/dictionaries", Name = "GetDictionaries")]
-        public DictionariesView Get()
+        public IActionResult Get()
         {
             string userId = _userHelper.GetUserId();
 
             var results = _queryProcessor.Execute(new GetDictionariesByUserQuery { UserId = userId });
-            return _dictionariesRenderer.Render(results.Dictionaries);
+            return Ok(_dictionariesRenderer.Render(results.Dictionaries));
         }
 
         [HttpGet("/api/dictionaries/{id}", Name = "GetDictionaryById")]
-        public DictionaryView Get(int id)
+        public IActionResult Get(int id)
         {
             string userId = _userHelper.GetUserId();
             var result = _queryProcessor.Execute(new GetDictionaryByIdQuery{ UserId = userId, DictionaryId = id });
-            return _dictionaryRenderer.Render(result.Dictionary);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_dictionaryRenderer.Render(result.Dictionary));
         }
 
+        [Authorize]
         [HttpPost("/api/dictionaries", Name = "CreateDictioanry")]
-        public void Post([FromBody]DictionaryView value)
+        public IActionResult Post([FromBody]DictionaryView value)
         {
             string userId = _userHelper.GetUserId();
 
-            _commandProcessor.Send(new AddDictionaryCommand
+            AddDictionaryCommand addDictionaryCommand = new AddDictionaryCommand
             {
-                UserId = userId,
                 Dictionary = value.Map<DictionaryView, Dictionary>()
-            });
+            };
+
+            addDictionaryCommand.Dictionary.UserId = userId;
+
+            _commandProcessor.Send(addDictionaryCommand);
+
+            var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary);
+            return Created(response.Links.Single(x => x.Rel == "self").Href, response);
         }
 
+        [Authorize]
         [HttpPut("/api/dictionaries/{id}", Name = "UpdateDictionary")]
-        public void Put(int id, [FromBody]DictionaryView value)
+        public IActionResult Put(int id, [FromBody]DictionaryView value)
         {
             string userId = _userHelper.GetUserId();
 
-            _commandProcessor.Send(new UpdateDictionaryCommand
+            var result = _queryProcessor.Execute(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });
+
+            if (result.Dictionary == null)
             {
-                UserId = userId,
-                Dictionary = value.Map<DictionaryView, Dictionary>()
-            });
+                AddDictionaryCommand addDictionaryCommand = new AddDictionaryCommand
+                {
+                    Dictionary = value.Map<DictionaryView, Dictionary>()
+                };
+
+                addDictionaryCommand.Dictionary.UserId = userId;
+
+                _commandProcessor.Send(addDictionaryCommand);
+
+                var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary);
+                return Created(response.Links.Single(x => x.Rel == "self").Href, response);
+            }
+            else
+            {
+                UpdateDictionaryCommand updateDictionaryCommand = new UpdateDictionaryCommand
+                {
+                    Dictionary = value.Map<DictionaryView, Dictionary>()
+                };
+
+                updateDictionaryCommand.Dictionary.UserId = userId;
+
+                _commandProcessor.Send(updateDictionaryCommand);
+
+                return Ok();
+            }
         }
 
+        [Authorize]
         [HttpDelete("/api/dictionaries/{id}", Name = "DeleteDictionary")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
             string userId = _userHelper.GetUserId();
+            var result = _queryProcessor.Execute(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });
+
+            if (result.Dictionary == null)
+            {
+                return NotFound();
+            }
 
             _commandProcessor.Send(new DeleteDictionaryCommand
             {
                 UserId = userId,
                 DictionaryId = id
             });
+
+            return NoContent();
         }
     }
 }

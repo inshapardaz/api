@@ -19,7 +19,7 @@ namespace Domain.UnitTests.CommandHandlers
         public void WhenAdded_ShouldSaveToDatabase()
         {
             var name = "Test";
-            _handler.Handle(new AddDictionaryCommand { UserId = "2", Dictionary = new Dictionary() { UserId = "2", IsPublic = false, Name = name, Language = 3 } });
+            _handler.Handle(new AddDictionaryCommand { Dictionary = new Dictionary() { UserId = "2", IsPublic = false, Name = name, Language = 3 } });
 
             Assert.Equal(_database.Dictionaries.Count(), 1);
             Assert.Equal(_database.Dictionaries.First().Name, name);

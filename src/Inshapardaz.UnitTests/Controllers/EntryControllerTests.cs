@@ -1,7 +1,6 @@
 ﻿using Inshapardaz.Controllers;
 using Inshapardaz.Model;
 using Inshapardaz.UnitTests.Fakes.Renderers;
-using System.Linq;
 using Xunit;
 
 namespace Inshapardaz.UnitTests.Controllers

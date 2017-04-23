@@ -17,7 +17,7 @@ namespace Inshapardaz.Domain.CommandHandlers
         public override UpdateDictionaryCommand Handle(UpdateDictionaryCommand command)
         {
             var existingDictionary =
-                _database.Dictionaries.SingleOrDefault(d => d.UserId == command.UserId && d.Id == command.Dictionary.Id);
+                _database.Dictionaries.SingleOrDefault(d => d.UserId == command.Dictionary.UserId && d.Id == command.Dictionary.Id);
 
             if (existingDictionary == null)
             {

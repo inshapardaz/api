@@ -24,7 +24,7 @@ namespace Domain.UnitTests.CommandHandlers
         [Fact]
         public void WhenUpdatePrivateDictionary_ShouldUpdateDictionaryFields()
         {
-            _handler.Handle(new UpdateDictionaryCommand { UserId = "1",  Dictionary = new Dictionary { Id = 3, UserId = "11",  Language = 33, Name = "Some Name", IsPublic = true  } });
+            _handler.Handle(new UpdateDictionaryCommand { Dictionary = new Dictionary { Id = 3, UserId = "1",  Language = 33, Name = "Some Name", IsPublic = true  } });
 
             var dictionary = _database.Dictionaries.Single(d => d.Id == 3);
 
@@ -39,7 +39,7 @@ namespace Domain.UnitTests.CommandHandlers
         [Fact]
         public void WhenRemovedOwnPublicDictionary_ShouldDeleteFromDatabase()
         {
-            _handler.Handle(new UpdateDictionaryCommand { UserId = "1",  Dictionary = new Dictionary { Id = 1, Language = 11 } });
+            _handler.Handle(new UpdateDictionaryCommand { Dictionary = new Dictionary { Id = 1, UserId = "1", Language = 11 } });
 
             Assert.Equal(_database.Dictionaries.Single(d => d.Id == 1).Language, 11);
         }
@@ -48,14 +48,14 @@ namespace Domain.UnitTests.CommandHandlers
         public void WhenRemovedSomeoneElsePrivateDictionary_ShouldNotDelete()
         {
             Assert.Throws<RecordNotFoundException>(() => 
-                    _handler.Handle(new UpdateDictionaryCommand { UserId = "1", Dictionary = new Dictionary { Id = 4, Language = 44 } }));
+                    _handler.Handle(new UpdateDictionaryCommand { Dictionary = new Dictionary { Id = 4, UserId = "1", Language = 44 } }));
         }
 
         [Fact]
         public void WhenRemovedSomeoneElsePublicDictionary_ShouldNotDelete()
         {
             Assert.Throws<RecordNotFoundException>(() =>
-                    _handler.Handle(new UpdateDictionaryCommand { UserId = "1",  Dictionary = new Dictionary { Id = 2, Language = 22 } }));
+                    _handler.Handle(new UpdateDictionaryCommand { Dictionary = new Dictionary { Id = 2, UserId = "1", Language = 22 } }));
         }
     }
 }

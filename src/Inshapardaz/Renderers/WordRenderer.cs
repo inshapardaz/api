@@ -8,20 +8,13 @@ namespace Inshapardaz.Renderers
 {
     public class WordRenderer : RendrerBase, IRenderResponseFromObject<Word, WordView>
     {
-        private readonly IRenderResponseFromObject<WordDetail, WordDetailView> _detailRenderer;
-
-        private readonly IRenderResponseFromObject<WordRelation, RelationshipView> _relationRenderer;
         private readonly IUserHelper _userHelper;
 
         public WordRenderer(
             IRenderLink linkRenderer, 
-            IRenderResponseFromObject<WordDetail, WordDetailView> detailRenderer, 
-            IRenderResponseFromObject<WordRelation, RelationshipView> relationRenderer,
             IUserHelper userHelper)
             : base(linkRenderer)
         {
-            _detailRenderer = detailRenderer;
-            _relationRenderer = relationRenderer;
             _userHelper = userHelper;
         }
 
@@ -40,13 +33,11 @@ namespace Inshapardaz.Renderers
             {
                 links.Add(LinkRenderer.Render("UpdateWord", "update", new {id = result.Id}));
                 links.Add(LinkRenderer.Render("DeleteWord", "delete", new {id = result.Id}));
-                links.Add(LinkRenderer.Render("AddWordDetail", "adddetail", new { id = result.Id }));
-                links.Add(LinkRenderer.Render("AddRelation", "addrelation", new { id = result.Id }));
+                links.Add(LinkRenderer.Render("AddWordDetail", "add-detail", new { id = result.Id }));
+                links.Add(LinkRenderer.Render("AddRelation", "add-relation", new { id = result.Id }));
             }
 
             result.Links = links;
-            //result.Details = source.WordDetails.Select(x => _detailRenderer.Render(x));
-            //result.Relations = source.WordRelations.Select(x => _relationRenderer.Render(x));
             return result;
         }
     }

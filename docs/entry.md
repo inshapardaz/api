@@ -57,7 +57,7 @@ Content-Type: application/json
 | ---- | ---- |
 | self | Link to current resource |
 | [dictionaries](dictionary/dictionaries.md) | Link to resource for all dictionaries available to user |
-| [languages](languages.md) | Link to language resource |
-| [attributes](attributes.md) | Link to word attribute resource |
-| [relationshiptypes](relationshipTypes.md) | Link to relationship types resource |
+| [languages](resources/languages.md) | Link to language resource |
+| [attributes](resources/attributes.md) | Link to word attribute resource |
+| [relationshiptypes](resources/relationshipTypes.md) | Link to relationship types resource |
 | thesaurus | Link to thesaurus resource |

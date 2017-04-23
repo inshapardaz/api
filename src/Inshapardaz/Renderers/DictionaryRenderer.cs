@@ -24,7 +24,7 @@ namespace Inshapardaz.Renderers
                                 LinkRenderer.Render("GetDictionaryWords", "index", new { id = source.Id })
                             };
 
-            if (_userHelper.GetUserId() == source.UserId)
+            if (_userHelper.IsContributor)
             {
                 links.Add(LinkRenderer.Render("UpdateDictionary", "update", new { id = source.Id }));
                 links.Add(LinkRenderer.Render("DeleteDictionary", "delete", new { id = source.Id }));

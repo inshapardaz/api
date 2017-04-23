@@ -10,18 +10,19 @@ using Xunit;
 
 namespace Inshapardaz.UnitTests.Renderers
 {
-    public class DictionaryRendererTests
+    public class WordRendererTests
     {
         public class WhenRendereingAnonymously
         {
-            DictionaryView _result;
-            Domain.Model.Dictionary _dictionary = new Domain.Model.Dictionary
+            WordView _result;
+            Domain.Model.Word _word = new Domain.Model.Word
             {
                 Id = 1,
-                Name = "Test",
-                Language = 4,
-                IsPublic = false,
-                UserId = "12"
+                Title = "Test",
+                TitleWithMovements = "Test2",
+                Description = "Test description",
+                Pronunciation = "T^e`st",
+                DictionaryId = 12
             };
 
             public WhenRendereingAnonymously()
@@ -30,42 +31,47 @@ namespace Inshapardaz.UnitTests.Renderers
 
                 var mockLinkRenderer = new Mock<IRenderLink>();
                 var fakeUserHelper = new FakeUserHelper();
-                var renderer = new DictionaryRenderer(mockLinkRenderer.Object, fakeUserHelper);
+                var renderer = new WordRenderer(mockLinkRenderer.Object, fakeUserHelper);
 
                 mockLinkRenderer.Setup(x => x.Render(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
                                 .Returns((string x, string r, object o) => new LinkView { Rel = r, Href = new Uri("http://link/") });
 
-                _result = renderer.Render(_dictionary);
+                _result = renderer.Render(_word);
             }
 
             [Fact]
-            public void ShouldRenderDictionary()
+            public void ShouldRenderWord()
             {
                 Assert.NotNull(_result);
             }
 
             [Fact]
-            public void ShouldRenderDictionaryId()
+            public void ShouldRenderId()
             {
-                Assert.Equal(_result.Id, _dictionary.Id);
+                Assert.Equal(_result.Id, _word.Id);
             }
 
             [Fact]
-            public void ShouldRenderDictionaryName()
+            public void ShouldRenderWordTitle()
             {
-                Assert.Equal(_result.Name, _dictionary.Name);
+                Assert.Equal(_result.Title, _word.Title);
+            }
+            [Fact]
+            public void ShouldRenderWordTitleWithmovement()
+            {
+                Assert.Equal(_result.TitleWithMovements, _word.TitleWithMovements);
             }
 
             [Fact]
-            public void ShouldRenderDictionaryLanguage()
+            public void ShouldRenderPronunciation()
             {
-                Assert.Equal(_result.Language, _dictionary.Language);
+                Assert.Equal(_result.Pronunciation, _word.Pronunciation);
             }
 
             [Fact]
-            public void ShouldRenderPublicFlag()
+            public void ShouldRenderDescription()
             {
-                Assert.Equal(_result.IsPublic, _dictionary.IsPublic);
+                Assert.Equal(_result.Description, _word.Description);
             }
 
             [Fact]
@@ -81,22 +87,29 @@ namespace Inshapardaz.UnitTests.Renderers
             }
 
             [Fact]
-            public void ShouldRenderDictionaryIndexLink()
+            public void ShouldRenderDictionaryDetailsLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "index"));
+                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "details"));
+            }
+
+            [Fact]
+            public void ShouldRenderDictionaryRelationsLink()
+            {
+                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "relations"));
             }
         }
 
         public class WhenRendereingForOwner
         {
-            DictionaryView _result;
-            Domain.Model.Dictionary _dictionary = new Domain.Model.Dictionary
+            WordView _result;
+            Domain.Model.Word _word = new Domain.Model.Word
             {
                 Id = 1,
-                Name = "Test",
-                Language = 4,
-                IsPublic = false,
-                UserId = "12"
+                Title = "Test",
+                TitleWithMovements = "Test2",
+                Description = "Test description",
+                Pronunciation = "T^e`st",
+                DictionaryId = 12
             };
 
             public WhenRendereingForOwner()
@@ -105,12 +118,12 @@ namespace Inshapardaz.UnitTests.Renderers
 
                 var mockLinkRenderer = new Mock<IRenderLink>();
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
-                var renderer = new DictionaryRenderer(mockLinkRenderer.Object, fakeUserHelper);
+                var renderer = new WordRenderer(mockLinkRenderer.Object, fakeUserHelper);
 
                 mockLinkRenderer.Setup(x => x.Render(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
                                 .Returns((string x, string r, object o) => new LinkView { Rel = r, Href = new Uri("http://link/") });
 
-                _result = renderer.Render(_dictionary);
+                _result = renderer.Render(_word);
             }
 
             [Fact]
@@ -126,9 +139,15 @@ namespace Inshapardaz.UnitTests.Renderers
             }
 
             [Fact]
-            public void ShouldRenderDictionaryCreateWordLink()
+            public void ShouldRenderDictionaryAddDetailLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "create-word"));
+                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "add-detail"));
+            }
+
+            [Fact]
+            public void ShouldRenderDictionaryAddRelationLink()
+            {
+                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "add-relation"));
             }
         }
     }

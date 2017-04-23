@@ -92,5 +92,12 @@ namespace Inshapardaz.Controllers
 
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
         }
+
+        [HttpGet]
+        [Route("api/dictionary/{id}/words", Name = "GetDictionaryWords")]
+        public IActionResult Get(int id, int pageNumber = 1, int pageSize = 10)
+        {
+            return new NotFoundResult();
+        }
     }
 }

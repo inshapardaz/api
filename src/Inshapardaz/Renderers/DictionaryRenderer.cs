@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Model;
@@ -22,13 +20,15 @@ namespace Inshapardaz.Renderers
         {
             var links = new List<LinkView>
                             {
-                                LinkRenderer.Render("GetDictionaryById", "self", new { id = source.Id })
+                                LinkRenderer.Render("GetDictionaryById", "self", new { id = source.Id }),
+                                LinkRenderer.Render("GetDictionaryWords", "index", new { id = source.Id })
                             };
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.GetUserId() == source.UserId)
             {
                 links.Add(LinkRenderer.Render("UpdateDictionary", "update", new { id = source.Id }));
                 links.Add(LinkRenderer.Render("DeleteDictionary", "delete", new { id = source.Id }));
+                links.Add(LinkRenderer.Render("CreateWord", "create-word", new { id = source.Id }));
             }
 
             var result = source.Map<Dictionary, DictionaryView>();

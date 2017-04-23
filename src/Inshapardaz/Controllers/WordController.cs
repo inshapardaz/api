@@ -58,8 +58,8 @@ namespace Inshapardaz.Controllers
             return new StatusCodeResult(501);
         }
 
-        [HttpPost("/api/Word", Name = "CreateWord")]
-        public IActionResult Post([FromBody]WordView word)
+        [HttpPost("/api/dictionary/{id}/word", Name = "CreateWord")]
+        public IActionResult Post(int id, [FromBody]WordView word)
         {
             if (word == null)
             {
@@ -67,6 +67,7 @@ namespace Inshapardaz.Controllers
             }
 
             var addWordCommand = new AddWordCommand { Word = word.Map<WordView, Word>()};
+            addWordCommand.Word.DictionaryId = id;
             _commandProcessor.Send(addWordCommand);
 
             var response = _wordRenderer.Render(addWordCommand.Word);

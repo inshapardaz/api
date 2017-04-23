@@ -65,6 +65,9 @@ namespace Inshapardaz.Controllers
         [HttpPost("/api/dictionaries", Name = "CreateDictioanry")]
         public IActionResult Post([FromBody]DictionaryView value)
         {
+            if (string.IsNullOrWhiteSpace(value.Name))
+                return BadRequest("Name is not valid");
+            
             string userId = _userHelper.GetUserId();
 
             AddDictionaryCommand addDictionaryCommand = new AddDictionaryCommand
@@ -84,6 +87,9 @@ namespace Inshapardaz.Controllers
         [HttpPut("/api/dictionaries/{id}", Name = "UpdateDictionary")]
         public IActionResult Put(int id, [FromBody]DictionaryView value)
         {
+            if (string.IsNullOrWhiteSpace(value.Name))
+                return BadRequest("Name is not valid");
+            
             string userId = _userHelper.GetUserId();
 
             var result = _queryProcessor.Execute(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });

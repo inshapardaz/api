@@ -211,7 +211,26 @@ Content-Type: application/json
 }
 ```
 
-### Error Responses ###
+#### Response
+
+When the dictionary mentioned does not exist
+
+```
+HTTP/1.1 201 CREATED
+Content-Type: application/json
+```
+
+``` javascript
+{
+    id : 12,
+    name : 'dictionary name',
+    description : 'dictionary description',
+    language : 34,
+    isPublic : true
+}
+```
+
+### Error Responses
 
 | **Case**                                              | **Response Code** |      **Error Code**           |
 |-------------------------------------------------------|-------------------|-------------------------------|

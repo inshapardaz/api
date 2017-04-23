@@ -123,6 +123,22 @@ namespace Inshapardaz.UnitTests.Controllers
         }
 
         [Fact]
+        public void WhenPostNameDoesNotExist_ShouldReturnBadRequest()
+        {
+            var dictionaryView = new Model.DictionaryView
+            {
+                Language = 23,
+                IsPublic = true,
+                Name = ""
+            };
+            _fakeDictionaryRenderer.WithLink("self", new System.Uri("http://link.test/123"));
+
+            var result = _controller.Post(dictionaryView);
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+        
+        [Fact]
         public void WhenPut_ShouldRaiseCommandToUpdateDictionary()
         {
             var userId = "user1234";
@@ -149,7 +165,7 @@ namespace Inshapardaz.UnitTests.Controllers
         }
        
         [Fact]
-         public void WhenPutNonExistingDictionary_ShouldCreateDictionary()
+        public void WhenPutNonExistingDictionary_ShouldCreateDictionary()
         {
             var userId = "user1234";
             var dictionaryId = 344;
@@ -177,7 +193,24 @@ namespace Inshapardaz.UnitTests.Controllers
         }
 
         [Fact]
+        public void WhenPutNameDoesNotExist_ShouldReturnBadRequest()
+        {
+            var dictionaryId = 344;
+            var dictionaryView = new Model.DictionaryView
+            {
+                Id = dictionaryId,
+                Language = 23,
+                IsPublic = true,
+                Name = ""
+            };
+            _fakeDictionaryRenderer.WithLink("self", new System.Uri("http://link.test/123"));
 
+            var result = _controller.Put(dictionaryId, dictionaryView);
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+        
+        [Fact]
         public void WhenDeleted_ShouldRemoveDictionary()
         {
             const int dictionaryId = 23;

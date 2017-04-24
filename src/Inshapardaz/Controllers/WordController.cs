@@ -74,8 +74,8 @@ namespace Inshapardaz.Controllers
             return new CreatedResult(response.Links.Single(x => x.Rel == "self").Href, response);
         }
 
-        [HttpPut("/api/Word/{id}", Name="UpdateWord")]
-        public IActionResult Put(int id, [FromBody]WordView word)
+        [HttpPut("/api/dictionary/{did}/Word/{id}", Name="UpdateWord")]
+        public IActionResult Put(int did, int id, [FromBody]WordView word)
         {
             if (word == null || id != word.Id)
             {

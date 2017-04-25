@@ -17,14 +17,16 @@ namespace Inshapardaz.Controllers
         private readonly IRenderResponseFromObject<Word, WordView> _wordRenderer;
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
-
+        private readonly IUserHelper _userHelper;
         public WordController(IRenderResponseFromObject<Word, WordView> wordRenderer,
             IAmACommandProcessor commandProcessor,
-            IQueryProcessor queryProcessor)
+            IQueryProcessor queryProcessor,
+            IUserHelper userHelper)
         {
             _wordRenderer = wordRenderer;
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
+            _userHelper = userHelper;
         }
 
         [HttpGet("{id}", Name = "GetWordById")]
@@ -61,9 +63,17 @@ namespace Inshapardaz.Controllers
         [HttpPost("/api/dictionary/{id}/word", Name = "CreateWord")]
         public IActionResult Post(int id, [FromBody]WordView word)
         {
-            if (word == null)
+            if (word == null || string.IsNullOrWhiteSpace(word.Title))
             {
                 return BadRequest();
+            }
+
+            var userId = _userHelper.GetUserId();
+            var dictionary = _queryProcessor.Execute(new GetDictionaryByIdQuery { DictionaryId = id, UserId = userId });
+
+            if (dictionary == null)
+            {
+                return Unauthorized();
             }
 
             var addWordCommand = new AddWordCommand { Word = word.Map<WordView, Word>()};
@@ -82,7 +92,8 @@ namespace Inshapardaz.Controllers
                 return BadRequest();
             }
 
-            var response = _queryProcessor.Execute(new WordByIdQuery { Id = id });
+            var userId = _userHelper.GetUserId();
+            var response = _queryProcessor.Execute(new WordByIdQuery { Id = id, UserId = userId });
 
             if (response == null)
             {

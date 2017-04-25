@@ -41,6 +41,8 @@ Content-Type: application/json
  
 ### Create new dictionary
 
+Creates a new [dictionary resource](../resources/dictionary.md)
+
 ### Uri 
 ` /api/dictionaries`
 
@@ -108,6 +110,8 @@ Content-Type: application/json
 
 ### GET dictionary
 
+Returns metadata of a [dictionary resource](../resources/dictionary.md)
+
 ### Uri
 
 `/api/dictionaries/{dictionaryId}`
@@ -166,6 +170,8 @@ Content-Type: application/json
 | No matching dictionary found                          | `404 Not Found`   | Dictionary Not Found          |
 
 ### Update dictionary data
+
+Update metadata for [dictionary resource](../resources/dictionary.md)
 
 #### Uri
 
@@ -241,6 +247,8 @@ Content-Type: application/json
 | Posted data not correct format                        | `400 Bad Request` | Invlaid data                  |
 
 ### Delete dictionary
+
+Removes the [dictionary resource](../resources/dictionary.md). All data associated with the dictionary is deleted. Data is removed permanently and cannot be undone.
 
 #### Uri
 `/api/dictionaries/{id}`

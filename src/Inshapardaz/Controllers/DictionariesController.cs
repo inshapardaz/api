@@ -119,7 +119,7 @@ namespace Inshapardaz.Controllers
 
                 _commandProcessor.Send(updateDictionaryCommand);
 
-                return Ok();
+                return NoContent();
             }
         }
 

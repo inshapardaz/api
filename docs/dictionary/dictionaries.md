@@ -203,18 +203,8 @@ Authorization: OAuth2 ...
 
 #### Response
 ```
-HTTP/1.1 200 OK
+HTTP/1.1 204 NoContent
 Content-Type: application/json
-```
-
-``` javascript
-{
-    id : 12,
-    name : 'dictionary name',
-    description : 'dictionary description',
-    language : 34,
-    isPublic : true
-}
 ```
 
 #### Response

@@ -155,7 +155,7 @@ namespace Inshapardaz.UnitTests.Controllers
 
             var result = _controller.Put(dictionaryId, dictionaryView);
 
-            Assert.IsType<OkResult>(result);
+            Assert.IsType<NoContentResult>(result);
 
             _mockCommandProcessor.Verify(x => x.Send(It.IsAny<UpdateDictionaryCommand>()));
             _mockCommandProcessor.Verify(x => x.Send(It.Is<UpdateDictionaryCommand>(d => d.Dictionary.Name == dictionaryView.Name)));

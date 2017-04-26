@@ -71,7 +71,7 @@ namespace Inshapardaz.Controllers
             var userId = _userHelper.GetUserId();
             var dictionary = _queryProcessor.Execute(new GetDictionaryByIdQuery { DictionaryId = id, UserId = userId });
 
-            if (dictionary == null)
+            if (userId == null || dictionary == null)
             {
                 return Unauthorized();
             }
@@ -84,15 +84,20 @@ namespace Inshapardaz.Controllers
             return new CreatedResult(response.Links.Single(x => x.Rel == "self").Href, response);
         }
 
-        [HttpPut("/api/dictionary/{did}/Word/{id}", Name="UpdateWord")]
-        public IActionResult Put(int did, int id, [FromBody]WordView word)
+        [HttpPut("/api/words/{id}", Name="UpdateWord")]
+        public IActionResult Put(int id, [FromBody]WordView word)
         {
-            if (word == null || id != word.Id)
+            if (word == null || id != word.Id || string.IsNullOrWhiteSpace(word.Title))
             {
                 return BadRequest();
             }
 
             var userId = _userHelper.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
             var response = _queryProcessor.Execute(new WordByIdQuery { Id = id, UserId = userId });
 
             if (response == null)
@@ -102,13 +107,19 @@ namespace Inshapardaz.Controllers
 
             _commandProcessor.Send(new UpdateWordCommand { Word = word.Map<WordView, Word>() });
 
-            return Ok();
+            return NoContent();
         }
 
-        [HttpDelete("/api/word/{id}", Name="DeleteWord")]
+        [HttpDelete("/api/words/{id}", Name="DeleteWord")]
         public IActionResult Delete(int id)
         {
-            var word = _queryProcessor.Execute(new WordByIdQuery {Id =  id});
+            var userId = _userHelper.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var word = _queryProcessor.Execute(new WordByIdQuery {Id =  id, UserId = userId });
 
             if (word == null)
             {
@@ -117,7 +128,7 @@ namespace Inshapardaz.Controllers
 
             _commandProcessor.Send(new DeleteWordCommand { Word = word });
 
-            return Ok();
+            return NoContent();
         }
     }
 }

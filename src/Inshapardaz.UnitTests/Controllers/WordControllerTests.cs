@@ -16,10 +16,65 @@ namespace Inshapardaz.UnitTests.Controllers
 {
     public class WordControllerTests
     {
+        public class WhenGettingWordById : TestContext
+        {
+            public WhenGettingWordById()
+            {
+                _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
+                _result = _controller.Get(34);
+            }
+
+            [Fact]
+            public void ShouldReturnOkResult()
+            {
+                Assert.IsType<OkObjectResult>(_result);
+            }
+
+            [Fact]
+            public void ShoudldQueryWordRequested()
+            {
+                var response = _result as OkObjectResult;
+
+                Assert.NotNull(response.Value);
+                Assert.IsType<WordView>(response.Value);
+            }
+        }
+
+        public class WhenGettingNonExistingWordById : TestContext
+        {
+            public WhenGettingNonExistingWordById()
+            {
+                _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(null);
+                _result = _controller.Get(34);
+            }
+
+            [Fact]
+            public void ShouldReturnNotFoundResult()
+            {
+                Assert.IsType<NotFoundResult>(_result);
+            }
+        }
+
+        public class WhenGettingWordBelongingToPrivateDictionaryWithNoAccess : TestContext
+        {
+            public WhenGettingWordBelongingToPrivateDictionaryWithNoAccess()
+            {
+                _fakeUserHelper.WithUserId("32");
+                _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(null);
+                _result = _controller.Get(34);
+            }
+
+            [Fact]
+            public void ShouldQueryForWordWithCorrectUser()
+            {
+                _fakeQueryProcessor.AssertQueryExecuted<WordByIdQuery>(q => q.UserId == "32");
+            }
+        }
+
         public class WhenPostingForWord : TestContext
         {
-            private int _dictionaryId = 56;
-            private WordView _wordView = new WordView
+            private const int DictionaryId = 56;
+            private readonly WordView _wordView = new WordView
             {
                 Title = "a",
                 TitleWithMovements = "a^A",
@@ -35,7 +90,7 @@ namespace Inshapardaz.UnitTests.Controllers
                 _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
                 _fakeWordRenderer.WithLink("self", new System.Uri("http://link.test/123"));
                 _fakeUserHelper.WithUserId("45");
-                _result = _controller.Post(_dictionaryId, _wordView);
+                _result = _controller.Post(DictionaryId, _wordView);
             }
 
             [Fact]
@@ -64,8 +119,8 @@ namespace Inshapardaz.UnitTests.Controllers
 
         public class WhenPostingForWordWithNoTitle : TestContext
         {
-            private int _dictionaryId = 56;
-            private WordView _wordView = new WordView
+            private const int DictionaryId = 56;
+            private readonly WordView _wordView = new WordView
             {
                 Title = "",
                 TitleWithMovements = "a^A",
@@ -79,7 +134,7 @@ namespace Inshapardaz.UnitTests.Controllers
 
                 _fakeQueryProcessor.SetupResultFor<WordByIdQuery, WordView>(_wordView);
 
-                _result = _controller.Post(_dictionaryId, _wordView);
+                _result = _controller.Post(DictionaryId, _wordView);
             }
 
             [Fact]
@@ -91,8 +146,8 @@ namespace Inshapardaz.UnitTests.Controllers
 
         public class WhenPostingInDictionaryWithNoWriteAccess : TestContext
         {
-            private int _dictionaryId = 56;
-            private WordView _wordView = new WordView
+            private const int DictionaryId = 56;
+            private readonly WordView _wordView = new WordView
             {
                 Title = "a",
                 TitleWithMovements = "a^A",
@@ -106,7 +161,7 @@ namespace Inshapardaz.UnitTests.Controllers
                 _fakeWordRenderer.WithLink("self", new System.Uri("http://link.test/123"));
                 _fakeUserHelper.WithUserId("21");
 
-                _result = _controller.Post(_dictionaryId, _wordView);
+                _result = _controller.Post(DictionaryId, _wordView);
             }
 
             [Fact]
@@ -271,8 +326,8 @@ namespace Inshapardaz.UnitTests.Controllers
             protected IActionResult _result;
             protected WordController _controller;
             protected FakeUserHelper _fakeUserHelper;
-            
-            public TestContext()
+
+            protected TestContext()
             {
                 Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
 

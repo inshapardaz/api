@@ -70,4 +70,4 @@ Link to delete the dictionary. Link only returned if user making call have permi
 
 #### create-word
 
-Link to create a new word in dictionary. Link only returned if user making call have permissions to edit dictionary data.
+Link to create a new word in dictionary. Link only returned if user making call have permissions to edit dictionary data. Details on creating word can be found [here](../dictionary/words.md)

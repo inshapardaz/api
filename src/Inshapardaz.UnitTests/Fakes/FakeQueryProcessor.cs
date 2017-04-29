@@ -14,7 +14,7 @@ namespace Inshapardaz.UnitTests.Fakes
         private readonly IDictionary<Type, IDictionary<Predicate<IQuery>, object>> _results;
         private readonly IDictionary<Type, IDictionary<Predicate<IQuery>, Exception>> _exceptions;
 
-        public IList<IQuery> ExecutedQueries { get; }
+        public List<IQuery> ExecutedQueries { get; }
 
         public FakeQueryProcessor()
         {
@@ -55,7 +55,7 @@ namespace Inshapardaz.UnitTests.Fakes
         {
             return ExecutedQueries.Where(q => q is T).Cast<T>();
         }
-
+        
         public void SetupResultFor<TRequest, TResponse>(Predicate<TRequest> predicate, TResponse result)
             where TRequest : IQuery
         {
@@ -111,6 +111,11 @@ namespace Inshapardaz.UnitTests.Fakes
         public void ShouldHaveExecuted<T>(Predicate<T> predicate) where T : IQuery
         {
             Assert.True(ExecutedQueries.Any(q => q is T && predicate((T)q)));
+        }
+
+        public void AssertQueryExecuted<TQuery>(Func<TQuery, bool> func) where TQuery : IQuery
+        {
+            Assert.True(GetExecutedQueries<TQuery>().Any(func));
         }
     }
 }

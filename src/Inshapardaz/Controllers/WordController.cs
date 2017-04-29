@@ -18,6 +18,7 @@ namespace Inshapardaz.Controllers
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
         private readonly IUserHelper _userHelper;
+
         public WordController(IRenderResponseFromObject<Word, WordView> wordRenderer,
             IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
@@ -32,32 +33,14 @@ namespace Inshapardaz.Controllers
         [HttpGet("{id}", Name = "GetWordById")]
         public IActionResult Get(int id)
         {
-            var word = _queryProcessor.Execute(new WordByIdQuery { Id = id });
+            var userId = _userHelper.GetUserId();
+            var word = _queryProcessor.Execute(new WordByIdQuery { Id = id, UserId = userId });
             if (word == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(_wordRenderer.Render(word));
-        }
-
-        [HttpGet("/api/word/exists/{word}")]
-        public IActionResult Exists(string word)
-        {
-            var result = _queryProcessor.Execute(new WordByTitleQuery { Title = word });
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok();
-        }
-
-        [HttpPost("/api/[controller]/{id}/merge", Name="MergeWords")]
-        public IActionResult Merge(int id, [FromBody]MergeWordViewModel target)
-        {
-            return new StatusCodeResult(501);
+            return Ok(_wordRenderer.Render(word));
         }
 
         [HttpPost("/api/dictionary/{id}/word", Name = "CreateWord")]
@@ -130,5 +113,28 @@ namespace Inshapardaz.Controllers
 
             return NoContent();
         }
+
+        #region Unwanted methods
+
+        //[HttpGet("/api/word/exists/{word}")]
+        //public IActionResult Exists(string word)
+        //{
+        //    var result = _queryProcessor.Execute(new WordByTitleQuery { Title = word });
+
+        //    if (result == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok();
+        //}
+
+        //[HttpPost("/api/[controller]/{id}/merge", Name = "MergeWords")]
+        //public IActionResult Merge(int id, [FromBody]MergeWordViewModel target)
+        //{
+        //    return new StatusCodeResult(501);
+        //}
+
+        #endregion
     }
 }

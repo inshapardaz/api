@@ -65,7 +65,6 @@ namespace Inshapardaz.Configuration
         public static IServiceCollection RegisterRenderes(this IServiceCollection services)
         {
             services.AddTransient<IRenderResponse<EntryView>, EntryRenderer>();
-            services.AddTransient<IRenderResponse<DictionaryEntryView>, DictionaryEntryRenderer>();
             services.AddTransient<IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView>, DictionariesRenderer>();
             services.AddTransient<IRenderResponseFromObject<Dictionary, DictionaryView>, DictionaryRenderer>();
             services.AddTransient<IRenderEnum, EnumRenderer>();
@@ -77,7 +76,6 @@ namespace Inshapardaz.Configuration
             services.AddTransient<IRenderResponseFromObject<WordRelation, RelationshipView>, RelationRenderer>();
             services.AddTransient<IRenderResponseFromObject<WordDetail, IEnumerable<MeaningContextView>>, WordMeaningRenderer>();
             services.AddTransient<IRenderResponseFromObject<Meaning, MeaningView>, MeaningRenderer>();
-            services.AddTransient<IRenderResponse<IndexView>, DictionaryIndexRenderer>();
             services.AddTransient<IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>>, WordIndexPageRenderer>();
             services.AddTransient<IRenderResponseFromObject<IEnumerable<WordRelation>, RelationshipsView>, RelationsRenderer>();
 

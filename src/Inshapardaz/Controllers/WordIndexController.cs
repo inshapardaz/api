@@ -71,33 +71,5 @@ namespace Inshapardaz.Controllers
 
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
         }
-
-        [HttpGet]
-        [Route("api/words/list", Name = "GetWords")]
-        public IActionResult Get(int pageNumber = 1, int pageSize = 10)
-        {
-            var query = new WordQuery
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
-
-            var results = _queryProcessor.Execute(query);
-
-            var pageRenderArgs = new PageRendererArgs<Word>()
-            {
-                RouteName = "GetWords",
-                Page = results
-            };
-
-            return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
-        }
-
-        [HttpGet]
-        [Route("api/dictionary/{id}/words", Name = "GetDictionaryWords")]
-        public IActionResult Get(int id, int pageNumber = 1, int pageSize = 10)
-        {
-            return new NotFoundResult();
-        }
     }
 }

@@ -18,16 +18,53 @@ namespace Inshapardaz.Controllers
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
         private readonly IUserHelper _userHelper;
+        private readonly IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>> _pageRenderer;
 
         public WordController(IRenderResponseFromObject<Word, WordView> wordRenderer,
             IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
-            IUserHelper userHelper)
+            IUserHelper userHelper,
+            IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>> pageRenderer)
         {
             _wordRenderer = wordRenderer;
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _userHelper = userHelper;
+            _pageRenderer = pageRenderer;
+        }
+        
+        [HttpGet]
+        [Route("api/dictionary/{id}/words", Name = "GetWords")]
+        public IActionResult Get(int id, int pageNumber = 1, int pageSize = 10)
+        {
+            var userId = _userHelper.GetUserId();
+            var dictionary = _queryProcessor.Execute(new GetDictionaryByIdQuery {DictionaryId = id});
+
+            if (dictionary == null)
+            {
+                return NotFound();
+            }
+
+            if (!dictionary.IsPublic && dictionary.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
+            var query = new WordQuery
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var results = _queryProcessor.Execute(query);
+
+            var pageRenderArgs = new PageRendererArgs<Word>
+            {
+                RouteName = "GetWords",
+                Page = results
+            };
+
+            return Ok(_pageRenderer.Render(pageRenderArgs));
         }
 
         [HttpGet("{id}", Name = "GetWordById")]

@@ -5,19 +5,18 @@ using Xunit;
 
 namespace Inshapardaz.UnitTests.Controllers
 {
-    public class EntryControllerTests
+    public class HomeControllerTests
     {
-        public class Get
+        public class WhenGettingIndex
         {
-            EntryController controller;
-            EntryView _response;
-            FakeEntryRender _renderer;
+            private readonly EntryView _response;
+            private readonly FakeEntryRender _renderer;
 
-            public Get()
+            public WhenGettingIndex()
             {
                 _renderer = new FakeEntryRender();
-                controller = new EntryController(_renderer, new FakeDictionaryEntryRender(), new FakeIndexRenderer());
-                _response = controller.Get();
+                var controller = new HomeController(_renderer);
+                _response = controller.Index();
             }
 
             [Fact]

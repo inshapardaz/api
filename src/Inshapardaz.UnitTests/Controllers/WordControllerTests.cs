@@ -4,6 +4,7 @@ using Inshapardaz.Controllers;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Model;
+using Inshapardaz.Renderers;
 using Inshapardaz.UnitTests.Fakes;
 using Inshapardaz.UnitTests.Fakes.Helpers;
 using Inshapardaz.UnitTests.Fakes.Renderers;
@@ -16,10 +17,95 @@ namespace Inshapardaz.UnitTests.Controllers
 {
     public class WordControllerTests
     {
+        public class WhenGettingWordsForDictionary : TestContext
+        {
+            public WhenGettingWordsForDictionary()
+            {
+                _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
+                _fakeQueryProcessor.SetupResultFor<WordQuery, Page<Word>>(new Page<Word>());
+                _result = _controller.Get(12, 1);
+            }
+
+            [Fact]
+            public void ShouldReturnOkResult()
+            {
+                Assert.IsType<OkObjectResult>(_result);
+            }
+
+            [Fact]
+            public void ShouldReturnThePagedData()
+            {
+                var result = _result as OkObjectResult;
+                
+                Assert.NotNull(result.Value);
+                Assert.IsType<PageView<WordView>>(result.Value);
+            }
+        }
+
+        public class WhenGettingWordsForPrivateDictionaryOfOthers : TestContext
+        {
+            public WhenGettingWordsForPrivateDictionaryOfOthers()
+            {
+                _fakeUserHelper.WithUserId("1");
+                _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery,Dictionary>(new Dictionary
+                {
+                    UserId = "2",
+                    IsPublic = false
+                });
+
+                _result = _controller.Get(12, 1);
+            }
+
+            [Fact]
+            public void ShouldReturnUnauthorised()
+            {
+                Assert.IsType<UnauthorizedResult>(_result);
+            }
+        }
+
+        public class WhenGettingWordsForPublicDictionaryOfOthers : TestContext
+        {
+            public WhenGettingWordsForPublicDictionaryOfOthers()
+            {
+                _fakeUserHelper.WithUserId("1");
+                _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary
+                {
+                    UserId = "2",
+                    IsPublic = true
+                });
+
+                _fakeQueryProcessor.SetupResultFor<WordQuery, Page<Word>>(new Page<Word>());
+                _result = _controller.Get(12, 1);
+            }
+
+            [Fact]
+            public void ShouldReturnOk()
+            {
+                Assert.IsType<OkObjectResult>(_result);
+            }
+        }
+
+        public class WhenGettingWordsForDictionaryThatDoesNotExist : TestContext
+        {
+            public WhenGettingWordsForDictionaryThatDoesNotExist()
+            {
+                _fakeUserHelper.WithUserId("1");
+                _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(null);
+                _result = _controller.Get(12, 1);
+            }
+
+            [Fact]
+            public void ShouldReturnNotFound()
+            {
+                Assert.IsType<NotFoundResult>(_result);
+            }
+        }
+
         public class WhenGettingWordById : TestContext
         {
             public WhenGettingWordById()
             {
+                _fakeUserHelper.AsContributor();
                 _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
                 _result = _controller.Get(34);
             }
@@ -326,6 +412,7 @@ namespace Inshapardaz.UnitTests.Controllers
             protected IActionResult _result;
             protected WordController _controller;
             protected FakeUserHelper _fakeUserHelper;
+            private WordIndexPageRenderer _wordIndexPageRenderer;
 
             protected TestContext()
             {
@@ -336,7 +423,7 @@ namespace Inshapardaz.UnitTests.Controllers
                 _fakeWordRenderer = new FakeWordRenderer();
                 _fakeUserHelper = new FakeUserHelper();
 
-                _controller = new WordController(_fakeWordRenderer, _mockCommandProcessor.Object, _fakeQueryProcessor, _fakeUserHelper);
+                _controller = new WordController(_fakeWordRenderer, _mockCommandProcessor.Object, _fakeQueryProcessor, _fakeUserHelper, new FakePageRenderer<Word, WordView>());
             }
         }
     }

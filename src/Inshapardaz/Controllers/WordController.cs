@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Darker;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
@@ -35,10 +36,10 @@ namespace Inshapardaz.Controllers
         
         [HttpGet]
         [Route("api/dictionary/{id}/words", Name = "GetWords")]
-        public IActionResult Get(int id, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Get(int id, int pageNumber = 1, int pageSize = 10)
         {
             var userId = _userHelper.GetUserId();
-            var dictionary = _queryProcessor.Execute(new GetDictionaryByIdQuery {DictionaryId = id});
+            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery {DictionaryId = id});
 
             if (dictionary == null)
             {
@@ -56,7 +57,7 @@ namespace Inshapardaz.Controllers
                 PageSize = pageSize
             };
 
-            var results = _queryProcessor.Execute(query);
+            var results = await _queryProcessor.ExecuteAsync(query);
 
             var pageRenderArgs = new PageRendererArgs<Word>
             {
@@ -68,10 +69,10 @@ namespace Inshapardaz.Controllers
         }
 
         [HttpGet("{id}", Name = "GetWordById")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var userId = _userHelper.GetUserId();
-            var word = _queryProcessor.Execute(new WordByIdQuery { Id = id, UserId = userId });
+            var word = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = id, UserId = userId });
             if (word == null)
             {
                 return NotFound();
@@ -81,15 +82,15 @@ namespace Inshapardaz.Controllers
         }
 
         [HttpPost("/api/dictionary/{id}/word", Name = "CreateWord")]
-        public IActionResult Post(int id, [FromBody]WordView word)
+        public async Task<IActionResult> Post(int id, [FromBody]WordView word)
         {
-            if (word == null || string.IsNullOrWhiteSpace(word.Title))
+            if (string.IsNullOrWhiteSpace(word?.Title))
             {
                 return BadRequest();
             }
 
             var userId = _userHelper.GetUserId();
-            var dictionary = _queryProcessor.Execute(new GetDictionaryByIdQuery { DictionaryId = id, UserId = userId });
+            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery { DictionaryId = id, UserId = userId });
 
             if (userId == null || dictionary == null)
             {
@@ -98,14 +99,14 @@ namespace Inshapardaz.Controllers
 
             var addWordCommand = new AddWordCommand { Word = word.Map<WordView, Word>()};
             addWordCommand.Word.DictionaryId = id;
-            _commandProcessor.Send(addWordCommand);
+            await _commandProcessor.SendAsync(addWordCommand);
 
             var response = _wordRenderer.Render(addWordCommand.Word);
             return new CreatedResult(response.Links.Single(x => x.Rel == "self").Href, response);
         }
 
         [HttpPut("/api/words/{id}", Name="UpdateWord")]
-        public IActionResult Put(int id, [FromBody]WordView word)
+        public async Task<IActionResult> Put(int id, [FromBody]WordView word)
         {
             if (word == null || id != word.Id || string.IsNullOrWhiteSpace(word.Title))
             {
@@ -118,20 +119,20 @@ namespace Inshapardaz.Controllers
                 return Unauthorized();
             }
 
-            var response = _queryProcessor.Execute(new WordByIdQuery { Id = id, UserId = userId });
+            var response = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = id, UserId = userId });
 
             if (response == null)
             {
                 return NotFound();
             }
 
-            _commandProcessor.Send(new UpdateWordCommand { Word = word.Map<WordView, Word>() });
+            await _commandProcessor.SendAsync(new UpdateWordCommand { Word = word.Map<WordView, Word>() });
 
             return NoContent();
         }
 
         [HttpDelete("/api/words/{id}", Name="DeleteWord")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var userId = _userHelper.GetUserId();
             if (userId == null)
@@ -139,14 +140,14 @@ namespace Inshapardaz.Controllers
                 return Unauthorized();
             }
 
-            var word = _queryProcessor.Execute(new WordByIdQuery {Id =  id, UserId = userId });
+            var word = await _queryProcessor.ExecuteAsync(new WordByIdQuery {Id =  id, UserId = userId });
 
             if (word == null)
             {
                 return NotFound();
             }
 
-            _commandProcessor.Send(new DeleteWordCommand { Word = word });
+            await _commandProcessor.SendAsync(new DeleteWordCommand { Word = word });
 
             return NoContent();
         }

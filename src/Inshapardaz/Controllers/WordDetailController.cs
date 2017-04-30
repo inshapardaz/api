@@ -34,6 +34,31 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet]
+        [Route("/api/word/{id}/Details", Name = "GetWordDetailsById")]
+        public async Task<IActionResult> GetForWord(int id)
+        {
+            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery {WordId = id});
+            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
+            {
+                return Unauthorized();
+            }
+
+            var query = new WordDetailsByWordQuery
+            {
+                WordId = id,
+                IncludeDetails = true
+            };
+
+            var wordDetailViews = await _queryProcessor.ExecuteAsync(query);
+            if (wordDetailViews == null || !wordDetailViews.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(wordDetailViews.Select(w => _wordDetailRenderer.Render(w)).ToList());
+        }
+
+        [HttpGet]
         [Route("/api/Word/Details/{id}", Name = "GetDetailsById")]
         public async Task<IActionResult> Get(int id)
         {
@@ -53,30 +78,21 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_wordDetailRenderer.Render(details));
         }
 
-        [HttpGet]
-        [Route("/api/word/{id}/Details", Name = "GetWordDetailsById")]
-        public IEnumerable<WordDetailView> GetForWord(int id)
-        {
-            var query = new WordDetailsByWordQuery
-            {
-                WordId = id,
-                IncludeDetails = true
-            };
-
-            return _queryProcessor.Execute(query)
-                                  .Select(w => _wordDetailRenderer.Render(w));
-        }
-
-        // POST api/values
         [HttpPost("/api/word/{id}/Details", Name = "AddWordDetail")]
-        public IActionResult Post(int id, [FromBody]WordDetailView wordDetail)
+        public async Task<IActionResult> Post(int id, [FromBody]WordDetailView wordDetail)
         {
             if (wordDetail == null)
             {
                 return BadRequest();
             }
 
-            var response = _queryProcessor.Execute(new WordByIdQuery{ Id = id});
+            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = id });
+            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            {
+                return Unauthorized();
+            }
+
+            var response = await _queryProcessor.ExecuteAsync(new WordByIdQuery{ Id = id});
 
             if (response == null)
             {
@@ -84,54 +100,69 @@ namespace Inshapardaz.Api.Controllers
             }
 
 
-            _commandProcessor.Send(new AddWordDetailCommand
+            var addWordDetailCommand = new AddWordDetailCommand
             {
                 WordId = id,
                 WordDetail = wordDetail.Map<WordDetailView, WordDetail>()
-            });
+            };
 
-            return Created("http://tempuri", 0);
+            await _commandProcessor.SendAsync(addWordDetailCommand);
+
+            var responseView = _wordDetailRenderer.Render(addWordDetailCommand.WordDetail);
+            return new CreatedResult(responseView.Links.Single(x => x.Rel == "self").Href, responseView);
         }
 
-        // PUT api/values/5
-        [HttpPut("/api/word/{id}/Details/{wordDetailId}", Name = "UpdateWordDetail")]
-        public IActionResult Put(int id, int wordDetailId, [FromBody]WordDetailView wordDetail)
+        [HttpPut("/api/Details/{wordDetailId}", Name = "UpdateWordDetail")]
+        public async Task<IActionResult> Put(int wordDetailId, [FromBody]WordDetailView wordDetail)
         {
             if (wordDetail == null)
             {
                 return BadRequest();
             }
 
-            var details = _queryProcessor.Execute(new WordDetailByIdQuery { Id = wordDetailId });
+            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = wordDetailId });
+            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            {
+                return Unauthorized();
+            }
+
+            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = wordDetailId });
 
             if (details == null || details.Id != wordDetail.Id)
             {
                 return BadRequest();
             }
 
-            _commandProcessor.Send(new UpdateWordDetailCommand
+            var updateWordDetailCommand = new UpdateWordDetailCommand
             {
-                WordId = id,
+                WordId = details.WordInstanceId,
                 WordDetail = wordDetail.Map<WordDetailView, WordDetail>()
-            });
+            };
+
+            await _commandProcessor.SendAsync(updateWordDetailCommand);
 
             return Ok();
         }
 
-        // DELETE api/values/5
-        [HttpDelete("/api/word/{id}/Details/{wordDetailId}", Name = "DeleteWordDetail")]
-        public IActionResult Delete(int id, int wordDetailId)
+        [HttpDelete("/api/details/{wordDetailId}", Name = "DeleteWordDetail")]
+        public async Task<IActionResult> Delete(int id)
         {
-            var details = _queryProcessor.Execute(new WordDetailByIdQuery {Id = wordDetailId});
+            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            {
+                return Unauthorized();
+            }
 
-            if (details == null || details.Id != id)
+            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery {Id = id});
+
+            if (details == null)
             {
                 return NotFound();
             }
 
             _commandProcessor.Send(new DeleteWordDetailCommand { WordDetailId =  id});
 
-            return Ok();
+            return NoContent();
         }
     }
 }

@@ -15,11 +15,11 @@ namespace Inshapardaz.Controllers
         }
 
         [HttpGet("api", Name = "Entry")]
-        public EntryView Index()
+        public IActionResult Index()
         {
-            return _entryRenderer.Render();
+            return Ok(_entryRenderer.Render());
         }
-        
+
         [Authorize]
         [HttpGet]
         [Route("api/test")]

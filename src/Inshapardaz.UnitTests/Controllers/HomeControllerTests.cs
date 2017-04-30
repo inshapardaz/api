@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Controllers;
 using Inshapardaz.Model;
 using Inshapardaz.UnitTests.Fakes.Renderers;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace Inshapardaz.UnitTests.Controllers
@@ -16,7 +17,8 @@ namespace Inshapardaz.UnitTests.Controllers
             {
                 _renderer = new FakeEntryRender();
                 var controller = new HomeController(_renderer);
-                _response = controller.Index();
+                var objectResult = controller.Index() as ObjectResult;
+                _response = objectResult.Value as EntryView;
             }
 
             [Fact]

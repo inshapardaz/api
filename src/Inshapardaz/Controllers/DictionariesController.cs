@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +13,7 @@ using paramore.brighter.commandprocessor;
 using Inshapardaz.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Controllers
 {
@@ -39,19 +39,19 @@ namespace Inshapardaz.Controllers
         }
 
         [HttpGet("/api/dictionaries", Name = "GetDictionaries")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             string userId = _userHelper.GetUserId();
 
-            var results = _queryProcessor.Execute(new GetDictionariesByUserQuery { UserId = userId });
+            var results = await _queryProcessor.ExecuteAsync(new GetDictionariesByUserQuery { UserId = userId });
             return Ok(_dictionariesRenderer.Render(results));
         }
 
         [HttpGet("/api/dictionaries/{id}", Name = "GetDictionaryById")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             string userId = _userHelper.GetUserId();
-            var result = _queryProcessor.Execute(new GetDictionaryByIdQuery{ UserId = userId, DictionaryId = id });
+            var result = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery{ UserId = userId, DictionaryId = id });
 
             if (result == null)
             {
@@ -63,10 +63,12 @@ namespace Inshapardaz.Controllers
 
         [Authorize]
         [HttpPost("/api/dictionaries", Name = "CreateDictioanry")]
-        public IActionResult Post([FromBody]DictionaryView value)
+        public async Task<IActionResult> Post([FromBody]DictionaryView value)
         {
             if (string.IsNullOrWhiteSpace(value.Name))
+            {
                 return BadRequest("Name is not valid");
+            }
             
             string userId = _userHelper.GetUserId();
 
@@ -77,7 +79,7 @@ namespace Inshapardaz.Controllers
 
             addDictionaryCommand.Dictionary.UserId = userId;
 
-            _commandProcessor.Send(addDictionaryCommand);
+            await _commandProcessor.SendAsync(addDictionaryCommand);
 
             var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary);
             return Created(response.Links.Single(x => x.Rel == "self").Href, response);
@@ -85,14 +87,16 @@ namespace Inshapardaz.Controllers
 
         [Authorize]
         [HttpPut("/api/dictionaries/{id}", Name = "UpdateDictionary")]
-        public IActionResult Put(int id, [FromBody]DictionaryView value)
+        public async Task<IActionResult> Put(int id, [FromBody]DictionaryView value)
         {
             if (string.IsNullOrWhiteSpace(value.Name))
+            {
                 return BadRequest("Name is not valid");
+            }
             
             string userId = _userHelper.GetUserId();
 
-            var result = _queryProcessor.Execute(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });
+            var result = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
             if (result == null)
             {
@@ -103,32 +107,30 @@ namespace Inshapardaz.Controllers
 
                 addDictionaryCommand.Dictionary.UserId = userId;
 
-                _commandProcessor.Send(addDictionaryCommand);
+                await _commandProcessor.SendAsync(addDictionaryCommand);
 
                 var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary);
                 return Created(response.Links.Single(x => x.Rel == "self").Href, response);
             }
-            else
+
+            UpdateDictionaryCommand updateDictionaryCommand = new UpdateDictionaryCommand
             {
-                UpdateDictionaryCommand updateDictionaryCommand = new UpdateDictionaryCommand
-                {
-                    Dictionary = value.Map<DictionaryView, Dictionary>()
-                };
+                Dictionary = value.Map<DictionaryView, Dictionary>()
+            };
 
-                updateDictionaryCommand.Dictionary.UserId = userId;
+            updateDictionaryCommand.Dictionary.UserId = userId;
 
-                _commandProcessor.Send(updateDictionaryCommand);
+            await _commandProcessor.SendAsync(updateDictionaryCommand);
 
-                return NoContent();
-            }
+            return NoContent();
         }
 
         [Authorize]
         [HttpDelete("/api/dictionaries/{id}", Name = "DeleteDictionary")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             string userId = _userHelper.GetUserId();
-            var result = _queryProcessor.Execute(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });
+            var result = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
             if (result == null)
             {

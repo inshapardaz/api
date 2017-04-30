@@ -1,3 +1,56 @@
+### Get Words For Dictionary
+
+Get the word resources associated with dictionary 
+
+#### Uri
+
+`api/dictionaries/{id}/words`
+
+#### Request
+
+```
+GET api/dictionaries/{id}/words HTTP/1.1
+Content-Type: application/json
+Authorization: OAuth2 ...
+```
+
+##### Request Parameters
+
+| Parameter Name |  Data Type  |  Description                     |
+|----------------|-------------|----------------------------------|
+| id             | number      | Id of word to get detail for     |
+
+#### Response
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+``` javascript
+[{
+        id : 1,
+        title : "some title",
+        titleWithMovements : "some title with movement",
+        pronunciation : "...",
+        description : "...",
+        links : [
+            // links
+        ]
+    },{
+        // other words
+    }
+]
+```
+
+See [word resource](../resources/word.md) for details on items in response list
+
+### Error Responses
+
+| **Case**                                              | **Response Code** |      **Error Code**           |
+|-------------------------------------------------------|-------------------|-------------------------------|
+| User not allowed to get resource                      | `403 Forbidden`   | Unauthorised                  |
+| No matching dictionary resource found                 | `404 Not Found`   | Dictionary Not Found          |
+
 ### Get Word
 
 Get the word resource 

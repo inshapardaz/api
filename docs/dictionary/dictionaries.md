@@ -39,6 +39,67 @@ Content-Type: application/json
 }
 ```
  
+### GET dictionary
+
+Returns metadata of a [dictionary resource](../resources/dictionary.md)
+
+### Uri
+
+`/api/dictionaries/{dictionaryId}`
+
+### Request
+```
+GET /api/dictionary/{id} HTTP/1.1
+Accept: application/json
+Authorization: OAuth2 ...
+```
+
+##### Request Parameters
+
+| Parameter Name |  Data Type  |  Description              |
+|----------------|-------------|---------------------------|
+| id             | number      | Id of dictionary to get   |
+
+
+#### Response
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+``` javascript
+{
+    id : 12,
+    name : 'dictionary name',
+    description : 'dictionary description',
+    language : 34,
+    isPublic : true,
+    links : [{
+        href : '...',
+        rel : 'self'
+    },{
+        href : '...'
+        rel : 'update'
+    },{
+        href : '...',
+        rel : 'delete'
+    }, {
+        href : '...',
+        rel : 'create-word'
+    }, {
+        href : '...',
+        rel : 'reference-types'
+    }]
+}
+```
+
+### Error Responses ###
+
+| **Case**                                              | **Response Code** |      **Error Code**           |
+|-------------------------------------------------------|-------------------|-------------------------------|
+| User not allowed to get dictioanry                 | `403 Forbidden`   | Unauthorised                  |
+| No matching dictionary found                          | `404 Not Found`   | Dictionary Not Found          |
+
 ### Create new dictionary
 
 Creates a new [dictionary resource](../resources/dictionary.md)
@@ -109,66 +170,6 @@ Location : http://....
 | Invalid language                                      | `400 Bad Request` | Invalid Language              |
 | Posted data not correct format                        | `400 Bad Request` | Invlaid data                  |
 
-### GET dictionary
-
-Returns metadata of a [dictionary resource](../resources/dictionary.md)
-
-### Uri
-
-`/api/dictionaries/{dictionaryId}`
-
-### Request
-```
-GET /api/dictionary/{id} HTTP/1.1
-Accept: application/json
-Authorization: OAuth2 ...
-```
-
-##### Request Parameters
-
-| Parameter Name |  Data Type  |  Description              |
-|----------------|-------------|---------------------------|
-| id             | number      | Id of dictionary to get   |
-
-
-#### Response
-```
-HTTP/1.1 200 OK
-Content-Type: application/json
-```
-
-``` javascript
-{
-    id : 12,
-    name : 'dictionary name',
-    description : 'dictionary description',
-    language : 34,
-    isPublic : true,
-    links : [{
-        href : '...',
-        rel : 'self'
-    },{
-        href : '...'
-        rel : 'update'
-    },{
-        href : '...',
-        rel : 'delete'
-    }, {
-        href : '...',
-        rel : 'create-word'
-    }, {
-        href : '...',
-        rel : 'reference-types'
-    }]
-}
-```
-
-### Error Responses ###
-
-| **Case**                                              | **Response Code** |      **Error Code**           |
-|-------------------------------------------------------|-------------------|-------------------------------|
-| User not allowed to get dictioanry                 | `403 Forbidden`   | Unauthorised                  |
-| No matching dictionary found                          | `404 Not Found`   | Dictionary Not Found          |
 
 ### Update dictionary data
 

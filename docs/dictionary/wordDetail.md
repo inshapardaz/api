@@ -9,7 +9,7 @@ Get the details resources associated with word
 #### Request
 
 ```
-GET /api/words/{id}/v HTTP/1.1
+GET /api/words/{id}/details HTTP/1.1
 Content-Type: application/json
 Authorization: OAuth2 ...
 ```

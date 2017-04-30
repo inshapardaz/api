@@ -64,7 +64,7 @@ Link to dictionary
 
 #### details
 
-Link to get word details
+Link to get word details. See [Word Details](../dictionary/wordDetail.md) resource for further details. 
 
 #### relations
 

@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/api/word/{id}/Details", Name = "GetWordDetailsById")]
+        [Route("/api/words/{id}/details", Name = "GetWordDetailsById")]
         public async Task<IActionResult> GetForWord(int id)
         {
             var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery {WordId = id});
@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/api/Word/Details/{id}", Name = "GetDetailsById")]
+        [Route("/api/details/{id}", Name = "GetDetailsById")]
         public async Task<IActionResult> Get(int id)
         {
             var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id});
@@ -78,7 +78,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_wordDetailRenderer.Render(details));
         }
 
-        [HttpPost("/api/word/{id}/Details", Name = "AddWordDetail")]
+        [HttpPost("/api/words/{id}/details", Name = "AddWordDetail")]
         public async Task<IActionResult> Post(int id, [FromBody]WordDetailView wordDetail)
         {
             if (wordDetail == null)
@@ -112,21 +112,21 @@ namespace Inshapardaz.Api.Controllers
             return new CreatedResult(responseView.Links.Single(x => x.Rel == "self").Href, responseView);
         }
 
-        [HttpPut("/api/Details/{wordDetailId}", Name = "UpdateWordDetail")]
-        public async Task<IActionResult> Put(int wordDetailId, [FromBody]WordDetailView wordDetail)
+        [HttpPut("/api/details/{id}", Name = "UpdateWordDetail")]
+        public async Task<IActionResult> Put(int id, [FromBody]WordDetailView wordDetail)
         {
             if (wordDetail == null)
             {
                 return BadRequest();
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = wordDetailId });
+            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
             }
 
-            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = wordDetailId });
+            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
 
             if (details == null || details.Id != wordDetail.Id)
             {
@@ -141,10 +141,10 @@ namespace Inshapardaz.Api.Controllers
 
             await _commandProcessor.SendAsync(updateWordDetailCommand);
 
-            return Ok();
+            return NoContent();
         }
 
-        [HttpDelete("/api/details/{wordDetailId}", Name = "DeleteWordDetail")]
+        [HttpDelete("/api/details/{id}", Name = "DeleteWordDetail")]
         public async Task<IActionResult> Delete(int id)
         {
             var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });

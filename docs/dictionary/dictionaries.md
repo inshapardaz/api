@@ -66,6 +66,7 @@ Authorization: OAuth2 ...
 ```
 HTTP/1.1 201 CREATED
 Content-Type: application/json
+Location : http://....
 ```
 
 ``` javascript

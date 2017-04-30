@@ -219,9 +219,9 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             Result = Controller.Put(32, new WordDetailView()).Result;
         }
         [Fact]
-        public void ShouldReturnOkResult()
+        public void ShouldReturnNoContentResult()
         {
-            Assert.IsType<OkResult>(Result);
+            Assert.IsType<NoContentResult>(Result);
         }
     }
 

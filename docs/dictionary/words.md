@@ -66,6 +66,64 @@ See [word resource](../resources/word.md) for details on response
 | User not allowed to get word                          | `403 Forbidden`   | Unauthorised                  |
 | No matching word found                                | `404 Not Found`   | Word Not Found                |
 
+### Add word to dictionary
+
+Add another word resource to dictionary
+
+#### Uri
+
+`api/dictionaries/{id}/words`
+
+#### Request
+
+```
+POST /api/dictionaries/{id}/words HTTP/1.1
+Content-Type: application/json
+Authorization: OAuth2 ...
+```
+
+``` javascript
+{
+    title : "some title",
+    titleWithMovements : "some title with movement",
+    pronunciation : "...",
+    description : "...",
+}
+```
+
+##### Request Parameters
+
+| Parameter Name |  Data Type  |  Description                      |
+|----------------|-------------|-----------------------------------|
+| id             | number      | Id of dictionary to add word      |
+
+#### Response
+```
+HTTP/1.1 201 CREATED
+Content-Type: application/json
+Location : http://....
+```
+
+``` javascript
+{
+    id : 1,
+    title : "some title",
+    titleWithMovements : "some title with movement",
+    pronunciation : "...",
+    description : "...",
+    links : [
+        // links here
+    ]
+}
+```
+
+
+### Error Responses
+
+| **Case**                                              | **Response Code** |      **Error Code**           |
+|-------------------------------------------------------|-------------------|-------------------------------|
+| User not allowed to update resource                   | `403 Forbidden`   | Unauthorised                  |
+| Bad Request                            | `403 Bad Request`   | Data not found            |
 
 ### Update Word
 
@@ -116,7 +174,7 @@ Content-Type: application/json
 
 ### Delete Word
 
-Removes the [wprd resource](../resources/word.md). All data associated with the word is deleted. Data is removed permanently and cannot be undone.
+Removes the [word resource](../resources/word.md). All data associated with the word is deleted. Data is removed permanently and cannot be undone.
 
 #### Uri
 `/api/words/{id}`

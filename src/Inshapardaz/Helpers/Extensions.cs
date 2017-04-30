@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Inshapardaz.Helpers
+namespace Inshapardaz.Api.Helpers
 {
     public static class Extensions
     {

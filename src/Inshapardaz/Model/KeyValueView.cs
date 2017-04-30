@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Inshapardaz.Model
+namespace Inshapardaz.Api.Model
 {
     public class KeyValueView<TKey, TValue>
     {

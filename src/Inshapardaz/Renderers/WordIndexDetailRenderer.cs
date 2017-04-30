@@ -1,8 +1,8 @@
 ﻿using System;
+using Inshapardaz.Api.Model;
 using Inshapardaz.Domain.Model;
-using Inshapardaz.Model;
 
-namespace Inshapardaz.Renderers
+namespace Inshapardaz.Api.Renderers
 {
     public class WordIndexDetailRenderer : RendrerBase, IRenderResponseFromObject<Word, WordDetailView>
     {

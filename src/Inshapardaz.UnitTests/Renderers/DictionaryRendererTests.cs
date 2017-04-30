@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using Inshapardaz.Configuration;
-using Inshapardaz.Model;
-using Inshapardaz.Renderers;
-using Inshapardaz.UnitTests.Fakes.Helpers;
-using Moq;
-using System;
+﻿using System;
 using System.Linq;
+using AutoMapper;
+using Inshapardaz.Api.Configuration;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.UnitTests.Fakes.Helpers;
+using Moq;
 using Xunit;
 
-namespace Inshapardaz.UnitTests.Renderers
+namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class DictionaryRendererTests
     {

@@ -6,18 +6,18 @@ using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
-    public class FakeWordRenderer : IRenderResponseFromObject<Word, WordView>
+    public class FakeWordDetailRenderer : IRenderResponseFromObject<WordDetail, WordDetailView>
     {
-        private readonly WordView _response = new WordView();
+        private readonly WordDetailView _response = new WordDetailView();
         private readonly List<LinkView> _links = new List<LinkView>();
 
-        public WordView Render(Word source)
+        public WordDetailView Render(WordDetail source)
         {
             _response.Links = _links;
             return _response;
         }
 
-        public FakeWordRenderer WithLink(string rel, Uri value)
+        public FakeWordDetailRenderer WithLink(string rel, Uri value)
         {
             _links.Add(new LinkView { Rel = rel, Href = value });
             return this;

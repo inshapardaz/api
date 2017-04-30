@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
-namespace Inshapardaz.Helpers
+namespace Inshapardaz.Api.Helpers
 {
     public class UserHelper : IUserHelper
     {

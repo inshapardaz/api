@@ -3,7 +3,7 @@ using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
 using Xunit;
 
-namespace Domain.UnitTests.QueryHandlers
+namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
     public class WordByIdQueryHandlerTests : DatabaseTestFixture
     {

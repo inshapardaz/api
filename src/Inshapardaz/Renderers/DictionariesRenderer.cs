@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-
+using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Model;
 using Inshapardaz.Domain.Model;
-using Inshapardaz.Model;
-using Inshapardaz.Helpers;
 
-namespace Inshapardaz.Renderers
+namespace Inshapardaz.Api.Renderers
 {
     public class DictionariesRenderer : RendrerBase, IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView>
     {

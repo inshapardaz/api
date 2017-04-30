@@ -1,4 +1,4 @@
-﻿namespace Inshapardaz.Domain.Queries
+﻿namespace Inshapardaz.Domain
 {
     public interface IAggregateQuery<T>
     {

@@ -1,13 +1,13 @@
-﻿using Darker;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using Xunit;
 using System.Threading;
+using System.Threading.Tasks;
+using Darker;
+using Xunit;
 
-namespace Inshapardaz.UnitTests.Fakes
+namespace Inshapardaz.Api.UnitTests.Fakes
 {
     public class FakeQueryProcessor : IQueryProcessor
     {

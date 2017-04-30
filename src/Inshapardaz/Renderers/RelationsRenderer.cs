@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Model;
 using Inshapardaz.Domain.Model;
-using Inshapardaz.Helpers;
-using Inshapardaz.Model;
 
-namespace Inshapardaz.Renderers
+namespace Inshapardaz.Api.Renderers
 {
     public class RelationsRenderer : RendrerBase, IRenderResponseFromObject<IEnumerable<WordRelation>, RelationshipsView>
     {

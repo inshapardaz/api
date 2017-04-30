@@ -1,23 +1,22 @@
-﻿using System.Collections.ObjectModel;
-using Moq;
-using paramore.brighter.commandprocessor;
-
-using Xunit;
-using Inshapardaz.Controllers;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading;
+using AutoMapper;
+using Inshapardaz.Api.Configuration;
+using Inshapardaz.Api.Controllers;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.UnitTests.Fakes;
+using Inshapardaz.Api.UnitTests.Fakes.Helpers;
+using Inshapardaz.Api.UnitTests.Fakes.Renderers;
+using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
-using Inshapardaz.UnitTests.Fakes;
-using Inshapardaz.UnitTests.Fakes.Helpers;
-using Inshapardaz.UnitTests.Fakes.Renderers;
-using Inshapardaz.Domain.Commands;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
-using Inshapardaz.Configuration;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using Moq;
+using paramore.brighter.commandprocessor;
+using Xunit;
 
-namespace Inshapardaz.UnitTests.Controllers
+namespace Inshapardaz.Api.UnitTests.Controllers
 {
     public class DictioanriesControllerTests
     {
@@ -103,7 +102,7 @@ namespace Inshapardaz.UnitTests.Controllers
         {
             var userId = "user1234";
             _fakeUserHelper.WithUserId(userId);
-            var dictionaryView = new Model.DictionaryView
+            var dictionaryView = new DictionaryView
             {
                 Language = 23,
                 IsPublic = true,
@@ -126,7 +125,7 @@ namespace Inshapardaz.UnitTests.Controllers
         [Fact]
         public void WhenPostNameDoesNotExist_ShouldReturnBadRequest()
         {
-            var dictionaryView = new Model.DictionaryView
+            var dictionaryView = new DictionaryView
             {
                 Language = 23,
                 IsPublic = true,
@@ -145,7 +144,7 @@ namespace Inshapardaz.UnitTests.Controllers
             var userId = "user1234";
             var dictionaryId = 344;
             _fakeUserHelper.WithUserId(userId);
-            var dictionaryView = new Model.DictionaryView
+            var dictionaryView = new DictionaryView
             {
                 Language = 23,
                 IsPublic = true,
@@ -173,7 +172,7 @@ namespace Inshapardaz.UnitTests.Controllers
             _fakeUserHelper.WithUserId(userId);
             _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(null);
 
-            var dictionaryView = new Model.DictionaryView
+            var dictionaryView = new DictionaryView
             {
                 Id = dictionaryId,
                 Language = 23,
@@ -197,7 +196,7 @@ namespace Inshapardaz.UnitTests.Controllers
         public void WhenPutNameDoesNotExist_ShouldReturnBadRequest()
         {
             var dictionaryId = 344;
-            var dictionaryView = new Model.DictionaryView
+            var dictionaryView = new DictionaryView
             {
                 Id = dictionaryId,
                 Language = 23,

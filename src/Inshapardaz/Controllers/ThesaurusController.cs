@@ -1,11 +1,11 @@
 ﻿using Darker;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
-using Inshapardaz.Model;
-using Inshapardaz.Renderers;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inshapardaz.Controllers
+namespace Inshapardaz.Api.Controllers
 {
     public class ThesaurusController : Controller
     {

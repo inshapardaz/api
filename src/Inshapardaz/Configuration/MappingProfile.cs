@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using Inshapardaz.Api.Model;
 using Inshapardaz.Domain.Model;
-using Inshapardaz.Model;
 
-namespace Inshapardaz.Configuration
+namespace Inshapardaz.Api.Configuration
 { 
     public class MappingProfile : Profile
     {

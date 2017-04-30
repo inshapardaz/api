@@ -10,7 +10,7 @@
 using System.Diagnostics;
 using AutoMapper;
 
-namespace Inshapardaz.Helpers
+namespace Inshapardaz.Api.Helpers
 {
     /// <summary>
     /// Object mapper class

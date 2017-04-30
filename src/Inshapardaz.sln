@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.3
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz", "Inshapardaz\Inshapardaz.csproj", "{2A559B58-E247-4340-88B2-0D717C8163C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api", "Inshapardaz\Inshapardaz.Api.csproj", "{2A559B58-E247-4340-88B2-0D717C8163C9}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Database", "Database\Database.sqlproj", "{7755BC55-495E-452F-B0C4-695CE843C2E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{E2C20F16-FA4A-4522-A1A7-77F8EE502C28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Domain", "Domain\Inshapardaz.Domain.csproj", "{E2C20F16-FA4A-4522-A1A7-77F8EE502C28}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.UnitTests", "Domain.UnitTests\Domain.UnitTests.csproj", "{C01C89C5-E9A5-4A3B-A39F-4AC9B6B72F7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Domain.UnitTests", "Domain.UnitTests\Inshapardaz.Domain.UnitTests.csproj", "{C01C89C5-E9A5-4A3B-A39F-4AC9B6B72F7D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.UnitTests", "Inshapardaz.UnitTests\Inshapardaz.UnitTests.csproj", "{7E64D58E-45FB-4AC2-9E23-DEC598FBF4A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api.UnitTests", "Inshapardaz.UnitTests\Inshapardaz.Api.UnitTests.csproj", "{7E64D58E-45FB-4AC2-9E23-DEC598FBF4A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

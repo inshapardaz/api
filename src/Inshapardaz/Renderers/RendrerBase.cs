@@ -1,4 +1,4 @@
-namespace Inshapardaz.Renderers
+namespace Inshapardaz.Api.Renderers
 {
     public abstract class RendrerBase
     {

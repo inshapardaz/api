@@ -1,12 +1,9 @@
-﻿using Inshapardaz.Model;
-using Inshapardaz.Renderers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Model;
 
-namespace Inshapardaz.UnitTests.Fakes.Renderers
+namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
     public class FakeDictionariesRenderer : IRenderResponseFromObject<IEnumerable<Domain.Model.Dictionary>, DictionariesView>
     {

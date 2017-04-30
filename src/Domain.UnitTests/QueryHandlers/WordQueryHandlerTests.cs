@@ -1,6 +1,6 @@
 ﻿using Inshapardaz.Domain.QueryHandlers;
 
-namespace Domain.UnitTests.QueryHandlers
+namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
     public class WordQueryHandlerTests : DatabaseTestFixture
     {

@@ -1,10 +1,10 @@
-﻿using Inshapardaz.Domain.CommandHandlers;
+﻿using System.Linq;
+using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
-using System.Linq;
 using Xunit;
 
-namespace Domain.UnitTests.CommandHandlers
+namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
     public class AddDictionaryCommandHandlerTests : DatabaseTestFixture
     {

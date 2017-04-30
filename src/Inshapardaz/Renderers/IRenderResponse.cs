@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Inshapardaz.Model;
+using Inshapardaz.Api.Model;
 
-namespace Inshapardaz.Renderers
+namespace Inshapardaz.Api.Renderers
 {
     public interface IRenderLink
     {

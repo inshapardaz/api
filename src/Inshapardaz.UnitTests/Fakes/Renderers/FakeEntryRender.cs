@@ -1,9 +1,9 @@
-﻿using Inshapardaz.Renderers;
-using Inshapardaz.Model;
+﻿using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
 
-namespace Inshapardaz.UnitTests.Fakes.Renderers
+namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
-    public class FakeEntryRender : IRenderResponse<Model.EntryView>
+    public class FakeEntryRender : IRenderResponse<EntryView>
     {
         private EntryView _entryView = new EntryView();
 

@@ -1,7 +1,7 @@
 using System;
 using paramore.brighter.commandprocessor;
 
-namespace Inshapardaz.Configuration
+namespace Inshapardaz.Api.Configuration
 {
     internal class ServiceHandlerFactory : IAmAHandlerFactory
     {

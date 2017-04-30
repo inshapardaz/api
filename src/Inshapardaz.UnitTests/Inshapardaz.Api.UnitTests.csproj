@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.0</TargetFramework>
-    <AssemblyName>Inshapardaz.UnitTests</AssemblyName>
+    <AssemblyName>Inshapardaz.Api.UnitTests</AssemblyName>
     <PackageId>Inshapardaz.UnitTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
@@ -10,10 +10,12 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>Inshapardaz.Api.UnitTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Inshapardaz\Inshapardaz.csproj" />
+    <ProjectReference Include="..\Domain\Inshapardaz.Domain.csproj" />
+    <ProjectReference Include="..\Inshapardaz\Inshapardaz.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>

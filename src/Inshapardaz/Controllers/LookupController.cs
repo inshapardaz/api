@@ -4,7 +4,7 @@ using System.Linq;
 using Inshapardaz.Domain.Model;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inshapardaz.Controllers.Api
+namespace Inshapardaz.Api.Controllers
 {
     public class LookupController : Controller
     {

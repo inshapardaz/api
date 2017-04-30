@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
-namespace Inshapardaz.Helpers
+namespace Inshapardaz.Api.Helpers
 {
     public static class EnumHelper
     {

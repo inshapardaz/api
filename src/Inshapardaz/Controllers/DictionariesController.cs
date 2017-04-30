@@ -1,21 +1,18 @@
 ﻿using System.Collections.Generic;
-
-using Microsoft.AspNetCore.Mvc;
-
-using Inshapardaz.Model;
-using Inshapardaz.Domain.Queries;
-using Inshapardaz.Renderers;
-
-using Darker;
-using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Model;
-using paramore.brighter.commandprocessor;
-using Inshapardaz.Helpers;
-using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using System.Threading.Tasks;
+using Darker;
+using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
+using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Queries;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using paramore.brighter.commandprocessor;
 
-namespace Inshapardaz.Controllers
+namespace Inshapardaz.Api.Controllers
 {
     public class DictionariesController : Controller
     {

@@ -2,30 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-
+using AutoMapper;
+using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
+using Inshapardaz.Domain.CommandHandlers;
+using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
-using AutoMapper;
 using paramore.brighter.commandprocessor;
 
-using Inshapardaz.Domain.Queries;
-using Inshapardaz.Domain.QueryHandlers;
-using Inshapardaz.Domain.CommandHandlers;
-using Inshapardaz.Domain.Model;
-
-using Inshapardaz.Model;
-using Inshapardaz.Helpers;
-using Inshapardaz.Renderers;
-
-namespace Inshapardaz.Configuration
+namespace Inshapardaz.Api.Configuration
 {
     public static class AppConfiguration
     {

@@ -1,10 +1,10 @@
-﻿using Inshapardaz.Domain.Model;
+﻿using System.Linq;
+using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
-using System.Linq;
 using Xunit;
 
-namespace Domain.UnitTests.QueryHandlers
+namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
     public class GetDictionariesByUserQueryHandlerTests : DatabaseTestFixture
     {

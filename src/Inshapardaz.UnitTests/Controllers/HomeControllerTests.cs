@@ -1,10 +1,10 @@
-﻿using Inshapardaz.Controllers;
-using Inshapardaz.Model;
-using Inshapardaz.UnitTests.Fakes.Renderers;
+﻿using Inshapardaz.Api.Controllers;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
-namespace Inshapardaz.UnitTests.Controllers
+namespace Inshapardaz.Api.UnitTests.Controllers
 {
     public class HomeControllerTests
     {

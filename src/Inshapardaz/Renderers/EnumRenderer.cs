@@ -1,6 +1,6 @@
-﻿using Inshapardaz.Helpers;
+﻿using Inshapardaz.Api.Helpers;
 
-namespace Inshapardaz.Renderers
+namespace Inshapardaz.Api.Renderers
 {
     public class EnumRenderer : IRenderEnum
     {

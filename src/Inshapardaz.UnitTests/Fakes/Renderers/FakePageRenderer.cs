@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Inshapardaz.Model;
-using Inshapardaz.Renderers;
+﻿using System.Collections.Generic;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
 
-namespace Inshapardaz.UnitTests.Fakes.Renderers
+namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
     public class FakePageRenderer<TModel, TView> : IRenderResponseFromObject<PageRendererArgs<TModel>, PageView<TView>>
     {

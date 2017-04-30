@@ -1,9 +1,9 @@
-﻿using Inshapardaz.Model;
-using Inshapardaz.Renderers;
+﻿using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inshapardaz.Controllers
+namespace Inshapardaz.Api.Controllers
 {
     public class HomeController : Controller
     {

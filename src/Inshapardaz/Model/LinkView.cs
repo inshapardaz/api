@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Inshapardaz.Model
+namespace Inshapardaz.Api.Model
 {
     public class LinkView
     {

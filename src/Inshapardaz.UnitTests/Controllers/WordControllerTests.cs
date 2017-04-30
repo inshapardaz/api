@@ -1,19 +1,19 @@
 ﻿using AutoMapper;
-using Inshapardaz.Configuration;
-using Inshapardaz.Controllers;
+using Inshapardaz.Api.Configuration;
+using Inshapardaz.Api.Controllers;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.UnitTests.Fakes;
+using Inshapardaz.Api.UnitTests.Fakes.Helpers;
+using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
-using Inshapardaz.Model;
-using Inshapardaz.Renderers;
-using Inshapardaz.UnitTests.Fakes;
-using Inshapardaz.UnitTests.Fakes.Helpers;
-using Inshapardaz.UnitTests.Fakes.Renderers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using paramore.brighter.commandprocessor;
 using Xunit;
 
-namespace Inshapardaz.UnitTests.Controllers
+namespace Inshapardaz.Api.UnitTests.Controllers
 {
     public class WhenGettingWordsForDictionary : WordControllerTestContext
     {

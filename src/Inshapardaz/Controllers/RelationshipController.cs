@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using Darker;
+using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
-using Inshapardaz.Helpers;
-using Inshapardaz.Model;
-using Inshapardaz.Renderers;
 using Microsoft.AspNetCore.Mvc;
 using paramore.brighter.commandprocessor;
 
-namespace Inshapardaz.Controllers
+namespace Inshapardaz.Api.Controllers
 {
     [Route("api/[controller]")]
     public class RelationshipController : Controller

@@ -1,11 +1,8 @@
-﻿using Inshapardaz.Domain;
-using Inshapardaz.Domain.Model;
+﻿using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.QueryHandlers;
-using Microsoft.EntityFrameworkCore;
-using System;
 using Xunit;
 
-namespace Domain.UnitTests.QueryHandlers
+namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
     public class GetDictionaryByIdQueryHandlerTests : DatabaseTestFixture
     {

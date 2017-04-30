@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Inshapardaz.Model
+namespace Inshapardaz.Api.Model
 {
     public class DictionaryEntryView
     {

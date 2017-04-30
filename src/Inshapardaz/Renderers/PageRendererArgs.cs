@@ -1,6 +1,6 @@
 ﻿using Inshapardaz.Domain.Model;
 
-namespace Inshapardaz.Renderers
+namespace Inshapardaz.Api.Renderers
 {
     public class PageRendererArgs<T>
     {

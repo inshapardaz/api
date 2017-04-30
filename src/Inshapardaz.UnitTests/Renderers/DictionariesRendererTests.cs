@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Inshapardaz.UnitTests.Renderers
+namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class DictionariesRendererTests
     {

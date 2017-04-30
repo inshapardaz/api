@@ -1,7 +1,7 @@
-﻿using Inshapardaz.Model;
-using Inshapardaz.Renderers;
+﻿using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
 
-namespace Inshapardaz.UnitTests.Fakes.Renderers
+namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
     public class FakeDictionaryEntryRender : IRenderResponse<DictionaryEntryView>
     {

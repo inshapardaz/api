@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Inshapardaz.Api.Model;
 using Inshapardaz.Domain.Model;
-using Inshapardaz.Model;
 
-namespace Inshapardaz.Renderers
+namespace Inshapardaz.Api.Renderers
 {
     public class WordIndexPageRenderer : RendrerBase, IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>>
     {

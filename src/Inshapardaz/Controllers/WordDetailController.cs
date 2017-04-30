@@ -1,47 +1,56 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Darker;
+using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
-using Inshapardaz.Helpers;
-using Inshapardaz.Model;
-using Inshapardaz.Renderers;
 using Microsoft.AspNetCore.Mvc;
 using paramore.brighter.commandprocessor;
 
-namespace Inshapardaz.Controllers
+namespace Inshapardaz.Api.Controllers
 {
     [Route("api/[controller]")]
     public class WordDetailController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
+        private readonly IUserHelper _userHelper;
 
         private readonly IRenderResponseFromObject<WordDetail, WordDetailView> _wordDetailRenderer;
 
         public WordDetailController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
+            IUserHelper userHelper,
             IRenderResponseFromObject<WordDetail, WordDetailView> wordDetailRenderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
+            _userHelper = userHelper;
             _wordDetailRenderer = wordDetailRenderer;
         }
 
-        // GET api/values/5
         [HttpGet]
         [Route("/api/Word/Details/{id}", Name = "GetDetailsById")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var details = _queryProcessor.Execute(new WordDetailByIdQuery {Id = id});
+            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id});
+            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
+            {
+                return Unauthorized();
+            }
+
+            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery {Id = id});
 
             if (details == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(_wordDetailRenderer.Render(details));
+            return Ok(_wordDetailRenderer.Render(details));
         }
 
         [HttpGet]

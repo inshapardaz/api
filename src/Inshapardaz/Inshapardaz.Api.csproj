@@ -3,12 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp1.0</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>Inshapardaz</AssemblyName>
+    <AssemblyName>Inshapardaz.Api</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>Inshapardaz</PackageId>
     <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
 	<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+	<RootNamespace>Inshapardaz.Api</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,10 +20,6 @@
     <None Update="wwwroot\**\*">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +35,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="1.1.1" />
     <PackageReference Include="Darker" Version="0.10.0-ci84" />
     <PackageReference Include="paramore.brighter.commandprocessor" Version="7.0.86-alpha" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Inshapardaz.Domain.csproj" />
   </ItemGroup>
 
 </Project>

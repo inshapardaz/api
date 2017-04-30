@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-
-using Microsoft.Extensions.DependencyInjection;
-
 using Darker;
 using Darker.Decorators;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Inshapardaz.Configuration
+namespace Inshapardaz.Api.Configuration
 {
     public class DarkerConfig : IQueryHandlerFactory, IQueryHandlerDecoratorFactory
     {

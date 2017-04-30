@@ -1,12 +1,11 @@
-﻿using Inshapardaz.Helpers;
-using Inshapardaz.Model;
-using Microsoft.AspNetCore.Http;
+﻿using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 
-namespace Inshapardaz.Renderers
+namespace Inshapardaz.Api.Renderers
 {
     public class LinkRenderer : IRenderLink
     {

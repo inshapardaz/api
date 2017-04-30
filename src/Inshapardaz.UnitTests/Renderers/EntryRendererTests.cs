@@ -1,10 +1,10 @@
-﻿using Inshapardaz.Model;
-using Inshapardaz.Renderers;
+﻿using System.Linq;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers;
 using Moq;
-using System.Linq;
 using Xunit;
 
-namespace Inshapardaz.UnitTests.Renderers
+namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class EntryRendererTests
     {

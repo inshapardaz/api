@@ -1,13 +1,9 @@
-﻿using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Model;
+﻿using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
-namespace Domain.UnitTests.QueryHandlers
+namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
     public class WordByTitleQueryHandlerTests : DatabaseTestFixture
     {

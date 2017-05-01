@@ -9,6 +9,7 @@ using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 using paramore.brighter.commandprocessor;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Controllers
 {
@@ -17,36 +18,58 @@ namespace Inshapardaz.Api.Controllers
     {
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
-
+        private readonly IUserHelper _userHelper;
         private readonly IRenderResponseFromObject<Meaning, MeaningView> _meaningRenderer;
 
         public MeaningController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
+            IUserHelper userHelper,
             IRenderResponseFromObject<Meaning, MeaningView> meaningRenderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
+            _userHelper = userHelper;
             _meaningRenderer = meaningRenderer;
         }
 
-        [HttpGet("{id}", Name = "GetMeaningById")]
-        public IActionResult Get(int id)
+        [Route("api/word/{id}/Meaning", Name = "GetWordMeaningById")]
+        public async Task<IActionResult> GetMeaningForWord(int id)
         {
-            var meaning = _queryProcessor.Execute(new WordMeaningByIdQuery {Id = id});
+            var user = _userHelper.GetUserId();
+            if (!string.IsNullOrWhiteSpace(user))
+            {
+                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+                if (dictionary != null && dictionary.UserId != user)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            IEnumerable<Meaning> meanings = await _queryProcessor.ExecuteAsync(new WordMeaningByWordQuery { WordId = id });
+            return Ok(meanings.Select(x => _meaningRenderer.Render(x)).ToList());
+        }
+
+        [HttpGet("{id}", Name = "GetMeaningById")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var user = _userHelper.GetUserId();
+            if (!string.IsNullOrWhiteSpace(user))
+            {
+                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByMeaningIdQuery { MeaningId = id });
+                if (dictionary != null && dictionary.UserId != user)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            var meaning = await _queryProcessor.ExecuteAsync(new WordMeaningByIdQuery { Id = id });
 
             if (meaning == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(_meaningRenderer.Render(meaning));
-        }
-
-        [Route("api/word/{id}/Meaning", Name = "GetWordMeaningById")]
-        public IEnumerable<MeaningView> GetMeaningForWord(int id)
-        {
-            return _queryProcessor.Execute(new WordMeaningByWordQuery { WordId = id } )
-                                  .Select(x => _meaningRenderer.Render(x));
+            return Ok(_meaningRenderer.Render(meaning));
         }
 
         [Route("api/word/{id}/Meaning/{context}", Name = "GetWordMeaningByContext")]
@@ -62,51 +85,78 @@ namespace Inshapardaz.Api.Controllers
                                    .Select(x => _meaningRenderer.Render(x));
         }
 
-        [HttpPost("api/word/{id}/detail/{detailId}/meaning", Name = "AddMeaning")]
-        public IActionResult Post(int id, int detailId, [FromBody]MeaningView meaning)
+        [HttpPost("api/details/{id}/meaning", Name = "AddMeaning")]
+        public async Task<IActionResult> Post(int id, [FromBody]MeaningView meaning)
         {
             if (meaning == null)
             {
                 return BadRequest();
             }
 
-            _commandProcessor.Send(new AddWordMeaningCommand { Meaning = meaning.Map<MeaningView, Meaning>() });
-            return Created("http://tempuri", 0);
+            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            {
+                return Unauthorized();
+            }
+
+            var dwtails = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
+
+            if (dwtails == null)
+            {
+                return BadRequest();
+            }
+
+            var command = new AddWordMeaningCommand { Meaning = meaning.Map<MeaningView, Meaning>() };
+            await _commandProcessor.SendAsync(command);
+            var response = _meaningRenderer.Render(command.Meaning);
+            return Created(response.Links.Single(x => x.Rel == "self").Href, response);
         }
 
-        [HttpPut("api/word/meaning/{id}", Name = "UpdateMeaning")]
-        public IActionResult Put(int id, [FromBody]MeaningView meaning)
+        [HttpPut("api/meaning/{id}", Name = "UpdateMeaning")]
+        public async Task<IActionResult> Put(int id, [FromBody]MeaningView meaning)
         {
             if (meaning == null)
             {
                 return BadRequest();
             }
 
-            var response = _queryProcessor.Execute(new WordMeaningByIdQuery { Id = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            {
+                return Unauthorized();
+            }
+
+            var response = await _queryProcessor.ExecuteAsync(new WordMeaningByIdQuery { Id = id });
 
             if (response == null || response.Id != meaning.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            _commandProcessor.Send(new UpdateWordMeaningCommand { Meaning = meaning.Map<MeaningView, Meaning>() });
+            await _commandProcessor.SendAsync(new UpdateWordMeaningCommand { Meaning = meaning.Map<MeaningView, Meaning>() });
 
-            return Ok();
+            return NoContent();
         }
 
-        [HttpDelete("api/word/meaning/{id}", Name = "DeleteMeaning")]
-        public IActionResult Delete(int id)
+        [HttpDelete("api/meaning/{id}", Name = "DeleteMeaning")]
+        public async Task<IActionResult> Delete(int id)
         {
-            var response = _queryProcessor.Execute(new WordMeaningByIdQuery { Id = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            {
+                return Unauthorized();
+            }
 
-            if (response == null || response.Id != id)
+            var response = await _queryProcessor.ExecuteAsync(new WordMeaningByIdQuery { Id = id });
+
+            if (response == null)
             {
                 return NotFound();
             }
 
-            _commandProcessor.Send(new DeleteWordMeaningCommand { Meaning = response });
+            await _commandProcessor.SendAsync(new DeleteWordMeaningCommand { Meaning = response });
 
-            return Ok();
+            return NoContent();
         }
     }
 }

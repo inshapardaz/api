@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Darker;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordMeaningByWordQueryHandler : QueryHandler<WordMeaningByWordQuery, IEnumerable<Meaning>>
+    public class WordMeaningByWordQueryHandler : AsyncQueryHandler<WordMeaningByWordQuery, IEnumerable<Meaning>>
     {
         private readonly IDatabaseContext _database;
 
@@ -15,23 +19,20 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override IEnumerable<Meaning> Execute(WordMeaningByWordQuery args)
+        public override async Task<IEnumerable<Meaning>> ExecuteAsync(WordMeaningByWordQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
-            IEnumerable<Meaning> meanings;
-            if (string.IsNullOrWhiteSpace(args.Context))
+            if (string.IsNullOrWhiteSpace(query.Context))
             {
-                meanings =_database.Meanings
-                           .Where(t => t.WordDetail.WordInstanceId == args.WordId)
-                           .ToList();
+                return await _database.Meanings
+                           .Where(t => t.WordDetail.WordInstanceId == query.WordId)
+                           .ToListAsync();
             }
             else
             {
-                meanings = _database.Meanings
-                    .Where(t => t.WordDetail.WordInstanceId == args.WordId && t.Context == args.Context)
-                    .ToList();
+                return await _database.Meanings
+                    .Where(t => t.WordDetail.WordInstanceId == query.WordId && t.Context == query.Context)
+                    .ToListAsync();
             }
-
-            return meanings;
         }
     }
 }

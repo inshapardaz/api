@@ -29,7 +29,6 @@ namespace Inshapardaz.Api.Configuration
         {
             var builder = new ConfigurationBuilder();
 
-
             if (env.IsEnvironment("Development"))
             {
                 builder.AddApplicationInsightsSettings(developerMode: true);
@@ -46,9 +45,9 @@ namespace Inshapardaz.Api.Configuration
         public static IServiceCollection RegisterFramework(this IServiceCollection services, IConfigurationRoot configuration)
         {
             services.AddApplicationInsightsTelemetry(configuration);
-            
+
             services.AddMvc();
-            
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             services.AddScoped<IUserHelper, UserHelper>();
@@ -77,7 +76,7 @@ namespace Inshapardaz.Api.Configuration
 
             return services;
         }
-        
+
         public static IServiceCollection RegisterDomain(this IServiceCollection services, IConfigurationRoot configuration)
         {
             var connectionString = configuration["Data:DefaultConnection:ConnectionString"];
@@ -127,6 +126,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<RelationshipByIdQueryHandler>();
             services.AddTransient<GetDictionaryByWordIdQueryHandler>();
             services.AddTransient<GetDictionaryByWordIdQuery>();
+            services.AddTransient<GetDictionaryByMeaningIdQueryHandler>();
 
             services.ConfigureCommandProcessor();
             services.ConfigureDarker();
@@ -144,7 +144,7 @@ namespace Inshapardaz.Api.Configuration
             app.Use(async (context, next) =>
             {
                 await next();
-                if (context.Response.StatusCode == 404 && 
+                if (context.Response.StatusCode == 404 &&
                     !Path.HasExtension(context.Request.Path.Value) &&
                     !context.Request.Path.Value.StartsWith("/api"))
                 {
@@ -171,7 +171,6 @@ namespace Inshapardaz.Api.Configuration
 
             return app;
         }
-        
 
         public static IApplicationBuilder ConfigureApiAuthentication(this IApplicationBuilder app, IConfigurationRoot configuration)
         {

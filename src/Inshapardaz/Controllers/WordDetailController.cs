@@ -59,13 +59,19 @@ namespace Inshapardaz.Api.Controllers
         [Route("/api/details/{id}", Name = "GetDetailsById")]
         public async Task<IActionResult> Get(int id)
         {
-            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id});
-            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
+            var userId = _userHelper.GetUserId();
+
+            if (!string.IsNullOrWhiteSpace(userId))
             {
-                return Unauthorized();
+                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+
+                if (dictionary == null || dictionary.UserId != userId)
+                {
+                    return Unauthorized();
+                }
             }
 
-            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery {Id = id});
+            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
 
             if (details == null)
             {
@@ -89,13 +95,12 @@ namespace Inshapardaz.Api.Controllers
                 return Unauthorized();
             }
 
-            var response = await _queryProcessor.ExecuteAsync(new WordByIdQuery{ Id = id});
+            var response = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = id });
 
             if (response == null)
             {
                 return BadRequest();
             }
-
 
             var addWordDetailCommand = new AddWordDetailCommand
             {
@@ -150,14 +155,14 @@ namespace Inshapardaz.Api.Controllers
                 return Unauthorized();
             }
 
-            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery {Id = id});
+            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
 
             if (details == null)
             {
                 return NotFound();
             }
 
-            _commandProcessor.Send(new DeleteWordDetailCommand { WordDetailId =  id});
+            _commandProcessor.Send(new DeleteWordDetailCommand { WordDetailId = id });
 
             return NoContent();
         }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using AutoMapper;
+﻿using AutoMapper;
 using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.Model;
@@ -11,16 +10,18 @@ using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using paramore.brighter.commandprocessor;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Controllers
 {
-    public class WhenGettingWordDetailsByWord : WordDetailControllerTestContext
+    public class WhenGettingMeaningsForAWord : MeaningControllerTestContext
     {
-        public WhenGettingWordDetailsByWord()
+        public WhenGettingMeaningsForAWord()
         {
-            FakeQueryProcessor.SetupResultFor<WordDetailsByWordQuery, IEnumerable<WordDetail>>(new List<WordDetail> { new WordDetail() });
-            Result = Controller.GetForWord(9).Result;
+            FakeQueryProcessor.SetupResultFor<WordMeaningByWordQuery, IEnumerable<Meaning>>(new List<Meaning>());
+            Result = Controller.GetMeaningForWord(23).Result;
         }
 
         [Fact]
@@ -30,19 +31,20 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
 
         [Fact]
-        public void ShouldReturnListOfWordDetails()
+        public void ShouldReturnListOfMeaning()
         {
             var result = Result as ObjectResult;
-            Assert.IsType<List<WordDetailView>>(result.Value);
+
+            Assert.IsType<List<MeaningView>>(result.Value);
         }
     }
 
-    public class WhenGettingWordDetailsByWordThatDoesNotExist : WordDetailControllerTestContext
+    public class WhenGettingMeaningByWordDetailThatDoesNotExist : MeaningControllerTestContext
     {
-        public WhenGettingWordDetailsByWordThatDoesNotExist()
+        public WhenGettingMeaningByWordDetailThatDoesNotExist()
         {
-            FakeQueryProcessor.SetupResultFor<WordDetailsByWordQuery, IEnumerable<WordDetail>>(new List<WordDetail>());
-            Result = Controller.GetForWord(9).Result;
+            FakeQueryProcessor.SetupResultFor<WordMeaningByWordQuery, IEnumerable<Meaning>>(new List<Meaning>());
+            Result = Controller.GetMeaningForWord(9).Result;
         }
 
         [Fact]
@@ -52,13 +54,13 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenGettingWordDetailsByWordThatUserHasNotAllowedAccess : WordDetailControllerTestContext
+    public class WhenGettingMeaningByWordDetailThatUserHasNotAllowedAccess : MeaningControllerTestContext
     {
-        public WhenGettingWordDetailsByWordThatUserHasNotAllowedAccess()
+        public WhenGettingMeaningByWordDetailThatUserHasNotAllowedAccess()
         {
             UserHelper.WithUserId("56");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
-            Result = Controller.GetForWord(9).Result;
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            Result = Controller.GetMeaningForWord(9).Result;
         }
 
         [Fact]
@@ -68,11 +70,12 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenGettingWordDetailsById : WordDetailControllerTestContext
+    public class WhenGettingMeaningByById : MeaningControllerTestContext
     {
-        public WhenGettingWordDetailsById()
+        public WhenGettingMeaningByById()
         {
-            FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
+            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
+            FakeMeaningRenderer.WithView(new MeaningView());
             Result = Controller.Get(23).Result;
         }
 
@@ -83,16 +86,16 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
 
         [Fact]
-        public void ShouldReturnResultOfWordDetail()
+        public void ShouldReturnResultOfMeaning()
         {
             var result = Result as ObjectResult;
-            Assert.IsType<WordDetailView>(result.Value);
+            Assert.IsType<MeaningView>(result.Value);
         }
     }
 
-    public class WhenGettingDetailByIdThatDoesNotExist : WordDetailControllerTestContext
+    public class WhenGettingMeaningByIdThatDoesNotExist : MeaningControllerTestContext
     {
-        public WhenGettingDetailByIdThatDoesNotExist()
+        public WhenGettingMeaningByIdThatDoesNotExist()
         {
             Result = Controller.Get(23).Result;
         }
@@ -104,12 +107,12 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenGettingDetailByIdForPrivateDictionaryOfOtherUsers : WordDetailControllerTestContext
+    public class WhenGettingMeaningByIdForPrivateDictionaryOfOtherUsers : MeaningControllerTestContext
     {
-        public WhenGettingDetailByIdForPrivateDictionaryOfOtherUsers()
+        public WhenGettingMeaningByIdForPrivateDictionaryOfOtherUsers()
         {
             UserHelper.WithUserId("123");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "12" });
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "12" });
             Result = Controller.Get(23).Result;
         }
 
@@ -120,16 +123,18 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenAddingWordDetails : WordDetailControllerTestContext
+    public class WhenAddingMeaning : MeaningControllerTestContext
     {
-        public WhenAddingWordDetails()
+        public WhenAddingMeaning()
         {
             UserHelper.WithUserId("23");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "23" });
             FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
-            FakeWordDetailRenderer.WithLink("self", new System.Uri("http://link.test/123"));
+            FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
+            FakeMeaningRenderer.WithView(new MeaningView());
+            FakeMeaningRenderer.WithLink("self", new Uri("http://link.test/123"));
 
-            Result = Controller.Post(23, new WordDetailView()).Result;
+            Result = Controller.Post(23, new MeaningView()).Result;
         }
 
         [Fact]
@@ -152,17 +157,17 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var response = Result as CreatedResult;
 
             Assert.NotNull(response.Value);
-            Assert.IsType<WordDetailView>(response.Value);
+            Assert.IsType<MeaningView>(response.Value);
         }
     }
 
-    public class WhenAddingWordDetailsToNonExistantWord : WordDetailControllerTestContext
+    public class WhenAddingMeaningToNonExistantWordDetail : MeaningControllerTestContext
     {
-        public WhenAddingWordDetailsToNonExistantWord()
+        public WhenAddingMeaningToNonExistantWordDetail()
         {
             UserHelper.WithUserId("23");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
-            Result = Controller.Post(23, new WordDetailView()).Result;
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            Result = Controller.Post(23, new MeaningView()).Result;
         }
 
         [Fact]
@@ -172,12 +177,12 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenAddingWordDetailsToDictionaryWithNoWriteAccess : WordDetailControllerTestContext
+    public class WhenAddingMeaningToDictionaryWithNoWriteAccess : MeaningControllerTestContext
     {
-        public WhenAddingWordDetailsToDictionaryWithNoWriteAccess()
+        public WhenAddingMeaningToDictionaryWithNoWriteAccess()
         {
             UserHelper.AsReader();
-            Result = Controller.Post(23, new WordDetailView()).Result;
+            Result = Controller.Post(23, new MeaningView()).Result;
         }
 
         [Fact]
@@ -187,28 +192,14 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenAddingWordDetailWithoutObjectInBody : WordDetailControllerTestContext
+    public class WhenUpdatingAMeaning : MeaningControllerTestContext
     {
-        public WhenAddingWordDetailWithoutObjectInBody()
-        {
-            Result = Controller.Post(23, null).Result;
-        }
-
-        [Fact]
-        public void ShouldReturnBadRequest()
-        {
-            Assert.IsType<BadRequestResult>(Result);
-        }
-    }
-
-    public class WhenUpdatingAWordDetail : WordDetailControllerTestContext
-    {
-        public WhenUpdatingAWordDetail()
+        public WhenUpdatingAMeaning()
         {
             UserHelper.WithUserId("33");
             FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
-            FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
-            Result = Controller.Put(32, new WordDetailView()).Result;
+            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
+            Result = Controller.Put(32, new MeaningView()).Result;
         }
 
         [Fact]
@@ -218,13 +209,13 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenUpdatingANonExistingWordDetail : WordDetailControllerTestContext
+    public class WhenUpdatingANonExistingMeaning : MeaningControllerTestContext
     {
-        public WhenUpdatingANonExistingWordDetail()
+        public WhenUpdatingANonExistingMeaning()
         {
             UserHelper.WithUserId("33");
             FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
-            Result = Controller.Put(32, new WordDetailView()).Result;
+            Result = Controller.Put(32, new MeaningView()).Result;
         }
 
         [Fact]
@@ -234,14 +225,14 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenUpdatingAWordDetailInDictionaryUserHasNoWriteAccess : WordDetailControllerTestContext
+    public class WhenUpdatingAMeaningInDictionaryUserHasNoWriteAccess : MeaningControllerTestContext
     {
-        public WhenUpdatingAWordDetailInDictionaryUserHasNoWriteAccess()
+        public WhenUpdatingAMeaningInDictionaryUserHasNoWriteAccess()
         {
             UserHelper.WithUserId("33");
             FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "32" });
-            FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
-            Result = Controller.Put(32, new WordDetailView()).Result;
+            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
+            Result = Controller.Put(32, new MeaningView()).Result;
         }
 
         [Fact]
@@ -251,13 +242,13 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenDeleteingAWordDetail : WordDetailControllerTestContext
+    public class WhenDeleteingAMeaning : MeaningControllerTestContext
     {
-        public WhenDeleteingAWordDetail()
+        public WhenDeleteingAMeaning()
         {
             UserHelper.WithUserId("33");
             FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
-            FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
+            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
             Result = Controller.Delete(34).Result;
         }
 
@@ -268,9 +259,9 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenDeleteingNonExisitngWordDetail : WordDetailControllerTestContext
+    public class WhenDeleteingNonExisitngMeaning : MeaningControllerTestContext
     {
-        public WhenDeleteingNonExisitngWordDetail()
+        public WhenDeleteingNonExisitngMeaning()
         {
             UserHelper.WithUserId("33");
             FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
@@ -284,13 +275,13 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenDeleteingAWordDetailFromDictionaryWithNoWriteAccess : WordDetailControllerTestContext
+    public class WhenDeleteingAMeaningFromDictionaryWithNoWriteAccess : MeaningControllerTestContext
     {
-        public WhenDeleteingAWordDetailFromDictionaryWithNoWriteAccess()
+        public WhenDeleteingAMeaningFromDictionaryWithNoWriteAccess()
         {
             UserHelper.WithUserId("33");
             FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "32" });
-            FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
+            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
             Result = Controller.Delete(34).Result;
         }
 
@@ -301,24 +292,24 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public abstract class WordDetailControllerTestContext
+    public abstract class MeaningControllerTestContext
     {
-        protected readonly WordDetailController Controller;
+        protected readonly MeaningController Controller;
         protected readonly Mock<IAmACommandProcessor> MockCommandProcessor;
-        protected readonly FakeWordDetailRenderer FakeWordDetailRenderer;
+        protected readonly FakeMeaningRenderer FakeMeaningRenderer;
         protected readonly FakeQueryProcessor FakeQueryProcessor;
         protected readonly FakeUserHelper UserHelper;
         protected IActionResult Result;
 
-        protected WordDetailControllerTestContext()
+        protected MeaningControllerTestContext()
         {
             Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
 
             MockCommandProcessor = new Mock<IAmACommandProcessor>();
-            FakeWordDetailRenderer = new FakeWordDetailRenderer();
+            FakeMeaningRenderer = new FakeMeaningRenderer();
             FakeQueryProcessor = new FakeQueryProcessor();
             UserHelper = new FakeUserHelper();
-            Controller = new WordDetailController(MockCommandProcessor.Object, FakeQueryProcessor, UserHelper, FakeWordDetailRenderer);
+            Controller = new MeaningController(MockCommandProcessor.Object, FakeQueryProcessor, UserHelper, FakeMeaningRenderer);
         }
     }
 }

@@ -4,11 +4,11 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
     public class WordQueryHandlerTests : DatabaseTestFixture
     {
-        private WordQueryHandler _handler;
+        private GetWordsPagesQueryHandler _handler;
 
         public WordQueryHandlerTests()
         {
-            _handler = new WordQueryHandler(_database);
+            _handler = new GetWordsPagesQueryHandler(_database);
         }
 
         // TODO : Add tests here

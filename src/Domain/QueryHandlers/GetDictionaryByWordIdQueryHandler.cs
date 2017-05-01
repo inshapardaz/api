@@ -1,11 +1,13 @@
-﻿using System.Linq;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Darker;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetDictionaryByWordIdQueryHandler : QueryHandler<GetDictionaryByWordIdQuery, Dictionary>
+    public class GetDictionaryByWordIdQueryHandler : AsyncQueryHandler<GetDictionaryByWordIdQuery, Dictionary>
     {
         private readonly IDatabaseContext _database;
 
@@ -13,10 +15,11 @@ namespace Inshapardaz.Domain.QueryHandlers
         {
             _database = database;
         }
-
-        public override Dictionary Execute(GetDictionaryByWordIdQuery request)
+        
+        public async override Task<Dictionary> ExecuteAsync(GetDictionaryByWordIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _database.Words.SingleOrDefault(wd => wd.Id == request.WordId)?.Dictionary;
+            var word = await _database.Words.SingleOrDefaultAsync(wd => wd.Id == query.WordId);
+            return word?.Dictionary;
         }
     }
 }

@@ -19,6 +19,9 @@
         rel : 'translation'
     },{
         href : '...',
+        rel : 'relationships'
+    },{
+        href : '...',
         rel : 'update'
     },{
         href : '...',

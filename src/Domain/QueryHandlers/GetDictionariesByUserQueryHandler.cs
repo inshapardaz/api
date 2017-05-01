@@ -5,10 +5,14 @@ using Inshapardaz.Domain.Queries;
 
 using Darker;
 using Inshapardaz.Domain.Model;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetDictionariesByUserQueryHandler : QueryHandler<GetDictionariesByUserQuery, IEnumerable<Model.Dictionary>>
+    public class GetDictionariesByUserQueryHandler : AsyncQueryHandler<GetDictionariesByUserQuery, IEnumerable<Model.Dictionary>>
     {
         private readonly IDatabaseContext _database;
 
@@ -17,19 +21,19 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override IEnumerable<Model.Dictionary> Execute(GetDictionariesByUserQuery request)
+        public async override Task<IEnumerable<Dictionary>> ExecuteAsync(GetDictionariesByUserQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
             IQueryable<Dictionary> result;
-            if (!string.IsNullOrWhiteSpace(request.UserId))
+            if (!string.IsNullOrWhiteSpace(query.UserId))
             {
-                result = _database.Dictionaries.Where(d => d.IsPublic || (d.UserId == request.UserId));
+                result = _database.Dictionaries.Where(d => d.IsPublic || (d.UserId == query.UserId));
             }
             else
             {
                 result = _database.Dictionaries.Where(d => d.IsPublic);
             }
 
-            return result.ToList();
+            return await result.ToListAsync();
         }
     }
 }

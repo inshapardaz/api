@@ -19,8 +19,6 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingWordDetailsByWord()
         {
-            UserHelper.WithUserId("56");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "56" });
             FakeQueryProcessor.SetupResultFor<WordDetailsByWordQuery, IEnumerable<WordDetail>>(new List<WordDetail>{ new WordDetail() });
             Result = Controller.GetForWord(9).Result;
         }
@@ -43,15 +41,14 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingWordDetailsByWordThatDoesNotExist()
         {
-            UserHelper.WithUserId("56");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "56" });
+            FakeQueryProcessor.SetupResultFor<WordDetailsByWordQuery, IEnumerable<WordDetail>>(new List<WordDetail>());
             Result = Controller.GetForWord(9).Result;
         }
 
         [Fact]
         public void ShouldReturnNotFoundResult()
         {
-            Assert.IsType<NotFoundResult>(Result);
+            Assert.IsType<OkObjectResult>(Result);
         }
     }
 

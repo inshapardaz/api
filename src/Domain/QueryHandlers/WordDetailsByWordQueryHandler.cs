@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Darker;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
@@ -7,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordDetailsByWordQueryHandler : QueryHandler<WordDetailsByWordQuery, IEnumerable<WordDetail>>
+    public class WordDetailsByWordQueryHandler : AsyncQueryHandler<WordDetailsByWordQuery, IEnumerable<WordDetail>>
     {
         private readonly IDatabaseContext _database;
 
@@ -15,28 +18,15 @@ namespace Inshapardaz.Domain.QueryHandlers
         {
             _database = database;
         }
-
-        public override IEnumerable<WordDetail> Execute(WordDetailsByWordQuery query)
+        
+        public async override Task<IEnumerable<WordDetail>> ExecuteAsync(WordDetailsByWordQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
             IEnumerable<WordDetail> result;
 
-            if (query.IncludeDetails)
-            {
-                result = _database.WordDetails
-                    .Include(w => w.Meanings)
-                    .Include(w => w.Translations)
-                    .Where(w => w.WordInstanceId == query.WordId)
-                    .OrderBy(x => x.Id)
-                    .ToList();
-            }
-            else
-            {
-                result = _database.WordDetails
-                    .Where(w => w.WordInstanceId == query.WordId)
-                    .OrderBy(x => x.Id)
-                    .ToList();
-            }
-            
+            result = await _database.WordDetails
+                              .Where(w => w.WordInstanceId == query.WordId)
+                              .OrderBy(x => x.Id)
+                              .ToListAsync();
             return result;
         }
     }

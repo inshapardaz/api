@@ -40,7 +40,6 @@ namespace Inshapardaz.Api.Configuration
                .ForMember(s => s.Language, o => o.MapFrom(d => d.Language))
                .ForMember(s => s.LanguageId, o => o.MapFrom(d => (int)d.Language))
                .ForMember(s => s.WordId, o => o.MapFrom(d => d.WordInstanceId))
-               .ForMember(s => s.Meanings, o => o.Ignore())
                .ForMember(s => s.Links, o => o.Ignore())
                .ReverseMap()
                     .ForMember(s => s.Attributes, o => o.MapFrom(d => (GrammaticalType)d.AttributeValue))

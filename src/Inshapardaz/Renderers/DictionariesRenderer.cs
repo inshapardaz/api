@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Renderers
         {
             var links = new List<LinkView>
                             {
-                                LinkRenderer.Render("DictionaryIndex", "self", null)
+                                LinkRenderer.Render("GetDictionaries", "self", null)
                             };
 
             if (_userHelper.IsContributor)

@@ -39,7 +39,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public void WhenCalledShouldReturnTheDictionary()
         {
-            var result = _handler.Execute(new Queries.GetDictionaryByWordDetailIdQuery { WordDetailId = 2 });
+            var result = _handler.ExecuteAsync(new Queries.GetDictionaryByWordDetailIdQuery { WordDetailId = 2 }).Result;
 
             Assert.NotNull(result);
         }
@@ -47,7 +47,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public void WhenCalledForNonExsistantId()
         {
-            var result = _handler.Execute(new Queries.GetDictionaryByWordDetailIdQuery { WordDetailId = 3 });
+            var result = _handler.ExecuteAsync(new Queries.GetDictionaryByWordDetailIdQuery { WordDetailId = 3 }).Result;
 
             Assert.Null(result);
         }

@@ -42,7 +42,8 @@ namespace Inshapardaz.Api.Renderers
                                    LinkRenderer.Render("GetWordDetailsById", "self", new { id = source.Id }),
                                    LinkRenderer.Render("GetWordById", "word", new { id = source.Id }),
                                    LinkRenderer.Render("GetWordTranslationsById", "translations", new { id = source.Id }),
-                                   LinkRenderer.Render("GetWordMeaningById", "meanings", new { id = source.Id })
+                                   LinkRenderer.Render("GetWordMeaningById", "meanings", new { id = source.Id }),
+                                   LinkRenderer.Render("GetWordRelationsById", "relationships", new { id = source.Id })
                                };
 
             if (_userHelper.IsContributor)
@@ -54,8 +55,6 @@ namespace Inshapardaz.Api.Renderers
             }
 
             result.Links = links;
-            result.Meanings = _meaningRenderer.Render(source);
-            result.Translations = source.Translations.Select(x => _translationRenderer.Render(x));
             return result;
         }
     }

@@ -1,28 +1,32 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Darker;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordQueryHandler : QueryHandler<WordQuery, Page<Word>>
+    public class GetWordsPagesQueryHandler : AsyncQueryHandler<WordQuery, Page<Word>>
     {
         private readonly IDatabaseContext _database;
 
-        public WordQueryHandler(IDatabaseContext database)
+        public GetWordsPagesQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }
-
-        public override Page<Word> Execute(WordQuery query)
+        
+        public async override Task<Page<Word>> ExecuteAsync(WordQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
             var words = _database.Words;
             var count = words.Count();
 
-            var data = words.OrderBy(x => x.Title)
+            var data = await words.OrderBy(x => x.Title)
                             .Paginate(query.PageNumber, query.PageSize)
-                            .ToList();
+                            .ToListAsync();
 
             return new Page<Word>
             {

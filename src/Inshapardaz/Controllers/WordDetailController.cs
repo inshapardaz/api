@@ -37,24 +37,21 @@ namespace Inshapardaz.Api.Controllers
         [Route("/api/words/{id}/details", Name = "GetWordDetailsById")]
         public async Task<IActionResult> GetForWord(int id)
         {
-            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery {WordId = id});
-            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
+            if (!string.IsNullOrWhiteSpace(_userHelper.GetUserId()))
             {
-                return Unauthorized();
+                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = id });
+                if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
+                {
+                    return Unauthorized();
+                }
             }
 
             var query = new WordDetailsByWordQuery
             {
-                WordId = id,
-                IncludeDetails = true
+                WordId = id
             };
 
             var wordDetailViews = await _queryProcessor.ExecuteAsync(query);
-            if (wordDetailViews == null || !wordDetailViews.Any())
-            {
-                return NotFound();
-            }
-
             return Ok(wordDetailViews.Select(w => _wordDetailRenderer.Render(w)).ToList());
         }
 

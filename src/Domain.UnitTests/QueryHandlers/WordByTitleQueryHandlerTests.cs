@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public void WhenCallingForWordFromPublicDictionary_ShouldReturnWord()
         {
-            var word = _handler.Execute(new WordByTitleQuery { Title = "word2", UserId = "1" });
+            var word = _handler.ExecuteAsync(new WordByTitleQuery { Title = "word2", UserId = "1" }).Result;
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 23);
@@ -32,7 +32,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public void WhenCallingForWordFromPrivateDictionary_ShouldReturnWord()
         {
-            var word = _handler.Execute(new WordByTitleQuery { Title = "word1", UserId = "1" });
+            var word = _handler.ExecuteAsync(new WordByTitleQuery { Title = "word1", UserId = "1" }).Result;
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 22);
@@ -41,7 +41,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public void WhenCallingForWordFromPublicDictionaryAsAnonymousUser_ShouldReturnWord()
         {
-            var word = _handler.Execute(new WordByTitleQuery { Title = "word2" });
+            var word = _handler.ExecuteAsync(new WordByTitleQuery { Title = "word2" }).Result;
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 23);
@@ -50,7 +50,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public void WhenCallingForWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
         {
-            var word = _handler.Execute(new WordByTitleQuery { Title = "word 1" });
+            var word = _handler.ExecuteAsync(new WordByTitleQuery { Title = "word 1" }).Result;
 
             Assert.Null(word);
         }
@@ -58,7 +58,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public void WhenCallingForInvalidWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
         {
-            var word = _handler.Execute(new WordByTitleQuery { Title = "somethingNew" });
+            var word = _handler.ExecuteAsync(new WordByTitleQuery { Title = "somethingNew" }).Result;
 
             Assert.Null(word);
         }

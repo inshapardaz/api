@@ -117,7 +117,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<WordIndexContainingTitleQueryHandler>();
             services.AddTransient<WordDetailsByWordQueryHandler>();
             services.AddTransient<WordDetailByIdQueryHandler>();
-            services.AddTransient<WordQueryHandler>();
+            services.AddTransient<GetWordsPagesQueryHandler>();
             services.AddTransient<WordByTitleQueryHandler>();
             services.AddTransient<WordByIdQueryHandler>();
             services.AddTransient<TranslationsByWordIdQueryHandler>();
@@ -125,6 +125,8 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<TranslationByIdQueryHandler>();
             services.AddTransient<RelationshipByWordIdQueryHandler>();
             services.AddTransient<RelationshipByIdQueryHandler>();
+            services.AddTransient<GetDictionaryByWordIdQueryHandler>();
+            services.AddTransient<GetDictionaryByWordIdQuery>();
 
             services.ConfigureCommandProcessor();
             services.ConfigureDarker();

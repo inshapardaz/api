@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> Get(int id, int pageNumber = 1, int pageSize = 10)
         {
             var userId = _userHelper.GetUserId();
-            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery {DictionaryId = id});
+            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery {DictionaryId = id });
 
             if (dictionary == null)
             {

@@ -26,9 +26,5 @@ namespace Inshapardaz.Api.Model
         public int WordId { get; set; }
 
         public IEnumerable<LinkView> Links { get; set; }
-       
-        public IEnumerable<MeaningContextView> Meanings { get; set; }
-
-        public IEnumerable<TranslationView> Translations { get; set; }
     }
 }

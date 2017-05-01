@@ -7,7 +7,5 @@ namespace Inshapardaz.Domain.Queries
     public class  WordDetailsByWordQuery : IQuery<IEnumerable<WordDetail>>
     {
         public int WordId { get; set; }
-
-        public bool IncludeDetails { get; set; }
     }
 }

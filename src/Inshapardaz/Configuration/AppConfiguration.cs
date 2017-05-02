@@ -127,6 +127,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<GetDictionaryByWordIdQueryHandler>();
             services.AddTransient<GetDictionaryByWordIdQuery>();
             services.AddTransient<GetDictionaryByMeaningIdQueryHandler>();
+            services.AddTransient<GetDictionaryByTranslationIdQueryHandler>();
 
             services.ConfigureCommandProcessor();
             services.ConfigureDarker();

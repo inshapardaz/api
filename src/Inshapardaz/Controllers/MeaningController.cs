@@ -120,7 +120,7 @@ namespace Inshapardaz.Api.Controllers
                 return BadRequest();
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByMeaningIdQuery { MeaningId = id });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
@@ -141,7 +141,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpDelete("api/meaning/{id}", Name = "DeleteMeaning")]
         public async Task<IActionResult> Delete(int id)
         {
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByMeaningIdQuery { MeaningId = id });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();

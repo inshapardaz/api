@@ -3,6 +3,7 @@ using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Model;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
@@ -14,6 +15,10 @@ namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
         public TranslationView Render(Translation source)
         {
             _view.Links = _links;
+            if (_view.Links == null || !_view.Links.Any())
+            {
+                _view.Links = new List<LinkView> { new LinkView { Rel = "self", Href = new Uri("http://link.test/123") } };
+            }
             return _view;
         }
 

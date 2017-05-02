@@ -2,10 +2,14 @@
 using Darker;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.Model;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class TranslationByIdQueryHandler : QueryHandler<TranslationByIdQuery, Translation>
+    public class TranslationByIdQueryHandler : AsyncQueryHandler<TranslationByIdQuery, Translation>
     {
         private readonly IDatabaseContext _database;
 
@@ -14,9 +18,9 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override Translation Execute(TranslationByIdQuery args)
+        public override async Task<Translation> ExecuteAsync(TranslationByIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _database.Translations.SingleOrDefault(t => t.Id == args.Id);
+            return await _database.Translations.SingleOrDefaultAsync(t => t.Id == query.Id);
         }
     }
 }

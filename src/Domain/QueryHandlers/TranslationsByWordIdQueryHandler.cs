@@ -5,10 +5,14 @@ using Darker;
 using Inshapardaz.Domain.Queries;
 using System.Collections.Generic;
 using Inshapardaz.Domain.Model;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class TranslationsByWordIdQueryHandler : QueryHandler<TranslationsByWordIdQuery, IEnumerable<Translation>>
+    public class TranslationsByWordIdQueryHandler : AsyncQueryHandler<TranslationsByWordIdQuery, IEnumerable<Translation>>
     {
         private readonly IDatabaseContext _database;
 
@@ -17,11 +21,11 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override IEnumerable<Translation> Execute(TranslationsByWordIdQuery query)
+        public override async Task<IEnumerable<Translation>> ExecuteAsync(TranslationsByWordIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _database.Translations
+            return await _database.Translations
                     .Where(t => t.WordDetail.WordInstanceId == query.WordId)
-                    .ToList();
+                    .ToListAsync();
         }
     }
 }

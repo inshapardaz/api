@@ -1,12 +1,16 @@
-﻿using System.Linq;
-using Darker;
-using Inshapardaz.Domain.Queries;
-using System.Collections.Generic;
+﻿using Darker;
 using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Queries;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class TranslationsByLanguageQueryHandler : QueryHandler<TranslationsByLanguageQuery, IEnumerable<Translation>>
+    public class TranslationsByLanguageQueryHandler : AsyncQueryHandler<TranslationsByLanguageQuery, IEnumerable<Translation>>
     {
         private readonly IDatabaseContext _database;
 
@@ -15,11 +19,11 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override IEnumerable<Translation> Execute(TranslationsByLanguageQuery query)
+        public override async Task<IEnumerable<Translation>> ExecuteAsync(TranslationsByLanguageQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _database.Translations
+            return await _database.Translations
                     .Where(t => t.WordDetail.WordInstanceId == query.WordId && t.Language == query.Language)
-                    .ToList();
+                    .ToListAsync();
         }
     }
 }

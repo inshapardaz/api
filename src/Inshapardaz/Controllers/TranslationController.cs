@@ -9,24 +9,61 @@ using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 using paramore.brighter.commandprocessor;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Controllers
 {
-
     [Route("api/[controller]")]
     public class TranslationController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
+        private readonly IUserHelper _userHelper;
         private readonly IRenderResponseFromObject<Translation, TranslationView> _renderer;
 
         public TranslationController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
+            IUserHelper userHelper,
             IRenderResponseFromObject<Translation, TranslationView> renderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _renderer = renderer;
+            _userHelper = userHelper;
+        }
+
+        [Route("/api/word/{id}/Translations", Name = "GetWordTranslationsById")]
+        public async Task<IActionResult> GetTranslationForWord(int id)
+        {
+            var user = _userHelper.GetUserId();
+            if (!string.IsNullOrWhiteSpace(user))
+            {
+                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+                if (dictionary != null && dictionary.UserId != user)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            var translations = await _queryProcessor.ExecuteAsync(new TranslationsByWordIdQuery { WordId = id });
+            return Ok(translations.Select(t => _renderer.Render(t)).ToList());
+        }
+
+        [Route("/api/word/{id}/Translation/{language}")]
+        public async Task<IActionResult> GetTranslationForWord(int id, Languages language)
+        {
+            var user = _userHelper.GetUserId();
+            if (!string.IsNullOrWhiteSpace(user))
+            {
+                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+                if (dictionary != null && dictionary.UserId != user)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            var translations = await _queryProcessor.ExecuteAsync(new TranslationsByLanguageQuery { WordId = id, Language = language });
+            return Ok(translations.Select(t => _renderer.Render(t)).ToList());
         }
 
         [HttpGet("{id}", Name = "GetTranslationById")]
@@ -42,21 +79,7 @@ namespace Inshapardaz.Api.Controllers
             return new ObjectResult(_renderer.Render(response));
         }
 
-        [Route("/api/word/{id}/Translations", Name = "GetWordTranslationsById")]
-        public IEnumerable<TranslationView> GetTranslationForWord(int id)
-        {
-            return _queryProcessor.Execute(new TranslationsByWordIdQuery { WordId = id })
-                                  .Select(t => _renderer.Render(t));
-        }
-
-        [Route("/api/word/{id}/Translation/{language}")]
-        public IEnumerable<TranslationView> GetTranslationForWord(int id, Languages language)
-        {
-            return _queryProcessor.Execute(new TranslationsByLanguageQuery { WordId = id, Language = language})
-                                  .Select(t => _renderer.Render(t));
-        }
-
-       [HttpPost("/api/word/{id}/Detail/{detailId}/Translations", Name = "AddTranslation")]
+        [HttpPost("/api/word/{id}/Detail/{detailId}/Translations", Name = "AddTranslation")]
         public IActionResult Post(int id, int detailId, [FromBody]TranslationView translation)
         {
             if (translation == null)
@@ -90,7 +113,7 @@ namespace Inshapardaz.Api.Controllers
             }
 
             _commandProcessor.Send(new UpdateWordTranslationCommand { Translation = translation.Map<TranslationView, Translation>() });
-            
+
             return Ok();
         }
 
@@ -99,7 +122,7 @@ namespace Inshapardaz.Api.Controllers
         {
             var response = _queryProcessor.Execute(new TranslationByIdQuery { Id = id });
 
-            if (response == null )
+            if (response == null)
             {
                 return NotFound();
             }

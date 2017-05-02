@@ -19,7 +19,7 @@ namespace Inshapardaz.Api.Model
 
         public int LanguageId { get; set; }
 
-        public IEnumerable<LinkView> Links { get; internal set; }
+        public IEnumerable<LinkView> Links { get; set; }
 
         public string Value { get; set; }
 

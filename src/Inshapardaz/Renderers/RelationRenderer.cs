@@ -20,20 +20,21 @@ namespace Inshapardaz.Api.Renderers
         public RelationshipView Render(WordRelation source)
         {
             var result = source.Map<WordRelation, RelationshipView>();
-            var links = new  List<LinkView>
+            var links = new List<LinkView>
                                {
                                    LinkRenderer.Render("GetWordRelationsById", "self", new { id = source.Id }),
-                                   LinkRenderer.Render("GetWordById", "word", new { id = source.RelatedWordId })
+                                   LinkRenderer.Render("GetWordById", "source-word", new { id = source.SourceWordId }),
+                                   LinkRenderer.Render("GetWordById", "related-word", new { id = source.RelatedWordId })
                                };
 
             if (_userHelper.IsContributor)
             {
-                links.Add(LinkRenderer.Render("UpdateRelation", "update", new { id = source.RelatedWordId, relatedWith = source.RelatedWordId }));    
-                links.Add(LinkRenderer.Render("DeleteRelation", "delete", new { id = source.RelatedWordId, relatedWith = source.RelatedWordId }));    
+                links.Add(LinkRenderer.Render("UpdateRelation", "update", new { id = source.SourceWordId, relatedWith = source.RelatedWordId }));
+                links.Add(LinkRenderer.Render("DeleteRelation", "delete", new { id = source.SourceWordId, relatedWith = source.RelatedWordId }));
             }
 
             result.Links = links;
-            result.RelationType = _enumRenderer.Render<RelationType>(source.RelationType);
+            result.RelationType = _enumRenderer.Render(source.RelationType);
 
             return result;
         }

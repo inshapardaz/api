@@ -2,7 +2,7 @@
 
 ## GET 
 
-Allows the consumer to retrueve list of word that can be used instead of the source word, for same meaning or opposite.
+Allows the consumer to retrieve list of word that can be used instead of the source word, for same meaning or opposite.
 
 ### Uri
 ` /api/thesaurus/{word}`

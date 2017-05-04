@@ -32,7 +32,7 @@ namespace Inshapardaz.Domain.Model
         ///     The compund.
         /// </summary>
         [Description("مرکب")]
-        Compund,
+        Compound,
 
         /// <summary>
         ///     The variation.

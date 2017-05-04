@@ -95,10 +95,10 @@ Content-Type: application/json
 
 ### Error Responses ###
 
-| **Case**                                              | **Response Code** |      **Error Code**           |
-|-------------------------------------------------------|-------------------|-------------------------------|
-| User not allowed to get dictioanry                 | `403 Forbidden`   | Unauthorised                  |
-| No matching dictionary found                          | `404 Not Found`   | Dictionary Not Found          |
+| **Case**                                              | **Response Code** |
+|-------------------------------------------------------|-------------------|
+| User not allowed to get dictionary                    | `403 Forbidden`   |
+| No matching dictionary found                          | `404 Not Found`   |
 
 ### Create new dictionary
 
@@ -156,19 +156,19 @@ Location : http://....
 }
 ```
 
-- If a dictioanry is created successfully, a object representing newly created dictionary is returned in response. Please review the [Dictionary Resource](../resources/dictionary.md) for detials on object.
+- If a dictionary is created successfully, a object representing newly created dictionary is returned in response. Please review the [Dictionary Resource](../resources/dictionary.md) for details on object.
 
 - By default all dictionaries are public unless specified.
 
 ### Error Responses ###
 
-| **Case**                                              | **Response Code** |      **Error Code**           |
-|-------------------------------------------------------|-------------------|-------------------------------|
-| User not allowed to create dictioanry                 | `403 Forbidden`   | Unauthorised                  |
-| No name specified                                     | `400 Bad Request` | Invalid name                  |
-| Name not specified                                    | `400 Bad Request` | Name required                 |
-| Invalid language                                      | `400 Bad Request` | Invalid Language              |
-| Posted data not correct format                        | `400 Bad Request` | Invlaid data                  |
+| **Case**                                              | **Response Code** |
+|-------------------------------------------------------|-------------------|
+| User not allowed to create dictionary                 | `403 Forbidden`   |
+| No name specified                                     | `400 Bad Request` |
+| Name not specified                                    | `400 Bad Request` |
+| Invalid language                                      | `400 Bad Request` |
+| Posted data not correct format                        | `400 Bad Request` |
 
 
 ### Update dictionary data
@@ -177,7 +177,7 @@ Update metadata for [dictionary resource](../resources/dictionary.md)
 
 #### Uri
 
-`/api/dictionaries/{dictionaryId}`
+`/api/dictionaries/{id}`
 
 #### Request
 
@@ -230,13 +230,13 @@ Content-Type: application/json
 
 ### Error Responses
 
-| **Case**                                              | **Response Code** |      **Error Code**           |
-|-------------------------------------------------------|-------------------|-------------------------------|
-| User not allowed to update dictioanry                 | `403 Forbidden`   | Unauthorised                  |
-| No matching dictionary found                          | `404 Not Found`   | Dictionary Not Found          |
-| Title missing                                         | `400 Bad Request` | Title required                |
-| Language id not valid                                 | `400 Bad Request` | Invlaid language              |
-| Posted data not correct format                        | `400 Bad Request` | Invlaid data                  |
+| **Case**                                              | **Response Code** |
+|-------------------------------------------------------|-------------------|
+| User not allowed to update dictionary                 | `403 Forbidden`   |
+| No matching dictionary found                          | `404 Not Found`   |
+| Title missing                                         | `400 Bad Request` |
+| Language id not valid                                 | `400 Bad Request` |
+| Posted data not correct format                        | `400 Bad Request` |
 
 ### Delete dictionary
 
@@ -267,7 +267,7 @@ Content-Type: application/json
 
 ### Error Responses ###
 
-| **Case**                                              | **Response Code** |      **Error Code**           |
-|-------------------------------------------------------|-------------------|-------------------------------|
-| User not allowed to delete dictioanry                 | `403 Forbidden`   | Unauthorised                  |
-| No matching dictionary found                          | `404 Not Found`   | Dictionary Not Found          |
+| **Case**                                              | **Response Code** |
+|-------------------------------------------------------|-------------------|
+| User not allowed to delete dictionary                 | `403 Forbidden`   |
+| No matching dictionary found                          | `404 Not Found`   |

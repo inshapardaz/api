@@ -15,6 +15,10 @@ namespace Inshapardaz.Api.Model
     {
         public int Id { get; set; }
 
+        public int SourceWordId { get; set; }
+
+        public string SourceWord { get; set; }
+
         public int RelatedWordId { get; set; }
 
         public string RelatedWord { get; set; }

@@ -111,7 +111,7 @@ namespace Inshapardaz.Api.Controllers
             await _commandProcessor.SendAsync(addWordDetailCommand);
 
             var responseView = _wordDetailRenderer.Render(addWordDetailCommand.WordDetail);
-            return new CreatedResult(responseView.Links.Single(x => x.Rel == "self").Href, responseView);
+            return Created(responseView.Links.Single(x => x.Rel == "self").Href, responseView);
         }
 
         [HttpPut("/api/details/{id}", Name = "UpdateWordDetail")]

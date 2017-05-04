@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.UnitTests.Fakes
         {
             return ExecutedQueries.Where(q => q is T).Cast<T>();
         }
-        
+
         public void SetupResultFor<TRequest, TResponse>(Predicate<TRequest> predicate, TResponse result)
             where TRequest : IQuery
         {

@@ -1,11 +1,14 @@
-﻿using System.Linq;
-using Darker;
-using Inshapardaz.Domain.Queries;
+﻿using Darker;
 using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Queries;
+using System;
+using Microsoft.EntityFrameworkCore;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class RelationshipByIdQueryHandler : QueryHandler<RelationshipByIdQuery, WordRelation>
+    public class RelationshipByIdQueryHandler : AsyncQueryHandler<RelationshipByIdQuery, WordRelation>
     {
         private readonly IDatabaseContext _database;
 
@@ -14,9 +17,12 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override WordRelation Execute(RelationshipByIdQuery query)
+        public override async Task<WordRelation> ExecuteAsync(RelationshipByIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _database.WordRelations.SingleOrDefault(t => t.Id == query.Id);
+            return await _database.WordRelations
+                                  .Include(r => r.SourceWord)
+                                  .Include(r => r.RelatedWord)
+                                  .SingleOrDefaultAsync(t => t.Id == query.Id);
         }
     }
 }

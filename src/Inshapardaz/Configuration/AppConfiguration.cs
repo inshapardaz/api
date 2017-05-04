@@ -72,7 +72,6 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRenderResponseFromObject<WordDetail, IEnumerable<MeaningContextView>>, WordMeaningRenderer>();
             services.AddTransient<IRenderResponseFromObject<Meaning, MeaningView>, MeaningRenderer>();
             services.AddTransient<IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>>, WordIndexPageRenderer>();
-            services.AddTransient<IRenderResponseFromObject<IEnumerable<WordRelation>, RelationshipsView>, RelationsRenderer>();
 
             return services;
         }

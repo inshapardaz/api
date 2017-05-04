@@ -31,3 +31,29 @@ Content-Type: application/json
         // Other values here
     ]
 ```
+
+## Relationship Types
+
+| Relationship   |
+|----------------|
+| Synonym        |
+| Acronym        |
+| Compound       |
+| Variation      |
+| Singular       |
+| Plural         | 
+| JamaGhairNadai |
+| WahidGhairNadai|
+| JamaIstasnai   |
+| OppositeGender |
+| FormOfFeal     |
+| Halat          |
+| HalatMafooli   |
+| HalatIzafi     |
+| HalatTafseeli  |
+| JamaNadai      |
+| HalatFaili     |
+| HalatTakhsis   |
+| WahidNadai     | 
+| Takabuli       | 
+| Usage          |

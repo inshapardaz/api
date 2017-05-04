@@ -3,7 +3,7 @@ using Inshapardaz.Api.Model;
 using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.Configuration
-{ 
+{
     public class MappingProfile : Profile
     {
         public MappingProfile()
@@ -71,14 +71,16 @@ namespace Inshapardaz.Api.Configuration
 
             CreateMap<WordRelation, RelationshipView>()
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
+                .ForMember(s => s.SourceWordId, o => o.MapFrom(d => d.SourceWordId))
                 .ForMember(s => s.RelatedWordId, o => o.MapFrom(d => d.RelatedWordId))
+                .ForMember(s => s.SourceWord, o => o.MapFrom(d => d.SourceWord.Title))
                 .ForMember(s => s.RelationType, o => o.MapFrom(d => d.RelationType))
                 .ForMember(s => s.RelationTypeId, o => o.MapFrom(d => (int)d.RelationType))
                 .ForMember(s => s.RelatedWord, o => o.MapFrom(d => d.RelatedWord.Title))
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ReverseMap()
                     .ForMember(s => s.RelationType, o => o.MapFrom(d => (RelationType)d.RelationTypeId))
-                    .ForMember(s => s.SourceWordId, o => o.Ignore())
+                    .ForMember(s => s.SourceWordId, o => o.MapFrom(d => d.SourceWordId))
                     .ForMember(s => s.RelatedWord, o => o.Ignore())
                     .ForMember(s => s.SourceWord, o => o.Ignore());
         }

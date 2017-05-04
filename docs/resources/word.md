@@ -68,7 +68,7 @@ Link to get word details. See [Word Details](../dictionary/wordDetail.md) resour
 
 #### relations
 
-Link to get words relationships
+Link to get words relationships. See [Relations](../dictionary/relationships.md) for further details. 
 
 #### update
 

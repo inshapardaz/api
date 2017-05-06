@@ -13,7 +13,7 @@ namespace Inshapardaz.Api.Model
 {
     public class WordDetailView
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string Attributes { get; set; }
 
@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Model
 
         public int LanguageId { get; set; }
 
-        public int WordId { get; set; }
+        public long WordId { get; set; }
 
         public IEnumerable<LinkView> Links { get; set; }
     }

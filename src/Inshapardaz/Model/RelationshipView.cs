@@ -13,13 +13,13 @@ namespace Inshapardaz.Api.Model
 {
     public class RelationshipView
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
-        public int SourceWordId { get; set; }
+        public long SourceWordId { get; set; }
 
         public string SourceWord { get; set; }
 
-        public int RelatedWordId { get; set; }
+        public long RelatedWordId { get; set; }
 
         public string RelatedWord { get; set; }
 

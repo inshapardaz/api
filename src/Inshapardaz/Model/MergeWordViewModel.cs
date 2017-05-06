@@ -2,7 +2,7 @@
 {
     public class MergeWordViewModel
     {
-        public int MergedWordId { get; set; }
+        public long MergedWordId { get; set; }
 
         public bool DeleteMergedWord { get; set; }
     }

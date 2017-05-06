@@ -13,7 +13,7 @@ namespace Inshapardaz.Api.Model
 {
     public class TranslationView
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string Language { get; set; }
 
@@ -23,6 +23,6 @@ namespace Inshapardaz.Api.Model
 
         public string Value { get; set; }
 
-        public int WordId { get; set; }
+        public long WordId { get; set; }
     }
 }

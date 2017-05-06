@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Model
     {
         public string Description { get; set; }
 
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public IEnumerable<LinkView> Links { get; set; }
 

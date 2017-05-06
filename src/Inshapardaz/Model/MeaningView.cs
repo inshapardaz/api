@@ -13,7 +13,7 @@ namespace Inshapardaz.Api.Model
 {
     public class MeaningView
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string Context { get; set; }
 
@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Model
 
         public string Example { get; set; }
 
-        public int WordDetailId { get; set; }
+        public long WordDetailId { get; set; }
 
         public IEnumerable<LinkView> Links { get; set; }
     }

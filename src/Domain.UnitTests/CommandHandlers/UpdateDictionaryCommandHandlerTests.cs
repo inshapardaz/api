@@ -1,30 +1,48 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Model;
+using Microsoft.EntityFrameworkCore;
+
 using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
-    public class UpdateDictionaryCommandHandlerTests : DatabaseTestFixture
+    public class UpdateDictionaryCommandHandlerTests
     {
         private UpdateDictionaryCommandHandler _handler;
+        private DatabaseContext _database;
 
         public UpdateDictionaryCommandHandlerTests()
         {
-            _handler = new UpdateDictionaryCommandHandler(_database);
+            var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
+                               .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                               .Options;
+
+            _database = new DatabaseContext(inMemoryDataContextOptions);
+            _database.Database.EnsureCreated();
+
             _database.Dictionaries.Add(new Dictionary { Id = 1, IsPublic = true, UserId = "1", Language = 1 });
             _database.Dictionaries.Add(new Dictionary { Id = 2, IsPublic = true, UserId = "2", Language = 2 });
             _database.Dictionaries.Add(new Dictionary { Id = 3, IsPublic = false, UserId = "1", Language = 3 });
             _database.Dictionaries.Add(new Dictionary { Id = 4, IsPublic = false, UserId = "2", Language = 4 });
+
             _database.SaveChanges();
+
+            _handler = new UpdateDictionaryCommandHandler(_database);
+        }
+
+        public void Dispose()
+        {
+            _database.Database.EnsureDeleted();
         }
 
         [Fact]
         public void WhenUpdatePrivateDictionary_ShouldUpdateDictionaryFields()
         {
-            _handler.Handle(new UpdateDictionaryCommand { Dictionary = new Dictionary { Id = 3, UserId = "1",  Language = 33, Name = "Some Name", IsPublic = true  } });
+            _handler.Handle(new UpdateDictionaryCommand { Dictionary = new Dictionary { Id = 3, UserId = "1", Language = 33, Name = "Some Name", IsPublic = true } });
 
             var dictionary = _database.Dictionaries.Single(d => d.Id == 3);
 
@@ -33,7 +51,6 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             Assert.Equal(dictionary.Language, 33);
             Assert.Equal(dictionary.UserId, "1");
             Assert.True(dictionary.IsPublic);
-
         }
 
         [Fact]
@@ -47,7 +64,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         [Fact]
         public void WhenRemovedSomeoneElsePrivateDictionary_ShouldNotDelete()
         {
-            Assert.Throws<RecordNotFoundException>(() => 
+            Assert.Throws<RecordNotFoundException>(() =>
                     _handler.Handle(new UpdateDictionaryCommand { Dictionary = new Dictionary { Id = 4, UserId = "1", Language = 44 } }));
         }
 

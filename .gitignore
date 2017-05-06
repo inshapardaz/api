@@ -19,6 +19,7 @@
 .vs
 .vscode
 *.jfm
+*.ncrunchproject
 
 #Specific files
 oneui.min.js

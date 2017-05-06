@@ -1,17 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.QueryHandlers;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
-    public class GetDictionaryByTranslationIdQueryHandlerTests : DatabaseTestFixture
+    public class GetDictionaryByTranslationIdQueryHandlerTests
     {
         private GetDictionaryByTranslationIdQueryHandler _handler;
+        private DatabaseContext _database;
 
         public GetDictionaryByTranslationIdQueryHandlerTests()
         {
-            _handler = new GetDictionaryByTranslationIdQueryHandler(_database);
+            var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
+                               .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                               .Options;
+
+            _database = new DatabaseContext(inMemoryDataContextOptions);
+            _database.Database.EnsureCreated();
 
             var data = new Dictionary
             {
@@ -40,20 +49,27 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             };
             _database.Add(data);
             _database.SaveChanges();
+
+            _handler = new GetDictionaryByTranslationIdQueryHandler(_database);
+        }
+
+        public void Dispose()
+        {
+            _database.Database.EnsureDeleted();
         }
 
         [Fact]
-        public void WhenCalledShouldReturnTheDictionary()
+        public async Task WhenCalledShouldReturnTheDictionary()
         {
-            var result = _handler.ExecuteAsync(new Queries.GetDictionaryByTranslationIdQuery { TranslationId = 10 }).Result;
+            var result = await _handler.ExecuteAsync(new Queries.GetDictionaryByTranslationIdQuery { TranslationId = 10 });
 
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void WhenCalledForNonExsistantId()
+        public async Task WhenCalledForNonExsistantId()
         {
-            var result = _handler.ExecuteAsync(new Queries.GetDictionaryByTranslationIdQuery { TranslationId = 3 }).Result;
+            var result = await _handler.ExecuteAsync(new Queries.GetDictionaryByTranslationIdQuery { TranslationId = 3 });
 
             Assert.Null(result);
         }

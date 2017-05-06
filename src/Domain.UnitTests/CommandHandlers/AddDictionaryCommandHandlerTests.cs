@@ -1,20 +1,34 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
-    public class AddDictionaryCommandHandlerTests : DatabaseTestFixture
+    public class AddDictionaryCommandHandlerTests
     {
         private AddDictionaryCommandHandler _handler;
+        private DatabaseContext _database;
 
         public AddDictionaryCommandHandlerTests()
         {
+            var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
+                               .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                               .Options;
+
+            _database = new DatabaseContext(inMemoryDataContextOptions);
+            _database.Database.EnsureCreated();
             _handler = new AddDictionaryCommandHandler(_database);
         }
-        
+
+        public void Dispose()
+        {
+            _database.Database.EnsureDeleted();
+        }
+
         [Fact]
         public void WhenAdded_ShouldSaveToDatabase()
         {

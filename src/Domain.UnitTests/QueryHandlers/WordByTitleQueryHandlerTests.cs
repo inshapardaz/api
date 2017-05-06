@@ -1,67 +1,82 @@
-﻿using Inshapardaz.Domain.Model;
+﻿using System;
+using System.Threading.Tasks;
+using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
-    public class WordByTitleQueryHandlerTests : DatabaseTestFixture
+    public class WordByTitleQueryHandlerTests
     {
         private WordByTitleQueryHandler _handler;
+        private DatabaseContext _database;
 
         public WordByTitleQueryHandlerTests()
         {
-            _handler = new WordByTitleQueryHandler(_database);
+            var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
+                               .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                               .Options;
+
+            _database = new DatabaseContext(inMemoryDataContextOptions);
+            _database.Database.EnsureCreated();
 
             _database.Dictionaries.Add(new Dictionary { Id = 1, UserId = "1", IsPublic = false });
             _database.Dictionaries.Add(new Dictionary { Id = 2, UserId = "1", IsPublic = true });
             _database.Words.Add(new Word { Id = 22, Title = "word1", DictionaryId = 1 });
             _database.Words.Add(new Word { Id = 23, Title = "word2", DictionaryId = 2 });
             _database.SaveChanges();
+
+            _handler = new WordByTitleQueryHandler(_database);
+        }
+
+        public void Dispose()
+        {
+            _database.Database.EnsureDeleted();
         }
 
         [Fact]
-        public void WhenCallingForWordFromPublicDictionary_ShouldReturnWord()
+        public async Task WhenCallingForWordFromPublicDictionary_ShouldReturnWord()
         {
-            var word = _handler.ExecuteAsync(new WordByTitleQuery { Title = "word2", UserId = "1" }).Result;
+            var word = await _handler.ExecuteAsync(new WordByTitleQuery { Title = "word2", UserId = "1" });
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 23);
         }
 
         [Fact]
-        public void WhenCallingForWordFromPrivateDictionary_ShouldReturnWord()
+        public async Task WhenCallingForWordFromPrivateDictionary_ShouldReturnWord()
         {
-            var word = _handler.ExecuteAsync(new WordByTitleQuery { Title = "word1", UserId = "1" }).Result;
+            var word = await _handler.ExecuteAsync(new WordByTitleQuery { Title = "word1", UserId = "1" });
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 22);
         }
 
         [Fact]
-        public void WhenCallingForWordFromPublicDictionaryAsAnonymousUser_ShouldReturnWord()
+        public async Task WhenCallingForWordFromPublicDictionaryAsAnonymousUser_ShouldReturnWord()
         {
-            var word = _handler.ExecuteAsync(new WordByTitleQuery { Title = "word2" }).Result;
+            var word = await _handler.ExecuteAsync(new WordByTitleQuery { Title = "word2" });
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 23);
         }
 
         [Fact]
-        public void WhenCallingForWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
+        public async Task WhenCallingForWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
         {
-            var word = _handler.ExecuteAsync(new WordByTitleQuery { Title = "word 1" }).Result;
+            var word = await _handler.ExecuteAsync(new WordByTitleQuery { Title = "word 1" });
 
             Assert.Null(word);
         }
 
         [Fact]
-        public void WhenCallingForInvalidWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
+        public async Task WhenCallingForInvalidWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
         {
-            var word = _handler.ExecuteAsync(new WordByTitleQuery { Title = "somethingNew" }).Result;
+            var word = await _handler.ExecuteAsync(new WordByTitleQuery { Title = "somethingNew" });
 
             Assert.Null(word);
         }
-
     }
 }

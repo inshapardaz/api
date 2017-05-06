@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Controllers
 {
-    [Route("api/[controller]")]
     public class RelationshipController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
@@ -31,7 +30,7 @@ namespace Inshapardaz.Api.Controllers
             _relationRender = relationRender;
         }
 
-        [Route("/api/word/{id}/relationships", Name = "GetWordRelationsById")]
+        [Route("/api/words/{id}/relationships", Name = "GetWordRelationsById")]
         public async Task<IActionResult> GetRelationshipForWord(int id)
         {
             if (!string.IsNullOrWhiteSpace(_userHelper.GetUserId()))
@@ -69,7 +68,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_relationRender.Render(relations));
         }
 
-        [HttpPost("/api/word/{id}/Relation", Name = "AddRelation")]
+        [HttpPost("/api/words/{id}/relationships", Name = "AddRelation")]
         public async Task<IActionResult> Post(int id, [FromBody]RelationshipView relationship)
         {
             if (relationship == null)
@@ -114,7 +113,7 @@ namespace Inshapardaz.Api.Controllers
             return Created(responseView.Links.Single(x => x.Rel == "self").Href, responseView);
         }
 
-        [HttpPut("/api/relationship/{id}", Name = "UpdateRelation")]
+        [HttpPut("/api/relationships/{id}", Name = "UpdateRelation")]
         public async Task<IActionResult> Put(int id, [FromBody]RelationshipView relationship)
         {
             if (relationship == null)
@@ -153,7 +152,7 @@ namespace Inshapardaz.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("/api/relationship/{id}", Name = "DeleteRelation")]
+        [HttpDelete("/api/relationships/{id}", Name = "DeleteRelation")]
         public async Task<IActionResult> Delete(int id)
         {
             var relations = await _queryProcessor.ExecuteAsync(new RelationshipByIdQuery { Id = id });

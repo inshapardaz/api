@@ -12,7 +12,6 @@ using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Api.Controllers
 {
-    [Route("api/[controller]")]
     public class WordController : Controller
     {
         private readonly IRenderResponseFromObject<Word, WordView> _wordRenderer;
@@ -68,7 +67,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_pageRenderer.Render(pageRenderArgs));
         }
 
-        [HttpGet("{id}", Name = "GetWordById")]
+        [HttpGet("api/words/{id}", Name = "GetWordById")]
         public async Task<IActionResult> Get(int id)
         {
             var userId = _userHelper.GetUserId();
@@ -81,7 +80,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_wordRenderer.Render(word));
         }
 
-        [HttpPost("/api/dictionary/{id}/word", Name = "CreateWord")]
+        [HttpPost("/api/dictionary/{id}/words", Name = "CreateWord")]
         public async Task<IActionResult> Post(int id, [FromBody]WordView word)
         {
             if (string.IsNullOrWhiteSpace(word?.Title))

@@ -13,7 +13,6 @@ using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Api.Controllers
 {
-    [Route("api/[controller]")]
     public class WordDetailController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;

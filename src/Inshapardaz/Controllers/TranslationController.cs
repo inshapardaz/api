@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Controllers
 {
-    [Route("api/[controller]")]
     public class TranslationController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
@@ -32,7 +31,7 @@ namespace Inshapardaz.Api.Controllers
             _userHelper = userHelper;
         }
 
-        [Route("/api/word/{id}/Translations", Name = "GetWordTranslationsById")]
+        [Route("api/words/{id}/translations", Name = "GetWordTranslationsById")]
         public async Task<IActionResult> GetTranslationForWord(int id)
         {
             var user = _userHelper.GetUserId();
@@ -49,7 +48,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(translations.Select(t => _translationRenderer.Render(t)).ToList());
         }
 
-        [Route("/api/word/{id}/Translation/{language}")]
+        [Route("api/words/{id}/translations/{language}")]
         public async Task<IActionResult> GetTranslationForWord(int id, Languages language)
         {
             var user = _userHelper.GetUserId();
@@ -66,7 +65,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(translations.Select(t => _translationRenderer.Render(t)).ToList());
         }
 
-        [HttpGet("{id}", Name = "GetTranslationById")]
+        [HttpGet("api/translations/{id}", Name = "GetTranslationById")]
         public IActionResult Get(int id)
         {
             var response = _queryProcessor.Execute(new TranslationByIdQuery { Id = id });
@@ -79,7 +78,7 @@ namespace Inshapardaz.Api.Controllers
             return new ObjectResult(_translationRenderer.Render(response));
         }
 
-        [HttpPost("/api/detail/{id}/translations", Name = "AddTranslation")]
+        [HttpPost("api/details/{id}/translations", Name = "AddTranslation")]
         public async Task<IActionResult> Post(int id, [FromBody]TranslationView translation)
         {
             if (translation == null)
@@ -112,7 +111,7 @@ namespace Inshapardaz.Api.Controllers
             return Created(response.Links.Single(x => x.Rel == "self").Href, response);
         }
 
-        [HttpPut("/api/translations/{id}", Name = "UpdateTranslation")]
+        [HttpPut("api/translations/{id}", Name = "UpdateTranslation")]
         public async Task<IActionResult> Put(int id, [FromBody]TranslationView translation)
         {
             if (translation == null)
@@ -138,7 +137,7 @@ namespace Inshapardaz.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("/api/translations/{id}", Name = "DeleteTranslation")]
+        [HttpDelete("api/translations/{id}", Name = "DeleteTranslation")]
         public async Task<IActionResult> Delete(int id)
         {
             var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByTranslationIdQuery { TranslationId = id });

@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Controllers
 {
-    [Route("api/[controller]")]
     public class MeaningController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
@@ -32,7 +31,7 @@ namespace Inshapardaz.Api.Controllers
             _meaningRenderer = meaningRenderer;
         }
 
-        [Route("api/word/{id}/Meaning", Name = "GetWordMeaningById")]
+        [Route("api/words/{id}/meanings", Name = "GetWordMeaningById")]
         public async Task<IActionResult> GetMeaningForWord(int id)
         {
             var user = _userHelper.GetUserId();
@@ -49,7 +48,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(meanings.Select(x => _meaningRenderer.Render(x)).ToList());
         }
 
-        [HttpGet("{id}", Name = "GetMeaningById")]
+        [HttpGet("api/meanings/{id}", Name = "GetMeaningById")]
         public async Task<IActionResult> Get(int id)
         {
             var user = _userHelper.GetUserId();
@@ -72,7 +71,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_meaningRenderer.Render(meaning));
         }
 
-        [Route("api/word/{id}/Meaning/{context}", Name = "GetWordMeaningByContext")]
+        [Route("api/words/{id}/meanings/{context}", Name = "GetWordMeaningByContext")]
         public IEnumerable<MeaningView> GetMeaningForWord(int id, string context)
         {
             var finalContext = string.Empty;
@@ -85,7 +84,7 @@ namespace Inshapardaz.Api.Controllers
                                    .Select(x => _meaningRenderer.Render(x));
         }
 
-        [HttpPost("api/details/{id}/meaning", Name = "AddMeaning")]
+        [HttpPost("api/details/{id}/meanings", Name = "AddMeaning")]
         public async Task<IActionResult> Post(int id, [FromBody]MeaningView meaning)
         {
             if (meaning == null)
@@ -112,7 +111,7 @@ namespace Inshapardaz.Api.Controllers
             return Created(response.Links.Single(x => x.Rel == "self").Href, response);
         }
 
-        [HttpPut("api/meaning/{id}", Name = "UpdateMeaning")]
+        [HttpPut("api/meanings/{id}", Name = "UpdateMeaning")]
         public async Task<IActionResult> Put(int id, [FromBody]MeaningView meaning)
         {
             if (meaning == null)
@@ -138,7 +137,7 @@ namespace Inshapardaz.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("api/meaning/{id}", Name = "DeleteMeaning")]
+        [HttpDelete("api/meanings/{id}", Name = "DeleteMeaning")]
         public async Task<IActionResult> Delete(int id)
         {
             var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = id });

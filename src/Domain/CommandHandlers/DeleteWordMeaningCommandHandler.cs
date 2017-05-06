@@ -16,7 +16,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override DeleteWordMeaningCommand Handle(DeleteWordMeaningCommand command)
         {
-            var meaning = _database.Meanings.SingleOrDefault(x => x.Id == command.Meaning.Id);
+            var meaning = _database.Meanings.SingleOrDefault(x => x.Id == command.MeaningId);
 
             if (meaning == null)
             {

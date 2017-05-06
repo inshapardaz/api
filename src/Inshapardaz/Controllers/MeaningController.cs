@@ -154,7 +154,7 @@ namespace Inshapardaz.Api.Controllers
                 return NotFound();
             }
 
-            await _commandProcessor.SendAsync(new DeleteWordMeaningCommand { Meaning = response });
+            await _commandProcessor.SendAsync(new DeleteWordMeaningCommand { MeaningId = response.Id });
 
             return NoContent();
         }

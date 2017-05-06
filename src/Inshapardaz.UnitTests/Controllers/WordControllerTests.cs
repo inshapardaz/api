@@ -415,7 +415,6 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         protected IActionResult _result;
         protected WordController _controller;
         protected FakeUserHelper _fakeUserHelper;
-        private WordIndexPageRenderer _wordIndexPageRenderer;
 
         protected WordControllerTestContext()
         {

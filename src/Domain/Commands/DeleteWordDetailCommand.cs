@@ -2,6 +2,6 @@
 {
     public class DeleteWordDetailCommand : Command
     {
-        public int WordDetailId { get; set; }
+        public long WordDetailId { get; set; }
     }
 }

@@ -4,6 +4,6 @@ namespace Inshapardaz.Domain.Commands
 {
     public class DeleteWordCommand : Command
     {
-        public Word Word { get; set; }
+        public long WordId { get; set; }
     }
 }

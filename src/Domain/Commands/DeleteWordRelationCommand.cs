@@ -2,6 +2,6 @@
 {
     public class DeleteWordRelationCommand : Command
     {
-        public int RelationId { get; set; }
+        public long RelationId { get; set; }
     }
 }

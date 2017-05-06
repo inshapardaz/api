@@ -10,6 +10,8 @@
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
 	<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
 	<RootNamespace>Inshapardaz.Api</RootNamespace>
+	<ApplicationInsightsResourceId>/subscriptions/370dd9c3-24b1-4218-9896-403457c19ca2/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/Inshapardaz.Api</ApplicationInsightsResourceId>
+	<ApplicationInsightsAnnotationResourceId>/subscriptions/370dd9c3-24b1-4218-9896-403457c19ca2/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/Inshapardaz.Api</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +41,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Inshapardaz.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 </Project>

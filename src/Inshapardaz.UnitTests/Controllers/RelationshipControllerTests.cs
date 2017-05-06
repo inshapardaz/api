@@ -58,7 +58,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordRelationshipsByWordThatUserHasNotAllowedAccess()
         {
             UserHelper.WithUserId("56");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
             Result = Controller.GetRelationshipForWord(9).Result;
         }
 
@@ -111,7 +111,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingRelationshipByIdForPrivateDictionaryOfOtherUsers()
         {
             UserHelper.WithUserId("123");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "12" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "12" });
             Result = Controller.Get(23).Result;
         }
 
@@ -127,7 +127,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenAddingRelation()
         {
             UserHelper.WithUserId("23");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
             FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
             FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
             FakeRelationshipRenderer.WithView(new RelationshipView());
@@ -195,7 +195,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenAddingRelationshipToDictionaryWithNoWriteAccess()
         {
             UserHelper.WithUserId("2");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "32" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "32" });
             FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
 
             Result = Controller.Post(23, new RelationshipView()).Result;
@@ -213,7 +213,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenAddingRelationshipToWordInAnotherDictionary()
         {
             UserHelper.WithUserId("23");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(x => x.WordId == 23, new Dictionary { UserId = "23" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(x => x.WordId == 23, new Dictionary { UserId = "23" });
             FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
 
             Result = Controller.Post(23, new RelationshipView { RelatedWordId = 45 }).Result;
@@ -245,7 +245,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingARelationship()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
             Result = Controller.Put(32, new RelationshipView()).Result;
         }
@@ -262,7 +262,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingANonExistingRelationship()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             Result = Controller.Put(32, new RelationshipView()).Result;
         }
 
@@ -278,7 +278,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingARelationshipWithTargetWordMissing()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(q => q.Id == 32, new WordRelation());
             Result = Controller.Put(32, new RelationshipView { RelatedWordId = 344 }).Result;
         }
@@ -295,7 +295,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingRelationshipInDictionaryUserHasNoWriteAccess()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "32" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "32" });
             FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
             Result = Controller.Put(32, new RelationshipView()).Result;
         }
@@ -312,8 +312,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingRelationshipWithWordFromOtherDictionary()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(q => q.WordId == 32, new Dictionary { Id = 3, UserId = "33" });
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(q => q.WordId == 43, new Dictionary { Id = 4, UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(q => q.WordId == 32, new Dictionary { Id = 3, UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(q => q.WordId == 43, new Dictionary { Id = 4, UserId = "33" });
             FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
             Result = Controller.Put(32, new RelationshipView { SourceWordId = 32, RelatedWordId = 43 }).Result;
         }
@@ -330,7 +330,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingRelationship()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
             Result = Controller.Delete(34).Result;
         }
@@ -347,7 +347,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingNonExisitngRelationship()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             Result = Controller.Delete(34).Result;
         }
 
@@ -363,7 +363,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingRelationshipFromDictionaryWithNoWriteAccess()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "32" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "32" });
             FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
             Result = Controller.Delete(34).Result;
         }

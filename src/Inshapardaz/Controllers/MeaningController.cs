@@ -38,7 +38,7 @@ namespace Inshapardaz.Api.Controllers
             var user = _userHelper.GetUserId();
             if (!string.IsNullOrWhiteSpace(user))
             {
-                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
                 if (dictionary != null && dictionary.UserId != user)
                 {
                     return Unauthorized();
@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.Controllers
             var user = _userHelper.GetUserId();
             if (!string.IsNullOrWhiteSpace(user))
             {
-                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByMeaningIdQuery { MeaningId = id });
+                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = id });
                 if (dictionary != null && dictionary.UserId != user)
                 {
                     return Unauthorized();
@@ -93,7 +93,7 @@ namespace Inshapardaz.Api.Controllers
                 return BadRequest();
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
@@ -120,7 +120,7 @@ namespace Inshapardaz.Api.Controllers
                 return BadRequest();
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByMeaningIdQuery { MeaningId = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = id });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
@@ -141,7 +141,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpDelete("api/meaning/{id}", Name = "DeleteMeaning")]
         public async Task<IActionResult> Delete(int id)
         {
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByMeaningIdQuery { MeaningId = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = id });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();

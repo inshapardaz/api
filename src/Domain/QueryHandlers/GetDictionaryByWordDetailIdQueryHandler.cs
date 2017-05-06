@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetDictionaryByWordDetailIdQueryHandler : AsyncQueryHandler<GetDictionaryByWordDetailIdQuery, Model.Dictionary>
+    public class GetDictionaryByWordDetailIdQueryHandler : AsyncQueryHandler<DictionaryByWordDetailIdQuery, Model.Dictionary>
     {
         private readonly IDatabaseContext _database;
 
@@ -17,7 +17,7 @@ namespace Inshapardaz.Domain.QueryHandlers
         }
         
 
-        public async override Task<Dictionary> ExecuteAsync(GetDictionaryByWordDetailIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
+        public async override Task<Dictionary> ExecuteAsync(DictionaryByWordDetailIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
             var word = await _database.WordDetails.SingleOrDefaultAsync(wd => wd.Id == query.WordDetailId);
             return word?.WordInstance.Dictionary;

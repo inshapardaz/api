@@ -4,8 +4,8 @@ using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class  TranslationsByWordIdQuery : IQuery<IEnumerable<Translation>>
+    public class TranslationsByWordIdQuery : IQuery<IEnumerable<Translation>>
     {
-        public int WordId { get; set; }
+        public long WordId { get; set; }
     }
 }

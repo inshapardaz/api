@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Controllers
         {
             string userId = _userHelper.GetUserId();
 
-            var results = await _queryProcessor.ExecuteAsync(new GetDictionariesByUserQuery { UserId = userId });
+            var results = await _queryProcessor.ExecuteAsync(new DictionariesByUserQuery { UserId = userId });
             return Ok(_dictionariesRenderer.Render(results));
         }
 
@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> Get(int id)
         {
             string userId = _userHelper.GetUserId();
-            var result = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery{ UserId = userId, DictionaryId = id });
+            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery{ UserId = userId, DictionaryId = id });
 
             if (result == null)
             {
@@ -93,7 +93,7 @@ namespace Inshapardaz.Api.Controllers
             
             string userId = _userHelper.GetUserId();
 
-            var result = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });
+            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
             if (result == null)
             {
@@ -127,7 +127,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             string userId = _userHelper.GetUserId();
-            var result = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery { UserId = userId, DictionaryId = id });
+            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
             if (result == null)
             {

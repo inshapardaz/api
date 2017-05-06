@@ -55,7 +55,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledShouldReturnTheDictionary()
         {
-            var result = await _handler.ExecuteAsync(new Queries.GetDictionaryByWordDetailIdQuery { WordDetailId = 2 });
+            var result = await _handler.ExecuteAsync(new Queries.DictionaryByWordDetailIdQuery { WordDetailId = 2 });
 
             Assert.NotNull(result);
         }
@@ -63,7 +63,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledForNonExsistantId()
         {
-            var result = await _handler.ExecuteAsync(new Queries.GetDictionaryByWordDetailIdQuery { WordDetailId = 3 });
+            var result = await _handler.ExecuteAsync(new Queries.DictionaryByWordDetailIdQuery { WordDetailId = 3 });
 
             Assert.Null(result);
         }

@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Controllers
         {
             if (!string.IsNullOrWhiteSpace(_userHelper.GetUserId()))
             {
-                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = id });
+                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
                 if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
                 {
                     return Unauthorized();
@@ -63,7 +63,7 @@ namespace Inshapardaz.Api.Controllers
 
             if (!string.IsNullOrWhiteSpace(userId))
             {
-                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
 
                 if (dictionary == null || dictionary.UserId != userId)
                 {
@@ -89,7 +89,7 @@ namespace Inshapardaz.Api.Controllers
                 return BadRequest();
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
@@ -122,7 +122,7 @@ namespace Inshapardaz.Api.Controllers
                 return BadRequest();
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
@@ -149,7 +149,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpDelete("/api/details/{id}", Name = "DeleteWordDetail")]
         public async Task<IActionResult> Delete(int id)
         {
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordDetailIdQuery { WordDetailId = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();

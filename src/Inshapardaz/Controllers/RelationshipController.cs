@@ -36,7 +36,7 @@ namespace Inshapardaz.Api.Controllers
         {
             if (!string.IsNullOrWhiteSpace(_userHelper.GetUserId()))
             {
-                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = id });
+                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
                 if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
                 {
                     return Unauthorized();
@@ -52,7 +52,7 @@ namespace Inshapardaz.Api.Controllers
         {
             if (!string.IsNullOrWhiteSpace(_userHelper.GetUserId()))
             {
-                var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = id });
+                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
                 if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
                 {
                     return Unauthorized();
@@ -89,13 +89,13 @@ namespace Inshapardaz.Api.Controllers
                 return NotFound();
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = id });
+            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
             }
 
-            var dictonary2 = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = relationship.RelatedWordId });
+            var dictonary2 = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = relationship.RelatedWordId });
             if (dictonary2 == null || dictonary2.Id != dictonary.Id)
             {
                 return BadRequest();
@@ -136,13 +136,13 @@ namespace Inshapardaz.Api.Controllers
                 return BadRequest();
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = relationship.SourceWordId });
+            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = relationship.SourceWordId });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
             }
 
-            var dictonary2 = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = relationship.RelatedWordId });
+            var dictonary2 = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = relationship.RelatedWordId });
             if (dictonary2 == null || dictonary2.Id != dictonary.Id)
             {
                 return BadRequest();
@@ -163,7 +163,7 @@ namespace Inshapardaz.Api.Controllers
                 return NotFound();
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new GetDictionaryByWordIdQuery { WordId = (int)relations.SourceWordId });
+            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = (int)relations.SourceWordId });
             if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();

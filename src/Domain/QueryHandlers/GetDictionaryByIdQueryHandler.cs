@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetDictionaryByIdQueryHandler : AsyncQueryHandler<GetDictionaryByIdQuery, Dictionary>
+    public class GetDictionaryByIdQueryHandler : AsyncQueryHandler<DictionaryByIdQuery, Dictionary>
     {
         private readonly IDatabaseContext _database;
 
@@ -21,7 +21,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public async override Task<Dictionary> ExecuteAsync(GetDictionaryByIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
+        public async override Task<Dictionary> ExecuteAsync(DictionaryByIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
             IQueryable<Dictionary> result;
             if (!string.IsNullOrWhiteSpace(query.UserId))

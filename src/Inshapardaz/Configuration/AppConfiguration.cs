@@ -124,7 +124,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<RelationshipByWordIdQueryHandler>();
             services.AddTransient<RelationshipByIdQueryHandler>();
             services.AddTransient<GetDictionaryByWordIdQueryHandler>();
-            services.AddTransient<GetDictionaryByWordIdQuery>();
+            services.AddTransient<DictionaryByWordIdQuery>();
             services.AddTransient<GetDictionaryByMeaningIdQueryHandler>();
             services.AddTransient<GetDictionaryByTranslationIdQueryHandler>();
 
@@ -214,7 +214,7 @@ namespace Inshapardaz.Api.Configuration
         {
             var config = new DarkerConfig(services, services.BuildServiceProvider());
             config.RegisterDefaultDecorators();
-            config.RegisterQueriesAndHandlersFromAssembly(typeof(GetDictionariesByUserQuery).GetTypeInfo().Assembly);
+            config.RegisterQueriesAndHandlersFromAssembly(typeof(DictionariesByUserQuery).GetTypeInfo().Assembly);
             //config.RegisterQueriesAndHandlersFromAssembly(typeof(GetDictionaryByIdQuery).GetTypeInfo().Assembly);
 
             var queryProcessor = Darker.Builder.QueryProcessorBuilder.With()

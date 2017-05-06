@@ -6,6 +6,6 @@ namespace Inshapardaz.Domain.Queries
 {
     public class RelationshipByWordIdQuery : IQuery<IEnumerable<WordRelation>>
     {
-        public int WordId { get; set; }
+        public long WordId { get; set; }
     }
 }

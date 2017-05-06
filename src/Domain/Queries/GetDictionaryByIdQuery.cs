@@ -2,7 +2,7 @@ using Darker;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class GetDictionaryByIdQuery : IQuery<Model.Dictionary>
+    public class DictionaryByIdQuery : IQuery<Model.Dictionary>
     {
         public string UserId { get; set; }
 

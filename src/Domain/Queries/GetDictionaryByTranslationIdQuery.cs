@@ -2,8 +2,8 @@ using Darker;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class GetDictionaryByTranslationIdQuery : IQuery<Model.Dictionary>
+    public class DictionaryByTranslationIdQuery : IQuery<Model.Dictionary>
     {
-        public int TranslationId { get; set; }
+        public long TranslationId { get; set; }
     }
 }

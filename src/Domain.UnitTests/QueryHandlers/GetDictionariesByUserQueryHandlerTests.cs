@@ -40,7 +40,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCallingForAnonymous_ShouldReturnAllPublicDictionaries()
         {
-            var result = await _handler.ExecuteAsync(new GetDictionariesByUserQuery());
+            var result = await _handler.ExecuteAsync(new DictionariesByUserQuery());
 
             Assert.Equal(result.Count(), 2);
             Assert.Equal(result.ElementAt(0).Id, 1);
@@ -52,7 +52,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledForAUser_ShouldReturnPublicAndPrivateDitionaries()
         {
-            var result = await _handler.ExecuteAsync(new GetDictionariesByUserQuery { UserId = "2" });
+            var result = await _handler.ExecuteAsync(new DictionariesByUserQuery { UserId = "2" });
 
             Assert.Equal(result.Count(), 3);
 

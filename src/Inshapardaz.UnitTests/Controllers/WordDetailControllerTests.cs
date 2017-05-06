@@ -57,7 +57,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordDetailsByWordThatUserHasNotAllowedAccess()
         {
             UserHelper.WithUserId("56");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
             Result = Controller.GetForWord(9).Result;
         }
 
@@ -109,7 +109,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingDetailByIdForPrivateDictionaryOfOtherUsers()
         {
             UserHelper.WithUserId("123");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "12" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "12" });
             Result = Controller.Get(23).Result;
         }
 
@@ -125,7 +125,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenAddingWordDetails()
         {
             UserHelper.WithUserId("23");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
             FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
             FakeWordDetailRenderer.WithLink("self", new System.Uri("http://link.test/123"));
 
@@ -161,7 +161,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenAddingWordDetailsToNonExistantWord()
         {
             UserHelper.WithUserId("23");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
             Result = Controller.Post(23, new WordDetailView()).Result;
         }
 
@@ -206,7 +206,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingAWordDetail()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
             Result = Controller.Put(32, new WordDetailView()).Result;
         }
@@ -223,7 +223,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingANonExistingWordDetail()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             Result = Controller.Put(32, new WordDetailView()).Result;
         }
 
@@ -239,7 +239,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingAWordDetailInDictionaryUserHasNoWriteAccess()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "32" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "32" });
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
             Result = Controller.Put(32, new WordDetailView()).Result;
         }
@@ -256,7 +256,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingAWordDetail()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
             Result = Controller.Delete(34).Result;
         }
@@ -273,7 +273,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingNonExisitngWordDetail()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             Result = Controller.Delete(34).Result;
         }
 
@@ -289,7 +289,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingAWordDetailFromDictionaryWithNoWriteAccess()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "32" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "32" });
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
             Result = Controller.Delete(34).Result;
         }

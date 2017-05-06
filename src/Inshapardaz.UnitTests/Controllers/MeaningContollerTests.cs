@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingMeaningByWordDetailThatUserHasNotAllowedAccess()
         {
             UserHelper.WithUserId("56");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "23" });
             Result = Controller.GetMeaningForWord(9).Result;
         }
 
@@ -112,7 +112,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingMeaningByIdForPrivateDictionaryOfOtherUsers()
         {
             UserHelper.WithUserId("123");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "12" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "12" });
             Result = Controller.Get(23).Result;
         }
 
@@ -128,7 +128,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenAddingMeaning()
         {
             UserHelper.WithUserId("23");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "23" });
             FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
             FakeMeaningRenderer.WithView(new MeaningView());
@@ -166,7 +166,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenAddingMeaningToNonExistantWordDetail()
         {
             UserHelper.WithUserId("23");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "23" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "23" });
             Result = Controller.Post(23, new MeaningView()).Result;
         }
 
@@ -197,7 +197,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingAMeaning()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
             Result = Controller.Put(32, new MeaningView()).Result;
         }
@@ -214,7 +214,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingANonExistingMeaning()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             Result = Controller.Put(32, new MeaningView()).Result;
         }
 
@@ -230,7 +230,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingAMeaningInDictionaryUserHasNoWriteAccess()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "32" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "32" });
             FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
             Result = Controller.Put(32, new MeaningView()).Result;
         }
@@ -247,7 +247,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingAMeaning()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
             Result = Controller.Delete(34).Result;
         }
@@ -264,7 +264,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingNonExisitngMeaning()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "33" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "33" });
             Result = Controller.Delete(34).Result;
         }
 
@@ -280,7 +280,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingAMeaningFromDictionaryWithNoWriteAccess()
         {
             UserHelper.WithUserId("33");
-            FakeQueryProcessor.SetupResultFor<GetDictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "32" });
+            FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = "32" });
             FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
             Result = Controller.Delete(34).Result;
         }

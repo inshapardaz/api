@@ -38,7 +38,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledAsAnonymousAnId_ShouldReturPublicDictionaryForOtherUser()
         {
-            var result = await _handler.ExecuteAsync(new Queries.GetDictionaryByIdQuery { DictionaryId = 2 });
+            var result = await _handler.ExecuteAsync(new Queries.DictionaryByIdQuery { DictionaryId = 2 });
 
             Assert.NotNull(result);
             Assert.True(result.IsPublic);
@@ -47,7 +47,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledAsAnonymousForPrivateDictionary_ShouldNotReutrnMatchingDictionary()
         {
-            var result = await _handler.ExecuteAsync(new Queries.GetDictionaryByIdQuery { DictionaryId = 3 });
+            var result = await _handler.ExecuteAsync(new Queries.DictionaryByIdQuery { DictionaryId = 3 });
 
             Assert.Null(result);
         }
@@ -55,7 +55,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledForUser_ShouldReturnPrivateDictionary()
         {
-            var result = await _handler.ExecuteAsync(new Queries.GetDictionaryByIdQuery { UserId = "2", DictionaryId = 3 });
+            var result = await _handler.ExecuteAsync(new Queries.DictionaryByIdQuery { UserId = "2", DictionaryId = 3 });
 
             Assert.NotNull(result);
             Assert.False(result.IsPublic);
@@ -64,7 +64,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledForUser_ShouldReturnPublicDictionary()
         {
-            var result = await _handler.ExecuteAsync(new Queries.GetDictionaryByIdQuery { UserId = "2", DictionaryId = 1 });
+            var result = await _handler.ExecuteAsync(new Queries.DictionaryByIdQuery { UserId = "2", DictionaryId = 1 });
 
             Assert.NotNull(result);
             Assert.True(result.IsPublic);

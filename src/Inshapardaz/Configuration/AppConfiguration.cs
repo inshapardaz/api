@@ -78,7 +78,7 @@ namespace Inshapardaz.Api.Configuration
 
         public static IServiceCollection RegisterDomain(this IServiceCollection services, IConfigurationRoot configuration)
         {
-            var connectionString = configuration["Data:DefaultConnection:ConnectionString"];
+            var connectionString = configuration["ConnectionStrings:DefaultDatabase"];
 
             services.AddEntityFrameworkSqlServer()
                     .AddDbContext<Domain.DatabaseContext>(options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));

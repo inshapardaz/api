@@ -15,6 +15,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api", Name = "Entry")]
+        [Produces(typeof(EntryView))]
         public IActionResult Index()
         {
             return Ok(_entryRenderer.Render());

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Inshapardaz.Api.Model
 {
@@ -6,6 +7,7 @@ namespace Inshapardaz.Api.Model
     {
         public int Id { get; set; }
 
+        [Required]
         public string Name { get; set; }
 
         public int Language { get; set; }

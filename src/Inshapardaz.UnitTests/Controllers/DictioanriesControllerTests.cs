@@ -129,13 +129,13 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             {
                 Language = 23,
                 IsPublic = true,
-                Name = ""
+                Name = "sdsd"
             };
             _fakeDictionaryRenderer.WithLink("self", new System.Uri("http://link.test/123"));
 
             var result = _controller.Post(dictionaryView).Result;
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<CreatedResult>(result);
         }
         
         [Fact]
@@ -201,13 +201,13 @@ namespace Inshapardaz.Api.UnitTests.Controllers
                 Id = dictionaryId,
                 Language = 23,
                 IsPublic = true,
-                Name = ""
+                Name = "sdsdsdsd"
             };
             _fakeDictionaryRenderer.WithLink("self", new System.Uri("http://link.test/123"));
 
             var result = _controller.Put(dictionaryId, dictionaryView).Result;
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<CreatedResult>(result);
         }
         
         [Fact]

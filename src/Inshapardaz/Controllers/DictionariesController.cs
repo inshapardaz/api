@@ -36,6 +36,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("/api/dictionaries", Name = "GetDictionaries")]
+        [Produces(typeof(DictionariesView))]
         public async Task<IActionResult> Get()
         {
             string userId = _userHelper.GetUserId();
@@ -45,6 +46,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("/api/dictionaries/{id}", Name = "GetDictionaryById")]
+        [Produces(typeof(DictionaryView))]
         public async Task<IActionResult> Get(int id)
         {
             string userId = _userHelper.GetUserId();
@@ -60,11 +62,13 @@ namespace Inshapardaz.Api.Controllers
 
         [Authorize]
         [HttpPost("/api/dictionaries", Name = "CreateDictioanry")]
+        [Produces(typeof(DictionaryView))]
+        
         public async Task<IActionResult> Post([FromBody]DictionaryView value)
         {
-            if (string.IsNullOrWhiteSpace(value.Name))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Name is not valid");
+                return BadRequest(ModelState);
             }
             
             string userId = _userHelper.GetUserId();
@@ -86,9 +90,9 @@ namespace Inshapardaz.Api.Controllers
         [HttpPut("/api/dictionaries/{id}", Name = "UpdateDictionary")]
         public async Task<IActionResult> Put(int id, [FromBody]DictionaryView value)
         {
-            if (string.IsNullOrWhiteSpace(value.Name))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Name is not valid");
+                return BadRequest(ModelState);
             }
             
             string userId = _userHelper.GetUserId();

@@ -10,32 +10,39 @@ namespace Inshapardaz.Api.Controllers
     {
         [HttpGet]
         [Route("api/languages", Name = "GetLanguages")]
-        public IEnumerable<KeyValuePair<string, int>> GetLanguages()
+        [Produces(typeof(IEnumerable<KeyValuePair<string, int>>))]
+        public IActionResult GetLanguages()
         {
-            return Enum.GetValues(typeof(Languages))
+             var result = Enum.GetValues(typeof(Languages))
                 .Cast<Languages>()
                 .Select(lang => new KeyValuePair<string, int>(Enum.GetName(typeof(Languages), lang), (int)lang))
                 .ToList();
+
+            return Ok(result);
         }
 
         [HttpGet]
         [Route("api/attributes", Name = "GetAttributes")]
-        public IEnumerable<KeyValuePair<string, int>> GetAttributes()
+        [Produces(typeof(IEnumerable<KeyValuePair<string, int>>))]        
+        public IActionResult GetAttributes()
         {
-            return Enum.GetValues(typeof(GrammaticalType))
+            var result =  Enum.GetValues(typeof(GrammaticalType))
                 .Cast<GrammaticalType>()
                 .Select(type => new KeyValuePair<string, int>(Enum.GetName(typeof(GrammaticalType), type), (int)type))
                 .ToList();
+            return Ok(result);
         }
 
         [HttpGet]
         [Route("api/relationtypes", Name = "GetRelationTypes")]
-        public IEnumerable<KeyValuePair<string, int>> GetRelationTypes()
+        [Produces(typeof(IEnumerable<KeyValuePair<string, int>>))]                
+        public IActionResult GetRelationTypes()
         {
-            return Enum.GetValues(typeof(RelationType))
+            var result =  Enum.GetValues(typeof(RelationType))
                 .Cast<RelationType>()
                 .Select(relation => new KeyValuePair<string, int>(Enum.GetName(typeof(RelationType), relation), (int)relation))
                 .ToList();
+            return Ok(result);
         }
     }
 }

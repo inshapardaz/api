@@ -72,9 +72,9 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("/api/words/{id}/relationships", Name = "AddRelation")]
         public async Task<IActionResult> Post(int id, [FromBody]RelationshipView relationship)
         {
-            if (relationship == null)
+            if (relationship == null || !ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var sourceWord = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = id });
@@ -117,9 +117,9 @@ namespace Inshapardaz.Api.Controllers
         [HttpPut("/api/relationships/{id}", Name = "UpdateRelation")]
         public async Task<IActionResult> Put(int id, [FromBody]RelationshipView relationship)
         {
-            if (relationship == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var relation1 = await _queryProcessor.ExecuteAsync(new RelationshipByIdQuery { Id = id });

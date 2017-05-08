@@ -8,6 +8,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Inshapardaz.Api.Model
 {
@@ -17,10 +18,12 @@ namespace Inshapardaz.Api.Model
 
         public string Language { get; set; }
 
+        [Required(AllowEmptyStrings = false)]
         public int LanguageId { get; set; }
 
         public IEnumerable<LinkView> Links { get; set; }
 
+        [Required]
         public string Value { get; set; }
 
         public long WordId { get; set; }

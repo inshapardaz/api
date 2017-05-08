@@ -8,6 +8,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Inshapardaz.Api.Model
 {
@@ -19,6 +20,8 @@ namespace Inshapardaz.Api.Model
 
         public IEnumerable<LinkView> Links { get; set; }
 
+        [Required(AllowEmptyStrings = false)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Title { get; set; }
 
         public string TitleWithMovements { get; set; }

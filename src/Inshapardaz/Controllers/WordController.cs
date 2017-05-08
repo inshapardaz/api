@@ -83,9 +83,9 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("/api/dictionary/{id}/words", Name = "CreateWord")]
         public async Task<IActionResult> Post(int id, [FromBody]WordView word)
         {
-            if (string.IsNullOrWhiteSpace(word?.Title))
+            if (word == null || !ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var userId = _userHelper.GetUserId();
@@ -107,9 +107,9 @@ namespace Inshapardaz.Api.Controllers
         [HttpPut("/api/words/{id}", Name = "UpdateWord")]
         public async Task<IActionResult> Put(int id, [FromBody]WordView word)
         {
-            if (word == null || id != word.Id || string.IsNullOrWhiteSpace(word.Title))
+            if (word == null || !ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var userId = _userHelper.GetUserId();

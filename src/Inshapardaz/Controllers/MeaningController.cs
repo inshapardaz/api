@@ -89,9 +89,9 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("api/details/{id}/meanings", Name = "AddMeaning")]
         public async Task<IActionResult> Post(int id, [FromBody]MeaningView meaning)
         {
-            if (meaning == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
@@ -116,9 +116,9 @@ namespace Inshapardaz.Api.Controllers
         [HttpPut("api/meanings/{id}", Name = "UpdateMeaning")]
         public async Task<IActionResult> Put(int id, [FromBody]MeaningView meaning)
         {
-            if (meaning == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = id });

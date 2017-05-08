@@ -236,7 +236,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         [Fact]
         public void ShouldReturnBadRequest()
         {
-            Assert.IsType<BadRequestResult>(Result);
+            Assert.IsType<BadRequestObjectResult>(Result);
         }
     }
 

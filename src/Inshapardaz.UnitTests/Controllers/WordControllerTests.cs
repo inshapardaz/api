@@ -208,7 +208,6 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
         private readonly WordView _wordView = new WordView
         {
-            Title = "",
             TitleWithMovements = "a^A",
             Pronunciation = "~a",
             Description = "Some description"
@@ -226,7 +225,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         [Fact]
         public void ShouldReturnBadRequest()
         {
-            Assert.IsType<BadRequestResult>(_result);
+            Assert.IsType<BadRequestObjectResult>(_result);
         }
     }
 
@@ -318,7 +317,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             WordView wordView = new WordView
             {
                 Id = wordId,
-                Title = " ",
+                Title = "",
                 TitleWithMovements = "a^A",
                 Pronunciation = "~a",
                 Description = "Some description"
@@ -330,7 +329,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         [Fact]
         public void ShouldReturnBadRequest()
         {
-            Assert.IsType<BadRequestResult>(_result);
+            Assert.IsType<BadRequestObjectResult>(_result);
         }
     }
 

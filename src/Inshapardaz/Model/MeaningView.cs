@@ -8,6 +8,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Inshapardaz.Api.Model
 {
@@ -17,6 +18,7 @@ namespace Inshapardaz.Api.Model
 
         public string Context { get; set; }
 
+        [Required(AllowEmptyStrings = false)]
         public string Value { get; set; }
 
         public string Example { get; set; }

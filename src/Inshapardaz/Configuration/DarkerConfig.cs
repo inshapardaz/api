@@ -45,8 +45,6 @@ namespace Inshapardaz.Api.Configuration
 
         public void RegisterDefaultDecorators()
         {
-            //_services.AddTransient(typeof(QueryLoggingDecorator<,>));
-            //_services.AddTransient(typeof(RetryableQueryDecorator<,>));
             _services.AddTransient(typeof(FallbackPolicyDecorator<,>));
         }
 

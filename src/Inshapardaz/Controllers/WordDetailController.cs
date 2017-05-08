@@ -83,9 +83,9 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("/api/words/{id}/details", Name = "AddWordDetail")]
         public async Task<IActionResult> Post(int id, [FromBody]WordDetailView wordDetail)
         {
-            if (wordDetail == null)
+            if (wordDetail == null || !ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
@@ -116,9 +116,9 @@ namespace Inshapardaz.Api.Controllers
         [HttpPut("/api/details/{id}", Name = "UpdateWordDetail")]
         public async Task<IActionResult> Put(int id, [FromBody]WordDetailView wordDetail)
         {
-            if (wordDetail == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });

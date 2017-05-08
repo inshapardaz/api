@@ -237,14 +237,13 @@ namespace Inshapardaz.Api.Configuration
             var config = new DarkerConfig(services, services.BuildServiceProvider());
             config.RegisterDefaultDecorators();
             config.RegisterQueriesAndHandlersFromAssembly(typeof(DictionariesByUserQuery).GetTypeInfo().Assembly);
-            //config.RegisterQueriesAndHandlersFromAssembly(typeof(GetDictionaryByIdQuery).GetTypeInfo().Assembly);
 
             var queryProcessor = Darker.Builder.QueryProcessorBuilder.With()
                 .Handlers(config.HandlerRegistry, config, config)
                 .InMemoryQueryContextFactory()
                 .Build();
 
-            services.AddSingleton<Darker.IQueryProcessor>(queryProcessor);
+            services.AddSingleton(queryProcessor);
         }
     }
 }

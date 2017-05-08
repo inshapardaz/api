@@ -21,7 +21,8 @@ namespace Inshapardaz.Api
         {
             services.RegisterFramework(Configuration)
                    .RegisterRenderes()
-                   .RegisterDomain(Configuration);
+                   .RegisterDomain(Configuration)
+                   .RegisterSwagger();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,7 +39,8 @@ namespace Inshapardaz.Api
             app.UseWelcomePage("/welcome");
             app.ConfigureApiAuthentication(Configuration)
                 .ConfigureApplication()
-               .ConfigureObjectMappings();
+                .ConfigureObjectMappings()
+                .ConfigureSwagger();
         }
     }
 }

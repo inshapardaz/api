@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using paramore.brighter.commandprocessor;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Inshapardaz.Api.Configuration
 {
@@ -54,6 +55,16 @@ namespace Inshapardaz.Api.Configuration
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                                                                             .AllowAnyMethod()
                                                                             .AllowAnyHeader()));
+            return services;
+        }
+
+        public static IServiceCollection RegisterSwagger(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Inshapardaz API", Version = "v1" });
+            });
+
             return services;
         }
 
@@ -168,6 +179,17 @@ namespace Inshapardaz.Api.Configuration
             });
 
             app.UseCors("AllowAll");
+
+            return app;
+        }
+
+        public static IApplicationBuilder ConfigureSwagger(this IApplicationBuilder app)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inshapardaz API");
+            });
 
             return app;
         }

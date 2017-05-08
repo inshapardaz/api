@@ -31,6 +31,7 @@ namespace Inshapardaz.Api.Controllers
             _meaningRenderer = meaningRenderer;
         }
 
+        [HttpGet]
         [Route("api/words/{id}/meanings", Name = "GetWordMeaningById")]
         public async Task<IActionResult> GetMeaningForWord(int id)
         {
@@ -71,8 +72,9 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_meaningRenderer.Render(meaning));
         }
 
-        [Route("api/words/{id}/meanings/{context}", Name = "GetWordMeaningByContext")]
-        public IEnumerable<MeaningView> GetMeaningForWord(int id, string context)
+        [HttpGet]
+        [Route("api/words/{id}/meanings/contexts/{context}", Name = "GetWordMeaningByContext")]
+        public IEnumerable<MeaningView> GetMeaningForContext(int id, string context)
         {
             var finalContext = string.Empty;
             if (context != "default")

@@ -31,6 +31,7 @@ namespace Inshapardaz.Api.Controllers
             _userHelper = userHelper;
         }
 
+        [HttpGet]
         [Route("api/words/{id}/translations", Name = "GetWordTranslationsById")]
         public async Task<IActionResult> GetTranslationForWord(int id)
         {
@@ -48,7 +49,8 @@ namespace Inshapardaz.Api.Controllers
             return Ok(translations.Select(t => _translationRenderer.Render(t)).ToList());
         }
 
-        [Route("api/words/{id}/translations/{language}")]
+        [HttpGet]
+        [Route("api/words/{id}/translations/languages/{language}")]
         public async Task<IActionResult> GetTranslationForWord(int id, Languages language)
         {
             var user = _userHelper.GetUserId();

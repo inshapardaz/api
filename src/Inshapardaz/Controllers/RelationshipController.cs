@@ -30,6 +30,7 @@ namespace Inshapardaz.Api.Controllers
             _relationRender = relationRender;
         }
 
+        [HttpGet]
         [Route("/api/words/{id}/relationships", Name = "GetWordRelationsById")]
         public async Task<IActionResult> GetRelationshipForWord(int id)
         {

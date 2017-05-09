@@ -281,31 +281,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             Assert.IsType<NotFoundResult>(_result);
         }
     }
-
-    public class WhenUpdatingAWordWithNoTitle : WordControllerTestContext
-    {
-        public WhenUpdatingAWordWithNoTitle()
-        {
-            int wordId = 434;
-            WordView wordView = new WordView
-            {
-                Id = wordId,
-                Title = null,
-                TitleWithMovements = "a^A",
-                Pronunciation = "~a",
-                Description = "Some description"
-            };
-
-            _result = _controller.Put(wordId, wordView).Result;
-        }
-
-        [Fact]
-        public void ShouldReturnBadRequest()
-        {
-            Assert.IsType<BadRequestObjectResult>(_result);
-        }
-    }
-
+    
     public class WhenDeleteingAWord : WordControllerTestContext
     {
         public WhenDeleteingAWord()
@@ -350,6 +326,32 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public void ShouldReturnUnauthorised()
         {
             Assert.IsType<UnauthorizedResult>(_result);
+        }
+    }
+
+    public class WhenUpdatingAWordInDictionaryWithNoWriteAccess : WordControllerTestContext
+    {
+        public WhenUpdatingAWordInDictionaryWithNoWriteAccess()
+        {
+            int wordId = 434;
+            WordView wordView = new WordView
+            {
+                Id = wordId,
+                Title = "a",
+                TitleWithMovements = "a^A",
+                Pronunciation = "~a",
+                Description = "Some description"
+            };
+
+            _fakeUserHelper.WithUserId("2");
+
+            _result = _controller.Put(wordId, wordView).Result;
+        }
+
+        [Fact]
+        public void ShouldReturnNotFound()
+        {
+            Assert.IsType<NotFoundResult>(_result);
         }
     }
 

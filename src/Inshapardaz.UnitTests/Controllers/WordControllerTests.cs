@@ -201,34 +201,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             Assert.IsType<WordView>(response.Value);
         }
     }
-
-    public class WhenPostingForWordWithNoTitle : WordControllerTestContext
-    {
-        private const int DictionaryId = 56;
-
-        private readonly WordView _wordView = new WordView
-        {
-            TitleWithMovements = "a^A",
-            Pronunciation = "~a",
-            Description = "Some description"
-        };
-
-        public WhenPostingForWordWithNoTitle()
-        {
-            Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
-            _fakeQueryProcessor.SetupResultFor<WordByIdQuery, WordView>(_wordView);
-
-            _result = _controller.Post(DictionaryId, _wordView).Result;
-        }
-
-        [Fact]
-        public void ShouldReturnBadRequest()
-        {
-            Assert.IsType<BadRequestObjectResult>(_result);
-        }
-    }
-
+    
     public class WhenPostingInDictionaryWithNoWriteAccess : WordControllerTestContext
     {
         private const int DictionaryId = 56;
@@ -317,7 +290,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             WordView wordView = new WordView
             {
                 Id = wordId,
-                Title = "",
+                Title = null,
                 TitleWithMovements = "a^A",
                 Pronunciation = "~a",
                 Description = "Some description"
@@ -330,32 +303,6 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public void ShouldReturnBadRequest()
         {
             Assert.IsType<BadRequestObjectResult>(_result);
-        }
-    }
-
-    public class WhenUpdatingAWordInDictionaryWithNoWriteAccess : WordControllerTestContext
-    {
-        public WhenUpdatingAWordInDictionaryWithNoWriteAccess()
-        {
-            int wordId = 434;
-            WordView wordView = new WordView
-            {
-                Id = wordId,
-                Title = "a",
-                TitleWithMovements = "a^A",
-                Pronunciation = "~a",
-                Description = "Some description"
-            };
-
-            _fakeUserHelper.WithUserId("2");
-
-            _result = _controller.Put(wordId, wordView).Result;
-        }
-
-        [Fact]
-        public void ShouldReturnNotFound()
-        {
-            Assert.IsType<NotFoundResult>(_result);
         }
     }
 

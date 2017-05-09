@@ -14,17 +14,17 @@ namespace Inshapardaz.Api.Model
 {
     public class WordView
     {
-        public string Description { get; set; }
-
         public long Id { get; set; }
 
-        public IEnumerable<LinkView> Links { get; set; }
-
         [Required(AllowEmptyStrings = false)]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Title { get; set; }
 
         public string TitleWithMovements { get; set; }
+
+        public string Description { get; set; }
+               
+        public IEnumerable<LinkView> Links { get; set; }
+
 
         public string Pronunciation { get; set; }
     }

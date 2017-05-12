@@ -52,9 +52,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             services.AddScoped<IUserHelper, UserHelper>();
-            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-                                                                            .AllowAnyMethod()
-                                                                            .AllowAnyHeader()));
+            services.AddCors();
             return services;
         }
 
@@ -168,6 +166,11 @@ namespace Inshapardaz.Api.Configuration
 
             app.UseApplicationInsightsExceptionTelemetry();
 
+            /* Always register CORS bedore Mvc  */
+            app.UseCors(policy => policy.AllowAnyOrigin()
+                                        .AllowAnyMethod()
+                                        .AllowAnyHeader()
+                                        .AllowCredentials());
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
@@ -177,8 +180,6 @@ namespace Inshapardaz.Api.Configuration
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            app.UseCors("AllowAll");
 
             return app;
         }

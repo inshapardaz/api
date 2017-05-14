@@ -18,12 +18,13 @@ namespace Inshapardaz.Api.Renderers
         public PageView<WordView> Render(PageRendererArgs<Word> source)
         {
             var page = new PageView<WordView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
-                            {
-                                Data = source.Page.Data.Select(x => _wordIndexRenderer.Render(x))
-                            };
+            {
+                Data = source.Page.Data.Select(x => _wordIndexRenderer.Render(x))
+            };
 
             var links = new List<LinkView>();
-            var parameters1 = new { pageNumber = page.CurrentPageIndex, pageSize = page.PageSize };
+            var parameters1 = new { query = source.Query, pageNumber = page.CurrentPageIndex, pageSize = page.PageSize };
+
             links.Add(LinkRenderer.Render(source.RouteName, "self", parameters1));
 
             if (page.CurrentPageIndex < page.PageCount)

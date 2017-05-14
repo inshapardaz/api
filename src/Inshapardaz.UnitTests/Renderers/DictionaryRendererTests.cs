@@ -14,8 +14,9 @@ namespace Inshapardaz.Api.UnitTests.Renderers
     {
         public class WhenRendereingAnonymously
         {
-            DictionaryView _result;
-            Domain.Model.Dictionary _dictionary = new Domain.Model.Dictionary
+            private DictionaryView _result;
+
+            private Domain.Model.Dictionary _dictionary = new Domain.Model.Dictionary
             {
                 Id = 1,
                 Name = "Test",
@@ -85,12 +86,19 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             {
                 Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "index"));
             }
+
+            [Fact]
+            public void ShouldRenderDictionarySearchLink()
+            {
+                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "search"));
+            }
         }
 
         public class WhenRendereingForOwner
         {
-            DictionaryView _result;
-            Domain.Model.Dictionary _dictionary = new Domain.Model.Dictionary
+            private DictionaryView _result;
+
+            private Domain.Model.Dictionary _dictionary = new Domain.Model.Dictionary
             {
                 Id = 1,
                 Name = "Test",

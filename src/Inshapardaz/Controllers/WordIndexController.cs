@@ -1,4 +1,5 @@
-﻿using Darker;
+﻿using System;
+using Darker;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Model;
@@ -19,7 +20,34 @@ namespace Inshapardaz.Api.Controllers
             _queryProcessor = queryProcessor;
             _pageRenderer = pageRenderer;
         }
-        
+
+        [HttpGet]
+        [Route("api/dictionaries/{id}/Search", Name = "SearchDictionary")]
+        public IActionResult SearchDictionary(int id, string query, int pageNumber = 1, int pageSize = 10)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return NotFound();
+            }
+
+            var wordQuery = new WordContainingTitleQuery
+            {
+                DictionaryId = id,
+                SearchTerm = query,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var response = _queryProcessor.Execute(wordQuery);
+            var pageRenderArgs = new PageRendererArgs<Word>()
+            {
+                RouteName = "SearchDictionary",
+                Page = response
+            };
+
+            return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
+        }
+
         [HttpGet]
         [Route("api/words/startWith/{title}", Name = "GetWordsListStartWith")]
         public IActionResult StartsWith(string title, int pageNumber = 1, int pageSize = 10)
@@ -30,17 +58,17 @@ namespace Inshapardaz.Api.Controllers
             }
 
             var query = new WordStartingWithQuery
-                            {
-                                PageSize = pageSize,
-                                PageNumber = pageNumber,
-                                Title = title
-                            };
+            {
+                PageSize = pageSize,
+                PageNumber = pageNumber,
+                Title = title
+            };
             var results = _queryProcessor.Execute(query);
 
             var pageRenderArgs = new PageRendererArgs<Word>()
-                                     {
-                                         RouteName = "GetWordsListStartWith",
-                                         Page = results
+            {
+                RouteName = "GetWordsListStartWith",
+                Page = results
             };
 
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));

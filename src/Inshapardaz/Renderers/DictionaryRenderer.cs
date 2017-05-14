@@ -20,8 +20,9 @@ namespace Inshapardaz.Api.Renderers
             var links = new List<LinkView>
                             {
                                 LinkRenderer.Render("GetDictionaryById", "self", new { id = source.Id }),
-                                LinkRenderer.Render("GetWords", "index", new { id = source.Id })
-                            };
+                                LinkRenderer.Render("GetWords", "index", new { id = source.Id }),
+                                LinkRenderer.Render("SearchDictionary", "search", new { id = source.Id })
+            };
 
             if (_userHelper.IsContributor)
             {

@@ -19,7 +19,9 @@ namespace Inshapardaz.Domain.QueryHandlers
 
         public override Page<Word> Execute(WordContainingTitleQuery query)
         {
-            var wordIndices = _database.Words.Where(x => x.Title.StartsWith(query.SearchTerm));
+            var wordIndices = query.DictionaryId > 0
+                ? _database.Words.Where(x => x.DictionaryId == query.DictionaryId && x.Title.StartsWith(query.SearchTerm))
+                : _database.Words.Where(x => x.Title.StartsWith(query.SearchTerm));
 
             var count = wordIndices.Count();
             var data = wordIndices

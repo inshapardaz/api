@@ -38,7 +38,7 @@ namespace Inshapardaz.Domain.Model
         ///     The sansikrat.
         /// </summary>
         [Description("سنسکرت")]
-        Sansikrat,
+        Sanskrit,
 
         /// <summary>
         ///     The hindi.
@@ -110,7 +110,7 @@ namespace Inshapardaz.Domain.Model
         ///     The portugeese.
         /// </summary>
         [Description("پرتگالی")]
-        Portugeese,
+        Portuguese,
 
         /// <summary>
         ///     The italian.

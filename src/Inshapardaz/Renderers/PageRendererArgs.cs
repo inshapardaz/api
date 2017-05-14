@@ -7,5 +7,6 @@ namespace Inshapardaz.Api.Renderers
         public string RouteName { get; set; }
 
         public Page<T> Page { get; set; }
+        public string Query { get; internal set; }
     }
 }

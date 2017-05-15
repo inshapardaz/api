@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet]
-        [Route("api/dictionary/{id}/words", Name = "GetWords")]
+        [Route("api/dictionaries/{id}/words", Name = "GetWords")]
         public async Task<IActionResult> Get(int id, int pageNumber = 1, int pageSize = 10)
         {
             var userId = _userHelper.GetUserId();
@@ -80,7 +80,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_wordRenderer.Render(word));
         }
 
-        [HttpPost("/api/dictionary/{id}/words", Name = "CreateWord")]
+        [HttpPost("/api/dictionaries/{id}/words", Name = "CreateWord")]
         public async Task<IActionResult> Post(int id, [FromBody]WordView word)
         {
             if (word == null || !ModelState.IsValid)

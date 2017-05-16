@@ -22,25 +22,34 @@ namespace Inshapardaz.Api.Renderers
                 Data = source.Page.Data.Select(x => _wordIndexRenderer.Render(x))
             };
 
-            var links = new List<LinkView>();
-            var parameters1 = new { query = source.Query, pageNumber = page.CurrentPageIndex, pageSize = page.PageSize };
-
-            links.Add(LinkRenderer.Render(source.RouteName, "self", parameters1));
+            var links = new List<LinkView>
+            {
+                LinkRenderer.Render(source.RouteName, "self",
+                    CreateRouteParameters(source, page.CurrentPageIndex, page.PageSize))
+            };
 
             if (page.CurrentPageIndex < page.PageCount)
             {
-                var parameters = new { pageNumber = page.CurrentPageIndex + 1, pageSize = page.PageSize };
-                links.Add(LinkRenderer.Render(source.RouteName, "next", parameters));
+                links.Add(LinkRenderer.Render(source.RouteName, "next",
+                    CreateRouteParameters(source, page.CurrentPageIndex + 1, page.PageSize)));
             }
 
             if (page.CurrentPageIndex > 1)
             {
-                var parameters = new { pageNumber = page.CurrentPageIndex - 1, pageSize = page.PageSize };
-                links.Add(LinkRenderer.Render(source.RouteName, "previous", parameters));
+                links.Add(LinkRenderer.Render(source.RouteName, "previous",
+                    CreateRouteParameters(source, page.CurrentPageIndex - 1, page.PageSize)));
             }
 
             page.Links = links;
             return page;
+        }
+
+        private object CreateRouteParameters(PageRendererArgs<Word> source, int pageNumber, int pageSize)
+        {
+            var args = source.RouteArguments ?? new PagedRouteArgs();
+            args.PageNumber = pageNumber;
+            args.PageSize = pageSize;
+            return args;
         }
     }
 }

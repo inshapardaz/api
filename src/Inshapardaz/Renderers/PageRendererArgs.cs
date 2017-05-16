@@ -7,6 +7,26 @@ namespace Inshapardaz.Api.Renderers
         public string RouteName { get; set; }
 
         public Page<T> Page { get; set; }
-        public string Query { get; internal set; }
+
+        public PagedRouteArgs RouteArguments { get; set; }
+    }
+
+    public class PagedRouteArgs
+    {
+        public int PageNumber { get; set; }
+
+        public int PageSize { get; set; }
+    }
+
+    public class DictionarSearchPageRouteArgs : PagedRouteArgs
+    {
+        public int Id { get; set; }
+
+        public string Query { get; set; }
+    }
+
+    public class RouteWithTitlePageRouteArgs : PagedRouteArgs
+    {
+        public string Title { get; set; }
     }
 }

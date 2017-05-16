@@ -39,10 +39,15 @@ namespace Inshapardaz.Api.Controllers
             };
 
             var response = _queryProcessor.Execute(wordQuery);
-            var pageRenderArgs = new PageRendererArgs<Word>()
+            var pageRenderArgs = new PageRendererArgs<Word>
             {
                 RouteName = "SearchDictionary",
-                Page = response
+                Page = response,
+                RouteArguments = new DictionarSearchPageRouteArgs
+                {
+                    Id = id,
+                    Query = query
+                }
             };
 
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
@@ -65,10 +70,14 @@ namespace Inshapardaz.Api.Controllers
             };
             var results = _queryProcessor.Execute(query);
 
-            var pageRenderArgs = new PageRendererArgs<Word>()
+            var pageRenderArgs = new PageRendererArgs<Word>
             {
                 RouteName = "GetWordsListStartWith",
-                Page = results
+                Page = results,
+                RouteArguments = new RouteWithTitlePageRouteArgs
+                {
+                    Title = title
+                }
             };
 
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
@@ -91,10 +100,14 @@ namespace Inshapardaz.Api.Controllers
             };
 
             var response = _queryProcessor.Execute(query);
-            var pageRenderArgs = new PageRendererArgs<Word>()
+            var pageRenderArgs = new PageRendererArgs<Word>
             {
                 RouteName = "WordSearch",
-                Page = response
+                Page = response,
+                RouteArguments = new RouteWithTitlePageRouteArgs
+                {
+                    Title = title
+                }
             };
 
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));

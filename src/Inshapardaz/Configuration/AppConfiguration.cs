@@ -162,10 +162,6 @@ namespace Inshapardaz.Api.Configuration
                 }
             });
 
-            app.UseApplicationInsightsRequestTelemetry();
-
-            app.UseApplicationInsightsExceptionTelemetry();
-
             /* Always register CORS bedore Mvc  */
             app.UseCors(policy => policy.AllowAnyOrigin()
                                         .AllowAnyMethod()

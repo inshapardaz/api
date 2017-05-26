@@ -54,10 +54,10 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet]
-        [Route("api/words/startWith/{title}", Name = "GetWordsListStartWith")]
-        public IActionResult StartsWith(string title, int pageNumber = 1, int pageSize = 10)
+        [Route("api/dictionaries/{id}/words/startWith/{startingWith}", Name = "GetWordsListStartWith")]
+        public IActionResult StartsWith(int id, string startingWith, int pageNumber = 1, int pageSize = 10)
         {
-            if (string.IsNullOrWhiteSpace(title))
+            if (string.IsNullOrWhiteSpace(startingWith))
             {
                 return NotFound();
             }
@@ -66,7 +66,8 @@ namespace Inshapardaz.Api.Controllers
             {
                 PageSize = pageSize,
                 PageNumber = pageNumber,
-                Title = title
+                Title = startingWith,
+                DictionaryId = id
             };
             var results = _queryProcessor.Execute(query);
 
@@ -76,7 +77,7 @@ namespace Inshapardaz.Api.Controllers
                 Page = results,
                 RouteArguments = new RouteWithTitlePageRouteArgs
                 {
-                    Title = title
+                    Title = startingWith
                 }
             };
 

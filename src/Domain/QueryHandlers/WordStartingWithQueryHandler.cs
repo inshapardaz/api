@@ -20,7 +20,7 @@ namespace Inshapardaz.Domain.QueryHandlers
 
         public override Page<Word> Execute(WordStartingWithQuery request)
         {
-            var wordIndices = _database.Words.Where(x => x.Title.StartsWith(request.Title));
+            var wordIndices = _database.Words.Where(x => x.DictionaryId == request.DictionaryId && x.Title.StartsWith(request.Title));
 
             var count = wordIndices.Count();
             var data = wordIndices

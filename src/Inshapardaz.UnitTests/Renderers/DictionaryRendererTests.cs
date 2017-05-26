@@ -76,6 +76,13 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             }
 
             [Fact]
+            public void ShouldRenderIndexes()
+            {
+                Assert.NotNull(_result.Indexes);
+                Assert.NotEqual(_result.Indexes.Count(), 0);
+            }
+
+            [Fact]
             public void ShouldRenderDictionarySelfLink()
             {
                 Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "self"));

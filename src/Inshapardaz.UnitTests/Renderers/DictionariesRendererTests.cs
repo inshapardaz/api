@@ -7,7 +7,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
         [Fact]
         public void ShouldRenderSelfLink()
         {
-
         }
     }
 }

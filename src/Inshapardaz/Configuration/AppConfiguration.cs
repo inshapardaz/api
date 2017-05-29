@@ -193,19 +193,11 @@ namespace Inshapardaz.Api.Configuration
 
         public static IApplicationBuilder ConfigureApiAuthentication(this IApplicationBuilder app, IConfigurationRoot configuration)
         {
-            var keyAsBase64 = configuration["auth0:clientSecret"].Replace('_', '/').Replace('-', '+');
-            var keyAsBytes = Convert.FromBase64String(keyAsBase64);
-
             var options = new JwtBearerOptions
             {
-                TokenValidationParameters =
-                {
-                    ValidIssuer = $"https://{configuration["auth0:domain"]}/",
-                    ValidAudience = configuration["auth0:clientId"],
-                    IssuerSigningKey = new SymmetricSecurityKey(keyAsBytes)
-                }
+                Audience = configuration["auth0:audience"],
+                Authority = configuration["auth0:authority"]
             };
-
             app.UseJwtBearerAuthentication(options);
 
             return app;

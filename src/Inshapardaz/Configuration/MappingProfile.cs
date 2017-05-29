@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Configuration
                 .ForMember(s => s.UserId, o => o.MapFrom(d => d.UserId))
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ForMember(s => s.Indexes, o => o.Ignore())
-                .ForMember(s => s.WordCount, o => o.Ignore())
+                .ForMember(s => s.WordCount, o => o.MapFrom(d => d.Words.Count))
                 .ReverseMap()
                     .ForMember(s => s.Words, o => o.Ignore());
 

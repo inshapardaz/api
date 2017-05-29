@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
+using Inshapardaz.Domain.Model;
 using Moq;
 using Xunit;
 
@@ -14,15 +16,16 @@ namespace Inshapardaz.Api.UnitTests.Renderers
     {
         public class WhenRendereingAnonymously
         {
-            private DictionaryView _result;
+            private readonly DictionaryView _result;
 
-            private Domain.Model.Dictionary _dictionary = new Domain.Model.Dictionary
+            private readonly Dictionary _dictionary = new Domain.Model.Dictionary
             {
                 Id = 1,
                 Name = "Test",
                 Language = 4,
                 IsPublic = false,
-                UserId = "12"
+                UserId = "12",
+                Words = new List<Word> { new Word(), new Word() }
             };
 
             public WhenRendereingAnonymously()
@@ -61,6 +64,12 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             public void ShouldRenderDictionaryLanguage()
             {
                 Assert.Equal(_result.Language, _dictionary.Language);
+            }
+
+            [Fact]
+            public void ShouldRenderWordCount()
+            {
+                Assert.Equal(_result.WordCount, _dictionary.Words.Count);
             }
 
             [Fact]

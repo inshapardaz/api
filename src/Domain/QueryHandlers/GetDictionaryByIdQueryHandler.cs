@@ -21,7 +21,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public async override Task<Dictionary> ExecuteAsync(DictionaryByIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<Dictionary> ExecuteAsync(DictionaryByIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
             IQueryable<Dictionary> result;
             if (!string.IsNullOrWhiteSpace(query.UserId))

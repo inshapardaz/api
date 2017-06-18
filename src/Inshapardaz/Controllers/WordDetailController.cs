@@ -36,15 +36,6 @@ namespace Inshapardaz.Api.Controllers
         [Route("/api/words/{id}/details", Name = "GetWordDetailsById")]
         public async Task<IActionResult> GetForWord(int id)
         {
-            if (!string.IsNullOrWhiteSpace(_userHelper.GetUserId()))
-            {
-                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
-                if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
-                {
-                    return Unauthorized();
-                }
-            }
-
             var query = new WordDetailsByWordQuery
             {
                 WordId = id

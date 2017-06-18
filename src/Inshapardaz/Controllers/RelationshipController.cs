@@ -34,15 +34,6 @@ namespace Inshapardaz.Api.Controllers
         [Route("/api/words/{id}/relationships", Name = "GetWordRelationsById")]
         public async Task<IActionResult> GetRelationshipForWord(int id)
         {
-            if (!string.IsNullOrWhiteSpace(_userHelper.GetUserId()))
-            {
-                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
-                if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
-                {
-                    return Unauthorized();
-                }
-            }
-
             var relations = await _queryProcessor.ExecuteAsync(new RelationshipByWordIdQuery { WordId = id });
             return Ok(relations.Select(r => _relationRender.Render(r)).ToList());
         }

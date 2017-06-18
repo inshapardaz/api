@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Renderers
                 links.Add(LinkRenderer.Render("UpdateWord", "update", new { id = result.Id }));
                 links.Add(LinkRenderer.Render("DeleteWord", "delete", new { id = result.Id }));
                 links.Add(LinkRenderer.Render("AddRelation", "addRelate", new { id = result.Id }));
-                links.Add(LinkRenderer.Render("MergeWords", "merge", new {id = result.Id }));
+                //links.Add(LinkRenderer.Render("MergeWords", "merge", new {id = result.Id }));
             }
 
             result.Links = links;

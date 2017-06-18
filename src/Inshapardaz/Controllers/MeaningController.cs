@@ -35,16 +35,6 @@ namespace Inshapardaz.Api.Controllers
         [Route("api/words/{id}/meanings", Name = "GetWordMeaningById")]
         public async Task<IActionResult> GetMeaningForWord(int id)
         {
-            var user = _userHelper.GetUserId();
-            if (!string.IsNullOrWhiteSpace(user))
-            {
-                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
-                if (dictionary != null && dictionary.UserId != user)
-                {
-                    return Unauthorized();
-                }
-            }
-
             IEnumerable<Meaning> meanings = await _queryProcessor.ExecuteAsync(new WordMeaningByWordQuery { WordId = id });
             return Ok(meanings.Select(x => _meaningRenderer.Render(x)).ToList());
         }

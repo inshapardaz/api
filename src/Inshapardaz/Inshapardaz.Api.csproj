@@ -14,6 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="wwwroot/.gitattributes" />
+    <Content Remove="wwwroot/.typingsrc" />
     <Content Remove="wwwroot/tscommand-c4df35cb.tmp.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -40,6 +41,14 @@
     <ProjectReference Include="..\Domain\Inshapardaz.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Connected Services" />
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />
+    <Content Include="wwwroot\assets\**\*"  CopyToPublishDirectory="PreserveNewest"/>
+    <Content Include="wwwroot\icons*\**\*"  CopyToPublishDirectory="PreserveNewest"/>
+    <Content Include="wwwroot\images\**\*"  CopyToPublishDirectory="PreserveNewest"/>
+    <Content Include="wwwroot\*.html"  CopyToPublishDirectory="PreserveNewest"/>
+    <Content Include="wwwroot\*.js"  CopyToPublishDirectory="PreserveNewest"/>
   </ItemGroup>
 </Project>

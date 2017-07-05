@@ -10,3 +10,11 @@ deploylocation/
 app/**/*.js
 app/**/*.map
 custom.css
+index.html
+assets/
+icons*/**/*
+images/
+polyfills.js
+vendor.js
+app.js
+package-lock.json

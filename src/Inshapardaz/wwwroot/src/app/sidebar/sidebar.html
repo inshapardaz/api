@@ -1,0 +1,39 @@
+<div id="sidebar-scroll">
+    <div class="sidebar-content">
+        <div class="side-header side-content bg-white-op">
+            <button class="btn btn-link text-gray pull-right hidden-md hidden-lg" type="button" sidebar-toggle data-action="sidebar_close">
+                <i class="fa fa-times"></i>
+            </button>
+            <a class="h5 text-white urdu"  [routerLink]="['/home']">
+                {{ 'APP.TITLE' | translate}}
+            </a>
+        </div>
+
+        <div class="side-content">
+            <ul class="nav-main">
+                <li>
+                    <a [routerLink]="['/home']"><i class="si si-home"></i><span class="sidebar-mini-hide">{{ 'HOME.TITLE' | translate}}</span></a>
+                </li>
+                <li class="nav-main-heading"><span class="sidebar-mini-hide">{{ 'SIDEBAR.SECTIONS' | translate}}</span></li>
+                <li>
+                    <a [routerLink]="['/dictionaries']">
+                        <i class="si si-book-open"></i>
+                        <span class="sidebar-mini-hide">{{ 'DICTIONARIES.TITLE' | translate}}</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="['/thesaurus']">
+                        <i class="si si-directions"></i>
+                        <span class="sidebar-mini-hide">{{ 'THESAURUS.TITLE' | translate}}</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="['/translations']">
+                        <i class="si si-globe"></i>
+                        <span class="sidebar-mini-hide">{{ 'TRANSLATIONS.TITLE' | translate}}</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

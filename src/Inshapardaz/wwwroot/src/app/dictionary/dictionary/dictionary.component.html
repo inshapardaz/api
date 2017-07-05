@@ -1,0 +1,145 @@
+<!-- Page Header -->
+<div class="content bg-gray-lighter" *ngIf="!isLoading">
+    <div class="row items-push">
+        <div class="col-sm-5 text-left hidden-xs">
+            <ol class="breadcrumb push-10-t">
+                <li>{{'DICTIONARIES.TITLE' | translate}}</li>
+                <li><a class="link-effect" href="">{{dictionary.name}}</a></li>
+            </ol>
+        </div>
+        <div class="col-sm-7 text-right ">
+            <h1 class="page-heading">
+                {{dictionary.name}}
+            </h1>
+        </div>
+        
+    </div>
+</div>
+<!-- END Page Header -->
+
+<!-- Search Form -->
+<div class="bg-white" *ngIf="!isLoading">
+    <section class="content content-full content-boxed">
+        <!-- Section Content -->
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+                <form [formGroup]="searchForm" (ngSubmit)="gotoSearch($event)">
+                    <div class="input-group input-group-lg">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                            <a class="btn btn-default" *ngIf="isInSearch" (click)="clearSearch()"><i class="fa fa-close" ></i></a>
+                        </div>
+                        <input class="form-control text-right" type="text" placeholder="{{'DICTIONARY.SEARCH_IN_DICTIONARY' | translate}}" formControlName="query">                        
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- END Section Content -->
+    </section>
+</div>
+
+<div class="content">
+    <div class="row">
+
+        <div class="col-sm-7 col-lg-9">
+            <!-- Tickets List -->
+            <div class="block">
+                <div class="block-header bg-gray-lighter">
+                    <ul class="block-options">
+                        <li *ngIf="!isLoading && wordPage.nextLink">
+                            <button class="js-tooltip" (click)="loadPage(wordPage.nextLink)"  title="{{'ACTIONS.NEXT_PAGE' | translate}}"
+                                type="button" data-toggle="block-option"><i class="si si-arrow-left"></i></button>
+                        </li>
+                        <li *ngIf="!isLoading && wordPage.prevLink">
+                            <button class="js-tooltip" (click)="loadPage(wordPage.prevLink)" title="{{'ACTIONS.PREVIOUS_PAGE' | translate}}"
+                                type="button" data-toggle="block-option"><i class="si si-arrow-right"></i></button>
+                        </li>
+                        <li *ngIf="!isLoading">
+                            <button type="button" (click)="reloadPage()" title="{{'ACTIONS.REFRESH' | translate}}" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+                        </li>
+                        <li>
+                            <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+                        </li>
+                    </ul>
+                    <div class="block-title text-normal" *ngIf="!isLoading">
+                        <span class="font-w400">{{ 'DICTIONARY.PAGE' | translate}}</span> <strong>{{wordPage.currentPageIndex}}</strong> <span class="font-w400">{{'DICTIONARY.OF' | translate}}</span> <strong>{{wordPage.pageCount}}</strong>
+                    </div>
+                </div>
+                <div class="block-content" [class.block-opt-refresh]="isLoading">
+                    <table class="table table-hover table-striped table-vcenter" *ngIf="!isLoading">
+                        <tbody>
+                            <tr *ngFor="let word of wordPage.words">
+                                <td class="text-center" *ngIf="word.updateLink">
+                                    <div class="btn-group">
+                                        <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="{{'ACTIONS.EDIT' | translate}}"><i class="fa fa-pencil"></i></button>
+                                        <button class="btn btn-xs btn-default" type="button" (click)="deleteWord(word)" data-toggle="tooltip" title="{{'ACTIONS.DELETE' | translate}}"><i class="fa fa-times"></i></button>
+                                    </div>
+                                </td>
+                                <td class="font-w600 urdu text-right" [routerLink]="['/word', word.id]">
+                                    {{word.description}}
+                                </td>
+                                <td class="font-w600 urdu text-right">
+                                    <a [routerLink]="['/word', word.id]">{{word.title}}</a>
+                                </td>
+                            </tr>
+                            <tr *ngIf="!isLoading && wordPage.words.length < 1">
+                                <td>
+                                    No word found
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5 col-lg-3">
+            <button class="btn btn-block btn-primary visible-xs push" data-toggle="collapse" data-target="#tickets-nav" type="button">Navigation</button>
+            <div class="collapse navbar-collapse remove-padding" id="tickets-nav">
+                <div class="block">
+                    <div class="block-header bg-gray-lighter">
+                        <h3 class="block-title urdu">{{'DICTIONARY.DETAILS' | translate}}</h3>
+                    </div>
+                    <div class="block-content">
+                        <ul class="nav nav-pills nav-stacked push text-right" *ngIf="dictionary">
+                            <li>
+                                <a href="base_pages_tickets.html">
+                                <span class="badge pull-left">{{dictionary.wordCount}}</span>{{'DICTIONARY.WORD_COUNT' | translate}} <i class="fa fa-fw fa-tasks push-5-r"></i>
+                            </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">
+                                <span class="badge pull-left">{{dictionary.language}}</span>{{'DICTIONARY.LANGUAGE' | translate}} <i class="fa fa-fw fa-language push-5-r"></i>
+                            </a>
+                            </li>
+                            <li *ngIf="dictionary.isPublic">
+                                <a href="javascript:void(0)">
+                                    {{'DICTIONARY.PUBLIC_DICTIONARY' | translate}}<i class="fa fa-fw fa-globe push-5-r"></i>
+                            </a>
+                            </li>
+                            <li *ngIf="!dictionary.isPublic">
+                                <a href="javascript:void(0)">
+                                    {{'DICTIONARY.PRIVATE_DICTIONARY' | translate}}<i class="fa fa-fw fa-lock push-5-r"></i>
+                            </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="block">
+                    <div class="block-header bg-gray-lighter">
+                        <h3 class="block-title urdu">{{'DICTIONARY.INDEX' | translate}}</h3>
+                    </div>
+                    <div class="block-content">
+                        <div class="list-group" *ngIf="dictionary">
+                            <a class="list-group-item text-right" *ngFor="let index of dictionary.indexes" href="javascript:void(0)" (click)="gotoIndex(index.link)">
+                            {{index.title}} <i class="fa fa-fw fa-angle-left push-5-r"></i> 
+                        </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- END Quick Stats -->
+            </div>
+            <!-- END Collapsible Tickets Navigation -->
+        </div>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+.sass-cache/
+.tscache/
+.vscode
+.typingsrc
+node_modules/.bin/grunt
+node_modules
+typings/
+dist
+deploylocation/
+app/**/*.js
+app/**/*.map
+custom.css

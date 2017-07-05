@@ -1,0 +1,115 @@
+<div class="bg-image overflow-hidden" style="background-image: url('images/photos/photo31@2x.jpg');">
+    <div class="bg-black-op">
+        <div class="content content-narrow">
+            <div class="block block-transparent">
+                <div class="block-content block-content-full">
+                    <h1 class="h1 font-w300 text-white animated fadeInDown push-50-t push-5 urdu">{{'DICTIONARIES.TITLE' | translate}}</h1>
+                    <h2 class="h4 font-w300 text-white-op animated fadeInUp urdu">{{'DICTIONARIES.SLOGAN' | translate}}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white">
+    <section class="content content-boxed overflow-hidden">
+        <!-- Section Content -->
+        <div class="content-grid">
+            <div class="row">
+                <div class="col-sm-12" *ngIf="isLoading">
+                    <div class="block block-opt-refresh">
+                        <div class="block-header">
+                        </div>
+                        <div class="block-content">
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-class="animated fadeInDown" *ngFor="let dictionary of dictionaries" >
+                    <a class="block block-bordered block-rounded block-link-hover3" [routerLink]="['/dictionary', dictionary.id]">
+                        <div class="block-content block-content-full border-b text-center">
+                            <div class="item">
+                                <i class="si si-book-open text-amethyst"></i>
+                            </div>
+                        </div>
+                        <div class="block-content block-content-full block-content-mini">
+                            <span class="font-w600 text-uppercase">{{dictionary.name}}</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-class="animated fadeInDown" *ngIf="createLink">
+                    <a class="block block-bordered block-rounded block-link-hover3" data-toggle="modal" data-target="#modal-normal">
+                        <div class="block-content block-content-full border-b text-center">
+                            <div class="item">
+                                <i class="si si-plus"></i>
+                            </div>
+                        </div>
+                        <div class="block-content block-content-full block-content-mini">
+                            <span class="font-w600 text-uppercase" >{{'DICTIONARIES.CREATENEW' | translate}}</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="modal" id="modal-normal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="block block-themed block-transparent remove-margin-b">
+                <div class="block-header bg-primary-dark">
+                    <ul class="block-options">
+                        <li>
+                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">Create New Dictionary</h3>
+                </div>
+                <div class="block-content">
+                    <form class="form-horizontal push-10-t" action="base_forms_elements.html" method="post" onsubmit="return false;">
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <div class="form-material">
+                                    <input class="form-control" type="text" id="material-text" name="material-text" placeholder="Please enter dictionary name">
+                                    <label for="material-text">Name</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <div class="form-material">
+                                    <select class="form-control" id="material-select" name="material-select" size="1">
+                                        <option>...</option>
+                                        <option value="1">Option #1</option>
+                                        <option value="2">Option #2</option>
+                                        <option value="3">Option #3</option>
+                                    </select>
+                                    <label for="material-select">Please Select language</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <div class="form-material">
+                                    <label class="css-input switch switch-primary">
+                                        <input type="checkbox" checked><span></span> Public Dictionary
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-sm btn-primary" type="button" data-dismiss="modal"><i class="fa fa-check"></i> Create</button>
+            </div>
+        </div>
+    </div>
+</div>

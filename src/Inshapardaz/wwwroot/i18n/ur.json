@@ -1,0 +1,64 @@
+{
+  "APP": {
+    "TITLE": "انشاپرداز",
+    "SLOGAN" : "آئیے اچھی زبان کی تخلیق کریں"
+  },
+  "HEADER" : {
+    "PROFILE" : "کوائف",
+    "SETTINGS" : "ترجیحات",
+    "LOGOUT" : "خروج",
+    "LOGIN" : "دخول",
+    "SEARCH" : "تلاش۔۔۔"
+  },
+  "SIDEBAR" : {
+    "SECTIONS" : "ذمرہ‌جات"
+  },
+  "HOME" : {
+    "TITLE" : "صفحہءاوّل"
+  },
+  "DICTIONARIES" : {
+    "TITLE" : "لغات",
+    "SLOGAN" : "آئیے اچھی زبان کی تخلیق کریں",
+    "CREATENEW" : "نئی لغت بنائیں"
+  },
+  "DICTIONARY" : {
+    "SEARCH_IN_DICTIONARY" : "لغت میں تلاش۔۔۔",
+    "DETAILS": "تفصیلات",
+    "INDEX" : "فہرست",
+    "WORD_COUNT" : "تعداد الفاظ",
+    "LANGUAGE" : "زبان",
+    "PUBLIC_DICTIONARY" : "عوامی لغت",
+    "PRIVATE_DICTIONARY" : "ذاتی لغت",
+    "PAGE" : "صفحہ",
+    "OF" : "کا"
+  },
+  "WORD":{
+    "RELATIONS" : "مربوط الفاظ"
+  },
+  "THESAURUS" : {
+    "TITLE" : "تھیسارس",
+    "SLOGAN" : "آئیے اچھی زبان کی تخلیق کریں"
+  },
+  "TRANSLATIONS" : {
+    "TITLE" : "تراجم",
+    "SLOGAN" : "آئیے اچھی زبان کی تخلیق کریں"
+  },
+  "EDITOR" : {
+    "TITLE" : "اداریہ",
+    "SLOGAN" : "آئیے اچھی زبان کی تخلیق کریں"
+  },
+  "SETTINGS" : {
+    "TITLE" : "ترجیحات",
+    "SUB_TITLE" : "اپنی ذاتی پسند کا اطلاق کیجیئے",
+    "USER_INTERFACE_LANGUAGES" : "صارفی زبان",
+    "COLOR_THEMES" : "رنگ"
+  },
+  "ACTIONS":{
+    "REFRESH" : "دوباہ لوڈ کریں",
+    "ADD" : "اضافہ کریں",
+    "EDIT" : "تدوین کریں",
+    "DELETE" : "حذف کریں",
+    "NEXT_PAGE" : "اگلہ صفیہ",
+    "PREVIOUS_PAGE" : "پچھلہ صفیہ"
+  }
+}

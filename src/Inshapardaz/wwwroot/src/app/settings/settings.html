@@ -1,0 +1,74 @@
+<div class="content bg-gray-lighter">
+    <div class="row items-push">
+        <div class="col-sm-7">
+            <h1 class="page-heading">
+                {{ 'SETTINGS.TITLE' | translate}} <small>{{ 'SETTINGS.SUB_TITLE' | translate}}</small>
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="row">
+        <div class="col-sm-6 col-lg-6">
+            <div class="block block-bordered">
+                <div class="block-header bg-gray-lighter">
+                    <h3 class="block-title">{{ 'SETTINGS.USER_INTERFACE_LANGUAGES' | translate}}</h3>
+                </div>
+                <div class="block-content">
+                    <div class="row row items-push">
+                        <div class="col-xs-12" *ngFor="let lang of translate.getLangs()">
+                            <label class="css-input css-radio css-radio-primary ">
+                                <input type="radio" name="radio-lang" [checked]="lang === translate.currentLang" (click)="setLanguage(lang)"><span></span> {{lang}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-6">
+            <div class="block block-bordered">
+                <div class="block-header bg-gray-lighter">
+                    <h3 class="block-title">{{'SETTINGS.COLOR_THEMES' | translate}}
+                    </h3>
+                </div>
+                <div class="block-content">
+                    <div class="row row items-push">
+                        <div class="col-xs-6">
+                            <label class="css-input css-radio css-radio-default" >
+                                <input type="radio" name="radio-color"
+                                     (click)="settheme('')"
+                                     [attr.checked]="selectedTheme === ''"><span></span> Default
+                            </label>
+                            <label class="css-input css-radio css-radio-info" >
+                                <input type="radio" name="radio-color"
+                                     (click)="settheme('amethyst.min.css')"
+                                     [attr.checked]="selectedTheme === 'amethyst.min.css'"><span></span> Amethyst
+                            </label>
+                            <label class="css-input css-radio css-radio-danger" >
+                                <input type="radio" name="radio-color"
+                                     (click)="settheme('city.min.css')"
+                                     [attr.checked]="selectedTheme === 'city.min.css'"><span></span> City
+                            </label>
+                            <label class="css-input css-radio css-radio-success" >
+                                <input type="radio" name="radio-color"
+                                     (click)="settheme('flat.min.css')"
+                                     [attr.checked]="selectedTheme === 'flat.min.css'"><span></span> Flat
+                            </label>
+                            <label class="css-input css-radio css-radio-primary" >
+                                <input type="radio" name="radio-color"
+                                     (click)="settheme('modern.min.css')"
+                                     [attr.checked]="selectedTheme === 'modern.min.css'"><span></span> Modern
+                            </label>
+                            <label class="css-input css-radio css-radio-warning" >
+                                <input type="radio" name="radio-color"
+                                     (click)="settheme('smooth.min.css')"
+                                     [attr.checked]="selectedTheme === 'smooth.min.css'"><span></span> Smooth
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+export enum RelationTypes {
+    Synonym,
+    Acronym,
+    Compound,
+    Variation,
+    Singular,
+    Plural,
+    JamaGhairNadai,
+    WahidGhairNadai,
+    JamaIstasnai,
+    OppositeGender,
+    FormOfFeal,
+    Halat,
+    HalatMafooli,
+    HalatIzafi,
+    HalatTafseeli,
+    JamaNadai,
+    HalatFaili,
+    HalatTakhsis,
+    WahidNadai,
+    Takabuli,
+    Usage
+}

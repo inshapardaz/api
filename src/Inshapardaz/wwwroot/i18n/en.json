@@ -1,0 +1,64 @@
+{
+  "APP": {
+    "TITLE": "inshapardaz",
+    "SLOGAN" : "Lets build better language"
+  },
+  "HEADER" : {
+    "PROFILE" : "Profile",
+    "SETTINGS" : "Settings",
+    "LOGOUT" : "Logout",
+    "LOGIN" : "Login",
+    "SEARCH" : "Search..."
+  },
+  "SIDEBAR" : {
+    "SECTIONS" : "Sections"
+  },
+  "HOME" : {
+    "TITLE" : "Home"
+  },
+  "DICTIONARIES" : {
+    "TITLE" : "Dictionaries",
+    "SLOGAN" : "Lets build better language",
+    "CREATENEW" : "Create new dictionary" 
+  },
+  "DICTIONARY" : {
+    "SEARCH_IN_DICTIONARY" : "Search in this dictionary...",
+    "DETAILS": "Details",
+    "INDEX" : "Index",
+    "WORD_COUNT" : "Word Count",
+    "LANGUAGE": "Language",
+    "PUBLIC_DICTIONARY" : "Public Dictionary",
+    "PRIVATE_DICTIONARY" : "Private Dictionary",
+    "PAGE" : "Page",
+    "OF" : "of"
+  },
+  "WORD":{
+    "RELATIONS" : "Relations"
+  },
+  "THESAURUS" : {
+    "TITLE" : "Thesaurus",
+    "SLOGAN" : "Lets build better language"    
+  },
+  "TRANSLATIONS" : {
+    "TITLE" : "Translations",
+    "SLOGAN" : "Lets build better language"    
+  },
+  "EDITOR" : {
+    "TITLE" : "Editor",
+    "SLOGAN" : "Lets build better language"    
+  },
+  "SETTINGS" : {
+    "TITLE" : "Settings",
+    "SUB_TITLE" : "Configure application to your own liking!",
+    "USER_INTERFACE_LANGUAGES" : "User interface language",
+    "COLOR_THEMES" : "Color Themes"
+  },
+  "ACTIONS":{
+    "REFRESH" : "Refresh",
+    "ADD" : "Add",
+    "EDIT" : "Edit",
+    "DELETE" : "Delete",
+    "NEXT_PAGE" : "Next Page",
+    "PREVIOUS_PAGE" : "Previous Page"
+  }
+}

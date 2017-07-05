@@ -1,0 +1,67 @@
+@font-face {
+  font-family: 'Fajer Noori Nastalique';
+  src: url("../fonts/Fajer-Noori-Nastalique.eot");
+  src: url("../fonts/Fajer-Noori-Nastalique.eot") format("embedded-opentype"), 
+       url("../fonts/Fajer-Noori-Nastalique.woff") format("woff"), 
+       url("../fonts/Fajer-Noori-Nastalique.ttf") format("truetype"), 
+       url("../fonts/Fajer-Noori-Nastalique.svg") format("svg");
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+  font-size: 140%;
+}
+@font-face {
+  font-family: 'Pak Nastaleeq';
+  src: url("../fonts/Pak-Nastaleeq.eot");
+  src: url("../fonts/Pak-Nastaleeq.eot") format("embedded-opentype"), 
+       url("../fonts/Pak-Nastaleeq.woff") format("woff"), 
+       url("../fonts/Pak-Nastaleeq.ttf") format("truetype"), 
+       url("../fonts/Pak-Nastaleeq.svg") format("svg");
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: 'Nafees Web Naskh';
+  src: url("../fonts/Nafees-Web-Naskh.eot");
+  src: url("../fonts/Nafees-Web-Naskh.eot") format("embedded-opentype"), 
+       url("../fonts/Nafees-Web-Naskh.woff") format("woff"), 
+       url("../fonts/Nafees-Web-Naskh.ttf") format("truetype"), 
+       url("../fonts/Nafees-Web-Naskh.svg") format("svg");
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; 
+}
+
+@font-face {
+  font-family: 'Nafees-Nastaleeq';
+  src: url("../fonts/Nafees-Nastaleeq.eot");
+  src: url("../fonts/Nafees-Nastaleeq.eot") format("embedded-opentype"), 
+       url("../fonts/Nafees-Nastaleeq.woff") format("woff"), 
+       url("../fonts/Nafees-Nastaleeq.ttf") format("truetype"), 
+       url("../fonts/Nafees-Nastaleeq.svg") format("svg");
+       unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+  font-size: 120%;
+}
+
+@font-face{
+  font-family: 'Mehr-Nastaleeq';
+  src: url("../fonts/Mehr-Nastaliq-Web.eot");
+  src: url("../fonts/Mehr-Nastaliq-Web.eot") format("embedded-opentype"),
+       url('../fonts/Mehr-Nastaliq-Web.woff') format("woff"),
+       url("../fonts/Mehr-Nastaliq-Web.ttf") format("truetype"),
+       url("../fonts/Mehr-Nastaliq-Web.svg") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-size: 120%;  
+}
+body.urdu {
+  font-family:  "Mehr-Nastaleeq", "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif; 
+}
+
+.urdu{
+  font-family:  "Mehr-Nastaleeq"; 
+}
+
+.word-title{
+  background-image: url('../img/photos/photo5@2x.jpg')
+}
+
+.rtl{
+  direction: rtl;
+}

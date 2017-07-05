@@ -54,22 +54,6 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenGettingMeaningByWordDetailThatUserHasNotAllowedAccess : MeaningControllerTestContext
-    {
-        public WhenGettingMeaningByWordDetailThatUserHasNotAllowedAccess()
-        {
-            UserHelper.WithUserId("56");
-            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = "23" });
-            Result = Controller.GetMeaningForWord(9).Result;
-        }
-
-        [Fact]
-        public void ShouldReturnUnAuthorisedResult()
-        {
-            Assert.IsType<UnauthorizedResult>(Result);
-        }
-    }
-
     public class WhenGettingMeaningByById : MeaningControllerTestContext
     {
         public WhenGettingMeaningByById()

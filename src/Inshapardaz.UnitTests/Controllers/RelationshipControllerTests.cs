@@ -53,22 +53,6 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
     }
 
-    public class WhenGettingWordRelationshipsByWordThatUserHasNotAllowedAccess : RelationshipControllerTestContext
-    {
-        public WhenGettingWordRelationshipsByWordThatUserHasNotAllowedAccess()
-        {
-            UserHelper.WithUserId("56");
-            FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = "23" });
-            Result = Controller.GetRelationshipForWord(9).Result;
-        }
-
-        [Fact]
-        public void ShouldReturnUnAuthorisedResult()
-        {
-            Assert.IsType<UnauthorizedResult>(Result);
-        }
-    }
-
     public class WhenGettingRelationshipById : RelationshipControllerTestContext
     {
         public WhenGettingRelationshipById()

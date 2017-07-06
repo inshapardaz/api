@@ -48,6 +48,7 @@
     <Content Include="wwwroot\assets\**\*"  CopyToPublishDirectory="PreserveNewest"/>
     <Content Include="wwwroot\icons*\**\*"  CopyToPublishDirectory="PreserveNewest"/>
     <Content Include="wwwroot\images\**\*"  CopyToPublishDirectory="PreserveNewest"/>
+    <Content Include="wwwroot\i18n\**\*"  CopyToPublishDirectory="PreserveNewest"/>
     <Content Include="wwwroot\*.html"  CopyToPublishDirectory="PreserveNewest"/>
     <Content Include="wwwroot\*.js"  CopyToPublishDirectory="PreserveNewest"/>
   </ItemGroup>

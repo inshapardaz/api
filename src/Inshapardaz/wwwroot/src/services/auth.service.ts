@@ -11,7 +11,7 @@ export class AuthService {
     domain: 'inshapardaz.eu.auth0.com',
     responseType: 'token id_token',
     audience: 'https://inshapardaz.eu.auth0.com/userinfo',
-    redirectUri: 'http://localhost:5001/callback',      
+    redirectUri: "http://" + window.location.hostname + "/callback",      
     scope: 'openid'
   });
 

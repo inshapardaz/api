@@ -58,7 +58,7 @@ module.exports = {
             from: 'src/assets/img',
             to: './images'
         }]),
-        new FaviconsWebpackPlugin('./src/assets/img/favicons/favicon.png'),
+        //new FaviconsWebpackPlugin('./src/assets/img/favicons/favicon.png'),
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',

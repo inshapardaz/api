@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Darker;
+using Hangfire;
+using Hangfire.Storage;
 using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Jobs;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Commands;
@@ -22,18 +25,24 @@ namespace Inshapardaz.Api.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView> _dictionariesRenderer;
         private readonly IRenderResponseFromObject<Dictionary, DictionaryView> _dictionaryRenderer;
+        private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly IRenderLink _linkRenderer;
 
         public DictionariesController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
             IUserHelper userHelper,
             IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView> dictionariesRenderer,
-            IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer)
+            IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer,
+            IBackgroundJobClient backgroundJobClient,
+            IRenderLink linkRenderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _userHelper = userHelper;
             _dictionariesRenderer = dictionariesRenderer;
             _dictionaryRenderer = dictionaryRenderer;
+            _backgroundJobClient = backgroundJobClient;
+            _linkRenderer = linkRenderer;
         }
 
         [HttpGet("/api/dictionaries", Name = "GetDictionaries")]
@@ -150,7 +159,38 @@ namespace Inshapardaz.Api.Controllers
         [HttpGet("/api/dictionary/{id}.{format}", Name = "DownloadDictionary")]
         public async Task<IActionResult> DownloadDictionary(int id, string format)
         {
-            throw new NotImplementedException();
+            var jobId = _backgroundJobClient.Enqueue<SqliteExport>(x => x.ExportDictionary(id));
+
+            var linkView = _linkRenderer.Render("JobStatus", "status", new { id = jobId });
+            return Created(linkView.Href, new DownloadDictionaryView
+            {
+                Links = new List<LinkView>
+            {
+                _linkRenderer.Render("DownloadDictionary", "self", new { id, format }),
+                linkView,
+            }
+            });
+        }
+
+        [HttpGet("/api/job/status", Name = "JobStatus")]
+        public async Task<IActionResult> DownloadStatus(string id)
+        {
+            IStorageConnection connection = JobStorage.Current.GetConnection();
+            JobData jobData = connection.GetJobData(id);
+
+            if (jobData == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new ProcessingStatusView
+            {
+                Status = jobData.State,
+                Links = new List<LinkView>
+                {
+                    _linkRenderer.Render("JobStatus", "self", new { id })
+                }
+            });
         }
     }
 }

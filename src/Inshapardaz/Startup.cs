@@ -40,7 +40,8 @@ namespace Inshapardaz.Api
             app.ConfigureApiAuthentication(Configuration)
                 .ConfigureApplication()
                 .ConfigureObjectMappings()
-                .ConfigureSwagger();
+                .ConfigureSwagger()
+                .ConfigureHangfire();
         }
     }
 }

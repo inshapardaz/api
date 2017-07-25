@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         private readonly FakeDictionaryRenderer _fakeDictionaryRenderer;
         private readonly FakeUserHelper _fakeUserHelper;
 
-        readonly DictionariesController _controller;
+        private readonly DictionariesController _controller;
 
         public DictioanriesControllerTests()
         {
@@ -38,7 +38,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             _fakeDictionaryRenderer = new FakeDictionaryRenderer();
             _fakeUserHelper = new FakeUserHelper();
 
-            _controller = new DictionariesController(_mockCommandProcessor.Object, _fakeQueryProcessor, _fakeUserHelper, fakeDictionariesRenderer, _fakeDictionaryRenderer);
+            _controller = new DictionariesController(_mockCommandProcessor.Object, _fakeQueryProcessor, _fakeUserHelper, fakeDictionariesRenderer, _fakeDictionaryRenderer, null, null);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             _fakeQueryProcessor.SetupResultFor<DictionariesByUserQuery, IEnumerable<Dictionary>>(new Collection<Dictionary>());
 
-            var result =  _controller.Get().Result;
+            var result = _controller.Get().Result;
 
             _fakeQueryProcessor.ShouldHaveExecuted<DictionariesByUserQuery>(q => q.UserId == null);
         }
@@ -87,7 +87,6 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             _fakeQueryProcessor.ShouldHaveExecuted<DictionaryByIdQuery>(q => q.UserId == userId && q.DictionaryId == dictionaryId);
         }
 
-
         [Fact]
         public void WhenDitionaryNotFound_ShouldReturnNotFoundResult()
         {
@@ -95,7 +94,6 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             Assert.IsType<NotFoundResult>(result);
         }
-
 
         [Fact]
         public void WhenPosted_ShouldAddToDictionary()
@@ -137,7 +135,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             Assert.IsType<CreatedResult>(result);
         }
-        
+
         [Fact]
         public void WhenPut_ShouldRaiseCommandToUpdateDictionary()
         {
@@ -163,7 +161,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<UpdateDictionaryCommand>(d => d.Dictionary.IsPublic == dictionaryView.IsPublic), false, default(CancellationToken)));
             _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<UpdateDictionaryCommand>(d => d.Dictionary.UserId == userId), false, default(CancellationToken)));
         }
-       
+
         [Fact]
         public void WhenPutNonExistingDictionary_ShouldCreateDictionary()
         {
@@ -209,7 +207,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             Assert.IsType<CreatedResult>(result);
         }
-        
+
         [Fact]
         public void WhenDeleted_ShouldRemoveDictionary()
         {
@@ -225,7 +223,6 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         }
 
         [Fact]
-
         public void WhenDeletingNonExistingDictionary_ShouldReturnNotFound()
         {
             const int dictionaryId = 23;

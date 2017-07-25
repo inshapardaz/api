@@ -24,6 +24,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Hangfire" Version="1.6.14" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.6.14" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.1" />

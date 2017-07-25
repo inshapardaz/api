@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using paramore.brighter.commandprocessor;
 using Swashbuckle.AspNetCore.Swagger;
+using Hangfire;
 
 namespace Inshapardaz.Api.Configuration
 {
@@ -51,6 +52,9 @@ namespace Inshapardaz.Api.Configuration
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddCors();
+
+            var connectionString = configuration["ConnectionStrings:DefaultDatabase"];
+            services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
             return services;
         }
 
@@ -185,6 +189,14 @@ namespace Inshapardaz.Api.Configuration
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inshapardaz API");
             });
+
+            return app;
+        }
+
+        public static IApplicationBuilder ConfigureHangfire(this IApplicationBuilder app)
+        {
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
 
             return app;
         }

@@ -36,6 +36,11 @@ namespace Inshapardaz.Api.Renderers
                 links.Add(LinkRenderer.Render("CreateWord", "create-word", new { id = source.Id }));
             }
 
+            if (source.IsPublic)
+            {
+                links.Add(LinkRenderer.Render("DownloadDictionary", "download", new { id = source.Id, format = "dat" }));
+            }
+
             var indexes = new List<LinkView>(_indexes.Select(i => LinkRenderer.Render("GetWordsListStartWith", i, new { id = source.Id, startingWith = i })));
 
             var result = source.Map<Dictionary, DictionaryView>();

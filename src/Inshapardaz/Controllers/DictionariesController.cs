@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Darker;
@@ -50,7 +51,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> Get(int id)
         {
             string userId = _userHelper.GetUserId();
-            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery{ UserId = userId, DictionaryId = id });
+            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
             if (result == null)
             {
@@ -63,14 +64,13 @@ namespace Inshapardaz.Api.Controllers
         [Authorize]
         [HttpPost("/api/dictionaries", Name = "CreateDictioanry")]
         [Produces(typeof(DictionaryView))]
-        
         public async Task<IActionResult> Post([FromBody]DictionaryView value)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
             string userId = _userHelper.GetUserId();
 
             AddDictionaryCommand addDictionaryCommand = new AddDictionaryCommand
@@ -94,7 +94,7 @@ namespace Inshapardaz.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             string userId = _userHelper.GetUserId();
 
             var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
@@ -145,6 +145,12 @@ namespace Inshapardaz.Api.Controllers
             });
 
             return NoContent();
+        }
+
+        [HttpGet("/api/dictionary/{id}.{format}", Name = "DownloadDictionary")]
+        public async Task<IActionResult> DownloadDictionary(int id, string format)
+        {
+            throw new NotImplementedException();
         }
     }
 }

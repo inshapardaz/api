@@ -11,6 +11,7 @@
     <RootNamespace>Inshapardaz.Api</RootNamespace>
     <ApplicationInsightsResourceId>/subscriptions/370dd9c3-24b1-4218-9896-403457c19ca2/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/Inshapardaz.Api</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/370dd9c3-24b1-4218-9896-403457c19ca2/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/Inshapardaz.Api</ApplicationInsightsAnnotationResourceId>
+    <UserSecretsId>9475ced9-4167-429f-acca-decb54f097e4</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="wwwroot/.gitattributes" />
@@ -45,11 +46,11 @@
     <Content Remove="wwwroot\**" />
     <EmbeddedResource Remove="wwwroot\**" />
     <None Remove="wwwroot\**" />
-    <Content Include="wwwroot\assets\**\*"  CopyToPublishDirectory="PreserveNewest"/>
-    <Content Include="wwwroot\icons*\**\*"  CopyToPublishDirectory="PreserveNewest"/>
-    <Content Include="wwwroot\images\**\*"  CopyToPublishDirectory="PreserveNewest"/>
-    <Content Include="wwwroot\i18n\**\*"  CopyToPublishDirectory="PreserveNewest"/>
-    <Content Include="wwwroot\*.html"  CopyToPublishDirectory="PreserveNewest"/>
-    <Content Include="wwwroot\*.js"  CopyToPublishDirectory="PreserveNewest"/>
+    <Content Include="wwwroot\assets\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot\icons*\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot\images\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot\i18n\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot\*.html" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot\*.js" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

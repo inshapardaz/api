@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Darker;
 using Hangfire;
-using Hangfire.Storage;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Jobs;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
@@ -26,7 +26,9 @@ namespace Inshapardaz.Api.Controllers
         private readonly IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView> _dictionariesRenderer;
         private readonly IRenderResponseFromObject<Dictionary, DictionaryView> _dictionaryRenderer;
         private readonly IBackgroundJobClient _backgroundJobClient;
-        private readonly IRenderLink _linkRenderer;
+
+        private readonly IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView>
+            _dictionaryDownloadRenderer;
 
         public DictionariesController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
@@ -34,7 +36,7 @@ namespace Inshapardaz.Api.Controllers
             IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView> dictionariesRenderer,
             IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer,
             IBackgroundJobClient backgroundJobClient,
-            IRenderLink linkRenderer)
+            IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView> dictionaryDownloadRenderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
@@ -42,7 +44,7 @@ namespace Inshapardaz.Api.Controllers
             _dictionariesRenderer = dictionariesRenderer;
             _dictionaryRenderer = dictionaryRenderer;
             _backgroundJobClient = backgroundJobClient;
-            _linkRenderer = linkRenderer;
+            _dictionaryDownloadRenderer = dictionaryDownloadRenderer;
         }
 
         [HttpGet("/api/dictionaries", Name = "GetDictionaries")]
@@ -60,7 +62,8 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> Get(int id)
         {
             string userId = _userHelper.GetUserId();
-            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
+            var result =
+                await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
             if (result == null)
             {
@@ -71,9 +74,9 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("/api/dictionaries", Name = "CreateDictioanry")]
+        [HttpPost("/api/dictionaries", Name = "CreateDictionary")]
         [Produces(typeof(DictionaryView))]
-        public async Task<IActionResult> Post([FromBody]DictionaryView value)
+        public async Task<IActionResult> Post([FromBody] DictionaryView value)
         {
             if (!ModelState.IsValid)
             {
@@ -97,7 +100,7 @@ namespace Inshapardaz.Api.Controllers
 
         [Authorize]
         [HttpPut("/api/dictionaries/{id}", Name = "UpdateDictionary")]
-        public async Task<IActionResult> Put(int id, [FromBody]DictionaryView value)
+        public async Task<IActionResult> Put(int id, [FromBody] DictionaryView value)
         {
             if (!ModelState.IsValid)
             {
@@ -106,7 +109,8 @@ namespace Inshapardaz.Api.Controllers
 
             string userId = _userHelper.GetUserId();
 
-            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
+            var result =
+                await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
             if (result == null)
             {
@@ -140,7 +144,8 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             string userId = _userHelper.GetUserId();
-            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
+            var result =
+                await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
             if (result == null)
             {
@@ -156,41 +161,35 @@ namespace Inshapardaz.Api.Controllers
             return NoContent();
         }
 
-        [HttpGet("/api/dictionary/{id}.{format}", Name = "DownloadDictionary")]
-        public async Task<IActionResult> DownloadDictionary(int id, string format)
+        [Authorize]
+        [HttpPost("/api/dictionaries/{id}/download", Name = "CreateDictionaryDownload")]
+        [Produces(typeof(DictionaryView))]
+        public async Task<IActionResult> CreateDownloadForDictionary(int id)
         {
-            var jobId = _backgroundJobClient.Enqueue<SqliteExport>(x => x.ExportDictionary(id));
+            string userId = _userHelper.GetUserId();
+            var dictionary =
+                await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
-            var linkView = _linkRenderer.Render("JobStatus", "status", new { id = jobId });
-            return Created(linkView.Href, new DownloadDictionaryView
-            {
-                Links = new List<LinkView>
-            {
-                _linkRenderer.Render("DownloadDictionary", "self", new { id, format }),
-                linkView,
-            }
-            });
-        }
-
-        [HttpGet("/api/job/status", Name = "JobStatus")]
-        public async Task<IActionResult> DownloadStatus(string id)
-        {
-            IStorageConnection connection = JobStorage.Current.GetConnection();
-            JobData jobData = connection.GetJobData(id);
-
-            if (jobData == null)
+            if (dictionary == null)
             {
                 return NotFound();
             }
 
-            return Ok(new ProcessingStatusView
+            var jobId = _backgroundJobClient.Enqueue<SqliteExport>(x => x.ExportDictionary(id));
+            var view = new DictionaryDownload
             {
-                Status = jobData.State,
-                Links = new List<LinkView>
-                {
-                    _linkRenderer.Render("JobStatus", "self", new { id })
-                }
-            });
+                DictionaryId = id,
+                //Format = "dat",
+                //JobId = jobId
+            };
+            var result = _dictionaryDownloadRenderer.Render(view);
+            return Created(result.Links.Single(x => x.Rel == "self").Href, result);
+        }
+
+        [HttpGet("/api/dictionary/{id}.{format}", Name = "DownloadDictionary")]
+        public IActionResult DownloadDictionary(int id, string format)
+        {
+            throw new NotImplementedException();
         }
     }
 }

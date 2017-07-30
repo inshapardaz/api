@@ -10,8 +10,9 @@ namespace Inshapardaz.Api.Renderers
     {
         private readonly IUserHelper _userHelper;
         private readonly IRenderResponseFromObject<Dictionary, DictionaryView> _dictionaryRenderer;
-        public DictionariesRenderer(IRenderLink linkRenderer, 
-                    IUserHelper userHelper, 
+
+        public DictionariesRenderer(IRenderLink linkRenderer,
+                    IUserHelper userHelper,
                     IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer)
             : base(linkRenderer)
         {
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Renderers
 
             if (_userHelper.IsContributor)
             {
-                links.Add(LinkRenderer.Render("CreateDictioanry", "create", null));
+                links.Add(LinkRenderer.Render("CreateDictionary", "create", null));
             }
 
             return new DictionariesView()

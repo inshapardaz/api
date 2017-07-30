@@ -112,9 +112,9 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
         public class WhenRendereingForOwner
         {
-            private DictionaryView _result;
+            private readonly DictionaryView _result;
 
-            private Domain.Model.Dictionary _dictionary = new Domain.Model.Dictionary
+            private readonly Dictionary _dictionary = new Dictionary
             {
                 Id = 1,
                 Name = "Test",
@@ -153,6 +153,12 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             public void ShouldRenderDictionaryCreateWordLink()
             {
                 Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "create-word"));
+            }
+
+            [Fact]
+            public void ShouldRenderDictionaryCreateDownloadLink()
+            {
+                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "create-download"));
             }
         }
     }

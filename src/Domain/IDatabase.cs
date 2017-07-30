@@ -12,6 +12,10 @@ namespace Inshapardaz.Domain
         DbSet<WordDetail> WordDetails { get; set; }
         DbSet<WordRelation> WordRelations { get; set; }
 
+        DbSet<DictionaryDownload> DictionaryDownloads { get; set; }
+
+        DbSet<File> Files { get; set; }
+
         int SaveChanges();
     }
 }

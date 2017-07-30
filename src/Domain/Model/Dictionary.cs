@@ -21,5 +21,6 @@ namespace Inshapardaz.Domain.Model
         public string UserId { get; set; }
 
         public virtual ICollection<Word> Words { get; set; }
+        public virtual ICollection<DictionaryDownload> Downloads { get; set; }
     }
 }

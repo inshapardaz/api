@@ -3,7 +3,6 @@ using System.Linq;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Domain.Model;
-using Microsoft.AspNetCore.Razor.Parser.SyntaxTree;
 
 namespace Inshapardaz.Api.Renderers
 {
@@ -33,6 +32,7 @@ namespace Inshapardaz.Api.Renderers
             {
                 links.Add(LinkRenderer.Render("UpdateDictionary", "update", new { id = source.Id }));
                 links.Add(LinkRenderer.Render("DeleteDictionary", "delete", new { id = source.Id }));
+                links.Add(LinkRenderer.Render("CreateDictionaryDownload", "create-download", new { id = source.Id }));
                 links.Add(LinkRenderer.Render("CreateWord", "create-word", new { id = source.Id }));
             }
 

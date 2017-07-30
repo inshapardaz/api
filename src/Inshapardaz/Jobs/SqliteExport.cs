@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Jobs
@@ -10,6 +8,7 @@ namespace Inshapardaz.Api.Jobs
         public async Task ExportDictionary(int dictionaryId)
 
         {
+            // Create table for available downloads
             throw new NotImplementedException();
         }
     }

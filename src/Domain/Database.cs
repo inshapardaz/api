@@ -1,17 +1,14 @@
 using Inshapardaz.Domain.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace Inshapardaz.Domain
 {
     public class DatabaseContext : DbContext, IDatabaseContext
     {
-        public DatabaseContext()
-        {
-        }
-
-        public DatabaseContext(DbContextOptions<DatabaseContext> options)
-            : base(options)
+        public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
 
@@ -96,6 +93,24 @@ namespace Inshapardaz.Domain
                     .WithMany(d => d.Downloads);
                 entity.HasOne(d => d.File);
             });
+        }
+    }
+
+    public class DataContextFactory : IDbContextFactory<DatabaseContext>
+    {
+        public DatabaseContext Create(DbContextFactoryOptions options)
+        {
+            // Used only for EF .NET Core CLI tools (update database/migrations etc.)
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory()))
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            var config = builder.Build();
+
+            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseSqlServer(config.GetConnectionString("DefaultDatabase"));
+
+            return new DatabaseContext(optionsBuilder.Options);
         }
     }
 }

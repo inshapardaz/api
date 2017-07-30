@@ -1,27 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Inshapardaz.Domain</AssemblyName>
-    <PackageId>Domain</PackageId>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <RootNamespace>Inshapardaz.Domain</RootNamespace>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Darker" Version="0.10.0-ci84" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
-    <PackageReference Include="paramore.brighter.commandprocessor" Version="7.0.86-alpha" />
-    <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Hangfire.Core">
-      <HintPath>..\..\..\..\..\Users\muhammad.farooq\.nuget\packages\hangfire.core\1.6.14\lib\netstandard1.3\Hangfire.Core.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
+    <PropertyGroup>
+        <TargetFramework>netstandard1.6</TargetFramework>
+        <AssemblyName>Inshapardaz.Domain</AssemblyName>
+        <PackageId>Domain</PackageId>
+        <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <RootNamespace>Inshapardaz.Domain</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+      <Content Include="appsettings.json">
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Darker" Version="0.10.0-ci84" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.1.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
+        <PackageReference Include="paramore.brighter.commandprocessor" Version="7.0.86-alpha" />
+        <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="Hangfire.Core">
+            <HintPath>..\..\..\..\..\Users\muhammad.farooq\.nuget\packages\hangfire.core\1.6.14\lib\netstandard1.3\Hangfire.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Configuration">
+          <HintPath>..\..\..\..\..\Users\muhammad.farooq\.nuget\packages\microsoft.extensions.configuration\1.1.2\lib\netstandard1.1\Microsoft.Extensions.Configuration.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 </Project>

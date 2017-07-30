@@ -29,6 +29,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.2" />
         <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.2" />
         <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.1.2" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
         <PackageReference Include="AutoMapper" Version="6.1.1" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
@@ -39,6 +40,9 @@
         <PackageReference Include="Darker" Version="0.10.0-ci84" />
         <PackageReference Include="paramore.brighter.commandprocessor" Version="7.0.86-alpha" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Domain\Inshapardaz.Domain.csproj" />

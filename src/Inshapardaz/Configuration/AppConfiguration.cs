@@ -8,20 +8,18 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
-using Inshapardaz.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using paramore.brighter.commandprocessor;
 using Swashbuckle.AspNetCore.Swagger;
 using Hangfire;
-using Hangfire.Storage;
 using Inshapardaz.Api.View;
+using Microsoft.AspNetCore.Http;
 
 namespace Inshapardaz.Api.Configuration
 {
@@ -38,18 +36,20 @@ namespace Inshapardaz.Api.Configuration
 
             builder.SetBasePath(Directory.GetCurrentDirectory());
             builder.AddJsonFile("appsettings.json", false, true)
-                   .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
 
             builder.AddEnvironmentVariables();
             return builder.Build();
         }
 
-        public static IServiceCollection RegisterFramework(this IServiceCollection services, IConfigurationRoot configuration)
+        public static IServiceCollection RegisterFramework(this IServiceCollection services,
+            IConfigurationRoot configuration)
         {
             services.AddApplicationInsightsTelemetry(configuration);
 
             services.AddMvc();
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             services.AddScoped<IUserHelper, UserHelper>();
@@ -62,10 +62,7 @@ namespace Inshapardaz.Api.Configuration
 
         public static IServiceCollection RegisterSwagger(this IServiceCollection services)
         {
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "Inshapardaz API", Version = "v1" });
-            });
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "Inshapardaz API", Version = "v1" }); });
 
             return services;
         }
@@ -73,7 +70,9 @@ namespace Inshapardaz.Api.Configuration
         public static IServiceCollection RegisterRenderes(this IServiceCollection services)
         {
             services.AddTransient<IRenderResponse<EntryView>, EntryRenderer>();
-            services.AddTransient<IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView>, DictionariesRenderer>();
+            services
+                .AddTransient<IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView>, DictionariesRenderer
+                >();
             services.AddTransient<IRenderResponseFromObject<Dictionary, DictionaryView>, DictionaryRenderer>();
             services.AddTransient<IRenderEnum, EnumRenderer>();
             services.AddTransient<IRenderLink, LinkRenderer>();
@@ -82,69 +81,17 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRenderResponseFromObject<WordDetail, WordDetailView>, WordDetailRenderer>();
             services.AddTransient<IRenderResponseFromObject<Translation, TranslationView>, TranslationRenderer>();
             services.AddTransient<IRenderResponseFromObject<WordRelation, RelationshipView>, RelationRenderer>();
-            services.AddTransient<IRenderResponseFromObject<WordDetail, IEnumerable<MeaningContextView>>, WordMeaningRenderer>();
+            services
+                .AddTransient<IRenderResponseFromObject<WordDetail, IEnumerable<MeaningContextView>>,
+                    WordMeaningRenderer>();
             services.AddTransient<IRenderResponseFromObject<Meaning, MeaningView>, MeaningRenderer>();
-            services.AddTransient<IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>>, WordIndexPageRenderer>();
-            services.AddTransient<IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView>, DictionaryDownloadRenderer>();
+            services
+                .AddTransient<IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>>,
+                    WordIndexPageRenderer>();
+            services
+                .AddTransient<IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView>,
+                    DictionaryDownloadRenderer>();
             services.AddTransient<IRenderResponseFromObject<JobStatus, JobStatusModel>, JobStatusRenderer>();
-
-            return services;
-        }
-
-        public static IServiceCollection RegisterDomain(this IServiceCollection services, IConfigurationRoot configuration)
-        {
-            var connectionString = configuration["ConnectionStrings:DefaultDatabase"];
-
-            services.AddEntityFrameworkSqlServer()
-                    .AddDbContext<Domain.DatabaseContext>(options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
-            services.AddTransient<Domain.IDatabaseContext, Domain.DatabaseContext>();
-
-            services.AddTransient<AddDictionaryCommandHandler>();
-            services.AddTransient<AddWordCommandHandler>();
-            services.AddTransient<AddWordDetailCommandHandler>();
-            services.AddTransient<AddWordRelationCommandHandler>();
-            services.AddTransient<AddWordTranslationCommandHandler>();
-            services.AddTransient<AddWordMeaningCommandHandler>();
-
-            services.AddTransient<UpdateDictionaryCommandHandler>();
-            services.AddTransient<UpdateWordCommandHandler>();
-            services.AddTransient<UpdateWordDetailCommandHandler>();
-            services.AddTransient<UpdateWordRelationCommandHandler>();
-            services.AddTransient<UpdateWordTranslationCommandHandler>();
-            services.AddTransient<UpdateWordMeaningCommandHandler>();
-
-            services.AddTransient<DeleteDictionaryCommandHandler>();
-            services.AddTransient<DeleteWordCommandHandler>();
-            services.AddTransient<DeleteWordDetailCommandHandler>();
-            services.AddTransient<DeleteWordRelationCommandHandler>();
-            services.AddTransient<DeleteWordTranslationCommandHandler>();
-            services.AddTransient<DeleteWordMeaningCommandHandler>();
-
-            // Darker Handlers
-            services.AddTransient<GetDictionariesByUserQueryHandler>();
-            services.AddTransient<GetDictionaryByIdQueryHandler>();
-            services.AddTransient<WordStartingWithQueryHandler>();
-            services.AddTransient<WordMeaningByWordQueryHandler>();
-            services.AddTransient<WordMeaningByIdQueryHandler>();
-            services.AddTransient<WordContainingTitleQuery>();
-            services.AddTransient<WordIndexContainingTitleQueryHandler>();
-            services.AddTransient<WordDetailsByWordQueryHandler>();
-            services.AddTransient<WordDetailByIdQueryHandler>();
-            services.AddTransient<GetWordsPagesQueryHandler>();
-            services.AddTransient<WordByTitleQueryHandler>();
-            services.AddTransient<WordByIdQueryHandler>();
-            services.AddTransient<TranslationsByWordIdQueryHandler>();
-            services.AddTransient<TranslationsByLanguageQueryHandler>();
-            services.AddTransient<TranslationByIdQueryHandler>();
-            services.AddTransient<RelationshipByWordIdQueryHandler>();
-            services.AddTransient<RelationshipByIdQueryHandler>();
-            services.AddTransient<GetDictionaryByWordIdQueryHandler>();
-            services.AddTransient<DictionaryByWordIdQuery>();
-            services.AddTransient<GetDictionaryByMeaningIdQueryHandler>();
-            services.AddTransient<GetDictionaryByTranslationIdQueryHandler>();
-
-            services.ConfigureCommandProcessor();
-            services.ConfigureDarker();
 
             return services;
         }
@@ -170,9 +117,9 @@ namespace Inshapardaz.Api.Configuration
 
             /* Always register CORS bedore Mvc  */
             app.UseCors(policy => policy.AllowAnyOrigin()
-                                        .AllowAnyMethod()
-                                        .AllowAnyHeader()
-                                        .AllowCredentials());
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
@@ -189,10 +136,7 @@ namespace Inshapardaz.Api.Configuration
         public static IApplicationBuilder ConfigureSwagger(this IApplicationBuilder app)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inshapardaz API");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inshapardaz API"); });
 
             return app;
         }
@@ -205,7 +149,8 @@ namespace Inshapardaz.Api.Configuration
             return app;
         }
 
-        public static IApplicationBuilder ConfigureApiAuthentication(this IApplicationBuilder app, IConfigurationRoot configuration)
+        public static IApplicationBuilder ConfigureApiAuthentication(this IApplicationBuilder app,
+            IConfigurationRoot configuration)
         {
             var options = new JwtBearerOptions
             {
@@ -227,7 +172,8 @@ namespace Inshapardaz.Api.Configuration
         public static void ConfigureCommandProcessor(this IServiceCollection services)
         {
             var commandProcessor = CommandProcessorBuilder.With()
-                .Handlers(new HandlerConfiguration(new CommandHandlerRegistry(), new ServiceHandlerFactory(services.BuildServiceProvider())))
+                .Handlers(new HandlerConfiguration(new CommandHandlerRegistry(),
+                    new ServiceHandlerFactory(services.BuildServiceProvider())))
                 .DefaultPolicy()
                 .NoTaskQueues()
                 .RequestContextFactory(new InMemoryRequestContextFactory())

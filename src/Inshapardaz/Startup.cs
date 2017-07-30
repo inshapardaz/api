@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Api.Configuration;
+using Inshapardaz.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,9 +21,9 @@ namespace Inshapardaz.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.RegisterFramework(Configuration)
-                   .RegisterRenderes()
-                   .RegisterDomain(Configuration)
-                   .RegisterSwagger();
+                .RegisterRenderes()
+                .ConfigureDomain(Configuration)
+                .RegisterSwagger();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

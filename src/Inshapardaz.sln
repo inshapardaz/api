@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api", "Inshapardaz\Inshapardaz.Api.csproj", "{2A559B58-E247-4340-88B2-0D717C8163C9}"
-EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Database", "Database\Database.sqlproj", "{7755BC55-495E-452F-B0C4-695CE843C2E8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Domain", "Domain\Inshapardaz.Domain.csproj", "{E2C20F16-FA4A-4522-A1A7-77F8EE502C28}"
 EndProject
@@ -23,10 +21,6 @@ Global
 		{2A559B58-E247-4340-88B2-0D717C8163C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A559B58-E247-4340-88B2-0D717C8163C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A559B58-E247-4340-88B2-0D717C8163C9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7755BC55-495E-452F-B0C4-695CE843C2E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7755BC55-495E-452F-B0C4-695CE843C2E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7755BC55-495E-452F-B0C4-695CE843C2E8}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{7755BC55-495E-452F-B0C4-695CE843C2E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2C20F16-FA4A-4522-A1A7-77F8EE502C28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E2C20F16-FA4A-4522-A1A7-77F8EE502C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2C20F16-FA4A-4522-A1A7-77F8EE502C28}.Release|Any CPU.ActiveCfg = Release|Any CPU

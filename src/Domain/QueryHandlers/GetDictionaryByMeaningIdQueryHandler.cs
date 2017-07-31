@@ -16,9 +16,10 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public async override Task<Dictionary> ExecuteAsync(DictionaryByMeaningIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<Dictionary> ExecuteAsync(DictionaryByMeaningIdQuery query,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            var meaning = await _database.Meanings.SingleOrDefaultAsync(m => m.Id == query.MeaningId);
+            var meaning = await _database.Meaning.SingleOrDefaultAsync(m => m.Id == query.MeaningId, cancellationToken);
             return meaning?.WordDetail.WordInstance.Dictionary;
         }
     }

@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetDictionaryByTranslationIdQueryHandler : AsyncQueryHandler<DictionaryByTranslationIdQuery, Dictionary>
+    public class
+        GetDictionaryByTranslationIdQueryHandler : AsyncQueryHandler<DictionaryByTranslationIdQuery, Dictionary>
     {
         private readonly IDatabaseContext _database;
 
@@ -16,9 +17,11 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public async override Task<Dictionary> ExecuteAsync(DictionaryByTranslationIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<Dictionary> ExecuteAsync(DictionaryByTranslationIdQuery query,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            var meaning = await _database.Translations.SingleOrDefaultAsync(m => m.Id == query.TranslationId);
+            var meaning =
+                await _database.Translation.SingleOrDefaultAsync(m => m.Id == query.TranslationId, cancellationToken);
             return meaning?.WordDetail.WordInstance.Dictionary;
         }
     }

@@ -8,8 +8,11 @@ namespace Inshapardaz.Api.Renderers
 {
     public class DictionaryRenderer : RendrerBase, IRenderResponseFromObject<Dictionary, DictionaryView>
     {
-        private readonly string[] _indexes = {"آ", "ا", "ب", "پ", "ت", "ٹ", "ث", "ج", "چ", "ح", "خ", "د", "ڈ", "ذ", "ر", "ڑ", "ز", "ژ", "س", "ش", "ص", "ض", "ط", "ظ", "ع", "غ", "ف"
-            , "ق", "ک", "گ", "ل", "م", "ن", "و", "ہ", "ء", "ی" };
+        private readonly string[] _indexes =
+        {
+            "آ", "ا", "ب", "پ", "ت", "ٹ", "ث", "ج", "چ", "ح", "خ", "د", "ڈ", "ذ", "ر", "ڑ", "ز", "ژ", "س", "ش", "ص",
+            "ض", "ط", "ظ", "ع", "غ", "ف", "ق", "ک", "گ", "ل", "م", "ن", "و", "ہ", "ء", "ی"
+        };
 
         private readonly IUserHelper _userHelper;
 
@@ -22,26 +25,27 @@ namespace Inshapardaz.Api.Renderers
         public DictionaryView Render(Dictionary source)
         {
             var links = new List<LinkView>
-                            {
-                                LinkRenderer.Render("GetDictionaryById", "self", new { id = source.Id }),
-                                LinkRenderer.Render("GetWords", "index", new { id = source.Id }),
-                                LinkRenderer.Render("SearchDictionary", "search", new { id = source.Id })
+            {
+                LinkRenderer.Render("GetDictionaryById", "self", new {id = source.Id}),
+                LinkRenderer.Render("GetWords", "index", new {id = source.Id}),
+                LinkRenderer.Render("SearchDictionary", "search", new {id = source.Id})
             };
 
             if (_userHelper.IsContributor)
             {
-                links.Add(LinkRenderer.Render("UpdateDictionary", "update", new { id = source.Id }));
-                links.Add(LinkRenderer.Render("DeleteDictionary", "delete", new { id = source.Id }));
-                links.Add(LinkRenderer.Render("CreateDictionaryDownload", "create-download", new { id = source.Id }));
-                links.Add(LinkRenderer.Render("CreateWord", "create-word", new { id = source.Id }));
+                links.Add(LinkRenderer.Render("UpdateDictionary", "update", new {id = source.Id}));
+                links.Add(LinkRenderer.Render("DeleteDictionary", "delete", new {id = source.Id}));
+                links.Add(LinkRenderer.Render("CreateDictionaryDownload", "create-download", new {id = source.Id}));
+                links.Add(LinkRenderer.Render("CreateWord", "create-word", new {id = source.Id}));
             }
 
             if (source.IsPublic)
             {
-                links.Add(LinkRenderer.Render("DownloadDictionary", "download", new { id = source.Id, format = "dat" }));
+                links.Add(LinkRenderer.Render("DownloadDictionary", "download", new {id = source.Id, format = "dat"}));
             }
 
-            var indexes = new List<LinkView>(_indexes.Select(i => LinkRenderer.Render("GetWordsListStartWith", i, new { id = source.Id, startingWith = i })));
+            var indexes = new List<LinkView>(_indexes.Select(i => LinkRenderer.Render("GetWordsListStartWith", i,
+                new {id = source.Id, startingWith = i})));
 
             var result = source.Map<Dictionary, DictionaryView>();
             result.Links = links;

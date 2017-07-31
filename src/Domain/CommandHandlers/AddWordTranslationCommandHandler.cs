@@ -18,9 +18,8 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override AddWordTranslationCommand Handle(AddWordTranslationCommand command)
         {
-
-            var detail = _queryProcessor.Execute(new WordDetailByIdQuery {Id = command.WordDetailId});
-            detail.Translations.Add(command.Translation);
+            var detail = _queryProcessor.Execute(new WordDetailByIdQuery { Id = command.WordDetailId });
+            detail.Translation.Add(command.Translation);
 
             _database.SaveChanges();
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Domain.Model;
@@ -25,15 +24,15 @@ namespace Inshapardaz.Api.Renderers
             var result = source.Map<WordDetail, WordDetailView>();
 
             result.Attributes = _enumRenderer.RenderFlags(source.Attributes).Trim(',');
-            result.Language = _enumRenderer.Render<Languages>(source.Language);
+            result.Language = _enumRenderer.Render((Languages)source.Language);
             var links = new List<LinkView>
-                               {
-                                   LinkRenderer.Render("GetWordDetailsById", "self", new { id = source.WordInstanceId }),
-                                   LinkRenderer.Render("GetWordById", "word", new { id = source.WordInstanceId }),
-                                   LinkRenderer.Render("GetWordTranslationsById", "translations", new { id = source.WordInstanceId }),
-                                   LinkRenderer.Render("GetWordMeaningById", "meanings", new { id = source.WordInstanceId }),
-                                   LinkRenderer.Render("GetWordRelationsById", "relationships", new { id = source.WordInstanceId })
-                               };
+            {
+                LinkRenderer.Render("GetWordDetailsById", "self", new {id = source.WordInstanceId}),
+                LinkRenderer.Render("GetWordById", "word", new {id = source.WordInstanceId}),
+                LinkRenderer.Render("GetWordTranslationsById", "translations", new {id = source.WordInstanceId}),
+                LinkRenderer.Render("GetWordMeaningById", "meanings", new {id = source.WordInstanceId}),
+                LinkRenderer.Render("GetWordRelationsById", "relationships", new {id = source.WordInstanceId})
+            };
 
             if (_userHelper.IsContributor)
             {

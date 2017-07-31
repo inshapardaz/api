@@ -1,6 +1,6 @@
-namespace Inshapardaz.Domain.Model
+﻿namespace Inshapardaz.Domain.Model
 {
-    public partial class Translation
+    public class Translation
     {
         public long Id { get; set; }
         public Languages Language { get; set; }

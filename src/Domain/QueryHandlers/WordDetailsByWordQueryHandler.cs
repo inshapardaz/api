@@ -18,16 +18,14 @@ namespace Inshapardaz.Domain.QueryHandlers
         {
             _database = database;
         }
-        
-        public async override Task<IEnumerable<WordDetail>> ExecuteAsync(WordDetailsByWordQuery query, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            IEnumerable<WordDetail> result;
 
-            result = await _database.WordDetails
-                              .Where(w => w.WordInstanceId == query.WordId)
-                              .OrderBy(x => x.Id)
-                              .ToListAsync();
-            return result;
+        public override async Task<IEnumerable<WordDetail>> ExecuteAsync(WordDetailsByWordQuery query,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await _database.WordDetail
+                .Where(w => w.WordInstanceId == query.WordId)
+                .OrderBy(x => x.Id)
+                .ToListAsync(cancellationToken);
         }
     }
 }

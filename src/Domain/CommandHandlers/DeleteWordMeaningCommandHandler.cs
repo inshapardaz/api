@@ -16,14 +16,14 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override DeleteWordMeaningCommand Handle(DeleteWordMeaningCommand command)
         {
-            var meaning = _database.Meanings.SingleOrDefault(x => x.Id == command.MeaningId);
+            var meaning = _database.Meaning.SingleOrDefault(x => x.Id == command.MeaningId);
 
             if (meaning == null)
             {
                 throw new RecordNotFoundException();
             }
 
-            _database.Meanings.Remove(meaning);
+            _database.Meaning.Remove(meaning);
             _database.SaveChanges();
 
             return base.Handle(command);

@@ -15,10 +15,11 @@ namespace Inshapardaz.Domain.QueryHandlers
         {
             _database = database;
         }
-        
-        public async override Task<WordDetail> ExecuteAsync(WordDetailByIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
+
+        public override async Task<WordDetail> ExecuteAsync(WordDetailByIdQuery query,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.WordDetails.SingleOrDefaultAsync(w => w.Id == query.Id);
+            return await _database.WordDetail.SingleOrDefaultAsync(w => w.Id == query.Id, cancellationToken);
         }
     }
 }

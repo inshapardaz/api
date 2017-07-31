@@ -16,8 +16,8 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         public GetDictionaryByWordDetailIdQueryHandlerTests()
         {
             var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
-                               .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                               .Options;
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
 
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
@@ -27,13 +27,13 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
                 Id = 1,
                 IsPublic = true,
                 UserId = "1",
-                Words = new List<Word>
+                Word = new List<Word>
                 {
                     new Word
                     {
                         Id = 1,
                         Title = "something",
-                        WordDetails = new List<WordDetail>
+                        WordDetail = new List<WordDetail>
                         {
                             new WordDetail {Id = 1},
                             new WordDetail {Id = 2}
@@ -55,7 +55,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledShouldReturnTheDictionary()
         {
-            var result = await _handler.ExecuteAsync(new Queries.DictionaryByWordDetailIdQuery { WordDetailId = 2 });
+            var result = await _handler.ExecuteAsync(new Queries.DictionaryByWordDetailIdQuery {WordDetailId = 2});
 
             Assert.NotNull(result);
         }
@@ -63,7 +63,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledForNonExsistantId()
         {
-            var result = await _handler.ExecuteAsync(new Queries.DictionaryByWordDetailIdQuery { WordDetailId = 3 });
+            var result = await _handler.ExecuteAsync(new Queries.DictionaryByWordDetailIdQuery {WordDetailId = 3});
 
             Assert.Null(result);
         }

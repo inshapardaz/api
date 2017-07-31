@@ -70,9 +70,7 @@ namespace Inshapardaz.Api.Configuration
         public static IServiceCollection RegisterRenderes(this IServiceCollection services)
         {
             services.AddTransient<IRenderResponse<EntryView>, EntryRenderer>();
-            services
-                .AddTransient<IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView>, DictionariesRenderer
-                >();
+            services.AddTransient<IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView>, DictionariesRenderer>();
             services.AddTransient<IRenderResponseFromObject<Dictionary, DictionaryView>, DictionaryRenderer>();
             services.AddTransient<IRenderEnum, EnumRenderer>();
             services.AddTransient<IRenderLink, LinkRenderer>();
@@ -81,16 +79,10 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRenderResponseFromObject<WordDetail, WordDetailView>, WordDetailRenderer>();
             services.AddTransient<IRenderResponseFromObject<Translation, TranslationView>, TranslationRenderer>();
             services.AddTransient<IRenderResponseFromObject<WordRelation, RelationshipView>, RelationRenderer>();
-            services
-                .AddTransient<IRenderResponseFromObject<WordDetail, IEnumerable<MeaningContextView>>,
-                    WordMeaningRenderer>();
+            services.AddTransient<IRenderResponseFromObject<WordDetail, IEnumerable<MeaningContextView>>, WordMeaningRenderer>();
             services.AddTransient<IRenderResponseFromObject<Meaning, MeaningView>, MeaningRenderer>();
-            services
-                .AddTransient<IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>>,
-                    WordIndexPageRenderer>();
-            services
-                .AddTransient<IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView>,
-                    DictionaryDownloadRenderer>();
+            services.AddTransient<IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>>, WordIndexPageRenderer>();
+            services.AddTransient<IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView>, DictionaryDownloadRenderer>();
             services.AddTransient<IRenderResponseFromObject<JobStatus, JobStatusModel>, JobStatusRenderer>();
 
             return services;
@@ -169,7 +161,7 @@ namespace Inshapardaz.Api.Configuration
             return app;
         }
 
-        public static void ConfigureCommandProcessor(this IServiceCollection services)
+        public static IServiceCollection ConfigureCommandProcessor(this IServiceCollection services)
         {
             var commandProcessor = CommandProcessorBuilder.With()
                 .Handlers(new HandlerConfiguration(new CommandHandlerRegistry(),
@@ -179,9 +171,10 @@ namespace Inshapardaz.Api.Configuration
                 .RequestContextFactory(new InMemoryRequestContextFactory())
                 .Build();
             services.AddSingleton<IAmACommandProcessor>(commandProcessor);
+            return services;
         }
 
-        public static void ConfigureDarker(this IServiceCollection services)
+        public static IServiceCollection ConfigureDarker(this IServiceCollection services)
         {
             var config = new DarkerConfig(services, services.BuildServiceProvider());
             config.RegisterDefaultDecorators();
@@ -193,6 +186,7 @@ namespace Inshapardaz.Api.Configuration
                 .Build();
 
             services.AddSingleton(queryProcessor);
+            return services;
         }
     }
 }

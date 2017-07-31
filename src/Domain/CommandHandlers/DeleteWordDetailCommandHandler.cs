@@ -22,13 +22,12 @@ namespace Inshapardaz.Domain.CommandHandlers
         {
             var details = _queryProcessor.Execute(new WordDetailByIdQuery { Id = command.WordDetailId });
 
-
             if (details == null)
             {
                 throw new RecordNotFoundException();
             }
 
-            _database.WordDetails.Remove(details);
+            _database.WordDetail.Remove(details);
             _database.SaveChanges();
 
             return base.Handle(command);

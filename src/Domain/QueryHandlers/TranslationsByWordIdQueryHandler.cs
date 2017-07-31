@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-
 using Darker;
-
 using Inshapardaz.Domain.Queries;
 using System.Collections.Generic;
 using Inshapardaz.Domain.Model;
@@ -12,7 +10,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class TranslationsByWordIdQueryHandler : AsyncQueryHandler<TranslationsByWordIdQuery, IEnumerable<Translation>>
+    public class TranslationsByWordIdQueryHandler : AsyncQueryHandler<TranslationsByWordIdQuery,
+        IEnumerable<Translation>>
     {
         private readonly IDatabaseContext _database;
 
@@ -21,11 +20,12 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override async Task<IEnumerable<Translation>> ExecuteAsync(TranslationsByWordIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<IEnumerable<Translation>> ExecuteAsync(TranslationsByWordIdQuery query,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.Translations
-                    .Where(t => t.WordDetail.WordInstanceId == query.WordId)
-                    .ToListAsync();
+            return await _database.Translation
+                .Where(t => t.WordDetail.WordInstanceId == query.WordId)
+                .ToListAsync(cancellationToken);
         }
     }
 }

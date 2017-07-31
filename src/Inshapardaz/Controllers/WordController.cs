@@ -81,7 +81,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("/api/dictionaries/{id}/words", Name = "CreateWord")]
-        public async Task<IActionResult> Post(int id, [FromBody]WordView word)
+        public async Task<IActionResult> Post(int id, [FromBody] WordView word)
         {
             if (word == null || !ModelState.IsValid)
             {
@@ -89,7 +89,8 @@ namespace Inshapardaz.Api.Controllers
             }
 
             var userId = _userHelper.GetUserId();
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = id, UserId = userId });
+            var dictionary =
+                await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = id, UserId = userId });
 
             if (userId == null || dictionary == null)
             {
@@ -105,7 +106,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("/api/words/{id}", Name = "UpdateWord")]
-        public async Task<IActionResult> Put(int id, [FromBody]WordView word)
+        public async Task<IActionResult> Put(int id, [FromBody] WordView word)
         {
             if (word == null || !ModelState.IsValid)
             {

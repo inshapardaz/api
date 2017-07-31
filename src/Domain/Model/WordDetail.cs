@@ -1,22 +1,23 @@
+﻿using System;
 using System.Collections.Generic;
 
 namespace Inshapardaz.Domain.Model
 {
-    public partial class WordDetail
+    public class WordDetail
     {
         public WordDetail()
         {
-            Meanings = new HashSet<Meaning>();
-            Translations = new HashSet<Translation>();
+            Meaning = new HashSet<Meaning>();
+            Translation = new HashSet<Translation>();
         }
 
         public long Id { get; set; }
         public GrammaticalType Attributes { get; set; }
-        public Languages Language { get; set; }
         public long WordInstanceId { get; set; }
+        public Languages Language { get; set; }
 
-        public virtual ICollection<Meaning> Meanings { get; set; }
-        public virtual ICollection<Translation> Translations { get; set; }
+        public virtual ICollection<Meaning> Meaning { get; set; }
+        public virtual ICollection<Translation> Translation { get; set; }
         public virtual Word WordInstance { get; set; }
     }
 }

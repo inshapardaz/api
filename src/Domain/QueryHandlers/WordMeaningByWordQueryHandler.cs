@@ -19,20 +19,19 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override async Task<IEnumerable<Meaning>> ExecuteAsync(WordMeaningByWordQuery query, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<IEnumerable<Meaning>> ExecuteAsync(WordMeaningByWordQuery query,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(query.Context))
             {
-                return await _database.Meanings
-                           .Where(t => t.WordDetail.WordInstanceId == query.WordId)
-                           .ToListAsync();
+                return await _database.Meaning
+                    .Where(t => t.WordDetail.WordInstanceId == query.WordId)
+                    .ToListAsync(cancellationToken);
             }
-            else
-            {
-                return await _database.Meanings
-                    .Where(t => t.WordDetail.WordInstanceId == query.WordId && t.Context == query.Context)
-                    .ToListAsync();
-            }
+
+            return await _database.Meaning
+                .Where(t => t.WordDetail.WordInstanceId == query.WordId && t.Context == query.Context)
+                .ToListAsync(cancellationToken);
         }
     }
 }

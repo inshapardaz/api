@@ -16,14 +16,14 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override DeleteWordCommand Handle(DeleteWordCommand command)
         {
-            var w = _database.Words.SingleOrDefault(x => x.Id == command.WordId);
+            var w = _database.Word.SingleOrDefault(x => x.Id == command.WordId);
 
             if (w == null || w.Id != command.WordId)
             {
                 throw new RecordNotFoundException();
             }
 
-            _database.Words.Remove(w);
+            _database.Word.Remove(w);
 
             _database.SaveChanges();
 

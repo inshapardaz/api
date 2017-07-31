@@ -22,13 +22,13 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override AddWordRelationCommand Handle(AddWordRelationCommand command)
         {
-            var word = _queryProcessor.Execute(new WordByIdQuery { Id = command.SourceWordId });
+            var word = _queryProcessor.Execute(new WordByIdQuery {Id = command.SourceWordId});
             if (word == null)
             {
                 throw new RecordNotFoundException();
             }
 
-            var relatedWord = _queryProcessor.Execute(new WordByIdQuery { Id = command.RelatedWordId });
+            var relatedWord = _queryProcessor.Execute(new WordByIdQuery {Id = command.RelatedWordId});
             if (relatedWord == null)
             {
                 throw new RecordNotFoundException();
@@ -43,7 +43,7 @@ namespace Inshapardaz.Domain.CommandHandlers
                 RelationType = command.RelationType
             };
 
-            _database.WordRelations.Add(relation);
+            _database.WordRelation.Add(relation);
             _database.SaveChanges();
 
             return base.Handle(command);

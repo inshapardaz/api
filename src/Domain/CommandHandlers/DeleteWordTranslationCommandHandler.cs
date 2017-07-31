@@ -28,7 +28,7 @@ namespace Inshapardaz.Domain.CommandHandlers
                 throw new RecordNotFoundException();
             }
 
-            _database.Translations.Remove(translation);
+            _database.Translation.Remove(translation);
             _database.SaveChanges();
 
             return base.Handle(command);

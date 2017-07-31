@@ -1,5 +1,5 @@
 ﻿using Inshapardaz.Api.Configuration;
-using Inshapardaz.Domain;
+using Inshapardaz.Api.Configuration.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,8 +21,10 @@ namespace Inshapardaz.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.RegisterFramework(Configuration)
-                .RegisterRenderes()
                 .ConfigureDomain(Configuration)
+                .ConfigureCommandProcessor()
+                .ConfigureDarker()
+                .RegisterRenderes()
                 .RegisterSwagger();
         }
 

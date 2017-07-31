@@ -16,8 +16,8 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         public AddDictionaryCommandHandlerTests()
         {
             var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
-                               .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                               .Options;
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
 
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
@@ -33,12 +33,15 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         public void WhenAdded_ShouldSaveToDatabase()
         {
             var name = "Test";
-            _handler.Handle(new AddDictionaryCommand { Dictionary = new Dictionary() { UserId = "2", IsPublic = false, Name = name, Language = 3 } });
+            _handler.Handle(new AddDictionaryCommand
+            {
+                Dictionary = new Dictionary() { UserId = "2", IsPublic = false, Name = name, Language = Languages.Avestan }
+            });
 
-            Assert.Equal(_database.Dictionaries.Count(), 1);
-            Assert.Equal(_database.Dictionaries.First().Name, name);
-            Assert.Equal(_database.Dictionaries.First().Language, 3);
-            Assert.False(_database.Dictionaries.First().IsPublic);
+            Assert.Equal(_database.Dictionary.Count(), 1);
+            Assert.Equal(_database.Dictionary.First().Name, name);
+            Assert.Equal(_database.Dictionary.First().Language, Languages.Avestan);
+            Assert.False(_database.Dictionary.First().IsPublic);
         }
     }
 }

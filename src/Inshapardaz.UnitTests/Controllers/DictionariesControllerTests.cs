@@ -40,13 +40,16 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             var fakeBackgroundJobClient = new FakeBackgroundJobClient();
             var fakeDictionaryDownloadRenderer = new FakeDictionaryDownloadRenderer();
-            _controller = new DictionariesController(_mockCommandProcessor.Object, _fakeQueryProcessor, _fakeUserHelper, fakeDictionariesRenderer, _fakeDictionaryRenderer, fakeBackgroundJobClient, fakeDictionaryDownloadRenderer);
+            _controller = new DictionariesController(_mockCommandProcessor.Object, _fakeQueryProcessor, _fakeUserHelper,
+                fakeDictionariesRenderer, _fakeDictionaryRenderer, fakeBackgroundJobClient,
+                fakeDictionaryDownloadRenderer);
         }
 
         [Fact]
         public void WhenAnonymousCall_ShouldQueryDictionariesPublicUser()
         {
-            _fakeQueryProcessor.SetupResultFor<DictionariesByUserQuery, IEnumerable<Dictionary>>(new Collection<Dictionary>());
+            _fakeQueryProcessor.SetupResultFor<DictionariesByUserQuery, IEnumerable<Dictionary>>(
+                new Collection<Dictionary>());
 
             var result = _controller.Get().Result;
 
@@ -58,7 +61,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             var userId = "user1234";
             _fakeUserHelper.WithUserId(userId);
-            _fakeQueryProcessor.SetupResultFor<DictionariesByUserQuery, IEnumerable<Dictionary>>(new Collection<Dictionary>());
+            _fakeQueryProcessor.SetupResultFor<DictionariesByUserQuery, IEnumerable<Dictionary>>(
+                new Collection<Dictionary>());
 
             var result = _controller.Get().Result;
 
@@ -73,7 +77,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             var result = _controller.Get(dictionaryId).Result;
 
-            _fakeQueryProcessor.ShouldHaveExecuted<DictionaryByIdQuery>(q => q.UserId == null && q.DictionaryId == dictionaryId);
+            _fakeQueryProcessor.ShouldHaveExecuted<DictionaryByIdQuery>(
+                q => q.UserId == null && q.DictionaryId == dictionaryId);
         }
 
         [Fact]
@@ -86,7 +91,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             var result = _controller.Get(dictionaryId).Result;
 
-            _fakeQueryProcessor.ShouldHaveExecuted<DictionaryByIdQuery>(q => q.UserId == userId && q.DictionaryId == dictionaryId);
+            _fakeQueryProcessor.ShouldHaveExecuted<DictionaryByIdQuery>(
+                q => q.UserId == userId && q.DictionaryId == dictionaryId);
         }
 
         [Fact]
@@ -104,7 +110,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             _fakeUserHelper.WithUserId(userId);
             var dictionaryView = new DictionaryView
             {
-                Language = 23,
+                Language = Languages.Persian,
                 IsPublic = true,
                 Name = "test dictionary"
             };
@@ -115,11 +121,19 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             Assert.NotNull(result);
             Assert.NotNull(result.Location);
 
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.IsAny<AddDictionaryCommand>(), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<AddDictionaryCommand>(d => d.Dictionary.Name == dictionaryView.Name), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<AddDictionaryCommand>(d => d.Dictionary.Language == dictionaryView.Language), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<AddDictionaryCommand>(d => d.Dictionary.IsPublic == dictionaryView.IsPublic), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<AddDictionaryCommand>(d => d.Dictionary.UserId == userId), false, default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(It.IsAny<AddDictionaryCommand>(), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<AddDictionaryCommand>(d => d.Dictionary.Name == dictionaryView.Name), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<AddDictionaryCommand>(d => d.Dictionary.Language == dictionaryView.Language), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<AddDictionaryCommand>(d => d.Dictionary.IsPublic == dictionaryView.IsPublic), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<AddDictionaryCommand>(d => d.Dictionary.UserId == userId), false, default(CancellationToken)));
         }
 
         [Fact]
@@ -127,7 +141,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             var dictionaryView = new DictionaryView
             {
-                Language = 23,
+                Language = Languages.Portuguese,
                 IsPublic = true,
                 Name = "sdsd"
             };
@@ -146,7 +160,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             _fakeUserHelper.WithUserId(userId);
             var dictionaryView = new DictionaryView
             {
-                Language = 23,
+                Language = Languages.Persian,
                 IsPublic = true,
                 Name = "test dictionary"
             };
@@ -157,11 +171,19 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             Assert.IsType<NoContentResult>(result);
 
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.IsAny<UpdateDictionaryCommand>(), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<UpdateDictionaryCommand>(d => d.Dictionary.Name == dictionaryView.Name), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<UpdateDictionaryCommand>(d => d.Dictionary.Language == dictionaryView.Language), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<UpdateDictionaryCommand>(d => d.Dictionary.IsPublic == dictionaryView.IsPublic), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<UpdateDictionaryCommand>(d => d.Dictionary.UserId == userId), false, default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(It.IsAny<UpdateDictionaryCommand>(), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<UpdateDictionaryCommand>(d => d.Dictionary.Name == dictionaryView.Name), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<UpdateDictionaryCommand>(d => d.Dictionary.Language == dictionaryView.Language), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<UpdateDictionaryCommand>(d => d.Dictionary.IsPublic == dictionaryView.IsPublic), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<UpdateDictionaryCommand>(d => d.Dictionary.UserId == userId), false, default(CancellationToken)));
         }
 
         [Fact]
@@ -175,7 +197,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var dictionaryView = new DictionaryView
             {
                 Id = dictionaryId,
-                Language = 23,
+                Language = Languages.Sanskrit,
                 IsPublic = true,
                 Name = "test dictionary"
             };
@@ -185,11 +207,19 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             Assert.IsType<CreatedResult>(result);
 
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.IsAny<AddDictionaryCommand>(), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<AddDictionaryCommand>(d => d.Dictionary.Name == dictionaryView.Name), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<AddDictionaryCommand>(d => d.Dictionary.Language == dictionaryView.Language), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<AddDictionaryCommand>(d => d.Dictionary.IsPublic == dictionaryView.IsPublic), false, default(CancellationToken)));
-            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<AddDictionaryCommand>(d => d.Dictionary.UserId == userId), false, default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(It.IsAny<AddDictionaryCommand>(), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<AddDictionaryCommand>(d => d.Dictionary.Name == dictionaryView.Name), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<AddDictionaryCommand>(d => d.Dictionary.Language == dictionaryView.Language), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<AddDictionaryCommand>(d => d.Dictionary.IsPublic == dictionaryView.IsPublic), false,
+                default(CancellationToken)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(
+                It.Is<AddDictionaryCommand>(d => d.Dictionary.UserId == userId), false, default(CancellationToken)));
         }
 
         [Fact]
@@ -199,7 +229,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var dictionaryView = new DictionaryView
             {
                 Id = dictionaryId,
-                Language = 23,
+                Language = Languages.Persian,
                 IsPublic = true,
                 Name = "sdsdsdsd"
             };
@@ -221,7 +251,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             Assert.IsType<NoContentResult>(result);
 
             _mockCommandProcessor.Verify(x => x.Send(It.IsAny<DeleteDictionaryCommand>()));
-            _mockCommandProcessor.Verify(x => x.Send(It.Is<DeleteDictionaryCommand>(c => c.DictionaryId == dictionaryId)));
+            _mockCommandProcessor.Verify(
+                x => x.Send(It.Is<DeleteDictionaryCommand>(c => c.DictionaryId == dictionaryId)));
         }
 
         [Fact]

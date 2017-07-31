@@ -14,7 +14,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override AddWordCommand Handle(AddWordCommand command)
         {
-            _database.Words.Add(command.Word);
+            _database.Word.Add(command.Word);
             _database.SaveChanges();
 
             return base.Handle(command);

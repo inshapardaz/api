@@ -17,9 +17,9 @@ namespace Inshapardaz.Domain.QueryHandlers
 
         public override Page<Word> Execute(WordRelationsByTitleQuery request)
         {
-            var relations = _database.Words
+            var relations = _database.Word
                             .Where(x => x.Title == request.Title)
-                            .SelectMany(w => w.WordRelations)
+                            .SelectMany(w => w.WordRelationRelatedWord)
                             .Select(x => x.RelatedWord);
 
             var count = relations.Count();

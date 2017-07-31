@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Renderers
         {
             var result = source.Map<Translation, TranslationView>();
 
-            result.Language = _enumRenderer.Render<Languages>(source.Language);
+            result.Language = _enumRenderer.Render((Languages)source.Language);
 
             var links = new List<LinkView>
             {

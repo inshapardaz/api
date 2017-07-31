@@ -16,16 +16,16 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         public WordByTitleQueryHandlerTests()
         {
             var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
-                               .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                               .Options;
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
 
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
 
-            _database.Dictionaries.Add(new Dictionary { Id = 1, UserId = "1", IsPublic = false });
-            _database.Dictionaries.Add(new Dictionary { Id = 2, UserId = "1", IsPublic = true });
-            _database.Words.Add(new Word { Id = 22, Title = "word1", DictionaryId = 1 });
-            _database.Words.Add(new Word { Id = 23, Title = "word2", DictionaryId = 2 });
+            _database.Dictionary.Add(new Dictionary { Id = 1, UserId = "1", IsPublic = false });
+            _database.Dictionary.Add(new Dictionary { Id = 2, UserId = "1", IsPublic = true });
+            _database.Word.Add(new Word { Id = 22, Title = "word1", DictionaryId = 1 });
+            _database.Word.Add(new Word { Id = 23, Title = "word2", DictionaryId = 2 });
             _database.SaveChanges();
 
             _handler = new WordByTitleQueryHandler(_database);

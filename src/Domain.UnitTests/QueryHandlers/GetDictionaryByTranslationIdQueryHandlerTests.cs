@@ -16,8 +16,8 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         public GetDictionaryByTranslationIdQueryHandlerTests()
         {
             var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
-                               .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                               .Options;
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
 
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
@@ -27,21 +27,23 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
                 Id = 1,
                 IsPublic = true,
                 UserId = "1",
-                Words = new List<Word>
+                Word = new List<Word>
                 {
                     new Word
                     {
                         Id = 1,
                         Title = "something",
-                        WordDetails = new List<WordDetail>
+                        WordDetail = new List<WordDetail>
                         {
-                            new WordDetail {
+                            new WordDetail
+                            {
                                 Id = 1,
-                                Translations = new [] { new Translation { Id = 9 } }
+                                Translation = new[] {new Translation {Id = 9}}
                             },
-                            new WordDetail {
+                            new WordDetail
+                            {
                                 Id = 2,
-                                Translations = new [] { new Translation { Id = 10 } }
+                                Translation = new[] {new Translation {Id = 10}}
                             }
                         }
                     }
@@ -61,7 +63,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledShouldReturnTheDictionary()
         {
-            var result = await _handler.ExecuteAsync(new Queries.DictionaryByTranslationIdQuery { TranslationId = 10 });
+            var result = await _handler.ExecuteAsync(new Queries.DictionaryByTranslationIdQuery {TranslationId = 10});
 
             Assert.NotNull(result);
         }
@@ -69,7 +71,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledForNonExsistantId()
         {
-            var result = await _handler.ExecuteAsync(new Queries.DictionaryByTranslationIdQuery { TranslationId = 3 });
+            var result = await _handler.ExecuteAsync(new Queries.DictionaryByTranslationIdQuery {TranslationId = 3});
 
             Assert.Null(result);
         }

@@ -1,13 +1,14 @@
-﻿using Inshapardaz.Domain.CommandHandlers;
+﻿using Inshapardaz.Domain;
+using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Inshapardaz.Domain
+namespace Inshapardaz.Api.Configuration.Modules
 {
-    public static class Module
+    public static class DomainModule
     {
         public static IServiceCollection ConfigureDomain(this IServiceCollection services,
             IConfigurationRoot configuration)
@@ -17,7 +18,7 @@ namespace Inshapardaz.Domain
             services.AddEntityFrameworkSqlServer()
                 .AddDbContext<DatabaseContext>(
                     options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
-            services.AddTransient<Domain.IDatabaseContext, Domain.DatabaseContext>();
+            services.AddTransient<IDatabaseContext, DatabaseContext>();
             services.AddTransient<AddDictionaryCommandHandler>();
             services.AddTransient<AddWordCommandHandler>();
             services.AddTransient<AddWordDetailCommandHandler>();

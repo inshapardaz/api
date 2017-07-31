@@ -7,7 +7,7 @@ namespace Inshapardaz.Api.Renderers
 {
     public class WordMeaningRenderer : RendrerBase, IRenderResponseFromObject<WordDetail, IEnumerable<MeaningContextView>>
     {
-        private const string DefaultContext = "Default"; 
+        private const string DefaultContext = "Default";
         private readonly IRenderResponseFromObject<Meaning, MeaningView> _meaningRenderer;
 
         public WordMeaningRenderer(IRenderLink linkRenderer, IRenderResponseFromObject<Meaning, MeaningView> meaningRenderer)
@@ -19,7 +19,7 @@ namespace Inshapardaz.Api.Renderers
         public IEnumerable<MeaningContextView> Render(WordDetail source)
         {
             return source
-                   .Meanings
+                   .Meaning
                    .GroupBy(m => m.Context)
                    .Select(
                     @group => new MeaningContextView

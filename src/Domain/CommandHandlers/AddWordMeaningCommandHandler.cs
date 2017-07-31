@@ -16,13 +16,13 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override AddWordMeaningCommand Handle(AddWordMeaningCommand command)
         {
-            var detail = _database.WordDetails.SingleOrDefault(w => w.Id == command.WordDetailId);
+            var detail = _database.WordDetail.SingleOrDefault(w => w.Id == command.WordDetailId);
             if (detail == null)
             {
                 throw new RecordNotFoundException();
             }
 
-            detail.Meanings.Add(command.Meaning);
+            detail.Meaning.Add(command.Meaning);
 
             _database.SaveChanges();
             return base.Handle(command);

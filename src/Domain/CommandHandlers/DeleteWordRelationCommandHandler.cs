@@ -28,7 +28,7 @@ namespace Inshapardaz.Domain.CommandHandlers
                 throw new RecordNotFoundException();
             }
 
-            _database.WordRelations.Remove(relation);
+            _database.WordRelation.Remove(relation);
             _database.SaveChanges();
 
             return base.Handle(command);

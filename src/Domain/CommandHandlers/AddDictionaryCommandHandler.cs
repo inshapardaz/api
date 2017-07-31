@@ -14,7 +14,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override AddDictionaryCommand Handle(AddDictionaryCommand command)
         {
-            _database.Dictionaries.Add(command.Dictionary);
+            _database.Dictionary.Add(command.Dictionary);
             _database.SaveChanges();
 
             return base.Handle(command);

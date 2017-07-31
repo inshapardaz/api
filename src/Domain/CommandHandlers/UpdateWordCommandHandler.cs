@@ -16,7 +16,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override UpdateWordCommand Handle(UpdateWordCommand command)
         {
-            var w = _database.Words.SingleOrDefault(x => x.Id == command.Word.Id);
+            var w = _database.Word.SingleOrDefault(x => x.Id == command.Word.Id);
 
             if (w == null || w.Id != command.Word.Id)
             {

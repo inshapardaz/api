@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class RelationshipByWordIdQueryHandler : AsyncQueryHandler<RelationshipByWordIdQuery, IEnumerable<WordRelation>>
+    public class RelationshipByWordIdQueryHandler : AsyncQueryHandler<RelationshipByWordIdQuery,
+        IEnumerable<WordRelation>>
     {
         private readonly IDatabaseContext _database;
 
@@ -19,13 +20,14 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override async Task<IEnumerable<WordRelation>> ExecuteAsync(RelationshipByWordIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<IEnumerable<WordRelation>> ExecuteAsync(RelationshipByWordIdQuery query,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.WordRelations
-                    .Include(r => r.RelatedWord)
-                    .Include(r => r.SourceWord)
-                    .Where(t => t.SourceWordId == query.WordId)
-                    .ToListAsync();
+            return await _database.WordRelation
+                .Include(r => r.RelatedWord)
+                .Include(r => r.SourceWord)
+                .Where(t => t.SourceWordId == query.WordId)
+                .ToListAsync(cancellationToken);
         }
     }
 }

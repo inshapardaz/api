@@ -17,12 +17,13 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override async Task<WordRelation> ExecuteAsync(RelationshipByIdQuery query, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<WordRelation> ExecuteAsync(RelationshipByIdQuery query,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.WordRelations
-                                  .Include(r => r.SourceWord)
-                                  .Include(r => r.RelatedWord)
-                                  .SingleOrDefaultAsync(t => t.Id == query.Id);
+            return await _database.WordRelation
+                .Include(r => r.SourceWord)
+                .Include(r => r.RelatedWord)
+                .SingleOrDefaultAsync(t => t.Id == query.Id, cancellationToken);
         }
     }
 }

@@ -16,8 +16,8 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         public GetDictionaryByMeaningIdQueryHandlerTests()
         {
             var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
-                              .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                              .Options;
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
 
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
@@ -27,21 +27,23 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
                 Id = 1,
                 IsPublic = true,
                 UserId = "1",
-                Words = new List<Word>
+                Word = new List<Word>
                 {
                     new Word
                     {
                         Id = 1,
                         Title = "something",
-                        WordDetails = new List<WordDetail>
+                        WordDetail = new List<WordDetail>
                         {
-                            new WordDetail {
+                            new WordDetail
+                            {
                                 Id = 1,
-                                Meanings = new [] { new Meaning { Id = 9 } }
+                                Meaning = new[] {new Meaning {Id = 9}}
                             },
-                            new WordDetail {
+                            new WordDetail
+                            {
                                 Id = 2,
-                                Meanings = new [] { new Meaning { Id = 10 } }
+                                Meaning = new[] {new Meaning {Id = 10}}
                             }
                         }
                     }

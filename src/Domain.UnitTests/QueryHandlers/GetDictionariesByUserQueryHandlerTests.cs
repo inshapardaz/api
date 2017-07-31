@@ -17,16 +17,16 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         public GetDictionariesByUserQueryHandlerTests()
         {
             var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
-                               .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                               .Options;
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
 
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
 
-            _database.Dictionaries.Add(new Dictionary { Id = 1, IsPublic = true, UserId = "1" });
-            _database.Dictionaries.Add(new Dictionary { Id = 2, IsPublic = true, UserId = "2" });
-            _database.Dictionaries.Add(new Dictionary { Id = 3, IsPublic = false, UserId = "2" });
-            _database.Dictionaries.Add(new Dictionary { Id = 4, IsPublic = false, UserId = "1" });
+            _database.Dictionary.Add(new Dictionary {Id = 1, IsPublic = true, UserId = "1"});
+            _database.Dictionary.Add(new Dictionary {Id = 2, IsPublic = true, UserId = "2"});
+            _database.Dictionary.Add(new Dictionary {Id = 3, IsPublic = false, UserId = "2"});
+            _database.Dictionary.Add(new Dictionary {Id = 4, IsPublic = false, UserId = "1"});
             _database.SaveChanges();
 
             _handler = new GetDictionariesByUserQueryHandler(_database);
@@ -52,7 +52,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCalledForAUser_ShouldReturnPublicAndPrivateDitionaries()
         {
-            var result = await _handler.ExecuteAsync(new DictionariesByUserQuery { UserId = "2" });
+            var result = await _handler.ExecuteAsync(new DictionariesByUserQuery {UserId = "2"});
 
             Assert.Equal(result.Count(), 3);
 

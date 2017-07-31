@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Darker;
@@ -18,15 +17,16 @@ namespace Inshapardaz.Domain.QueryHandlers
         {
             _database = database;
         }
-        
-        public async override Task<Page<Word>> ExecuteAsync(WordQuery query, CancellationToken cancellationToken = default(CancellationToken))
+
+        public override async Task<Page<Word>> ExecuteAsync(WordQuery query,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            var words = _database.Words;
+            var words = _database.Word;
             var count = words.Count();
 
             var data = await words.OrderBy(x => x.Title)
-                            .Paginate(query.PageNumber, query.PageSize)
-                            .ToListAsync();
+                .Paginate(query.PageNumber, query.PageSize)
+                .ToListAsync(cancellationToken);
 
             return new Page<Word>
             {

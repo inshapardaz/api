@@ -22,10 +22,10 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             {
                 Id = 1,
                 Name = "Test",
-                Language = 4,
+                Language = Languages.French,
                 IsPublic = false,
                 UserId = "12",
-                Words = new List<Word> { new Word(), new Word() }
+                Word = new List<Word> { new Word(), new Word() }
             };
 
             public WhenRendereingAnonymously()
@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var renderer = new DictionaryRenderer(mockLinkRenderer.Object, fakeUserHelper);
 
                 mockLinkRenderer.Setup(x => x.Render(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
-                                .Returns((string x, string r, object o) => new LinkView { Rel = r, Href = new Uri("http://link/") });
+                    .Returns((string x, string r, object o) => new LinkView { Rel = r, Href = new Uri("http://link/") });
 
                 _result = renderer.Render(_dictionary);
             }
@@ -69,7 +69,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             [Fact]
             public void ShouldRenderWordCount()
             {
-                Assert.Equal(_result.WordCount, _dictionary.Words.Count);
+                Assert.Equal(_result.WordCount, _dictionary.Word.Count);
             }
 
             [Fact]
@@ -118,7 +118,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             {
                 Id = 1,
                 Name = "Test",
-                Language = 4,
+                Language = Languages.Chinese,
                 IsPublic = false,
                 UserId = "12"
             };
@@ -132,7 +132,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var renderer = new DictionaryRenderer(mockLinkRenderer.Object, fakeUserHelper);
 
                 mockLinkRenderer.Setup(x => x.Render(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
-                                .Returns((string x, string r, object o) => new LinkView { Rel = r, Href = new Uri("http://link/") });
+                    .Returns((string x, string r, object o) => new LinkView { Rel = r, Href = new Uri("http://link/") });
 
                 _result = renderer.Render(_dictionary);
             }

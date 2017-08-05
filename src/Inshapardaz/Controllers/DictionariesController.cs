@@ -5,16 +5,15 @@ using System.Threading.Tasks;
 using Darker;
 using Hangfire;
 using Inshapardaz.Api.Helpers;
-using Inshapardaz.Api.Jobs;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
-using Inshapardaz.Api.View;
-using Inshapardaz.Domain;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Api.Controllers
@@ -31,13 +30,18 @@ namespace Inshapardaz.Api.Controllers
         private readonly IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView>
             _dictionaryDownloadRenderer;
 
+        private readonly ILogger<DictionariesController> _logger;
+        private readonly IConfigurationRoot _configuration;
+
         public DictionariesController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
             IUserHelper userHelper,
             IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView> dictionariesRenderer,
             IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer,
             IBackgroundJobClient backgroundJobClient,
-            IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView> dictionaryDownloadRenderer)
+            IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView> dictionaryDownloadRenderer,
+            ILogger<DictionariesController> logger,
+            IConfigurationRoot configuration)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
@@ -46,6 +50,8 @@ namespace Inshapardaz.Api.Controllers
             _dictionaryRenderer = dictionaryRenderer;
             _backgroundJobClient = backgroundJobClient;
             _dictionaryDownloadRenderer = dictionaryDownloadRenderer;
+            _logger = logger;
+            _configuration = configuration;
         }
 
         [HttpGet("/api/dictionaries", Name = "GetDictionaries")]
@@ -162,7 +168,7 @@ namespace Inshapardaz.Api.Controllers
             return NoContent();
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost("/api/dictionaries/{id}/download", Name = "CreateDictionaryDownload")]
         [Produces(typeof(DictionaryView))]
         public async Task<IActionResult> CreateDownloadForDictionary(int id)
@@ -176,15 +182,20 @@ namespace Inshapardaz.Api.Controllers
                 return NotFound();
             }
 
-            var jobId = _backgroundJobClient.Enqueue<SqliteExport>(x => x.ExportDictionary(id));
-            var view = new DictionaryDownload
-            {
-                DictionaryId = id,
-                //Format = "dat",
-                //JobId = jobId
-            };
-            var result = _dictionaryDownloadRenderer.Render(view);
-            return Created(result.Links.Single(x => x.Rel == "self").Href, result);
+            var sqliteExport = new Domain.Exports.Sqlite.SqliteExport(_logger, _configuration);
+            var data =   sqliteExport.ExportDictionary(id);
+            var response = File(data, "application/octet-stream");
+            return response;
+
+            //var jobId = _backgroundJobClient.Enqueue<SqliteExport>(x => x.ExportDictionary(id));
+            //var view = new DictionaryDownload
+            //{
+            //    DictionaryId = id,
+            //    //Format = "dat",
+            //    //JobId = jobId
+            //};
+            //var result = _dictionaryDownloadRenderer.Render(view);
+            //return Created(result.Links.Single(x => x.Rel == "self").Href, result);
         }
 
         [HttpGet("/api/dictionary/{id}.{format}", Name = "DownloadDictionary")]

@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var fakeDictionaryDownloadRenderer = new FakeDictionaryDownloadRenderer();
             _controller = new DictionariesController(_mockCommandProcessor.Object, _fakeQueryProcessor, _fakeUserHelper,
                 fakeDictionariesRenderer, _fakeDictionaryRenderer, fakeBackgroundJobClient,
-                fakeDictionaryDownloadRenderer);
+                fakeDictionaryDownloadRenderer, null);
         }
 
         [Fact]

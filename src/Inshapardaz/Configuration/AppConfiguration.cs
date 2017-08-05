@@ -49,6 +49,7 @@ namespace Inshapardaz.Api.Configuration
 
             services.AddMvc();
 
+            services.AddSingleton(provider => configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();

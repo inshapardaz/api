@@ -1,7 +1,7 @@
 ﻿using System;
 using Darker;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;

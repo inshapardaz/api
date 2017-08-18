@@ -2,7 +2,6 @@
 using System.Linq;
 using Darker;
 using Inshapardaz.Api.Helpers;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
@@ -10,6 +9,7 @@ using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 using paramore.brighter.commandprocessor;
 using System.Threading.Tasks;
+using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.Controllers
 {

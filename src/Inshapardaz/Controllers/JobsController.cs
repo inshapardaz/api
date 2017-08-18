@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Storage;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Mvc;

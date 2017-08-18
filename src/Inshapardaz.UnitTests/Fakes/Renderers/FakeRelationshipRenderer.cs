@@ -1,9 +1,9 @@
 ﻿using System;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Model;
 using System.Collections.Generic;
 using System.Linq;
+using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {

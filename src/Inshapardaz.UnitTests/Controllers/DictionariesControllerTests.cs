@@ -4,10 +4,10 @@ using System.Threading;
 using AutoMapper;
 using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Controllers;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.UnitTests.Fakes;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
+using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var fakeDictionaryDownloadRenderer = new FakeDictionaryDownloadRenderer();
             _controller = new DictionariesController(_mockCommandProcessor.Object, _fakeQueryProcessor, _fakeUserHelper,
                 fakeDictionariesRenderer, _fakeDictionaryRenderer, fakeBackgroundJobClient,
-                fakeDictionaryDownloadRenderer, null);
+                fakeDictionaryDownloadRenderer);
         }
 
         [Fact]

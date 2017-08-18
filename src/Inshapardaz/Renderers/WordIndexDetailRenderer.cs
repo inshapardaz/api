@@ -1,5 +1,5 @@
 ﻿using System;
-using Inshapardaz.Api.Model;
+using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.Renderers

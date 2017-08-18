@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Controllers;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.UnitTests.Fakes;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
@@ -12,6 +11,7 @@ using Moq;
 using paramore.brighter.commandprocessor;
 using System;
 using System.Collections.Generic;
+using Inshapardaz.Api.View;
 using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Controllers

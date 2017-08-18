@@ -19,12 +19,16 @@ namespace Inshapardaz.Api.Configuration.Modules
                 .AddDbContext<DatabaseContext>(
                     options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
             services.AddTransient<IDatabaseContext, DatabaseContext>();
+
+            MigrateDatabase(connectionString);
+
             services.AddTransient<AddDictionaryCommandHandler>();
             services.AddTransient<AddWordCommandHandler>();
             services.AddTransient<AddWordDetailCommandHandler>();
             services.AddTransient<AddWordRelationCommandHandler>();
             services.AddTransient<AddWordTranslationCommandHandler>();
             services.AddTransient<AddWordMeaningCommandHandler>();
+            services.AddTransient<AddDictionaryDownloadHandler>();
 
             services.AddTransient<UpdateDictionaryCommandHandler>();
             services.AddTransient<UpdateWordCommandHandler>();
@@ -64,6 +68,14 @@ namespace Inshapardaz.Api.Configuration.Modules
             services.AddTransient<GetDictionaryByTranslationIdQueryHandler>();
 
             return services;
+        }
+
+        private static void MigrateDatabase(string connectionString)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<Data.DictionaryDatabase>();
+            optionsBuilder.UseSqlServer(connectionString);
+
+            new Data.DictionaryDatabase(optionsBuilder.Options).Database.Migrate();
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Inshapardaz.Api.Controllers;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
+using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 

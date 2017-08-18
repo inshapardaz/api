@@ -22,7 +22,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             _storage = storage;
         }
 
-        public override async Task<string> ExecuteAsync(GetJobStateQuery query, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<string> ExecuteAsync(GetJobStateQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
             throw new NotImplementedException();
         }

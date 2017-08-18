@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.View;
 using Moq;
 using Xunit;
 

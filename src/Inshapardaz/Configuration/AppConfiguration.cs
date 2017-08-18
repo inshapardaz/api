@@ -3,7 +3,6 @@ using System.IO;
 using System.Reflection;
 using AutoMapper;
 using Inshapardaz.Api.Helpers;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Model;
@@ -18,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using paramore.brighter.commandprocessor;
 using Swashbuckle.AspNetCore.Swagger;
 using Hangfire;
+using Inshapardaz.Api.Model;
 using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Http;
 
@@ -83,7 +83,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRenderResponseFromObject<WordDetail, IEnumerable<MeaningContextView>>, WordMeaningRenderer>();
             services.AddTransient<IRenderResponseFromObject<Meaning, MeaningView>, MeaningRenderer>();
             services.AddTransient<IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>>, WordIndexPageRenderer>();
-            services.AddTransient<IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView>, DictionaryDownloadRenderer>();
+            services.AddTransient<IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView>, DictionaryDownloadRenderer>();
             services.AddTransient<IRenderResponseFromObject<JobStatus, JobStatusModel>, JobStatusRenderer>();
 
             return services;

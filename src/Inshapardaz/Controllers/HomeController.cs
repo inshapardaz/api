@@ -1,5 +1,5 @@
-﻿using Inshapardaz.Api.Model;
-using Inshapardaz.Api.Renderers;
+﻿using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

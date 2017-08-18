@@ -59,7 +59,4 @@
         <Content Include="wwwroot\*.html" CopyToPublishDirectory="PreserveNewest" />
         <Content Include="wwwroot\*.js" CopyToPublishDirectory="PreserveNewest" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Jobs\" />
-    </ItemGroup>
 </Project>

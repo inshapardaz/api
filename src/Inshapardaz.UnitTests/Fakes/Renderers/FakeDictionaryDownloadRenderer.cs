@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
-    public class FakeDictionaryDownloadRenderer : IRenderResponseFromObject<DictionaryDownload, DownloadDictionaryView>
+    public class FakeDictionaryDownloadRenderer : IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView>
     {
-        public DownloadDictionaryView Render(DictionaryDownload source)
+        public DownloadDictionaryView Render(DownloadJobModel source)
         {
-            return new DownloadDictionaryView()
+            return new DownloadDictionaryView
             {
                 Links = new List<LinkView>
                 {

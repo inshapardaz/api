@@ -1,5 +1,5 @@
 ﻿using Inshapardaz.Api.Helpers;
-using Inshapardaz.Api.Model;
+using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;

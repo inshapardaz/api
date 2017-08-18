@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {

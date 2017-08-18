@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Model;
+using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.Renderers
 {

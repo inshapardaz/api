@@ -72,10 +72,11 @@ namespace Inshapardaz.Api.Configuration.Modules
 
         private static void MigrateDatabase(string connectionString)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<Data.DictionaryDatabase>();
+            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
             optionsBuilder.UseSqlServer(connectionString);
 
-            new Data.DictionaryDatabase(optionsBuilder.Options).Database.Migrate();
+            var database = new DatabaseContext(optionsBuilder.Options).Database;
+            database.Migrate();
         }
     }
 }

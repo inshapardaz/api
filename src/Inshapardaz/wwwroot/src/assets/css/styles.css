@@ -65,3 +65,19 @@ body.urdu {
 .rtl{
   direction: rtl;
 }
+
+#page-footer{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: auto;  
+}
+
+.hand{
+  cursor: pointer;
+}
+
+.content{
+  padding-bottom: 30px;
+}

@@ -36,7 +36,6 @@ export class AppComponent {
 
         console.log(this.translate.get('APP.TITLE'));
         this.translate.get('APP.TITLE').subscribe((res: string) => {
-            console.log('title changed to :' + res);
             this.titleService.setTitle(res);
         });
 

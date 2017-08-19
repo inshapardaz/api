@@ -1,6 +1,12 @@
 import { Component } from '@angular/core';
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Dictionary } from '../../../models/dictionary';
+import { AuthService } from '../../../services/auth.service';
+
+import { CreateDictionariesComponent } from '../create-dictionary/create-dictionary.component';
+
+import { DialogService } from "ng2-bootstrap-modal";
+
 
 @Component({
     selector: 'dictionaries',
@@ -13,12 +19,35 @@ export class DictionariesComponent {
     dictionaries : Dictionary[];
     createLink : string;
 
-    constructor(private dictionaryService: DictionaryService){
+    constructor(private dictionaryService: DictionaryService, 
+                private dialogService:DialogService,
+                private auth: AuthService){
     }
 
     ngOnInit() {
         this.getEntry();
     }
+
+    createDictionary() {
+        let disposable = this.dialogService.addDialog(CreateDictionariesComponent, {
+            title:'Confirm title', 
+            message:'Confirm message'})
+            .subscribe((isConfirmed)=>{
+                //We get dialog result
+                if(isConfirmed) {
+                    alert('accepted');
+                }
+                else {
+                    alert('declined');
+                }
+            });
+        //We can close dialog calling disposable.unsubscribe();
+        //If dialog was not closed manually close it by timeout
+        setTimeout(()=>{
+            disposable.unsubscribe();
+        },10000);
+    }
+
 
     getEntry() {
         this.isLoading = true;

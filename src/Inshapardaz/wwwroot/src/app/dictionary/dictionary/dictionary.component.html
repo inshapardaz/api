@@ -18,25 +18,23 @@
 <!-- END Page Header -->
 
 <!-- Search Form -->
-<div class="bg-white" *ngIf="!isLoading">
-    <section class="content content-full content-boxed">
-        <!-- Section Content -->
-        <div class="row">
-            <div class="col-sm-8 col-sm-offset-2">
-                <form [formGroup]="searchForm" (ngSubmit)="gotoSearch($event)">
-                    <div class="input-group input-group-lg">
-                        <div class="input-group-btn">
-                            <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
-                            <a class="btn btn-default" *ngIf="isInSearch" (click)="clearSearch()"><i class="fa fa-close" ></i></a>
-                        </div>
-                        <input class="form-control text-right" type="text" placeholder="{{'DICTIONARY.SEARCH_IN_DICTIONARY' | translate}}" formControlName="query">                        
+<section class="content content-full content-boxed" *ngIf="!isLoading">
+    <!-- Section Content -->
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <form [formGroup]="searchForm" (ngSubmit)="gotoSearch($event)">
+                <div class="input-group input-group-lg">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                        <a class="btn btn-default" *ngIf="isInSearch" (click)="clearSearch()"><i class="fa fa-close" ></i></a>
                     </div>
-                </form>
-            </div>
+                    <input class="form-control text-right" type="text" placeholder="{{'DICTIONARY.SEARCH_IN_DICTIONARY' | translate}}" formControlName="query">                        
+                </div>
+            </form>
         </div>
-        <!-- END Section Content -->
-    </section>
-</div>
+    </div>
+    <!-- END Section Content -->
+</section>
 
 <div class="content">
     <div class="row">

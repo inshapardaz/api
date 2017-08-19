@@ -19,7 +19,9 @@
   "DICTIONARIES" : {
     "TITLE" : "Dictionaries",
     "SLOGAN" : "Lets build better language",
-    "CREATENEW" : "Create new dictionary" 
+    "CREATENEW" : "Create new dictionary",
+    "SIGNINANDCREATRENEW" : "Sign in and start creating dictionaries",
+    "NODICTIONARY" : "No Dictionary Found"
   },
   "DICTIONARY" : {
     "SEARCH_IN_DICTIONARY" : "Search in this dictionary...",

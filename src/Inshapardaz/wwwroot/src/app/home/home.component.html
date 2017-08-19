@@ -11,62 +11,60 @@
     </div>
 </div>
 
-<div class="bg-white">
-    <section class="content content-boxed overflow-hidden">
-        <!-- Section Content -->
-        <div class="content-grid">
-            <div class="row">
-                <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-class="animated fadeInDown">
-                    <a class="block block-bordered block-rounded block-link-hover3" [routerLink]="['/dictionaries']">
-                        <div class="block-content block-content-full border-b text-center">
-                            <div class="item">
-                                <i class="si si-book-open text-amethyst"></i>
-                            </div>
+<section class="content content-boxed overflow-hidden">
+    <!-- Section Content -->
+    <div class="content-grid">
+        <div class="row">
+            <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-class="animated fadeInDown">
+                <a class="block block-bordered block-rounded block-link-hover3" [routerLink]="['/dictionaries']">
+                    <div class="block-content block-content-full border-b text-center">
+                        <div class="item">
+                            <i class="si si-book-open text-amethyst"></i>
                         </div>
-                        <div class="block-content block-content-full block-content-mini">
-                            <span class="font-w600 text-uppercase urdu">{{'DICTIONARIES.TITLE' | translate}}</span>
+                    </div>
+                    <div class="block-content block-content-full block-content-mini">
+                        <span class="font-w600 text-uppercase urdu">{{'DICTIONARIES.TITLE' | translate}}</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-timeout="200" data-class="animated fadeInDown">
+                <a class="block block-bordered block-rounded block-link-hover3" [routerLink]="['/thesaurus']">
+                    <div class="block-content block-content-full border-b text-center">
+                        <div class="item">
+                            <i class="si si-shuffle text-city"></i>
                         </div>
-                    </a>
-                </div>
-                <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-timeout="200" data-class="animated fadeInDown">
-                    <a class="block block-bordered block-rounded block-link-hover3" [routerLink]="['/thesaurus']">
-                        <div class="block-content block-content-full border-b text-center">
-                            <div class="item">
-                                <i class="si si-shuffle text-city"></i>
-                            </div>
+                    </div>
+                    <div class="block-content block-content-full block-content-mini">
+                        <span class="font-w600 text-uppercase urdu">{{'THESAURUS.TITLE' | translate}}</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-timeout="400" data-class="animated fadeInDown">
+                <a class="block block-bordered block-rounded block-link-hover3" [routerLink]="['/translations']">
+                    <div class="block-content block-content-full border-b text-center">
+                        <div class="item">
+                            <i class="si si-globe text-flat"></i>
                         </div>
-                        <div class="block-content block-content-full block-content-mini">
-                            <span class="font-w600 text-uppercase urdu">{{'THESAURUS.TITLE' | translate}}</span>
+                    </div>
+                    <div class="block-content block-content-full block-content-mini">
+                        <span class="font-w600 text-uppercase urdu">{{'TRANSLATIONS.TITLE' | translate}}</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-timeout="600" data-class="animated fadeInDown">
+                <a class="block block-bordered block-rounded block-link-hover3" href="javascript:void(0)">
+                    <div class="block-content block-content-full border-b text-center">
+                        <div class="item">
+                            <i class="si si-note text-smooth"></i>
                         </div>
-                    </a>
-                </div>
-                <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-timeout="400" data-class="animated fadeInDown">
-                    <a class="block block-bordered block-rounded block-link-hover3" [routerLink]="['/translations']">
-                        <div class="block-content block-content-full border-b text-center">
-                            <div class="item">
-                                <i class="si si-globe text-flat"></i>
-                            </div>
-                        </div>
-                        <div class="block-content block-content-full block-content-mini">
-                            <span class="font-w600 text-uppercase urdu">{{'TRANSLATIONS.TITLE' | translate}}</span>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-timeout="600" data-class="animated fadeInDown">
-                    <a class="block block-bordered block-rounded block-link-hover3" href="javascript:void(0)">
-                        <div class="block-content block-content-full border-b text-center">
-                            <div class="item">
-                                <i class="si si-note text-smooth"></i>
-                            </div>
-                        </div>
-                        <div class="block-content block-content-full block-content-mini">
-                            <span class="font-w600 text-uppercase urdu">{{'EDITOR.TITLE' | translate}}</span>
-                        </div>
-                    </a>
-                </div>
+                    </div>
+                    <div class="block-content block-content-full block-content-mini">
+                        <span class="font-w600 text-uppercase urdu">{{'EDITOR.TITLE' | translate}}</span>
+                    </div>
+                </a>
             </div>
         </div>
-        <!-- END Section Content -->
-    </section>
-</div>
+    </div>
+    <!-- END Section Content -->
+</section>
 <!-- END Categories -->

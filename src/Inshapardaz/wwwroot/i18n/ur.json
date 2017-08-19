@@ -19,7 +19,9 @@
   "DICTIONARIES" : {
     "TITLE" : "لغات",
     "SLOGAN" : "آئیے اچھی زبان کی تخلیق کریں",
-    "CREATENEW" : "نئی لغت بنائیں"
+    "CREATENEW" : "نئی لغت بنائیں",
+    "SIGNINANDCREATRENEW" : "داخل ہوں اور لغّت بنائیں",
+    "NODICTIONARY" : "کوئی لغّت موجود نہیں"
   },
   "DICTIONARY" : {
     "SEARCH_IN_DICTIONARY" : "لغت میں تلاش۔۔۔",

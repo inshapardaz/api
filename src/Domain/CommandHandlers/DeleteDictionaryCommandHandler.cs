@@ -1,11 +1,14 @@
 ﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
+using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class DeleteDictionaryCommandHandler : RequestHandler<DeleteDictionaryCommand>
+    public class DeleteDictionaryCommandHandler : RequestHandlerAsync<DeleteDictionaryCommand>
     {
         private readonly IDatabaseContext _database;
 
@@ -14,10 +17,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             _database = database;
         }
 
-        public override DeleteDictionaryCommand Handle(DeleteDictionaryCommand command)
+        public override async Task<DeleteDictionaryCommand> HandleAsync(DeleteDictionaryCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var d = _database.Dictionary.SingleOrDefault(
-                x => x.Id == command.DictionaryId && x.UserId == command.UserId);
+            var d = await _database.Dictionary.SingleOrDefaultAsync(x => x.Id == command.DictionaryId && x.UserId == command.UserId, cancellationToken);
 
             if (d == null || d.Id != command.DictionaryId)
             {
@@ -26,9 +28,9 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             _database.Dictionary.Remove(d);
 
-            _database.SaveChanges();
+            await _database.SaveChangesAsync(cancellationToken);
 
-            return base.Handle(command);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

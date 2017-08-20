@@ -1,13 +1,14 @@
-﻿using Darker;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Darker;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class UpdateWordDetailCommandHandler : RequestHandler<UpdateWordDetailCommand>
+    public class UpdateWordDetailCommandHandler : RequestHandlerAsync<UpdateWordDetailCommand>
     {
         private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
@@ -19,9 +20,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             _queryProcessor = queryProcessor;
         }
 
-        public override UpdateWordDetailCommand Handle(UpdateWordDetailCommand command)
+        public override async Task<UpdateWordDetailCommand> HandleAsync(UpdateWordDetailCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var detail = _queryProcessor.Execute(new WordDetailByIdQuery {Id =  command.WordDetail.Id});
+            var detail = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = command.WordDetail.Id }, cancellationToken);
 
             if (detail == null)
             {
@@ -31,9 +32,8 @@ namespace Inshapardaz.Domain.CommandHandlers
             detail.Attributes = command.WordDetail.Attributes;
             detail.Language = command.WordDetail.Language;
 
-            _database.SaveChanges();
-
-            return base.Handle(command);
+            await _database.SaveChangesAsync(cancellationToken);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

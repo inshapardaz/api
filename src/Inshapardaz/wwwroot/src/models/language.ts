@@ -1,5 +1,5 @@
 export enum Languages{
-        None,
+        None= 0,
         Unknown,
         Urdu,
         Sanskrit,

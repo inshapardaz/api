@@ -1,4 +1,6 @@
-﻿using Darker;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Darker;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Model;
@@ -7,7 +9,7 @@ using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class AddWordRelationCommandHandler : RequestHandler<AddWordRelationCommand>
+    public class AddWordRelationCommandHandler : RequestHandlerAsync<AddWordRelationCommand>
     {
         private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
@@ -20,15 +22,15 @@ namespace Inshapardaz.Domain.CommandHandlers
             _queryProcessor = queryProcessor;
         }
 
-        public override AddWordRelationCommand Handle(AddWordRelationCommand command)
+        public override async Task<AddWordRelationCommand> HandleAsync(AddWordRelationCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var word = _queryProcessor.Execute(new WordByIdQuery {Id = command.SourceWordId});
+            var word = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = command.SourceWordId }, cancellationToken);
             if (word == null)
             {
                 throw new RecordNotFoundException();
             }
 
-            var relatedWord = _queryProcessor.Execute(new WordByIdQuery {Id = command.RelatedWordId});
+            var relatedWord = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = command.RelatedWordId }, cancellationToken);
             if (relatedWord == null)
             {
                 throw new RecordNotFoundException();
@@ -44,9 +46,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             };
 
             _database.WordRelation.Add(relation);
-            _database.SaveChanges();
+            await _database.SaveChangesAsync(cancellationToken);
 
-            return base.Handle(command);
-        }
+            return await base.HandleAsync(command, cancellationToken);
+        }        
     }
 }

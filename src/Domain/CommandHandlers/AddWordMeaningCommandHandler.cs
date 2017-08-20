@@ -1,11 +1,13 @@
 ﻿using Inshapardaz.Domain.Commands;
 using paramore.brighter.commandprocessor;
-using System.Linq;
 using Inshapardaz.Domain.Exception;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class AddWordMeaningCommandHandler : RequestHandler<AddWordMeaningCommand>
+    public class AddWordMeaningCommandHandler : RequestHandlerAsync<AddWordMeaningCommand>
     {
         private readonly IDatabaseContext _database;
 
@@ -14,9 +16,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             _database = database;
         }
 
-        public override AddWordMeaningCommand Handle(AddWordMeaningCommand command)
+        public override async Task<AddWordMeaningCommand> HandleAsync(AddWordMeaningCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var detail = _database.WordDetail.SingleOrDefault(w => w.Id == command.WordDetailId);
+            var detail = await _database.WordDetail.SingleOrDefaultAsync(w => w.Id == command.WordDetailId, cancellationToken);
             if (detail == null)
             {
                 throw new RecordNotFoundException();
@@ -24,8 +26,9 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             detail.Meaning.Add(command.Meaning);
 
-            _database.SaveChanges();
-            return base.Handle(command);
+            await _database.SaveChangesAsync(cancellationToken);
+
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

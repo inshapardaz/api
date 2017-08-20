@@ -1,11 +1,13 @@
-﻿using System.Linq;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
+using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class DeleteWordCommandHandler : RequestHandler<DeleteWordCommand>
+    public class DeleteWordCommandHandler : RequestHandlerAsync<DeleteWordCommand>
     {
         private readonly IDatabaseContext _database;
 
@@ -14,9 +16,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             _database = database;
         }
 
-        public override DeleteWordCommand Handle(DeleteWordCommand command)
+        public override async Task<DeleteWordCommand> HandleAsync(DeleteWordCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var w = _database.Word.SingleOrDefault(x => x.Id == command.WordId);
+            var w = await _database.Word.SingleOrDefaultAsync(x => x.Id == command.WordId, cancellationToken);
 
             if (w == null || w.Id != command.WordId)
             {
@@ -25,9 +27,9 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             _database.Word.Remove(w);
 
-            _database.SaveChanges();
+            await _database.SaveChangesAsync(cancellationToken);
 
-            return base.Handle(command);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

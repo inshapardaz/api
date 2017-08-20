@@ -1,9 +1,11 @@
-﻿using Inshapardaz.Domain.Commands;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Inshapardaz.Domain.Commands;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class AddDictionaryCommandHandler : RequestHandler<AddDictionaryCommand>
+    public class AddDictionaryCommandHandler : RequestHandlerAsync<AddDictionaryCommand>
     {
         private readonly IDatabaseContext _database;
 
@@ -12,12 +14,12 @@ namespace Inshapardaz.Domain.CommandHandlers
             _database = database;
         }
 
-        public override AddDictionaryCommand Handle(AddDictionaryCommand command)
+        public override async Task<AddDictionaryCommand> HandleAsync(AddDictionaryCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _database.Dictionary.Add(command.Dictionary);
-            _database.SaveChanges();
+            await _database.Dictionary.AddAsync(command.Dictionary, cancellationToken);
+            await _database.SaveChangesAsync(cancellationToken);
 
-            return base.Handle(command);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

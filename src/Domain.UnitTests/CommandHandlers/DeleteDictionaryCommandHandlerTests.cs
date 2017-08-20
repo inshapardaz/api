@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
@@ -38,33 +39,33 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         }
 
         [Fact]
-        public void WhenRemovedPrivateDictionary_ShouldDeleteFromDatabase()
+        public async Task WhenRemovedPrivateDictionary_ShouldDeleteFromDatabase()
         {
-            _handler.Handle(new DeleteDictionaryCommand {DictionaryId = 3, UserId = "1"});
+            await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 3, UserId = "1"});
 
             Assert.Null(_database.Dictionary.SingleOrDefault(d => d.Id == 3));
         }
 
         [Fact]
-        public void WhenRemovedOwnPublicDictionary_ShouldDeleteFromDatabase()
+        public async Task WhenRemovedOwnPublicDictionary_ShouldDeleteFromDatabase()
         {
-            _handler.Handle(new DeleteDictionaryCommand {DictionaryId = 1, UserId = "1"});
+            await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 1, UserId = "1"});
 
             Assert.Null(_database.Dictionary.SingleOrDefault(d => d.Id == 1));
         }
 
         [Fact]
-        public void WhenRemovedSomeoneElsePrivateDictionary_ShouldNotDelete()
+        public async Task WhenRemovedSomeoneElsePrivateDictionary_ShouldNotDelete()
         {
-            Assert.Throws<RecordNotFoundException>(() =>
-                _handler.Handle(new DeleteDictionaryCommand {DictionaryId = 4, UserId = "1"}));
+            await Assert.ThrowsAsync<RecordNotFoundException>(async () =>
+                 await _handler.HandleAsync(new DeleteDictionaryCommand { DictionaryId = 4, UserId = "1" }));
         }
 
         [Fact]
-        public void WhenRemovedSomeoneElsePublicDictionary_ShouldNotDelete()
+        public async Task WhenRemovedSomeoneElsePublicDictionary_ShouldNotDelete()
         {
-            Assert.Throws<RecordNotFoundException>(() =>
-                _handler.Handle(new DeleteDictionaryCommand {DictionaryId = 2, UserId = "1"}));
+            await Assert.ThrowsAsync<RecordNotFoundException>(async () =>
+                await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 2, UserId = "1"}));
         }
     }
 }

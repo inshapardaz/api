@@ -1,11 +1,14 @@
 ﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
+using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class UpdateWordMeaningCommandHandler : RequestHandler<UpdateWordMeaningCommand>
+    public class UpdateWordMeaningCommandHandler : RequestHandlerAsync<UpdateWordMeaningCommand>
     {
         private readonly IDatabaseContext _database;
 
@@ -14,9 +17,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             _database = database;
         }
 
-        public override UpdateWordMeaningCommand Handle(UpdateWordMeaningCommand command)
+        public override async Task<UpdateWordMeaningCommand> HandleAsync(UpdateWordMeaningCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var meaning = _database.Meaning.SingleOrDefault(x => x.Id == command.Meaning.Id);
+            var meaning = await _database.Meaning.SingleOrDefaultAsync(x => x.Id == command.Meaning.Id, cancellationToken);
 
             if (meaning == null)
             {
@@ -27,9 +30,8 @@ namespace Inshapardaz.Domain.CommandHandlers
             meaning.Value = command.Meaning.Value;
             meaning.Example = command.Meaning.Example;
 
-            _database.SaveChanges();
-
-            return base.Handle(command);
+            await _database.SaveChangesAsync(cancellationToken);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

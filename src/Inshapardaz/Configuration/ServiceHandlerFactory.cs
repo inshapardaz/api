@@ -3,7 +3,7 @@ using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Api.Configuration
 {
-    internal class ServiceHandlerFactory : IAmAHandlerFactory
+    internal class ServiceHandlerFactory : IAmAHandlerFactoryAsync
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -12,12 +12,12 @@ namespace Inshapardaz.Api.Configuration
             _serviceProvider = serviceProvider;
         }
 
-        public IHandleRequests Create(Type handlerType)
+        public IHandleRequestsAsync Create(Type handlerType)
         {
-            return _serviceProvider.GetService(handlerType) as IHandleRequests;
+            return _serviceProvider.GetService(handlerType) as IHandleRequestsAsync;
         }
 
-        public void Release(IHandleRequests handler)
+        public void Release(IHandleRequestsAsync handler)
         {
             var disposable = handler as IDisposable;
             if (disposable != null)

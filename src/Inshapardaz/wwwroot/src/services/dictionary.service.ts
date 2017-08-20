@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { AuthService } from './auth.service';
 import { AuthHttp } from 'angular2-jwt';
 import { Observable } from 'rxjs/Observable';
@@ -30,6 +30,7 @@ export class DictionaryService {
     private wordUrl = this.serverAddress + '/api/words/';
     private searchUrl = '/api/words/search/';
     private staringWithUrl = '/api/words/StartWith/';
+    private static _entry : Entry;
 
     constructor(private auth: AuthService, private authHttp: AuthHttp, private http: Http) {
     }
@@ -38,6 +39,7 @@ export class DictionaryService {
         return this.getHttp().get(this.entryUrl)
             .map(r => {
                 var e = this.extractData(r, Mapper.MapEntry);
+                DictionaryService._entry = e;
                 return e;
             })
             .catch(this.handleError);
@@ -45,6 +47,20 @@ export class DictionaryService {
 
     getDictionaries(link: string): Observable<Dictionaries> {
         return this.getHttp().get(link)
+            .map(r => this.extractData(r, Mapper.MapDictionaries))
+            .catch(this.handleError);
+    }
+
+    createDictionary(createLink : string, dictionary : Dictionary) : Observable<Dictionary>{
+        let headers = new Headers();
+        headers.append('Accept-Type', 'application/json');
+        headers.append('Content-Type', 'application/json');
+    
+        let options = new RequestOptions({
+            headers: headers
+        });
+        
+        return this.getHttp().post(createLink, JSON.stringify(dictionary), options)
             .map(r => this.extractData(r, Mapper.MapDictionaries))
             .catch(this.handleError);
     }

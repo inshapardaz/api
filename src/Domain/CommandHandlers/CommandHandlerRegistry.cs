@@ -7,26 +7,26 @@ namespace Inshapardaz.Domain.CommandHandlers
     {
         public CommandHandlerRegistry()
         {
-            Register<AddDictionaryCommand, AddDictionaryCommandHandler>();
-            Register<AddWordCommand, AddWordCommandHandler>();
-            Register<AddWordDetailCommand, AddWordDetailCommandHandler>();
-            Register<AddWordRelationCommand, AddWordRelationCommandHandler>();
-            Register<AddWordTranslationCommand, AddWordTranslationCommandHandler>();
-            Register<AddWordMeaningCommand, AddWordMeaningCommandHandler>();
+            RegisterAsync<AddDictionaryCommand, AddDictionaryCommandHandler>();
+            RegisterAsync<AddWordCommand, AddWordCommandHandler>();
+            RegisterAsync<AddWordDetailCommand, AddWordDetailCommandHandler>();
+            RegisterAsync<AddWordRelationCommand, AddWordRelationCommandHandler>();
+            RegisterAsync<AddWordTranslationCommand, AddWordTranslationCommandHandler>();
+            RegisterAsync<AddWordMeaningCommand, AddWordMeaningCommandHandler>();
 
-            Register<UpdateDictionaryCommand, UpdateDictionaryCommandHandler>();
-            Register<UpdateWordCommand, UpdateWordCommandHandler>();
-            Register<UpdateWordDetailCommand, UpdateWordDetailCommandHandler>();
-            Register<UpdateWordRelationCommand, UpdateWordRelationCommandHandler>();
-            Register<UpdateWordTranslationCommand, UpdateWordTranslationCommandHandler>();
-            Register<UpdateWordMeaningCommand, UpdateWordMeaningCommandHandler>();
+            RegisterAsync<UpdateDictionaryCommand, UpdateDictionaryCommandHandler>();
+            RegisterAsync<UpdateWordCommand, UpdateWordCommandHandler>();
+            RegisterAsync<UpdateWordDetailCommand, UpdateWordDetailCommandHandler>();
+            RegisterAsync<UpdateWordRelationCommand, UpdateWordRelationCommandHandler>();
+            RegisterAsync<UpdateWordTranslationCommand, UpdateWordTranslationCommandHandler>();
+            RegisterAsync<UpdateWordMeaningCommand, UpdateWordMeaningCommandHandler>();
 
-            Register<DeleteDictionaryCommand, DeleteDictionaryCommandHandler>();
-            Register<DeleteWordCommand, DeleteWordCommandHandler>();
-            Register<DeleteWordDetailCommand, DeleteWordDetailCommandHandler>();
-            Register<DeleteWordRelationCommand, DeleteWordRelationCommandHandler>();
-            Register<DeleteWordTranslationCommand, DeleteWordTranslationCommandHandler>();
-            Register<DeleteWordMeaningCommand, DeleteWordMeaningCommandHandler>();
+            RegisterAsync<DeleteDictionaryCommand, DeleteDictionaryCommandHandler>();
+            RegisterAsync<DeleteWordCommand, DeleteWordCommandHandler>();
+            RegisterAsync<DeleteWordDetailCommand, DeleteWordDetailCommandHandler>();
+            RegisterAsync<DeleteWordRelationCommand, DeleteWordRelationCommandHandler>();
+            RegisterAsync<DeleteWordTranslationCommand, DeleteWordTranslationCommandHandler>();
+            RegisterAsync<DeleteWordMeaningCommand, DeleteWordMeaningCommandHandler>();
         }
     }
 }

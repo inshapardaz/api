@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div class="content bg-white text-center overflow-hidden" *ngIf="!isLoading && (dictionaries != null || dictionaries.length < 1)">
+            <div class="content bg-white text-center overflow-hidden" *ngIf="!isLoading && dictionaries.length < 1">
                 <div class="row">
                     <div class="col-sm-6 col-sm-offset-3">
                         <div class="font-s64 text-gray push-30-t push-50">
@@ -60,8 +60,8 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-xs-12 visibility-hidden" appear data-class="animated fadeInDown" *ngIf="createLink">
-                    <a class="block block-bordered block-rounded block-link-hover3" (click)="createDictionary()">
+                <div class="col-lg-12 visibility-hidden" appear data-class="animated fadeInDown" *ngIf="createLink">
+                    <a class="block block-bordered block-rounded block-link-hover3"  [routerLink]="['/create-dictionary']">
                         <div class="block-content block-content-full border-b text-center">
                             <div class="item">
                                 <i class="si si-plus"></i>
@@ -76,58 +76,3 @@
         </div>
     </div>
 </section>
-
-<div class="modal" id="modal-normal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="block block-themed block-transparent remove-margin-b">
-                <div class="block-header bg-primary-dark">
-                    <ul class="block-options">
-                        <li>
-                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
-                        </li>
-                    </ul>
-                    <h3 class="block-title">Create New Dictionary</h3>
-                </div>
-                <div class="block-content">
-                    <form class="form-horizontal push-10-t" action="base_forms_elements.html" method="post" onsubmit="return false;">
-                        <div class="form-group">
-                            <div class="col-sm-9">
-                                <div class="form-material">
-                                    <input class="form-control" type="text" id="material-text" name="material-text" placeholder="Please enter dictionary name">
-                                    <label for="material-text">Name</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-9">
-                                <div class="form-material">
-                                    <select class="form-control" id="material-select" name="material-select" size="1">
-                                        <option>...</option>
-                                        <option value="1">Option #1</option>
-                                        <option value="2">Option #2</option>
-                                        <option value="3">Option #3</option>
-                                    </select>
-                                    <label for="material-select">Please Select language</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-9">
-                                <div class="form-material">
-                                    <label class="css-input switch switch-primary">
-                                        <input type="checkbox" checked><span></span> Public Dictionary
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">Close</button>
-                <button class="btn btn-sm btn-primary" type="button" data-dismiss="modal"><i class="fa fa-check"></i> Create</button>
-            </div>
-        </div>
-    </div>
-</div>

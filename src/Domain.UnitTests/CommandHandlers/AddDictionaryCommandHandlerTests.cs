@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Model;
@@ -30,10 +31,10 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         }
 
         [Fact]
-        public void WhenAdded_ShouldSaveToDatabase()
+        public async Task WhenAdded_ShouldSaveToDatabase()
         {
             var name = "Test";
-            _handler.Handle(new AddDictionaryCommand
+            await _handler.HandleAsync(new AddDictionaryCommand
             {
                 Dictionary = new Dictionary() { UserId = "2", IsPublic = false, Name = name, Language = Languages.Avestan }
             });

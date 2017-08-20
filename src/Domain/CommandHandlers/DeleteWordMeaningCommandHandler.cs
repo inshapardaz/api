@@ -1,11 +1,13 @@
 ﻿using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
 using paramore.brighter.commandprocessor;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class DeleteWordMeaningCommandHandler : RequestHandler<DeleteWordMeaningCommand>
+    public class DeleteWordMeaningCommandHandler : RequestHandlerAsync<DeleteWordMeaningCommand>
     {
         private readonly IDatabaseContext _database;
 
@@ -14,9 +16,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             _database = database;
         }
 
-        public override DeleteWordMeaningCommand Handle(DeleteWordMeaningCommand command)
+        public override async Task<DeleteWordMeaningCommand> HandleAsync(DeleteWordMeaningCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var meaning = _database.Meaning.SingleOrDefault(x => x.Id == command.MeaningId);
+            var meaning = await _database.Meaning.SingleOrDefaultAsync(x => x.Id == command.MeaningId, cancellationToken);
 
             if (meaning == null)
             {
@@ -24,9 +26,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             }
 
             _database.Meaning.Remove(meaning);
-            _database.SaveChanges();
+            await _database.SaveChangesAsync(cancellationToken);
 
-            return base.Handle(command);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

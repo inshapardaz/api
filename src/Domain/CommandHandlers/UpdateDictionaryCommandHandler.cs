@@ -1,11 +1,13 @@
-﻿using System.Linq;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
+using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class UpdateDictionaryCommandHandler : RequestHandler<UpdateDictionaryCommand>
+    public class UpdateDictionaryCommandHandler : RequestHandlerAsync<UpdateDictionaryCommand>
     {
         private readonly IDatabaseContext _database;
 
@@ -14,10 +16,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             _database = database;
         }
 
-        public override UpdateDictionaryCommand Handle(UpdateDictionaryCommand command)
+        public override async Task<UpdateDictionaryCommand> HandleAsync(UpdateDictionaryCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var existingDictionary =
-                _database.Dictionary.SingleOrDefault(d => d.UserId == command.Dictionary.UserId && d.Id == command.Dictionary.Id);
+            var existingDictionary = await _database.Dictionary.SingleOrDefaultAsync(d => d.UserId == command.Dictionary.UserId && d.Id == command.Dictionary.Id, cancellationToken);
 
             if (existingDictionary == null)
             {
@@ -28,9 +29,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             existingDictionary.Language = command.Dictionary.Language;
             existingDictionary.IsPublic = command.Dictionary.IsPublic;
 
-            _database.SaveChanges();
+            await _database.SaveChangesAsync(cancellationToken);
 
-            return base.Handle(command);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

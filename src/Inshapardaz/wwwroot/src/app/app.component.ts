@@ -14,6 +14,7 @@ import {AuthService} from '../services/auth.service';
 })
 
 export class AppComponent {
+    
     currentRoute: string = "";
     constructor(private router: Router, 
                 private auth: AuthService, 

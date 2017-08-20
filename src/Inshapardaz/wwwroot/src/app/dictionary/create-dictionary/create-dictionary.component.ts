@@ -1,25 +1,60 @@
 import { Component } from '@angular/core';
-import { DialogComponent, DialogService } from "ng2-bootstrap-modal";
-export interface ConfirmModel {
-    title:string;
-    message:string;
-  }
-  
+import { Router } from '@angular/router';
+
+import { DictionaryService } from '../../../services/dictionary.service';
+import { Dictionary } from '../../../models/Dictionary';
+import { Languages } from '../../../models/language';
+
 @Component({
     selector: 'create-dictionaries',
     templateUrl: './create-dictionary.component.html'
 })
-export class CreateDictionariesComponent extends DialogComponent<ConfirmModel, boolean> implements ConfirmModel  {
-    title: string;
-    message: string;
-    constructor(dialogService: DialogService) {
-      super(dialogService);
+export class CreateDictionaryComponent {
+    model = new Dictionary();
+    languages : any[];
+    languagesEnum = Languages;
+    createLink : any;
+
+    constructor(private dictionaryService: DictionaryService, 
+                private router: Router) {
+        this.languages = Object.keys(this.languagesEnum).filter(Number);
+        this.model.language = Languages.Urdu;
+    }  
+
+    ngOnInit() {
+        this.getEntry();
     }
-    confirm() {
-      // we set dialog result as true on click on confirm button, 
-      // then we can get dialog result from caller code 
-      this.result = true;
-      this.close();
+
+    getEntry() {
+        this.dictionaryService.getEntry()
+            .subscribe(
+            entry => { 
+                this.dictionaryService.getDictionaries(entry.dictionariesLink)
+                    .subscribe(data => {
+                        if (!data.createLink){
+                            this.router.navigate(['/error/unauthorised']);
+                            return;
+                        }
+                        this.createLink = data.createLink;
+                    },
+                    this.handlerError);
+            },
+            this.handlerError);
     }
-  
+
+    onSubmit(){
+        this.dictionaryService.createDictionary(this.createLink, this.model)
+        .subscribe(m => {
+            this.router.navigate(['/dictionaries']);
+        },
+        this.handlerCreationError);
+    }
+
+    handlerError(error : any) {
+        
+    }
+
+    handlerCreationError(error : any) {
+        
+    }
 }

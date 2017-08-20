@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Darker;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
@@ -6,7 +8,7 @@ using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class UpdateWordRelationCommandHandler : RequestHandler<UpdateWordRelationCommand>
+    public class UpdateWordRelationCommandHandler : RequestHandlerAsync<UpdateWordRelationCommand>
     {
         private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
@@ -19,9 +21,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             _queryProcessor = queryProcessor;
         }
 
-        public override UpdateWordRelationCommand Handle(UpdateWordRelationCommand command)
+        public override async Task<UpdateWordRelationCommand> HandleAsync(UpdateWordRelationCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var relation = _queryProcessor.Execute(new RelationshipByIdQuery { Id = command.Relation.Id });
+            var relation = await _queryProcessor.ExecuteAsync(new RelationshipByIdQuery { Id = command.Relation.Id }, cancellationToken);
             if (relation == null)
             {
                 throw new RecordNotFoundException();
@@ -31,9 +33,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             relation.SourceWordId = command.Relation.SourceWordId;
             relation.RelationType = command.Relation.RelationType;
 
-            _database.SaveChanges();
+            await _database.SaveChangesAsync(cancellationToken);
 
-            return base.Handle(command);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

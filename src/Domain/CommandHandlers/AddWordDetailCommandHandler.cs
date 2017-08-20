@@ -1,4 +1,6 @@
-﻿using Darker;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Darker;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
@@ -6,7 +8,7 @@ using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class AddWordDetailCommandHandler : RequestHandler<AddWordDetailCommand>
+    public class AddWordDetailCommandHandler : RequestHandlerAsync<AddWordDetailCommand>
     {
         private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
@@ -18,9 +20,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             _queryProcessor = queryProcessor;
         }
 
-        public override AddWordDetailCommand Handle(AddWordDetailCommand command)
+        public override async Task<AddWordDetailCommand> HandleAsync(AddWordDetailCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var word = _queryProcessor.Execute(new WordByIdQuery { Id = command.WordId });
+            var word = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = command.WordId });
 
             if (word == null)
             {
@@ -28,9 +30,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             }
 
             word.WordDetail.Add(command.WordDetail);
-            _database.SaveChanges();
-
-            return base.Handle(command);
+            await _database.SaveChangesAsync(cancellationToken);
+            
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

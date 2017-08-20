@@ -1,11 +1,13 @@
-﻿using Darker;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Darker;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Queries;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class AddWordTranslationCommandHandler : RequestHandler<AddWordTranslationCommand>
+    public class AddWordTranslationCommandHandler : RequestHandlerAsync<AddWordTranslationCommand>
     {
         private readonly IDatabaseContext _database;
         private readonly IQueryProcessor _queryProcessor;
@@ -16,14 +18,14 @@ namespace Inshapardaz.Domain.CommandHandlers
             _queryProcessor = queryProcessor;
         }
 
-        public override AddWordTranslationCommand Handle(AddWordTranslationCommand command)
+        public override async Task<AddWordTranslationCommand> HandleAsync(AddWordTranslationCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var detail = _queryProcessor.Execute(new WordDetailByIdQuery { Id = command.WordDetailId });
+            var detail = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = command.WordDetailId }, cancellationToken);
             detail.Translation.Add(command.Translation);
 
-            _database.SaveChanges();
+            await _database.SaveChangesAsync(cancellationToken);
 
-            return base.Handle(command);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

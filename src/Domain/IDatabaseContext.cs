@@ -1,4 +1,6 @@
-﻿using Inshapardaz.Domain.Model;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Inshapardaz.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain
@@ -15,5 +17,6 @@ namespace Inshapardaz.Domain
         DbSet<File> File { get; set; }
 
         int SaveChanges();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

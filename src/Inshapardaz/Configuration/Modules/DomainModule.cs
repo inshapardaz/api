@@ -75,8 +75,8 @@ namespace Inshapardaz.Api.Configuration.Modules
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
             optionsBuilder.UseSqlServer(connectionString);
 
-            var database = new DatabaseContext(optionsBuilder.Options).Database;
-            database.Migrate();
+            //var database = new DatabaseContext(optionsBuilder.Options).Database;
+            //database.Migrate();
         }
     }
 }

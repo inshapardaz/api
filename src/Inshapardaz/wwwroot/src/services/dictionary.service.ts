@@ -23,7 +23,7 @@ import { Entry } from '../models/entry';
 
 @Injectable()
 export class DictionaryService {
-    private serverAddress = 'http://localhost:5000';
+    private serverAddress = '';
     private entryUrl = this.serverAddress + '/api';
     private indexUrl = this.serverAddress + '/api/dictionary/index';
     private dictionaryUrl = this.serverAddress + '/api/dictionaries/';

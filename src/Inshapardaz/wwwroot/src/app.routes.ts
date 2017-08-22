@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent }      from './app/home/home.component';
 import { DictionariesComponent }      from './app/dictionary/dictionaries/dictionaries.component';
 import { DictionaryComponent }      from './app/dictionary/dictionary/dictionary.component';
-import { CreateDictionaryComponent }      from './app/dictionary/create-dictionary/create-dictionary.component';
 import { WordComponent }      from './app/dictionary/word/word.component';
 import { SettingsComponent } from './app/settings/settings.component';
 
@@ -23,7 +22,6 @@ const appRoutes: Routes = [
     
     { path: 'dictionaries',        component: DictionariesComponent},
     { path: 'dictionary/:id',      component: DictionaryComponent},
-    { path: 'create-dictionary',   component : CreateDictionaryComponent},
     { path: 'word/:id', component: WordComponent },
     { path: 'thesaurus',     component: ThesaurusComponent },
     { path: 'translations',    component: TranslationsComponent },

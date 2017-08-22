@@ -81,3 +81,12 @@ body.urdu {
 .content{
   padding-bottom: 30px;
 }
+
+.fa-sub {
+  position: relative;
+  left: -.8em;
+  width: .2em;
+  vertical-align: -.25em;
+  text-shadow: 0 0 1px #4D4B4B;
+  font-size: large;
+}

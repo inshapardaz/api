@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DictionaryService } from '../../../services/dictionary.service';
@@ -13,8 +13,9 @@ export class CreateDictionaryComponent {
     model = new Dictionary();
     languages : any[];
     languagesEnum = Languages;
-    createLink : any;
-
+    
+    @Input() createLink:string = '';
+    @Input() modalId:string = '';
     constructor(private dictionaryService: DictionaryService, 
                 private router: Router) {
         this.languages = Object.keys(this.languagesEnum).filter(Number);
@@ -22,24 +23,6 @@ export class CreateDictionaryComponent {
     }  
 
     ngOnInit() {
-        this.getEntry();
-    }
-
-    getEntry() {
-        this.dictionaryService.getEntry()
-            .subscribe(
-            entry => { 
-                this.dictionaryService.getDictionaries(entry.dictionariesLink)
-                    .subscribe(data => {
-                        if (!data.createLink){
-                            this.router.navigate(['/error/unauthorised']);
-                            return;
-                        }
-                        this.createLink = data.createLink;
-                    },
-                    this.handlerError);
-            },
-            this.handlerError);
     }
 
     onSubmit(){

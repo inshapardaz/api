@@ -32,7 +32,8 @@
     "PUBLIC_DICTIONARY" : "Public Dictionary",
     "PRIVATE_DICTIONARY" : "Private Dictionary",
     "PAGE" : "Page",
-    "OF" : "of"
+    "OF" : "of",
+    "NOWORDFOUND": "No Word Found"
   },
   "WORD":{
     "RELATIONS" : "Relations"

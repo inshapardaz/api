@@ -32,7 +32,8 @@
     "PUBLIC_DICTIONARY" : "عوامی لغت",
     "PRIVATE_DICTIONARY" : "ذاتی لغت",
     "PAGE" : "صفحہ",
-    "OF" : "کا"
+    "OF" : "کا",
+    "NOWORDFOUND": "کوئی لفظ موجود نہیں"    
   },
   "WORD":{
     "RELATIONS" : "مربوط الفاظ"

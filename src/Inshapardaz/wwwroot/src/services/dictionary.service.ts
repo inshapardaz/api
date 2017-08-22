@@ -33,9 +33,22 @@ export class DictionaryService {
     private static _entry : Entry;
 
     constructor(private auth: AuthService, private authHttp: AuthHttp, private http: Http) {
+        let sessionOverride = sessionStorage.getItem('server-address');
+        if (sessionOverride !== null){
+            this.serverAddress = sessionOverride;
+            console.log('using local override : '+ this.serverAddress);            
+            this.entryUrl = this.serverAddress + '/api';
+            this.indexUrl = this.serverAddress + '/api/dictionary/index';
+            this.dictionaryUrl = this.serverAddress + '/api/dictionaries/';
+            this.wordUrl = this.serverAddress + '/api/words/';
+            this.searchUrl = '/api/words/search/';
+            this.staringWithUrl = '/api/words/StartWith/';
+            
+        }
     }
 
     getEntry(): Observable<Entry> {
+        console.debug('Calling ' + this.entryUrl);
         return this.getHttp().get(this.entryUrl)
             .map(r => {
                 var e = this.extractData(r, Mapper.MapEntry);

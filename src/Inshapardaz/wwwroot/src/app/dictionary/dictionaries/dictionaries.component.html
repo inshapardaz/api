@@ -20,15 +20,14 @@
                     <div class="block-header">
                     </div>
                     <div class="block-content">
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
+                        <div class="alert alert-info">
+                            <h3 class="font-w300 push-15">Loading...</h3>
+                            <p>Please wait while we load dictionaries</p>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <div class="content bg-white text-center overflow-hidden" *ngIf="!isLoading && dictionaries.length < 1">
                 <div class="row">
                     <div class="col-sm-6 col-sm-offset-3">
@@ -45,27 +44,52 @@
                     </div>
                 </div>
             </div>
-            <div class="content bg-white text-center overflow-hidden">
+            <div class="content text-center overflow-hidden">
                 <div class="row">
                     <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-class="animated fadeInDown" *ngFor="let dictionary of dictionaries">
-                        <a class="block block-bordered block-rounded block-link-hover3" [routerLink]="['/dictionary', dictionary.id]">
-                            <div class="block-content block-content-full border-b text-center">
-                                <div class="item">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="si si-book-open text-amethyst"></i>
-                                        <i class="fa fa-globe fa-sub text-success" *ngIf="dictionary.isPublic"></i>
-                                        <i class="fa fa-lock fa-sub text-warning" *ngIf="!dictionary.isPublic"></i>
-                                    </span>
-                                </div>
+                        <div class="block block-rounded animated fadeIn" data-category="books">
+                            <div class="block-header">
+                                <ul class="block-options">
+                                    <li>
+                                        <button type="button" [routerLink]="['/dictionary', dictionary.id]"><i class="si si-eye"></i></button>
+                                    </li>
+                                    <li *ngIf="dictionary.updateLink">
+                                        <button type="button"><i class="si si-pencil"></i></button>
+                                    </li>
+                                    <li *ngIf="dictionary.deleteLink">
+                                        <button type="button" [swal]="{title :'Delete dictionary?', 
+                                                                       input : 'This cannot be undone.', 
+                                                                       type : 'warning',
+                                                                       confirmButtonText : 'Yes',
+                                                                       cancelButtonText : 'No',
+                                                                       confirmButtonColor: '#d26a5c',
+                                                                       confirmButtonText: 'Yes, delete it!',
+                                                                       html: false,
+                                                                       allowOutsideClick : false,
+                                                                       showCancelButton: true}" (confirm)="deleteDictionary(dictionary)"><i class="si si-close"></i></button>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="block-content block-content-full block-content-mini">
-                                <span class="font-w600 text-uppercase">{{dictionary.name}}</span>
+                            <div class="block-content block-content-full text-center">
+                                <a [routerLink]="['/dictionary', dictionary.id]">
+                                    <div class="item item-2x item-circle"
+                                        [class.bg-info-light]="!dictionary.isPublic"
+                                        [class.text-info]="!dictionary.isPublic"
+                                        [class.bg-success-light]="dictionary.isPublic"
+                                        [class.text-success]="dictionary.isPublic">
+                                        <i class="si si-book-open"></i>
+                                    </div>
+                                </a>
                             </div>
-                        </a>
+                            <div class="block-content block-content-full text-center mheight-100">
+                                <h3 class="h4 font-w300 text-black push-5 hand" [routerLink]="['/dictionary', dictionary.id]">{{dictionary.name}}</h3>
+                                <span class="text-gray">{{dictionary.language}} | {{dictionary.wordCount}} words</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-12 visibility-hidden" appear data-class="animated fadeInDown" *ngIf="createLink">
-                    <a class="block block-bordered block-rounded block-link-hover3" href="" data-toggle="modal" data-target="#create-dictionary">
+                    <a class="block block-bordered block-rounded block-link-hover3 hand" (click)="createDictionary()">
                         <div class="block-content block-content-full border-b text-center">
                             <div class="item">
                                 <i class="si si-plus"></i>
@@ -80,4 +104,4 @@
         </div>
     </div>
 </section>
-<create-dictionaries [modalId]="'create-dictionary'" [createLink]="createLink"></create-dictionaries>
+<create-dictionaries [modalId]="'create-dictionary'" [createLink]="createLink" [visible]="showCreateDialog" (onClosed)="onCreateClosed($event)"></create-dictionaries>

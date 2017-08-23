@@ -5,7 +5,7 @@
                 <div class="block-header bg-primary-dark">
                     <ul class="block-options">
                         <li>
-                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                            <button (click)="onClose()" type="button"><i class="si si-close"></i></button>
                         </li>
                     </ul>
                     <h3 class="block-title">Create New Dictionary</h3>
@@ -44,8 +44,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">Close</button>
-                <button class="btn btn-sm btn-primary" type="button" data-dismiss="modal"><i class="fa fa-check"></i> Create</button>
+                <button class="btn btn-sm btn-default" type="button" (click)="onClose()">Close</button>
+                <button class="btn btn-sm btn-primary" type="button" (click)="onSubmit()"><i class="fa fa-check"></i> Create</button>
             </div>
         </div>
     </div>

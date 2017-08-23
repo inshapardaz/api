@@ -51,6 +51,15 @@ export class Mapper{
         dictionary.language  = source.language;
         dictionary.searchLink = _.find<string[], Link>(source.links, ['rel', 'search']).href;
         dictionary.indexLink = _.find<string[], Link>(source.links, ['rel', 'index']).href;
+
+        var updateLink = _.find<string[], Link>(source.links, ['rel', 'update']);
+        dictionary.updateLink = updateLink ? updateLink.href : null;
+        
+        var deleteLink = _.find<string[], Link>(source.links, ['rel', 'delete']);
+        dictionary.deleteLink = deleteLink ? deleteLink.href : null;
+
+        var createDownloadLink = _.find<string[], Link>(source.links, ['rel', 'create-download']);
+        dictionary.createDownloadLink = createDownloadLink ? createDownloadLink.href : null;
         var indexes = new Array<DictionaryIndex>();
         _.forEach(source.indexes, (i) => indexes.push(Mapper.MapDictionaryIndex(i)));
         dictionary.indexes = indexes;

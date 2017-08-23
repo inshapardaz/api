@@ -31,6 +31,10 @@ export class AppComponent {
         auth.scheduleRenewal();
     }
 
+    // ngOnInit(){
+    //     App.loader('hide');
+    // }
+
     private setLanguages(){
         this.translate.addLangs(["en", "ur"]);
         this.translate.setDefaultLang('en');

@@ -13,6 +13,8 @@ export class DictionariesComponent {
     errorMessage: string;
     dictionaries : Dictionary[];
     createLink : string;
+    dictionariesLink : string;
+    showCreateDialog : boolean = false;
 
     constructor(private dictionaryService: DictionaryService, 
                 private auth: AuthService){
@@ -22,24 +24,41 @@ export class DictionariesComponent {
         this.getEntry();
     }
 
-    createDictionary() {
+    deleteDictionary(dictionary) {
+        console.log('deleting ' + dictionary.name);
     }
-
 
     getEntry() {
         this.isLoading = true;
         this.dictionaryService.getEntry()
             .subscribe(
-            entry => { 
-                this.dictionaryService.getDictionaries(entry.dictionariesLink)
-                    .subscribe(data => {
-                        this.dictionaries = data.dictionaries;
-                        this.createLink = data.createLink;
-                        this.isLoading = false;
-                    },
-                    this.handlerError);
+                entry => {
+                    this.dictionariesLink = entry.dictionariesLink;
+                    this.getDictionaries();
             },
             this.handlerError);
+    }
+
+    getDictionaries(){
+        this.dictionaryService.getDictionaries(this.dictionariesLink)
+        .subscribe(data => {
+            this.dictionaries = data.dictionaries;
+            this.createLink = data.createLink;
+            this.isLoading = false;
+        },
+        this.handlerError);
+    }
+
+    createDictionary(){
+        console.debug('showing create dialog');
+        this.showCreateDialog = true;
+    }
+    onCreateClosed(created : boolean){
+        console.debug('create dialog closed');        
+        this.showCreateDialog = false;
+        if (created){
+            this.getDictionaries();
+        }
     }
 
     handlerError(error : any) {

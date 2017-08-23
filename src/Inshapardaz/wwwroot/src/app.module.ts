@@ -37,6 +37,8 @@ import { MeaningsComponent } from './app/dictionary/meanings/meanings.component'
 import { ThesaurusComponent }      from './app/thesaurus/thesaurus.component';
 import { TranslationsComponent }      from './app/translations/translations.component';
 
+import { SweetAlert2Module } from '@toverux/ngsweetalert2';
+
 import { routing  } from './app.routes';
 
 @NgModule({
@@ -47,7 +49,8 @@ import { routing  } from './app.routes';
     ReactiveFormsModule,
     HttpModule,
     JsonpModule,
-    TranslateModule.forRoot()
+    TranslateModule.forRoot(),
+    SweetAlert2Module
   ],
   providers: [
     HttpModule,

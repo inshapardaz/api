@@ -10,6 +10,9 @@ export class Dictionary{
     public searchLink : string;
     public indexLink : string;
     public indexes : Array<DictionaryIndex>;
+    public updateLink : string;
+    public deleteLink : string;
+    public createDownloadLink : string;
 }
 
 export class DictionaryIndex{

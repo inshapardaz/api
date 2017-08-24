@@ -47,14 +47,16 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                                <div class="col-md-8 col-md-offset-8">
+                                        <button class="btn btn-sm btn-default" type="button" (click)="onClose()" >Close</button>
+                                        <button class="btn btn-sm btn-primary" type="submit" [disabled]="!dictionaryForm.form.valid"><i class="fa fa-check"></i> 
+                                            {{ isCreating == true ? 'Create' : 'Update' }}
+                                        </button>
+                                </div>
+                            </div>
                     </form>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-sm btn-default" type="button" (click)="onClose()" >Close</button>
-                <button class="btn btn-sm btn-primary" type="submit" [disabled]="!dictionaryForm.form.valid"><i class="fa fa-check"></i> 
-                    {{ isCreating == true ? 'Create' : 'Update' }}
-                </button>
             </div>
         </div>
     </div>

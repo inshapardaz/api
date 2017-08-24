@@ -50,7 +50,7 @@ export class EditDictionaryComponent {
     }  
 
     onSubmit(){
-        console.log(this.createLink);
+        console.log('Form submitted');
         this.isBusy = false;
         if (this.isCreating){
             this.dictionaryService.createDictionary(this.createLink, this.model)

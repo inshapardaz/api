@@ -69,7 +69,6 @@ namespace Inshapardaz.Domain.Jobs
 
                 foreach (var dictionary in dictionaries)
                 {
-                    database.SaveChanges();
                     int count = 0;
                     foreach (var word in dictionary.Word)
                     {
@@ -89,6 +88,7 @@ namespace Inshapardaz.Domain.Jobs
                             relationShips.Add(newRelation);
                         }
 
+                        database.SaveChanges();
                         count++;
                         if (count > 1000) break;
                     }

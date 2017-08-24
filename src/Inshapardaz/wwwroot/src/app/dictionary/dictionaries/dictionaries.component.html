@@ -53,12 +53,15 @@
                                     <li>
                                         <button type="button" [routerLink]="['/dictionary', dictionary.id]"><i class="si si-eye"></i></button>
                                     </li>
+                                    <li *ngIf="dictionary.createDownloadLink">
+                                        <button type="button"><i class="si si-cloud-download"></i></button>
+                                    </li>
                                     <li *ngIf="dictionary.updateLink">
                                         <button type="button"><i class="si si-pencil"></i></button>
                                     </li>
                                     <li *ngIf="dictionary.deleteLink">
                                         <button type="button" [swal]="{title :'Delete dictionary?', 
-                                                                       input : 'This cannot be undone.', 
+                                                                       text : 'Are you sure you want to delete dictionary? This can not be undone.', 
                                                                        type : 'warning',
                                                                        confirmButtonText : 'Yes',
                                                                        cancelButtonText : 'No',

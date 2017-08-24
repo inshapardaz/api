@@ -24,8 +24,11 @@ export class DictionariesComponent {
         this.getEntry();
     }
 
-    deleteDictionary(dictionary) {
-        console.log('deleting ' + dictionary.name);
+    deleteDictionary(dictionary : Dictionary) {
+        this.dictionaryService.deleteDictionary(dictionary.deleteLink)
+        .subscribe(r => {
+            this.getDictionaries();
+        });
     }
 
     getEntry() {

@@ -78,6 +78,11 @@ export class DictionaryService {
             .catch(this.handleError);
     }
 
+    deleteDictionary(deleteLink : string) : Observable<void>{
+        return this.getHttp().delete(deleteLink)
+            .catch(this.handleError);
+    }
+
     getDictionary(id: number): Observable<Dictionary> {
         return this.getHttp().get(this.dictionaryUrl + id)
             .map(r => this.extractData(r, Mapper.MapDictionary))

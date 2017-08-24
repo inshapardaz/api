@@ -152,7 +152,7 @@ namespace Inshapardaz.Api.Controllers
                 return NotFound();
             }
 
-            _commandProcessor.Send(new DeleteWordDetailCommand { WordDetailId = id });
+            await _commandProcessor.SendAsync(new DeleteWordDetailCommand { WordDetailId = id });
 
             return NoContent();
         }

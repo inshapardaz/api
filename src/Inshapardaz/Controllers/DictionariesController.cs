@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Darker;
-using Hangfire;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
@@ -24,7 +23,6 @@ namespace Inshapardaz.Api.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView> _dictionariesRenderer;
         private readonly IRenderResponseFromObject<Dictionary, DictionaryView> _dictionaryRenderer;
-        private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView> _dictionaryDownloadRenderer;
 
         public DictionariesController(IAmACommandProcessor commandProcessor,
@@ -32,7 +30,6 @@ namespace Inshapardaz.Api.Controllers
             IUserHelper userHelper,
             IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView> dictionariesRenderer,
             IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer,
-            IBackgroundJobClient backgroundJobClient,
             IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView> dictionaryDownloadRenderer)
         {
             _commandProcessor = commandProcessor;
@@ -40,7 +37,6 @@ namespace Inshapardaz.Api.Controllers
             _userHelper = userHelper;
             _dictionariesRenderer = dictionariesRenderer;
             _dictionaryRenderer = dictionaryRenderer;
-            _backgroundJobClient = backgroundJobClient;
             _dictionaryDownloadRenderer = dictionaryDownloadRenderer;
         }
 
@@ -149,7 +145,7 @@ namespace Inshapardaz.Api.Controllers
                 return NotFound();
             }
 
-            _commandProcessor.Send(new DeleteDictionaryCommand
+            await _commandProcessor.SendAsync(new DeleteDictionaryCommand
             {
                 UserId = userId,
                 DictionaryId = id

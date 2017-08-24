@@ -1,7 +1,7 @@
 <div class="modal" [attr.id]="modalId" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="block block-themed block-transparent remove-margin-b">
+            <div class="block block-themed block-transparent remove-margin-b" [class.block-opt-refresh]="isCreating">
                 <div class="block-header bg-primary-dark">
                     <ul class="block-options">
                         <li>

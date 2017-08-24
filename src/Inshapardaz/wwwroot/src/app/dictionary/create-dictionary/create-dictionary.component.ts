@@ -14,6 +14,7 @@ export class CreateDictionaryComponent {
     languages : any[];
     languagesEnum = Languages;
     _visible : boolean = false;
+    isCreating : boolean = false;
 
     @Input() createLink:string = '';
     @Input() modalId:string = '';
@@ -41,8 +42,10 @@ export class CreateDictionaryComponent {
 
     onSubmit(){
         console.log(this.createLink);
+        this.isCreating = true;
         this.dictionaryService.createDictionary(this.createLink, this.model)
         .subscribe(m => {
+            this.isCreating = false;
             this.onClosed.emit(true);
             this.visible = false;
         },
@@ -55,7 +58,7 @@ export class CreateDictionaryComponent {
     }
 
     handlerError(error : any) {
-        
+        this.isCreating = false;
     }
 
     handlerCreationError(error : any) {

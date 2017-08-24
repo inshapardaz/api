@@ -3,9 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Inshapardaz.Data.Entities;
+using Inshapardaz.Domain.Model;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using File = System.IO.File;
+using Languages = Inshapardaz.Data.Entities.Languages;
+using Meaning = Inshapardaz.Data.Entities.Meaning;
+using RelationType = Inshapardaz.Data.Entities.RelationType;
+using Translation = Inshapardaz.Data.Entities.Translation;
+using Word = Inshapardaz.Data.Entities.Word;
+using WordDetail = Inshapardaz.Data.Entities.WordDetail;
+using WordRelation = Inshapardaz.Data.Entities.WordRelation;
 
 namespace Inshapardaz.Domain.Jobs
 {
@@ -21,7 +30,7 @@ namespace Inshapardaz.Domain.Jobs
             _databaseContext = databaseContext;
         }
 
-        public byte[] ExportDictionary(int dictionaryId)
+        public void ExportDictionary(int dictionaryId)
         {
             var sqlitePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.dat");
             var connectionString = new SqliteConnectionStringBuilder
@@ -111,7 +120,24 @@ namespace Inshapardaz.Domain.Jobs
                 _logger.LogDebug("Data migration completed");
             }
 
-            return File.ReadAllBytes(sqlitePath);
+            var bytes = File.ReadAllBytes(sqlitePath);
+            var file = new Model.File
+            {
+                MimeType = MimeTypes.SqlLite,
+                Contents = bytes,
+                FileName = $"{dictionaryId}.dat",
+                DateCreated = DateTime.UtcNow,
+                LiveUntil = DateTime.MaxValue
+            };
+            _databaseContext.File.Add(file);
+
+            _databaseContext.DictionaryDownload.Add(new DictionaryDownload
+            {
+                DictionaryId = dictionaryId,
+                MimeType = MimeTypes.SqlLite,
+                File = file
+            });
+            _databaseContext.SaveChanges();
         }
 
         private Word MapWord(Model.Word word)

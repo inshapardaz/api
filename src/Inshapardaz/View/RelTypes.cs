@@ -10,5 +10,6 @@
         public const string RelationshipTypes = "relationshiptypes";
         public const string Thesaurus = "thesaurus";
         public const string Thesauruses = "thesaurus";
+        public const string Download = "download";
     }
 }

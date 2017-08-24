@@ -8,6 +8,7 @@ namespace Inshapardaz.Domain.CommandHandlers
         public CommandHandlerRegistry()
         {
             RegisterAsync<AddDictionaryCommand, AddDictionaryCommandHandler>();
+            RegisterAsync<AddDictionaryDownloadCommand, AddDictionaryDownloadCommandHandler>();
             RegisterAsync<AddWordCommand, AddWordCommandHandler>();
             RegisterAsync<AddWordDetailCommand, AddWordDetailCommandHandler>();
             RegisterAsync<AddWordRelationCommand, AddWordRelationCommandHandler>();

@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Configuration.Modules
             services.AddTransient<AddWordRelationCommandHandler>();
             services.AddTransient<AddWordTranslationCommandHandler>();
             services.AddTransient<AddWordMeaningCommandHandler>();
-            services.AddTransient<AddDictionaryDownloadHandler>();
+            services.AddTransient<AddDictionaryDownloadCommandHandler>();
 
             services.AddTransient<UpdateDictionaryCommandHandler>();
             services.AddTransient<UpdateWordCommandHandler>();
@@ -66,6 +66,7 @@ namespace Inshapardaz.Api.Configuration.Modules
             services.AddTransient<DictionaryByWordIdQuery>();
             services.AddTransient<GetDictionaryByMeaningIdQueryHandler>();
             services.AddTransient<GetDictionaryByTranslationIdQueryHandler>();
+            services.AddTransient<GetDownloadByDictionaryIdQueryHandler>();
 
             return services;
         }

@@ -11,11 +11,11 @@
                     <h3 class="block-title">Create New Dictionary</h3>
                 </div>
                 <div class="block-content">
-                    <form class="form-horizontal push-10-t" (ngSubmit)="onSubmit()">
+                    <form class="js-validation-bootstrap form-horizontal push-10-t" (ngSubmit)="onSubmit()">
                         <div class="form-group">
                             <div class="col-sm-12">
                                 <div class="form-material">
-                                    <input class="form-control" type="text" id="name" name="name" [(ngModel)]="model.name" placeholder="Please enter dictionary name"
+                                    <input class="form-control" type="text" id="name" name="name" required [(ngModel)]="model.name" placeholder="Please enter dictionary name"
                                         required>
                                     <label for="material-text">Name</label>
                                 </div>
@@ -24,7 +24,7 @@
                         <div class="form-group">
                             <div class="col-sm-12">
                                 <div class="form-material">
-                                    <select class="form-control" id="language" name="language" size="1" [(ngModel)]="model.language">
+                                    <select class="form-control" id="language" name="language" size="1" required [(ngModel)]="model.language">
                                                         <option *ngFor="let key of languages" [value]="key">{{languagesEnum[key]}}</option>
                                                 </select>
                                     <label for="material-select">Please Select language</label>

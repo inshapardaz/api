@@ -8,6 +8,8 @@
 
         public int FileId { get; set; }
 
+        public string MimeType { get; set; }
+
         public virtual Dictionary Dictionary { get; set; }
 
         public virtual File File { get; set; }

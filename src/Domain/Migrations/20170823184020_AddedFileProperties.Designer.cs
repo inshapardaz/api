@@ -9,9 +9,10 @@ using Inshapardaz.Domain.Model;
 namespace Inshapardaz.Domain.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20170823184020_AddedFileProperties")]
+    partial class AddedFileProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasDefaultSchema("Inshapardaz")

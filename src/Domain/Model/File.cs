@@ -8,6 +8,8 @@ namespace Inshapardaz.Domain.Model
 
         public string MimeType { get; set; }
 
+        public string FileName { get; set; }
+
         public DateTime DateCreated { get; set; }
 
         public DateTime LiveUntil { get; set; }

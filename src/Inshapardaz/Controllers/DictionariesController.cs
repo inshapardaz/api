@@ -9,7 +9,6 @@ using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Jobs;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Authorization;
@@ -176,23 +175,36 @@ namespace Inshapardaz.Api.Controllers
             var addDictionaryDownloadCommand = new AddDictionaryDownloadCommand
             {
                 DitionarayId = id,
-                DownloadType = "dat"
+                DownloadType = MimeTypes.SqlLite
             };
-            _commandProcessor.Send(addDictionaryDownloadCommand);
+
+            await _commandProcessor.SendAsync(addDictionaryDownloadCommand);
 
             var result = _dictionaryDownloadRenderer.Render(new DownloadJobModel
             {
                 Id = id,
-                Type = "dat",
+                Type = MimeTypes.SqlLite,
                 JobId = addDictionaryDownloadCommand.JobId
             });
             return Created(result.Links.Single(x => x.Rel == "self").Href, result);
         }
 
-        [HttpGet("/api/dictionary/{id}.{format}", Name = "DownloadDictionary")]
-        public IActionResult DownloadDictionary(int id, string format)
+        [HttpGet("/api/dictionary/{id}/download", Name = "DownloadDictionary")]
+        public async Task<IActionResult> DownloadDictionary(int id, [FromHeader(Name = "Accept")] string accept = MimeTypes.SqlLite)
         {
-            throw new NotImplementedException();
+            var file = await _queryProcessor.ExecuteAsync(new GetDownloadByDictionaryIdQuery
+            {
+                DictionaryId =  id,
+                UserId = _userHelper.GetUserId(),
+                MimeType = accept
+            });
+
+            if (file != null)
+            {
+                return File(file.Contents, file.MimeType, file.FileName);
+            }
+
+            return NotFound();
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Renderers
 
             if (source.IsPublic)
             {
-                links.Add(LinkRenderer.Render("DownloadDictionary", "download", new {id = source.Id, format = "dat"}));
+                links.Add(LinkRenderer.Render("DownloadDictionary", RelTypes.Download, new {id = source.Id, accept = ""}));
             }
 
             var indexes = new List<LinkView>(_indexes.Select(i => LinkRenderer.Render("GetWordsListStartWith", i,

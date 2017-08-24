@@ -29,7 +29,7 @@ import { SettingsComponent } from './app/settings/settings.component';
 
 import { DictionariesComponent } from './app/dictionary/dictionaries/dictionaries.component';
 import { DictionaryComponent } from './app/dictionary/dictionary/dictionary.component';
-import { CreateDictionaryComponent } from './app/dictionary/create-dictionary/create-dictionary.component';
+import { EditDictionaryComponent } from './app/dictionary/edit-dictionary/edit-dictionary.component';
 import { WordComponent } from './app/dictionary/word/word.component';
 import { WordDetailsComponent } from './app/dictionary/wordDetail/wordDetail.component';
 import { RelationsComponent } from './app/dictionary/relations/relations.component';
@@ -77,7 +77,7 @@ import { routing  } from './app.routes';
     SettingsComponent,
     DictionariesComponent,
     DictionaryComponent,
-    CreateDictionaryComponent,
+    EditDictionaryComponent,
     WordComponent,
     WordDetailsComponent,
     RelationsComponent,

@@ -77,6 +77,19 @@ export class DictionaryService {
             .map(r => this.extractData(r, Mapper.MapDictionaries))
             .catch(this.handleError);
     }
+    
+    updateDictionary(updateLink : string, dictionary : Dictionary) : Observable<void>{
+        let headers = new Headers();
+        headers.append('Accept-Type', 'application/json');
+        headers.append('Content-Type', 'application/json');
+    
+        let options = new RequestOptions({
+            headers: headers
+        });
+        
+        return this.getHttp().put(updateLink, JSON.stringify(dictionary), options)
+            .catch(this.handleError);
+    }
 
     deleteDictionary(deleteLink : string) : Observable<void>{
         return this.getHttp().delete(deleteLink)

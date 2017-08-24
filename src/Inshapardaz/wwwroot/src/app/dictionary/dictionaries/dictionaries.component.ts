@@ -15,6 +15,7 @@ export class DictionariesComponent {
     createLink : string;
     dictionariesLink : string;
     showCreateDialog : boolean = false;
+    selectedDictionary : Dictionary;
 
     constructor(private dictionaryService: DictionaryService, 
                 private auth: AuthService){
@@ -53,9 +54,16 @@ export class DictionariesComponent {
     }
 
     createDictionary(){
-        console.debug('showing create dialog');
+        this.selectedDictionary = null;        
         this.showCreateDialog = true;
     }
+
+    editDictionary(dictionary : Dictionary){
+        console.log("editing dictionary :" + dictionary.id);
+        this.selectedDictionary = dictionary;
+        this.showCreateDialog = true;
+    }
+
     onCreateClosed(created : boolean){
         console.debug('create dialog closed');        
         this.showCreateDialog = false;

@@ -1,7 +1,7 @@
 <div class="modal" [attr.id]="modalId" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="block block-themed block-transparent remove-margin-b" [class.block-opt-refresh]="isCreating">
+            <div class="block block-themed block-transparent remove-margin-b" [class.block-opt-refresh]="isBusy">
                 <div class="block-header bg-primary-dark">
                     <ul class="block-options">
                         <li>
@@ -45,7 +45,9 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-sm btn-default" type="button" (click)="onClose()">Close</button>
-                <button class="btn btn-sm btn-primary" type="button" (click)="onSubmit()"><i class="fa fa-check"></i> Create</button>
+                <button class="btn btn-sm btn-primary" type="button" (click)="onSubmit()"><i class="fa fa-check"></i> 
+                    {{ isCreating == true ? 'Create' : 'Update' }}
+                </button>
             </div>
         </div>
     </div>

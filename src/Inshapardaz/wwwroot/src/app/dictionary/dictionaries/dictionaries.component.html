@@ -57,7 +57,7 @@
                                         <button type="button"><i class="si si-cloud-download"></i></button>
                                     </li>
                                     <li *ngIf="dictionary.updateLink">
-                                        <button type="button"><i class="si si-pencil"></i></button>
+                                        <button type="button" (click)="editDictionary(dictionary)"><i class="si si-pencil"></i></button>
                                     </li>
                                     <li *ngIf="dictionary.deleteLink">
                                         <button type="button" [swal]="{title :'Delete dictionary?', 
@@ -107,4 +107,8 @@
         </div>
     </div>
 </section>
-<create-dictionaries [modalId]="'create-dictionary'" [createLink]="createLink" [visible]="showCreateDialog" (onClosed)="onCreateClosed($event)"></create-dictionaries>
+<edit-dictionaries [modalId]="'create-dictionary'" 
+    [createLink] = "createLink" 
+    [visible] = "showCreateDialog" 
+    [dictionary] = "selectedDictionary"
+    (onClosed)="onCreateClosed($event)"></edit-dictionaries>

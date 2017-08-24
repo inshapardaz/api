@@ -6,26 +6,35 @@ import { Dictionary } from '../../../models/Dictionary';
 import { Languages } from '../../../models/language';
 
 @Component({
-    selector: 'create-dictionaries',
-    templateUrl: './create-dictionary.component.html'
+    selector: 'edit-dictionaries',
+    templateUrl: './edit-dictionary.html'
 })
-export class CreateDictionaryComponent {
+export class EditDictionaryComponent {
     model = new Dictionary();
     languages : any[];
     languagesEnum = Languages;
     _visible : boolean = false;
+    isBusy : boolean = false;
     isCreating : boolean = false;
 
     @Input() createLink:string = '';
     @Input() modalId:string = '';
+    @Input() dictionary:Dictionary = null;
     @Output() onClosed = new EventEmitter<boolean>();
 
     @Input()
     set visible(isVisible: boolean) {
         console.log('dialog - visible ' + isVisible);
         this._visible = isVisible;
+        this.isBusy = false;
         if (isVisible){
-            this.model = new Dictionary();
+            if (this.dictionary == null) {
+                this.model = new Dictionary();
+                this.isCreating = true;
+            } else {
+                this.model = Object.assign({}, this.dictionary);
+                this.isCreating = false;
+            }
             $('#'+ this.modalId).modal('show');
         } else {
             $('#'+ this.modalId).modal('hide');
@@ -42,14 +51,24 @@ export class CreateDictionaryComponent {
 
     onSubmit(){
         console.log(this.createLink);
-        this.isCreating = true;
-        this.dictionaryService.createDictionary(this.createLink, this.model)
-        .subscribe(m => {
-            this.isCreating = false;
-            this.onClosed.emit(true);
-            this.visible = false;
-        },
-        this.handlerCreationError);
+        this.isBusy = false;
+        if (this.isCreating){
+            this.dictionaryService.createDictionary(this.createLink, this.model)
+            .subscribe(m => {
+                this.isBusy = false;
+                this.onClosed.emit(true);
+                this.visible = false;
+            },
+            this.handlerCreationError);    
+        } else {
+            this.dictionaryService.updateDictionary(this.model.updateLink, this.model)
+            .subscribe(m => {
+                this.isBusy = false;
+                this.onClosed.emit(true);
+                this.visible = false;
+            },
+            this.handlerCreationError);
+        }
     }
 
     onClose(){
@@ -58,7 +77,7 @@ export class CreateDictionaryComponent {
     }
 
     handlerError(error : any) {
-        this.isCreating = false;
+        this.isBusy = false;
     }
 
     handlerCreationError(error : any) {

@@ -38,11 +38,9 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             _fakeDictionaryRenderer = new FakeDictionaryRenderer();
             _fakeUserHelper = new FakeUserHelper();
 
-            var fakeBackgroundJobClient = new FakeBackgroundJobClient();
             var fakeDictionaryDownloadRenderer = new FakeDictionaryDownloadRenderer();
             _controller = new DictionariesController(_mockCommandProcessor.Object, _fakeQueryProcessor, _fakeUserHelper,
-                fakeDictionariesRenderer, _fakeDictionaryRenderer, fakeBackgroundJobClient,
-                fakeDictionaryDownloadRenderer);
+                fakeDictionariesRenderer, _fakeDictionaryRenderer, fakeDictionaryDownloadRenderer);
         }
 
         [Fact]
@@ -250,9 +248,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             Assert.IsType<NoContentResult>(result);
 
-            _mockCommandProcessor.Verify(x => x.Send(It.IsAny<DeleteDictionaryCommand>()));
-            _mockCommandProcessor.Verify(
-                x => x.Send(It.Is<DeleteDictionaryCommand>(c => c.DictionaryId == dictionaryId)));
+            _mockCommandProcessor.Verify(x => x.SendAsync(It.IsAny<DeleteDictionaryCommand>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+            _mockCommandProcessor.Verify(x => x.SendAsync(It.Is<DeleteDictionaryCommand>(c => c.DictionaryId == dictionaryId), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
         }
 
         [Fact]

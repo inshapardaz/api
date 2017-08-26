@@ -12,6 +12,7 @@ import { ProfileComponent } from './app/profile/profile.component';
 import { ThesaurusComponent }      from './app/thesaurus/thesaurus.component';
 import { TranslationsComponent }      from './app/translations/translations.component';
 import { UnauthorisedComponent } from './app/error/unauthorised/unauthorised.component';
+import { ServerErrorComponent } from './app/error/serverError/serverError.component';
 
 const appRoutes: Routes = [
     { path: '',            component: HomeComponent },
@@ -25,7 +26,8 @@ const appRoutes: Routes = [
     { path: 'word/:id', component: WordComponent },
     { path: 'thesaurus',     component: ThesaurusComponent },
     { path: 'translations',    component: TranslationsComponent },
-    { path: 'error/unauthorised', component : UnauthorisedComponent }
+    { path: 'error/unauthorised', component : UnauthorisedComponent },
+    { path: 'error/servererror', component : ServerErrorComponent }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes);

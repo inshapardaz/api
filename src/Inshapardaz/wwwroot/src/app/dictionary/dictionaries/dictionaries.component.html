@@ -27,8 +27,7 @@
                     </div>
                 </div>
             </div>
-
-            <div class="content bg-white text-center overflow-hidden" *ngIf="!isLoading && dictionaries.length < 1">
+            <div class="content bg-white text-center overflow-hidden" *ngIf="!isLoading && !errorLoadingDictionaries && dictionaries.length < 1">
                 <div class="row">
                     <div class="col-sm-6 col-sm-offset-3">
                         <div class="font-s64 text-gray push-30-t push-50">
@@ -38,12 +37,28 @@
 
                         <h2 class="h3 font-w300 text-dark-op push-50 animated fadeInRightBig" *ngIf="!createLink">
                             <a (click)="auth.login()">
-                            {{'DICTIONARIES.SIGNINANDCREATRENEW' | translate}}
-                            </a>
+                                {{'DICTIONARIES.SIGNINANDCREATRENEW' | translate}}
+                                </a>
                         </h2>
                     </div>
                 </div>
             </div>
+            <div class="content bg-white text-center overflow-hidden" *ngIf="!isLoading && errorLoadingDictionaries">
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3" *ngIf="errorLoadingDictionaries">
+                        <div class="font-s64 text-gray push-30-t push-50">
+                            <i class="si si-close"></i>
+                        </div>
+                        <h1 class="h2 font-w400 push-15 animated fadeInUp">Error loading dictionaries</h1>
+                            <h2 class="h3 font-w300 text-dark-op push-50 animated fadeInRightBig">
+                                <a (click)="getEntry()" class="hand">
+                                {{'ACTIONS.REFRESH' | translate}}
+                                </a>
+                            </h2>
+                    </div>
+                </div>
+            </div>
+
             <div class="content text-center overflow-hidden">
                 <div class="row">
                     <div class="col-xs-6 col-sm-3 visibility-hidden" appear data-class="animated fadeInDown" *ngFor="let dictionary of dictionaries">
@@ -77,11 +92,8 @@
                             </div>
                             <div class="block-content block-content-full text-center">
                                 <a [routerLink]="['/dictionary', dictionary.id]">
-                                    <div class="item item-2x item-circle"
-                                        [class.bg-info-light]="!dictionary.isPublic"
-                                        [class.text-info]="!dictionary.isPublic"
-                                        [class.bg-success-light]="dictionary.isPublic"
-                                        [class.text-success]="dictionary.isPublic">
+                                    <div class="item item-2x item-circle" [class.bg-info-light]="!dictionary.isPublic" [class.text-info]="!dictionary.isPublic"
+                                        [class.bg-success-light]="dictionary.isPublic" [class.text-success]="dictionary.isPublic">
                                         <i class="si si-book-open"></i>
                                     </div>
                                 </a>
@@ -109,8 +121,5 @@
         </div>
     </div>
 </section>
-<edit-dictionaries [modalId]="'create-dictionary'" 
-    [createLink] = "createLink" 
-    [visible] = "showCreateDialog" 
-    [dictionary] = "selectedDictionary"
+<edit-dictionaries [modalId]="'create-dictionary'" [createLink]="createLink" [visible]="showCreateDialog" [dictionary]="selectedDictionary"
     (onClosed)="onCreateClosed($event)"></edit-dictionaries>

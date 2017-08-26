@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Dictionary } from '../../../models/dictionary';
 import { AuthService } from '../../../services/auth.service';
 import { AlertService } from '../../../services/alert.service';
 
+ 
 @Component({
     selector: 'dictionaries',
     templateUrl: './dictionaries.component.html'
@@ -11,6 +14,7 @@ import { AlertService } from '../../../services/alert.service';
 
 export class DictionariesComponent {
     isLoading : boolean = false;
+    errorLoadingDictionaries : boolean = false;
     errorMessage: string;
     dictionaries : Dictionary[];
     createLink : string;
@@ -20,7 +24,8 @@ export class DictionariesComponent {
 
     constructor(private dictionaryService: DictionaryService, 
                 private auth: AuthService,
-                private alertService: AlertService){
+                private alertService: AlertService,
+                private router: Router,){
     }
 
     ngOnInit() {
@@ -30,7 +35,11 @@ export class DictionariesComponent {
     deleteDictionary(dictionary : Dictionary) {
         this.dictionaryService.deleteDictionary(dictionary.deleteLink)
         .subscribe(r => {
+            this.alertService.success('Dictionary ' + dictionary.name + ' deleted successfully.' );
             this.getDictionaries();
+        }, e => {
+            this.handlerError();
+            this.alertService.error('Unable to delete dictionary ' + dictionary.name + '.' );            
         });
     }
 
@@ -41,20 +50,24 @@ export class DictionariesComponent {
                 entry => {
                     this.dictionariesLink = entry.dictionariesLink;
                     this.getDictionaries();
-            },
-            this.handlerError);
+            }, e => {
+                this.handlerError();
+                this.router.navigate(['/error/servererror']);
+            });
     }
 
     getDictionaries(){
-        this.alertService.info("Loading ...", true);        
-        
+        this.errorLoadingDictionaries = false;
         this.dictionaryService.getDictionaries(this.dictionariesLink)
         .subscribe(data => {
             this.dictionaries = data.dictionaries;
             this.createLink = data.createLink;
             this.isLoading = false;
-        },
-        this.handlerError);
+        }, e => {            
+            this.handlerError();
+            this.errorLoadingDictionaries = true;
+            this.alertService.error('Unable to load dictionaries. Please try again');
+        });
     }
 
     createDictionary(){
@@ -63,7 +76,6 @@ export class DictionariesComponent {
     }
 
     editDictionary(dictionary : Dictionary){
-        console.log("editing dictionary :" + dictionary.id);
         this.selectedDictionary = dictionary;
         this.showCreateDialog = true;
     }
@@ -71,21 +83,21 @@ export class DictionariesComponent {
     createDictionaryDownload(dictionary : Dictionary){
         this.dictionaryService.createDictionaryDownload(dictionary.createDownloadLink)
         .subscribe(data => {
-            // TODO : Raise a success message
-        },
-        this.handlerError);
+            this.alertService.success('Dictionary download request sent.');
+        }, e => {
+            this.handlerError(); 
+            this.alertService.error('Dictionary download request failed. Please try again.');            
+        });
     }
 
     onCreateClosed(created : boolean){
-        console.debug('create dialog closed');        
         this.showCreateDialog = false;
         if (created){
             this.getDictionaries();
         }
     }
 
-    handlerError(error : any) {
-        this.errorMessage = <any>error;
+    handlerError() {
         this.isLoading = false;
     }
 }

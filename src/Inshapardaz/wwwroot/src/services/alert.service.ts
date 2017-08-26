@@ -5,49 +5,75 @@ import { Subject } from 'rxjs/Subject';
 
 import { Alert, AlertType } from '../models/alert';
 
+import * as $ from "jquery";
+
+interface JQuery {
+    notify(): any;
+}
+
 @Injectable()
 export class AlertService {
     private subject = new Subject<Alert>();
     private keepAfterRouteChange = false;
 
     constructor(private router: Router) {
-        // clear alert messages on route change unless 'keepAfterRouteChange' flag is true
         router.events.subscribe(event => {
             if (event instanceof NavigationStart) {
                 if (this.keepAfterRouteChange) {
-                    // only keep for a single route change
                     this.keepAfterRouteChange = false;
                 } else {
-                    // clear alert messages
                     this.clear();
                 }
             }
         });
     }
 
-    getAlert(): Observable<any> {
-        return this.subject.asObservable();
+    private showNotification(notifyIcon : string, notifyMessage : string, notifyType : string, notifyFrom : string, notifyAlign : string){
+        /*$.notify({
+            icon: notifyIcon,
+            message: notifyMessage,
+            //url: $notifyUrl
+        },
+        {
+            element: 'body',
+            type: notifyType,
+            allow_dismiss: true,
+            newest_on_top: true,
+            showProgressbar: false,
+            placement: {
+                from: notifyFrom,
+                align: notifyAlign
+            },
+            offset: 20,
+            spacing: 10,
+            z_index: 1033,
+            delay: 5000,
+            timer: 1000,
+            animate: {
+                enter: 'animated fadeIn',
+                exit: 'animated fadeOutDown'
+            }
+        });*/
     }
 
-    success(message: string, keepAfterRouteChange = false) {
-        this.alert(AlertType.Success, message, keepAfterRouteChange);
+    success(message: string) {
+        var icon = 'fa fa-check';
+        this.showNotification(icon, message, 'success', 'bottom', 'right');
     }
 
-    error(message: string, keepAfterRouteChange = false) {
-        this.alert(AlertType.Error, message, keepAfterRouteChange);
+    error(message: string) {
+        var icon = 'fa fa-times';
+        this.showNotification(icon, message, 'danger', 'bottom', 'right');
     }
 
     info(message: string, keepAfterRouteChange = false) {
-        this.alert(AlertType.Info, message, keepAfterRouteChange);
+        var icon = 'fa fa-info-circle';
+        this.showNotification(icon, message, 'info', 'bottom', 'right');
     }
 
     warn(message: string, keepAfterRouteChange = false) {
-        this.alert(AlertType.Warning, message, keepAfterRouteChange);
-    }
-
-    alert(type: AlertType, message: string, keepAfterRouteChange = false) {
-        this.keepAfterRouteChange = keepAfterRouteChange;
-        this.subject.next(<Alert>{ type: type, message: message });
+        var icon = 'fa fa-warning';
+        this.showNotification(icon, message, 'warning', 'bottom', 'right');
     }
 
     clear() {

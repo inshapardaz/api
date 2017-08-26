@@ -11,7 +11,6 @@ import { AuthService } from './services/auth.service';
 import { DictionaryService } from './services/dictionary.service';
 import { AlertService } from './services/alert.service';
 
-import { AlertComponent } from './directives/alert.component';
 import { UIToggleDirective } from './directives/ui-toggle.directive';
 import { SideBarToggleDirective } from './directives/side-bar-toggle.directive';
 import { AppearDirective } from './directives/appear.directive';
@@ -22,6 +21,7 @@ import { CallbackComponent } from './app/callback/callback.component';
 import { ProfileComponent } from './app/profile/profile.component';
 
 import { UnauthorisedComponent } from './app/error/unauthorised/unauthorised.component';
+import { ServerErrorComponent } from './app/error/serverError/serverError.component';
 
 import { HomeComponent } from './app/home/home.component';
 import { HeaderComponent } from './app/header/header.component';
@@ -67,12 +67,12 @@ import { routing  } from './app.routes';
     SideBarToggleDirective,
     RightToLeftDirective,
     AppearDirective,
-    AlertComponent,
 
     AppComponent,
     CallbackComponent,
     ProfileComponent,
     UnauthorisedComponent,
+    ServerErrorComponent,
 
     HomeComponent,
     HeaderComponent,

@@ -1,5 +1,4 @@
-﻿using System;
-using Inshapardaz.Domain.Model;
+﻿using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Commands
 {

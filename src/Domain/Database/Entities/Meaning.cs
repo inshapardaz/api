@@ -1,10 +1,11 @@
-﻿namespace Inshapardaz.Domain.Model
+﻿namespace Inshapardaz.Domain.Database.Entities
 {
-    public class Translation
+    public class Meaning
     {
         public long Id { get; set; }
-        public Languages Language { get; set; }
+        public string Context { get; set; }
         public string Value { get; set; }
+        public string Example { get; set; }
         public long WordDetailId { get; set; }
 
         public virtual WordDetail WordDetail { get; set; }

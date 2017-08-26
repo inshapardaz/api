@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Darker;
 using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
 using paramore.brighter.commandprocessor;

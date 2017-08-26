@@ -1,4 +1,5 @@
 ﻿using System;
+using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.QueryHandlers;
 using Microsoft.EntityFrameworkCore;
 using Xunit;

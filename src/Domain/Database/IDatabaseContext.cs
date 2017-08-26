@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Inshapardaz.Domain
+namespace Inshapardaz.Domain.Database
 {
     public interface IDatabaseContext
     {

@@ -3,8 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

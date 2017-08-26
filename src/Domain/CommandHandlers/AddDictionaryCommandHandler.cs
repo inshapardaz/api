@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Database;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers

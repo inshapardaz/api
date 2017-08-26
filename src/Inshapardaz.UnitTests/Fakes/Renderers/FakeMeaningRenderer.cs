@@ -3,6 +3,7 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Model;
 using System.Collections.Generic;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {

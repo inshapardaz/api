@@ -1,6 +1,7 @@
 ﻿using Darker;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;

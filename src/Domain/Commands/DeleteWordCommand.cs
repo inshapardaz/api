@@ -1,6 +1,4 @@
-﻿using Inshapardaz.Domain.Model;
-
-namespace Inshapardaz.Domain.Commands
+﻿namespace Inshapardaz.Domain.Commands
 {
     public class DeleteWordCommand : Command
     {

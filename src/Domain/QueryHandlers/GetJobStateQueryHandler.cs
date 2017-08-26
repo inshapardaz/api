@@ -1,15 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using Inshapardaz.Domain.Queries;
+﻿using Inshapardaz.Domain.Queries;
 
 using Darker;
-using Inshapardaz.Domain.Model;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Hangfire.Storage;
-using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {

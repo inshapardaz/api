@@ -32,6 +32,9 @@
         <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />
     </ItemGroup>
     <ItemGroup>
+      <Reference Include="AutoMapper">
+        <HintPath>..\..\..\..\..\Users\muhammad.farooq\.nuget\packages\automapper\6.1.1\lib\netstandard1.3\AutoMapper.dll</HintPath>
+      </Reference>
       <Reference Include="System.Threading.ThreadPool">
         <HintPath>..\..\..\..\..\Users\muhammad.farooq\.nuget\packages\system.threading.threadpool\4.3.0\ref\netstandard1.3\System.Threading.ThreadPool.dll</HintPath>
       </Reference>

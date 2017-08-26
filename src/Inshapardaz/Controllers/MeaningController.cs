@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using paramore.brighter.commandprocessor;
 using System.Threading.Tasks;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.Controllers
 {

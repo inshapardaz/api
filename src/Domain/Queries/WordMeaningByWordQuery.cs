@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Darker;
-using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Queries
 {

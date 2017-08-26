@@ -9,7 +9,7 @@
 
 using System.ComponentModel;
 
-namespace Inshapardaz.Domain.Model
+namespace Inshapardaz.Domain.Database.Entities
 {
     /// <summary>
     ///     The relation type.

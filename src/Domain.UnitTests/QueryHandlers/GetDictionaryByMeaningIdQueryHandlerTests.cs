@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.QueryHandlers;
 using Microsoft.EntityFrameworkCore;
 using Xunit;

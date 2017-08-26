@@ -1,5 +1,6 @@
 ﻿using System;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.Renderers

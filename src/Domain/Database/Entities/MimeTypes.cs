@@ -1,4 +1,4 @@
-﻿namespace Inshapardaz.Domain.Model
+﻿namespace Inshapardaz.Domain.Database.Entities
 {
     public static class MimeTypes
     {

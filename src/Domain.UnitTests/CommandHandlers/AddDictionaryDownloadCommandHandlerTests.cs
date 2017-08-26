@@ -5,6 +5,7 @@ using Hangfire.Common;
 using Hangfire.States;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Database;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;

@@ -6,6 +6,7 @@ using Inshapardaz.Api.UnitTests.Fakes;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Model;
+﻿using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.Renderers
 {

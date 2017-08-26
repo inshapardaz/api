@@ -1,14 +1,14 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Darker;
-using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetDictionaryByWordDetailIdQueryHandler : AsyncQueryHandler<DictionaryByWordDetailIdQuery,
-        Model.Dictionary>
+    public class GetDictionaryByWordDetailIdQueryHandler : AsyncQueryHandler<DictionaryByWordDetailIdQuery, Dictionary>
     {
         private readonly IDatabaseContext _database;
 

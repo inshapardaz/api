@@ -3,6 +3,7 @@ using paramore.brighter.commandprocessor;
 using Inshapardaz.Domain.Exception;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.CommandHandlers

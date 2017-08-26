@@ -5,6 +5,7 @@ using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Database.Entities;
 using Moq;
 using Xunit;
 
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
         public class WhenRendereingAnonymously
         {
             WordView _result;
-            Domain.Model.Word _word = new Domain.Model.Word
+            Word _word = new Word
             {
                 Id = 1,
                 Title = "Test",
@@ -101,8 +102,9 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
         public class WhenRendereingForOwner
         {
-            WordView _result;
-            Domain.Model.Word _word = new Domain.Model.Word
+            readonly WordView _result;
+
+            readonly Word _word = new Word
             {
                 Id = 1,
                 Title = "Test",

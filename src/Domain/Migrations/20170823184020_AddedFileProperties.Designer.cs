@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Inshapardaz.Domain;
-using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Database;
 
 namespace Inshapardaz.Domain.Migrations
 {

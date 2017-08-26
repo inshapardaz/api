@@ -19,6 +19,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using Hangfire;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain;
+using Inshapardaz.Domain.Database.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace Inshapardaz.Api.Configuration
@@ -157,7 +159,12 @@ namespace Inshapardaz.Api.Configuration
 
         public static IApplicationBuilder ConfigureObjectMappings(this IApplicationBuilder app)
         {
-            Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
+            Mapper.Initialize(c =>
+                {
+                    c.AddProfile(new MappingProfile());
+                    c.AddProfile(new DomainMappingProfile());
+                }
+            );
             Mapper.AssertConfigurationIsValid();
             return app;
         }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.View

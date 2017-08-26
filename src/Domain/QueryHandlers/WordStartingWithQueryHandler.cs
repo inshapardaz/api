@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using Darker;
+using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
-using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Helpers;
 
 namespace Inshapardaz.Domain.QueryHandlers

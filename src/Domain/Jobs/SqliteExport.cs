@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Inshapardaz.Data.Entities;
-using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -121,7 +122,7 @@ namespace Inshapardaz.Domain.Jobs
             }
 
             var bytes = File.ReadAllBytes(sqlitePath);
-            var file = new Model.File
+            var file = new Database.Entities.File
             {
                 MimeType = MimeTypes.SqlLite,
                 Contents = bytes,
@@ -150,7 +151,7 @@ namespace Inshapardaz.Domain.Jobs
             _databaseContext.SaveChanges();
         }
 
-        private Word MapWord(Model.Word word)
+        private Word MapWord(Database.Entities.Word word)
         {
             return new Word
             {
@@ -162,7 +163,7 @@ namespace Inshapardaz.Domain.Jobs
             };
         }
         
-        private ICollection<WordDetail> MapDetails(IEnumerable<Model.WordDetail> details)
+        private ICollection<WordDetail> MapDetails(IEnumerable<Database.Entities.WordDetail> details)
         {
             var result = new List<WordDetail>();
             foreach (var detail in details)
@@ -173,7 +174,7 @@ namespace Inshapardaz.Domain.Jobs
             return result;
         }
 
-        private WordDetail MapDetail(Model.WordDetail detail)
+        private WordDetail MapDetail(Database.Entities.WordDetail detail)
         {
             return new WordDetail
             {
@@ -184,7 +185,7 @@ namespace Inshapardaz.Domain.Jobs
             };
         }
 
-        private ICollection<Meaning> MapMeanings(IEnumerable<Model.Meaning> meanings)
+        private ICollection<Meaning> MapMeanings(IEnumerable<Database.Entities.Meaning> meanings)
         {
             var result = new List<Meaning>();
             foreach (var meaning in meanings)
@@ -195,7 +196,7 @@ namespace Inshapardaz.Domain.Jobs
             return result;
         }
 
-        private Meaning MapMeaning(Model.Meaning meaning)
+        private Meaning MapMeaning(Database.Entities.Meaning meaning)
         {
             return new Meaning
             {
@@ -205,7 +206,7 @@ namespace Inshapardaz.Domain.Jobs
             };
         }
 
-        private ICollection<Translation> MapTranslations(IEnumerable<Model.Translation> translations)
+        private ICollection<Translation> MapTranslations(IEnumerable<Database.Entities.Translation> translations)
         {
             var result = new List<Translation>();
             foreach (var translation in translations)
@@ -216,7 +217,7 @@ namespace Inshapardaz.Domain.Jobs
             return result;
         }
 
-        private Translation MapTranslation(Model.Translation translation)
+        private Translation MapTranslation(Database.Entities.Translation translation)
         {
             return new Translation
             {

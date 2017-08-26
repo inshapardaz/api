@@ -6,6 +6,7 @@ using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Model;
 using Moq;
 using Xunit;
@@ -18,7 +19,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
         {
             private readonly DictionaryView _result;
 
-            private readonly Dictionary _dictionary = new Domain.Model.Dictionary
+            private readonly Dictionary _dictionary = new Dictionary
             {
                 Id = 1,
                 Name = "Test",

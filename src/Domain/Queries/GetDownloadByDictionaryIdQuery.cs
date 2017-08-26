@@ -1,8 +1,9 @@
 using Darker;
+using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class GetDownloadByDictionaryIdQuery : IQuery<Model.File>
+    public class GetDownloadByDictionaryIdQuery : IQuery<File>
     {
         public string UserId { get; set; }
 

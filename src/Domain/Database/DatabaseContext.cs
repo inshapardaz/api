@@ -1,8 +1,8 @@
-using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Inshapardaz.Domain
+namespace Inshapardaz.Domain.Database
 {
     public class DatabaseContext : DbContext, IDatabaseContext
     {

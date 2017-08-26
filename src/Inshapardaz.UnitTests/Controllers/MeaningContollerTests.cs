@@ -12,6 +12,7 @@ using paramore.brighter.commandprocessor;
 using System;
 using System.Collections.Generic;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Database.Entities;
 using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Controllers

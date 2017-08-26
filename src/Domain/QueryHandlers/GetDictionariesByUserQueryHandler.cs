@@ -2,9 +2,10 @@
 using System.Linq;
 using Inshapardaz.Domain.Queries;
 using Darker;
-using Inshapardaz.Domain.Model;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers

@@ -9,6 +9,7 @@ using paramore.brighter.commandprocessor;
 using System.Linq;
 using System.Threading.Tasks;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.Controllers
 {

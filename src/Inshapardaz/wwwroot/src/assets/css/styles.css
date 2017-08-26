@@ -126,6 +126,11 @@ body.urdu .h6{
   left: 0;
 }
 
+.sidebar-o[dir='rtl'] .dropdown-menu a,
+.sidebar-o[dir='rtl'] .dropdown-menu .dropdown-header{
+  text-align: right;
+}
+
 .word-title{
   background-image: url('../img/photos/photo5@2x.jpg')
 }

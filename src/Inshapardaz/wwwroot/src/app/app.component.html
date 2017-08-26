@@ -1,4 +1,6 @@
-<div id="page-container" class="sidebar-o side-scroll header-navbar-fixed sidebar-r">
+<div id="page-container" class="sidebar-o side-scroll header-navbar-fixed" dir="auto"
+     [class.sidebar-r]="isRtl" [class.sidebar-l]="!isRtl"
+     [attr.dir]="isRtl ? 'rtl' : 'ltr'">
     <sidebar id="sidebar"></sidebar>
     <header id="header-navbar" class="content-mini content-mini-full">
     </header>

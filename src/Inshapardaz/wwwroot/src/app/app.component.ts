@@ -15,6 +15,7 @@ import {AuthService} from '../services/auth.service';
 
 export class AppComponent {
     currentRoute: string = "";
+    isRtl : boolean = false;
     constructor(private router: Router, 
                 private auth: AuthService, 
                 private translate: TranslateService, 
@@ -43,5 +44,6 @@ export class AppComponent {
         var selectedLang = localStorage.getItem('ui-lang'); 
 
         this.translate.use(selectedLang ? selectedLang : (browserLang.match(/en|ur/) ? browserLang : 'en'));
+        this.isRtl = selectedLang == 'ur';
     }
  }

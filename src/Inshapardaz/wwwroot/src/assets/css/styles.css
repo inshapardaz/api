@@ -108,6 +108,23 @@ body.urdu .h6{
   font-family:  "UrduNaskhAsiatype", "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif; 
 }
 
+.sidebar-o[dir='rtl'] .nav-main a > i {
+  margin-right: 0px;
+  margin-left: 15px;
+}
+
+.sidebar-o[dir='rtl'] .pull-left {
+  float: right !important;
+}
+
+.sidebar-o[dir='rtl'] .pull-right {
+  float: left !important;
+}
+
+.sidebar-o[dir='rtl'] .dropdown-menu-right{
+  right: auto;
+  left: 0;
+}
 
 .word-title{
   background-image: url('../img/photos/photo5@2x.jpg')

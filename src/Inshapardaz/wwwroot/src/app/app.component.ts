@@ -14,7 +14,6 @@ import {AuthService} from '../services/auth.service';
 })
 
 export class AppComponent {
-    
     currentRoute: string = "";
     constructor(private router: Router, 
                 private auth: AuthService, 
@@ -30,10 +29,6 @@ export class AppComponent {
         auth.handleAuthentication();
         auth.scheduleRenewal();
     }
-
-    // ngOnInit(){
-    //     App.loader('hide');
-    // }
 
     private setLanguages(){
         this.translate.addLangs(["en", "ur"]);

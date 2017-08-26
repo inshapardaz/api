@@ -10,8 +10,8 @@
                         <div class="col-lg-4" *ngFor="let relation of relations">
                             <a class="block block-link-hover3" [routerLink]="['/word', relation.relatedWordId]">
                                 <div class="block-content block-content-full clearfix">
-                                    <span class="h4 font-w700 urdu pull-right">{{relation.relatedWord}}</span>
-                                    <span class="h6 urdu text-muted">{{relation.relationType}}</span>
+                                    <span class="h4 font-w700 pull-right">{{relation.relatedWord}}</span>
+                                    <span class="h6 text-muted">{{relation.relationType}}</span>
                                     <i *ngIf="relation.relationTypeId==0" class="si si-layers fa-2x text-muted pull-left"></i>
                                     <i *ngIf="relation.relationTypeId==1" class="si si-directions fa-2x text-muted pull-left"></i>
                                     <i *ngIf="relation.relationTypeId==2" class="si si-chemistry fa-2x text-muted pull-left"></i>

@@ -51,13 +51,63 @@
   font-style: normal;
   font-size: 120%;  
 }
-body.urdu {
-  font-family:  "Mehr-Nastaleeq", "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif; 
+
+@font-face{
+  font-family: 'DehalviKhushKhat';
+  src: url("../fonts/DehalviKhushKhat.eot");
+  src: url("../fonts/DehalviKhushKhat.eot") format("embedded-opentype"),
+       url('../fonts/DehalviKhushKhat.woff') format("woff"),
+       url("../fonts/DehalviKhushKhat.ttf") format("truetype"),
+       url("../fonts/DehalviKhushKhat.svg") format("svg");
+       unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;       
+  font-weight: normal;
+  font-style: normal;
+  font-size: 120%;  
 }
 
-.urdu{
-  font-family:  "Mehr-Nastaleeq"; 
+@font-face{
+  font-family: 'AdobeArabic';
+  src: url("../fonts/AdobeArabic-Regular.eot");
+  src: url("../fonts/AdobeArabic-Regular.eot") format("embedded-opentype"),
+       url('../fonts/AdobeArabic-Regular.woff') format("woff"),
+       url("../fonts/AdobeArabic-Regular.ttf") format("truetype"),
+       url("../fonts/AdobeArabic-Regular.svg") format("svg");
+       unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;       
+  font-weight: normal;
+  font-style: normal;
+  font-size: 150%;  
 }
+
+
+@font-face{
+  font-family: 'UrduNaskhAsiatype';
+  src: url("../fonts/UrduNaskhAsiatype.eot");
+  src: url("../fonts/UrduNaskhAsiatype.eot") format("embedded-opentype"),
+       url('../fonts/UrduNaskhAsiatype.woff') format("woff"),
+       url("../fonts/UrduNaskhAsiatype.ttf") format("truetype"),
+       url("../fonts/UrduNaskhAsiatype.svg") format("svg");
+       unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;       
+  font-weight: normal;
+  font-style: normal;
+  font-size: 140%;  
+}
+
+body.urdu, 
+body.urdu h1, 
+body.urdu h2, 
+body.urdu h3,
+body.urdu h4,
+body.urdu h5,
+body.urdu h6,
+body.urdu .h1, 
+body.urdu .h2, 
+body.urdu .h3,
+body.urdu .h4,
+body.urdu .h5,
+body.urdu .h6{
+  font-family:  "UrduNaskhAsiatype", "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif; 
+}
+
 
 .word-title{
   background-image: url('../img/photos/photo5@2x.jpg')

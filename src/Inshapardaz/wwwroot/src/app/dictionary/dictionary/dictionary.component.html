@@ -74,10 +74,10 @@
                                         <button class="btn btn-xs btn-default" type="button" (click)="deleteWord(word)" data-toggle="tooltip" title="{{'ACTIONS.DELETE' | translate}}"><i class="fa fa-times"></i></button>
                                     </div>
                                 </td>
-                                <td class="font-w600 urdu text-right" [routerLink]="['/word', word.id]">
+                                <td class="font-w600 text-right" [routerLink]="['/word', word.id]">
                                     {{word.description}}
                                 </td>
-                                <td class="font-w600 urdu text-right">
+                                <td class="font-w600 text-right">
                                     <a [routerLink]="['/word', word.id]">{{word.title}}</a>
                                 </td>
                             </tr>
@@ -86,7 +86,7 @@
                                     <div class="font-s64 text-gray push-30-t push-50">
                                         <i class="si si-ghost"></i>
                                     </div>
-                                    <h1 class="h2 font-w400 push-15 animated fadeInLeftBig urdu">{{'DICTIONARY.NOWORDFOUND' | translate}}</h1>
+                                    <h1 class="h2 font-w400 push-15 animated fadeInLeftBig">{{'DICTIONARY.NOWORDFOUND' | translate}}</h1>
                                 </td>
                             </tr>
                         </tbody>
@@ -99,7 +99,7 @@
             <div class="collapse navbar-collapse remove-padding" id="tickets-nav">
                 <div class="block">
                     <div class="block-header bg-gray-lighter">
-                        <h3 class="block-title urdu">{{'DICTIONARY.DETAILS' | translate}}</h3>
+                        <h3 class="block-title">{{'DICTIONARY.DETAILS' | translate}}</h3>
                     </div>
                     <div class="block-content">
                         <ul class="nav nav-pills nav-stacked push text-right" *ngIf="dictionary">
@@ -129,7 +129,7 @@
 
                 <div class="block">
                     <div class="block-header bg-gray-lighter">
-                        <h3 class="block-title urdu">{{'DICTIONARY.INDEX' | translate}}</h3>
+                        <h3 class="block-title">{{'DICTIONARY.INDEX' | translate}}</h3>
                     </div>
                     <div class="block-content">
                         <div class="list-group" *ngIf="dictionary">

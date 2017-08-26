@@ -9,7 +9,9 @@ import {TranslateModule} from "ng2-translate/ng2-translate";
 
 import { AuthService } from './services/auth.service';
 import { DictionaryService } from './services/dictionary.service';
+import { AlertService } from './services/alert.service';
 
+import { AlertComponent } from './directives/alert.component';
 import { UIToggleDirective } from './directives/ui-toggle.directive';
 import { SideBarToggleDirective } from './directives/side-bar-toggle.directive';
 import { AppearDirective } from './directives/appear.directive';
@@ -57,13 +59,15 @@ import { routing  } from './app.routes';
     Title,
     AUTH_PROVIDERS,
     AuthService,
-    DictionaryService
+    DictionaryService,
+    AlertService
   ],
   declarations: [
     UIToggleDirective,
     SideBarToggleDirective,
     RightToLeftDirective,
     AppearDirective,
+    AlertComponent,
 
     AppComponent,
     CallbackComponent,

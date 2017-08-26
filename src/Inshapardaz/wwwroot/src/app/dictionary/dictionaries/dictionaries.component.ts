@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Dictionary } from '../../../models/dictionary';
 import { AuthService } from '../../../services/auth.service';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
     selector: 'dictionaries',
@@ -18,7 +19,8 @@ export class DictionariesComponent {
     selectedDictionary : Dictionary;
 
     constructor(private dictionaryService: DictionaryService, 
-                private auth: AuthService){
+                private auth: AuthService,
+                private alertService: AlertService){
     }
 
     ngOnInit() {
@@ -44,6 +46,8 @@ export class DictionariesComponent {
     }
 
     getDictionaries(){
+        this.alertService.info("Loading ...", true);        
+        
         this.dictionaryService.getDictionaries(this.dictionariesLink)
         .subscribe(data => {
             this.dictionaries = data.dictionaries;

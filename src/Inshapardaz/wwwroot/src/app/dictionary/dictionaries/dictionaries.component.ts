@@ -64,6 +64,14 @@ export class DictionariesComponent {
         this.showCreateDialog = true;
     }
 
+    createDictionaryDownload(dictionary : Dictionary){
+        this.dictionaryService.createDictionaryDownload(dictionary.createDownloadLink)
+        .subscribe(data => {
+            // TODO : Raise a success message
+        },
+        this.handlerError);
+    }
+
     onCreateClosed(created : boolean){
         console.debug('create dialog closed');        
         this.showCreateDialog = false;

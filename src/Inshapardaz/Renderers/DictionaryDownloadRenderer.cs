@@ -7,7 +7,9 @@ namespace Inshapardaz.Api.Renderers
     {
         public DownloadDictionaryView Render(object source)
         {
-            throw new NotImplementedException();
+            return new DownloadDictionaryView()
+            {
+            };
         }
     }
 }

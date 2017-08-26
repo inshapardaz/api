@@ -129,6 +129,16 @@ namespace Inshapardaz.Domain.Jobs
                 DateCreated = DateTime.UtcNow,
                 LiveUntil = DateTime.MaxValue
             };
+
+
+            var exisitngDownload = _databaseContext.DictionaryDownload
+                                                   .SingleOrDefault(d => d.DictionaryId == dictionaryId && d.MimeType == MimeTypes.SqlLite);
+            if (exisitngDownload != null)
+            {
+                _databaseContext.File.Remove(exisitngDownload.File);
+                _databaseContext.DictionaryDownload.Remove(exisitngDownload);
+            }
+
             _databaseContext.File.Add(file);
 
             _databaseContext.DictionaryDownload.Add(new DictionaryDownload

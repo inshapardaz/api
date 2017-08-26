@@ -53,8 +53,10 @@
                                     <li>
                                         <button type="button" [routerLink]="['/dictionary', dictionary.id]"><i class="si si-eye"></i></button>
                                     </li>
-                                    <li *ngIf="dictionary.createDownloadLink">
-                                        <button type="button"><i class="si si-cloud-download"></i></button>
+                                    <li *ngIf="dictionary.createDownloadLink" (click)="createDictionaryDownload(dictionary)">
+                                        <button type="button">
+                                                <i class="si si-cloud-download"></i>
+                                        </button>
                                     </li>
                                     <li *ngIf="dictionary.updateLink">
                                         <button type="button" (click)="editDictionary(dictionary)"><i class="si si-pencil"></i></button>

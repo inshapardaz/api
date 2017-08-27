@@ -12,6 +12,7 @@ export class Dictionary{
     public indexes : Array<DictionaryIndex>;
     public updateLink : string;
     public deleteLink : string;
+    public createWordLink : string;
     public createDownloadLink : string;
 }
 

@@ -4,10 +4,12 @@ import { Subscription } from 'rxjs/Subscription';
 import { FormsModule , FormBuilder } from '@angular/forms';
 import { Observable }  from 'rxjs/Observable';
 
+import {Languages} from '../../../models/language';
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Dictionary } from '../../../models/dictionary';
+import { Word } from '../../../models/word';
 import { WordPage } from '../../../models/WordPage';
-
+import { DictionaryIndex } from '../../../models/Dictionary';
 export class Index{
     title : string;
     link : string;
@@ -26,9 +28,17 @@ export class DictionaryComponent {
     dictionary : Dictionary;
     searchText : Observable<string>;
     selectedIndex : Observable<string>;
+    index : DictionaryIndex;
     wordPage : WordPage;
     private loadedLink : string;
     indexes : Array<string>;
+
+    selectedWord : Word = null;
+    createWordLink : string;
+    showCreateDialog : boolean = false;
+
+    Languages = Languages;
+    
 
     public searchForm = this.fb.group({
         query: [""]
@@ -63,14 +73,14 @@ export class DictionaryComponent {
             });
         this.selectedIndex.subscribe(
             (val) => {
-                if (val !== "") this.loadIndex(val);
+                if (val !== "") this.getIndex(val);
             });
         
     }
 
-    gotoIndex(index:string){
+    gotoIndex(index:DictionaryIndex){
         let navigationExtras: NavigationExtras = {
-            queryParams: { 'startWith': index },
+            queryParams: { 'startWith': index.link },
         };
         this.router.navigate(['/dictionary', this.id], navigationExtras);
         
@@ -108,6 +118,7 @@ export class DictionaryComponent {
                 this.dictionary = dict;
                 this.isLoading = false;
                 this.getWords(this.dictionary.indexLink);
+                this.createWordLink = dict.createWordLink;
             },
             error => {
                 this.errorMessage = <any>error;
@@ -129,18 +140,6 @@ export class DictionaryComponent {
             });
     }
 
-    loadIndex(index : string){
-        this.isLoading = true;
-        this.dictionaryService.getWordStartingWith(index)
-            .subscribe(
-                words => {
-                    this.wordPage = words;
-                    this.isLoading = false;
-                },
-                error => {
-                this.errorMessage = <any>error;
-            });
-    }
     reloadPage(){
         this.getWords(this.loadedLink);
     }
@@ -166,6 +165,16 @@ export class DictionaryComponent {
                 error => {
                 this.errorMessage = <any>error;
             });
+        }
+    }
+
+    addWord(){
+        this.showCreateDialog = true;
+    }
+    onCreateClosed(created : boolean){
+        this.showCreateDialog = false;
+        if (created){
+            this.reloadPage();
         }
     }
 

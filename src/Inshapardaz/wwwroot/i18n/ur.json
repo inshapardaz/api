@@ -59,7 +59,15 @@
     "NOWORDFOUND": "کوئی لفظ موجود نہیں"    
   },
   "WORD":{
-    "RELATIONS" : "مربوط الفاظ"
+    "RELATIONS" : "مربوط الفاظ",
+    "CREATENEW" : "لفظ کا اضافہ کریں",
+    "TITLE" : "لفظ",
+    "TITLEWITHMOVEMENTS" : "لفظ بمع حرکات",
+    "PRONUNCIATION" : "تلفّض",
+    "DESCRIPTION" : "تفصیل",
+    "VALIDATION" : {
+      "TITLE" : "لفظ ضروری ہے۔"
+    }
   },
   "THESAURUS" : {
     "TITLE" : "تھیسارس",

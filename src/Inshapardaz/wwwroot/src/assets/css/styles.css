@@ -150,9 +150,8 @@ body.urdu .h6{
 .hand{
   cursor: pointer;
 }
-
-.content{
-  padding-bottom: 30px;
+.no-padding{
+  padding: 0;
 }
 
 .fa-sub {

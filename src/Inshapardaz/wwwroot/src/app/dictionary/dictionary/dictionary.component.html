@@ -1,147 +1,119 @@
-<!-- Page Header -->
-<div class="content bg-gray-lighter" *ngIf="!isLoading">
+<div class="content bg-gray-lighter">
     <div class="row items-push">
-        <div class="col-sm-5 text-left hidden-xs">
-            <ol class="breadcrumb push-10-t">
-                <li>{{'DICTIONARIES.TITLE' | translate}}</li>
-                <li><a class="link-effect" href="">{{dictionary.name}}</a></li>
-            </ol>
-        </div>
-        <div class="col-sm-7 text-right ">
-            <h1 class="page-heading">
-                {{dictionary.name}}
+        <div class="col-sm-7">
+            <h1 class="page-heading" *ngIf="!isLoading">
+                <!-- <i class="si si-book-open"></i> -->
+                {{dictionary.name}} <small>{{ Languages[dictionary.language] }} dictionary with {{dictionary.wordCount}} words.</small>
             </h1>
         </div>
-
-    </div>
-</div>
-<!-- END Page Header -->
-
-<!-- Search Form -->
-<section class="content content-full content-boxed" *ngIf="!isLoading">
-    <!-- Section Content -->
-    <div class="row">
-        <div class="col-sm-8 col-sm-offset-2">
-            <form [formGroup]="searchForm" (ngSubmit)="gotoSearch($event)">
-                <div class="input-group input-group-lg">
-                    <div class="input-group-btn">
-                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
-                        <a class="btn btn-default" *ngIf="isInSearch" (click)="clearSearch()"><i class="fa fa-close" ></i></a>
-                    </div>
-                    <input class="form-control text-right" type="text" placeholder="{{'DICTIONARY.SEARCH_IN_DICTIONARY' | translate}}" formControlName="query">
-                </div>
-            </form>
+        <div class="col-sm-5 text-right hidden-xs">
+            <ol class="breadcrumb push-10-t" *ngIf="!isLoading">
+                <li><a class="link-effect" href="javascript:void(0)" [routerLink]="['/dictionaries']"> {{'DICTIONARIES.TITLE' | translate}}</a></li>
+                <li>{{dictionary.name}}</li>
+            </ol>
         </div>
     </div>
-    <!-- END Section Content -->
+</div>
+
+<section class="content" *ngIf="!isLoading">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="btn-group">
+                <form [formGroup]="searchForm" (ngSubmit)="gotoSearch($event)">
+                    <div class="input-group">
+                        <input class="form-control text-right" type="text" placeholder="{{'DICTIONARY.SEARCH_IN_DICTIONARY' | translate}}" formControlName="query">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> Search</button>
+                            <a class="btn btn-default" *ngIf="isInSearch" (click)="clearSearch()"><i class="fa fa-close" ></i></a>
+                            <a class="btn btn-default" href="javascript:void(0)" (click)="addWord()" *ngIf="dictionary && dictionary.createWordLink">
+                                <i class="fa fa-fw fa-plus push-5-r"></i> Add Word 
+                            </a>
+                            <button class="btn btn-default" type="button">Index</button>
+                            <div class="btn-group">
+                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                            <span class="caret"></span>
+                                        </button>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li class="col-lg-3 col-md-3 col-sm-6" *ngFor="let idx of dictionary.indexes">
+                                        <a tabindex="-1" href="javascript:void(0)" (click)="gotoIndex(idx)">{{idx.title}}</a>
+                                    </li>
+                                </ul>
+            
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </section>
 
 <div class="content">
     <div class="row">
-
-        <div class="col-sm-7 col-lg-9">
-            <!-- Tickets List -->
-            <div class="block">
-                <div class="block-header bg-gray-lighter">
-                    <ul class="block-options">
-                        <li *ngIf="!isLoading && wordPage.nextLink">
-                            <button class="js-tooltip" (click)="loadPage(wordPage.nextLink)" title="{{'ACTIONS.NEXT_PAGE' | translate}}" type="button"
-                                data-toggle="block-option"><i class="si si-arrow-left"></i></button>
-                        </li>
-                        <li *ngIf="!isLoading && wordPage.prevLink">
-                            <button class="js-tooltip" (click)="loadPage(wordPage.prevLink)" title="{{'ACTIONS.PREVIOUS_PAGE' | translate}}" type="button"
-                                data-toggle="block-option"><i class="si si-arrow-right"></i></button>
-                        </li>
-                        <li *ngIf="!isLoading">
-                            <button type="button" (click)="reloadPage()" title="{{'ACTIONS.REFRESH' | translate}}" data-toggle="block-option" data-action="refresh_toggle"
-                                data-action-mode="demo"><i class="si si-refresh"></i></button>
-                        </li>
-                        <li>
-                            <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
-                        </li>
-                    </ul>
-                    <div class="block-title text-normal" *ngIf="!isLoading">
-                        <span class="font-w400">{{ 'DICTIONARY.PAGE' | translate}}</span> <strong>{{wordPage.currentPageIndex}}</strong>                        <span class="font-w400">{{'DICTIONARY.OF' | translate}}</span> <strong>{{wordPage.pageCount}}</strong>
-                    </div>
-                </div>
-                <div class="block-content" [class.block-opt-refresh]="isLoading">
-                    <table class="table table-hover table-striped table-vcenter" *ngIf="!isLoading">
-                        <tbody>
-                            <tr *ngFor="let word of wordPage.words">
-                                <td class="text-center" *ngIf="word.updateLink">
-                                    <div class="btn-group">
-                                        <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="{{'ACTIONS.EDIT' | translate}}"><i class="fa fa-pencil"></i></button>
-                                        <button class="btn btn-xs btn-default" type="button" (click)="deleteWord(word)" data-toggle="tooltip" title="{{'ACTIONS.DELETE' | translate}}"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </td>
-                                <td class="font-w600 text-right" [routerLink]="['/word', word.id]">
-                                    {{word.description}}
-                                </td>
-                                <td class="font-w600 text-right">
-                                    <a [routerLink]="['/word', word.id]">{{word.title}}</a>
-                                </td>
-                            </tr>
-                            <tr *ngIf="!isLoading && wordPage.words.length < 1">
-                                <td class="text-center">
-                                    <div class="font-s64 text-gray push-30-t push-50">
-                                        <i class="si si-ghost"></i>
-                                    </div>
-                                    <h1 class="h2 font-w400 push-15 animated fadeInLeftBig">{{'DICTIONARY.NOWORDFOUND' | translate}}</h1>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <div class="block">
+            <div class="block-header bg-gray-lighter">
+                <ul class="block-options">
+                    <li *ngIf="!isLoading && wordPage.words.length > 0 && wordPage.nextLink">
+                        <button class="js-tooltip" (click)="loadPage(wordPage.nextLink)" title="{{'ACTIONS.NEXT_PAGE' | translate}}" type="button"
+                            data-toggle="block-option"><i class="si si-arrow-left"></i></button>
+                    </li>
+                    <li *ngIf="!isLoading && wordPage.words.length > 0 && wordPage.prevLink">
+                        <button class="js-tooltip" (click)="loadPage(wordPage.prevLink)" title="{{'ACTIONS.PREVIOUS_PAGE' | translate}}" type="button"
+                            data-toggle="block-option"><i class="si si-arrow-right"></i></button>
+                    </li>
+                    <li *ngIf="!isLoading">
+                        <button type="button" (click)="reloadPage()" title="{{'ACTIONS.REFRESH' | translate}}" data-toggle="block-option" data-action="refresh_toggle"
+                            data-action-mode="demo"><i class="si si-refresh"></i></button>
+                    </li>
+                    <li>
+                        <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+                    </li>
+                </ul>
+                <div class="block-title text-normal" *ngIf="!isLoading && wordPage.pageCount > 1">
+                    <span class="font-w400">{{ 'DICTIONARY.PAGE' | translate}}</span> <strong>{{wordPage.currentPageIndex}}</strong>                    <span class="font-w400">{{'DICTIONARY.OF' | translate}}</span> <strong>{{wordPage.pageCount}}</strong>
                 </div>
             </div>
-        </div>
-        <div class="col-sm-5 col-lg-3">
-            <button class="btn btn-block btn-primary visible-xs push" data-toggle="collapse" data-target="#tickets-nav" type="button">{{'DICTIONARY.DETAILS' | translate}}</button>
-            <div class="collapse navbar-collapse remove-padding" id="tickets-nav">
-                <div class="block">
-                    <div class="block-header bg-gray-lighter">
-                        <h3 class="block-title">{{'DICTIONARY.DETAILS' | translate}}</h3>
-                    </div>
-                    <div class="block-content">
-                        <ul class="nav nav-pills nav-stacked push text-right" *ngIf="dictionary">
-                            <li>
-                                <a href="base_pages_tickets.html">
-                                <span class="badge pull-left">{{dictionary.wordCount}}</span>{{'DICTIONARY.WORD_COUNT' | translate}} <i class="fa fa-fw fa-tasks push-5-r"></i>
-                            </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                <span class="badge pull-left">{{dictionary.language}}</span>{{'DICTIONARY.LANGUAGE' | translate}} <i class="fa fa-fw fa-language push-5-r"></i>
-                            </a>
-                            </li>
-                            <li *ngIf="dictionary.isPublic">
-                                <a href="javascript:void(0)">
-                                    {{'DICTIONARY.PUBLIC_DICTIONARY' | translate}}<i class="fa fa-fw fa-globe push-5-r"></i>
-                            </a>
-                            </li>
-                            <li *ngIf="!dictionary.isPublic">
-                                <a href="javascript:void(0)">
-                                    {{'DICTIONARY.PRIVATE_DICTIONARY' | translate}}<i class="fa fa-fw fa-lock push-5-r"></i>
-                            </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="block">
-                    <div class="block-header bg-gray-lighter">
-                        <h3 class="block-title">{{'DICTIONARY.INDEX' | translate}}</h3>
-                    </div>
-                    <div class="block-content">
-                        <div class="list-group" *ngIf="dictionary">
-                            <a class="list-group-item text-right" *ngFor="let index of dictionary.indexes" href="javascript:void(0)" (click)="gotoIndex(index.link)">
-                            {{index.title}} <i class="fa fa-fw fa-angle-left push-5-r"></i> 
-                        </a>
+            <div class="block-content" [class.block-opt-refresh]="isLoading">
+                <table class="table table-hover table-striped table-vcenter" *ngIf="!isLoading && wordPage.words.length > 0">
+                    <tbody>
+                        <tr *ngFor="let word of wordPage.words">
+                            <td class="text-center" *ngIf="word.updateLink">
+                                <div class="btn-group">
+                                    <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="{{'ACTIONS.EDIT' | translate}}"><i class="fa fa-pencil"></i></button>
+                                    <button class="btn btn-xs btn-default" type="button" (click)="deleteWord(word)" data-toggle="tooltip" title="{{'ACTIONS.DELETE' | translate}}"><i class="fa fa-times"></i></button>
+                                </div>
+                            </td>
+                            <td class="font-w600 text-right" [routerLink]="['/word', word.id]">
+                                {{word.description}}
+                            </td>
+                            <td class="font-w600 text-right">
+                                <a [routerLink]="['/word', word.id]">{{word.title}}</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="content bg-white text-center overflow-hidden" *ngIf="!isLoading && wordPage.words.length < 1">
+                        <div class="row">
+                            <div class="col-sm-6 col-sm-offset-3">
+                                <h1 class="font-s128 font-w300 text-amethyst animated fadeInDown">
+                                    <i class="si si-ghost"></i>
+                                </h1>
+                                <h2 class="h3 font-w300 push-50 animated fadeInUp">{{'DICTIONARY.NOWORDFOUND' | translate}}</h2>
+                                <form class="form-horizontal push-50 animated fadeInUp"  *ngIf="dictionary && dictionary.createWordLink">
+                                        <div class="form-group">
+                                            <div class="col-sm-6 col-sm-offset-3">
+                                                <button class="btn btn-default" (click)="addWord()">
+                                                    <i class="fa fa-fw fa-plus push-5-r"></i> Add Word 
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- END Quick Stats -->
             </div>
-            <!-- END Collapsible Tickets Navigation -->
         </div>
     </div>
 </div>
+<edit-word [modalId]="'create-word'" [createLink]="createWordLink" [visible]="showCreateDialog" [word]="selectedWord"
+(onClosed)="onCreateClosed($event)"></edit-word>

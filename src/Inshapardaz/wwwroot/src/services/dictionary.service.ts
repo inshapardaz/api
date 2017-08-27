@@ -118,12 +118,6 @@ export class DictionaryService {
             .catch(this.handleError);
     }
 
-    // getIndex(): Observable<DictionaryIndex> {
-    //     return this.getHttp().get(this.indexUrl)
-    //         .map(r => this.extractData(r, Mapper.MapDictionaryIndex))
-    //         .catch(this.handleError);
-    // }
-
     getWordById(wordId): Observable<Word> {
         return this.getHttp().get(this.wordUrl + wordId)
             .map(r => this.extractData(r, Mapper.MapWord))
@@ -133,6 +127,32 @@ export class DictionaryService {
     getWord(url: string): Observable<Word> {
         return this.getHttp().get(url)
             .map(r => this.extractData(r, Mapper.MapWord))
+            .catch(this.handleError);
+    }
+
+    createWord(createWordLink : string, word : Word) : Observable<void>{
+        let headers = new Headers();
+        headers.append('Accept-Type', 'application/json');
+        headers.append('Content-Type', 'application/json');
+    
+        let options = new RequestOptions({
+            headers: headers
+        });
+
+        return this.getHttp().post(createWordLink, JSON.stringify(word), options)
+            .catch(this.handleError);
+    }
+
+    updateWord(updateLink : string, word : Word) : Observable<void>{
+        let headers = new Headers();
+        headers.append('Accept-Type', 'application/json');
+        headers.append('Content-Type', 'application/json');
+    
+        let options = new RequestOptions({
+            headers: headers
+        });
+        
+        return this.getHttp().put(updateLink, JSON.stringify(word), options)
             .catch(this.handleError);
     }
 

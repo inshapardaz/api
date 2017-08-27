@@ -60,7 +60,15 @@
     "NOWORDFOUND": "No Word Found"
   },
   "WORD":{
-    "RELATIONS" : "Relations"
+    "RELATIONS" : "Relations",
+    "CREATENEW" : "Create new word",
+    "TITLE" : "Title",
+    "TITLEWITHMOVEMENTS" : "Title with movements",
+    "PRONUNCIATION" : "Pronunciation",
+    "DESCRIPTION" : "Description",
+    "VALIDATION" : {
+      "TITLE" : "Title is required"
+    }
   },
   "THESAURUS" : {
     "TITLE" : "Thesaurus",

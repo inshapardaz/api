@@ -58,8 +58,12 @@ export class Mapper{
         var deleteLink = _.find<string[], Link>(source.links, ['rel', 'delete']);
         dictionary.deleteLink = deleteLink ? deleteLink.href : null;
 
+        var createWordLink = _.find<string[], Link>(source.links, ['rel', 'create-word']);
+        dictionary.createWordLink = createWordLink ? createWordLink.href : null;
+
         var createDownloadLink = _.find<string[], Link>(source.links, ['rel', 'create-download']);
         dictionary.createDownloadLink = createDownloadLink ? createDownloadLink.href : null;
+
         var indexes = new Array<DictionaryIndex>();
         _.forEach(source.indexes, (i) => indexes.push(Mapper.MapDictionaryIndex(i)));
         dictionary.indexes = indexes;

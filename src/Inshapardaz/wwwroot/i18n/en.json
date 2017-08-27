@@ -21,7 +21,31 @@
     "SLOGAN" : "Lets build better language",
     "CREATENEW" : "Create new dictionary",
     "SIGNINANDCREATRENEW" : "Sign in and start creating dictionaries",
-    "NODICTIONARY" : "No Dictionary Found"
+    "NODICTIONARY" : "No Dictionary Found",
+    "ALL" : "All",
+    "PUBLIC" : "Public",
+    "PRIVATE" : "Private",
+    "FAVORITE" : "Favorite",
+    "VIEW_DICTIONARY" : "View Dictionary",
+    "CREATE_DOWNLOAD" : "Create Download",
+    "EDIT_DICTIONARY" : "Edit Dictionary",
+    "DELETE_DICTIONARY" : "Delete Dictionary",
+    "NAME" : "Name",
+    "NAME_PLACEHOLDER" : "Please enter dictionary name",
+    "LANGUAGE" : "Please Select language",
+    "PUBLIC_DICTIONARY" : "Public Dictionary",
+    "MESSAGES" : {
+      "DELETION_SUCCESS" : "'Dictionary deleted successfully.'",
+      "DELETION_FAILURE" : "'Unable to delete dictionary.",
+      "LOADING_FAILURE" : "Unable to load dictionaries. Please try again",
+      "DOWNLOAD_REQUEST_SUCCESS" : "Dictionary download request sent.",
+      "DOWNLOAD_REQUEST_FAILURE" : "Dictionary download request failed. Please try again."
+    },
+    "VALIDATION" : {
+      "NAME" : "Name is required",
+      "LANGUAGE" : "Language is required"
+    }
+
   },
   "DICTIONARY" : {
     "SEARCH_IN_DICTIONARY" : "Search in this dictionary...",
@@ -62,6 +86,9 @@
     "EDIT" : "Edit",
     "DELETE" : "Delete",
     "NEXT_PAGE" : "Next Page",
-    "PREVIOUS_PAGE" : "Previous Page"
+    "PREVIOUS_PAGE" : "Previous Page",
+    "CLOSE" : "Close",
+    "CREATE" : "Create",
+    "UPDATE" : "Update"
   }
 }

@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
+import {TranslateService} from 'ng2-translate';
+
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Dictionary } from '../../../models/Dictionary';
 import { Languages } from '../../../models/language';
@@ -44,7 +46,8 @@ export class EditDictionaryComponent {
     get visible(): boolean { return this._visible; }
     
     constructor(private dictionaryService: DictionaryService, 
-                private router: Router) {
+                private router: Router,
+                private translate: TranslateService) {
         this.languages = Object.keys(this.languagesEnum).filter(Number);
         this.model.language = Languages.Urdu;
     }  

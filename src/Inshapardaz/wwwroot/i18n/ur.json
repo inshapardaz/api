@@ -7,7 +7,7 @@
     "PROFILE" : "کوائف",
     "SETTINGS" : "ترجیحات",
     "LOGOUT" : "خروج",
-    "LOGIN" : "دخول",
+    "LOGIN" : "داخل ہوں",
     "SEARCH" : "تلاش۔۔۔"
   },
   "SIDEBAR" : {
@@ -21,7 +21,30 @@
     "SLOGAN" : "آئیے اچھی زبان کی تخلیق کریں",
     "CREATENEW" : "نئی لغت بنائیں",
     "SIGNINANDCREATRENEW" : "داخل ہوں اور لغّت بنائیں",
-    "NODICTIONARY" : "کوئی لغّت موجود نہیں"
+    "NODICTIONARY" : "کوئی لغّت موجود نہیں",
+    "ALL" : "تمام",
+    "PUBLIC" : "عوامی",
+    "PRIVATE" : "ذاتی",
+    "FAVORITE" : "پسندیدہ",
+    "VIEW_DICTIONARY" : "لغّت کی تفصیل",
+    "CREATE_DOWNLOAD" : "ڈاؤنلوڈ تخلیق کریں",
+    "EDIT_DICTIONARY" : "لغّت کی تدوین",
+    "DELETE_DICTIONARY" : "لغّت ہٹائیں",
+    "NAME" : "نام",
+    "NAME_PLACEHOLDER" : "نام کا انتخاب کریں",
+    "LANGUAGE" : "زبان کا انتخاب کریں",
+    "PUBLIC_DICTIONARY" : "عوامی لغّت",
+    "MESSAGES" : {
+      "DELETION_SUCCESS" : "'لغّت کامیاب سے ہٹا دی گئی ہے۔.'",
+      "DELETION_FAILURE" : "لغّت ہٹائی نہیں جا سکی۔'",
+      "LOADING_FAILURE" : "لغّات کے حصول میں ناکامی۔ برائے مہربانی دوبارہ کوشش کریں۔",
+      "DOWNLOAD_REQUEST_SUCCESS" : "لغّت ڈاؤنلوڈ کے لیے بھجوا دی گئی ہے۔",
+      "DOWNLOAD_REQUEST_FAILURE" : "لغّت ڈاؤنلوڈ کے لیے نہیں بھجوائی جا سکی۔ برائے مہربانی دوبارہ کوشش کریں۔"
+    },
+    "VALIDATION" : {
+      "NAME" : "نام ضروری ہے۔",
+      "LANGUAGE" : "زبان ضروری ہے۔"
+    }
   },
   "DICTIONARY" : {
     "SEARCH_IN_DICTIONARY" : "لغت میں تلاش۔۔۔",
@@ -62,6 +85,9 @@
     "EDIT" : "تدوین کریں",
     "DELETE" : "حذف کریں",
     "NEXT_PAGE" : "اگلہ صفیہ",
-    "PREVIOUS_PAGE" : "پچھلہ صفیہ"
+    "PREVIOUS_PAGE" : "پچھلہ صفیہ",
+    "CLOSE" : "بند کریں",
+    "CREATE" : "بنائیں",
+    "UPDATE" : "محفوظ کریں"
   }
 }

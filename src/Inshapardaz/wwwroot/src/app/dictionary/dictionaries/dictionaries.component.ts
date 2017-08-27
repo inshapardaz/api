@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
+import {TranslateService} from 'ng2-translate';
+import {Languages} from '../../../models/language';
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Dictionary } from '../../../models/dictionary';
 import { AuthService } from '../../../services/auth.service';
@@ -21,11 +23,13 @@ export class DictionariesComponent {
     dictionariesLink : string;
     showCreateDialog : boolean = false;
     selectedDictionary : Dictionary;
+    Languages = Languages;
 
     constructor(private dictionaryService: DictionaryService, 
                 private auth: AuthService,
                 private alertService: AlertService,
-                private router: Router,){
+                private router: Router,
+                private translate: TranslateService){
     }
 
     ngOnInit() {
@@ -35,11 +39,11 @@ export class DictionariesComponent {
     deleteDictionary(dictionary : Dictionary) {
         this.dictionaryService.deleteDictionary(dictionary.deleteLink)
         .subscribe(r => {
-            this.alertService.success('Dictionary ' + dictionary.name + ' deleted successfully.' );
+            this.alertService.success(this.translate.instant('DICTIONARIES.MESSAGES.DELETION_SUCCESS'));
             this.getDictionaries();
         }, e => {
             this.handlerError();
-            this.alertService.error('Unable to delete dictionary ' + dictionary.name + '.' );            
+            this.alertService.error(this.translate.instant('DICTIONARIES.MESSAGES.DELETION_FAILURE'));
         });
     }
 
@@ -66,7 +70,7 @@ export class DictionariesComponent {
         }, e => {            
             this.handlerError();
             this.errorLoadingDictionaries = true;
-            this.alertService.error('Unable to load dictionaries. Please try again');
+            this.alertService.error(this.translate.instant('DICTIONARIES.MESSAGES.LOADING_FAILURE'));
         });
     }
 
@@ -83,10 +87,10 @@ export class DictionariesComponent {
     createDictionaryDownload(dictionary : Dictionary){
         this.dictionaryService.createDictionaryDownload(dictionary.createDownloadLink)
         .subscribe(data => {
-            this.alertService.success('Dictionary download request sent.');
+            this.alertService.success(this.translate.instant('DICTIONARIES.MESSAGES.CREATION_SUCCESS'));
         }, e => {
             this.handlerError(); 
-            this.alertService.error('Dictionary download request failed. Please try again.');            
+            this.alertService.error(this.translate.instant('DICTIONARIES.MESSAGES.DOWNLOAD_REQUEST_FAILURE'));
         });
     }
 

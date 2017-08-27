@@ -156,6 +156,11 @@ export class DictionaryService {
             .catch(this.handleError);
     }
 
+    deleteWord(deleteLink : string) : Observable<void>{
+        return this.getHttp().delete(deleteLink)
+            .catch(this.handleError);
+    }
+
     searchWord(searchText: string, pageNumber: number = 1, pageSize: number = 10): Observable<WordPage> {
         return this.getHttp().get(this.searchUrl + searchText + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize)
             .map(r => this.extractData(r, Mapper.MapWordPage))

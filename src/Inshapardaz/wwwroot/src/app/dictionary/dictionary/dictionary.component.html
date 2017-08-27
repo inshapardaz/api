@@ -77,17 +77,37 @@
                 <table class="table table-hover table-striped table-vcenter" *ngIf="!isLoading && wordPage.words.length > 0">
                     <tbody>
                         <tr *ngFor="let word of wordPage.words">
-                            <td class="text-center" *ngIf="word.updateLink">
+                            <td>
+                                <h3 class="h3 font-w600 push-10">
+                                    <a class="link-effect" [routerLink]="['/word', word.id]" href="javascript:void(0)">{{word.title}}</a>
+                                </h3>
+                                <div class="font-s13 text-muted hidden-xs">
+                                        <p>{{word.description}}</p>
+                                    </div>
+
+                            </td>
+                            <td class="text-center" style="width: 100px;" *ngIf="word.updateLink">
                                 <div class="btn-group">
-                                    <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="{{'ACTIONS.EDIT' | translate}}"><i class="fa fa-pencil"></i></button>
-                                    <button class="btn btn-xs btn-default" type="button" (click)="deleteWord(word)" data-toggle="tooltip" title="{{'ACTIONS.DELETE' | translate}}"><i class="fa fa-times"></i></button>
+                                    <button class="btn btn-xs btn-default" type="button" 
+                                            data-toggle="tooltip" title="{{'ACTIONS.EDIT' | translate}}" 
+                                            (click)="editWord(word)">
+                                            <i class="fa fa-pencil text-normal"></i>
+                                    </button>
+                                    <button class="btn btn-xs btn-default" type="button" 
+                                            data-toggle="tooltip" title="{{'ACTIONS.DELETE' | translate}}"
+                                            [swal]="{title :'Delete dictionary?', 
+                                                    text : 'Are you sure you want to delete word?', 
+                                                    type : 'warning',
+                                                    confirmButtonText : 'Yes',
+                                                    cancelButtonText : 'No',
+                                                    confirmButtonColor: '#d26a5c',
+                                                    confirmButtonText: 'Yes, delete it!',
+                                                    html: false,
+                                                    allowOutsideClick : false,
+                                                    showCancelButton: true}" (confirm)="deleteWord(word)">
+                                        <i class="fa fa-times text-danger"></i>
+                                    </button>
                                 </div>
-                            </td>
-                            <td class="font-w600 text-right" [routerLink]="['/word', word.id]">
-                                {{word.description}}
-                            </td>
-                            <td class="font-w600 text-right">
-                                <a [routerLink]="['/word', word.id]">{{word.title}}</a>
                             </td>
                         </tr>
                     </tbody>

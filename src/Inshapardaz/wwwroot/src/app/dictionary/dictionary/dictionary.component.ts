@@ -173,14 +173,22 @@ export class DictionaryComponent {
     }
     onCreateClosed(created : boolean){
         this.showCreateDialog = false;
+        this.selectedWord = null;
         if (created){
             this.reloadPage();
         }
     }
 
-    deleteWord(word){
-        console.log("Deleting word");
-        console.log(word);
+    editWord(word : Word){
+        this.showCreateDialog = true;
+        this.selectedWord = word;
+    }
+
+    deleteWord(word : Word){
+        this.dictionaryService.deleteWord(word.deleteLink)
+        .subscribe(r => {
+            this.reloadPage();
+        }, this.handlerError);
     }
 
     handlerError(error : any) {

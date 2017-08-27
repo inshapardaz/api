@@ -3,7 +3,7 @@ import { ViewEncapsulation } from '@angular/core';
 import { RouterModule , Router, NavigationStart } from '@angular/router';
 import { Title }     from '@angular/platform-browser';
 
-import {TranslateService} from 'ng2-translate/ng2-translate';
+import {TranslateService, LangChangeEvent} from 'ng2-translate/ng2-translate';
 
 import {AuthService} from '../services/auth.service';
 
@@ -29,6 +29,10 @@ export class AppComponent {
         });
         auth.handleAuthentication();
         auth.scheduleRenewal();
+
+        this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+            this.isRtl = event.lang == 'ur';
+          });
     }
 
     private setLanguages(){
@@ -44,6 +48,6 @@ export class AppComponent {
         var selectedLang = localStorage.getItem('ui-lang'); 
 
         this.translate.use(selectedLang ? selectedLang : (browserLang.match(/en|ur/) ? browserLang : 'en'));
-        this.isRtl = selectedLang == 'ur';
+        this.isRtl = selectedLang == 'ur';        
     }
  }

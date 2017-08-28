@@ -29,9 +29,8 @@ namespace Inshapardaz.Api.Renderers
             {
                 LinkRenderer.Render("GetWordDetailsById", "self", new {id = source.WordInstanceId}),
                 LinkRenderer.Render("GetWordById", "word", new {id = source.WordInstanceId}),
-                LinkRenderer.Render("GetWordTranslationsById", "translations", new {id = source.WordInstanceId}),
-                LinkRenderer.Render("GetWordMeaningById", "meanings", new {id = source.WordInstanceId}),
-                LinkRenderer.Render("GetWordRelationsById", "relationships", new {id = source.WordInstanceId})
+                LinkRenderer.Render("GetWordTranslationsById", "translations", new {id = source.Id}),
+                LinkRenderer.Render("GetWordMeaningByWordDetailId", "meanings", new {id = source.Id})
             };
 
             if (_userHelper.IsContributor)

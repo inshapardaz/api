@@ -26,7 +26,8 @@ namespace Inshapardaz.Api.Renderers
                                {
                                    LinkRenderer.Render("GetWordById", "self", new { id = result.Id }),
                                    LinkRenderer.Render("GetWordRelationsById", "relations", new { id = result.Id }),
-                                   LinkRenderer.Render("GetWordDetailsById", "details", new { id = result.Id })
+                                   LinkRenderer.Render("GetWordDetailsById", "details", new { id = result.Id }),
+                                   LinkRenderer.Render("GetWordRelationsById", "relationships", new {id = result.Id})
                                };
 
             if (_userHelper.IsContributor)

@@ -33,10 +33,18 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet]
-        [Route("api/words/{id}/meanings", Name = "GetWordMeaningById")]
+        [Route("api/words/{id}/meanings", Name = "GetWordMeaningByWordId")]
         public async Task<IActionResult> GetMeaningForWord(int id)
         {
             IEnumerable<Meaning> meanings = await _queryProcessor.ExecuteAsync(new WordMeaningByWordQuery { WordId = id });
+            return Ok(meanings.Select(x => _meaningRenderer.Render(x)).ToList());
+        }
+
+        [HttpGet]
+        [Route("api/details/{id}/meanings", Name = "GetWordMeaningByWordDetailId")]
+        public async Task<IActionResult> GetMeaningForWordDetail(int id)
+        {
+            IEnumerable<Meaning> meanings = await _queryProcessor.ExecuteAsync(new WordMeaningByWordDetailQuery { WordDetailId = id });
             return Ok(meanings.Select(x => _meaningRenderer.Render(x)).ToList());
         }
 

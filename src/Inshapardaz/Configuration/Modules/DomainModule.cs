@@ -50,6 +50,7 @@ namespace Inshapardaz.Api.Configuration.Modules
             services.AddTransient<GetDictionaryByIdQueryHandler>();
             services.AddTransient<WordStartingWithQueryHandler>();
             services.AddTransient<WordMeaningByWordQueryHandler>();
+            services.AddTransient<WordMeaningByWordDetailQueryHandler>();
             services.AddTransient<WordMeaningByIdQueryHandler>();
             services.AddTransient<WordContainingTitleQuery>();
             services.AddTransient<WordIndexContainingTitleQueryHandler>();

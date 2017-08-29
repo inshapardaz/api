@@ -53,9 +53,16 @@ export class DictionaryComponent {
 
     ngOnInit() {
         this.sub = this.route.params.subscribe(params => {
+            console.log('this.route.params.subscribe');
             this.id = params['id'];
             this.pageNumber = params['page'] || 1;
-            this.getDictionary();
+            if (this.dictionary == null){
+                console.log("loading dictionary")                
+                this.getDictionary(d => {
+                    console.log("dictionary loaded. now loading words")
+                    this.getWords(d.indexLink);
+                });
+            }
         });
 
         //Subscribe to search query parameter
@@ -63,9 +70,16 @@ export class DictionaryComponent {
             .map(params => params['search'] || '');
         this.searchText.subscribe(
             (val) => {
-                if (val !== "") {
+                console.log('this.searchText.subscribe');
+                if (val != null && val !== "") {
                     this.searchForm.controls.query.setValue(val);
-                    this.doSearch(val);
+                    if (this.dictionary == null){
+                        this.getDictionary(d => {
+                            this.doSearch();
+                        });
+                    } else {
+                        this.doSearch();
+                    }
                 }
             });
 
@@ -74,6 +88,7 @@ export class DictionaryComponent {
             .map(params => params['startWith'] || '');
         this.selectedIndex.subscribe(
             (val) => {
+                console.log('this.selectedIndex.subscribe');                
                 if (val !== "") this.getIndex(val);
             });
         
@@ -93,15 +108,15 @@ export class DictionaryComponent {
             });
     }
 
-    getDictionary() {
+    getDictionary(callback) {
         this.isLoading = true;
         this.dictionaryService.getDictionary(this.id)
             .subscribe(
             dict => { 
                 this.dictionary = dict;
                 this.isLoading = false;
-                this.getWords(this.dictionary.indexLink);
                 this.createWordLink = dict.createWordLink;
+                callback(dict);
             },
             error => {
                 this.errorMessage = <any>error;
@@ -142,6 +157,8 @@ export class DictionaryComponent {
 
     gotoSearch(){
         let query = this.searchForm.controls.query.value;
+        console.log('gotoSearch، query : ' + query);
+        
         if (query == null || query.length < 0) return;
 
         let navigationExtras: NavigationExtras = {
@@ -153,6 +170,7 @@ export class DictionaryComponent {
     navigateToPage(){
         var startWith = this.route.snapshot.queryParams["startWith"];
         var search = this.route.snapshot.queryParams["search"];
+        console.log('navigateToPage. startWith : ' +  startWith + ', search: ' + search );
         if (startWith != null && startWith != ''){
             let navigationExtras: NavigationExtras = {
                 queryParams: { 'startWith': startWith }
@@ -168,28 +186,29 @@ export class DictionaryComponent {
         }
     }
 
-    reloadPage(){        
+    reloadPage(){    
         this.getWords(this.loadedLink);
     }
     
     clearSearch(){
         this.searchForm.setValue({ query : ''});
-        this.getWords(this.loadedLink);
+        this.isInSearch = false;
+        this.reloadPage();
     }
 
-    doSearch(searchValue) {
+    doSearch() {
         var searchValue = this.searchForm.controls.query.value;
+        console.log('doSearch : ' + searchValue);        
         if(searchValue != null && searchValue.length > 0){
               this.isInSearch = true;
               this.isLoading = true; 
               this.dictionaryService.searchWords(this.dictionary.searchLink, searchValue, this.pageNumber)
-              .subscribe(
-                words => {
-                    this.wordPage = words;
-                    this.isLoading = false;
+                    .subscribe( words => {
+                        this.wordPage = words;
+                        this.isLoading = false;
                 },
                 error => {
-                this.errorMessage = <any>error;
+                    this.errorMessage = <any>error;
             });
         }
     }

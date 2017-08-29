@@ -32,6 +32,7 @@ export class DictionaryComponent {
     wordPage : WordPage;
     private loadedLink : string;
     indexes : Array<string>;
+    pageNumber : number = 0;
 
     selectedWord : Word = null;
     createWordLink : string;
@@ -53,17 +54,13 @@ export class DictionaryComponent {
     ngOnInit() {
         this.sub = this.route.params.subscribe(params => {
             this.id = params['id'];
+            this.pageNumber = params['page'] || 1;
             this.getDictionary();
         });
 
-        this.searchText = this.route
-            .queryParams
+        //Subscribe to search query parameter
+        this.searchText = this.route.queryParams
             .map(params => params['search'] || '');
-
-        this.selectedIndex = this.route
-            .queryParams
-            .map(params => params['startWith'] || '');
-
         this.searchText.subscribe(
             (val) => {
                 if (val !== "") {
@@ -71,6 +68,10 @@ export class DictionaryComponent {
                     this.doSearch(val);
                 }
             });
+
+        // Subscribe to startWith query parameter
+        this.selectedIndex = this.route.queryParams
+            .map(params => params['startWith'] || '');
         this.selectedIndex.subscribe(
             (val) => {
                 if (val !== "") this.getIndex(val);
@@ -78,28 +79,10 @@ export class DictionaryComponent {
         
     }
 
-    gotoIndex(index:DictionaryIndex){
-        let navigationExtras: NavigationExtras = {
-            queryParams: { 'startWith': index.link },
-        };
-        this.router.navigate(['/dictionary', this.id], navigationExtras);
-        
-    }
-
-    gotoSearch(){
-        let query = this.searchForm.controls.query.value;
-        if (query == null || query.length < 0) return;
-
-        let navigationExtras: NavigationExtras = {
-            queryParams: { 'search': query }
-        };
-        this.router.navigate(['/dictionary', this.id], navigationExtras);
-    }
-
     getIndex(index : string){
         this.isInSearch = false;
         this.isLoading = true;
-        this.dictionaryService.getWordStartingWith(index)
+        this.dictionaryService.getWordStartingWith(index, this.pageNumber)
             .subscribe(
                 words => {
                     this.wordPage = words;
@@ -128,7 +111,7 @@ export class DictionaryComponent {
     getWords(link){
         this.isInSearch = false;
         this.isLoading = true;
-        this.dictionaryService.getWords(link)
+        this.dictionaryService.getWords(link, this.pageNumber)
             .subscribe(
                 words => {
                     this.wordPage = words;
@@ -140,12 +123,55 @@ export class DictionaryComponent {
             });
     }
 
-    reloadPage(){
+    goNext(){
+        this.pageNumber++
+        this.navigateToPage();
+    }
+    goPrevious(){
+        this.pageNumber--;
+        this.navigateToPage();
+    }
+
+    gotoIndex(index:DictionaryIndex){
+        let navigationExtras: NavigationExtras = {
+            queryParams: { 'startWith': index.link },
+        };
+        this.router.navigate(['/dictionary', this.id], navigationExtras);
+        
+    }
+
+    gotoSearch(){
+        let query = this.searchForm.controls.query.value;
+        if (query == null || query.length < 0) return;
+
+        let navigationExtras: NavigationExtras = {
+            queryParams: { 'search': query }
+        };
+        this.router.navigate(['/dictionary', this.id], navigationExtras);
+    }
+
+    navigateToPage(){
+        var startWith = this.route.snapshot.queryParams["startWith"];
+        var search = this.route.snapshot.queryParams["search"];
+        if (startWith != null && startWith != ''){
+            let navigationExtras: NavigationExtras = {
+                queryParams: { 'startWith': startWith }
+            };
+            this.router.navigate(['dictionary', this.id, this.pageNumber ], navigationExtras);
+        } else if (search != null && search != ''){
+            let navigationExtras: NavigationExtras = {
+                queryParams: { 'search': search }
+            };
+            this.router.navigate(['dictionary', this.id, this.pageNumber ], navigationExtras);            
+        } else {
+            this.router.navigate(['dictionary', this.id, this.pageNumber ]);
+        }
+    }
+
+    reloadPage(){        
         this.getWords(this.loadedLink);
     }
-    loadPage(link){
-        this.getWords(link);
-    }
+    
     clearSearch(){
         this.searchForm.setValue({ query : ''});
         this.getWords(this.loadedLink);
@@ -156,7 +182,7 @@ export class DictionaryComponent {
         if(searchValue != null && searchValue.length > 0){
               this.isInSearch = true;
               this.isLoading = true; 
-              this.dictionaryService.searchWords(this.dictionary.searchLink, searchValue)
+              this.dictionaryService.searchWords(this.dictionary.searchLink, searchValue, this.pageNumber)
               .subscribe(
                 words => {
                     this.wordPage = words;

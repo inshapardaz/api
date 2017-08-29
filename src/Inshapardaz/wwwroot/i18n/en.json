@@ -55,9 +55,11 @@
     "LANGUAGE": "Language",
     "PUBLIC_DICTIONARY" : "Public Dictionary",
     "PRIVATE_DICTIONARY" : "Private Dictionary",
-    "PAGE" : "Page",
-    "OF" : "of",
-    "NOWORDFOUND": "No Word Found"
+    "PAGE" : "Page <strong>{{current}}</strong> of <strong>{{total}}</strong> ",
+    "NOWORDFOUND": "No Word Found",
+    "TITLE" : "{{lang}} dictionary with {{count}} words",
+    "ADD_WORD" : "Add Word",
+    "INDEX" : "Index"
   },
   "WORD":{
     "RELATIONS" : "Relations",
@@ -97,6 +99,7 @@
     "PREVIOUS_PAGE" : "Previous Page",
     "CLOSE" : "Close",
     "CREATE" : "Create",
-    "UPDATE" : "Update"
+    "UPDATE" : "Update",
+    "SEARCH" : "Search"
   }
 }

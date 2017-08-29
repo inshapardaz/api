@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetWordsPagesQueryHandler : AsyncQueryHandler<WordQuery, Page<Word>>
+    public class GetWordsPagesQueryHandler : AsyncQueryHandler<GetWordPageQuery, Page<Word>>
     {
         private readonly IDatabaseContext _database;
 
@@ -19,13 +19,14 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override async Task<Page<Word>> ExecuteAsync(WordQuery query,
+        public override async Task<Page<Word>> ExecuteAsync(GetWordPageQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var words = _database.Word;
+            var words = _database.Word.Where(w => w.DictionaryId == query.DictionaryId);
             var count = words.Count();
 
-            var data = await words.OrderBy(x => x.Title)
+            var data = await words
+                .OrderBy(x => x.Title)
                 .Paginate(query.PageNumber, query.PageSize)
                 .ToListAsync(cancellationToken);
 

@@ -179,8 +179,8 @@ export class DictionaryService {
             .catch(this.handleError);
     }
 
-    getWordStartingWith(url: string): Observable<WordPage> {
-        return this.getHttp().get(url)
+    getWordStartingWith(url: string, pageNumber: number = 1, pageSize: number = 10): Observable<WordPage> {
+        return this.getHttp().get(url+ "?pageNumber=" + pageNumber + "&pageSize=" + pageSize)
             .map(r => this.extractData(r, Mapper.MapWordPage))
             .catch(this.handleError);
     }

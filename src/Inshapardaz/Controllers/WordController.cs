@@ -51,8 +51,9 @@ namespace Inshapardaz.Api.Controllers
                 return Unauthorized();
             }
 
-            var query = new WordQuery
+            var query = new GetWordPageQuery
             {
+                DictionaryId = id,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };

@@ -23,6 +23,7 @@ const appRoutes: Routes = [
     
     { path: 'dictionaries',        component: DictionariesComponent},
     { path: 'dictionary/:id',      component: DictionaryComponent},
+    { path: 'dictionary/:id/:page',      component: DictionaryComponent},
     { path: 'word/:id', component: WordComponent },
     { path: 'thesaurus',     component: ThesaurusComponent },
     { path: 'translations',    component: TranslationsComponent },

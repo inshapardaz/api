@@ -54,9 +54,12 @@
     "LANGUAGE" : "زبان",
     "PUBLIC_DICTIONARY" : "عوامی لغت",
     "PRIVATE_DICTIONARY" : "ذاتی لغت",
-    "PAGE" : "صفحہ",
+    "PAGE" : "صفحہ <strong>{{current}} </strong> از <strong>{{total}}</strong>",
     "OF" : "کا",
-    "NOWORDFOUND": "کوئی لفظ موجود نہیں"    
+    "NOWORDFOUND": "کوئی لفظ موجود نہیں",
+    "TITLE" : "{{lang}} لغّت بمعہ {{count}} الفاظ",
+    "ADD_WORD" : "لفظ کا اضافہ",
+    "INDEX" : "فہرست" 
   },
   "WORD":{
     "RELATIONS" : "مربوط الفاظ",
@@ -96,6 +99,7 @@
     "PREVIOUS_PAGE" : "پچھلہ صفیہ",
     "CLOSE" : "بند کریں",
     "CREATE" : "بنائیں",
-    "UPDATE" : "محفوظ کریں"
+    "UPDATE" : "محفوظ کریں",
+    "SEARCH" : "تلاش"
   }
 }

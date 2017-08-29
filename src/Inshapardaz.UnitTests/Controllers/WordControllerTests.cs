@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordsForDictionary()
         {
             _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
-            _fakeQueryProcessor.SetupResultFor<WordQuery, Page<Word>>(new Page<Word>());
+            _fakeQueryProcessor.SetupResultFor<GetWordPageQuery, Page<Word>>(new Page<Word>());
             _result = _controller.Get(12, 1).Result;
         }
 
@@ -73,7 +73,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
                 IsPublic = true
             });
 
-            _fakeQueryProcessor.SetupResultFor<WordQuery, Page<Word>>(new Page<Word>());
+            _fakeQueryProcessor.SetupResultFor<GetWordPageQuery, Page<Word>>(new Page<Word>());
             _result = _controller.Get(12, 1).Result;
         }
 

@@ -62,6 +62,8 @@ export class DictionaryComponent {
                     console.log("dictionary loaded. now loading words")
                     this.getWords(d.indexLink);
                 });
+            } else{
+                this.getWords(this.dictionary.indexLink);
             }
         });
 

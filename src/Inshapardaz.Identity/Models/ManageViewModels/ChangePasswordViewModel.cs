@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IdentityServerWithAspNetIdentity.Models.ManageViewModels
+namespace Inshapardaz.Identity.Models.ManageViewModels
 {
     public class ChangePasswordViewModel
     {

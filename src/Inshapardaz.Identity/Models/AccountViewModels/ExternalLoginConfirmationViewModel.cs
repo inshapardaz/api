@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IdentityServerWithAspNetIdentity.Models.AccountViewModels
+namespace Inshapardaz.Identity.Models.AccountViewModels
 {
     public class ExternalLoginConfirmationViewModel
     {

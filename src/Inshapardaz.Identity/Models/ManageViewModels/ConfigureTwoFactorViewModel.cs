@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace IdentityServerWithAspNetIdentity.Models.ManageViewModels
+namespace Inshapardaz.Identity.Models.ManageViewModels
 {
     public class ConfigureTwoFactorViewModel
     {

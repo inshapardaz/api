@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using IdentityServer4.Services;
-using IdentityServer4.Quickstart.UI;
+using Inshapardaz.Identity.Quickstart;
+using Inshapardaz.Identity.Quickstart.Home;
+using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityServerWithAspNetIdentity.Controllers
+namespace Inshapardaz.Identity.Controllers
 {
     [SecurityHeaders]
     public class HomeController : Controller

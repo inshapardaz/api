@@ -2,21 +2,22 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
+using Inshapardaz.Identity.Models;
+using Inshapardaz.Identity.Models.AccountViewModels;
+using Inshapardaz.Identity.Quickstart;
+using Inshapardaz.Identity.Quickstart.Account;
+using Inshapardaz.Identity.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using IdentityServerWithAspNetIdentity.Models;
-using IdentityServerWithAspNetIdentity.Models.AccountViewModels;
-using IdentityServerWithAspNetIdentity.Services;
-using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using Microsoft.AspNetCore.Http.Authentication;
-using IdentityServer4.Quickstart.UI;
-using Microsoft.AspNetCore.Http;
 
-namespace IdentityServerWithAspNetIdentity.Controllers
+namespace Inshapardaz.Identity.Controllers
 {
     [Authorize]
     [SecurityHeaders]

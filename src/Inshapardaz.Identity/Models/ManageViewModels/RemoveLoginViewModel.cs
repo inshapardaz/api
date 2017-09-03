@@ -1,4 +1,4 @@
-﻿namespace IdentityServerWithAspNetIdentity.Models.ManageViewModels
+﻿namespace Inshapardaz.Identity.Models.ManageViewModels
 {
     public class RemoveLoginViewModel
     {

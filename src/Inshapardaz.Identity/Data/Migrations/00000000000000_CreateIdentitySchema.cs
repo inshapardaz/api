@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace IdentityServerWithAspNetIdentity.Data.Migrations
+namespace Inshapardaz.Identity.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

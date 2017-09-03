@@ -123,7 +123,7 @@ namespace Inshapardaz.Identity.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("IdentityServerWithAspNetIdentity.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Inshapardaz.Identity.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id");
 
@@ -182,7 +182,7 @@ namespace Inshapardaz.Identity.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("IdentityServerWithAspNetIdentity.Models.ApplicationUser")
+                    b.HasOne("Inshapardaz.Identity.Models.ApplicationUser")
                         .WithMany("Claims")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -190,7 +190,7 @@ namespace Inshapardaz.Identity.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("IdentityServerWithAspNetIdentity.Models.ApplicationUser")
+                    b.HasOne("Inshapardaz.Identity.Models.ApplicationUser")
                         .WithMany("Logins")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -203,7 +203,7 @@ namespace Inshapardaz.Identity.Data.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("IdentityServerWithAspNetIdentity.Models.ApplicationUser")
+                    b.HasOne("Inshapardaz.Identity.Models.ApplicationUser")
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

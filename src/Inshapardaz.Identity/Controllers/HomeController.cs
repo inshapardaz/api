@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using Inshapardaz.Identity.Quickstart;
 using Inshapardaz.Identity.Quickstart.Home;
@@ -18,21 +19,12 @@ namespace Inshapardaz.Identity.Controllers
 
         public IActionResult Index()
         {
-            return View();
-        }
+            if (User.IsAuthenticated())
+            {
+                return View();
+            }
 
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
+            return RedirectToAction("Login", "Account");
         }
 
         public async Task<IActionResult> Error(string errorId)

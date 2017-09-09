@@ -3,7 +3,6 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { LocationStrategy, HashLocationStrategy } from "@angular/common";
 import { HttpModule, JsonpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AUTH_PROVIDERS } from 'angular2-jwt';
 
 import {TranslateModule} from "ng2-translate/ng2-translate";
 
@@ -58,7 +57,6 @@ import { routing  } from './app.routes';
   providers: [
     HttpModule,
     Title,
-    AUTH_PROVIDERS,
     AuthService,
     DictionaryService,
     AlertService

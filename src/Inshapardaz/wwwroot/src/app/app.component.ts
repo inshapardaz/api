@@ -27,9 +27,6 @@ export class AppComponent {
                  this.currentRoute = event.url;
             }
         });
-        auth.handleAuthentication();
-        auth.scheduleRenewal();
-
         this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
             this.isRtl = event.lang == 'ur';
           });

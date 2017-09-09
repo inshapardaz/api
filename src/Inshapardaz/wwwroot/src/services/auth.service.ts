@@ -1,143 +1,235 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import 'rxjs/add/operator/filter';
-import {Observable} from 'rxjs/Observable';
-import * as auth0 from 'auth0-js';
+
+import { Injectable, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
+import { Http, Headers, RequestOptions, Response } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+
+import { UserManager, User } from 'oidc-client/lib/oidc-client.js';
+
+const settings: any = {
+  authority: "http://localhost:5002",
+  client_id: 'angular2client',
+  redirect_uri: window.location.origin + "/redirect.html",
+  post_logout_redirect_uri: window.location.origin,
+  response_type: 'id_token token',
+  scope: 'openid',
+
+  silent_redirect_uri: window.location.origin + '/silent-renew.html',
+  automaticSilentRenew: true,
+  accessTokenExpiringNotificationTime: 4,
+  // silentRequestTimeout:10000,
+
+  filterProtocolClaims: true,
+  loadUserInfo: true
+};
+
 
 @Injectable()
 export class AuthService {
-  _auth0 = new auth0.WebAuth({
-    clientID: 'WkEHQXUHgcec5GhzLqUZ0PTVYJ4u9ihI',
-    domain: 'inshapardaz.eu.auth0.com',
-    responseType: 'token id_token',
-    audience: 'https://inshapardaz.eu.auth0.com/userinfo',
-    redirectUri: window.location.origin + "/callback",      
-    scope: 'openid'
-  });
+  mgr: UserManager = new UserManager(settings);
+  userLoadededEvent: EventEmitter<User> = new EventEmitter<User>();
+  currentUser: User;
+  loggedIn = false;
 
-  refreshSubscription : any;
-  userProfile: any;
+  authHeaders: Headers;
 
-  constructor(public router: Router) {
+
+  constructor(private http: Http, public router: Router) {
+
+    this.mgr.getUser()
+      .then((user) => {
+        if (user) {
+          this.loggedIn = true;
+          this.currentUser = user;
+          this.userLoadededEvent.emit(user);
+        }
+        else {
+          this.loggedIn = false;
+        }
+      })
+      .catch((err) => {
+        this.loggedIn = false;
+      });
+
+    this.mgr.events.addUserLoaded((user) => {
+      this.currentUser = user;
+	  this.loggedIn = !(user === undefined);
+      });
+
+    this.mgr.events.addUserUnloaded((e) => {
+      this.loggedIn = false;
+    });
+
   }
 
-  ngOnInit() {
-    if (this.isAuthenticated()) {
-      this.getProfile(() => console.log('profile loaded'));
-    }
-  }
-
-
-  public login(): void {
-    this._auth0.authorize({});
-  }
-
-  public handleAuthentication(): void {
-    this._auth0.parseHash((err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        window.location.hash = '';
-        this.setSession(authResult);
-        this.getProfile(() => this.router.navigate(['/home']));
-      } else if (err) {
-        this.router.navigate(['/home']);
-        console.log(err);
+  isLoggedInObs(): Observable<boolean> {
+    return Observable.fromPromise(this.mgr.getUser()).map<User, boolean>((user) => {
+      if (user) {
+        return true;
+      } else {
+        return false;
       }
     });
   }
 
-  private setSession(authResult): void {
-    const expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
-    localStorage.setItem('access_token', authResult.accessToken);
-    localStorage.setItem('id_token', authResult.idToken);
-    localStorage.setItem('expires_at', expiresAt);
+  clearState() {
+    this.mgr.clearStaleState().then(function () {
+      console.log('clearStateState success');
+    }).catch(function (e) {
+      console.log('clearStateState error', e.message);
+    });
+  }
 
-    this.scheduleRenewal();
+  public login() {
+    console.log("login clicked");
+    this.mgr.signinRedirect();
   }
 
   public logout(): boolean {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('id_token');
-    localStorage.removeItem('expires_at');
+    this.mgr.signoutRedirect();
 
-    this.unscheduleRenewal();
-    
     this.router.navigate(['/home']);
     return true;
   }
 
   public isAuthenticated(): boolean {
-    const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
-    return new Date().getTime() < expiresAt;
+    return this.loggedIn;
   }
 
-  public renewToken() {
-    this._auth0.renewAuth({
-      audience: 'https://inshapardaz.eu.auth0.com/userinfo',
-      redirectUri: this.relPathToAbs('/silent'),
-      usePostMessage: true
-    }, (err, result) => {
-      if (err) {
-        alert(`Could not get a new token using silent authentication (${err.error}).`);
-      } else {
-        alert(`Successfully renewed auth!`);
-        this.setSession(result);
-      }
+  getUser() {
+    this.mgr.getUser().then((user) => {
+      this.currentUser = user;
+      console.log('got user', user);
+      this.userLoadededEvent.emit(user);
+    }).catch(function (err) {
+      console.log(err);
     });
   }
 
-  public scheduleRenewal() {
-    if(!this.isAuthenticated()) return;
-    this.unscheduleRenewal();
+  removeUser() {
+    this.mgr.removeUser().then(() => {
+      this.userLoadededEvent.emit(null);
+      console.log('user removed');
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
 
-    const expiresAt = JSON.parse(window.localStorage.getItem('expires_at'));
+  startSigninMainWindow() {
+    this.mgr.signinRedirect({ data: 'some data' }).then(function () {
+      console.log('signinRedirect done');
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
+  endSigninMainWindow() {
+    this.mgr.signinRedirectCallback().then(function (user) {
+      console.log('signed in', user);
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
 
-    const source = Observable.of(expiresAt).flatMap(
-      expiresAt => {
-
-        const now = Date.now();
-
-        // Use the delay in a timer to
-        // run the refresh at the proper time
-        console.log(expiresAt - now);
-        return Observable.timer(Math.max(1, expiresAt - now));
+  startSignoutMainWindow() {
+    this.mgr.getUser().then(user => {
+      return this.mgr.signoutRedirect({ id_token_hint: user.id_token }).then(resp => {
+        console.log('signed out', resp);
+		setTimeout(5000, () => {
+          console.log('testing to see if fired...');
+        });
+      }).catch(function (err) {
+        console.log(err);
       });
+    });   
+  };
 
-    // Once the delay time from above is
-    // reached, get a new JWT and schedule
-    // additional refreshes
-    this.refreshSubscription = source.subscribe(() => {
-      this.renewToken();
-      this.scheduleRenewal();
+  endSignoutMainWindow() {
+    this.mgr.signoutRedirectCallback().then(function (resp) {
+      console.log('signed out', resp);
+    }).catch(function (err) {
+      console.log(err);
     });
+  };
+  /**
+   * Example of how you can make auth request using angulars http methods.
+   * @param options if options are not supplied the default content type is application/json
+   */
+  AuthGet(url: string, options?: RequestOptions): Observable<Response> {
+
+    if (options) {
+      options = this._setRequestOptions(options);
+    }
+    else {
+      options = this._setRequestOptions();
+    }
+    return this.http.get(url, options);
+  }
+  /**
+   * @param options if options are not supplied the default content type is application/json
+   */
+  AuthPut(url: string, data: any, options?: RequestOptions): Observable<Response> {
+
+    let body = JSON.stringify(data);
+
+    if (options) {
+      options = this._setRequestOptions(options);
+    }
+    else {
+      options = this._setRequestOptions();
+    }
+    return this.http.put(url, body, options);
+  }
+  /**
+   * @param options if options are not supplied the default content type is application/json
+   */
+  AuthDelete(url: string, options?: RequestOptions): Observable<Response> {
+
+    if (options) {
+      options = this._setRequestOptions(options);
+    }
+    else {
+      options = this._setRequestOptions();
+    }
+    return this.http.delete(url, options);
+  }
+  /**
+   * @param options if options are not supplied the default content type is application/json
+   */
+  AuthPost(url: string, data: any, options?: RequestOptions): Observable<Response> {
+
+    let body = JSON.stringify(data);
+
+    if (options) {
+      options = this._setRequestOptions(options);
+    } else {
+      options = this._setRequestOptions();
+    }
+    return this.http.post(url, body, options);
   }
 
-  public unscheduleRenewal() {
-    if(!this.refreshSubscription) return;
-    this.refreshSubscription.unsubscribe();
-  }
 
-  public getProfile(cb): void {
-    var accessToken = localStorage.getItem('access_token');
-    if (accessToken == null) {
-      cb(null, {});
-      return;
+  private _setAuthHeaders(user: any): void {
+    this.authHeaders = new Headers();
+    this.authHeaders.append('Authorization', user.token_type + ' ' + user.id_token);
+    if (this.authHeaders.get('Content-Type')) {
+
+    } else {
+      this.authHeaders.append('Content-Type', 'application/json');
+    }
+  }
+  private _setRequestOptions(options?: RequestOptions) {
+    if (this.loggedIn) {
+      this._setAuthHeaders(this.currentUser);
+    }
+    if (options) {
+      options.headers.append(this.authHeaders.keys[0], this.authHeaders.values[0]);
+    } else {
+      options = new RequestOptions({ headers: this.authHeaders });
     }
 
-    const self = this;
-    this._auth0.client.userInfo(accessToken, (err, profile) => {
-      if (profile) {
-        self.userProfile = profile;
-      }
-      cb(err, profile);
-    });
+    return options;
   }
 
-  private relPathToAbs (sRelPath) : string {
-    var nUpLn, sDir = "", sPath = location.pathname.replace(/[^\/]*$/, sRelPath.replace(/(\/|^)(?:\.?\/+)+/g, "$1"));
-    for (var nEnd, nStart = 0; nEnd = sPath.indexOf("/../", nStart), nEnd > -1; nStart = nEnd + nUpLn) {
-      nUpLn = /^\/(?:\.\.\/)*/.exec(sPath.slice(nEnd))[0].length;
-      sDir = (sDir + sPath.substring(nStart, nEnd)).replace(new RegExp("(?:\\\/+[^\\\/]*){0," + ((nUpLn - 1) / 3) + "}$"), "/");
-    }
-    return sDir + sPath.substr(nStart);
-  }
 }
+

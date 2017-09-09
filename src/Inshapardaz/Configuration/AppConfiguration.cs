@@ -93,7 +93,7 @@ namespace Inshapardaz.Api.Configuration
 
         public static void ConfigureLogging(this ILoggerFactory loggerFactory, IConfigurationRoot configuration)
         {
-            loggerFactory.AddConsole(configuration.GetSection("Logging"));
+            loggerFactory.AddConsole(LogLevel.Trace);
         }
 
         public static IApplicationBuilder ConfigureApplication(this IApplicationBuilder app)
@@ -147,12 +147,15 @@ namespace Inshapardaz.Api.Configuration
         public static IApplicationBuilder ConfigureApiAuthentication(this IApplicationBuilder app,
             IConfigurationRoot configuration)
         {
-            var options = new JwtBearerOptions
+            app.UseJwtBearerAuthentication(new JwtBearerOptions
             {
-                Audience = configuration["auth0:audience"],
-                Authority = configuration["auth0:authority"]
-            };
-            app.UseJwtBearerAuthentication(options);
+                Authority = "http://localhost:5002",
+                Audience = "angular2client",
+
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                RequireHttpsMetadata = false
+            });
 
             return app;
         }

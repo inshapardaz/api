@@ -21,12 +21,10 @@ export class HeaderComponent {
     }
 
     ngOnInit() {
-        if (this.auth.userProfile) {
-            this.profile = this.auth.userProfile;
+        if (this.auth.currentUser) {
+            this.profile = this.auth.currentUser;
         } else {
-            this.auth.getProfile((err, profile) => {
-                this.profile = profile;
-            });
+            this.profile = this.auth.getUser();
         }
     }
     onSearch(event: any): void {

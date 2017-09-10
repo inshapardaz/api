@@ -146,10 +146,12 @@ namespace Inshapardaz.Api.Configuration
         public static IApplicationBuilder ConfigureApiAuthentication(this IApplicationBuilder app,
             IConfigurationRoot configuration)
         {
+            var authority = configuration["Auth:Authority"];
+            var audience = configuration["Auth:Audience"];
             app.UseJwtBearerAuthentication(new JwtBearerOptions
             {
-                Authority = "http://localhost:5002",
-                Audience = "angular2client",
+                Authority = authority,
+                Audience = audience,
 
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true,

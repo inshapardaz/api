@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
@@ -25,9 +26,15 @@ namespace Inshapardaz.Api.Helpers
 
         public bool IsReader => IsAuthenticated;
 
-        public string GetUserId()
+        public Guid GetUserId()
         {
-            return _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var nameIdentifier = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (nameIdentifier != null)
+            {
+                return Guid.Parse(nameIdentifier);
+            }
+            
+            return Guid.Empty;
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Darker;
 using Inshapardaz.Api.Helpers;
@@ -6,7 +7,6 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 using paramore.brighter.commandprocessor;
@@ -137,7 +137,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var userId = _userHelper.GetUserId();
-            if (userId == null)
+            if (userId == Guid.Empty)
             {
                 return Unauthorized();
             }

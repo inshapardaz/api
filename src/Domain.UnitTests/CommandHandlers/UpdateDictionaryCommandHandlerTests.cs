@@ -13,8 +13,9 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
     public class UpdateDictionaryCommandHandlerTests
     {
-        private UpdateDictionaryCommandHandler _handler;
-        private DatabaseContext _database;
+        private readonly UpdateDictionaryCommandHandler _handler;
+        private readonly DatabaseContext _database;
+        private readonly Guid _userId1;
 
         public UpdateDictionaryCommandHandlerTests()
         {
@@ -25,32 +26,35 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
 
+            _userId1 = Guid.NewGuid();
+            var userId2 = Guid.NewGuid();
+            
             _database.Dictionary.Add(new Dictionary
             {
                 Id = 1,
                 IsPublic = true,
-                UserId = "1",
+                UserId = _userId1,
                 Language = Languages.Avestan
             });
             _database.Dictionary.Add(new Dictionary
             {
                 Id = 2,
                 IsPublic = true,
-                UserId = "2",
+                UserId = userId2,
                 Language = Languages.Chinese
             });
             _database.Dictionary.Add(new Dictionary
             {
                 Id = 3,
                 IsPublic = false,
-                UserId = "1",
+                UserId = _userId1,
                 Language = Languages.English
             });
             _database.Dictionary.Add(new Dictionary
             {
                 Id = 4,
                 IsPublic = false,
-                UserId = "2",
+                UserId = userId2,
                 Language = Languages.German
             });
 
@@ -72,7 +76,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
                 Dictionary = new Dictionary
                 {
                     Id = 3,
-                    UserId = "1",
+                    UserId = _userId1,
                     Language = Languages.Hindi,
                     Name = "Some Name",
                     IsPublic = true
@@ -84,7 +88,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             Assert.NotNull(dictionary);
             Assert.Equal(dictionary.Name, "Some Name", true);
             Assert.Equal(dictionary.Language, Languages.Hindi);
-            Assert.Equal(dictionary.UserId, "1");
+            Assert.Equal(dictionary.UserId, _userId1);
             Assert.True(dictionary.IsPublic);
         }
 
@@ -93,7 +97,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         {
             await _handler.HandleAsync(new UpdateDictionaryCommand
             {
-                Dictionary = new Dictionary { Id = 1, UserId = "1", Language = Languages.Japanese }
+                Dictionary = new Dictionary { Id = 1, UserId = _userId1, Language = Languages.Japanese }
             });
 
             Assert.Equal(_database.Dictionary.Single(d => d.Id == 1).Language, Languages.Japanese);
@@ -105,7 +109,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             await Assert.ThrowsAsync<RecordNotFoundException>(async () =>
                 await _handler.HandleAsync(new UpdateDictionaryCommand
                 {
-                    Dictionary = new Dictionary { Id = 4, UserId = "1", Language = Languages.Persian }
+                    Dictionary = new Dictionary { Id = 4, UserId = _userId1, Language = Languages.Persian }
                 }));
         }
 
@@ -115,7 +119,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             await Assert.ThrowsAsync<RecordNotFoundException>(async () =>
                 await _handler.HandleAsync(new UpdateDictionaryCommand
                 {
-                    Dictionary = new Dictionary { Id = 2, UserId = "1", Language = Languages.Persian }
+                    Dictionary = new Dictionary { Id = 2, UserId = _userId1, Language = Languages.Persian }
                 }));
         }
     }

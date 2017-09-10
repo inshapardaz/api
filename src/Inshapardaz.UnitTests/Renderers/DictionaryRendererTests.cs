@@ -7,7 +7,6 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 using Moq;
 using Xunit;
 
@@ -25,7 +24,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 Name = "Test",
                 Language = Languages.French,
                 IsPublic = false,
-                UserId = "12",
+                UserId = Guid.NewGuid(),
                 Word = new List<Word> { new Word(), new Word() }
             };
 
@@ -121,7 +120,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 Name = "Test",
                 Language = Languages.Chinese,
                 IsPublic = false,
-                UserId = "12"
+                UserId = Guid.NewGuid()
             };
 
             public WhenRendereingForOwner()

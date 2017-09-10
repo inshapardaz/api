@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Controllers
         [Route("api/test")]
         public string Test()
         {
-            return "All good. You only get this message if you are authenticated.";
+            return $"All good. You only get this message if you are authenticated.";
         }
     }
 }

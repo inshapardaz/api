@@ -46,7 +46,7 @@ export class DictionaryService {
     }
 
     getEntry(): Observable<Entry> {
-        return this.auth.AuthGet(this.entryUrl, this.createOptions())
+        return this.auth.AuthGet(this.entryUrl)
             .map(r => {
                 var e = this.extractData(r, Mapper.MapEntry);
                 DictionaryService._entry = e;
@@ -56,51 +56,51 @@ export class DictionaryService {
     }
 
     getDictionaries(link: string): Observable<Dictionaries> {
-        return this.auth.AuthGet(link, this.createOptions())
+        return this.auth.AuthGet(link)
             .map(r => this.extractData(r, Mapper.MapDictionaries))
             .catch(this.handleError);
     }
 
     createDictionary(createLink : string, dictionary : Dictionary) : Observable<Dictionary>{
-        return this.auth.AuthPost(createLink, JSON.stringify(dictionary), this.createOptions())
+        return this.auth.AuthPost(createLink, dictionary)
             .map(r => this.extractData(r, Mapper.MapDictionaries))
             .catch(this.handleError);
     }
     
     updateDictionary(updateLink : string, dictionary : Dictionary) : Observable<void>{
-        return this.auth.AuthPut(updateLink, JSON.stringify(dictionary), this.createOptions())
+        return this.auth.AuthPut(updateLink, dictionary)
             .catch(this.handleError);
     }
 
     deleteDictionary(deleteLink : string) : Observable<void>{
-        return this.auth.AuthDelete(deleteLink, this.createOptions())
+        return this.auth.AuthDelete(deleteLink)
             .catch(this.handleError);
     }
 
     createDictionaryDownload(createDownloadLink : string) : Observable<void>{
-        return this.auth.AuthPost(createDownloadLink, this.createOptions())
+        return this.auth.AuthPost(createDownloadLink, {})
             .catch(this.handleError);
     }
     getDictionary(id: number): Observable<Dictionary> {
-        return this.auth.AuthGet(this.dictionaryUrl + id, this.createOptions())
+        return this.auth.AuthGet(this.dictionaryUrl + id)
             .map(r => this.extractData(r, Mapper.MapDictionary))
             .catch(this.handleError);
     }
 
     searchWords(url: string, query: string, pageNumber: number = 1, pageSize: number = 10): Observable<WordPage> {
-        return this.auth.AuthGet(url + "?query=" + query + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize, this.createOptions())
+        return this.auth.AuthGet(url + "?query=" + query + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize)
             .map(r => this.extractData(r, Mapper.MapWordPage))
             .catch(this.handleError);
     }
 
     getWords(url: string, pageNumber: number = 1, pageSize: number = 10): Observable<WordPage> {
-        return this.auth.AuthGet(url + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize, this.createOptions())
+        return this.auth.AuthGet(url + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize)
             .map(r => this.extractData(r, Mapper.MapWordPage))
             .catch(this.handleError);
     }
 
     getWordById(wordId): Observable<Word> {
-        return this.auth.AuthGet(this.wordUrl + wordId, this.createOptions())
+        return this.auth.AuthGet(this.wordUrl + wordId)
             .map(r => this.extractData(r, Mapper.MapWord))
             .catch(this.handleError);
     }
@@ -112,12 +112,12 @@ export class DictionaryService {
     }
 
     createWord(createWordLink : string, word : Word) : Observable<void>{
-        return this.auth.AuthPost(createWordLink, JSON.stringify(word), this.createOptions())
+        return this.auth.AuthPost(createWordLink, word)
             .catch(this.handleError);
     }
 
     updateWord(updateLink : string, word : Word) : Observable<void>{
-        return this.auth.AuthPut(updateLink, JSON.stringify(word), this.createOptions())
+        return this.auth.AuthPut(updateLink, word)
             .catch(this.handleError);
     }
 
@@ -127,49 +127,49 @@ export class DictionaryService {
     }
 
     searchWord(searchText: string, pageNumber: number = 1, pageSize: number = 10): Observable<WordPage> {
-        return this.auth.AuthGet(this.searchUrl + searchText + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize, this.createOptions())
+        return this.auth.AuthGet(this.searchUrl + searchText + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize)
             .map(r => this.extractData(r, Mapper.MapWordPage))
             .catch(this.handleError);
     }
 
     getSearchResults(url: string): Observable<WordPage> {
-        return this.auth.AuthGet(url, this.createOptions())
+        return this.auth.AuthGet(url)
             .map(r => this.extractData(r, Mapper.MapWordPage))
             .catch(this.handleError);
     }
 
     wordStartingWith(startingWith: string, pageNumber: number = 1, pageSize: number = 10): Observable<WordPage> {
-        return this.auth.AuthGet(this.staringWithUrl + startingWith + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize, this.createOptions())
+        return this.auth.AuthGet(this.staringWithUrl + startingWith + "?pageNumber=" + pageNumber + "&pageSize=" + pageSize)
             .map(r => this.extractData(r, Mapper.MapWordPage))
             .catch(this.handleError);
     }
 
     getWordStartingWith(url: string, pageNumber: number = 1, pageSize: number = 10): Observable<WordPage> {
-        return this.auth.AuthGet(url+ "?pageNumber=" + pageNumber + "&pageSize=" + pageSize, this.createOptions())
+        return this.auth.AuthGet(url+ "?pageNumber=" + pageNumber + "&pageSize=" + pageSize)
             .map(r => this.extractData(r, Mapper.MapWordPage))
             .catch(this.handleError);
     }
 
     getWordRelations(url: string): Observable<Array<Relation>> {
-        return this.auth.AuthGet(url, this.createOptions())
+        return this.auth.AuthGet(url)
             .map(r => this.extractData(r, Mapper.MapRelations))
             .catch(this.handleError);
     }
 
     getWordTranslations(url: string): Observable<Array<Translation>> {
-        return this.auth.AuthGet(url, this.createOptions())
+        return this.auth.AuthGet(url)
             .map(r => this.extractData(r, Mapper.MapTranslations))
             .catch(this.handleError);
     }
 
     getMeanings(url: string): Observable<Array<Meaning>> {
-        return this.auth.AuthGet(url, this.createOptions())
+        return this.auth.AuthGet(url)
             .map(r => this.extractData(r, Mapper.MapMeanings))
             .catch(this.handleError);
     }
 
     getWordDetails(url: string): Observable<Array<WordDetail>> {
-        return this.auth.AuthGet(url, this.createOptions())
+        return this.auth.AuthGet(url)
             .map(r => this.extractData(r, Mapper.MapWordDetails))
             .catch(this.handleError);
     }
@@ -186,16 +186,5 @@ export class DictionaryService {
         if (error.stack)
             console.error(error.stack);
         return Observable.throw(errMsg);
-    }
-
-    private createOptions(): RequestOptions{
-        return null;
-        // let headers = new Headers();
-        // headers.append('Accept-Type', 'application/json');
-        // headers.append('Content-Type', 'application/json');
-    
-        // return new RequestOptions({
-        //     headers: headers
-        // }); 
     }
 }

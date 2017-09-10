@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Inshapardaz.Domain.Queries;
 using Darker;
@@ -24,7 +25,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             CancellationToken cancellationToken = default(CancellationToken))
         {
             IQueryable<Dictionary> result;
-            if (!string.IsNullOrWhiteSpace(query.UserId))
+            if (query.UserId != Guid.Empty)
             {
                 result = _database.Dictionary.Where(d => d.IsPublic || (d.UserId == query.UserId));
             }

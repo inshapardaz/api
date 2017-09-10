@@ -13,18 +13,21 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
     {
         private WordByIdQueryHandler _handler;
         private DatabaseContext _database;
+        private readonly Guid _userId;
 
         public WordByIdQueryHandlerTests()
         {
             var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
-
+    
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
 
-            _database.Dictionary.Add(new Dictionary { Id = 1, UserId = "1", IsPublic = false });
-            _database.Dictionary.Add(new Dictionary { Id = 2, UserId = "1", IsPublic = true });
+            _userId = Guid.NewGuid();
+            
+            _database.Dictionary.Add(new Dictionary { Id = 1, UserId = _userId, IsPublic = false });
+            _database.Dictionary.Add(new Dictionary { Id = 2, UserId = _userId, IsPublic = true });
             _database.Word.Add(new Word { Id = 22, Title = "word1", DictionaryId = 1 });
             _database.Word.Add(new Word { Id = 23, Title = "word2", DictionaryId = 2 });
             _database.SaveChanges();
@@ -40,7 +43,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCallingForWordFromPublicDictionary_ShouldReturnWord()
         {
-            var word = await _handler.ExecuteAsync(new WordByIdQuery { Id = 23, UserId = "1" });
+            var word = await _handler.ExecuteAsync(new WordByIdQuery { Id = 23, UserId = _userId });
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 23);
@@ -49,7 +52,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCallingForWordFromPrivateDictionary_ShouldReturnWord()
         {
-            var word = await _handler.ExecuteAsync(new WordByIdQuery { Id = 22, UserId = "1" });
+            var word = await _handler.ExecuteAsync(new WordByIdQuery { Id = 22, UserId = _userId });
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 22);

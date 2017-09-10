@@ -1,8 +1,10 @@
-﻿namespace Inshapardaz.Domain.Commands
+﻿using System;
+
+namespace Inshapardaz.Domain.Commands
 {
     public class DeleteDictionaryCommand : Command
     {
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public int DictionaryId { get; set; }
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Darker;
@@ -44,7 +43,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(DictionariesView))]
         public async Task<IActionResult> Get()
         {
-            string userId = _userHelper.GetUserId();
+            var userId = _userHelper.GetUserId();
 
             var results = await _queryProcessor.ExecuteAsync(new DictionariesByUserQuery { UserId = userId });
             return Ok(_dictionariesRenderer.Render(results));
@@ -54,7 +53,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(DictionaryView))]
         public async Task<IActionResult> Get(int id)
         {
-            string userId = _userHelper.GetUserId();
+            var userId = _userHelper.GetUserId();
             var result =
                 await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
@@ -69,14 +68,14 @@ namespace Inshapardaz.Api.Controllers
         [Authorize]
         [HttpPost("/api/dictionaries", Name = "CreateDictionary")]
         [Produces(typeof(DictionaryView))]
-        public async Task<IActionResult> Post([FromBody] DictionaryView value)
+        public async Task<IActionResult> Post(DictionaryView value)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            string userId = _userHelper.GetUserId();
+            var userId = _userHelper.GetUserId();
 
             AddDictionaryCommand addDictionaryCommand = new AddDictionaryCommand
             {
@@ -100,7 +99,7 @@ namespace Inshapardaz.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            string userId = _userHelper.GetUserId();
+            var userId = _userHelper.GetUserId();
 
             var result =
                 await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
@@ -136,7 +135,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpDelete("/api/dictionaries/{id}", Name = "DeleteDictionary")]
         public async Task<IActionResult> Delete(int id)
         {
-            string userId = _userHelper.GetUserId();
+            var userId = _userHelper.GetUserId();
             var result =
                 await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
 
@@ -159,7 +158,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(DictionaryView))]
         public async Task<IActionResult> CreateDownloadForDictionary(int id)
         {
-            string userId = _userHelper.GetUserId();
+            var userId = _userHelper.GetUserId();
             var dictionary =
                 await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = id });
 

@@ -37,7 +37,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             var name = "Test";
             await _handler.HandleAsync(new AddDictionaryCommand
             {
-                Dictionary = new Dictionary() { UserId = "2", IsPublic = false, Name = name, Language = Languages.Avestan }
+                Dictionary = new Dictionary() { UserId = Guid.NewGuid(), IsPublic = false, Name = name, Language = Languages.Avestan }
             });
 
             Assert.Equal(_database.Dictionary.Count(), 1);

@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
             return this;
         }
 
-        public FakeDictionaryRenderer WithUserId(string userId)
+        public FakeDictionaryRenderer WithUserId(Guid userId)
         {
             _response.UserId = userId;
             return this;

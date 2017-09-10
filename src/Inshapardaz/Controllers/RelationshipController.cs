@@ -1,8 +1,8 @@
-﻿using Darker;
+﻿using System;
+using Darker;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 using paramore.brighter.commandprocessor;
@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpGet("/api/relationships/{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            if (!string.IsNullOrWhiteSpace(_userHelper.GetUserId()))
+            if (_userHelper.GetUserId() != Guid.Empty)
             {
                 var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
                 if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())

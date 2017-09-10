@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.View
 {
@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.View
 
         public Languages Language { get; set; }
 
-        public string UserId { get; set; }
+        public Guid? UserId { get; set; }
 
         public bool IsPublic { get; set; }
 

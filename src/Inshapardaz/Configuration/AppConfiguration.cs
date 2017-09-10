@@ -5,7 +5,6 @@ using AutoMapper;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.CommandHandlers;
-using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

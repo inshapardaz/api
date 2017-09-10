@@ -8,10 +8,10 @@ import { Observable } from 'rxjs/Observable';
 import { UserManager, User } from 'oidc-client/lib/oidc-client.js';
 
 const settings: any = {
-  authority: "http://localhost:5002",
+  authority: "http://localhost:5002/",
   client_id: 'angular2client',
   redirect_uri: window.location.origin + "/redirect.html",
-  post_logout_redirect_uri: window.location.origin,
+  post_logout_redirect_uri: window.location.origin + '/',
   response_type: 'id_token token',
   scope: 'openid',
 

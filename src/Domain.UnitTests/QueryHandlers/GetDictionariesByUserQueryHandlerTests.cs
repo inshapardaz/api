@@ -12,8 +12,10 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
     public class GetDictionariesByUserQueryHandlerTests
     {
-        private GetDictionariesByUserQueryHandler _handler;
-        private DatabaseContext _database;
+        private readonly GetDictionariesByUserQueryHandler _handler;
+        private readonly DatabaseContext _database;
+        private readonly Guid _userId1;
+        private readonly Guid _userId2;
 
         public GetDictionariesByUserQueryHandlerTests()
         {
@@ -24,10 +26,12 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
 
-            _database.Dictionary.Add(new Dictionary {Id = 1, IsPublic = true, UserId = "1"});
-            _database.Dictionary.Add(new Dictionary {Id = 2, IsPublic = true, UserId = "2"});
-            _database.Dictionary.Add(new Dictionary {Id = 3, IsPublic = false, UserId = "2"});
-            _database.Dictionary.Add(new Dictionary {Id = 4, IsPublic = false, UserId = "1"});
+            _userId1 = Guid.NewGuid();
+            _userId2 = Guid.NewGuid();
+            _database.Dictionary.Add(new Dictionary {Id = 1, IsPublic = true, UserId = _userId1});
+            _database.Dictionary.Add(new Dictionary {Id = 2, IsPublic = true, UserId = _userId2});
+            _database.Dictionary.Add(new Dictionary {Id = 3, IsPublic = false, UserId = _userId2});
+            _database.Dictionary.Add(new Dictionary {Id = 4, IsPublic = false, UserId = _userId1});
             _database.SaveChanges();
 
             _handler = new GetDictionariesByUserQueryHandler(_database);
@@ -51,9 +55,9 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         }
 
         [Fact]
-        public async Task WhenCalledForAUser_ShouldReturnPublicAndPrivateDitionaries()
+        public async Task WhenCalledForAUser_ShouldReturnPublicAndPrivateDictionaries()
         {
-            var result = await _handler.ExecuteAsync(new DictionariesByUserQuery {UserId = "2"});
+            var result = await _handler.ExecuteAsync(new DictionariesByUserQuery {UserId = _userId2 });
 
             Assert.Equal(result.Count(), 3);
 

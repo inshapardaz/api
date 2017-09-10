@@ -13,8 +13,9 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
     public class DeleteDictionaryCommandHandlerTests
     {
-        private DeleteDictionaryCommandHandler _handler;
-        private DatabaseContext _database;
+        private readonly DeleteDictionaryCommandHandler _handler;
+        private readonly DatabaseContext _database;
+        private readonly Guid _userId1;
 
         public DeleteDictionaryCommandHandlerTests()
         {
@@ -25,10 +26,13 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
 
-            _database.Dictionary.Add(new Dictionary {Id = 1, IsPublic = true, UserId = "1"});
-            _database.Dictionary.Add(new Dictionary {Id = 2, IsPublic = true, UserId = "2"});
-            _database.Dictionary.Add(new Dictionary {Id = 3, IsPublic = false, UserId = "1"});
-            _database.Dictionary.Add(new Dictionary {Id = 4, IsPublic = false, UserId = "2"});
+            _userId1 = Guid.NewGuid();
+            var userId2 = Guid.NewGuid();
+            
+            _database.Dictionary.Add(new Dictionary {Id = 1, IsPublic = true, UserId = _userId1});
+            _database.Dictionary.Add(new Dictionary {Id = 2, IsPublic = true, UserId = userId2});
+            _database.Dictionary.Add(new Dictionary {Id = 3, IsPublic = false, UserId = _userId1});
+            _database.Dictionary.Add(new Dictionary {Id = 4, IsPublic = false, UserId = userId2});
             _database.SaveChanges();
 
             _handler = new DeleteDictionaryCommandHandler(_database);
@@ -42,7 +46,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         [Fact]
         public async Task WhenRemovedPrivateDictionary_ShouldDeleteFromDatabase()
         {
-            await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 3, UserId = "1"});
+            await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 3, UserId = _userId1 });
 
             Assert.Null(_database.Dictionary.SingleOrDefault(d => d.Id == 3));
         }
@@ -50,7 +54,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         [Fact]
         public async Task WhenRemovedOwnPublicDictionary_ShouldDeleteFromDatabase()
         {
-            await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 1, UserId = "1"});
+            await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 1, UserId = _userId1 });
 
             Assert.Null(_database.Dictionary.SingleOrDefault(d => d.Id == 1));
         }
@@ -59,14 +63,14 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         public async Task WhenRemovedSomeoneElsePrivateDictionary_ShouldNotDelete()
         {
             await Assert.ThrowsAsync<RecordNotFoundException>(async () =>
-                 await _handler.HandleAsync(new DeleteDictionaryCommand { DictionaryId = 4, UserId = "1" }));
+                 await _handler.HandleAsync(new DeleteDictionaryCommand { DictionaryId = 4, UserId = _userId1 }));
         }
 
         [Fact]
         public async Task WhenRemovedSomeoneElsePublicDictionary_ShouldNotDelete()
         {
             await Assert.ThrowsAsync<RecordNotFoundException>(async () =>
-                await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 2, UserId = "1"}));
+                await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 2, UserId = _userId1 }));
         }
     }
 }

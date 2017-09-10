@@ -1,4 +1,5 @@
-﻿using Darker;
+﻿using System;
+using Darker;
 using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Queries
@@ -7,6 +8,6 @@ namespace Inshapardaz.Domain.Queries
     {
         public long Id { get; set; }
 
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Inshapardaz.Api.Helpers
+﻿using System;
+
+namespace Inshapardaz.Api.Helpers
 {
     public interface IUserHelper
     {
@@ -11,6 +13,6 @@
 
         bool IsReader { get; }
 
-        string GetUserId();
+        Guid GetUserId();
     }
 }

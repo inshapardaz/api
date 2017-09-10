@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Inshapardaz.Domain.Queries;
 using Darker;
 using System.Threading;
@@ -22,7 +23,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             CancellationToken cancellationToken = default(CancellationToken))
         {
             IQueryable<Dictionary> result;
-            if (!string.IsNullOrWhiteSpace(query.UserId))
+            if (query.UserId != Guid.Empty)
             {
                 result = _database.Dictionary
                                   .Include(d => d.Downloads)

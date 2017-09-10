@@ -23,8 +23,9 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _database = new DatabaseContext(inMemoryDataContextOptions);
             _database.Database.EnsureCreated();
 
-            _database.Dictionary.Add(new Dictionary { Id = 1, UserId = "1", IsPublic = false });
-            _database.Dictionary.Add(new Dictionary { Id = 2, UserId = "1", IsPublic = true });
+            var userId = Guid.NewGuid();
+            _database.Dictionary.Add(new Dictionary { Id = 1, UserId = userId, IsPublic = false });
+            _database.Dictionary.Add(new Dictionary { Id = 2, UserId = userId, IsPublic = true });
             _database.Word.Add(new Word { Id = 22, Title = "word1", DictionaryId = 1 });
             _database.Word.Add(new Word { Id = 23, Title = "word2", DictionaryId = 2 });
             _database.SaveChanges();

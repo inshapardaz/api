@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Inshapardaz.Domain.Database.Entities
 {
@@ -13,7 +14,7 @@ namespace Inshapardaz.Domain.Database.Entities
         public string Name { get; set; }
         public bool IsPublic { get; set; }
         public Languages Language { get; set; }
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public virtual ICollection<Word> Word { get; set; }
 

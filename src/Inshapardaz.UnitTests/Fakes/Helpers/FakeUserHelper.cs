@@ -1,16 +1,17 @@
-﻿using Inshapardaz.Api.Helpers;
+﻿using System;
+using Inshapardaz.Api.Helpers;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Helpers
 {
     public class FakeUserHelper : IUserHelper
     {
-        private string _userId = null;
+        private Guid _userId = Guid.Empty;
         private bool _authenticated;
         private bool _admin;
         private bool _contributor;
         private bool _reader;
 
-        public FakeUserHelper WithUserId(string userId)
+        public FakeUserHelper WithUserId(Guid userId)
         {
             _userId = userId;
             return this;
@@ -76,7 +77,7 @@ namespace Inshapardaz.Api.UnitTests.Fakes.Helpers
             }
         }
 
-        public string GetUserId()
+        public Guid GetUserId()
         {
             return _userId;
         }

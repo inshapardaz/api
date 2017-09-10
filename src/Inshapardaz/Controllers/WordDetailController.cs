@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Darker;
@@ -51,7 +51,7 @@ namespace Inshapardaz.Api.Controllers
         {
             var userId = _userHelper.GetUserId();
 
-            if (!string.IsNullOrWhiteSpace(userId))
+            if (userId != Guid.Empty)
             {
                 var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
 

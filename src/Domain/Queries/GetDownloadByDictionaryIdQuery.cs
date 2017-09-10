@@ -1,3 +1,4 @@
+using System;
 using Darker;
 using Inshapardaz.Domain.Database.Entities;
 
@@ -5,7 +6,7 @@ namespace Inshapardaz.Domain.Queries
 {
     public class GetDownloadByDictionaryIdQuery : IQuery<File>
     {
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public int DictionaryId { get; set; }
 

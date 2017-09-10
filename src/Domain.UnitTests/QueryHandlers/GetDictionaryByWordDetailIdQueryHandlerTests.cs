@@ -27,7 +27,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             {
                 Id = 1,
                 IsPublic = true,
-                UserId = "1",
+                UserId = Guid.NewGuid(),
                 Word = new List<Word>
                 {
                     new Word

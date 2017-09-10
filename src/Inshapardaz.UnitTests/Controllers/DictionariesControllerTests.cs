@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using AutoMapper;
@@ -51,13 +52,13 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             var result = _controller.Get().Result;
 
-            _fakeQueryProcessor.ShouldHaveExecuted<DictionariesByUserQuery>(q => q.UserId == null);
+            _fakeQueryProcessor.ShouldHaveExecuted<DictionariesByUserQuery>(q => q.UserId == Guid.Empty);
         }
 
         [Fact]
         public void WhenAuthenticatedCall_ShouldQueryDictionariesForUser()
         {
-            var userId = "user1234";
+            var userId = Guid.NewGuid();
             _fakeUserHelper.WithUserId(userId);
             _fakeQueryProcessor.SetupResultFor<DictionariesByUserQuery, IEnumerable<Dictionary>>(
                 new Collection<Dictionary>());
@@ -76,13 +77,13 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var result = _controller.Get(dictionaryId).Result;
 
             _fakeQueryProcessor.ShouldHaveExecuted<DictionaryByIdQuery>(
-                q => q.UserId == null && q.DictionaryId == dictionaryId);
+                q => q.UserId == Guid.Empty && q.DictionaryId == dictionaryId);
         }
 
         [Fact]
         public void WhenAuthenticatedCall_ShouldQueryDictionaryForUser()
         {
-            var userId = "user1234";
+            var userId = Guid.NewGuid();
             var dictionaryId = 2332;
             _fakeUserHelper.WithUserId(userId);
             _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
@@ -104,7 +105,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         [Fact]
         public void WhenPosted_ShouldAddToDictionary()
         {
-            var userId = "user1234";
+            var userId = Guid.NewGuid();
             _fakeUserHelper.WithUserId(userId);
             var dictionaryView = new DictionaryView
             {
@@ -153,7 +154,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         [Fact]
         public void WhenPut_ShouldRaiseCommandToUpdateDictionary()
         {
-            var userId = "user1234";
+            var userId = Guid.NewGuid();
             var dictionaryId = 344;
             _fakeUserHelper.WithUserId(userId);
             var dictionaryView = new DictionaryView
@@ -187,7 +188,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         [Fact]
         public void WhenPutNonExistingDictionary_ShouldCreateDictionary()
         {
-            var userId = "user1234";
+            var userId = Guid.NewGuid();
             var dictionaryId = 344;
             _fakeUserHelper.WithUserId(userId);
             _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(null);

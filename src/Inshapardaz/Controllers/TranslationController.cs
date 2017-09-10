@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using Darker;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 using paramore.brighter.commandprocessor;
@@ -37,7 +36,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> GetTranslationForWord(int id)
         {
             var user = _userHelper.GetUserId();
-            if (!string.IsNullOrWhiteSpace(user))
+            if (user != Guid.Empty)
             {
                 var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
                 if (dictionary != null && dictionary.UserId != user)
@@ -55,7 +54,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> GetTranslationForWord(int id, Languages language)
         {
             var user = _userHelper.GetUserId();
-            if (!string.IsNullOrWhiteSpace(user))
+            if (user != Guid.Empty)
             {
                 var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
                 if (dictionary != null && dictionary.UserId != user)

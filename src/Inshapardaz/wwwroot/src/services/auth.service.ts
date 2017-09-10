@@ -7,8 +7,13 @@ import { Observable } from 'rxjs/Observable';
 
 import { UserManager, User } from 'oidc-client/lib/oidc-client.js';
 
+let authority = "http://ipid.azurewebsites.net"
+let sessionOverride = sessionStorage.getItem('server-address');
+if (sessionOverride !== null){
+  authority = sessionOverride;
+}
 const settings: any = {
-  authority: "http://localhost:5002/",
+  authority: authority,
   client_id: 'angular2client',
   redirect_uri: window.location.origin + "/redirect.html",
   post_logout_redirect_uri: window.location.origin + '/',

@@ -68,8 +68,10 @@
     "TITLEWITHMOVEMENTS" : "Title with movements",
     "PRONUNCIATION" : "Pronunciation",
     "DESCRIPTION" : "Description",
+    "ATTRIBUTES" : "Attributes",
     "VALIDATION" : {
-      "TITLE" : "Title is required"
+      "TITLE" : "Title is required",
+      "ATTRIBUTES" : "AttributesRequired"
     }
   },
   "THESAURUS" : {

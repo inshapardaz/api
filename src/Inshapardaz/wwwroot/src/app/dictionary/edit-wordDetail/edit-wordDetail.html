@@ -1,0 +1,54 @@
+<div class="modal" [attr.id]="modalId" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="block block-themed block-transparent remove-margin-b" [class.block-opt-refresh]="isBusy">
+                <div class="block-header bg-primary-dark">
+                    <ul class="block-options">
+                        <li>
+                            <button (click)="onClose()" type="button"><i class="si si-close"></i></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">{{ 'WORD.CREATENEW' | translate }}</h3>
+                </div>
+                <div class="block-content">
+                    <form class="js-validation-bootstrap form-horizontal push-10-t" #dictionaryForm="ngForm" (ngSubmit)="onSubmit()">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="form-material">
+                                    <select class="form-control" id="language" name="language" size="1" required [(ngModel)]="model.language" #language="ngModel">
+                                                            <option *ngFor="let key of languages" [value]="key">{{languagesEnum[key]}}</option>
+                                                    </select>
+                                    <label for="material-select">{{ 'DICTIONARIES.LANGUAGE' | translate}}</label>
+                                    <div [hidden]="language.valid || language.pristine" class="alert alert-danger">
+                                        {{ 'DICTIONARIES.VALIDATION.LANGUAGE' | translate}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="form-material">
+                                    <select class="form-control" id="attributes" name="attributes" size="1" required [(ngModel)]="model.attributes" #attributes="ngModel">
+                                            <option *ngFor="let key of attributesValues" [value]="key">{{attributeEnum[key]}}</option>
+                                    </select>
+                                    <label for="material-select">{{ 'WORD.ATTRIBUTES' | translate}}</label>
+                                    <div [hidden]="attributes.valid || attributes.pristine" class="alert alert-danger">
+                                        {{ 'WORD.VALIDATION.ATTRIBUTES' | translate}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-12 text-right">
+                                <button class="btn btn-sm btn-primary" type="submit" [disabled]="!dictionaryForm.form.valid"><i class="fa fa-check"></i> 
+                                            {{ isCreating == true ? 'Create' : 'Update' }}
+                                        </button>
+                                <button class="btn btn-sm btn-default" type="button" (click)="onClose()">{{ 'ACTIONS.CLOSE' | translate}}</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

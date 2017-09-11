@@ -36,7 +36,6 @@ export class AppComponent {
         this.translate.addLangs(["en", "ur"]);
         this.translate.setDefaultLang('en');
 
-        console.log(this.translate.get('APP.TITLE'));
         this.translate.get('APP.TITLE').subscribe((res: string) => {
             this.titleService.setTitle(res);
         });

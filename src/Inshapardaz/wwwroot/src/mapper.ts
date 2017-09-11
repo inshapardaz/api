@@ -124,6 +124,17 @@ export class Mapper{
             word.deleteLink = deleteLink.href;
         }
 
+        
+        var addDetailLink = _.find<string[], Link>(source.links, ['rel', 'add-detail']);
+        if (addDetailLink != null){
+            word.addDetailLink = addDetailLink.href;
+        }
+
+        var addRelationLink = _.find<string[], Link>(source.links, ['rel', 'add-relation']);
+        if (addRelationLink != null){
+            word.addRelationLink = addRelationLink.href;
+        }
+
         return word;
     }
 
@@ -134,23 +145,34 @@ export class Mapper{
     }
 
     public static MapWordDetail(source : any) : WordDetail{
-        let word = new WordDetail();
-        word.id = source.id;
-        word.wordId = source.wordId;
+        let detail = new WordDetail();
+        detail.id = source.id;
+        detail.wordId = source.wordId;
 
-        word.attributes = source.attributes;
-        word.attributeValue = source.attributeValue;
-        word.language = source.language;
-        word.languageId = source.languageId;
+        detail.attributes = source.attributes;
+        detail.attributeValue = source.attributeValue;
+        detail.language = source.language;
+        detail.languageId = source.languageId;
         
         
-        word.translations = Mapper.MapTranslations(source.translations);
-        word.meaningContexts = Mapper.MapMeaningContexts(source.meanings);
+        detail.translations = Mapper.MapTranslations(source.translations);
+        detail.meaningContexts = Mapper.MapMeaningContexts(source.meanings);
 
-        word.selfLink = _.find<string[], Link>(source.links, ['rel', 'self']).href;
-        word.translationsLink = _.find<string[], Link>(source.links, ['rel', 'translations']).href;
-        word.meaningsLink = _.find<string[], Link>(source.links, ['rel', 'meanings']).href;
-        return word;
+        detail.selfLink = _.find<string[], Link>(source.links, ['rel', 'self']).href;
+        detail.translationsLink = _.find<string[], Link>(source.links, ['rel', 'translations']).href;
+        detail.meaningsLink = _.find<string[], Link>(source.links, ['rel', 'meanings']).href;
+
+        var updateLink = _.find<string[], Link>(source.links, ['rel', 'update']);
+        if (updateLink != null){
+            detail.updateLink = updateLink.href;
+        }
+
+        var deleteLink = _.find<string[], Link>(source.links, ['rel', 'delete']);
+        if (deleteLink != null){
+            detail.deleteLink = deleteLink.href;
+        }
+
+        return detail;
     }
 
     public static MapTranslations(source: any) : Translation[]{

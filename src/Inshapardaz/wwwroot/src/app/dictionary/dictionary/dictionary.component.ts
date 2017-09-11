@@ -84,13 +84,10 @@ export class DictionaryComponent {
 
     ngOnInit() {
         this.sub = this.route.params.subscribe(params => {
-            console.log('this.route.params.subscribe');
             this.id = params['id'];
             this.pageNumber = params['page'] || 1;
             if (this.dictionary == null){
-                console.log("loading dictionary")                
                 this.getDictionary(d => {
-                    console.log("dictionary loaded. now loading words")
                     this.getWords(d.indexLink);
                 });
             } else{
@@ -103,7 +100,6 @@ export class DictionaryComponent {
             .map(params => params['search'] || '');
         this.searchText.subscribe(
             (val) => {
-                console.log('this.searchText.subscribe');
                 if (val != null && val !== "") {
                     this.searchForm.controls.query.setValue(val);
                     if (this.dictionary == null){
@@ -121,7 +117,6 @@ export class DictionaryComponent {
             .map(params => params['startWith'] || '');
         this.selectedIndex.subscribe(
             (val) => {
-                console.log('this.selectedIndex.subscribe');                
                 if (val !== "") this.getIndex(val);
             });
         
@@ -195,7 +190,6 @@ export class DictionaryComponent {
 
     gotoSearch(){
         let query = this.searchForm.controls.query.value;
-        console.log('gotoSearch، query : ' + query);
         
         if (query == null || query.length < 0) return;
 
@@ -208,7 +202,6 @@ export class DictionaryComponent {
     navigateToPage(){
         var startWith = this.route.snapshot.queryParams["startWith"];
         var search = this.route.snapshot.queryParams["search"];
-        console.log('navigateToPage. startWith : ' +  startWith + ', search: ' + search );
         if (startWith != null && startWith != ''){
             let navigationExtras: NavigationExtras = {
                 queryParams: { 'startWith': startWith }
@@ -236,7 +229,6 @@ export class DictionaryComponent {
 
     doSearch() {
         var searchValue = this.searchForm.controls.query.value;
-        console.log('doSearch : ' + searchValue);        
         if(searchValue != null && searchValue.length > 0){
               this.isInSearch = true;
               this.isLoading = true; 

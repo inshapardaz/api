@@ -11,6 +11,9 @@ import { WordDetail } from '../../../models/worddetail';
 
 export class WordDetailsComponent {
     _wordDetailLink: string;
+    selectedDetail : WordDetail;
+    showEditDialog : boolean = false;
+    @Input() createLink: string = '';
 
     isLoadingDetails : boolean = false;
     errorMessage: string;
@@ -21,11 +24,33 @@ export class WordDetailsComponent {
         this._wordDetailLink = (wordDetailLink) || '';
         this.getWordDetails();
     }
+    
     get wordDetailLink(): string { return this._wordDetailLink; }
 
     constructor(private route: ActivatedRoute,
         private router: Router,
         private dictionaryService: DictionaryService){
+    }
+
+    editDetail(detail : WordDetail){
+        this.selectedDetail = detail;
+        this.showEditDialog = true;
+    }
+
+    deleteDetail(detail : WordDetail){
+            
+    }
+
+    addDetail(){
+        this.selectedDetail = null;
+        this.showEditDialog = true;        
+    }
+
+    onEditClosed(created : boolean){
+        this.showEditDialog = false;
+        if (created){
+            this.getWordDetails();
+        }
     }
 
     getWordDetails() {

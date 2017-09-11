@@ -105,7 +105,6 @@ export class AuthService {
   getUser() {
     this.mgr.getUser().then((user) => {
       this.currentUser = user;
-      console.log('got user', user);
       this.userLoadededEvent.emit(user);
     }).catch(function (err) {
       console.log(err);

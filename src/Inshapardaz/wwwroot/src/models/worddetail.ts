@@ -13,7 +13,9 @@ export class WordDetail {
     public selfLink : string;
     public parentLink : string;
     public translationsLink : string;
-    public meaningsLink : string;   
+    public meaningsLink : string;
+    public updateLink : string;   
+    public deleteLink : string;  
 
     public translations : Translation[];
     public meaningContexts : MeaningContext[];

@@ -44,8 +44,7 @@
             </div>
         </div>
     </div>
-
-    <word-detail *ngIf="word" [wordDetailLink]="word.detailsLink"> </word-detail>
-    <word-relations *ngIf="word" [relationsLink]="word.relationsLink"> </word-relations>
+    <word-detail *ngIf="word" [wordDetailLink]="word.detailsLink" [createLink]="word.addDetailLink"></word-detail>
+    <word-relations *ngIf="word" [relationsLink]="word.relationsLink" [createRelationLink]="word.addRelationLink"></word-relations>
 </div>
 <edit-word [modalId]="'edit-word'" [visible]="showEditDialog" [word]="word" (onClosed)="onEditClosed($event)"></edit-word>

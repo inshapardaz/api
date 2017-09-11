@@ -11,4 +11,6 @@ export class Word {
     public updateLink :string;
     public deleteLink : string;
     public dictionaryLink : string;
+    public addDetailLink : string;
+    public addRelationLink : string;
 }

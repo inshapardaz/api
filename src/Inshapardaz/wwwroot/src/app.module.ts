@@ -34,6 +34,7 @@ import { EditDictionaryComponent } from './app/dictionary/edit-dictionary/edit-d
 import { EditWordComponent } from './app/dictionary/edit-word/edit-word.component';
 import { WordComponent } from './app/dictionary/word/word.component';
 import { WordDetailsComponent } from './app/dictionary/wordDetail/wordDetail.component';
+import { EditWordDetailComponent } from './app/dictionary/edit-wordDetail/edit-wordDetail.component';
 import { RelationsComponent } from './app/dictionary/relations/relations.component';
 import { MeaningsComponent } from './app/dictionary/meanings/meanings.component';
 import { ThesaurusComponent }      from './app/thesaurus/thesaurus.component';
@@ -83,6 +84,7 @@ import { routing  } from './app.routes';
     DictionaryComponent,
     EditDictionaryComponent,
     EditWordComponent,
+    EditWordDetailComponent,
     WordComponent,
     WordDetailsComponent,
     RelationsComponent,

@@ -12,6 +12,8 @@ import {RelationTypes} from '../../../models/relationTypes';
 
 export class RelationsComponent {
     public _relationsLink: string;
+    public _createLink: string;
+
     public relationTypes : RelationTypes;
     public isLoading : boolean = false;
     public errorMessage: string;
@@ -23,6 +25,13 @@ export class RelationsComponent {
         this.getRelations();
     }
     get relationsLink(): string { return this._relationsLink; }
+
+    @Input()
+    set createRelationLink(createLink: string) {
+        this._createLink = (createLink) || '';
+    }
+    
+    get createRelationLink(): string { return this._createLink; }
 
     constructor(private route: ActivatedRoute,
         private router: Router,

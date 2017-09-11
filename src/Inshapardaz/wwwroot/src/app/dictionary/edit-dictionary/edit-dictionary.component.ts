@@ -26,7 +26,6 @@ export class EditDictionaryComponent {
 
     @Input()
     set visible(isVisible: boolean) {
-        console.log('dialog - visible ' + isVisible);
         this._visible = isVisible;
         this.isBusy = false;
         if (isVisible){
@@ -53,7 +52,6 @@ export class EditDictionaryComponent {
     }  
 
     onSubmit(){
-        console.log('Form submitted');
         this.isBusy = false;
         if (this.isCreating){
             this.dictionaryService.createDictionary(this.createLink, this.model)

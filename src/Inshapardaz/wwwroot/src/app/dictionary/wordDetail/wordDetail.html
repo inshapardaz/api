@@ -4,21 +4,25 @@
             <div class="block block-transparent block-bordered pull-r-l" *ngFor="let detail of wordDetails">
                 <div class="block-header bg-gray-lighter">
                     <h3 class="block-title pull-right">{{detail.attributes}} - {{detail.language}}</h3>
-                    <ul class="block-options pull-left">
-                        <li>
-                            <button type="button" title="{{'ACTIONS.DELETE'|translate}}">
-                    <i class="si si-trash"></i>
-                </button>
+                    <ul class="block-options pull-left" *ngIf="detail.updateLink || detail.deleteLink">
+                        <li *ngIf="detail.deleteLink">
+                            <button type="button" title="{{'ACTIONS.DELETE'|translate}}" (click)="editDetail(detail)">
+                                <i class="si si-trash"></i>
+                            </button>
                         </li>
-                        <li>
-                            <button type="button" title="{{'ACTIONS.EDIT'|translate}}">
-                    <i class="si si-note"></i>
-                </button>
-                        </li>
-                        <li>
-                            <button type="button" title="{{'ACTIONS.ADD'|translate}}">
-                    <i class="si si-plus"></i>
-                </button>
+                        <li *ngIf="detail.updateLink">
+                            <button type="button" title="{{'ACTIONS.EDIT'|translate}}" [swal]="{title :'Delete dictionary?', 
+                                        text : 'Are you sure you want to delete word detail?', 
+                                        type : 'warning',
+                                        confirmButtonText : 'Yes',
+                                        cancelButtonText : 'No',
+                                        confirmButtonColor: '#d26a5c',
+                                        confirmButtonText: 'Yes, delete it!',
+                                        html: false,
+                                        allowOutsideClick : false,
+                                        showCancelButton: true}" (confirm)="deleteDetail(detail)">
+                                <i class="si si-note"></i>
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -26,6 +30,14 @@
                     <word-meanings *ngIf="detail" [meaningsLink]="detail.meaningsLink"> </word-meanings>
                 </div>
             </div>
+            <div *ngIf="createLink">
+                <button class="btn btn-block btn-default push-10" (click)="addDetail()"> 
+                    <i class="fa fa-plus pull-left"></i>
+                    Add Detail
+                </button>
+            </div>
         </div>
     </div>
 </div>
+
+<edit-wordDetail [modalId]="'edit-word'" [createLink]="createLink" [visible]="showEditDialog" [wordDetail]="selectedDetail" (onClosed)="onEditClosed($event)"></edit-wordDetail>

@@ -39,6 +39,7 @@ export class WordComponent {
         this.dictionaryService.getWordById(this.id)
             .subscribe(
             word => { 
+                console.log(word);
                 this.word = word;
                 this.isLoading = false;
             },

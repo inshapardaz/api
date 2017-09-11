@@ -174,6 +174,16 @@ export class DictionaryService {
             .catch(this.handleError);
     }
 
+    createWordDetail(url: string, wordDetail : WordDetail): Observable<WordDetail>{
+        return this.auth.AuthPost(url, wordDetail)
+                   .catch(this.handleError);
+    }
+
+    updateWordDetail(url: string, wordDetail : WordDetail): Observable<WordDetail>{
+        return this.auth.AuthPut(url, wordDetail)
+                   .catch(this.handleError);
+    }
+
     private extractData(res: Response, converter: Function) {
         let body = res.json();
         return converter(body);

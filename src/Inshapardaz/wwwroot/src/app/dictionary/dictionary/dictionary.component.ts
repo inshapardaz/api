@@ -14,6 +14,37 @@ export class Index{
     title : string;
     link : string;
 }
+
+@Component({
+    selector: 'dictionary',
+    templateUrl: '../empty.html'
+})
+
+export class DictionaryByLinkComponent {
+    private sub: Subscription;
+    
+    constructor(private route: ActivatedRoute,
+        private router: Router){
+    }
+
+    ngOnInit(){
+        this.sub = this.route.params.subscribe(params => {
+            let dictionaryLink = params['link'];
+            if (dictionaryLink === '' || dictionaryLink == null){
+                this.router.navigate(['dictionaries']);    
+            } else {
+                let id  = dictionaryLink.substring( dictionaryLink.lastIndexOf('/') + 1)
+                this.router.navigate(['dictionary', id]);
+            }
+        });
+    }
+
+    ngOnDestroy() {
+        this.sub.unsubscribe();
+      }
+}
+
+
 @Component({
     selector: 'dictionary',
     templateUrl: './dictionary.component.html'
@@ -95,6 +126,11 @@ export class DictionaryComponent {
             });
         
     }
+
+    ngOnDestroy() {
+        this.sub.unsubscribe();
+      }
+      
 
     getIndex(index : string){
         this.isInSearch = false;

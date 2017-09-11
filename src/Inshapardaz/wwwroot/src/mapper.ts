@@ -112,6 +112,7 @@ export class Mapper{
         word.selfLink = _.find<string[], Link>(source.links, ['rel', 'self']).href;
         word.relationsLink = _.find<string[], Link>(source.links, ['rel', 'relations']).href;
         word.detailsLink = _.find<string[], Link>(source.links, ['rel', 'details']).href;
+        word.dictionaryLink = _.find<string[], Link>(source.links, ['rel', 'dictionary']).href;
 
         var updateLink = _.find<string[], Link>(source.links, ['rel', 'update']);
         if (updateLink != null){

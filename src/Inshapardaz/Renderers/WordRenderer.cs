@@ -20,14 +20,15 @@ namespace Inshapardaz.Api.Renderers
 
         public WordView Render(Word source)
         {
-            var result = source.Map<Word, WordView>();
+            var result = source.Map<Word, WordView>();  
 
             var links = new List<LinkView>
                                {
                                    LinkRenderer.Render("GetWordById", "self", new { id = result.Id }),
                                    LinkRenderer.Render("GetWordRelationsById", "relations", new { id = result.Id }),
                                    LinkRenderer.Render("GetWordDetailsById", "details", new { id = result.Id }),
-                                   LinkRenderer.Render("GetWordRelationsById", "relationships", new {id = result.Id})
+                                   LinkRenderer.Render("GetWordRelationsById", "relationships", new {id = result.Id}),
+                                   LinkRenderer.Render("GetDictionaryById", "dictionary", new {id = source.DictionaryId})
                                };
 
             if (_userHelper.IsContributor)

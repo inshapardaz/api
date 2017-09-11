@@ -2,7 +2,7 @@ import { ModuleWithProviders }  from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent }      from './app/home/home.component';
 import { DictionariesComponent }      from './app/dictionary/dictionaries/dictionaries.component';
-import { DictionaryComponent }      from './app/dictionary/dictionary/dictionary.component';
+import { DictionaryComponent,DictionaryByLinkComponent }      from './app/dictionary/dictionary/dictionary.component';
 import { WordComponent }      from './app/dictionary/word/word.component';
 import { SettingsComponent } from './app/settings/settings.component';
 
@@ -22,6 +22,7 @@ const appRoutes: Routes = [
     { path: 'settings',     component: SettingsComponent },
     
     { path: 'dictionaries',        component: DictionariesComponent},
+    { path: 'dictionaryLink/:link',      component: DictionaryByLinkComponent},
     { path: 'dictionary/:id',      component: DictionaryComponent},
     { path: 'dictionary/:id/:page',      component: DictionaryComponent},
     { path: 'word/:id', component: WordComponent },

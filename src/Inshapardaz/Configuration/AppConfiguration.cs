@@ -77,7 +77,6 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRenderEnum, EnumRenderer>();
             services.AddTransient<IRenderLink, LinkRenderer>();
             services.AddTransient<IRenderResponseFromObject<Word, WordView>, WordRenderer>();
-            services.AddTransient<IRenderResponseFromObject<Word, WordView>, WordIndexRenderer>();
             services.AddTransient<IRenderResponseFromObject<WordDetail, WordDetailView>, WordDetailRenderer>();
             services.AddTransient<IRenderResponseFromObject<Translation, TranslationView>, TranslationRenderer>();
             services.AddTransient<IRenderResponseFromObject<WordRelation, RelationshipView>, RelationRenderer>();

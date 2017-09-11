@@ -10,4 +10,5 @@ export class Word {
     public detailsLink : string;
     public updateLink :string;
     public deleteLink : string;
+    public dictionaryLink : string;
 }

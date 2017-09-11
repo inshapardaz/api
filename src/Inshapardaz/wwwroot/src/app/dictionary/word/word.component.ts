@@ -14,6 +14,7 @@ import { Word } from '../../../models/Word';
 export class WordComponent {
     private sub: Subscription;
     isLoading : boolean = false;
+    showEditDialog : boolean = false;
     errorMessage: string;
     id : number;
     word : Word;
@@ -29,6 +30,10 @@ export class WordComponent {
         });
     }
 
+    ngOnDestroy() {
+        this.sub.unsubscribe();
+    }
+
     getWord() {
         this.isLoading = true;
         this.dictionaryService.getWordById(this.id)
@@ -40,6 +45,24 @@ export class WordComponent {
             error => {
                 this.errorMessage = <any>error;
             });
+    }
+
+    editWord() {
+        this.showEditDialog = true;
+    }
+
+    deleteWord(){
+        this.dictionaryService.deleteWord(this.word.deleteLink)
+        .subscribe(r => {
+            this.router.navigate(['dictionaryLink', this.word.dictionaryLink ])
+        }, this.handlerError);
+    }
+
+    onEditClosed(created : boolean){
+        this.showEditDialog = false;
+        if (created){
+            this.getWord();
+        }
     }
 
     handlerError(error : any) {

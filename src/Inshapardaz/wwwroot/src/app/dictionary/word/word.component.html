@@ -3,12 +3,21 @@
         <div class="block-header" *ngIf="word.updateLink || word.deleteLink">
             <ul class="block-options">
                 <li *ngIf="word.deleteLink">
-                    <button type="button" title="{{'ACTIONS.DELETE'|translate}}">
+                    <button type="button" title="{{'ACTIONS.DELETE'|translate}}" [swal]="{title :'Delete dictionary?', 
+                                text : 'Are you sure you want to delete word?', 
+                                type : 'warning',
+                                confirmButtonText : 'Yes',
+                                cancelButtonText : 'No',
+                                confirmButtonColor: '#d26a5c',
+                                confirmButtonText: 'Yes, delete it!',
+                                html: false,
+                                allowOutsideClick : false,
+                                showCancelButton: true}" (confirm)="deleteWord()">
                         <i class="si si-trash"></i>
                     </button>
                 </li>
                 <li *ngIf="word.updateLink">
-                    <button type="button" title="{{'ACTIONS.EDIT'|translate}}">
+                    <button type="button" (click)="editWord()" title="{{'ACTIONS.EDIT'|translate}}">
                         <i class="si si-note"></i>
                     </button>
                 </li>
@@ -27,10 +36,10 @@
         <div class="block-content border-t">
             <div class="row items-push text-center">
                 <div class="col-xs-6 border-r" *ngIf="word.pronunciation">
-                    <a class="h4 font-w300 push-5" href="javascript:void(0)" data-tooltip="Pronunciation">{{word.pronunciation}}</a>
+                    <span class="h4 font-w300 push-5" href="javascript:void(0)" data-tooltip="Pronunciation">{{word.pronunciation}}</span>
                 </div>
                 <div class="col-xs-6" *ngIf="word.titleWithMovements">
-                    <a class="h4 font-w300 push-5" href="javascript:void(0)">{{word.titleWithMovements}}</a>
+                    <span class="h4 font-w300 push-5" href="javascript:void(0)">{{word.titleWithMovements}}</span>
                 </div>
             </div>
         </div>
@@ -39,3 +48,4 @@
     <word-detail *ngIf="word" [wordDetailLink]="word.detailsLink"> </word-detail>
     <word-relations *ngIf="word" [relationsLink]="word.relationsLink"> </word-relations>
 </div>
+<edit-word [modalId]="'edit-word'" [visible]="showEditDialog" [word]="word" (onClosed)="onEditClosed($event)"></edit-word>

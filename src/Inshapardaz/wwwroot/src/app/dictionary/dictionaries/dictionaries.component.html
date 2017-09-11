@@ -65,7 +65,7 @@
                     <h1 class="h2 font-w400 push-15 animated fadeInLeftBig">{{'DICTIONARIES.NODICTIONARY' | translate}}</h1>
 
                     <h2 class="h3 font-w300 text-dark-op push-50 animated fadeInRightBig" *ngIf="!createLink">
-                        <a (click)="auth.login()">
+                        <a href="javascript:void(0)" (click)="auth.login()">
                                 {{'DICTIONARIES.SIGNINANDCREATRENEW' | translate}}
                                 </a>
                     </h2>

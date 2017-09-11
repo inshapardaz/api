@@ -8,7 +8,7 @@ import { Observable } from 'rxjs/Observable';
 import { UserManager, User } from 'oidc-client/lib/oidc-client.js';
 
 let authority = "http://ipid.azurewebsites.net"
-let sessionOverride = sessionStorage.getItem('server-address');
+let sessionOverride = sessionStorage.getItem('auth-server-address');
 if (sessionOverride !== null){
   authority = sessionOverride;
 }

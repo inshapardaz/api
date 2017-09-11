@@ -75,7 +75,7 @@ namespace Inshapardaz.Api.Controllers
         [Authorize]
         [HttpPost("/api/dictionaries", Name = "CreateDictionary")]
         [Produces(typeof(DictionaryView))]
-        public async Task<IActionResult> Post(DictionaryView value)
+        public async Task<IActionResult> Post([FromBody]DictionaryView value)
         {
             if (!ModelState.IsValid)
             {

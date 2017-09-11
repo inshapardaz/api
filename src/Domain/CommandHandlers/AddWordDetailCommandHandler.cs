@@ -1,10 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Darker;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
+using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
@@ -12,18 +12,15 @@ namespace Inshapardaz.Domain.CommandHandlers
     public class AddWordDetailCommandHandler : RequestHandlerAsync<AddWordDetailCommand>
     {
         private readonly IDatabaseContext _database;
-        private readonly IQueryProcessor _queryProcessor;
 
-        public AddWordDetailCommandHandler(IDatabaseContext database,
-            IQueryProcessor queryProcessor)
+        public AddWordDetailCommandHandler(IDatabaseContext database)
         {
             _database = database;
-            _queryProcessor = queryProcessor;
         }
 
         public override async Task<AddWordDetailCommand> HandleAsync(AddWordDetailCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var word = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = command.WordId });
+            var word = await _database.Word.SingleOrDefaultAsync(w => w.Id == command.WordId, cancellationToken);
 
             if (word == null)
             {

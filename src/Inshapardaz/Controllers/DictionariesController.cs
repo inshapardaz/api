@@ -11,6 +11,8 @@ using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Logging;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Api.Controllers
@@ -24,12 +26,15 @@ namespace Inshapardaz.Api.Controllers
         private readonly IRenderResponseFromObject<Dictionary, DictionaryView> _dictionaryRenderer;
         private readonly IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView> _dictionaryDownloadRenderer;
 
+        private readonly ILogger _logger;
+
         public DictionariesController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
             IUserHelper userHelper,
             IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView> dictionariesRenderer,
             IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer,
-            IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView> dictionaryDownloadRenderer)
+            IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView> dictionaryDownloadRenderer, 
+            ILogger<DictionariesController> logger)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
@@ -37,6 +42,7 @@ namespace Inshapardaz.Api.Controllers
             _dictionariesRenderer = dictionariesRenderer;
             _dictionaryRenderer = dictionaryRenderer;
             _dictionaryDownloadRenderer = dictionaryDownloadRenderer;
+            _logger = logger;
         }
 
         [HttpGet("/api/dictionaries", Name = "GetDictionaries")]
@@ -59,6 +65,7 @@ namespace Inshapardaz.Api.Controllers
 
             if (result == null)
             {
+                _logger.LogDebug("Unable to find dictionary with id {0}", id);
                 return NotFound();
             }
 
@@ -72,6 +79,9 @@ namespace Inshapardaz.Api.Controllers
         {
             if (!ModelState.IsValid)
             {
+                IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+                _logger.LogDebug("Unable to create dictionary. Model not valid. {0}", string.Join("\n", allErrors.First().ErrorMessage));
+
                 return BadRequest(ModelState);
             }
 
@@ -96,6 +106,9 @@ namespace Inshapardaz.Api.Controllers
         {
             if (!ModelState.IsValid)
             {
+                IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+                _logger.LogDebug("Unable to create dictionary. Model not valid. {0}", string.Join("\n", allErrors.First().ErrorMessage));
+
                 return BadRequest(ModelState);
             }
 
@@ -106,6 +119,7 @@ namespace Inshapardaz.Api.Controllers
 
             if (result == null)
             {
+                _logger.LogDebug("Existing dictionary not found. Creating new with name '{0}'", value.Name);
                 AddDictionaryCommand addDictionaryCommand = new AddDictionaryCommand
                 {
                     Dictionary = value.Map<DictionaryView, Dictionary>()
@@ -118,6 +132,8 @@ namespace Inshapardaz.Api.Controllers
                 var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary);
                 return Created(response.Links.Single(x => x.Rel == "self").Href, response);
             }
+
+            _logger.LogDebug("Updating existing dictionary with id '{0}'", value.Id);
 
             UpdateDictionaryCommand updateDictionaryCommand = new UpdateDictionaryCommand
             {
@@ -141,8 +157,11 @@ namespace Inshapardaz.Api.Controllers
 
             if (result == null)
             {
+                _logger.LogDebug("Dictionary with id '{0}' not found. Nothing deleted", id);
                 return NotFound();
             }
+
+            _logger.LogDebug("Deleting dictionary with id '{0}'", id);
 
             await _commandProcessor.SendAsync(new DeleteDictionaryCommand
             {
@@ -153,7 +172,7 @@ namespace Inshapardaz.Api.Controllers
             return NoContent();
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("/api/dictionaries/{id}/download", Name = "CreateDictionaryDownload")]
         [Produces(typeof(DictionaryView))]
         public async Task<IActionResult> CreateDownloadForDictionary(int id)
@@ -164,6 +183,8 @@ namespace Inshapardaz.Api.Controllers
 
             if (dictionary == null)
             {
+                _logger.LogDebug("Dictionary with id '{0}' not found. Download cannot be created", id);
+
                 return NotFound();
             }
 
@@ -198,6 +219,8 @@ namespace Inshapardaz.Api.Controllers
             {
                 return File(file.Contents, file.MimeType, file.FileName);
             }
+
+            _logger.LogDebug("Dictionary with id '{0}' not found. Download cannot be found", id);
 
             return NotFound();
         }

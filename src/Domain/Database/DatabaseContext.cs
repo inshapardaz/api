@@ -40,7 +40,6 @@ namespace Inshapardaz.Domain.Database
                 entity.HasOne(d => d.WordDetail)
                     .WithMany(p => p.Meaning)
                     .HasForeignKey(d => d.WordDetailId)
-                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_Meaning_WordDetail");
             });
 
@@ -51,7 +50,6 @@ namespace Inshapardaz.Domain.Database
                 entity.HasOne(d => d.WordDetail)
                     .WithMany(p => p.Translation)
                     .HasForeignKey(d => d.WordDetailId)
-                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_Translation_WordDetail");
             });
 
@@ -74,7 +72,6 @@ namespace Inshapardaz.Domain.Database
                 entity.HasOne(d => d.WordInstance)
                     .WithMany(p => p.WordDetail)
                     .HasForeignKey(d => d.WordInstanceId)
-                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_WordDetail_Word");
             });
 
@@ -85,7 +82,6 @@ namespace Inshapardaz.Domain.Database
                 entity.HasOne(d => d.RelatedWord)
                     .WithMany(p => p.WordRelationRelatedWord)
                     .HasForeignKey(d => d.RelatedWordId)
-                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_WordRelation_RelatedWord");
 
                 entity.HasOne(d => d.SourceWord)

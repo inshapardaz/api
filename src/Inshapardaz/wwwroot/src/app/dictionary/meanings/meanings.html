@@ -1,30 +1,48 @@
-<!--<ul class="nav-users push rtl">
-    <li *ngFor="let meaning of meanings">
-        <a text-center *ngIf="meaning.deleteLink || meaning.updateLink">       
-            {{meaning.value}}
-            <div class="font-w400 text-muted">
-                <small>{{meaning.context}}</small>
-            </div>        
-            <div class="btn-group pull-left">
-                <button *ngIf="meaning.deleteLink"class="btn btn-xs btn-default" type="button" (click)="deleteMeaning(meaning)" data-toggle="tooltip" title="Remove Meaning"><i class="fa fa-times"></i></button>
-                <button *ngIf="meaning.updateLink" class="btn btn-xs btn-default" type="button" (click)="editMeaning(meaning)"  data-toggle="tooltip" title="Edit Meaning"><i class="fa fa-pencil"></i></button>
-            </div>
-        </a>
-    </li>
-</ul>-->
 <div class="content-grid push-50">
     <div class="row">
-        <table class="table table-striped table-borderless table-vcenter">
-        <tr *ngFor="let meaning of meanings">
-            <td text-center *ngIf="meaning.deleteLink || meaning.updateLink" style="width:75px">       
-                <div class="btn-group">
-                    <button *ngIf="meaning.deleteLink"class="btn btn-xs btn-default" type="button" (click)="deleteMeaning(meaning)" data-toggle="tooltip" title="{{'ACTIONS.DELETE'|translate}}"><i class="fa fa-times"></i></button>
-                    <button *ngIf="meaning.updateLink" class="btn btn-xs btn-default" type="button" (click)="editMeaning(meaning)"  data-toggle="tooltip" title="{{'ACTIONS.EDIT'|translate}}"><i class="fa fa-pencil"></i></button>
-                </div>
-            </td>
-            <td class="h5 pull-right">{{meaning.context}}</td>
-            <td class="h5 pull-right">{{meaning.value}}</td>
-        </tr>
+        <table class="table table-striped table-borderless table-vcenter" *ngIf="meanings != null && meanings.length > 0">
+            <tr *ngFor="let meaning of meanings">
+                <td text-center *ngIf="meaning.deleteLink || meaning.updateLink" style="width:75px">
+                    <div class="btn-group">
+                        <button *ngIf="meaning.deleteLink" class="btn btn-xs btn-default" type="button" data-toggle="tooltip"
+                            title="{{'ACTIONS.DELETE'|translate}}"
+                            [swal]="{title :'Delete Meaning?', 
+                            text : 'Are you sure you want to delete meaning?', 
+                            type : 'warning',
+                            confirmButtonText : 'Yes',
+                            cancelButtonText : 'No',
+                            confirmButtonColor: '#d26a5c',
+                            confirmButtonText: 'Yes, delete it!',
+                            html: false,
+                            allowOutsideClick : false,
+                            showCancelButton: true}" 
+                            (confirm)="deleteMeaning(meaning)"><i class="fa fa-times"></i></button>
+                        <button *ngIf="meaning.updateLink" class="btn btn-xs btn-default" type="button" (click)="editMeaning(meaning)" data-toggle="tooltip"
+                            title="{{'ACTIONS.EDIT'|translate}}"><i class="fa fa-pencil"></i></button>
+                    </div>
+                </td>
+                <td class="h5 pull-right">{{meaning.context}}</td>
+                <td class="h5 pull-right">{{meaning.value}}</td>
+            </tr>
         </table>
+
+        <div class="content text-center overflow-hidden" *ngIf="meanings == null || meanings.length < 1">
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3">
+                        <h1 class="font-s128 font-w300 text-amethyst animated fadeInDown">
+                            <i class="si si-ghost"></i>
+                        </h1>
+                        <h2 class="h3 font-w300 push-50 animated fadeInUp">{{'MEANING.EMPTY' | translate}}</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="createLink">
+                    <button class="btn btn-block btn-default push-10" (click)="addMeaning()"> 
+                        <i class="fa fa-plus pull-left"></i>
+                        {{ 'MEANING.ADD' | translate}}
+                    </button>
+                </div>
     </div>
 </div>
+<edit-meaning [modalId]="'edit-meaning-' + wordDetailId" [createLink]="createLink" [visible]="showEditDialog" [meaning]="selectedMeaning" (onClosed)="onEditClosed($event)"></edit-meaning>

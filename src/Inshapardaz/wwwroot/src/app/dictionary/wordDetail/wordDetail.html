@@ -29,7 +29,7 @@
                     </ul>
                 </div>
                 <div class="block-content">
-                    <word-meanings *ngIf="detail" [meaningsLink]="detail.meaningsLink"> </word-meanings>
+                    <word-meanings *ngIf="detail" [wordDetailId]="detail.id" [meaningsLink]="detail.meaningsLink" [createLink]="detail.createMeaningLink"> </word-meanings>
                 </div>
             </div>
             <div *ngIf="createLink">

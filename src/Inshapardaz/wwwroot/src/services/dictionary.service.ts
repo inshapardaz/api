@@ -168,6 +168,22 @@ export class DictionaryService {
             .catch(this.handleError);
     }
 
+    createMeaning(url: string, meaning : Meaning): Observable<Meaning>{
+        return this.auth.AuthPost(url, meaning)
+                   .catch(this.handleError);
+    }
+
+    updateMeaning(url: string, meaning : Meaning): Observable<Meaning>{
+        return this.auth.AuthPut(url, meaning)
+                   .catch(this.handleError);
+    }
+
+    deleteMeaning(deleteLink : string) : Observable<void>{
+        return this.auth.AuthDelete(deleteLink)
+            .catch(this.handleError);
+    }
+
+
     getWordDetails(url: string): Observable<Array<WordDetail>> {
         return this.auth.AuthGet(url)
             .map(r => this.extractData(r, Mapper.MapWordDetails))

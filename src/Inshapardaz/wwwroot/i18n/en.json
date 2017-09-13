@@ -74,6 +74,15 @@
       "ATTRIBUTES" : "AttributesRequired"
     }
   },
+  "MEANING" : {
+    "EMPTY" : "No meaning defined",
+    "ADD" : "Add meaning",
+    "TITLE" : "Meaning",
+    "EXAMPLE" : "EXAMPLE",
+    "VALIDATION" : {
+      "TITLE" : "Meaning is requied"
+    }
+  },
   "RELATION": {
     "CREATENEW" : "Relate words",
     "TYPE" : "Relation Type",

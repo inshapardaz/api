@@ -17,6 +17,10 @@ export class MeaningsComponent {
     public errorMessage: string;
     public meanings : Array<Meaning>;
 
+    showEditDialog : boolean = false;
+    selectedMeaning : Meaning = null;
+    @Input() createLink : string;
+    @Input() wordDetailId : number;
     @Input()
     set meaningsLink(relationsLink: string) {
         this._meaningsLink = (relationsLink) || '';
@@ -41,16 +45,34 @@ export class MeaningsComponent {
                 this.errorMessage = <any>error;
             });
     }
-
-    editMeaning(meaning) {
-        console.log("Edit meaning not implemented");
+    addMeaning(){
+        this.selectedMeaning = null;
+        this.showEditDialog = true;
     }
 
-    deleteMeaning(meaning) {
-        if (meaning.deleteLink == null){
-            return;
-        }
+    editMeaning(meaning : Meaning) {
+        this.selectedMeaning = meaning;
+        this.showEditDialog = true;
+    }
+
+    deleteMeaning(meaning : Meaning) {
+        this.dictionaryService.deleteMeaning(meaning.deleteLink)
+        .subscribe(r => {
+            this.getMeanings();
+        }, this.handlerError);
 
         console.log("Delete meaning not implemented");
+    }
+
+    onEditClosed(created : boolean){
+        this.showEditDialog = false;
+        if (created){
+            this.getMeanings();
+        }
+    }
+
+    handlerError(error : any) {
+        this.errorMessage = <any>error;
+        this.isLoading = false;
     }
 }

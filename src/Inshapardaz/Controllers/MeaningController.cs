@@ -99,14 +99,14 @@ namespace Inshapardaz.Api.Controllers
                 return Unauthorized();
             }
 
-            var dwtails = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
+            var detail = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
 
-            if (dwtails == null)
+            if (detail == null)
             {
                 return BadRequest();
             }
 
-            var command = new AddWordMeaningCommand { Meaning = meaning.Map<MeaningView, Meaning>() };
+            var command = new AddWordMeaningCommand { WordDetailId = detail.Id, Meaning = meaning.Map<MeaningView, Meaning>()};
             await _commandProcessor.SendAsync(command);
             var response = _meaningRenderer.Render(command.Meaning);
             return Created(response.Links.Single(x => x.Rel == "self").Href, response);

@@ -172,6 +172,16 @@ export class Mapper{
             detail.deleteLink = deleteLink.href;
         }
 
+        var addMeaningLink = _.find<string[], Link>(source.links, ['rel', 'addMeaning']);
+        if (addMeaningLink != null){
+            detail.createMeaningLink = addMeaningLink.href;
+        }
+
+        var addTranslationLink = _.find<string[], Link>(source.links, ['rel', 'addTranslation']);
+        if (addTranslationLink != null){
+            detail.createTranslationLink = addTranslationLink.href;
+        }
+
         return detail;
     }
 

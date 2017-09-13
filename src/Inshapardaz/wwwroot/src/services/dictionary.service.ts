@@ -184,6 +184,26 @@ export class DictionaryService {
                    .catch(this.handleError);
     }
 
+    deleteWordDetail(deleteLink : string) : Observable<void>{
+        return this.auth.AuthDelete(deleteLink)
+            .catch(this.handleError);
+    }
+
+    createRelation(url: string, relation : Relation): Observable<Relation>{
+        return this.auth.AuthPost(url, relation)
+                   .catch(this.handleError);
+    }
+
+    updateRelation(url: string, relation : Relation): Observable<Relation>{
+        return this.auth.AuthPut(url, relation)
+                   .catch(this.handleError);
+    }
+
+    deleteRelation(deleteLink : string) : Observable<void>{
+        return this.auth.AuthDelete(deleteLink)
+            .catch(this.handleError);
+    }
+
     private extractData(res: Response, converter: Function) {
         let body = res.json();
         return converter(body);

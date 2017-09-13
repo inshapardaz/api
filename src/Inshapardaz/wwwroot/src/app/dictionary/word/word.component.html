@@ -3,8 +3,8 @@
         <div class="block-header" *ngIf="word.updateLink || word.deleteLink">
             <ul class="block-options">
                 <li *ngIf="word.deleteLink">
-                    <button type="button" title="{{'ACTIONS.DELETE'|translate}}" [swal]="{title :'Delete dictionary?', 
-                                text : 'Are you sure you want to delete word?', 
+                    <button type="button" title="{{'ACTIONS.DELETE'|translate}}" [swal]="{title :'Delete word?', 
+                                text : 'Are you sure you want to delete word and all of its details?', 
                                 type : 'warning',
                                 confirmButtonText : 'Yes',
                                 cancelButtonText : 'No',

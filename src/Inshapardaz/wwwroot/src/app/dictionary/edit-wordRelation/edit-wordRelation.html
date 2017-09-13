@@ -8,19 +8,18 @@
                             <button (click)="onClose()" type="button"><i class="si si-close"></i></button>
                         </li>
                     </ul>
-                    <h3 class="block-title">{{ 'WORD.CREATENEW' | translate }}</h3>
+                    <h3 class="block-title">{{ 'RELATION.CREATENEW' | translate }}</h3>
                 </div>
                 <div class="block-content">
                     <form class="js-validation-bootstrap form-horizontal push-10-t" #dictionaryForm="ngForm" (ngSubmit)="onSubmit()">
                         <div class="form-group">
                             <div class="col-sm-12">
                                 <div class="form-material">
-                                    <select class="form-control" id="language" name="language" size="1" required [(ngModel)]="model.languageId" #language="ngModel">
-                                                            <option *ngFor="let key of languages" [value]="key">{{languagesEnum[key]}}</option>
-                                                    </select>
-                                    <label for="material-select">{{ 'DICTIONARIES.LANGUAGE' | translate}}</label>
-                                    <div [hidden]="language.valid || language.pristine" class="alert alert-danger">
-                                        {{ 'DICTIONARIES.VALIDATION.LANGUAGE' | translate}}
+                                    <input class="form-control" type="text" id="relatedWord" name="relatedWord" #relatedWord="ngModel" required [(ngModel)]="model.relatedWord" [attr.placeholder]="translate.instant('RELATION.PLACEHOLDER.RELATEDWORD')"
+                                        required>
+                                    <label for="material-text">{{ 'RELATION.RELATEDWORD' | translate}} </label>
+                                    <div [hidden]="relatedWord.valid || relatedWord.pristine" class="alert alert-danger">
+                                        {{ 'RELATION.VALIDATION.RELATEDWORD' | translate}}
                                     </div>
                                 </div>
                             </div>
@@ -28,12 +27,12 @@
                         <div class="form-group">
                             <div class="col-sm-12">
                                 <div class="form-material">
-                                    <select class="form-control" id="attributes" name="attributes" size="1" required [(ngModel)]="model.attributeValue" #attributes="ngModel">
-                                            <option *ngFor="let key of attributesValues" [value]="key">{{attributeEnum[key]}}</option>
+                                    <select class="form-control" id="relationTypes" name="relationTypes" size="1" required [(ngModel)]="model.relationTypeId" #relationTypes="ngModel">
+                                            <option *ngFor="let key of relationTypesValues" [value]="key">{{relationTypesEnum[key]}}</option>
                                     </select>
-                                    <label for="material-select">{{ 'WORD.ATTRIBUTES' | translate}}</label>
-                                    <div [hidden]="attributes.valid || attributes.pristine" class="alert alert-danger">
-                                        {{ 'WORD.VALIDATION.ATTRIBUTES' | translate}}
+                                    <label for="material-select">{{ 'RELATION.TYPE' | translate}}</label>
+                                    <div [hidden]="relationTypes.valid || relationTypes.pristine" class="alert alert-danger">
+                                        {{ 'RELATION.VALIDATION.TYPE' | translate}}
                                     </div>
                                 </div>
                             </div>

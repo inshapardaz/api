@@ -18,7 +18,34 @@
                                     <i *ngIf="relation.relationTypeId==3" class="si si-vector fa-2x text-muted pull-left"></i>
                                     <i *ngIf="relation.relationTypeId>=4" class="si si-link fa-2x text-muted pull-left"></i>
                                 </div>
+                                <div class="block-content block-content-full block-content-mini bg-gray-lighter" *ngIf="relation.updateLink || relation.deleteLink ">
+                                    <a href="javascript:void(0)" class="btn btn-xs btn-info" 
+                                        *ngIf="relation.updateLink" (click)="editRelation(relation)">
+                                        <i class="fa fa-pencil"></i> Edit
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn btn-xs btn-warning pull-right"  *ngIf="relation.deleteLink"
+                                        [swal]="{title :'Delete Relation?', 
+                                        text : 'Are you sure you want to remove word relation?', 
+                                        type : 'warning',
+                                        confirmButtonText : 'Yes',
+                                        cancelButtonText : 'No',
+                                        confirmButtonColor: '#d26a5c',
+                                        confirmButtonText: 'Yes, delete it!',
+                                        html: false,
+                                        allowOutsideClick : false,
+                                        showCancelButton: true}" 
+                                        (confirm)="deleteRelation(relation)">
+                                        <i class="fa fa-trash"></i> Delete</a>
+                                </div>
                             </a>
+                        </div>
+                        <div class="col-lg-4" *ngIf="createLink">
+                                <a class="block block-link-hover3" (click)="addRelation()"> 
+                                    <div class="block-content block-content-full clearfix">
+                                        <span class="h4 text-muted pull-right hand">Add Relation</span>
+                                        <i class="si si-plus fa-2x text-muted pull-left"></i>
+                                    </div>
+                                </a>
                         </div>
                     </div>
                 </div>
@@ -26,3 +53,4 @@
         </div>
     </div>
 </div>  
+<edit-wordRelation [modalId]="'edit-relation'" [createLink]="createRelationLink" [visible]="showEditDialog" [relation]="selectedRelation" (onClosed)="onEditClosed($event)"></edit-wordRelation>

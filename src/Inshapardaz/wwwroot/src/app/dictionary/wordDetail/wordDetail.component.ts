@@ -38,7 +38,10 @@ export class WordDetailsComponent {
     }
 
     deleteDetail(detail : WordDetail){
-            
+        this.dictionaryService.deleteWordDetail(detail.deleteLink)
+        .subscribe(r => {
+            this.getWordDetails();
+        }, this.handlerError);  
     }
 
     addDetail(){
@@ -64,5 +67,9 @@ export class WordDetailsComponent {
             error => {
                 this.errorMessage = <any>error;
             });
+    }
+
+    handlerError(error : any) {
+        this.errorMessage = <any>error;
     }
 }

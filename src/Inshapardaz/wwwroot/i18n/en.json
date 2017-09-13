@@ -74,6 +74,18 @@
       "ATTRIBUTES" : "AttributesRequired"
     }
   },
+  "RELATION": {
+    "CREATENEW" : "Relate words",
+    "TYPE" : "Relation Type",
+    "RELATEDWORD" : "Related Word",
+    "PLACEHOLDER" : {
+      "RELATEDWORD" : "Related Word"
+    },
+    "VALIDATION" : {
+      "TYPE" : "Relation type is required",
+      "RELATEDWORD" : "Related Word required"
+    }
+  },
   "THESAURUS" : {
     "TITLE" : "Thesaurus",
     "SLOGAN" : "Lets build better language"    

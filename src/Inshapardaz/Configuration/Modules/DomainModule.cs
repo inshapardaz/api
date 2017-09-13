@@ -48,6 +48,7 @@ namespace Inshapardaz.Api.Configuration.Modules
             // Darker Handlers
             services.AddTransient<GetDictionariesByUserQueryHandler>();
             services.AddTransient<GetDictionaryByIdQueryHandler>();
+            services.AddTransient<GetDictionaryByWordDetailIdQueryHandler>();
             services.AddTransient<WordStartingWithQueryHandler>();
             services.AddTransient<WordMeaningByWordQueryHandler>();
             services.AddTransient<WordMeaningByWordDetailQueryHandler>();

@@ -6,21 +6,23 @@
                     <h3 class="block-title pull-right">{{detail.attributes}} - {{detail.language}}</h3>
                     <ul class="block-options pull-left" *ngIf="detail.updateLink || detail.deleteLink">
                         <li *ngIf="detail.deleteLink">
-                            <button type="button" title="{{'ACTIONS.DELETE'|translate}}" (click)="editDetail(detail)">
+                            <button type="button" title="{{'ACTIONS.DELETE'|translate}}" 
+                                [swal]="{title :'Delete Word Detail?', 
+                                text : 'Are you sure you want to delete word detail?', 
+                                type : 'warning',
+                                confirmButtonText : 'Yes',
+                                cancelButtonText : 'No',
+                                confirmButtonColor: '#d26a5c',
+                                confirmButtonText: 'Yes, delete it!',
+                                html: false,
+                                allowOutsideClick : false,
+                                showCancelButton: true}" 
+                                (confirm)="deleteDetail(detail)">
                                 <i class="si si-trash"></i>
                             </button>
                         </li>
                         <li *ngIf="detail.updateLink">
-                            <button type="button" title="{{'ACTIONS.EDIT'|translate}}" [swal]="{title :'Delete dictionary?', 
-                                        text : 'Are you sure you want to delete word detail?', 
-                                        type : 'warning',
-                                        confirmButtonText : 'Yes',
-                                        cancelButtonText : 'No',
-                                        confirmButtonColor: '#d26a5c',
-                                        confirmButtonText: 'Yes, delete it!',
-                                        html: false,
-                                        allowOutsideClick : false,
-                                        showCancelButton: true}" (confirm)="deleteDetail(detail)">
+                            <button type="button" title="{{'ACTIONS.EDIT'|translate}}" (click)="editDetail(detail)">
                                 <i class="si si-note"></i>
                             </button>
                         </li>
@@ -40,4 +42,4 @@
     </div>
 </div>
 
-<edit-wordDetail [modalId]="'edit-word'" [createLink]="createLink" [visible]="showEditDialog" [wordDetail]="selectedDetail" (onClosed)="onEditClosed($event)"></edit-wordDetail>
+<edit-wordDetail [modalId]="'edit-wordDetail'" [createLink]="createLink" [visible]="showEditDialog" [wordDetail]="selectedDetail" (onClosed)="onEditClosed($event)"></edit-wordDetail>

@@ -246,15 +246,24 @@ export class Mapper{
     }
 
     public static MapRelation(source: any) : Relation{
-        let meaning = new Relation();
-        meaning.id = source.id;
-        meaning.relatedWord = source.relatedWord;
-        meaning.relatedWordId = source.relatedWordId;
-        meaning.relationType = source.relationType;
-        meaning.relationTypeId = source.relationTypeId;
-        meaning.selfLink =  _.find<string[], Link>(source.links, ['rel', 'self']).href;
-        meaning.relatedWordLink =  _.find<string[], Link>(source.links, ['rel', 'related-word']).href;
+        let relation = new Relation();
+        relation.id = source.id;
+        relation.relatedWord = source.relatedWord;
+        relation.relatedWordId = source.relatedWordId;
+        relation.relationType = source.relationType;
+        relation.relationTypeId = source.relationTypeId;
+        relation.selfLink =  _.find<string[], Link>(source.links, ['rel', 'self']).href;
+        relation.relatedWordLink =  _.find<string[], Link>(source.links, ['rel', 'related-word']).href;
         
-        return meaning;
+        var linkUpd = _.find<string[], Link>(source.links, ['rel', 'update']);
+        if (linkUpd != null){
+            relation.updateLink = linkUpd.href;
+        }
+        var linkDel = _.find<string[], Link>(source.links, ['rel', 'delete']);
+        if (linkDel != null){
+            relation.deleteLink = linkDel.href;
+        }
+
+        return relation;
     }
 }

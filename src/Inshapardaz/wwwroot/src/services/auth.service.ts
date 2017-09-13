@@ -9,7 +9,7 @@ import { UserManager, User } from 'oidc-client/lib/oidc-client.js';
 
 let authority = "http://ipid.azurewebsites.net"
 let sessionOverride = sessionStorage.getItem('auth-server-address');
-if (sessionOverride !== null){
+if (sessionOverride !== null) {
   authority = sessionOverride;
 }
 const settings: any = {
@@ -39,10 +39,21 @@ export class AuthService {
 
   authHeaders: Headers;
 
-
   constructor(private http: Http, public router: Router) {
+    this.init();
+  }
 
-    this.mgr.getUser()
+  init() {
+    this.mgr.events.addUserLoaded((user) => {
+      this.currentUser = user;
+      this.loggedIn = !(user === undefined);
+    });
+
+    this.mgr.events.addUserUnloaded((e) => {
+      this.loggedIn = false;
+    });
+
+    return this.mgr.getUser()
       .then((user) => {
         if (user) {
           this.loggedIn = true;
@@ -56,16 +67,6 @@ export class AuthService {
       .catch((err) => {
         this.loggedIn = false;
       });
-
-    this.mgr.events.addUserLoaded((user) => {
-      this.currentUser = user;
-	  this.loggedIn = !(user === undefined);
-      });
-
-    this.mgr.events.addUserUnloaded((e) => {
-      this.loggedIn = false;
-    });
-
   }
 
   isLoggedInObs(): Observable<boolean> {
@@ -135,22 +136,22 @@ export class AuthService {
     });
   }
 
-  refreshToken(){
+  refreshToken() {
     this.mgr.signinSilent();
   }
-  
+
 
   startSignoutMainWindow() {
     this.mgr.getUser().then(user => {
       return this.mgr.signoutRedirect({ id_token_hint: user.id_token }).then(resp => {
         console.log('signed out', resp);
-		setTimeout(5000, () => {
+        setTimeout(5000, () => {
           console.log('testing to see if fired...');
         });
       }).catch(function (err) {
         console.log(err);
       });
-    });   
+    });
   };
 
   endSignoutMainWindow() {

@@ -7,4 +7,7 @@ export class Relation{
     public relationTypeId : RelationTypes;
     public relatedWordLink : string;
     public selfLink : string;
+
+    public updateLink : string;
+    public deleteLink : string;
 }

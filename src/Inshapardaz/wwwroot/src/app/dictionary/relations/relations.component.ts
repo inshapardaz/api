@@ -12,13 +12,15 @@ import {RelationTypes} from '../../../models/relationTypes';
 
 export class RelationsComponent {
     public _relationsLink: string;
-    public _createLink: string;
+    public createLink: string;
 
     public relationTypes : RelationTypes;
     public isLoading : boolean = false;
     public errorMessage: string;
     public relations : Array<Relation>;
-
+    selectedRelation : Relation = null;
+    showEditDialog : boolean = false;
+    
     @Input()
     set relationsLink(relationsLink: string) {
         this._relationsLink = (relationsLink) || '';
@@ -28,10 +30,10 @@ export class RelationsComponent {
 
     @Input()
     set createRelationLink(createLink: string) {
-        this._createLink = (createLink) || '';
+        this.createLink = (createLink) || '';
     }
     
-    get createRelationLink(): string { return this._createLink; }
+    get createRelationLink(): string { return this.createLink; }
 
     constructor(private route: ActivatedRoute,
         private router: Router,
@@ -49,5 +51,39 @@ export class RelationsComponent {
             error => {
                 this.errorMessage = <any>error;
             });
+    }
+
+    addRelation(){
+        this.selectedRelation = null;
+        this.showEditDialog = true;
+        console.log(this.showEditDialog);
+        
+    }
+
+    editRelation(relation : Relation){
+        this.selectedRelation = relation;
+        this.showEditDialog = true;
+        console.log(this.showEditDialog);
+        
+    }
+
+    deleteRelation(relation : Relation){
+        this.dictionaryService.deleteRelation(relation.deleteLink)
+        .subscribe(r => {
+            this.getRelations();
+        }, this.handlerError);  
+    }
+
+    onEditClosed(created : boolean){
+        this.showEditDialog = false;
+        console.log(this.showEditDialog);
+        
+        if (created){
+            this.getRelations();
+        }
+    }
+
+    handlerError(error : any) {
+        this.errorMessage = <any>error;
     }
 }

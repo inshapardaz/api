@@ -4,7 +4,7 @@ import { LocationStrategy, HashLocationStrategy } from "@angular/common";
 import { HttpModule, JsonpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import {TranslateModule} from "ng2-translate/ng2-translate";
+import { TranslateModule } from "ng2-translate/ng2-translate";
 
 import { AuthService } from './services/auth.service';
 import { DictionaryService } from './services/dictionary.service';
@@ -36,13 +36,14 @@ import { WordComponent } from './app/dictionary/word/word.component';
 import { WordDetailsComponent } from './app/dictionary/wordDetail/wordDetail.component';
 import { EditWordDetailComponent } from './app/dictionary/edit-wordDetail/edit-wordDetail.component';
 import { RelationsComponent } from './app/dictionary/relations/relations.component';
+import { EditWordRelationComponent } from './app/dictionary/edit-wordRelation/edit-wordRelation.component';
 import { MeaningsComponent } from './app/dictionary/meanings/meanings.component';
-import { ThesaurusComponent }      from './app/thesaurus/thesaurus.component';
-import { TranslationsComponent }      from './app/translations/translations.component';
+import { ThesaurusComponent } from './app/thesaurus/thesaurus.component';
+import { TranslationsComponent } from './app/translations/translations.component';
 
 import { SweetAlert2Module } from '@toverux/ngsweetalert2';
 
-import { routing  } from './app.routes';
+import { routing } from './app.routes';
 
 @NgModule({
   imports: [
@@ -85,6 +86,7 @@ import { routing  } from './app.routes';
     EditDictionaryComponent,
     EditWordComponent,
     EditWordDetailComponent,
+    EditWordRelationComponent,
     WordComponent,
     WordDetailsComponent,
     RelationsComponent,
@@ -96,4 +98,4 @@ import { routing  } from './app.routes';
   bootstrap: [AppComponent]
 })
 
-export class AppModule { }   
+export class AppModule { }

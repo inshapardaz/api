@@ -35,7 +35,7 @@
                 <td class="h5 pull-right">{{translation.language}}</td>
             </tr>
         </table>
-        <p class="font-s13" *ngIf="translations != null">No translations available. Why not add some.</p>
+        <p class="font-s13" *ngIf="translations == null || translations.length < 1">No translations available. Why not add some.</p>
     </div>
 </div>
 

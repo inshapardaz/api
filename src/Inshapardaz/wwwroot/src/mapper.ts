@@ -194,8 +194,8 @@ export class Mapper{
     public static MapTranslation(source: any) : Translation{
         let translation = new Translation();
         translation.id = source.id;
-        translation.language = source.lanuage;
-        translation.languageValue = source.lanuageId;
+        translation.language = source.language;
+        translation.languageId = source.languageId;
         translation.value = source.value;
         translation.wordId = source.wordId;
 

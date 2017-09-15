@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Controllers
             if (user != Guid.Empty)
             {
                 var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
-                if (dictionary != null && dictionary.UserId != user)
+                if (dictionary != null &&  dictionary.UserId != user)
                 {
                     return Unauthorized();
                 }
@@ -64,6 +64,42 @@ namespace Inshapardaz.Api.Controllers
             }
 
             var translations = await _queryProcessor.ExecuteAsync(new TranslationsByLanguageQuery { WordId = id, Language = language });
+            return Ok(translations.Select(t => _translationRenderer.Render(t)).ToList());
+        }
+
+        [HttpGet]
+        [Route("api/detail/{id}/translations", Name = "GetWordTranslationsByDetailId")]
+        public async Task<IActionResult> GetTranslationForWordDetail(int id)
+        {
+            var user = _userHelper.GetUserId();
+            if (user != Guid.Empty)
+            {
+                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
+                if (dictionary != null && dictionary.UserId != user)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            var translations = await _queryProcessor.ExecuteAsync(new TranslationsByWordDetailIdQuery { WordDetailId = id });
+            return Ok(translations.Select(t => _translationRenderer.Render(t)).ToList());
+        }
+
+        [HttpGet]
+        [Route("api/detail/{id}/translations/languages/{language}", Name = "GetWordTranslationsByDetailIdAndLanguage")]
+        public async Task<IActionResult> GetTranslationForWordDetail(int id, Languages language)
+        {
+            var user = _userHelper.GetUserId();
+            if (user != Guid.Empty)
+            {
+                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
+                if (dictionary != null && dictionary.UserId != user)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            var translations = await _queryProcessor.ExecuteAsync(new TranslationsByWordDetailAndLanguageQuery { WordDetailId = id, Language = language });
             return Ok(translations.Select(t => _translationRenderer.Render(t)).ToList());
         }
 

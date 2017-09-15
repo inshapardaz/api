@@ -33,8 +33,8 @@ namespace Inshapardaz.Api.Renderers
 
             if (_userHelper.IsContributor)
             {
-                links.Add(LinkRenderer.Render("UpdateTranslation", "update", new { id = source.WordDetail.WordInstanceId, detailId = source.WordDetailId, translationId = source.Id }));
-                links.Add(LinkRenderer.Render("DeleteTranslation", "delete", new { id = source.WordDetail.WordInstanceId, detailId = source.WordDetailId, translationId = source.Id }));
+                links.Add(LinkRenderer.Render("UpdateTranslation", "update", new { id = source.Id }));
+                links.Add(LinkRenderer.Render("DeleteTranslation", "delete", new { id = source.Id }));
             }
             result.Links = links;
             return result;

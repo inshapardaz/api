@@ -61,7 +61,9 @@ namespace Inshapardaz.Api.Configuration.Modules
             services.AddTransient<WordByTitleQueryHandler>();
             services.AddTransient<WordByIdQueryHandler>();
             services.AddTransient<TranslationsByWordIdQueryHandler>();
+            services.AddTransient<TranslationsByWordDetailIdQueryHandler>();
             services.AddTransient<TranslationsByLanguageQueryHandler>();
+            services.AddTransient<TranslationsByWordDetailAndLanguageQueryHandler>();
             services.AddTransient<TranslationByIdQueryHandler>();
             services.AddTransient<RelationshipByWordIdQueryHandler>();
             services.AddTransient<RelationshipByIdQueryHandler>();

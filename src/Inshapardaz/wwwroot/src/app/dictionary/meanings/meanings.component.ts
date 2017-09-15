@@ -60,8 +60,6 @@ export class MeaningsComponent {
         .subscribe(r => {
             this.getMeanings();
         }, this.handlerError);
-
-        console.log("Delete meaning not implemented");
     }
 
     onEditClosed(created : boolean){

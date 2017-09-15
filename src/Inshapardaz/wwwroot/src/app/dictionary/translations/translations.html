@@ -1,22 +1,48 @@
 <div class="block-header bg-gray-lighter">
     <ul class="block-options">
-    <li>
-        <span>
-            <i class="fa fa-plus"></i>
-            Add Translations</span>
-    </li>
-</ul>
-<h3 class="block-title">Translations</h3>
+        <li>
+            <button type="button" (click)="addTranslation()">
+                <i class="si si-plus"></i> Add Translations
+            </button>
+        </li>
+    </ul>
+    <h3 class="block-title">Translations</h3>
 </div>
 <div class="block-content">
     <div class="block-content">
-        <ul class="nav-users push" *ngIf="translations != null">
-            <li *ngFor="let translation of translations">
-                <a href="javacript:void(0)">
-                        <i class="fa fa-circle text-success"></i> {{translation.value}}
-                        <div class="font-w400 text-muted"><small>{{translation.language}}</small></div>
-                    </a>
-                </li>
-        </ul>
+        <table class="table table-striped table-borderless table-vcenter" *ngIf="translations != null && translations.length > 0">
+            <tr *ngFor="let translation of translations">
+                <td text-center *ngIf="translation.deleteLink || translation.updateLink" style="width:75px">
+                    <div class="btn-group">
+                        <button *ngIf="translation.deleteLink" class="btn btn-xs btn-default" type="button" data-toggle="tooltip"
+                            title="{{'ACTIONS.DELETE'|translate}}"
+                            [swal]="{title :'Delete Translation?', 
+                            text : 'Are you sure you want to translation?', 
+                            type : 'warning',
+                            confirmButtonText : 'Yes',
+                            cancelButtonText : 'No',
+                            confirmButtonColor: '#d26a5c',
+                            confirmButtonText: 'Yes, delete it!',
+                            html: false,
+                            allowOutsideClick : false,
+                            showCancelButton: true}" 
+                            (confirm)="deleteTranslation(translation)"><i class="fa fa-times"></i></button>
+                        <button *ngIf="translation.updateLink" class="btn btn-xs btn-default" type="button" (click)="editTranslation(translation)" data-toggle="tooltip"
+                            title="{{'ACTIONS.EDIT'|translate}}"><i class="fa fa-pencil"></i></button>
+                    </div>
+                </td>
+                <td class="h5 pull-right">{{translation.value}}</td>
+                <td class="h5 pull-right">{{translation.language}}</td>
+            </tr>
+        </table>
         <p class="font-s13" *ngIf="translations != null">No translations available. Why not add some.</p>
     </div>
+</div>
+
+<edit-translation [modalId]="'edit-translation'" 
+                  [createLink]="createLink" 
+                  [translation]="selectedTranslation"
+                  [visible]="showEditDialog"
+                  (onClosed)="onEditClosed($event)">
+
+</edit-translation>

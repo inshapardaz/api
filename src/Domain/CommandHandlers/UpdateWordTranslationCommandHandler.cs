@@ -1,10 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Darker;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Queries;
+using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 
 namespace Inshapardaz.Domain.CommandHandlers
@@ -12,19 +11,15 @@ namespace Inshapardaz.Domain.CommandHandlers
     public class UpdateWordTranslationCommandHandler : RequestHandlerAsync<UpdateWordTranslationCommand>
     {
         private readonly IDatabaseContext _database;
-        private readonly IQueryProcessor _queryProcessor;
 
-        public UpdateWordTranslationCommandHandler(
-            IDatabaseContext database,
-            IQueryProcessor queryProcessor)
+        public UpdateWordTranslationCommandHandler(IDatabaseContext database)
         {
             _database = database;
-            _queryProcessor = queryProcessor;
         }
 
         public override async Task<UpdateWordTranslationCommand> HandleAsync(UpdateWordTranslationCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var translation = await _queryProcessor.ExecuteAsync(new TranslationByIdQuery { Id = command.Translation.Id }, cancellationToken);
+            var translation = await _database.Translation.SingleOrDefaultAsync(t => t.Id == command.Translation.Id, cancellationToken);
 
             if (translation == null)
             {

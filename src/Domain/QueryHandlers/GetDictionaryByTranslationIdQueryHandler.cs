@@ -22,7 +22,11 @@ namespace Inshapardaz.Domain.QueryHandlers
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var meaning =
-                await _database.Translation.SingleOrDefaultAsync(m => m.Id == query.TranslationId, cancellationToken);
+                await _database.Translation
+                               .Include(t => t.WordDetail)
+                               .ThenInclude(wd => wd.WordInstance)
+                               .ThenInclude(w => w.Dictionary)
+                               .SingleOrDefaultAsync(m => m.Id == query.TranslationId, cancellationToken);
             return meaning?.WordDetail.WordInstance.Dictionary;
         }
     }

@@ -40,8 +40,10 @@ import { EditWordRelationComponent } from './app/dictionary/edit-wordRelation/ed
 import { MeaningsComponent } from './app/dictionary/meanings/meanings.component';
 import { EditMeaningComponent } from './app/dictionary/edit-meaning/edit-meaning.component';
 import { WordTranslationsComponent } from './app/dictionary/translations/translations.component';
+import { EditWordTranslationComponent } from './app/dictionary/edit-translation/edit-translation.component';
 import { ThesaurusComponent } from './app/thesaurus/thesaurus.component';
 import { TranslationsComponent } from './app/translations/translations.component';
+
 
 import { SweetAlert2Module } from '@toverux/ngsweetalert2';
 
@@ -95,6 +97,7 @@ import { routing } from './app.routes';
     MeaningsComponent,
     EditMeaningComponent,
     WordTranslationsComponent,
+    EditWordTranslationComponent,
     ThesaurusComponent,
     TranslationsComponent
   ],

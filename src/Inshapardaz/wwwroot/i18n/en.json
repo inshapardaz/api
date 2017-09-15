@@ -80,6 +80,10 @@
     "CREATENEW" : "Create new word type",
     "EDIT" : "Edit word type"
   },
+  "WORDTRANSLATION":{
+    "CREATENEW" : "Create new Translation",
+    "EDIT" : "Edit Translation"
+  },
   "MEANING" : {
     "EMPTY" : "No meaning defined",
     "ADD" : "Add meaning",

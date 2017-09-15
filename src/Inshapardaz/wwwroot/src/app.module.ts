@@ -39,6 +39,7 @@ import { RelationsComponent } from './app/dictionary/relations/relations.compone
 import { EditWordRelationComponent } from './app/dictionary/edit-wordRelation/edit-wordRelation.component';
 import { MeaningsComponent } from './app/dictionary/meanings/meanings.component';
 import { EditMeaningComponent } from './app/dictionary/edit-meaning/edit-meaning.component';
+import { WordTranslationsComponent } from './app/dictionary/translations/translations.component';
 import { ThesaurusComponent } from './app/thesaurus/thesaurus.component';
 import { TranslationsComponent } from './app/translations/translations.component';
 
@@ -93,6 +94,7 @@ import { routing } from './app.routes';
     RelationsComponent,
     MeaningsComponent,
     EditMeaningComponent,
+    WordTranslationsComponent,
     ThesaurusComponent,
     TranslationsComponent
   ],

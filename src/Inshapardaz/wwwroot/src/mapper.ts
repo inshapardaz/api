@@ -194,13 +194,23 @@ export class Mapper{
     public static MapTranslation(source: any) : Translation{
         let translation = new Translation();
         translation.id = source.id;
-        translation.lanuage = source.lanuage;
+        translation.language = source.lanuage;
         translation.languageValue = source.lanuageId;
         translation.value = source.value;
         translation.wordId = source.wordId;
 
         translation.selfLink = _.find<string[], Link>(source.links, ['rel', 'self']).href;
         translation.parentLink = _.find<string[], Link>(source.links, ['rel', 'worddetail']).href;
+        var updateLink = _.find<string[], Link>(source.links, ['rel', 'update']);
+        if (updateLink != null){
+            translation.updateLink = updateLink.href;
+        }
+
+        var deleteLink = _.find<string[], Link>(source.links, ['rel', 'delete']);
+        if (deleteLink != null){
+            translation.deleteLink = deleteLink.href;
+        }
+
         return translation;
     }
 

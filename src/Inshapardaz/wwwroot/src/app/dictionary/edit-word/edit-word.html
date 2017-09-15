@@ -8,7 +8,8 @@
                             <button (click)="onClose()" type="button"><i class="si si-close"></i></button>
                         </li>
                     </ul>
-                    <h3 class="block-title">{{ 'WORD.CREATENEW' | translate }}</h3>
+                    <h3 class="block-title"  *ngIf="isCreating == true">{{ 'WORD.CREATENEW' | translate }}</h3>
+                    <h3 class="block-title" *ngIf="isCreating !== true">{{ 'WORD.EDIT' | translate }}</h3>
                 </div>
                 <div class="block-content">
                     <form class="js-validation-bootstrap form-horizontal push-10-t"  #dictionaryForm="ngForm" (ngSubmit)="onSubmit()">

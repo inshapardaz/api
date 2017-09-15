@@ -1,19 +1,22 @@
- <h2 class="content-heading">Relations</h2>
-<div class="content-grid push-50">
-    <!-- Simple Tiles -->
-    <div class="row">
-        <div class="col-lg-4" *ngFor="let translation of translations">
-            <!--<a class="block block-link-hover3" [routerLink]="['/word', relation.relatedWordId]">
-                <div class="block-content block-content-full clearfix">
-                    <span class="h4 font-w700">{{relation.relatedWord}}</span>
-                    <span class="h4 text-muted">{{relation.relationType}}</span>
-                    <i *ngIf="relation.relationTypeId==0" class="si si-layers fa-2x text-muted pull-right"></i>                    
-                    <i *ngIf="relation.relationTypeId==1" class="si si-directions fa-2x text-muted pull-right"></i>
-                    <i *ngIf="relation.relationTypeId==2" class="si si-chemistry fa-2x text-muted pull-right"></i>
-                    <i *ngIf="relation.relationTypeId==3" class="si si-vector fa-2x text-muted pull-right"></i>
-                    <i *ngIf="relation.relationTypeId>=4" class="si si-link fa-2x text-muted pull-right"></i>
-                </div>
-            </a>-->
-        </div>
-    </div>
+<div class="block-header bg-gray-lighter">
+    <ul class="block-options">
+    <li>
+        <span>
+            <i class="fa fa-plus"></i>
+            Add Translations</span>
+    </li>
+</ul>
+<h3 class="block-title">Translations</h3>
 </div>
+<div class="block-content">
+    <div class="block-content">
+        <ul class="nav-users push" *ngIf="translations != null">
+            <li *ngFor="let translation of translations">
+                <a href="javacript:void(0)">
+                        <i class="fa fa-circle text-success"></i> {{translation.value}}
+                        <div class="font-w400 text-muted"><small>{{translation.language}}</small></div>
+                    </a>
+                </li>
+        </ul>
+        <p class="font-s13" *ngIf="translations != null">No translations available. Why not add some.</p>
+    </div>

@@ -29,7 +29,10 @@
                     </ul>
                 </div>
                 <div class="block-content">
-                    <word-meanings *ngIf="detail" [wordDetailId]="detail.id" [meaningsLink]="detail.meaningsLink" [createLink]="detail.createMeaningLink"> </word-meanings>
+                    <div class="block block-transparent pull-r-l">
+                        <word-meanings *ngIf="detail" [wordDetailId]="detail.id" [meaningsLink]="detail.meaningsLink" [createLink]="detail.createMeaningLink"> </word-meanings>
+                    </div>
+                        <word-translations [wordDetailId]="detail.id" [translationsLink]="detail.translationsLink" [createLink]="detail.createTranslationLink"></word-translations>
                 </div>
             </div>
             <div *ngIf="createLink">

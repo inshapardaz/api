@@ -20,6 +20,7 @@
     "TITLE" : "Dictionaries",
     "SLOGAN" : "Lets build better language",
     "CREATENEW" : "Create new dictionary",
+    "EDIT" : "Edit dictionary",
     "SIGNINANDCREATRENEW" : "Sign in and start creating dictionaries",
     "NODICTIONARY" : "No Dictionary Found",
     "ALL" : "All",
@@ -64,6 +65,7 @@
   "WORD":{
     "RELATIONS" : "Relations",
     "CREATENEW" : "Create new word",
+    "EDIT" : "Edit word",
     "TITLE" : "Title",
     "TITLEWITHMOVEMENTS" : "Title with movements",
     "PRONUNCIATION" : "Pronunciation",
@@ -74,9 +76,14 @@
       "ATTRIBUTES" : "AttributesRequired"
     }
   },
+  "WORDDETAIL":{
+    "CREATENEW" : "Create new word type",
+    "EDIT" : "Edit word type"
+  },
   "MEANING" : {
     "EMPTY" : "No meaning defined",
     "ADD" : "Add meaning",
+    "EDIT" : "Edit meaning",
     "TITLE" : "Meaning",
     "EXAMPLE" : "EXAMPLE",
     "VALIDATION" : {

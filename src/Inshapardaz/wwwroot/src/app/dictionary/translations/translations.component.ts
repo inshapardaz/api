@@ -16,7 +16,8 @@ export class WordTranslationsComponent {
     public isLoading : boolean = false;
     public errorMessage: string;
     public translations : Array<Translation>;
-
+    @Input() createLink : string;
+    @Input() wordDetailId : string;  
     @Input()
     set translationsLink(translationLink: string) {
         this._translationsLink = (translationLink) || '';

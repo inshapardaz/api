@@ -1,6 +1,8 @@
 import { Directive, ElementRef, Input } from '@angular/core';
-
-@Directive({ selector: '[appear]' })
+import "../lib/jQuery.appear.min";
+@Directive({ 
+    selector: '[appear]' }
+)
 export class AppearDirective {
     el: ElementRef;
 
@@ -11,7 +13,7 @@ export class AppearDirective {
     ngAfterViewInit() {
         var html = $('html');
         var windowW = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        var thisEl = $(this.el.nativeElement);
+        var thisEl  : any = $(this.el.nativeElement);
         var targetClass = thisEl.data('class') ? thisEl.data('class') : 'animated fadeIn';
         var offset = thisEl.data('offset') ? thisEl.data('offset') : 0;
         var timeout = (html.hasClass('ie9') || windowW < 992) ? 0 : (thisEl.data('timeout') ? thisEl.data('timeout') : 0);

@@ -33,7 +33,6 @@ export class EditWordDetailComponent {
     set visible(isVisible: boolean) {
         this._visible = isVisible;
         this.isBusy = false;
-        console.log(this.createLink);
         if (isVisible){
             if (this.wordDetail == null) {
                 this.model = new WordDetail();

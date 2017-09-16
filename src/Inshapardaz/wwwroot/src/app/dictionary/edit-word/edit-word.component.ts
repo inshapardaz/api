@@ -51,7 +51,6 @@ export class EditWordComponent {
     }  
 
     onSubmit(){
-        console.log('Form submitted');
         this.isBusy = false;
         if (this.isCreating){
             this.dictionaryService.createWord(this.createLink, this.model)

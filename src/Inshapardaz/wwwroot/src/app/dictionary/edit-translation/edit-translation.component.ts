@@ -30,7 +30,6 @@ export class EditWordTranslationComponent {
     set visible(isVisible: boolean) {
         this._visible = isVisible;
         this.isBusy = false;
-        console.log(this.createLink);
         if (isVisible){
             if (this.translation == null) {
                 this.model = new Translation();

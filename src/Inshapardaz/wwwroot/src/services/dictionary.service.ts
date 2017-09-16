@@ -35,7 +35,7 @@ export class DictionaryService {
         let sessionOverride = sessionStorage.getItem('server-address');
         if (sessionOverride !== null){
             this.serverAddress = sessionOverride;
-            console.log('using local override : '+ this.serverAddress);            
+            console.debug('using local override : '+ this.serverAddress);            
             this.entryUrl = this.serverAddress + '/api';
             this.indexUrl = this.serverAddress + '/api/dictionary/index';
             this.dictionaryUrl = this.serverAddress + '/api/dictionaries/';

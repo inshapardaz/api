@@ -37,7 +37,6 @@ export class EditWordRelationComponent {
 
     @Input()
     set visible(isVisible: boolean) {
-        console.log(this.sourceWord);
         this._visible = isVisible;
         this.isBusy = false;
         if (isVisible){
@@ -78,7 +77,6 @@ export class EditWordRelationComponent {
       }
 
       relatedWordChanged(e: Word): void {
-        console.log("changed related word to :" + e.id);
         this.model.relatedWordId = e.id;
         this.model.relatedWord = e.title;
     }

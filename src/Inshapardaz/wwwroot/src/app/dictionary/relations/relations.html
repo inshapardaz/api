@@ -26,20 +26,22 @@
                                     <i *ngIf="relation.relationTypeId>=4" class="si si-link fa-2x text-muted pull-left"></i>
                                 </div>
                                 <div class="block-content block-content-full block-content-mini bg-gray-lighter" *ngIf="relation.updateLink || relation.deleteLink ">
-                                    <a href="javascript:void(0)" class="btn btn-xs btn-info" *ngIf="relation.updateLink" (click)="editRelation(relation)">
+                                    <a href="javascript:void(0)" class="btn btn-xs btn-default" *ngIf="relation.updateLink" (click)="editRelation(relation)">
                                         <i class="fa fa-pencil"></i> Edit
                                     </a>
-                                    <a href="javascript:void(0)" class="btn btn-xs btn-warning pull-right" *ngIf="relation.deleteLink" [swal]="{title :'Delete Relation?', 
-                                        text : 'Are you sure you want to remove word relation?', 
-                                        type : 'warning',
-                                        confirmButtonText : 'Yes',
-                                        cancelButtonText : 'No',
-                                        confirmButtonColor: '#d26a5c',
-                                        confirmButtonText: 'Yes, delete it!',
-                                        html: false,
-                                        allowOutsideClick : false,
-                                        showCancelButton: true}" (confirm)="deleteRelation(relation)">
-                                        <i class="fa fa-trash"></i> Delete</a>
+                                    <a href="javascript:void(0)" class="btn btn-xs btn-default pull-right" *ngIf="relation.deleteLink" 
+                                        [swal]="{title :'Delete Relation?', 
+                                            text : 'Are you sure you want to remove word relation?', 
+                                            type : 'warning',
+                                            confirmButtonText : 'Yes',
+                                            cancelButtonText : 'No',
+                                            confirmButtonColor: '#d26a5c',
+                                            confirmButtonText: 'Yes, delete it!',
+                                            html: false,
+                                            allowOutsideClick : false,
+                                            showCancelButton: true}" 
+                                        (confirm)="deleteRelation(relation)">
+                                        <i class="fa fa-trash text-danger"></i> Delete</a>
                                 </div>
                             </a>
                         </div>
@@ -57,6 +59,6 @@
         </div>
     </div>
 </div>
-<edit-wordRelation [modalId]="'edit-relation'" [createLink]="createRelationLink" 
+<edit-wordRelation [modalId]="'edit-relation'" [createLink]="createRelationLink" [sourceWord]="sourceWord"
     [visible]="showEditDialog" [relation]="selectedRelation" [dictionaryLink]="dictionaryLink"
     (onClosed)="onEditClosed($event)"></edit-wordRelation>

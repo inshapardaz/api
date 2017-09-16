@@ -29,8 +29,8 @@ namespace Inshapardaz.Api.Renderers
 
             if (_userHelper.IsContributor)
             {
-                links.Add(LinkRenderer.Render("UpdateRelation", "update", new { id = source.SourceWordId, relatedWith = source.RelatedWordId }));
-                links.Add(LinkRenderer.Render("DeleteRelation", "delete", new { id = source.SourceWordId, relatedWith = source.RelatedWordId }));
+                links.Add(LinkRenderer.Render("UpdateRelation", "update", new { id = source.Id }));
+                links.Add(LinkRenderer.Render("DeleteRelation", "delete", new { id = source.Id }));
             }
 
             result.Links = links;

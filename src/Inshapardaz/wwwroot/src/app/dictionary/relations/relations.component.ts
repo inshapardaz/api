@@ -3,7 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Relation } from '../../../models/relation';
-import {RelationTypes} from '../../../models/relationTypes';
+import { Word } from '../../../models/Word';
+import { RelationTypes } from '../../../models/relationTypes';
 
 @Component({
     selector: 'word-relations',
@@ -21,21 +22,16 @@ export class RelationsComponent {
     selectedRelation : Relation = null;
     showEditDialog : boolean = false;
     
-    @Input() dictionaryLink:string = '';
+    @Input() createRelationLink : string;
+    @Input() dictionaryLink : string;
+    @Input() sourceWord : Word;
     @Input()
     set relationsLink(relationsLink: string) {
         this._relationsLink = (relationsLink) || '';
         this.getRelations();
     }
     get relationsLink(): string { return this._relationsLink; }
-
-    @Input()
-    set createRelationLink(createLink: string) {
-        this.createLink = (createLink) || '';
-    }
     
-    get createRelationLink(): string { return this.createLink; }
-
     constructor(private route: ActivatedRoute,
         private router: Router,
         private dictionaryService: DictionaryService){
@@ -55,7 +51,6 @@ export class RelationsComponent {
     }
 
     addRelation(){
-        console.log(this.dictionaryLink);
         this.selectedRelation = null;
         this.showEditDialog = true;
     }

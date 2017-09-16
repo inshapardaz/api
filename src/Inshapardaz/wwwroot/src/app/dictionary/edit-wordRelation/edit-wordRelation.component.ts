@@ -1,5 +1,5 @@
-import { Word } from '../../../models/Word';
 import { Observable } from 'rxjs/Rx';
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -9,6 +9,7 @@ import { DictionaryService } from '../../../services/dictionary.service';
 import { Relation } from '../../../models/relation';
 import { Languages } from '../../../models/language';
 import { WordPage } from '../../../models/WordPage';
+import { Word } from '../../../models/Word';
 import { RelationTypes } from '../../../models/relationTypes';
 
 @Component({
@@ -31,18 +32,22 @@ export class EditWordRelationComponent {
     @Input() dictionaryLink:string = '';
     @Input() modalId:string = '';
     @Input() relation:Relation = null;
+    @Input() sourceWord:Word = null;
     @Output() onClosed = new EventEmitter<boolean>();
 
     @Input()
     set visible(isVisible: boolean) {
+        console.log(this.sourceWord);
         this._visible = isVisible;
         this.isBusy = false;
         if (isVisible){
             if (this.relation == null) {
                 this.model = new Relation();
+                this.model.sourceWordId = this.sourceWord.id;
                 this.isCreating = true;
             } else {
                 this.model = Object.assign({}, this.relation);
+                this.model.sourceWordId = this.sourceWord.id;
                 this.isCreating = false;
             }
             $('#'+ this.modalId).modal('show');
@@ -55,7 +60,8 @@ export class EditWordRelationComponent {
     
     constructor(private dictionaryService: DictionaryService, 
                 private router: Router,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private _sanitizer: DomSanitizer) {
         this.languages = Object.keys(this.languagesEnum).filter(Number);
         this.relationTypesValues = Object.keys(this.relationTypesEnum).filter(Number)
     }  
@@ -67,23 +73,26 @@ export class EditWordRelationComponent {
           return Observable.of([]);
         }
       }
-      autocompleteListFormatter = (data: Word) => {
-          return data.title;
+      autocompleteListFormatter = (data: any) => {
+        return this._sanitizer.bypassSecurityTrustHtml(data.title);
       }
 
       relatedWordChanged(e: Word): void {
+        console.log("changed related word to :" + e.id);
         this.model.relatedWordId = e.id;
+        this.model.relatedWord = e.title;
     }
     onSubmit(){
         this.isBusy = false;
         if (this.isCreating){
+            this.model.sourceWord = this.sourceWord.title;
             this.dictionaryService.createRelation(this.createLink, this.model)
             .subscribe(m => {
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;
             },
-            this.handlerCreationError);    
+            this.handlerError);    
         } else {
             this.dictionaryService.updateRelation(this.model.updateLink, this.model)
             .subscribe(m => {
@@ -91,7 +100,7 @@ export class EditWordRelationComponent {
                 this.onClosed.emit(true);
                 this.visible = false;
             },
-            this.handlerCreationError);
+            this.handlerError);
         }
     }
 
@@ -102,9 +111,5 @@ export class EditWordRelationComponent {
 
     handlerError(error : any) {
         this.isBusy = false;
-    }
-
-    handlerCreationError(error : any) {
-        
     }
 }

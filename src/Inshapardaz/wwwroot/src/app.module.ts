@@ -7,7 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // 3rd party references
 import { TranslateModule } from "ng2-translate/ng2-translate";
 import { SweetAlert2Module } from '@toverux/ngsweetalert2';
-
+import { Ng2AutoCompleteModule } from 'ng2-auto-complete';
 
 // Services
 import { AuthService } from './services/auth.service';
@@ -61,7 +61,8 @@ import { routing } from './app.routes';
     HttpModule,
     JsonpModule,
     TranslateModule.forRoot(),
-    SweetAlert2Module
+    SweetAlert2Module,
+    Ng2AutoCompleteModule
   ],
   providers: [
     HttpModule,

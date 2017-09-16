@@ -38,8 +38,7 @@ export class WordComponent {
         this.isLoading = true;
         this.dictionaryService.getWordById(this.id)
             .subscribe(
-            word => { 
-                console.log(word);
+            word => {
                 this.word = word;
                 this.isLoading = false;
             },

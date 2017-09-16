@@ -13,7 +13,7 @@
                                 html: false,
                                 allowOutsideClick : false,
                                 showCancelButton: true}" (confirm)="deleteWord()">
-                        <i class="si si-trash"></i>
+                        <i class="si si-trash text-danger"></i>
                     </button>
                 </li>
                 <li *ngIf="word.updateLink">
@@ -45,6 +45,10 @@
         </div>
     </div>
     <word-detail *ngIf="word" [wordDetailLink]="word.detailsLink" [createLink]="word.addDetailLink"></word-detail>
-    <word-relations *ngIf="word" [relationsLink]="word.relationsLink" [dictionaryLink]="word.dictionaryLink" [createRelationLink]="word.addRelationLink"></word-relations>
+    <word-relations *ngIf="word" 
+        [relationsLink]="word.relationsLink" 
+        [dictionaryLink]="word.dictionaryLink" 
+        [createRelationLink]="word.addRelationLink"
+        [sourceWord]="word"></word-relations>
 </div>
 <edit-word [modalId]="'edit-word'" [visible]="showEditDialog" [word]="word" (onClosed)="onEditClosed($event)"></edit-word>

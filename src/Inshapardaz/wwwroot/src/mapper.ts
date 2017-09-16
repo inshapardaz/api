@@ -202,10 +202,13 @@ export class Mapper{
     public static MapRelation(source: any) : Relation{
         let relation = new Relation();
         relation.id = source.id;
+        relation.sourceWord = source.sourceWord;
+        relation.sourceWordId = source.sourceWordId;
         relation.relatedWord = source.relatedWord;
         relation.relatedWordId = source.relatedWordId;
         relation.relationType = source.relationType;
         relation.relationTypeId = source.relationTypeId;
+
         relation.selfLink =  Mapper.findHrefWithRel(source.links, RelTypes.Self);
         relation.relatedWordLink =  Mapper.findHrefWithRel(source.links, RelTypes.RelatedWord);
         relation.updateLink = Mapper.findHrefWithRel(source.links, RelTypes.Update);

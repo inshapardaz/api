@@ -81,14 +81,14 @@ namespace Inshapardaz.Api.Controllers
                 return NotFound();
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
-            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
+            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
             }
 
-            var dictonary2 = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = relationship.RelatedWordId });
-            if (dictonary2 == null || dictonary2.Id != dictonary.Id)
+            var dictionary2 = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = relationship.RelatedWordId });
+            if (dictionary2 == null || dictionary2.Id != dictionary.Id)
             {
                 return BadRequest();
             }
@@ -101,7 +101,7 @@ namespace Inshapardaz.Api.Controllers
             };
             await _commandProcessor.SendAsync(command);
 
-            var newRelationship = await _queryProcessor.ExecuteAsync(new RelationshipByIdQuery { Id = id });
+            var newRelationship = await _queryProcessor.ExecuteAsync(new RelationshipByIdQuery { Id = command.RelationId });
             var responseView = _relationRender.Render(newRelationship);
             return Created(responseView.Links.Single(x => x.Rel == "self").Href, responseView);
         }

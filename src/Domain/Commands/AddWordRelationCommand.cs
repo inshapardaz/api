@@ -7,5 +7,6 @@ namespace Inshapardaz.Domain.Commands
         public long SourceWordId { get; set; }
         public long RelatedWordId { get; set; }
         public RelationType RelationType { get; set; }
+        public long RelationId { get; set; }
     }
 }

@@ -15,8 +15,11 @@
                         <div class="form-group">
                             <div class="col-sm-12">
                                 <div class="form-material">
-                                    <input class="form-control" type="text" id="relatedWord" name="relatedWord" #relatedWord="ngModel" required [(ngModel)]="model.relatedWord" [attr.placeholder]="translate.instant('RELATION.PLACEHOLDER.RELATEDWORD')"
-                                        required>
+                                    <input class="form-control" type="text" id="relatedWord" 
+                                           name="relatedWord" #relatedWord="ngModel" required 
+                                           [(ngModel)]="model.relatedWord" 
+                                           [attr.placeholder]="translate.instant('RELATION.PLACEHOLDER.RELATEDWORD')"> 
+                                    
                                     <label for="material-text">{{ 'RELATION.RELATEDWORD' | translate}} </label>
                                     <div [hidden]="relatedWord.valid || relatedWord.pristine" class="alert alert-danger">
                                         {{ 'RELATION.VALIDATION.RELATEDWORD' | translate}}

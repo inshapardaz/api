@@ -150,6 +150,12 @@ export class DictionaryService {
             .catch(this.handleError);
     }
 
+    getWordsStartingWith(url: string, startWith : string,  pageNumber: number = 1, pageSize: number = 10): Observable<Word[]> {
+        return this.auth.AuthGet(url+ "/words/startWith/" + startWith +"?pageNumber=" + pageNumber + "&pageSize=" + pageSize)
+            .map(r => this.extractData(r, Mapper.MapWordPage).words)
+            .catch(this.handleError);
+    }
+
     getWordRelations(url: string): Observable<Array<Relation>> {
         return this.auth.AuthGet(url)
             .map(r => this.extractData(r, Mapper.MapRelations))

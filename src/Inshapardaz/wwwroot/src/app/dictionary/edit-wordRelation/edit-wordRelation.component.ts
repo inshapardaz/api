@@ -1,3 +1,5 @@
+import { Word } from '../../../models/Word';
+import { Observable } from 'rxjs/Rx';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -6,6 +8,7 @@ import {TranslateService} from 'ng2-translate';
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Relation } from '../../../models/relation';
 import { Languages } from '../../../models/language';
+import { WordPage } from '../../../models/WordPage';
 import { RelationTypes } from '../../../models/relationTypes';
 
 @Component({
@@ -25,6 +28,7 @@ export class EditWordRelationComponent {
     isCreating : boolean = false;
 
     @Input() createLink:string = '';
+    @Input() dictionaryLink:string = '';
     @Input() modalId:string = '';
     @Input() relation:Relation = null;
     @Output() onClosed = new EventEmitter<boolean>();
@@ -56,6 +60,20 @@ export class EditWordRelationComponent {
         this.relationTypesValues = Object.keys(this.relationTypesEnum).filter(Number)
     }  
 
+    observableSource = (keyword: any): Observable<Word[]> => {
+        if (keyword) {
+          return this.dictionaryService.getWordsStartingWith(this.dictionaryLink, keyword);
+        } else {
+          return Observable.of([]);
+        }
+      }
+      autocompleteListFormatter = (data: Word) => {
+          return data.title;
+      }
+
+      relatedWordChanged(e: Word): void {
+        this.model.relatedWordId = e.id;
+    }
     onSubmit(){
         this.isBusy = false;
         if (this.isCreating){

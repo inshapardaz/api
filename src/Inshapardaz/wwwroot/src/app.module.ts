@@ -4,17 +4,23 @@ import { LocationStrategy, HashLocationStrategy } from "@angular/common";
 import { HttpModule, JsonpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+// 3rd party references
 import { TranslateModule } from "ng2-translate/ng2-translate";
+import { SweetAlert2Module } from '@toverux/ngsweetalert2';
 
+
+// Services
 import { AuthService } from './services/auth.service';
 import { DictionaryService } from './services/dictionary.service';
 import { AlertService } from './services/alert.service';
 
+// Directives
 import { UIToggleDirective } from './directives/ui-toggle.directive';
 import { SideBarToggleDirective } from './directives/side-bar-toggle.directive';
 import { AppearDirective } from './directives/appear.directive';
 import { RightToLeftDirective } from './directives/right-to-left.directive';
 
+// Components
 import { AppComponent } from './app/app.component';
 import { CallbackComponent } from './app/callback/callback.component';
 import { ProfileComponent } from './app/profile/profile.component';
@@ -43,9 +49,6 @@ import { WordTranslationsComponent } from './app/dictionary/translations/transla
 import { EditWordTranslationComponent } from './app/dictionary/edit-translation/edit-translation.component';
 import { ThesaurusComponent } from './app/thesaurus/thesaurus.component';
 import { TranslationsComponent } from './app/translations/translations.component';
-
-
-import { SweetAlert2Module } from '@toverux/ngsweetalert2';
 
 import { routing } from './app.routes';
 

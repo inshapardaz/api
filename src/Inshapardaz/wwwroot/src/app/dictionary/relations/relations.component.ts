@@ -21,6 +21,7 @@ export class RelationsComponent {
     selectedRelation : Relation = null;
     showEditDialog : boolean = false;
     
+    @Input() dictionaryLink:string = '';
     @Input()
     set relationsLink(relationsLink: string) {
         this._relationsLink = (relationsLink) || '';
@@ -54,17 +55,14 @@ export class RelationsComponent {
     }
 
     addRelation(){
+        console.log(this.dictionaryLink);
         this.selectedRelation = null;
         this.showEditDialog = true;
-        console.log(this.showEditDialog);
-        
     }
 
     editRelation(relation : Relation){
         this.selectedRelation = relation;
         this.showEditDialog = true;
-        console.log(this.showEditDialog);
-        
     }
 
     deleteRelation(relation : Relation){
@@ -76,7 +74,6 @@ export class RelationsComponent {
 
     onEditClosed(created : boolean){
         this.showEditDialog = false;
-        console.log(this.showEditDialog);
         
         if (created){
             this.getRelations();

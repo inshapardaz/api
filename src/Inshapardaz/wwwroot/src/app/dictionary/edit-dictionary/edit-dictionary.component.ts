@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import {TranslateService} from 'ng2-translate';
 
 import { DictionaryService } from '../../../services/dictionary.service';
+import { AlertService } from '../../../services/alert.service';
+
 import { Dictionary } from '../../../models/Dictionary';
 import { Languages } from '../../../models/language';
 
@@ -46,7 +48,8 @@ export class EditDictionaryComponent {
     
     constructor(private dictionaryService: DictionaryService, 
                 private router: Router,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private alertService: AlertService) {
         this.languages = Object.keys(this.languagesEnum).filter(Number);
         this.model.language = Languages.Urdu;
     }  
@@ -56,6 +59,7 @@ export class EditDictionaryComponent {
         if (this.isCreating){
             this.dictionaryService.createDictionary(this.createLink, this.model)
             .subscribe(m => {
+                this.alertService.success(`Dictionary ${this.model.name} created successfully`);
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;
@@ -64,6 +68,7 @@ export class EditDictionaryComponent {
         } else {
             this.dictionaryService.updateDictionary(this.model.updateLink, this.model)
             .subscribe(m => {
+                this.alertService.success(`Dictionary ${this.model.name} saved successfully`);
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;

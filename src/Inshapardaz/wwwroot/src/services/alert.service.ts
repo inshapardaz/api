@@ -7,10 +7,6 @@ import { Alert, AlertType } from '../models/alert';
 
 import * as $ from "jquery";
 
-interface JQuery {
-    notify(): any;
-}
-
 @Injectable()
 export class AlertService {
     private subject = new Subject<Alert>();
@@ -29,7 +25,7 @@ export class AlertService {
     }
 
     private showNotification(notifyIcon : string, notifyMessage : string, notifyType : string, notifyFrom : string, notifyAlign : string){
-        /*$.notify({
+        $['notify']({
             icon: notifyIcon,
             message: notifyMessage,
             //url: $notifyUrl
@@ -53,20 +49,23 @@ export class AlertService {
                 enter: 'animated fadeIn',
                 exit: 'animated fadeOutDown'
             }
-        });*/
+        });
     }
 
     success(message: string) {
+        console.log('show success');
         var icon = 'fa fa-check';
         this.showNotification(icon, message, 'success', 'bottom', 'right');
     }
 
     error(message: string) {
+        console.log('show error');        
         var icon = 'fa fa-times';
         this.showNotification(icon, message, 'danger', 'bottom', 'right');
     }
 
     info(message: string, keepAfterRouteChange = false) {
+        console.log('show info');        
         var icon = 'fa fa-info-circle';
         this.showNotification(icon, message, 'info', 'bottom', 'right');
     }

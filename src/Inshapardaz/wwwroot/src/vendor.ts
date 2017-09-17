@@ -23,6 +23,6 @@ import './assets/js/app.js';
 
 import 'sweetalert2/dist/sweetalert2.min.css';
 import 'sweetalert2/dist/sweetalert2.min';
-import 'bootstrap-notify/bootstrap-notify.min';
+import 'bootstrap-notify/bootstrap-notify';
 import './assets/css/oneui.css';
 import './assets/css/styles.css';

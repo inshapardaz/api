@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import {TranslateService} from 'ng2-translate';
-import {Languages} from '../../../models/language';
+import { TranslateService } from 'ng2-translate';
+import { Languages } from '../../../models/language';
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Dictionary } from '../../../models/dictionary';
 import { AuthService } from '../../../services/auth.service';
@@ -50,8 +50,7 @@ export class DictionariesComponent {
     getEntry() {
         this.isLoading = true;
         this.dictionaryService.getEntry()
-            .subscribe(
-                entry => {
+            .subscribe( entry => {
                     this.dictionariesLink = entry.dictionariesLink;
                     this.getDictionaries();
             }, e => {
@@ -103,5 +102,6 @@ export class DictionariesComponent {
 
     handlerError() {
         this.isLoading = false;
+        this.alertService.error('Error loading dictionaries. Please try again');
     }
 }

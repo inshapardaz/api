@@ -41,9 +41,6 @@ export class AppComponent {
         this.oauthService.setupAutomaticSilentRefresh();
         this.oauthService.tokenValidationHandler = new JwksValidationHandler();
         this.oauthService.loadDiscoveryDocumentAndTryLogin();
-        // this.oauthService.silentRefresh()
-        // .then(info => console.debug('refresh ok', info))
-        // .catch(err => console.error('refresh error', err));
     }
 
     private setLanguages(){

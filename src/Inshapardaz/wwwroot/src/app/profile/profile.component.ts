@@ -12,8 +12,7 @@ export class ProfileComponent implements OnInit {
   constructor(public auth: AuthService) { }
 
   ngOnInit() {
-      this.auth.loadUserProfile();
-      var profile = this.auth.userProfile;
+    
   }
 
 }

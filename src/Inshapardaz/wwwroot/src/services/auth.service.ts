@@ -46,7 +46,7 @@ export class AuthService {
     return this.oauthService.getAccessToken() != null;
   }
 
-  private refreshToken(){
+  public refreshToken(){
     this.oauthService.silentRefresh();
   }
 

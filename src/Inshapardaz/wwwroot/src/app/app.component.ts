@@ -3,7 +3,7 @@ import { ViewEncapsulation } from '@angular/core';
 import { RouterModule , Router, NavigationStart } from '@angular/router';
 import { Title }     from '@angular/platform-browser';
 
-import { TranslateService, LangChangeEvent} from 'ng2-translate/ng2-translate';
+import { TranslateService, LangChangeEvent} from '@ngx-translate/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { JwksValidationHandler } from 'angular-oauth2-oidc';
 

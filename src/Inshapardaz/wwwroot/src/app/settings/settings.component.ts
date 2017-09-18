@@ -1,12 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import {TranslateService} from 'ng2-translate/ng2-translate';
+import {TranslateService} from '@ngx-translate/core';
 
 // import amethyst from './../../assets/css/themes/amethyst.min.css';
 // import city from '../../assets/css/themes/city.min.css';
 // import flat from '../../assets/css/themes/flat.min.css';
 // import modern from '../../assets/css/themes/modern.min.css';
-// import smooth from '../../assets/css/themes/smooth.min.css';
+// import smooth from '../../assets/css/themes/smooth.min.css'  ;
 
 @Component({
     selector: 'settings',

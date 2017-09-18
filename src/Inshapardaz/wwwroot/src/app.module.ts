@@ -5,7 +5,7 @@ import { HttpModule, JsonpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // 3rd party references
-import { TranslateModule } from "ng2-translate/ng2-translate";
+import { TranslateModule } from "@ngx-translate/core";
 import { SweetAlert2Module } from '@toverux/ngsweetalert2';
 import { Ng2AutoCompleteModule } from 'ng2-auto-complete';
 import { OAuthModule } from 'angular-oauth2-oidc';

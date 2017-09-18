@@ -21,11 +21,7 @@ export class HeaderComponent {
     }
 
     ngOnInit() {
-        if (this.auth.currentUser) {
-            this.profile = this.auth.currentUser;
-        } else {
-            this.profile = this.auth.getUser();
-        }
+        
     }
     onSearch(event: any): void {
         if (event.keyCode == 13) {

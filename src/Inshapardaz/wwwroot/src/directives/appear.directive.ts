@@ -1,5 +1,5 @@
 import { Directive, ElementRef, Input } from '@angular/core';
-import "../lib/jQuery.appear.min";
+import "../lib/jquery.appear.min";
 @Directive({ 
     selector: '[appear]' }
 )

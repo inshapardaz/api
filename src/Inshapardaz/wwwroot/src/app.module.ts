@@ -8,6 +8,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from "ng2-translate/ng2-translate";
 import { SweetAlert2Module } from '@toverux/ngsweetalert2';
 import { Ng2AutoCompleteModule } from 'ng2-auto-complete';
+import { OAuthModule } from 'angular-oauth2-oidc';
 
 // Services
 import { AuthService } from './services/auth.service';
@@ -61,6 +62,7 @@ import { routing } from './app.routes';
     HttpModule,
     JsonpModule,
     TranslateModule.forRoot(),
+    OAuthModule.forRoot(),
     SweetAlert2Module,
     Ng2AutoCompleteModule
   ],

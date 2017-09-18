@@ -9,9 +9,10 @@ using Inshapardaz.Domain.Database.Entities;
 namespace Inshapardaz.Domain.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20170918112459_RemovedWordDictionaryDefault")]
+    partial class RemovedWordDictionaryDefault
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasDefaultSchema("Inshapardaz")
@@ -230,13 +231,13 @@ namespace Inshapardaz.Domain.Migrations
                     b.HasOne("Inshapardaz.Domain.Database.Entities.Word", "RelatedWord")
                         .WithMany("WordRelationRelatedWord")
                         .HasForeignKey("RelatedWordId")
-                        .HasConstraintName("FK_WordRelation_RelatedWord");
+                        .HasConstraintName("FK_WordRelation_RelatedWord")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Inshapardaz.Domain.Database.Entities.Word", "SourceWord")
                         .WithMany("WordRelationSourceWord")
                         .HasForeignKey("SourceWordId")
-                        .HasConstraintName("FK_WordRelation_SourceWord")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasConstraintName("FK_WordRelation_SourceWord");
                 });
         }
     }

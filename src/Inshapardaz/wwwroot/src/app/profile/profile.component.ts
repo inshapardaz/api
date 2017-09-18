@@ -12,13 +12,8 @@ export class ProfileComponent implements OnInit {
   constructor(public auth: AuthService) { }
 
   ngOnInit() {
-
-    this.auth.refreshToken();
-    if (this.auth.currentUser) {
-      this.profile = this.auth.currentUser;
-    } else {
-      this.profile = this.auth.getUser();
-    }
+      this.auth.loadUserProfile();
+      var profile = this.auth.userProfile;
   }
 
 }

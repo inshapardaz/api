@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import {TranslateService} from 'ng2-translate';
 
 import { DictionaryService } from '../../../services/dictionary.service';
-import { Meaning } from '../../../models/meaning';
+import { Meaning } from '../../../models/Meaning';
 import { Languages } from '../../../models/language';
 
 @Component({

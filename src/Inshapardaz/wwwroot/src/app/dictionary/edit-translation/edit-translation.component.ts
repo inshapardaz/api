@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import {TranslateService} from 'ng2-translate';
 
 import { DictionaryService } from '../../../services/dictionary.service';
-import { Translation } from '../../../models/translation';
+import { Translation } from '../../../models/Translation';
 import { Languages } from '../../../models/language';
 import { GrammaticTypes } from '../../../models/grammaticalTypes';
 

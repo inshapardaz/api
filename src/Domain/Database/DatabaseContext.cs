@@ -27,10 +27,18 @@ namespace Inshapardaz.Domain.Database
             modelBuilder.Entity<Dictionary>(entity =>
             {
                 entity.ToTable("Dictionary", "Inshapardaz");
-
                 entity.Property(e => e.Name).HasMaxLength(255);
-
                 entity.Property(e => e.UserId).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Word>(entity =>
+            {
+                entity.ToTable("Word", "Inshapardaz");
+                entity.HasOne(d => d.Dictionary)
+                      .WithMany(p => p.Word)
+                      .HasForeignKey(d => d.DictionaryId)
+                      .HasConstraintName("FK_Word_Dictionary")
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Meaning>(entity =>
@@ -40,7 +48,8 @@ namespace Inshapardaz.Domain.Database
                 entity.HasOne(d => d.WordDetail)
                     .WithMany(p => p.Meaning)
                     .HasForeignKey(d => d.WordDetailId)
-                    .HasConstraintName("FK_Meaning_WordDetail");
+                    .HasConstraintName("FK_Meaning_WordDetail")
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Translation>(entity =>
@@ -50,19 +59,8 @@ namespace Inshapardaz.Domain.Database
                 entity.HasOne(d => d.WordDetail)
                     .WithMany(p => p.Translation)
                     .HasForeignKey(d => d.WordDetailId)
-                    .HasConstraintName("FK_Translation_WordDetail");
-            });
-
-            modelBuilder.Entity<Word>(entity =>
-            {
-                entity.ToTable("Word", "Inshapardaz");
-
-                entity.Property(e => e.DictionaryId).HasDefaultValueSql("1");
-
-                entity.HasOne(d => d.Dictionary)
-                    .WithMany(p => p.Word)
-                    .HasForeignKey(d => d.DictionaryId)
-                    .HasConstraintName("FK_Word_Dictionary");
+                    .HasConstraintName("FK_Translation_WordDetail")
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<WordDetail>(entity =>
@@ -72,7 +70,8 @@ namespace Inshapardaz.Domain.Database
                 entity.HasOne(d => d.WordInstance)
                     .WithMany(p => p.WordDetail)
                     .HasForeignKey(d => d.WordInstanceId)
-                    .HasConstraintName("FK_WordDetail_Word");
+                    .HasConstraintName("FK_WordDetail_Word")
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<WordRelation>(entity =>
@@ -82,13 +81,14 @@ namespace Inshapardaz.Domain.Database
                 entity.HasOne(d => d.RelatedWord)
                     .WithMany(p => p.WordRelationRelatedWord)
                     .HasForeignKey(d => d.RelatedWordId)
-                    .HasConstraintName("FK_WordRelation_RelatedWord");
+                    .HasConstraintName("FK_WordRelation_RelatedWord")
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(d => d.SourceWord)
                     .WithMany(p => p.WordRelationSourceWord)
                     .HasForeignKey(d => d.SourceWordId)
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("FK_WordRelation_SourceWord");
+                    .HasConstraintName("FK_WordRelation_SourceWord")
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<File>(entity => { entity.ToTable("File", "Inshapardaz"); });
@@ -97,8 +97,10 @@ namespace Inshapardaz.Domain.Database
             {
                 entity.ToTable("DictionaryDownload", "Inshapardaz");
                 entity.HasOne(d => d.Dictionary)
-                    .WithMany(d => d.Downloads);
+                    .WithMany(d => d.Downloads)
+                    .OnDelete(DeleteBehavior.Cascade);
                 entity.HasOne(d => d.File);
+
             });
         }
     }

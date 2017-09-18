@@ -5,7 +5,7 @@ import { Entry } from './models/entry';
 import { Link } from './models/link';
 import { Dictionaries } from './models/dictionaries';
 import { Dictionary, DictionaryIndex } from './models/Dictionary';
-import { Word } from './models/word';
+import { Word } from './models/Word';
 import { WordPage } from './models/wordpage';
 import { WordDetail } from './models/WordDetail';
 import { Translation } from './models/Translation';

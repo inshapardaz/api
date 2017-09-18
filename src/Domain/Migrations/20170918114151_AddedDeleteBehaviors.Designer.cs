@@ -9,9 +9,10 @@ using Inshapardaz.Domain.Database.Entities;
 namespace Inshapardaz.Domain.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20170918114151_AddedDeleteBehaviors")]
+    partial class AddedDeleteBehaviors
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasDefaultSchema("Inshapardaz")

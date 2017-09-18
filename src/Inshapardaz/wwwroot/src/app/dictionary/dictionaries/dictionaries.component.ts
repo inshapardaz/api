@@ -102,6 +102,5 @@ export class DictionariesComponent {
 
     handlerError() {
         this.isLoading = false;
-        this.alertService.error('Error loading dictionaries. Please try again');
     }
 }

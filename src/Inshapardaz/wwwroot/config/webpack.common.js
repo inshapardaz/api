@@ -57,6 +57,9 @@ module.exports = {
         new CopyWebpackPlugin([{
             from: 'src/assets/img',
             to: './images'
+        }, {
+            from: 'src/i18n',
+            to: './assets/i18n'
         }]),
         //new FaviconsWebpackPlugin('./src/assets/img/favicons/favicon.png'),
         new webpack.ProvidePlugin({

@@ -3,9 +3,11 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { LocationStrategy, HashLocationStrategy } from "@angular/common";
 import { HttpModule, JsonpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 // 3rd party references
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { SweetAlert2Module } from '@toverux/ngsweetalert2';
 import { Ng2AutoCompleteModule } from 'ng2-auto-complete';
 import { OAuthModule } from 'angular-oauth2-oidc';
@@ -53,6 +55,10 @@ import { TranslationsComponent } from './app/translations/translations.component
 
 import { routing } from './app.routes';
 
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -60,8 +66,15 @@ import { routing } from './app.routes';
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
+    HttpClientModule,
     JsonpModule,
-    TranslateModule.forRoot(),
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+      }
+    }),
     OAuthModule.forRoot(),
     SweetAlert2Module,
     Ng2AutoCompleteModule
@@ -84,7 +97,7 @@ import { routing } from './app.routes';
     ProfileComponent,
     UnauthorisedComponent,
     ServerErrorComponent,
-
+    
     HomeComponent,
     HeaderComponent,
     SidebarComponent,

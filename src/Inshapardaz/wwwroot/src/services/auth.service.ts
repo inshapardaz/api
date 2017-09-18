@@ -19,7 +19,8 @@ export const authConfig: AuthConfig = {
    silentRefreshRedirectUri: window.location.origin + '/silent-renew.html',
    clientId: 'angular2client',
    scope: 'openid',
-   sessionChecksEnabled: true
+   sessionChecksEnabled: true,
+   requireHttps : false
  }
 
 

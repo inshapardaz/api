@@ -1,4 +1,4 @@
-<div class="modal" [attr.id]="modalId" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal" [attr.id]="modalId" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="block block-themed block-transparent remove-margin-b" [class.block-opt-refresh]="isBusy">
@@ -51,7 +51,7 @@
                         </div>
                         <div class="form-group">
                                 <div class="col-xs-12 text-right">
-                                        <button class="btn btn-sm btn-primary" type="submit" [disabled]="!dictionaryForm.form.valid"><i class="fa fa-check"></i> 
+                                        <button class="btn btn-sm btn-primary" type="submit" [disabled]="!dictionaryForm.form.valid || isBusy"><i class="fa fa-check"></i> 
                                             {{ isCreating == true ? 'Create' : 'Update' }}
                                         </button>
                                         <button class="btn btn-sm btn-default" type="button" (click)="onClose()" >{{ 'ACTIONS.CLOSE' | translate}}</button>

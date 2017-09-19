@@ -113,16 +113,18 @@
                                 </li>
                                 <li *ngIf="dictionary.deleteLink"
                                     data-toggle="tooltip" data-placement="top" [attr.title]="translate.instant('DICTIONARIES.DELETE_DICTIONARY')">
-                                    <button type="button" [swal]="{title :'Delete dictionary?', 
-                                                                       text : 'Are you sure you want to delete dictionary? This can not be undone.', 
+                                    <button type="button" [swal]="{title : translate.instant('DICTIONARIES.DELETE_DICTIONARY_TITLE'), 
+                                                                       text : translate.instant('DICTIONARIES.DELETE_DICTIONARY_DESCRIPTION', {name : dictionary.name }), 
                                                                        type : 'warning',
-                                                                       confirmButtonText : 'Yes',
-                                                                       cancelButtonText : 'No',
+                                                                       confirmButtonText : translate.instant('ACTIONS.YES'),
+                                                                       cancelButtonText : translate.instant('ACTIONS.NO'),
                                                                        confirmButtonColor: '#d26a5c',
-                                                                       confirmButtonText: 'Yes, delete it!',
                                                                        html: false,
                                                                        allowOutsideClick : false,
-                                                                       showCancelButton: true}" (confirm)="deleteDictionary(dictionary)"><i class="si si-close"></i></button>
+                                                                       showCancelButton: true}" 
+                                                                       (confirm)="deleteDictionary(dictionary)">
+                                                                    <i class="si si-close"></i>
+                                    </button>
                                 </li>
                             </ul>
                         </div>

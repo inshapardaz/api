@@ -95,13 +95,14 @@
                                     <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="{{'ACTIONS.EDIT' | translate}}" (click)="editWord(word)">
                                             <i class="fa fa-pencil text-normal"></i>
                                     </button>
-                                    <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="{{'ACTIONS.DELETE' | translate}}" [swal]="{title :'Delete dictionary?', 
-                                                    text : 'Are you sure you want to delete word?', 
+                                    <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip"
+                                            title="{{'WORD.ACTIONS.DELETE' | translate}}" 
+                                            [swal]="{title : translate.instant('WORD.ACTIONS.DELETE'), 
+                                                    text : translate.instant('WORD.ACTIONS.DELETE_MESSAGE', { word : word.title }), 
                                                     type : 'warning',
-                                                    confirmButtonText : 'Yes',
-                                                    cancelButtonText : 'No',
+                                                    confirmButtonText : translate.instant('ACTIONS.YES'),
+                                                    cancelButtonText : translate.instant('ACTIONS.NO'),
                                                     confirmButtonColor: '#d26a5c',
-                                                    confirmButtonText: 'Yes, delete it!',
                                                     html: false,
                                                     allowOutsideClick : false,
                                                     showCancelButton: true}" (confirm)="deleteWord(word)">
@@ -134,7 +135,7 @@
                                     <div class="col-sm-6 col-sm-offset-3">
                                         <button class="btn btn-default" (click)="addWord()">
                                                     <i class="fa fa-fw fa-plus push-5-r"></i> {{ 'DICTIONARY.ADD_WORD' | translate}} 
-                                                </button>
+                                        </button>
                                     </div>
                                 </div>
                             </form>

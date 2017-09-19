@@ -6,6 +6,7 @@ import {TranslateService} from '@ngx-translate/core';
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Word } from '../../../models/Word';
 import { Languages } from '../../../models/language';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
     selector: 'edit-word',
@@ -46,41 +47,41 @@ export class EditWordComponent {
     
     constructor(private dictionaryService: DictionaryService, 
                 private router: Router,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private alertService: AlertService) {
         this.languages = Object.keys(this.languagesEnum).filter(Number);
     }  
 
     onSubmit(){
-        this.isBusy = false;
+        this.isBusy = true;
         if (this.isCreating){
             this.dictionaryService.createWord(this.createLink, this.model)
             .subscribe(m => {
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;
-            },
-            this.handlerCreationError);    
+                this.alertService.success(this.translate.instant('WORD.MESSAGES.CREATION_SUCCESS', { title : this.model.title }));                
+            }, e => {
+                this.isBusy = false;
+                this.alertService.error(this.translate.instant('WORD.MESSAGES.CREATION_FAILURE', { title : this.model.title }));
+                
+            });
         } else {
             this.dictionaryService.updateWord(this.model.updateLink, this.model)
             .subscribe(m => {
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;
-            },
-            this.handlerCreationError);
+                this.alertService.success(this.translate.instant('WORD.MESSAGES.UPDATE_SUCCESS', { title : this.model.title }));
+            }, e => {
+                this.isBusy = false;
+                this.alertService.error(this.translate.instant('WORD.MESSAGES.UPDATE_FAILURE', { title : this.model.title }));                
+            });
         }
     }
 
     onClose(){
         this.onClosed.emit(false);
         this.visible = false;
-    }
-
-    handlerError(error : any) {
-        this.isBusy = false;
-    }
-
-    handlerCreationError(error : any) {
-        
     }
 }

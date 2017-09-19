@@ -31,13 +31,19 @@
     "CREATE_DOWNLOAD" : "Create Download",
     "EDIT_DICTIONARY" : "Edit Dictionary",
     "DELETE_DICTIONARY" : "Delete Dictionary",
+    "DELETE_DICTIONARY_TITLE" : "Delete Dictionary?",
+    "DELETE_DICTIONARY_DESCRIPTION" : "Are you sure you want to delete dictionary '{{name}}'? Deletion will remove all data related to this dictionary and cannot be reversed.",
     "NAME" : "Name",
     "NAME_PLACEHOLDER" : "Please enter dictionary name",
     "LANGUAGE" : "Please Select language",
     "PUBLIC_DICTIONARY" : "Public Dictionary",
     "MESSAGES" : {
-      "DELETION_SUCCESS" : "'Dictionary deleted successfully.'",
-      "DELETION_FAILURE" : "'Unable to delete dictionary.",
+      "CREATION_SUCCESS" : "Dictionary '{{name}}' deleted successfully.'",
+      "CREATION_FAILURE" : "Error creating dictionary '{{name}}'.'",
+      "UPDATE_SUCCESS" : "Dictionary '{{name}}' saved successfully.'",
+      "UPDATE_FAILURE" : "Error saving dictionary '{{name}}'.'",
+      "DELETION_SUCCESS" : "Dictionary '{{name}}' deleted successfully.'",
+      "DELETION_FAILURE" : "Unable to delete dictionary '{{name}}'.",
       "LOADING_FAILURE" : "Unable to load dictionaries. Please try again",
       "DOWNLOAD_REQUEST_SUCCESS" : "Dictionary download request sent.",
       "DOWNLOAD_REQUEST_FAILURE" : "Dictionary download request failed. Please try again."
@@ -60,7 +66,12 @@
     "NOWORDFOUND": "No Word Found",
     "TITLE" : "{{lang}} dictionary with {{count}} words",
     "ADD_WORD" : "Add Word",
-    "INDEX" : "Index"
+    "INDEX" : "Index",
+    "MESSAGES" : {
+      "LOADING_FAILURE" : "Error loading dictionary. Please try again.",
+      "WORDS_LOADING_FAILURE" : "Unable to load word list. Please try again",
+      "SEARCH_LOADING_FAILURE" : "Unable to complete search. Please try again"
+    }
   },
   "WORD":{
     "RELATIONS" : "Relations",
@@ -74,6 +85,18 @@
     "VALIDATION" : {
       "TITLE" : "Title is required",
       "ATTRIBUTES" : "AttributesRequired"
+    },
+    "ACTIONS" : {
+      "DELETE" : "Delete Word",
+      "DELETE_MESSAGE" : "Are you sure you want to delete word '{{word}}?"
+    },
+    "MESSAGES": {
+      "CREATION_SUCCESS" : "Word '{{title}}' created.",
+      "CREATION_FAILURE" : "Unable to create word '{{title}}'.",
+      "UPDATE_SUCCESS" : "Word '{{title}}' saved.",
+      "UPDATE_FAILURE" : "Unable to save word '{{title}}'.",
+      "DELETE_SUCCESS" : "Word '{{title}}' removed.",
+      "DELETE_FAILURE" : "Unable to remove word '{{title}}'."
     }
   },
   "WORDDETAIL":{
@@ -134,6 +157,8 @@
     "CLOSE" : "Close",
     "CREATE" : "Create",
     "UPDATE" : "Update",
-    "SEARCH" : "Search"
+    "SEARCH" : "Search",
+    "YES" : "Yes",
+    "NO" : "No"
   }
 }

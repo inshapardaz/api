@@ -3,13 +3,16 @@ import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { FormsModule , FormBuilder } from '@angular/forms';
 import { Observable }  from 'rxjs/Observable';
+import { TranslateService } from '@ngx-translate/core';
 
-import {Languages} from '../../../models/language';
+import { Languages } from '../../../models/language';
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Dictionary } from '../../../models/dictionary';
 import { Word } from '../../../models/word';
 import { WordPage } from '../../../models/WordPage';
 import { DictionaryIndex } from '../../../models/Dictionary';
+import { AlertService } from '../../../services/alert.service';
+
 export class Index{
     title : string;
     link : string;
@@ -61,7 +64,7 @@ export class DictionaryComponent {
     selectedIndex : Observable<string>;
     index : DictionaryIndex;
     wordPage : WordPage;
-    private loadedLink : string;
+    loadedLink : string;
     indexes : Array<string>;
     pageNumber : number = 0;
 
@@ -79,6 +82,8 @@ export class DictionaryComponent {
     constructor(private route: ActivatedRoute,
         private router: Router,
         public fb: FormBuilder,
+        private alertService: AlertService,
+        private translate: TranslateService,
         private dictionaryService: DictionaryService){
     }
 
@@ -124,7 +129,7 @@ export class DictionaryComponent {
 
     ngOnDestroy() {
         this.sub.unsubscribe();
-      }
+    }
       
 
     getIndex(index : string){
@@ -137,7 +142,9 @@ export class DictionaryComponent {
                     this.isLoading = false;
                 },
                 error => {
-                this.errorMessage = <any>error;
+                    this.isLoading = false;
+                    this.alertService.error(this.translate.instant('DICTIONARY.MESSAGES.LOADING_FAILURE'));
+                    this.errorMessage = <any>error;
             });
     }
 
@@ -152,6 +159,8 @@ export class DictionaryComponent {
                 callback(dict);
             },
             error => {
+                this.isLoading = false;
+                this.alertService.error(this.translate.instant('DICTIONARY.MESSAGES.LOADING_FAILURE'));
                 this.errorMessage = <any>error;
             });
     }
@@ -167,7 +176,9 @@ export class DictionaryComponent {
                     this.loadedLink = link;
                 },
                 error => {
-                this.errorMessage = <any>error;
+                    this.isLoading = false;
+                    this.alertService.error(this.translate.instant('DICTIONARY.MESSAGES.WORDS_LOADING_FAILURE'));
+                    this.errorMessage = <any>error;
             });
     }
 
@@ -238,6 +249,8 @@ export class DictionaryComponent {
                         this.isLoading = false;
                 },
                 error => {
+                    this.isLoading = false;
+                    this.alertService.error(this.translate.instant('DICTIONARY.MESSAGES.SEARCH_LOADING_FAILURE'));
                     this.errorMessage = <any>error;
             });
         }
@@ -260,14 +273,15 @@ export class DictionaryComponent {
     }
 
     deleteWord(word : Word){
+        this.isLoading = true;
         this.dictionaryService.deleteWord(word.deleteLink)
         .subscribe(r => {
+            this.alertService.success(this.translate.instant('WORD.MESSAGES.DELETE_SUCCESS', { title : word.title }));            
             this.reloadPage();
-        }, this.handlerError);
-    }
-
-    handlerError(error : any) {
-        this.errorMessage = <any>error;
-        this.isLoading = false;
+        }, e => {
+            this.errorMessage = <any>e;
+            this.isLoading = false;
+            this.alertService.error(this.translate.instant('WORD.MESSAGES.DELETE_FAILURE', { title : word.title}));            
+        });
     }
 }

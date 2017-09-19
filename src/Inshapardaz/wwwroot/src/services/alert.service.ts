@@ -55,24 +55,24 @@ export class AlertService {
     success(message: string) {
         console.log('show success');
         var icon = 'fa fa-check';
-        this.showNotification(icon, message, 'success', 'bottom', 'right');
+        this.showNotification(icon, message, 'success', 'bottom', 'center');
     }
 
     error(message: string) {
         console.log('show error');        
         var icon = 'fa fa-times';
-        this.showNotification(icon, message, 'danger', 'bottom', 'right');
+        this.showNotification(icon, message, 'danger', 'bottom', 'center');
     }
 
     info(message: string, keepAfterRouteChange = false) {
         console.log('show info');        
         var icon = 'fa fa-info-circle';
-        this.showNotification(icon, message, 'info', 'bottom', 'right');
+        this.showNotification(icon, message, 'info', 'bottom', 'center');
     }
 
     warn(message: string, keepAfterRouteChange = false) {
         var icon = 'fa fa-warning';
-        this.showNotification(icon, message, 'warning', 'bottom', 'right');
+        this.showNotification(icon, message, 'warning', 'bottom', 'center');
     }
 
     clear() {

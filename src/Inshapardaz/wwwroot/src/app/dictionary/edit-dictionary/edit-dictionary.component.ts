@@ -1,3 +1,4 @@
+import * as v8 from 'v8';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -14,6 +15,14 @@ import { Languages } from '../../../models/language';
     templateUrl: './edit-dictionary.html'
 })
 export class EditDictionaryComponent {
+    constructor(private dictionaryService: DictionaryService, 
+        private router: Router,
+        private translate: TranslateService,
+        private alertService: AlertService) {
+        this.languages = Object.keys(this.languagesEnum).filter(Number);
+        this.model.language = Languages.Urdu;
+    } 
+
     model = new Dictionary();
     languages : any[];
     languagesEnum = Languages;
@@ -45,48 +54,40 @@ export class EditDictionaryComponent {
     }
      
     get visible(): boolean { return this._visible; }
-    
-    constructor(private dictionaryService: DictionaryService, 
-                private router: Router,
-                private translate: TranslateService,
-                private alertService: AlertService) {
-        this.languages = Object.keys(this.languagesEnum).filter(Number);
-        this.model.language = Languages.Urdu;
-    }  
 
     onSubmit(){
-        this.isBusy = false;
+        if (this.isBusy){
+            return;
+        }
+        
+        this.isBusy = true;
         if (this.isCreating){
             this.dictionaryService.createDictionary(this.createLink, this.model)
             .subscribe(m => {
-                this.alertService.success(`Dictionary ${this.model.name} created successfully`);
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;
-            },
-            this.handlerCreationError);    
+                this.alertService.success(this.translate.instant('DICTIONARIES.MESSAGES.CREATION_SUCCESS', { name : this.model.name }));                
+            }, e => {
+                this.isBusy = false;
+                this.alertService.error(this.translate.instant('DICTIONARIES.MESSAGES.CREATION_FAILURE', { name : this.model.name }));
+            });    
         } else {
             this.dictionaryService.updateDictionary(this.model.updateLink, this.model)
             .subscribe(m => {
-                this.alertService.success(`Dictionary ${this.model.name} saved successfully`);
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;
-            },
-            this.handlerCreationError);
+                this.alertService.success(this.translate.instant('DICTIONARIES.MESSAGES.UPDATE_SUCCESS', { name : this.model.name }));
+            }, e => {
+                this.isBusy = false;
+                this.alertService.error(this.translate.instant('DICTIONARIES.MESSAGES.UPDATE_FAILURE', { name : this.model.name }));
+            });
         }
     }
 
     onClose(){
         this.onClosed.emit(false);
         this.visible = false;
-    }
-
-    handlerError(error : any) {
-        this.isBusy = false;
-    }
-
-    handlerCreationError(error : any) {
-        
     }
 }

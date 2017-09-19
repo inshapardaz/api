@@ -39,11 +39,11 @@ export class DictionariesComponent {
     deleteDictionary(dictionary : Dictionary) {
         this.dictionaryService.deleteDictionary(dictionary.deleteLink)
         .subscribe(r => {
-            this.alertService.success(this.translate.instant('DICTIONARIES.MESSAGES.DELETION_SUCCESS'));
+            this.alertService.success(this.translate.instant('DICTIONARIES.MESSAGES.DELETION_SUCCESS', {name : dictionary.name}));
             this.getDictionaries();
         }, e => {
             this.handlerError();
-            this.alertService.error(this.translate.instant('DICTIONARIES.MESSAGES.DELETION_FAILURE'));
+            this.alertService.error(this.translate.instant('DICTIONARIES.MESSAGES.DELETION_FAILURE', {name : dictionary.name}));
         });
     }
 
@@ -55,6 +55,7 @@ export class DictionariesComponent {
                     this.getDictionaries();
             }, e => {
                 this.handlerError();
+                this.alertService.error(this.translate.instant('DICTIONARIES.MESSAGES.LOADING_FAILURE'));
                 this.router.navigate(['/error/servererror']);
             });
     }

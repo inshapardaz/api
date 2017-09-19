@@ -12,7 +12,7 @@ export class ProfileComponent implements OnInit {
   constructor(public auth: AuthService) { }
 
   ngOnInit() {
-    
+    this.auth.refreshToken();
   }
 
 }

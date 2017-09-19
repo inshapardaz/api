@@ -35,8 +35,8 @@
     "LANGUAGE" : "زبان کا انتخاب کریں",
     "PUBLIC_DICTIONARY" : "عوامی لغّت",
     "MESSAGES" : {
-      "DELETION_SUCCESS" : "'لغّت کامیاب سے ہٹا دی گئی ہے۔.'",
-      "DELETION_FAILURE" : "لغّت ہٹائی نہیں جا سکی۔'",
+      "DELETION_SUCCESS" : "'لغّت '{{name}}' کامیابی سے ہٹا دی گئی ہے۔.'",
+      "DELETION_FAILURE" : "لغّت '{{name}}' ہٹائی نہیں جا سکی۔'",
       "LOADING_FAILURE" : "لغّات کے حصول میں ناکامی۔ برائے مہربانی دوبارہ کوشش کریں۔",
       "DOWNLOAD_REQUEST_SUCCESS" : "لغّت ڈاؤنلوڈ کے لیے بھجوا دی گئی ہے۔",
       "DOWNLOAD_REQUEST_FAILURE" : "لغّت ڈاؤنلوڈ کے لیے نہیں بھجوائی جا سکی۔ برائے مہربانی دوبارہ کوشش کریں۔"

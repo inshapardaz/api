@@ -38,7 +38,7 @@
     "LANGUAGE" : "Please Select language",
     "PUBLIC_DICTIONARY" : "Public Dictionary",
     "MESSAGES" : {
-      "CREATION_SUCCESS" : "Dictionary '{{name}}' deleted successfully.'",
+      "CREATION_SUCCESS" : "Dictionary '{{name}}' created successfully.'",
       "CREATION_FAILURE" : "Error creating dictionary '{{name}}'.'",
       "UPDATE_SUCCESS" : "Dictionary '{{name}}' saved successfully.'",
       "UPDATE_FAILURE" : "Error saving dictionary '{{name}}'.'",
@@ -52,7 +52,6 @@
       "NAME" : "Name is required",
       "LANGUAGE" : "Language is required"
     }
-
   },
   "DICTIONARY" : {
     "SEARCH_IN_DICTIONARY" : "Search in this dictionary...",
@@ -136,7 +135,7 @@
       "UPDATE_FAILURE" : "Unable to save word translation.",
       "DELETE_SUCCESS" : "Word translation removed.",
       "DELETE_FAILURE" : "Unable to remove word translation.",
-      "LOAD_FAILURE" : "Error loading meaning. Please try again."
+      "LOAD_FAILURE" : "Error loading translations. Please try again."
     }
   },
   "MEANING" : {
@@ -188,7 +187,7 @@
       "UPDATE_FAILURE" : "Unable to save word relation.",
       "DELETE_SUCCESS" : "Word relation removed.",
       "DELETE_FAILURE" : "Unable to remove word relation.",
-      "LOAD_FAILURE" : "Error loading meaning. Please try again."
+      "LOAD_FAILURE" : "Error loading relations. Please try again."
     }
   },
   "THESAURUS" : {

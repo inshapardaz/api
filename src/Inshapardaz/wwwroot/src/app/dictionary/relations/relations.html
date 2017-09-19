@@ -6,7 +6,7 @@
                     <ul class="block-options">
                         <li>
                             <button type="button" (click)="addRelation()">
-                            <i class="si si-plus"></i> Add Relation
+                                <i class="si si-plus"></i> {{'RELATION.ACTIONS.ADD'|translate}}
                             </button>
                         </li>
                     </ul>
@@ -27,28 +27,27 @@
                                 </div>
                                 <div class="block-content block-content-full block-content-mini bg-gray-lighter" *ngIf="relation.updateLink || relation.deleteLink ">
                                     <a href="javascript:void(0)" class="btn btn-xs btn-default" *ngIf="relation.updateLink" (click)="editRelation(relation)">
-                                        <i class="fa fa-pencil"></i> Edit
+                                        <i class="fa fa-pencil"></i> {{'RELATION.ACTIONS.EDIT'|translate}}
                                     </a>
                                     <a href="javascript:void(0)" class="btn btn-xs btn-default pull-right" *ngIf="relation.deleteLink" 
-                                        [swal]="{title :'Delete Relation?', 
-                                            text : 'Are you sure you want to remove word relation?', 
+                                        [swal]="{title :translate.instant('RELATION.ACTIONS.DELETE'), 
+                                            text : translate.instant('RELATION.ACTIONS.DELETE_MESSAGE'),
                                             type : 'warning',
-                                            confirmButtonText : 'Yes',
-                                            cancelButtonText : 'No',
+                                            confirmButtonText : translate.instant('ACTIONS.YES'),
+                                            cancelButtonText : translate.instant('ACTIONS.NO'),
                                             confirmButtonColor: '#d26a5c',
-                                            confirmButtonText: 'Yes, delete it!',
                                             html: false,
                                             allowOutsideClick : false,
                                             showCancelButton: true}" 
                                         (confirm)="deleteRelation(relation)">
-                                        <i class="fa fa-trash text-danger"></i> Delete</a>
+                                        <i class="fa fa-trash text-danger"></i> {{'RELATION.ACTIONS.DELETE'|translate}}</a>
                                 </div>
                             </a>
                         </div>
                         <div class="col-lg-4" *ngIf="createLink">
                             <a class="block block-link-hover3" (click)="addRelation()">
                                 <div class="block-content block-content-full clearfix">
-                                    <span class="h4 text-muted pull-right hand">Add Relation</span>
+                                    <span class="h4 text-muted pull-right hand">{{'RELATION.ACTIONS.ADD'|translate}}</span>
                                     <i class="si si-plus fa-2x text-muted pull-left"></i>
                                 </div>
                             </a>

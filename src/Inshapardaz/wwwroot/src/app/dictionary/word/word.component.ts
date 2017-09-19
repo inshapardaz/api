@@ -5,6 +5,8 @@ import { FormsModule , FormBuilder } from '@angular/forms';
 
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Word } from '../../../models/Word';
+import { AlertService } from '../../../services/alert.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'word',
@@ -13,7 +15,7 @@ import { Word } from '../../../models/Word';
 
 export class WordComponent {
     private sub: Subscription;
-    isLoading : boolean = false;
+    isBusy : boolean = false;
     showEditDialog : boolean = false;
     errorMessage: string;
     id : number;
@@ -21,6 +23,8 @@ export class WordComponent {
     
     constructor(private route: ActivatedRoute,
         private router: Router,
+        private alertService: AlertService,
+        private translate: TranslateService,
         private dictionaryService: DictionaryService){
     }
     ngOnInit() {
@@ -35,14 +39,16 @@ export class WordComponent {
     }
 
     getWord() {
-        this.isLoading = true;
+        this.isBusy = true;
         this.dictionaryService.getWordById(this.id)
             .subscribe(
             word => {
                 this.word = word;
-                this.isLoading = false;
+                this.isBusy = false;
             },
             error => {
+                this.isBusy = false;
+                this.alertService.error(this.translate.instant('WORD.MESSAGES.LOAD_FAILURE'));
                 this.errorMessage = <any>error;
             });
     }
@@ -52,10 +58,17 @@ export class WordComponent {
     }
 
     deleteWord(){
+        this.isBusy = true;
         this.dictionaryService.deleteWord(this.word.deleteLink)
         .subscribe(r => {
+            this.isBusy = false;
+            this.alertService.success(this.translate.instant('WORD.MESSAGES.DELETE_SUCCESS', { title : this.word.title }));            
             this.router.navigate(['dictionaryLink', this.word.dictionaryLink ])
-        }, this.handlerError);
+        }, error =>{
+            this.errorMessage = <any>error;
+            this.isBusy = false;
+            this.alertService.error(this.translate.instant('WORD.MESSAGES.DELETE_FAILURE', { title : this.word.title}));            
+        });
     }
 
     onEditClosed(created : boolean){
@@ -63,10 +76,5 @@ export class WordComponent {
         if (created){
             this.getWord();
         }
-    }
-
-    handlerError(error : any) {
-        this.errorMessage = <any>error;
-        this.isLoading = false;
     }
 }

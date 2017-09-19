@@ -96,16 +96,48 @@
       "UPDATE_SUCCESS" : "Word '{{title}}' saved.",
       "UPDATE_FAILURE" : "Unable to save word '{{title}}'.",
       "DELETE_SUCCESS" : "Word '{{title}}' removed.",
-      "DELETE_FAILURE" : "Unable to remove word '{{title}}'."
+      "DELETE_FAILURE" : "Unable to remove word '{{title}}'.",
+      "LOAD_FAILURE" : "Error loading page. Please try again."
     }
   },
   "WORDDETAIL":{
     "CREATENEW" : "Create new word type",
-    "EDIT" : "Edit word type"
+    "EDIT" : "Edit word type",
+    "ACTIONS" : {
+      "ADDDETAIL" : "Add Details",
+      "DELETE" : "Delete word detail",
+      "DELETE_MESSAGE" : "Are you sure you want to delete word detail?"
+    },
+    "MESSAGES": {
+      "CREATION_SUCCESS" : "Word detail created.",
+      "CREATION_FAILURE" : "Unable to create word detail.",
+      "UPDATE_SUCCESS" : "Word detail saved.",
+      "UPDATE_FAILURE" : "Unable to save word detail.",
+      "DELETE_SUCCESS" : "Word detail removed.",
+      "DELETE_FAILURE" : "Unable to remove word detail.",
+      "LOAD_FAILURE" : "Error loading page. Please try again."
+    }
   },
   "WORDTRANSLATION":{
     "CREATENEW" : "Create new Translation",
-    "EDIT" : "Edit Translation"
+    "EDIT" : "Edit Translation",
+    "TITLE" : "Translations",
+    "ACTIONS" : {
+      "ADD" : "Add word translation",
+      "EDIT" : "Edit word translation",
+      "DELETE" : "Delete word translation",
+      "DELETE_MESSAGE" : "Are you sure you want to remove word translation?"
+    },
+    "MESSAGES": {
+      "EMPTY" : "No translations available. Why not add some.",
+      "CREATION_SUCCESS" : "Word translation added.",
+      "CREATION_FAILURE" : "Unable to add word translation.",
+      "UPDATE_SUCCESS" : "Word translation saved.",
+      "UPDATE_FAILURE" : "Unable to save word translation.",
+      "DELETE_SUCCESS" : "Word translation removed.",
+      "DELETE_FAILURE" : "Unable to remove word translation.",
+      "LOAD_FAILURE" : "Error loading meaning. Please try again."
+    }
   },
   "MEANING" : {
     "EMPTY" : "No meaning defined",
@@ -115,18 +147,48 @@
     "EXAMPLE" : "EXAMPLE",
     "VALIDATION" : {
       "TITLE" : "Meaning is requied"
+    },
+    "ACTIONS" : {
+      "ADDDETAIL" : "Add Meaning",
+      "DELETE" : "Delete meaning",
+      "DELETE_MESSAGE" : "Are you sure you want to delete meaning?"
+    },
+    "MESSAGES": {
+      "CREATION_SUCCESS" : "Meaning added.",
+      "CREATION_FAILURE" : "Unable to add meaning to word.",
+      "UPDATE_SUCCESS" : "Meaning saved.",
+      "UPDATE_FAILURE" : "Unable to save meaning.",
+      "DELETE_SUCCESS" : "Meaning removed.",
+      "DELETE_FAILURE" : "Unable to remove meaning.",
+      "LOAD_FAILURE" : "Error loading meaning. Please try again."
     }
   },
   "RELATION": {
     "CREATENEW" : "Relate words",
     "TYPE" : "Relation Type",
     "RELATEDWORD" : "Related Word",
+    "RELATEDWORDS" : "Related Words",
     "PLACEHOLDER" : {
       "RELATEDWORD" : "Related Word"
     },
     "VALIDATION" : {
       "TYPE" : "Relation type is required",
       "RELATEDWORD" : "Related Word required"
+    },
+    "ACTIONS" : {
+      "ADD" : "Add word relation",
+      "EDIT" : "Edit word relation",
+      "DELETE" : "Delete word relation",
+      "DELETE_MESSAGE" : "Are you sure you want to remove word relation?"
+    },
+    "MESSAGES": {
+      "CREATION_SUCCESS" : "Word relation added.",
+      "CREATION_FAILURE" : "Unable to add word relation.",
+      "UPDATE_SUCCESS" : "Word relation saved.",
+      "UPDATE_FAILURE" : "Unable to save word relation.",
+      "DELETE_SUCCESS" : "Word relation removed.",
+      "DELETE_FAILURE" : "Unable to remove word relation.",
+      "LOAD_FAILURE" : "Error loading meaning. Please try again."
     }
   },
   "THESAURUS" : {

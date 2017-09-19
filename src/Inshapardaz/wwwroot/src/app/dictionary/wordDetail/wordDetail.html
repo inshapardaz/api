@@ -1,24 +1,25 @@
 <div class="content content-boxed">
     <div class="row">
         <div class="col-lg-12">
-            <div class="block block-transparent block-bordered pull-r-l" *ngFor="let detail of wordDetails">
+            <div class="block block-transparent block-bordered pull-r-l" 
+                [class.block-opt-refresh]="isBusy"
+                *ngFor="let detail of wordDetails">
                 <div class="block-header bg-gray-lighter">
                     <h3 class="block-title pull-right">{{detail.attributes}} - {{detail.language}}</h3>
                     <ul class="block-options pull-left" *ngIf="detail.updateLink || detail.deleteLink">
                         <li *ngIf="detail.deleteLink">
                             <button type="button" title="{{'ACTIONS.DELETE'|translate}}" 
-                                [swal]="{title :'Delete Word Detail?', 
-                                text : 'Are you sure you want to delete word detail?', 
+                                [swal]="{title :translate.instant('WORDDETAIL.ACTIONS.DELETE'), 
+                                text : translate.instant('WORDDETAIL.ACTIONS.DELETE_MESSAGE'),
                                 type : 'warning',
-                                confirmButtonText : 'Yes',
-                                cancelButtonText : 'No',
+                                confirmButtonText : translate.instant('ACTIONS.YES'),
+                                cancelButtonText : translate.instant('ACTIONS.NO'),
                                 confirmButtonColor: '#d26a5c',
-                                confirmButtonText: 'Yes, delete it!',
                                 html: false,
                                 allowOutsideClick : false,
                                 showCancelButton: true}" 
                                 (confirm)="deleteDetail(detail)">
-                                <i class="si si-trash"></i>
+                                <i class="si si-trash text-danger"></i>
                             </button>
                         </li>
                         <li *ngIf="detail.updateLink">
@@ -38,7 +39,7 @@
             <div *ngIf="createLink">
                 <button class="btn btn-block btn-default push-10" (click)="addDetail()"> 
                     <i class="fa fa-plus pull-left"></i>
-                    Add Detail
+                    {{'WORDDETAIL.ACTIONS.ADDDETAIL'|translate}}
                 </button>
             </div>
         </div>

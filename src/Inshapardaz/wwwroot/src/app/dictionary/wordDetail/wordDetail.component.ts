@@ -1,3 +1,5 @@
+import { AlertService } from '../../../services/alert.service';
+import { TranslateService } from '@ngx-translate/core';
 import { Component, Input  } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
@@ -15,7 +17,7 @@ export class WordDetailsComponent {
     showEditDialog : boolean = false;
     @Input() createLink: string = '';
 
-    isLoadingDetails : boolean = false;
+    isBusy : boolean = false;
     errorMessage: string;
     wordDetails : Array<WordDetail>;
 
@@ -29,19 +31,43 @@ export class WordDetailsComponent {
 
     constructor(private route: ActivatedRoute,
         private router: Router,
+        private alertService: AlertService,
+        private translate: TranslateService,
         private dictionaryService: DictionaryService){
     }
 
+    getWordDetails() {
+        this.isBusy = true;
+        this.dictionaryService.getWordDetails(this._wordDetailLink)
+            .subscribe(
+            details => { 
+                this.wordDetails = details;
+                this.isBusy = false;
+            },
+            error => {
+                this.isBusy = false;
+                this.alertService.error(this.translate.instant('WORDDETAIL.MESSAGES.LOAD_FAILURE'));                
+                this.errorMessage = <any>error;
+            });
+    }
+    
     editDetail(detail : WordDetail){
         this.selectedDetail = detail;
         this.showEditDialog = true;
     }
 
     deleteDetail(detail : WordDetail){
+        this.isBusy = true;
         this.dictionaryService.deleteWordDetail(detail.deleteLink)
         .subscribe(r => {
+            this.isBusy = false;
+            this.alertService.success(this.translate.instant('WORDDETAIL.MESSAGES.DELETE_SUCCESS'));
             this.getWordDetails();
-        }, this.handlerError);  
+        }, error => {
+            this.isBusy = false;
+            this.alertService.error(this.translate.instant('WORDDETAIL.MESSAGES.DELETE_FAILURE'));
+            this.errorMessage = <any>error;
+        });  
     }
 
     addDetail(){
@@ -54,22 +80,5 @@ export class WordDetailsComponent {
         if (created){
             this.getWordDetails();
         }
-    }
-
-    getWordDetails() {
-        this.isLoadingDetails = true;
-        this.dictionaryService.getWordDetails(this._wordDetailLink)
-            .subscribe(
-            details => { 
-                this.wordDetails = details;
-                this.isLoadingDetails = false;
-            },
-            error => {
-                this.errorMessage = <any>error;
-            });
-    }
-
-    handlerError(error : any) {
-        this.errorMessage = <any>error;
     }
 }

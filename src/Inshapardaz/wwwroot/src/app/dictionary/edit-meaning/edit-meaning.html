@@ -36,7 +36,7 @@
                         <div class="form-group">
                             <div class="col-xs-12 text-right">
                                 <button class="btn btn-sm btn-primary" type="submit" [disabled]="!dictionaryForm.form.valid"><i class="fa fa-check"></i> 
-                                            {{ isCreating == true ? 'Create' : 'Update' }}
+                                    {{ isCreating == true ? translate.instant('ACTIONS.CREATE') : translate.instant('ACTIONS.UPDATE') }}
                                         </button>
                                 <button class="btn btn-sm btn-default" type="button" (click)="onClose()">{{ 'ACTIONS.CLOSE' | translate}}</button>
                             </div>

@@ -2,11 +2,11 @@
     <ul class="block-options">
         <li>
             <button type="button" (click)="addTranslation()">
-                <i class="si si-plus"></i> Add Translations
+                <i class="si si-plus"></i>  {{'WORDTRANSLATION.ACTIONS.ADD'|translate}}
             </button>
         </li>
     </ul>
-    <h3 class="block-title">Translations</h3>
+    <h3 class="block-title">{{'WORDTRANSLATION.TITLE'|translate}}</h3>
 </div>
 <div class="block-content">
     <div class="block-content">
@@ -16,18 +16,18 @@
                     <div class="btn-group">
                         <button *ngIf="translation.deleteLink" class="btn btn-xs btn-default" type="button" data-toggle="tooltip"
                             title="{{'ACTIONS.DELETE'|translate}}"
-                            [swal]="{title :'Delete Translation?', 
-                            text : 'Are you sure you want to translation?', 
+                            [swal]="{title :translate.instant('WORDTRANSLATION.ACTIONS.DELETE'), 
+                            text : translate.instant('WORDTRANSLATION.ACTIONS.DELETE_MESSAGE'),  
                             type : 'warning',
-                            confirmButtonText : 'Yes',
-                            cancelButtonText : 'No',
+                            confirmButtonText : translate.instant('ACTIONS.YES'),
+                            cancelButtonText : translate.instant('ACTIONS.NO'),
                             confirmButtonColor: '#d26a5c',
-                            confirmButtonText: 'Yes, delete it!',
                             html: false,
                             allowOutsideClick : false,
                             showCancelButton: true}" 
                             (confirm)="deleteTranslation(translation)"><i class="fa fa-times"></i></button>
-                        <button *ngIf="translation.updateLink" class="btn btn-xs btn-default" type="button" (click)="editTranslation(translation)" data-toggle="tooltip"
+                        <button *ngIf="translation.updateLink" class="btn btn-xs btn-default" type="button" 
+                        (click)="editTranslation(translation)" data-toggle="tooltip"
                             title="{{'ACTIONS.EDIT'|translate}}"><i class="fa fa-pencil"></i></button>
                     </div>
                 </td>
@@ -35,7 +35,9 @@
                 <td class="h5 pull-right">{{translation.language}}</td>
             </tr>
         </table>
-        <p class="font-s13" *ngIf="translations == null || translations.length < 1">No translations available. Why not add some.</p>
+        <p class="font-s13" *ngIf="translations == null || translations.length < 1">
+                {{'WORDTRANSLATION.MESSAGES.EMPTY'|translate}}
+        </p>
     </div>
 </div>
 

@@ -1,15 +1,17 @@
 <div class="content">
-    <div class="block block-bordered" *ngIf="!isLoading">
+    <div class="block block-bordered" [class.block-opt-refresh]="isBusy"></div>
+    <div class="block block-bordered" *ngIf="!isBusy">
         <div class="block-header" *ngIf="word.updateLink || word.deleteLink">
             <ul class="block-options">
                 <li *ngIf="word.deleteLink">
-                    <button type="button" title="{{'ACTIONS.DELETE'|translate}}" [swal]="{title :'Delete word?', 
-                                text : 'Are you sure you want to delete word and all of its details?', 
+                    <button type="button" 
+                            title="{{'WORD.ACTIONS.DELETE'|translate}}" 
+                            [swal]="{title :translate.instant('WORD.ACTIONS.DELETE'), 
+                                text : translate.instant('WORD.ACTIONS.DELETE_MESSAGE', { word : word.title }),  
                                 type : 'warning',
-                                confirmButtonText : 'Yes',
-                                cancelButtonText : 'No',
+                                confirmButtonText : translate.instant('ACTIONS.YES'),
+                                cancelButtonText : translate.instant('ACTIONS.NO'),
                                 confirmButtonColor: '#d26a5c',
-                                confirmButtonText: 'Yes, delete it!',
                                 html: false,
                                 allowOutsideClick : false,
                                 showCancelButton: true}" (confirm)="deleteWord()">
@@ -17,7 +19,7 @@
                     </button>
                 </li>
                 <li *ngIf="word.updateLink">
-                    <button type="button" (click)="editWord()" title="{{'ACTIONS.EDIT'|translate}}">
+                    <button type="button" (click)="editWord()" title="{{'WORD.ACTIONS.EDIT'|translate}}">
                         <i class="si si-note"></i>
                     </button>
                 </li>
@@ -30,13 +32,13 @@
         </div>
         <div class="block-content block-content-mini block-content-full bg-gray-lighter">
             <div class="text-center text-muted">
-                <h3 class="h4 font-w300">{{word.description}}</h3>
+                <h3 class="h4 font-w300" >{{word.description}}</h3>
             </div>
         </div>
         <div class="block-content border-t">
             <div class="row items-push text-center">
                 <div class="col-xs-6 border-r" *ngIf="word.pronunciation">
-                    <span class="h4 font-w300 push-5" href="javascript:void(0)" data-tooltip="Pronunciation">{{word.pronunciation}}</span>
+                    <span class="h4 font-w300 push-5" href="javascript:void(0)">{{word.pronunciation}}</span>
                 </div>
                 <div class="col-xs-6" *ngIf="word.titleWithMovements">
                     <span class="h4 font-w300 push-5" href="javascript:void(0)">{{word.titleWithMovements}}</span>

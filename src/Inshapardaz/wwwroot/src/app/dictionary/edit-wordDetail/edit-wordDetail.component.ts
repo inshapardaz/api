@@ -7,6 +7,7 @@ import { DictionaryService } from '../../../services/dictionary.service';
 import { WordDetail } from '../../../models/WordDetail';
 import { Languages } from '../../../models/language';
 import { GrammaticTypes } from '../../../models/grammaticalTypes';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
     selector: 'edit-wordDetail',
@@ -51,6 +52,7 @@ export class EditWordDetailComponent {
     
     constructor(private dictionaryService: DictionaryService, 
                 private router: Router,
+                private alertService: AlertService,                    
                 private translate: TranslateService) {
         this.languages = Object.keys(this.languagesEnum).filter(Number);
         this.attributesValues = Object.keys(this.attributeEnum).filter(Number)
@@ -64,29 +66,27 @@ export class EditWordDetailComponent {
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;
-            },
-            this.handlerCreationError);    
+                this.alertService.success(this.translate.instant('WORDDETAIL.MESSAGES.CREATION_SUCCESS'));                
+            }, error => {
+                this.alertService.error(this.translate.instant('WORDDETAIL.MESSAGES.CREATION_FAILURE'));
+                this.isBusy = false;
+            });
         } else {
             this.dictionaryService.updateWordDetail(this.model.updateLink, this.model)
             .subscribe(m => {
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;
-            },
-            this.handlerCreationError);
+                this.alertService.success(this.translate.instant('WORDDETAIL.MESSAGES.UPDATE_SUCCESS',));
+            },error => {
+                this.alertService.error(this.translate.instant('WORDDETAIL.MESSAGES.UPDATE_FAILURE'));                
+                this.isBusy = false;
+            });
         }
     }
 
     onClose(){
         this.onClosed.emit(false);
         this.visible = false;
-    }
-
-    handlerError(error : any) {
-        this.isBusy = false;
-    }
-
-    handlerCreationError(error : any) {
-        
     }
 }

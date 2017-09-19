@@ -5,20 +5,19 @@
                 <td text-center *ngIf="meaning.deleteLink || meaning.updateLink" style="width:75px">
                     <div class="btn-group">
                         <button *ngIf="meaning.deleteLink" class="btn btn-xs btn-default" type="button" data-toggle="tooltip"
-                            title="{{'ACTIONS.DELETE'|translate}}"
-                            [swal]="{title :'Delete Meaning?', 
-                            text : 'Are you sure you want to delete meaning?', 
+                            title="{{'MEANING.ACTIONS.DELETE'|translate}}"
+                            [swal]="{title :translate.instant('MEANING.ACTIONS.DELETE'), 
+                            text : translate.instant('MEANING.ACTIONS.DELETE_MESSAGE'),
                             type : 'warning',
-                            confirmButtonText : 'Yes',
-                            cancelButtonText : 'No',
+                            confirmButtonText : translate.instant('ACTIONS.YES'),
+                            cancelButtonText : translate.instant('ACTIONS.NO'),
                             confirmButtonColor: '#d26a5c',
-                            confirmButtonText: 'Yes, delete it!',
                             html: false,
                             allowOutsideClick : false,
                             showCancelButton: true}" 
                             (confirm)="deleteMeaning(meaning)"><i class="fa fa-times"></i></button>
                         <button *ngIf="meaning.updateLink" class="btn btn-xs btn-default" type="button" (click)="editMeaning(meaning)" data-toggle="tooltip"
-                            title="{{'ACTIONS.EDIT'|translate}}"><i class="fa fa-pencil"></i></button>
+                            title="{{'WORD.ACTIONS.EDIT'|translate}}"><i class="fa fa-pencil"></i></button>
                     </div>
                 </td>
                 <td class="h5 pull-right">{{meaning.context}}</td>

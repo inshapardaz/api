@@ -1,3 +1,5 @@
+import { TranslateService } from '@ngx-translate/core';
+import { AlertService } from '../../../services/alert.service';
 import { Component, Input  } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
@@ -34,6 +36,8 @@ export class RelationsComponent {
     
     constructor(private route: ActivatedRoute,
         private router: Router,
+        private alertService: AlertService,
+        private translate: TranslateService,
         private dictionaryService: DictionaryService){
     }
 
@@ -46,6 +50,7 @@ export class RelationsComponent {
                 this.isLoading = false;
             },
             error => {
+                this.alertService.error(this.translate.instant('RELATION.MESSAGES.LOAD_FAILURE'));                
                 this.errorMessage = <any>error;
             });
     }
@@ -63,8 +68,12 @@ export class RelationsComponent {
     deleteRelation(relation : Relation){
         this.dictionaryService.deleteRelation(relation.deleteLink)
         .subscribe(r => {
+            this.alertService.success(this.translate.instant('RELATION.MESSAGES.DELETE_SUCCESS'));            
             this.getRelations();
-        }, this.handlerError);  
+        }, error => {
+            this.errorMessage = <any>error;   
+            this.alertService.error(this.translate.instant('RELATION.MESSAGES.DELETE_FAILURE'));
+        });  
     }
 
     onEditClosed(created : boolean){
@@ -73,9 +82,5 @@ export class RelationsComponent {
         if (created){
             this.getRelations();
         }
-    }
-
-    handlerError(error : any) {
-        this.errorMessage = <any>error;
     }
 }

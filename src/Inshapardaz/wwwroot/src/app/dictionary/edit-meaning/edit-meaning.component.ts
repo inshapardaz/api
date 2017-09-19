@@ -1,3 +1,4 @@
+import { AlertService } from '../../../services/alert.service';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -47,7 +48,8 @@ export class EditMeaningComponent {
     
     constructor(private dictionaryService: DictionaryService, 
                 private router: Router,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private alertService: AlertService) {
         this.languages = Object.keys(this.languagesEnum).filter(Number);
     }  
 
@@ -59,29 +61,27 @@ export class EditMeaningComponent {
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;
-            },
-            this.handlerCreationError);    
+                this.alertService.success(this.translate.instant('MEANING.MESSAGES.CREATION_SUCCESS'));                
+            }, error => {
+                this.isBusy = false;        
+                this.alertService.error(this.translate.instant('MEANING.MESSAGES.CREATION_FAILURE'));                
+            });    
         } else {
             this.dictionaryService.updateMeaning(this.model.updateLink, this.model)
             .subscribe(m => {
                 this.isBusy = false;
                 this.onClosed.emit(true);
                 this.visible = false;
-            },
-            this.handlerCreationError);
+                this.alertService.success(this.translate.instant('MEANING.MESSAGES.UPDATE_SUCCESS'));                
+            },error => {
+                this.isBusy = false;        
+                this.alertService.error(this.translate.instant('MEANING.MESSAGES.UPDATE_FAILURE'));                
+            });
         }
     }
 
     onClose(){
         this.visible = false;        
         this.onClosed.emit(false);
-    }
-
-    handlerError(error : any) {
-        this.isBusy = false;
-    }
-
-    handlerCreationError(error : any) {
-        
     }
 }

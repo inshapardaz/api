@@ -1,3 +1,5 @@
+import { TranslateService } from '@ngx-translate/core';
+import { AlertService } from '../../../services/alert.service';
 import { Component, Input  } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
@@ -30,6 +32,8 @@ export class MeaningsComponent {
 
     constructor(private route: ActivatedRoute,
         private router: Router,
+        private alertService: AlertService,
+        private translate: TranslateService,
         private dictionaryService: DictionaryService){
     }
 
@@ -42,9 +46,11 @@ export class MeaningsComponent {
                 this.isLoading = false;
             },
             error => {
+                this.alertService.error(this.translate.instant('MEANING.MESSAGES.LOAD_FAILURE'));                
                 this.errorMessage = <any>error;
             });
     }
+    
     addMeaning(){
         this.selectedMeaning = null;
         this.showEditDialog = true;
@@ -58,8 +64,13 @@ export class MeaningsComponent {
     deleteMeaning(meaning : Meaning) {
         this.dictionaryService.deleteMeaning(meaning.deleteLink)
         .subscribe(r => {
+            this.alertService.success(this.translate.instant('MEANING.MESSAGES.DELETE_SUCCESS'));            
             this.getMeanings();
-        }, this.handlerError);
+        }, error => {
+            this.errorMessage = <any>error;
+            this.isLoading = false;
+            this.alertService.error(this.translate.instant('MEANING.MESSAGES.DELETE_FAILURE'));            
+        });
     }
 
     onEditClosed(created : boolean){
@@ -67,10 +78,5 @@ export class MeaningsComponent {
         if (created){
             this.getMeanings();
         }
-    }
-
-    handlerError(error : any) {
-        this.errorMessage = <any>error;
-        this.isLoading = false;
     }
 }

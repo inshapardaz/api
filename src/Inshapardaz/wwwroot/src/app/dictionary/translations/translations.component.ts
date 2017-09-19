@@ -1,3 +1,5 @@
+import { TranslateService } from '@ngx-translate/core';
+import { AlertService } from '../../../services/alert.service';
 import { Component, Input, transition } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
@@ -31,7 +33,24 @@ export class WordTranslationsComponent {
 
     constructor(private route: ActivatedRoute,
         private router: Router,
+        private alertService: AlertService,
+        private translate: TranslateService,
         private dictionaryService: DictionaryService){
+    }
+
+    getTranslations() {
+        this.isLoading = true;
+        this.dictionaryService.getWordTranslations(this._translationsLink)
+            .subscribe(
+            translations => { 
+                this.translations = translations;
+                this.isLoading = false;
+            },
+            error => {
+                this.errorMessage = <any>error;
+                this.isLoading = false;
+                this.alertService.error(this.translate.instant('WORDTRANSLATION.MESSAGES.LOAD_FAILURE'));                
+            });
     }
 
     addTranslation(){
@@ -47,30 +66,19 @@ export class WordTranslationsComponent {
     deleteTranslation(translation : Translation){
         this.dictionaryService.deleteWordTranslation(translation.deleteLink)
         .subscribe(r => {
+            this.alertService.success(this.translate.instant('WORDTRANSLATION.MESSAGES.DELETE_SUCCESS'));            
             this.getTranslations();
-        }, this.handlerError);
+        }, error => {
+            this.errorMessage = <any>error;
+            this.isLoading = false;
+            this.alertService.error(this.translate.instant('WORDTRANSLATION.MESSAGES.DELETE_FAILURE'));            
+        });
     }
-    getTranslations() {
-        this.isLoading = true;
-        this.dictionaryService.getWordTranslations(this._translationsLink)
-            .subscribe(
-            translations => { 
-                this.translations = translations;
-                this.isLoading = false;
-            },
-            error => {
-                this.errorMessage = <any>error;
-            });
-    }
+    
     onEditClosed(created : boolean){
         this.showEditDialog = false;
         if (created){
             this.getTranslations();
         }
     }
-    handlerError(error : any) {
-        this.errorMessage = <any>error;
-        this.isLoading = false;
-    }
-
 }

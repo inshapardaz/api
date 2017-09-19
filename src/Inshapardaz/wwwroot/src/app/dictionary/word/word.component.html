@@ -1,5 +1,5 @@
 <div class="content">
-    <div class="block block-bordered" [class.block-opt-refresh]="isBusy"></div>
+    <div class="block block-bordered" [class.block-opt-refresh]="isBusy" *ngIf="isBusy"></div>
     <div class="block block-bordered" *ngIf="!isBusy">
         <div class="block-header" *ngIf="word.updateLink || word.deleteLink">
             <ul class="block-options">
@@ -25,7 +25,9 @@
                 </li>
             </ul>
         </div>
-        <div class="block-content block-content-full text-center">
+        <div class="block-content block-content-full text-center ribbon ribbon-modern ribbon-success">
+            <div class="ribbon-box font-w600 text-uppercase">
+                <a class="text-white" [routerLink]="['/dictionaryLink', word.dictionaryLink]">{{'DICTIONARY.BACKTODICTIONARY'|translate}}</a></div>
             <div class="row items-push text-center">
                 <h2 class="h4 font-s64 push-5">{{word.title}}</h2>
             </div>

@@ -66,6 +66,7 @@
     "TITLE" : "{{lang}} لغّت بمعہ {{count}} الفاظ",
     "ADD_WORD" : "لفظ کا اضافہ",
     "INDEX" : "فہرست",
+    "BACKTODICTIONARY" : "لغّت",
     "MESSAGES" : {
       "LOADING_FAILURE" : "لغّت تک رسائی نہیں ہو سکی۔ دوبارہ کوشش کیجئے۔",
       "WORDS_LOADING_FAILURE" : "لغّت کے الفاظ تک رسائی نہیں ہو سکی۔ دوبارہ کوشش کیجئے۔",

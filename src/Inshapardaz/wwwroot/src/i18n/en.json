@@ -66,6 +66,7 @@
     "TITLE" : "{{lang}} dictionary with {{count}} words",
     "ADD_WORD" : "Add Word",
     "INDEX" : "Index",
+    "BACKTODICTIONARY" : "Back to Dictionary",
     "MESSAGES" : {
       "LOADING_FAILURE" : "Error loading dictionary. Please try again.",
       "WORDS_LOADING_FAILURE" : "Unable to load word list. Please try again",

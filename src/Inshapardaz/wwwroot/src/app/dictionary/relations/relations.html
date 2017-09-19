@@ -3,7 +3,7 @@
         <div class="col-lg-12">
             <div class="block block-transparent block-bordered pull-r-l">
                 <div class="block-header bg-gray-lighter">
-                    <ul class="block-options">
+                    <ul class="block-options" *ngIf="createRelationLink">
                         <li>
                             <button type="button" (click)="addRelation()">
                                 <i class="si si-plus"></i> {{'RELATION.ACTIONS.ADD'|translate}}
@@ -13,37 +13,49 @@
                     <h3 class="block-title">{{'WORD.RELATIONS'|translate}}</h3>
                 </div>
                 <div class="block-content">
-                    <div class="row">
-                        <div class="col-lg-4" *ngFor="let relation of relations">
-                            <a class="block block-link-hover3" [routerLink]="['/word', relation.relatedWordId]">
-                                <div class="block-content block-content-full clearfix">
-                                    <span class="h4 font-w700 pull-right">{{relation.relatedWord}}</span>
-                                    <span class="h6 text-muted">{{relation.relationType}}</span>
-                                    <i *ngIf="relation.relationTypeId==0" class="si si-layers fa-2x text-muted pull-left"></i>
-                                    <i *ngIf="relation.relationTypeId==1" class="si si-directions fa-2x text-muted pull-left"></i>
-                                    <i *ngIf="relation.relationTypeId==2" class="si si-chemistry fa-2x text-muted pull-left"></i>
-                                    <i *ngIf="relation.relationTypeId==3" class="si si-vector fa-2x text-muted pull-left"></i>
-                                    <i *ngIf="relation.relationTypeId>=4" class="si si-link fa-2x text-muted pull-left"></i>
-                                </div>
-                                <div class="block-content block-content-full block-content-mini bg-gray-lighter" *ngIf="relation.updateLink || relation.deleteLink ">
-                                    <a href="javascript:void(0)" class="btn btn-xs btn-default" *ngIf="relation.updateLink" (click)="editRelation(relation)">
-                                        <i class="fa fa-pencil"></i> {{'RELATION.ACTIONS.EDIT'|translate}}
-                                    </a>
-                                    <a href="javascript:void(0)" class="btn btn-xs btn-default pull-right" *ngIf="relation.deleteLink" 
-                                        [swal]="{title :translate.instant('RELATION.ACTIONS.DELETE'), 
-                                            text : translate.instant('RELATION.ACTIONS.DELETE_MESSAGE'),
-                                            type : 'warning',
-                                            confirmButtonText : translate.instant('ACTIONS.YES'),
-                                            cancelButtonText : translate.instant('ACTIONS.NO'),
-                                            confirmButtonColor: '#d26a5c',
-                                            html: false,
-                                            allowOutsideClick : false,
-                                            showCancelButton: true}" 
-                                        (confirm)="deleteRelation(relation)">
-                                        <i class="fa fa-trash text-danger"></i> {{'RELATION.ACTIONS.DELETE'|translate}}</a>
-                                </div>
-                            </a>
-                        </div>
+                    <div class="table-responsive" *ngIf="relations != null && relations.length > 0">
+                        <table class="table table-borderless table-striped table-vcenter">
+                            <tbody>
+                                <tr *ngFor="let relation of relations">
+                                    <td style="width: 80px;">
+                                        <span class="label" [class.label-primary]="relation.relationTypeId==0" [class.label-success]="relation.relationTypeId==1"
+                                            [class.label-info]="relation.relationTypeId==2" [class.label-warning]="relation.relationTypeId==3"
+                                            [class.label-default]="relation.relationTypeId>=4">
+                                                {{relation.relationType}}
+                                            </span>
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void(0)" [routerLink]="['/word', relation.relatedWordId]">
+                                                {{relation.relatedWord}}
+                                            </a>
+                                    </td>
+                                    <td style="width: 80px;" *ngIf="relation.updateLink || relation.deleteLink ">
+                                        <div class="btn-group">
+                                            <a href="javascript:void(0)" class="btn btn-xs btn-default" 
+                                             *ngIf="relation.updateLink" (click)="editRelation(relation)"
+                                             data-toggle="tooltip" data-placement="right" title="{{'RELATION.ACTIONS.EDIT'|translate}}" >
+                                                        <i class="fa fa-pencil"></i> 
+                                                    </a>
+                                            <a href="javascript:void(0)" class="btn btn-xs btn-default pull-right"
+                                                data-toggle="tooltip" data-placement="right" title="{{'RELATION.ACTIONS.DELETE'|translate}}"
+                                                *ngIf="relation.deleteLink" [swal]="{title :translate.instant('RELATION.ACTIONS.DELETE'), 
+                                                            text : translate.instant('RELATION.ACTIONS.DELETE_MESSAGE'),
+                                                            type : 'warning',
+                                                            confirmButtonText : translate.instant('ACTIONS.YES'),
+                                                            cancelButtonText : translate.instant('ACTIONS.NO'),
+                                                            confirmButtonColor: '#d26a5c',
+                                                            html: false,
+                                                            allowOutsideClick : false,
+                                                            showCancelButton: true}" (confirm)="deleteRelation(relation)">
+                                                        <i class="fa fa-trash text-danger"></i>
+                                                    </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row" *ngIf="relations == null || relations.length < 1">
                         <div class="col-lg-4" *ngIf="createLink">
                             <a class="block block-link-hover3" (click)="addRelation()">
                                 <div class="block-content block-content-full clearfix">
@@ -58,6 +70,5 @@
         </div>
     </div>
 </div>
-<edit-wordRelation [modalId]="'edit-relation'" [createLink]="createRelationLink" [sourceWord]="sourceWord"
-    [visible]="showEditDialog" [relation]="selectedRelation" [dictionaryLink]="dictionaryLink"
-    (onClosed)="onEditClosed($event)"></edit-wordRelation>
+<edit-wordRelation [modalId]="'edit-relation'" [createLink]="createRelationLink" [sourceWord]="sourceWord" [visible]="showEditDialog"
+    [relation]="selectedRelation" [dictionaryLink]="dictionaryLink" (onClosed)="onEditClosed($event)"></edit-wordRelation>

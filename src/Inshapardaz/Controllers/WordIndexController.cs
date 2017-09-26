@@ -22,8 +22,7 @@ namespace Inshapardaz.Api.Controllers
             _pageRenderer = pageRenderer;
         }
 
-        [HttpGet]
-        [Route("api/dictionaries/{id}/Search", Name = "SearchDictionary")]
+        [HttpGet("api/dictionaries/{id}/Search", Name = "SearchDictionary")]
         public IActionResult SearchDictionary(int id, string query, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrWhiteSpace(query))
@@ -54,8 +53,7 @@ namespace Inshapardaz.Api.Controllers
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
         }
 
-        [HttpGet]
-        [Route("api/dictionaries/{id}/words/startWith/{startingWith}", Name = "GetWordsListStartWith")]
+        [HttpGet("api/dictionaries/{id}/words/startWith/{startingWith}", Name = "GetWordsListStartWith")]
         public IActionResult StartsWith(int id, string startingWith, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrWhiteSpace(startingWith))
@@ -85,8 +83,7 @@ namespace Inshapardaz.Api.Controllers
             return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
         }
 
-        [Route("api/words/search/{title}", Name = "WordSearch")]
-        [HttpGet]
+        [HttpGet("api/words/search/{title}", Name = "WordSearch")]
         public IActionResult Search(string title, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrWhiteSpace(title))

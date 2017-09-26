@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Renderers
             result.Language = _enumRenderer.Render((Languages)source.Language);
             var links = new List<LinkView>
             {
-                LinkRenderer.Render("GetWordDetailsById", "self", new {id = source.WordInstanceId}),
+                LinkRenderer.Render("GetDetailsById", "self", new {id = source.Id}),
                 LinkRenderer.Render("GetWordById", "word", new {id = source.WordInstanceId}),
                 LinkRenderer.Render("GetWordTranslationsByDetailId", "translations", new {id = source.Id}),
                 LinkRenderer.Render("GetWordMeaningByWordDetailId", "meanings", new {id = source.Id})

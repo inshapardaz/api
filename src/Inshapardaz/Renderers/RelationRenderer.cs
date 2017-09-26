@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Renderers
             var result = source.Map<WordRelation, RelationshipView>();
             var links = new List<LinkView>
                                {
-                                   LinkRenderer.Render("GetWordRelationsById", "self", new { id = source.Id }),
+                                   LinkRenderer.Render("GetRelationById", "self", new { id = source.Id }),
                                    LinkRenderer.Render("GetWordById", "source-word", new { id = source.SourceWordId }),
                                    LinkRenderer.Render("GetWordById", "related-word", new { id = source.RelatedWordId })
                                };

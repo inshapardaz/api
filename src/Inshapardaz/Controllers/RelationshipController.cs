@@ -31,15 +31,14 @@ namespace Inshapardaz.Api.Controllers
             _relationRender = relationRender;
         }
 
-        [HttpGet]
-        [Route("/api/words/{id}/relationships", Name = "GetWordRelationsById")]
+        [HttpGet("/api/words/{id}/relationships", Name = "GetWordRelationsById")]
         public async Task<IActionResult> GetRelationshipForWord(int id)
         {
             var relations = await _queryProcessor.ExecuteAsync(new RelationshipByWordIdQuery { WordId = id });
             return Ok(relations.Select(r => _relationRender.Render(r)).ToList());
         }
 
-        [HttpGet("/api/relationships/{id}")]
+        [HttpGet("/api/relationships/{id}", Name = "GetRelationById")]
         public async Task<IActionResult> Get(int id)
         {
             if (_userHelper.GetUserId() != Guid.Empty)

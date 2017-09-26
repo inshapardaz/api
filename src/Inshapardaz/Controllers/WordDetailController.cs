@@ -32,8 +32,7 @@ namespace Inshapardaz.Api.Controllers
             _wordDetailRenderer = wordDetailRenderer;
         }
 
-        [HttpGet]
-        [Route("/api/words/{id}/details", Name = "GetWordDetailsById")]
+        [HttpGet("/api/words/{id}/details", Name = "GetWordDetailsById")]
         public async Task<IActionResult> GetForWord(int id)
         {
             var query = new WordDetailsByWordQuery
@@ -45,8 +44,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(wordDetailViews.Select(w => _wordDetailRenderer.Render(w)).ToList());
         }
 
-        [HttpGet]
-        [Route("/api/details/{id}", Name = "GetDetailsById")]
+        [HttpGet("/api/details/{id}", Name = "GetDetailsById")]
         public async Task<IActionResult> Get(int id)
         {
             var userId = _userHelper.GetUserId();

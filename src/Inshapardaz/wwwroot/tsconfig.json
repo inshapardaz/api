@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
+    "module": "es2015",
+    "target": "es5",
     "moduleResolution": "node",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
@@ -9,7 +9,12 @@
     "allowJs": true,
     "removeComments": false,
     "noImplicitAny": false,
-    "watch": false
+    "watch": false,
+    "lib": [
+      "ES5",
+      "ES2015",
+      "DOM",
+      "ScriptHost"]
   },
   "exclude": [
     "node_modules"

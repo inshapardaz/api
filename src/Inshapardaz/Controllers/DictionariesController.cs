@@ -11,6 +11,7 @@ using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using paramore.brighter.commandprocessor;
@@ -34,7 +35,7 @@ namespace Inshapardaz.Api.Controllers
             IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView> dictionariesRenderer,
             IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer,
             IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView> dictionaryDownloadRenderer, 
-            ILogger<DictionariesController> logger)
+            ILogger<DictionariesController> logger, IActionContextAccessor a)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;

@@ -21,10 +21,11 @@ namespace Inshapardaz.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.RegisterFramework(Configuration)
+                .RegisterRenderes()
+                .ConfigureAdapters()
                 .ConfigureDomain(Configuration)
                 .ConfigureCommandProcessor()
                 .ConfigureDarker()
-                .RegisterRenderes()
                 .RegisterSwagger();
         }
 

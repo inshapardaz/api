@@ -1,12 +1,18 @@
-﻿using Inshapardaz.Domain.Commands;
+﻿using Inshapardaz.Api.Adapter;
+using Inshapardaz.Domain.CommandHandlers;
+using Inshapardaz.Domain.Commands;
 using paramore.brighter.commandprocessor;
 
-namespace Inshapardaz.Domain.CommandHandlers
+namespace Inshapardaz.Api.Configuration
 {
     public class CommandHandlerRegistry : SubscriberRegistry
     {
         public CommandHandlerRegistry()
         {
+            // Adapters
+            Register<GetEntryCommand, GetEntryCommandHandler>();
+
+            // Domain
             RegisterAsync<AddDictionaryCommand, AddDictionaryCommandHandler>();
             RegisterAsync<AddDictionaryDownloadCommand, AddDictionaryDownloadCommandHandler>();
             RegisterAsync<AddWordCommand, AddWordCommandHandler>();

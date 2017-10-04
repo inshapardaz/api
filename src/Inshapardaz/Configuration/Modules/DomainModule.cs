@@ -1,5 +1,4 @@
-﻿using Inshapardaz.Domain;
-using Inshapardaz.Domain.CommandHandlers;
+﻿using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;

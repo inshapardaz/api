@@ -1,13 +1,16 @@
 ﻿using System.Linq;
-using Darker;
+using System.Threading;
+using System.Threading.Tasks;
+using Paramore.Darker;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordIndexContainingTitleQueryHandler : QueryHandler<WordContainingTitleQuery, Page<Word>>
+    public class WordIndexContainingTitleQueryHandler : QueryHandlerAsync<WordContainingTitleQuery, Page<Word>>
     {
         private readonly IDatabaseContext _database;
 
@@ -16,14 +19,14 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override Page<Word> Execute(WordContainingTitleQuery query)
+        public override async Task<Page<Word>> ExecuteAsync(WordContainingTitleQuery query, CancellationToken cancellationToken)
         {
             var wordIndices = query.DictionaryId > 0
                 ? _database.Word.Where(
                     x => x.DictionaryId == query.DictionaryId && x.Title.StartsWith(query.SearchTerm))
                 : _database.Word.Where(x => x.Title.StartsWith(query.SearchTerm));
 
-            var count = wordIndices.Count();
+            var count = await wordIndices.CountAsync(cancellationToken);
             var data = wordIndices
                 .OrderBy(x => x.Title.Length)
                 .ThenBy(x => x.Title)

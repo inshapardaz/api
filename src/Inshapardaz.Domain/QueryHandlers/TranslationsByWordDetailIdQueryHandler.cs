@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Darker;
+using Paramore.Darker;
 using Inshapardaz.Domain.Queries;
 using System.Collections.Generic;
 using System.Threading;
@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class TranslationsByWordDetailIdQueryHandler : AsyncQueryHandler<TranslationsByWordDetailIdQuery,
+    public class TranslationsByWordDetailIdQueryHandler : QueryHandlerAsync<TranslationsByWordDetailIdQuery,
         IEnumerable<Translation>>
     {
         private readonly IDatabaseContext _database;

@@ -1,5 +1,5 @@
 ﻿using System;
-using Darker;
+using Paramore.Darker;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Commands;

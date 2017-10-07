@@ -1,4 +1,4 @@
-﻿using Darker;
+﻿using Paramore.Darker;
 using Inshapardaz.Domain.Queries;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordByTitleQueryHandler : AsyncQueryHandler<WordByTitleQuery, Word>
+    public class WordByTitleQueryHandler : QueryHandlerAsync<WordByTitleQuery, Word>
     {
         private readonly IDatabaseContext _database;
 

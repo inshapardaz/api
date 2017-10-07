@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Darker;
+using Paramore.Darker;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordDetailsByWordQueryHandler : AsyncQueryHandler<WordDetailsByWordQuery, IEnumerable<WordDetail>>
+    public class WordDetailsByWordQueryHandler : QueryHandlerAsync<WordDetailsByWordQuery, IEnumerable<WordDetail>>
     {
         private readonly IDatabaseContext _database;
 

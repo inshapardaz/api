@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Inshapardaz.Domain.Queries;
-using Darker;
+using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Database;
@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetDownloadByDictionaryIdQueryHandler : AsyncQueryHandler<GetDownloadByDictionaryIdQuery, File>
+    public class GetDownloadByDictionaryIdQueryHandler : QueryHandlerAsync<GetDownloadByDictionaryIdQuery, File>
     {
         private readonly IDatabaseContext _database;
 

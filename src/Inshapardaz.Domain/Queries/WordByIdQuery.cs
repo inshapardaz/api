@@ -1,5 +1,5 @@
 ﻿using System;
-using Darker;
+using Paramore.Darker;
 using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Queries

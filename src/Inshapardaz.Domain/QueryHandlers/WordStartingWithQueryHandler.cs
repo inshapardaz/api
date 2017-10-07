@@ -1,13 +1,16 @@
 ﻿using System.Linq;
-using Darker;
+using System.Threading;
+using System.Threading.Tasks;
+using Paramore.Darker;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordStartingWithQueryHandler : QueryHandler<WordStartingWithQuery, Page<Word>>
+    public class WordStartingWithQueryHandler : QueryHandlerAsync<WordStartingWithQuery, Page<Word>>
     {
         private readonly IDatabaseContext _database;
 
@@ -16,12 +19,12 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override Page<Word> Execute(WordStartingWithQuery request)
+        public override async Task<Page<Word>> ExecuteAsync(WordStartingWithQuery request, CancellationToken cancellationToken)
         {
             var wordIndices = _database.Word.Where(x => x.DictionaryId == request.DictionaryId &&
                                                         x.Title.StartsWith(request.Title));
 
-            var count = wordIndices.Count();
+            var count = await wordIndices.CountAsync(cancellationToken);
             var data = wordIndices
                 .OrderBy(x => x.Title.Length)
                 .ThenBy(x => x.Title)

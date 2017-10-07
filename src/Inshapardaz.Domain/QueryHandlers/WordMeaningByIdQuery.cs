@@ -1,4 +1,4 @@
-﻿using Darker;
+﻿using Paramore.Darker;
 using Inshapardaz.Domain.Queries;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
@@ -8,7 +8,7 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordMeaningByIdQueryHandler : AsyncQueryHandler<WordMeaningByIdQuery, Meaning>
+    public class WordMeaningByIdQueryHandler : QueryHandlerAsync<WordMeaningByIdQuery, Meaning>
     {
         private readonly IDatabaseContext _database;
 

@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.1.1" />
-    <PackageReference Include="Darker" Version="0.10.0-ci84" />
     <PackageReference Include="Hangfire.Core" Version="1.6.17" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.6.17" />
     <PackageReference Include="Inshapardaz.Data" Version="1.0.20" />
@@ -22,6 +21,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Paramore.Brighter" Version="7.1.5" />
+    <PackageReference Include="Paramore.Darker" Version="1.0.1" />
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>

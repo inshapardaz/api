@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Darker;
+using Paramore.Darker;
 using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Fakes

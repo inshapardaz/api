@@ -1,5 +1,5 @@
-﻿using Darker;
-using Inshapardaz.Domain.Database.Entities;
+﻿using Inshapardaz.Domain.Database.Entities;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Queries
 {

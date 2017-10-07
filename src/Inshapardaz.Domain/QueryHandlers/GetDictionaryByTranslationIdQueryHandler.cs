@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Darker;
+using Paramore.Darker;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class
-        GetDictionaryByTranslationIdQueryHandler : AsyncQueryHandler<DictionaryByTranslationIdQuery, Dictionary>
+        GetDictionaryByTranslationIdQueryHandler : QueryHandlerAsync<DictionaryByTranslationIdQuery, Dictionary>
     {
         private readonly IDatabaseContext _database;
 

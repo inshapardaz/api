@@ -25,14 +25,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="wwwroot\**\*">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Content Remove="wwwroot/.gitattributes" />
     <Content Remove="wwwroot/.typingsrc" />
     <Content Remove="wwwroot/tscommand-c4df35cb.tmp.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="wwwroot\**\*">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="wwwroot\**" />

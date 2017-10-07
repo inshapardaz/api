@@ -1,6 +1,6 @@
 ﻿using Inshapardaz.Domain.Queries;
 
-using Darker;
+using Paramore.Darker;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ using Hangfire.Storage;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetJobStateQueryHandler : AsyncQueryHandler<GetJobStateQuery, string>
+    public class GetJobStateQueryHandler : QueryHandlerAsync<GetJobStateQuery, string>
     {
         private readonly IStorageConnection _storage;
 

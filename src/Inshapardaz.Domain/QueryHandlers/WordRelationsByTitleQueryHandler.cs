@@ -1,13 +1,16 @@
 ﻿using System.Linq;
-using Darker;
+using System.Threading;
+using System.Threading.Tasks;
+using Paramore.Darker;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class WordRelationsByTitleQueryHandler : QueryHandler<WordRelationsByTitleQuery, Page<Word>>
+    public class WordRelationsByTitleQueryHandler : QueryHandlerAsync<WordRelationsByTitleQuery, Page<Word>>
     {
         private readonly IDatabaseContext _database;
 
@@ -16,14 +19,14 @@ namespace Inshapardaz.Domain.QueryHandlers
             _database = database;
         }
 
-        public override Page<Word> Execute(WordRelationsByTitleQuery request)
+        public override async Task<Page<Word>> ExecuteAsync(WordRelationsByTitleQuery request, CancellationToken cancellationToken)
         {
             var relations = _database.Word
                             .Where(x => x.Title == request.Title)
                             .SelectMany(w => w.WordRelationRelatedWord)
                             .Select(x => x.RelatedWord);
 
-            var count = relations.Count();
+            var count = await relations.CountAsync(cancellationToken);
             var data = relations
                             .OrderBy(x => x.Title.Length)
                             .ThenBy(x => x.Title)

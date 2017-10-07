@@ -1,4 +1,4 @@
-﻿using Darker;
+﻿using Paramore.Darker;
 using Inshapardaz.Domain.Queries;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class RelationshipByWordIdQueryHandler : AsyncQueryHandler<RelationshipByWordIdQuery,
+    public class RelationshipByWordIdQueryHandler : QueryHandlerAsync<RelationshipByWordIdQuery,
         IEnumerable<WordRelation>>
     {
         private readonly IDatabaseContext _database;

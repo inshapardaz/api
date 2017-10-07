@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="6.1.1" />
+    <PackageReference Include="Hangfire" Version="1.6.17" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.6.17" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.0" />
+    <PackageReference Include="Paramore.Brighter.AspNetCore" Version="1.0.0-RC2" />
+    <PackageReference Include="Paramore.Darker.AspNetCore" Version="1.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Inshapardaz.Domain\Inshapardaz.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="wwwroot\**\*">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot/.gitattributes" />
+    <Content Remove="wwwroot/.typingsrc" />
+    <Content Remove="wwwroot/tscommand-c4df35cb.tmp.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />
+    <Content Include="wwwroot\assets\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot\icons*\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot\images\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot\i18n\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot\*.html" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot\*.js" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

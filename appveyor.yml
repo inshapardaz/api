@@ -1,0 +1,46 @@
+version: 1.0.{build}
+max_jobs: 1
+image: Visual Studio 2017 Preview
+install:
+     # .NET Core SDK binaries
+   - ps: $urlCurrent = "https://download.microsoft.com/download/3/7/F/37F1CA21-E5EE-4309-9714-E914703ED05A/dotnet-dev-win-x64.2.0.0-preview1-005977.exe"
+   - ps: $env:DOTNET_INSTALL_DIR = "$pwd\.dotnetsdk"
+   - ps: mkdir $env:DOTNET_INSTALL_DIR -Force | Out-Null
+   - ps: $tempFileCurrent = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [System.IO.Path]::GetRandomFileName())
+   - ps: (New-Object System.Net.WebClient).DownloadFile($urlCurrent, $tempFileCurrent)
+   - ps: Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory($tempFileCurrent, $env:DOTNET_INSTALL_DIR)
+   - ps: $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
+before_build:
+- cmd: nuget restore src/Inshapardaz.Api.sln
+- cmd: cd src/Inshapardaz.api/wwwroot
+- cmd: npm install
+- cmd: npm run build
+- cmd: cd ../../..
+build:
+  project: src/Inshapardaz.api.sln
+  publish_wap_xcopy: true
+  verbosity: minimal
+after_build:
+- cmd: dotnet publish src/inshapardaz.api/inshapardaz.api.csproj
+test_script:
+- cmd: cd src/Inshapardaz.UnitTests
+- cmd: dotnet test --no-build
+- cmd: cd ../Domain.UnitTests
+- cmd: dotnet test --no-build
+artifacts:
+- path: src\Inshapardaz\bin\Debug\netcoreapp1.0\publish
+  name: api
+  type: WebDeployPackage
+deploy:
+- provider: WebDeploy
+  server: https://ipapi.scm.azurewebsites.net:443/msdeploy.axd?site=ipapi
+  website: ipapi
+  username: $ipapi
+  password:
+    secure: vK/BUACA1BgRsWc0a6hLQ2xgw71Ip04EWgk0Kfbx6RewUyDHbH7E32UDSeb0XXyU3SaP3W6DJCILfvCS0Yyuyg==
+  artifact: api
+  aspnet_core: true
+  remove_files: true
+  app_offline: true
+  do_not_use_checksum: true
+  aspnet_core_force_restart: true

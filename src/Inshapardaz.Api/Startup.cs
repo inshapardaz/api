@@ -10,7 +10,6 @@ using Inshapardaz.Api.View;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -55,6 +54,7 @@ namespace Inshapardaz.Api
 
             ConfigureApiAuthentication(services);
             ConfigureDomain(services);
+            services.AddAuthorization();
             services.AddMvc();
         }
 
@@ -88,6 +88,7 @@ namespace Inshapardaz.Api
                                         .AllowCredentials());
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseMvc();
 
             app.UseHangfireServer();
@@ -96,16 +97,13 @@ namespace Inshapardaz.Api
 
         private void ConfigureApiAuthentication(IServiceCollection services)
         {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.Audience = Configuration["Auth:Audience"];
-                options.Authority = Configuration["Auth:Authority"];
-                options.RequireHttpsMetadata = false;
-            });
+            services.AddAuthentication("Bearer")
+                    .AddIdentityServerAuthentication(options =>
+                    {
+                        options.Authority = Configuration["Auth:Authority"];
+                        options.ApiName = Configuration["Auth:Audience"];
+                        options.RequireHttpsMetadata = false;
+                    });
         }
         private void RegisterRenderer(IServiceCollection services)
         {

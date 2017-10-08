@@ -2,7 +2,7 @@ version: 1.0.{build}
 max_jobs: 1
 image: Visual Studio 2017 Preview
 before_build:
-- cmd: nuget restore src/Inshapardaz.Api.sln
+- cmd: dotnet restore src/Inshapardaz.Api.sln
 - cmd: cd src/Inshapardaz.api/wwwroot
 - cmd: npm install
 - cmd: npm run build

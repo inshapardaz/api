@@ -12,14 +12,14 @@ build:
   publish_wap_xcopy: true
   verbosity: minimal
 after_build:
-- cmd: dotnet publish src/inshapardaz.api/inshapardaz.api.csproj
+- cmd: dotnet publish -c Release src/inshapardaz.api/inshapardaz.api.csproj
 test_script:
 - cmd: cd src/Inshapardaz.UnitTests
 - cmd: dotnet test --no-build
 - cmd: cd ../Domain.UnitTests
 - cmd: dotnet test --no-build
 artifacts:
-- path: src\Inshapardaz\bin\Debug\netcoreapp1.0\publish
+- path: src\Inshapardaz\bin\Release\netcoreapp2.0\publish
   name: api
   type: WebDeployPackage
 deploy:

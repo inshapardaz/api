@@ -27,8 +27,7 @@ deploy:
   server: https://ipapi.scm.azurewebsites.net:443/msdeploy.axd?site=ipapi
   website: ipapi
   username: $ipapi
-  password:
-    secure: vK/BUACA1BgRsWc0a6hLQ2xgw71Ip04EWgk0Kfbx6RewUyDHbH7E32UDSeb0XXyU3SaP3W6DJCILfvCS0Yyuyg==
+  password: L6iRu7xou062FovaspAHlwDhNkJbCbk6mheJtwCv38WzAuTeD805aT9nfu7T
   artifact: api
   aspnet_core: true
   remove_files: true

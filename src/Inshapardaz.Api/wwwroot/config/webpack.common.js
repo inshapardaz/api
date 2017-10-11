@@ -58,13 +58,13 @@ module.exports = {
             name: ['app', 'vendor', 'polyfills']
         }),
         new HtmlWebpackPlugin({
-            template: 'src/index.html'
+            template: './src/index.html'
         }),
         new CopyWebpackPlugin([{
-            from: 'src/assets/img',
+            from: './src/assets/img',
             to: './images'
         }, {
-            from: 'src/i18n',
+            from: './src/i18n',
             to: './assets/i18n'
         }]),
         new webpack.ProvidePlugin({

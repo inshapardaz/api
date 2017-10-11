@@ -14,12 +14,12 @@ build:
 after_build:
 - cmd: dotnet publish -c Release src/inshapardaz.api/inshapardaz.api.csproj
 test_script:
-- cmd: cd src/Inshapardaz.UnitTests
+- cmd: cd src/Inshapardaz.Api.UnitTests
 - cmd: dotnet test --no-build
-- cmd: cd ../Domain.UnitTests
+- cmd: cd ../Inshapardaz.Domain.UnitTests
 - cmd: dotnet test --no-build
 artifacts:
-- path: src\Inshapardaz\bin\Release\netcoreapp2.0\publish
+- path: src\Inshapardaz.Api\bin\Release\netcoreapp2.0\publish
   name: api
   type: WebDeployPackage
 deploy:

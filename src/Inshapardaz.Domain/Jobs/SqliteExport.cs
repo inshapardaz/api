@@ -48,7 +48,7 @@ namespace Inshapardaz.Domain.Jobs
             {
 
                 _logger.LogDebug("Starting creating target database");
-                database.Database.Migrate();
+                database.Database.EnsureCreated();
                 _logger.LogDebug("Target database created");
 
                 var wordIdMap = new Dictionary<long, long>();
@@ -133,8 +133,9 @@ namespace Inshapardaz.Domain.Jobs
 
 
             var exisitngDownload = _databaseContext.DictionaryDownload
+                                                   .Include(d => d.File)
                                                    .SingleOrDefault(d => d.DictionaryId == dictionaryId && d.MimeType == MimeTypes.SqlLite);
-            if (exisitngDownload != null)
+            if (exisitngDownload != null && exisitngDownload.File != null)
             {
                 _databaseContext.File.Remove(exisitngDownload.File);
                 _databaseContext.DictionaryDownload.Remove(exisitngDownload);

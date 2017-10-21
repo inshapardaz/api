@@ -32,34 +32,34 @@ namespace Inshapardaz.Api.Controllers
             _meaningRenderer = meaningRenderer;
         }
 
-        [HttpGet("api/words/{id}/meanings", Name = "GetWordMeaningByWordId")]
-        public async Task<IActionResult> GetMeaningForWord(int id)
+        [HttpGet("api/dictionaries/{id}/words/{wordId}/meanings", Name = "GetWordMeaningByWordId")]
+        public async Task<IActionResult> GetMeaningForWord(int id, int wordId)
         {
-            IEnumerable<Meaning> meanings = await _queryProcessor.ExecuteAsync(new WordMeaningByWordQuery { WordId = id });
+            IEnumerable<Meaning> meanings = await _queryProcessor.ExecuteAsync(new WordMeaningByWordQuery { WordId = wordId });
             return Ok(meanings.Select(x => _meaningRenderer.Render(x)).ToList());
         }
 
-        [HttpGet("api/details/{id}/meanings", Name = "GetWordMeaningByWordDetailId")]
-        public async Task<IActionResult> GetMeaningForWordDetail(int id)
+        [HttpGet("api/dictionaries/{id}/details/{detailId}/meanings", Name = "GetWordMeaningByWordDetailId")]
+        public async Task<IActionResult> GetMeaningForWordDetail(int id, int detailId)
         {
-            IEnumerable<Meaning> meanings = await _queryProcessor.ExecuteAsync(new WordMeaningByWordDetailQuery { WordDetailId = id });
+            IEnumerable<Meaning> meanings = await _queryProcessor.ExecuteAsync(new WordMeaningByWordDetailQuery { WordDetailId = detailId });
             return Ok(meanings.Select(x => _meaningRenderer.Render(x)).ToList());
         }
 
-        [HttpGet("api/meanings/{id}", Name = "GetMeaningById")]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet("api/dictionaries/{id}/meanings/{meaningId}", Name = "GetMeaningById")]
+        public async Task<IActionResult> Get(int id, int meaningId)
         {
             var user = _userHelper.GetUserId();
             if (user != Guid.Empty)
             {
-                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = id });
+                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = meaningId });
                 if (dictionary != null && dictionary.UserId != user)
                 {
                     return Unauthorized();
                 }
             }
 
-            var meaning = await _queryProcessor.ExecuteAsync(new WordMeaningByIdQuery { Id = id });
+            var meaning = await _queryProcessor.ExecuteAsync(new WordMeaningByIdQuery { Id = meaningId });
 
             if (meaning == null)
             {
@@ -69,8 +69,8 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_meaningRenderer.Render(meaning));
         }
 
-        [HttpGet("api/words/{id}/meanings/contexts/{context}", Name = "GetWordMeaningByContext")]
-        public IEnumerable<MeaningView> GetMeaningForContext(int id, string context)
+        [HttpGet("api/dictionaries/{id}/words/{wordId}/meanings/contexts/{context}", Name = "GetWordMeaningByContext")]
+        public IEnumerable<MeaningView> GetMeaningForContext(int id, int wordId, string context)
         {
             var finalContext = string.Empty;
             if (context != "default")
@@ -78,25 +78,25 @@ namespace Inshapardaz.Api.Controllers
                 finalContext = context;
             }
 
-            return _queryProcessor.Execute(new WordMeaningByWordQuery { WordId = id, Context = finalContext })
+            return _queryProcessor.Execute(new WordMeaningByWordQuery { WordId = wordId, Context = finalContext })
                                    .Select(x => _meaningRenderer.Render(x));
         }
 
-        [HttpPost("api/details/{id}/meanings", Name = "AddMeaning")]
-        public async Task<IActionResult> Post(int id, [FromBody]MeaningView meaning)
+        [HttpPost("api/dictionaries/{id}/details/{detailId}/meanings", Name = "AddMeaning")]
+        public async Task<IActionResult> Post(int id, int detailId, [FromBody]MeaningView meaning)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
-            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = detailId });
+            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
             }
 
-            var detail = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
+            var detail = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { WordDetailId = detailId });
 
             if (detail == null)
             {
@@ -109,21 +109,21 @@ namespace Inshapardaz.Api.Controllers
             return Created(response.Links.Single(x => x.Rel == "self").Href, response);
         }
 
-        [HttpPut("api/meanings/{id}", Name = "UpdateMeaning")]
-        public async Task<IActionResult> Put(int id, [FromBody]MeaningView meaning)
+        [HttpPut("api/dictionaries/{id}/meanings/{meaningId}", Name = "UpdateMeaning")]
+        public async Task<IActionResult> Put(int id, int meaningId, [FromBody]MeaningView meaning)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = id });
-            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = meaningId });
+            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
             }
 
-            var response = await _queryProcessor.ExecuteAsync(new WordMeaningByIdQuery { Id = id });
+            var response = await _queryProcessor.ExecuteAsync(new WordMeaningByIdQuery { Id = meaningId });
 
             if (response == null || response.Id != meaning.Id)
             {
@@ -135,16 +135,16 @@ namespace Inshapardaz.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("api/meanings/{id}", Name = "DeleteMeaning")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("api/dictionaries/{id}/meanings/{meaningId}", Name = "DeleteMeaning")]
+        public async Task<IActionResult> Delete(int id, int meaningId)
         {
-            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = id });
-            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByMeaningIdQuery { MeaningId = meaningId });
+            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
             {
                 return Unauthorized();
             }
 
-            var response = await _queryProcessor.ExecuteAsync(new WordMeaningByIdQuery { Id = id });
+            var response = await _queryProcessor.ExecuteAsync(new WordMeaningByIdQuery { Id = meaningId });
 
             if (response == null)
             {

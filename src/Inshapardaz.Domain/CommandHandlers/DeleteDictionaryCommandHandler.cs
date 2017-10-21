@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             if (d == null || d.Id != command.DictionaryId)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             _database.Dictionary.Remove(d);

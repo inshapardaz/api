@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             if (relation == null)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             _database.WordRelation.Remove(relation);

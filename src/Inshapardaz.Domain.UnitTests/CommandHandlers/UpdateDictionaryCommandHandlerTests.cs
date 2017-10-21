@@ -86,8 +86,8 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             var dictionary = _database.Dictionary.Single(d => d.Id == 3);
 
             Assert.NotNull(dictionary);
-            Assert.Equal(dictionary.Name, "Some Name", true);
-            Assert.Equal(dictionary.Language, Languages.Hindi);
+            Assert.Equal("Some Name", dictionary.Name, true);
+            Assert.Equal(Languages.Hindi, dictionary.Language);
             Assert.Equal(dictionary.UserId, _userId1);
             Assert.True(dictionary.IsPublic);
         }
@@ -106,7 +106,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         [Fact]
         public async Task WhenRemovedSomeoneElsePrivateDictionary_ShouldNotDelete()
         {
-            await Assert.ThrowsAsync<RecordNotFoundException>(async () =>
+            await Assert.ThrowsAsync<NotFoundException>(async () =>
                 await _handler.HandleAsync(new UpdateDictionaryCommand
                 {
                     Dictionary = new Dictionary { Id = 4, UserId = _userId1, Language = Languages.Persian }
@@ -116,7 +116,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         [Fact]
         public async Task WhenRemovedSomeoneElsePublicDictionary_ShouldNotDelete()
         {
-            await Assert.ThrowsAsync<RecordNotFoundException>(async () =>
+            await Assert.ThrowsAsync<NotFoundException>(async () =>
                 await _handler.HandleAsync(new UpdateDictionaryCommand
                 {
                     Dictionary = new Dictionary { Id = 2, UserId = _userId1, Language = Languages.Persian }

@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             if (translation == null)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             _database.Translation.Remove(translation);

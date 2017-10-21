@@ -1,9 +1,8 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 using Paramore.Darker;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +22,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api/dictionaries/{id}/Search", Name = "SearchDictionary")]
-        public IActionResult SearchDictionary(int id, string query, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> SearchDictionary(int id, string query, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
@@ -38,7 +37,7 @@ namespace Inshapardaz.Api.Controllers
                 PageSize = pageSize
             };
 
-            var response = _queryProcessor.Execute(wordQuery);
+            var response = await _queryProcessor.ExecuteAsync(wordQuery);
             var pageRenderArgs = new PageRendererArgs<Word>
             {
                 RouteName = "SearchDictionary",
@@ -54,7 +53,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api/dictionaries/{id}/words/startWith/{startingWith}", Name = "GetWordsListStartWith")]
-        public IActionResult StartsWith(int id, string startingWith, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> StartsWith(int id, string startingWith, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrWhiteSpace(startingWith))
             {
@@ -68,7 +67,7 @@ namespace Inshapardaz.Api.Controllers
                 Title = startingWith,
                 DictionaryId = id
             };
-            var results = _queryProcessor.Execute(query);
+            var results = await _queryProcessor.ExecuteAsync(query);
 
             var pageRenderArgs = new PageRendererArgs<Word>
             {
@@ -84,7 +83,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api/words/search/{title}", Name = "WordSearch")]
-        public IActionResult Search(string title, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Search(string title, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrWhiteSpace(title))
             {
@@ -98,7 +97,7 @@ namespace Inshapardaz.Api.Controllers
                 PageSize = pageSize
             };
 
-            var response = _queryProcessor.Execute(query);
+            var response = await _queryProcessor.ExecuteAsync(query);
             var pageRenderArgs = new PageRendererArgs<Word>
             {
                 RouteName = "WordSearch",

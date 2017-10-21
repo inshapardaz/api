@@ -35,13 +35,10 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             _mockCommandProcessor = new Mock<IAmACommandProcessor>();
             _fakeQueryProcessor = new FakeQueryProcessor();
 
-            var fakeDictionariesRenderer = new FakeDictionariesRenderer();
             _fakeDictionaryRenderer = new FakeDictionaryRenderer();
             _fakeUserHelper = new FakeUserHelper();
 
-            var fakeDictionaryDownloadRenderer = new FakeDictionaryDownloadRenderer();
-            _controller = new DictionariesController(_mockCommandProcessor.Object, _fakeQueryProcessor, _fakeUserHelper,
-                fakeDictionariesRenderer, _fakeDictionaryRenderer, fakeDictionaryDownloadRenderer, new FakeLogger<DictionariesController>(), null);
+            _controller = new DictionariesController(_mockCommandProcessor.Object);
         }
 
         [Fact]
@@ -50,7 +47,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             _fakeQueryProcessor.SetupResultFor<DictionariesByUserQuery, IEnumerable<Dictionary>>(
                 new Collection<Dictionary>());
 
-            var result = _controller.Get().Result;
+            var result = _controller.GetDictionaries().Result;
 
             _fakeQueryProcessor.ShouldHaveExecuted<DictionariesByUserQuery>(q => q.UserId == Guid.Empty);
         }
@@ -63,7 +60,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             _fakeQueryProcessor.SetupResultFor<DictionariesByUserQuery, IEnumerable<Dictionary>>(
                 new Collection<Dictionary>());
 
-            var result = _controller.Get().Result;
+            var result = _controller.GetDictionaries().Result;
 
             _fakeQueryProcessor.ShouldHaveExecuted<DictionariesByUserQuery>(q => q.UserId == userId);
         }
@@ -74,7 +71,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var dictionaryId = 2332;
             _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
 
-            var result = _controller.Get(dictionaryId).Result;
+            var result = _controller.GetDictionaryById(dictionaryId).Result;
 
             _fakeQueryProcessor.ShouldHaveExecuted<DictionaryByIdQuery>(
                 q => q.UserId == Guid.Empty && q.DictionaryId == dictionaryId);
@@ -88,7 +85,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             _fakeUserHelper.WithUserId(userId);
             _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
 
-            var result = _controller.Get(dictionaryId).Result;
+            var result = _controller.GetDictionaryById(dictionaryId).Result;
 
             _fakeQueryProcessor.ShouldHaveExecuted<DictionaryByIdQuery>(
                 q => q.UserId == userId && q.DictionaryId == dictionaryId);
@@ -97,7 +94,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         [Fact]
         public void WhenDictionaryNotFound_ShouldReturnNotFoundResult()
         {
-            var result = _controller.Get(12).Result;
+            var result = _controller.GetDictionaryById(12).Result;
 
             Assert.IsType<NotFoundResult>(result);
         }

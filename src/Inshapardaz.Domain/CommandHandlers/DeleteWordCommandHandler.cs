@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             if (w == null || w.Id != command.WordId)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             _database.Word.Remove(w);

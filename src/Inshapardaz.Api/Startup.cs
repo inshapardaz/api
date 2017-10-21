@@ -4,6 +4,7 @@ using AutoMapper;
 using Hangfire;
 using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
@@ -89,6 +90,7 @@ namespace Inshapardaz.Api
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseAuthentication();
+            app.UseStatusCodeMiddleWare();
             app.UseMvc();
 
             app.UseHangfireServer();

@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             if (meaning == null)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             meaning.Context = command.Meaning.Context;

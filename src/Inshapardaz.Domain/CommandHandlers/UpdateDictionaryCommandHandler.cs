@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             if (existingDictionary == null)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             existingDictionary.Name = command.Dictionary.Name;

@@ -20,7 +20,7 @@ namespace Inshapardaz.Domain.QueryHandlers
         public override async Task<WordDetail> ExecuteAsync(WordDetailByIdQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.WordDetail.SingleOrDefaultAsync(w => w.Id == query.Id, cancellationToken);
+            return await _database.WordDetail.SingleOrDefaultAsync(w => w.Id == query.WordDetailId, cancellationToken);
         }
     }
 }

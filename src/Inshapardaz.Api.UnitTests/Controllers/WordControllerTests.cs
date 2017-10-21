@@ -2,13 +2,11 @@
 using AutoMapper;
 using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Controllers;
-using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -23,7 +21,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
             _fakeQueryProcessor.SetupResultFor<GetWordPageQuery, Page<Word>>(new Page<Word>());
-            _result = _controller.Get(12, 1).Result;
+            _result = _controller.GetWord(12, 1).Result;
         }
 
         [Fact]
@@ -53,7 +51,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
                 IsPublic = false
             });
 
-            _result = _controller.Get(12, 1).Result;
+            _result = _controller.GetWord(12, 1).Result;
         }
 
         [Fact]
@@ -75,7 +73,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             });
 
             _fakeQueryProcessor.SetupResultFor<GetWordPageQuery, Page<Word>>(new Page<Word>());
-            _result = _controller.Get(12, 1).Result;
+            _result = _controller.GetWord(12, 1).Result;
         }
 
         [Fact]
@@ -91,7 +89,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             _fakeUserHelper.WithUserId(Guid.NewGuid());
             _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(null);
-            _result = _controller.Get(12, 1).Result;
+            _result = _controller.GetWord(12, 1).Result;
         }
 
         [Fact]
@@ -107,7 +105,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             _fakeUserHelper.AsContributor();
             _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
-            _result = _controller.Get(34).Result;
+            _result = _controller.GetWords(34).Result;
         }
 
         [Fact]
@@ -131,7 +129,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingNonExistingWordById()
         {
             _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(null);
-            _result = _controller.Get(34).Result;
+            _result = _controller.GetWords(34).Result;
         }
 
         [Fact]
@@ -149,7 +147,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             _fakeUserHelper.WithUserId(_userId);
             _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(null);
-            _result = _controller.Get(34).Result;
+            _result = _controller.GetWords(34).Result;
         }
 
         [Fact]
@@ -177,7 +175,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             _fakeQueryProcessor.SetupResultFor<WordByIdQuery, WordView>(_wordView);
             _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
-            _fakeWordRenderer.WithLink("self", new System.Uri("http://link.test/123"));
+            _fakeWordRenderer.WithLink("self", new Uri("http://link.test/123"));
             _fakeUserHelper.WithUserId(Guid.NewGuid());
             _result = _controller.Post(DictionaryId, _wordView).Result;
         }
@@ -250,7 +248,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
             _fakeUserHelper.WithUserId(Guid.NewGuid());
-            _result = _controller.Put(wordId, wordView).Result;
+            _result = _controller.Put(0, wordId, wordView).Result;
         }
 
         [Fact]
@@ -276,7 +274,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             _fakeUserHelper.WithUserId(Guid.NewGuid());
 
-            _result = _controller.Put(wordId, wordView).Result;
+            _result = _controller.Put(0, wordId, wordView).Result;
         }
 
         [Fact]
@@ -292,7 +290,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             _fakeUserHelper.WithUserId(Guid.NewGuid());
             _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
-            _result = _controller.Delete(34).Result;
+            _result = _controller.Delete(0, 34).Result;
         }
 
         [Fact]
@@ -308,7 +306,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             _fakeUserHelper.WithUserId(Guid.NewGuid());
 
-            _result = _controller.Delete(34).Result;
+            _result = _controller.Delete(0, 34).Result;
         }
 
         [Fact]
@@ -323,7 +321,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingAWordFromDictionaryWithNoWriteAccess()
         {
             _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
-            _result = _controller.Delete(34).Result;
+            _result = _controller.Delete(0, 34).Result;
         }
 
         [Fact]
@@ -349,7 +347,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             _fakeUserHelper.WithUserId(Guid.NewGuid());
 
-            _result = _controller.Put(wordId, wordView).Result;
+            _result = _controller.Put(0, wordId, wordView).Result;
         }
 
         [Fact]

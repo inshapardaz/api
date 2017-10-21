@@ -151,7 +151,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenAddingRelationshipsForNonExistantWord()
         {
-            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(w => w.Id == 12, new Word());
+            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(w => w.WordId == 12, new Word());
             Result = Controller.Post(23, new RelationshipView { RelatedWordId = 12 }).Result;
         }
 
@@ -166,7 +166,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenAddingRelationshipsToNonExistantWord()
         {
-            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(w => w.Id == 23, new Word());
+            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(w => w.WordId == 23, new Word());
             Result = Controller.Post(23, new RelationshipView { RelatedWordId = 12 }).Result;
         }
 

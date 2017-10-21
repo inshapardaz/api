@@ -22,7 +22,7 @@ namespace Inshapardaz.Domain.CommandHandlers
             var detail = await _database.WordDetail.SingleOrDefaultAsync(w => w.Id == command.WordDetailId, cancellationToken);
             if (detail == null)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             detail.Meaning.Add(command.Meaning);

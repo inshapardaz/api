@@ -32,34 +32,50 @@ namespace Inshapardaz.Api.Controllers
             _wordDetailRenderer = wordDetailRenderer;
         }
 
-        [HttpGet("/api/words/{id}/details", Name = "GetWordDetailsById")]
-        public async Task<IActionResult> GetForWord(int id)
+        [HttpGet("/api/dictionaries/{id}/words/{wordId}/details", Name = "GetWordDetailsById")]
+        public async Task<IActionResult> GetDetailForWord(int id, int wordId)
         {
+            var userId = _userHelper.GetUserId();
+            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = id });
+
+            if (dictionary == null)
+            {
+                return NotFound();
+            }
+
+            if (!dictionary.IsPublic && dictionary.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
             var query = new WordDetailsByWordQuery
             {
-                WordId = id
+                DictionaryId = id,
+                WordId = wordId
             };
 
             var wordDetailViews = await _queryProcessor.ExecuteAsync(query);
             return Ok(wordDetailViews.Select(w => _wordDetailRenderer.Render(w)).ToList());
         }
 
-        [HttpGet("/api/details/{id}", Name = "GetDetailsById")]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet("/api/dictionaries/{id}/details/{detailId}", Name = "GetDetailsById")]
+        public async Task<IActionResult> GetWordDetailById(int id, int detailId)
         {
             var userId = _userHelper.GetUserId();
+            
+            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = id });
 
-            if (userId != Guid.Empty)
+            if (dictionary == null)
             {
-                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
-
-                if (dictionary == null || dictionary.UserId != userId)
-                {
-                    return Unauthorized();
-                }
+                return NotFound();
             }
 
-            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
+            if (!dictionary.IsPublic && dictionary.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
+            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { DictionaryId = id, WordDetailId = detailId });
 
             if (details == null)
             {
@@ -69,21 +85,33 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_wordDetailRenderer.Render(details));
         }
 
-        [HttpPost("/api/words/{id}/details", Name = "AddWordDetail")]
-        public async Task<IActionResult> Post(int id, [FromBody]WordDetailView wordDetail)
+        [HttpPost("/api/dictionaries/{id}/words/{wordId}/details", Name = "AddWordDetail")]
+        public async Task<IActionResult> Post(int id, int wordId, [FromBody]WordDetailView wordDetail)
         {
             if (wordDetail == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
-            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            var userId = _userHelper.GetUserId();
+            if (userId == Guid.Empty)
             {
                 return Unauthorized();
             }
 
-            var response = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = id });
+            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = id });
+
+            if (dictionary == null)
+            {
+                return NotFound();
+            }
+
+            if (dictionary.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
+            var response = await _queryProcessor.ExecuteAsync(new WordByIdQuery { DictionaryId = id, WordId = wordId });
 
             if (response == null)
             {
@@ -92,7 +120,8 @@ namespace Inshapardaz.Api.Controllers
 
             var addWordDetailCommand = new AddWordDetailCommand
             {
-                WordId = id,
+                DictionaryId = id,
+                WordId = wordId,
                 WordDetail = wordDetail.Map<WordDetailView, WordDetail>()
             };
 
@@ -101,22 +130,34 @@ namespace Inshapardaz.Api.Controllers
             var responseView = _wordDetailRenderer.Render(addWordDetailCommand.WordDetail);
             return Created(responseView.Links.Single(x => x.Rel == "self").Href, responseView);
         }
-
-        [HttpPut("/api/details/{id}", Name = "UpdateWordDetail")]
-        public async Task<IActionResult> Put(int id, [FromBody]WordDetailView wordDetail)
+        
+        [HttpPut("/api/dictionaries/{id}/details/{detailId}", Name = "UpdateWordDetail")]
+        public async Task<IActionResult> Put(int id, int detailId, [FromBody]WordDetailView wordDetail)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
-            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            var userId = _userHelper.GetUserId();
+            if (userId == Guid.Empty)
             {
                 return Unauthorized();
             }
 
-            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
+            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = id });
+
+            if (dictionary == null)
+            {
+                return NotFound();
+            }
+
+            if (dictionary.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
+            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery  { DictionaryId = id, WordDetailId = detailId });
 
             if (details == null || details.Id != wordDetail.Id)
             {
@@ -125,6 +166,7 @@ namespace Inshapardaz.Api.Controllers
 
             var updateWordDetailCommand = new UpdateWordDetailCommand
             {
+                DictionaryId = id,
                 WordId = details.WordInstanceId,
                 WordDetail = wordDetail.Map<WordDetailView, WordDetail>()
             };
@@ -134,23 +176,35 @@ namespace Inshapardaz.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("/api/details/{id}", Name = "DeleteWordDetail")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("/api/dictionaries/{id}/details/{detailId}", Name = "DeleteWordDetail")]
+        public async Task<IActionResult> Delete(int id, int detailId)
         {
-            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
-            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            var userId = _userHelper.GetUserId();
+            if (userId == Guid.Empty)
             {
                 return Unauthorized();
             }
 
-            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
+            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = id });
+
+            if (dictionary == null)
+            {
+                return NotFound();
+            }
+            
+            if (dictionary.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
+            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { DictionaryId = id, WordDetailId = detailId });
 
             if (details == null)
             {
                 return NotFound();
             }
 
-            await _commandProcessor.SendAsync(new DeleteWordDetailCommand { WordDetailId = id });
+            await _commandProcessor.SendAsync(new DeleteWordDetailCommand { DictionaryId = id, WordDetailId = detailId });
 
             return NoContent();
         }

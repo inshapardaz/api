@@ -22,7 +22,7 @@ namespace Inshapardaz.Domain.CommandHandlers
             var relation = await _database.WordRelation.SingleOrDefaultAsync(r => r.Id == command.Relation.Id, cancellationToken);
             if (relation == null)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             relation.RelatedWordId = command.Relation.RelatedWordId;

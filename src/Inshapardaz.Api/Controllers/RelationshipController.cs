@@ -68,13 +68,13 @@ namespace Inshapardaz.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var sourceWord = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = id });
+            var sourceWord = await _queryProcessor.ExecuteAsync(new WordByIdQuery { WordId = id });
             if (sourceWord == null)
             {
                 return NotFound();
             }
 
-            var relatedWord = await _queryProcessor.ExecuteAsync(new WordByIdQuery { Id = relationship.RelatedWordId });
+            var relatedWord = await _queryProcessor.ExecuteAsync(new WordByIdQuery { WordId = relationship.RelatedWordId });
             if (relatedWord == null)
             {
                 return NotFound();

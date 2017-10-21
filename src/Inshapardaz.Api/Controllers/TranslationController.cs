@@ -126,7 +126,7 @@ namespace Inshapardaz.Api.Controllers
                 return Unauthorized();
             }
 
-            var dwtails = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = id });
+            var dwtails = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { WordDetailId = id });
 
             if (dwtails == null)
             {

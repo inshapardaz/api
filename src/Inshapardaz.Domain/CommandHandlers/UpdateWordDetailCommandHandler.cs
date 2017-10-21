@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             if (detail == null)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             detail.Attributes = command.WordDetail.Attributes;

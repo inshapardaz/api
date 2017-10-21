@@ -43,7 +43,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCallingForWordFromPublicDictionary_ShouldReturnWord()
         {
-            var word = await _handler.ExecuteAsync(new WordByIdQuery { Id = 23, UserId = _userId });
+            var word = await _handler.ExecuteAsync(new WordByIdQuery { WordId = 23, UserId = _userId });
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 23);
@@ -52,7 +52,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCallingForWordFromPrivateDictionary_ShouldReturnWord()
         {
-            var word = await _handler.ExecuteAsync(new WordByIdQuery { Id = 22, UserId = _userId });
+            var word = await _handler.ExecuteAsync(new WordByIdQuery { WordId = 22, UserId = _userId });
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 22);
@@ -61,7 +61,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCallingForWordFromPublicDictionaryAsAnonymousUser_ShouldReturnWord()
         {
-            var word = await _handler.ExecuteAsync(new WordByIdQuery { Id = 23 });
+            var word = await _handler.ExecuteAsync(new WordByIdQuery { WordId = 23 });
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 23);
@@ -70,7 +70,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCallingForWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
         {
-            var word = await _handler.ExecuteAsync(new WordByIdQuery { Id = 22 });
+            var word = await _handler.ExecuteAsync(new WordByIdQuery { WordId = 22 });
 
             Assert.Null(word);
         }
@@ -78,7 +78,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCallingForInvalidWordFromPrivateDictionaryAsAnonymousUser_ShouldNotReturnWord()
         {
-            var word = await _handler.ExecuteAsync(new WordByIdQuery { Id = 223 });
+            var word = await _handler.ExecuteAsync(new WordByIdQuery { WordId = 223 });
 
             Assert.Null(word);
         }

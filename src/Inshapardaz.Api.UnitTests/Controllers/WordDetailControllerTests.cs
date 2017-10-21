@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordDetailsByWord()
         {
             FakeQueryProcessor.SetupResultFor<WordDetailsByWordQuery, IEnumerable<WordDetail>>(new List<WordDetail> { new WordDetail() });
-            Result = Controller.GetForWord(9).Result;
+            Result = Controller.GetDetailForWord(0, 9).Result;
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordDetailsByWordThatDoesNotExist()
         {
             FakeQueryProcessor.SetupResultFor<WordDetailsByWordQuery, IEnumerable<WordDetail>>(new List<WordDetail>());
-            Result = Controller.GetForWord(9).Result;
+            Result = Controller.GetDetailForWord(0, 9).Result;
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordDetailsById()
         {
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
-            Result = Controller.Get(23).Result;
+            Result = Controller.GetWordDetailById(0, 23).Result;
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingDetailByIdThatDoesNotExist()
         {
-            Result = Controller.Get(23).Result;
+            Result = Controller.GetWordDetailById(0, 23).Result;
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             UserHelper.WithUserId(Guid.NewGuid());
             FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
-            Result = Controller.Get(23).Result;
+            Result = Controller.GetWordDetailById(0, 23).Result;
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
             FakeWordDetailRenderer.WithLink("self", new System.Uri("http://link.test/123"));
 
-            Result = Controller.Post(23, new WordDetailView()).Result;
+            Result = Controller.Post(0, 23, new WordDetailView()).Result;
         }
 
         [Fact]
@@ -150,7 +150,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            Result = Controller.Post(23, new WordDetailView()).Result;
+            Result = Controller.Post(0, 23, new WordDetailView()).Result;
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenAddingWordDetailsToDictionaryWithNoWriteAccess()
         {
             UserHelper.AsReader();
-            Result = Controller.Post(23, new WordDetailView()).Result;
+            Result = Controller.Post(0, 23, new WordDetailView()).Result;
         }
 
         [Fact]
@@ -179,7 +179,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenAddingWordDetailWithoutObjectInBody()
         {
-            Result = Controller.Post(23, null).Result;
+            Result = Controller.Post(0, 23, null).Result;
         }
 
         [Fact]
@@ -197,7 +197,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = userId });
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
-            Result = Controller.Put(32, new WordDetailView()).Result;
+            Result = Controller.Put(0, 32, new WordDetailView()).Result;
         }
 
         [Fact]
@@ -214,7 +214,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            Result = Controller.Put(32, new WordDetailView()).Result;
+            Result = Controller.Put(0, 32, new WordDetailView()).Result;
         }
 
         [Fact]
@@ -231,7 +231,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             UserHelper.WithUserId(Guid.NewGuid());
             FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
-            Result = Controller.Put(32, new WordDetailView()).Result;
+            Result = Controller.Put(0, 32, new WordDetailView()).Result;
         }
 
         [Fact]
@@ -249,7 +249,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = userId });
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
-            Result = Controller.Delete(34).Result;
+            Result = Controller.Delete(0, 34).Result;
         }
 
         [Fact]
@@ -266,7 +266,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            Result = Controller.Delete(34).Result;
+            Result = Controller.Delete(0, 34).Result;
         }
 
         [Fact]
@@ -283,7 +283,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             UserHelper.WithUserId(Guid.NewGuid());
             FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
-            Result = Controller.Delete(34).Result;
+            Result = Controller.Delete(0, 34).Result;
         }
 
         [Fact]

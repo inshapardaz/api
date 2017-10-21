@@ -23,11 +23,11 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override async Task<DeleteWordDetailCommand> HandleAsync(DeleteWordDetailCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { Id = command.WordDetailId }, cancellationToken);
+            var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { WordDetailId = command.WordDetailId }, cancellationToken);
 
             if (details == null)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             _database.WordDetail.Remove(details);

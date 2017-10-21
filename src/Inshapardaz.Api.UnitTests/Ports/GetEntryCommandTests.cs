@@ -10,7 +10,7 @@ namespace Inshapardaz.Api.UnitTests.Ports
         [Fact]
         public async Task ShouldReturnEntryResponse()
         {
-            GetEntryCommandHandler handler = new GetEntryCommandHandler(new FakeEntryRender());
+            var handler = new GetEntryRequestHandler(new FakeEntryRender());
 
             var command  = new GetEntryRequest();
             await handler.HandleAsync(command);

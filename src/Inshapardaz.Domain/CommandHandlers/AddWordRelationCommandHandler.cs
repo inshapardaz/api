@@ -23,13 +23,13 @@ namespace Inshapardaz.Domain.CommandHandlers
             var word = await _database.Word.SingleOrDefaultAsync(w => w.Id == command.SourceWordId, cancellationToken);
             if (word == null)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             var relatedWord = await _database.Word.SingleOrDefaultAsync(w => w.Id == command.RelatedWordId, cancellationToken);
             if (relatedWord == null)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             var relation = new WordRelation

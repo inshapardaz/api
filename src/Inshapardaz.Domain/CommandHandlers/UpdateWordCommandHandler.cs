@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             if (w == null || w.Id != command.Word.Id)
             {
-                throw new RecordNotFoundException();
+                throw new NotFoundException();
             }
 
             w.Title = command.Word.Title;

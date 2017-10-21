@@ -62,14 +62,14 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         [Fact]
         public async Task WhenRemovedSomeoneElsePrivateDictionary_ShouldNotDelete()
         {
-            await Assert.ThrowsAsync<RecordNotFoundException>(async () =>
+            await Assert.ThrowsAsync<NotFoundException>(async () =>
                  await _handler.HandleAsync(new DeleteDictionaryCommand { DictionaryId = 4, UserId = _userId1 }));
         }
 
         [Fact]
         public async Task WhenRemovedSomeoneElsePublicDictionary_ShouldNotDelete()
         {
-            await Assert.ThrowsAsync<RecordNotFoundException>(async () =>
+            await Assert.ThrowsAsync<NotFoundException>(async () =>
                 await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 2, UserId = _userId1 }));
         }
     }

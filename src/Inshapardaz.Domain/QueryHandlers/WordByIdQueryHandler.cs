@@ -21,7 +21,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _database.Word.SingleOrDefaultAsync(
-                w => w.Id == query.Id && (w.Dictionary.IsPublic || w.Dictionary.UserId == query.UserId),
+                w => w.Id == query.WordId && (w.Dictionary.IsPublic || w.Dictionary.UserId == query.UserId),
                 cancellationToken);
         }
     }

@@ -49,8 +49,8 @@ namespace Inshapardaz.Api
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "Inshapardaz API", Version = "v1" }); });
 
-            services.AddHangfire(x => x.UseSqlServerStorage(Configuration["ConnectionStrings:DefaultDatabase"]));
-
+            ConfigureHangFire(services);
+            
             services.AddCors();
 
             ConfigureApiAuthentication(services);
@@ -93,8 +93,7 @@ namespace Inshapardaz.Api
             app.UseStatusCodeMiddleWare();
             app.UseMvc();
 
-            app.UseHangfireServer();
-            app.UseHangfireDashboard();
+            AddHangFire(app);
         }
 
         private void ConfigureApiAuthentication(IServiceCollection services)
@@ -137,7 +136,18 @@ namespace Inshapardaz.Api
             Mapper.AssertConfigurationIsValid();
         }
 
-        private void ConfigureDomain(IServiceCollection services)
+        protected virtual void ConfigureHangFire(IServiceCollection services)
+        {
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration["ConnectionStrings:DefaultDatabase"]));
+        }
+
+        protected virtual void AddHangFire(IApplicationBuilder app)
+        {
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
+        }
+
+        protected virtual void ConfigureDomain(IServiceCollection services)
         {
             var connectionString = Configuration["ConnectionStrings:DefaultDatabase"];
 

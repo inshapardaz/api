@@ -1,7 +1,9 @@
 using System;
+using System.IO;
 using System.Net.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.PlatformAbstractions;
 using Xunit;
 
 namespace Inshapardaz.Api.IntegrationTests
@@ -15,9 +17,9 @@ namespace Inshapardaz.Api.IntegrationTests
         public EntryTestsGettingEntryAsAnonymousUser()
         {
             _server = new TestServer(new WebHostBuilder()
-                                         .UseStartup<Startup>());
+                                         .UseStartup<TestStartup>());
             _client = _server.CreateClient();
-            _response = _client.GetAsync("/api").Result;
+            _response = _client.GetAsync("/").Result;
         }
 
         [Fact]

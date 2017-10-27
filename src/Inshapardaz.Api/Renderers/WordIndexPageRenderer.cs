@@ -5,38 +5,44 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.Renderers
 {
-    public class WordIndexPageRenderer : RendrerBase, IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>>
+    public interface IRenderWordPage
     {
-        private readonly IRenderResponseFromObject<Word, WordView> _wordIndexRenderer;
+        PageView<WordView> Render(PageRendererArgs<Word> source, int dictionaryId);
+    }
 
-        public WordIndexPageRenderer(IRenderLink linkRenderer, IRenderResponseFromObject<Word, WordView> wordIndexRenderer)
-            : base(linkRenderer)
+    public class WordIndexPageRenderer : IRenderWordPage
+    {
+        private readonly IRenderLink _linkRenderer;
+        private readonly IRenderWord _wordRenderer;
+
+        public WordIndexPageRenderer(IRenderLink linkRenderer, IRenderWord wordRenderer)
         {
-            _wordIndexRenderer = wordIndexRenderer;
+            _linkRenderer = linkRenderer;
+            _wordRenderer = wordRenderer;
         }
 
-        public PageView<WordView> Render(PageRendererArgs<Word> source)
+        public PageView<WordView> Render(PageRendererArgs<Word> source, int dictionaryId)
         {
             var page = new PageView<WordView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
-                Data = source.Page.Data.Select(x => _wordIndexRenderer.Render(x))
+                Data = source.Page.Data.Select(x => _wordRenderer.Render(x, dictionaryId))
             };
 
             var links = new List<LinkView>
             {
-                LinkRenderer.Render(source.RouteName, "self",
+                _linkRenderer.Render(source.RouteName, "self",
                     CreateRouteParameters(source, page.CurrentPageIndex, page.PageSize))
             };
 
             if (page.CurrentPageIndex < page.PageCount)
             {
-                links.Add(LinkRenderer.Render(source.RouteName, "next",
+                links.Add(_linkRenderer.Render(source.RouteName, "next",
                     CreateRouteParameters(source, page.CurrentPageIndex + 1, page.PageSize)));
             }
 
             if (page.CurrentPageIndex > 1)
             {
-                links.Add(LinkRenderer.Render(source.RouteName, "previous",
+                links.Add(_linkRenderer.Render(source.RouteName, "previous",
                     CreateRouteParameters(source, page.CurrentPageIndex - 1, page.PageSize)));
             }
 

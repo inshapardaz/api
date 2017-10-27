@@ -38,13 +38,13 @@ namespace Inshapardaz.Api.Ports
         private readonly IUserHelper _userHelper;
         private readonly IQueryProcessor _queryProcessor;
         private readonly IAmACommandProcessor _commandProcessor;
-        private readonly IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView> _dictionaryDownloadRenderer;
+        private readonly IRenderDictionaryDownload _dictionaryDownloadRenderer;
         private readonly ILogger<CreateDictionaryDownloadRequestHandler> _logger;
 
         public CreateDictionaryDownloadRequestHandler(IAmACommandProcessor commandProcessor, 
             IQueryProcessor queryProcessor, 
             IUserHelper userHelper, 
-            IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView> dictionaryDownloadRenderer, 
+            IRenderDictionaryDownload dictionaryDownloadRenderer, 
             ILogger<CreateDictionaryDownloadRequestHandler> logger)
         {
             _userHelper = userHelper;

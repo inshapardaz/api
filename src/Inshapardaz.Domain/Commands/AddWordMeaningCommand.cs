@@ -7,5 +7,6 @@ namespace Inshapardaz.Domain.Commands
         public long WordDetailId { get; set; }
 
         public Meaning Meaning { get; set; }
+
     }
 }

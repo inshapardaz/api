@@ -3,7 +3,12 @@ using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.Renderers
 {
-    public class DictionaryDownloadRenderer : IRenderResponseFromObject<object, DownloadDictionaryView>
+    public interface IRenderDictionaryDownload
+    {
+        DownloadDictionaryView Render(object source);
+    }
+
+    public class DictionaryDownloadRenderer : IRenderDictionaryDownload
     {
         public DownloadDictionaryView Render(object source)
         {

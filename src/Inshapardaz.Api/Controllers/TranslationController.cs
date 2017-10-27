@@ -1,13 +1,7 @@
-﻿using System;
-using System.Linq;
-using Paramore.Darker;
-using Inshapardaz.Api.Helpers;
-using Inshapardaz.Api.Renderers;
-using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Queries;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Ports;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
 
@@ -16,179 +10,117 @@ namespace Inshapardaz.Api.Controllers
     public class TranslationController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
-        private readonly IQueryProcessor _queryProcessor;
-        private readonly IUserHelper _userHelper;
-        private readonly IRenderResponseFromObject<Translation, TranslationView> _translationRenderer;
 
-        public TranslationController(IAmACommandProcessor commandProcessor,
-            IQueryProcessor queryProcessor,
-            IUserHelper userHelper,
-            IRenderResponseFromObject<Translation, TranslationView> renderer)
+        public TranslationController(IAmACommandProcessor commandProcessor)
         {
             _commandProcessor = commandProcessor;
-            _queryProcessor = queryProcessor;
-            _translationRenderer = renderer;
-            _userHelper = userHelper;
         }
 
-        [HttpGet("api/words/{id}/translations", Name = "GetWordTranslationsById")]
-        public async Task<IActionResult> GetTranslationForWord(int id)
+        [HttpGet("api/dictionaries/{id}/words/{wordId}/translations", Name = "GetWordTranslationsById")]
+        public async Task<IActionResult> GetTranslationForWord(int id, int wordId)
         {
-            var user = _userHelper.GetUserId();
-            if (user != Guid.Empty)
+            var request = new GetTranslationForWordRequest
             {
-                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
-                if (dictionary != null &&  dictionary.UserId != user)
-                {
-                    return Unauthorized();
-                }
-            }
-
-            var translations = await _queryProcessor.ExecuteAsync(new TranslationsByWordIdQuery { WordId = id });
-            return Ok(translations.Select(t => _translationRenderer.Render(t)).ToList());
-        }
-
-        [HttpGet("api/words/{id}/translations/languages/{language}", Name = "GetWordTranslationsByWordIdAndLanguage")]
-        public async Task<IActionResult> GetTranslationForWord(int id, Languages language)
-        {
-            var user = _userHelper.GetUserId();
-            if (user != Guid.Empty)
-            {
-                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = id });
-                if (dictionary != null && dictionary.UserId != user)
-                {
-                    return Unauthorized();
-                }
-            }
-
-            var translations = await _queryProcessor.ExecuteAsync(new TranslationsByLanguageQuery { WordId = id, Language = language });
-            return Ok(translations.Select(t => _translationRenderer.Render(t)).ToList());
-        }
-
-        [HttpGet("api/detail/{id}/translations", Name = "GetWordTranslationsByDetailId")]
-        public async Task<IActionResult> GetTranslationForWordDetail(int id)
-        {
-            var user = _userHelper.GetUserId();
-            if (user != Guid.Empty)
-            {
-                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
-                if (dictionary != null && dictionary.UserId != user)
-                {
-                    return Unauthorized();
-                }
-            }
-
-            var translations = await _queryProcessor.ExecuteAsync(new TranslationsByWordDetailIdQuery { WordDetailId = id });
-            return Ok(translations.Select(t => _translationRenderer.Render(t)).ToList());
-        }
-
-        [HttpGet("api/detail/{id}/translations/languages/{language}", Name = "GetWordTranslationsByDetailIdAndLanguage")]
-        public async Task<IActionResult> GetTranslationForWordDetail(int id, Languages language)
-        {
-            var user = _userHelper.GetUserId();
-            if (user != Guid.Empty)
-            {
-                var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
-                if (dictionary != null && dictionary.UserId != user)
-                {
-                    return Unauthorized();
-                }
-            }
-
-            var translations = await _queryProcessor.ExecuteAsync(new TranslationsByWordDetailAndLanguageQuery { WordDetailId = id, Language = language });
-            return Ok(translations.Select(t => _translationRenderer.Render(t)).ToList());
-        }
-
-        [HttpGet("api/translations/{id}", Name = "GetTranslationById")]
-        public IActionResult Get(int id)
-        {
-            var response = _queryProcessor.Execute(new TranslationByIdQuery { Id = id });
-
-            if (response == null)
-            {
-                return NotFound();
-            }
-
-            return new ObjectResult(_translationRenderer.Render(response));
-        }
-
-        [HttpPost("api/details/{id}/translations", Name = "AddTranslation")]
-        public async Task<IActionResult> Post(int id, [FromBody]TranslationView translation)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByWordDetailIdQuery { WordDetailId = id });
-            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
-            {
-                return Unauthorized();
-            }
-
-            var dwtails = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { WordDetailId = id });
-
-            if (dwtails == null)
-            {
-                return BadRequest();
-            }
-
-            var command = new AddWordTranslationCommand
-            {
-                WordDetailId = id,
-                Translation = translation.Map<TranslationView, Translation>()
+                DictionaryId = id,
+                WordId = wordId
             };
-            await _commandProcessor.SendAsync(command);
 
-            var response = _translationRenderer.Render(command.Translation);
-
-            return Created(response.Links.Single(x => x.Rel == "self").Href, response);
+            await _commandProcessor.SendAsync(request);
+            return Ok(request.Result);
         }
 
-        [HttpPut("api/translations/{id}", Name = "UpdateTranslation")]
-        public async Task<IActionResult> Put(int id, [FromBody]TranslationView translation)
+        [HttpGet("api/dictionaries/{id}/words/{wordId}/translations/languages/{language}", Name = "GetWordTranslationsByWordIdAndLanguage")]
+        public async Task<IActionResult> GetTranslationForWord(int id, int wordId, Languages language)
         {
-            if (!ModelState.IsValid)
+            var request = new GetTranslationForWordLanguageRequest
             {
-                return BadRequest(ModelState);
-            }
+                DictionaryId = id,
+                WordId = wordId,
+                Language = language
+            };
 
-            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByTranslationIdQuery { TranslationId = id });
-            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            await _commandProcessor.SendAsync(request);
+            return Ok(request.Result);
+        }
+
+        [HttpGet("api/dictionaries/{id}/detail/{id}/translations", Name = "GetWordTranslationsByDetailId")]
+        public async Task<IActionResult> GetTranslationForWordDetail(int id, int wordId)
+        {
+            var request = new GetTranslationForWordDetailRequest
             {
-                return Unauthorized();
-            }
+                DictionaryId = id,
+                WordDetailId = wordId
+            };
 
-            var response = await _queryProcessor.ExecuteAsync(new TranslationByIdQuery { Id = id });
+            await _commandProcessor.SendAsync(request);
+            return Ok(request.Result);
+        }
 
-            if (response == null)
+        [HttpGet("api/dictionaries/{id}/detail/{id}/translations/languages/{language}", Name = "GetWordTranslationsByDetailIdAndLanguage")]
+        public async Task<IActionResult> GetTranslationForWordDetail(int id, int wordId, Languages language)
+        {
+            var request = new GetTranslationForWordDetailLanguageRequest
             {
-                return BadRequest();
-            }
+                DictionaryId = id,
+                WordDetailId = wordId
+            };
 
-            await _commandProcessor.SendAsync(new UpdateWordTranslationCommand { Translation = translation.Map<TranslationView, Translation>() });
+            await _commandProcessor.SendAsync(request);
+            return Ok(request.Result);
+        }
 
+        [HttpGet("api/dictionaries/{id}/translations/{detailId}", Name = "GetTranslationById")]
+        public async Task<IActionResult> Get(int id, int translationId)
+        {
+            var request = new GetTranslationRequest
+            {
+                DictionaryId = id,
+                TranslationId = translationId
+            };
+
+            await _commandProcessor.SendAsync(request);
+            return Ok(request.Result);
+        }
+
+        [HttpPost("api/dictionaries/{id}/details/{detailId}/translations", Name = "AddTranslation")]
+        public async Task<IActionResult> Post(int id, int detailId, [FromBody]TranslationView translation)
+        {
+            var request = new PostTranslationRequest
+            {
+                DictionaryId = id,
+                WordDetailId = detailId,
+                Translation = translation
+            };
+
+            await _commandProcessor.SendAsync(request);
+            return Created(request.Result.Location, request.Result.Response);
+        }
+
+        [HttpPut("api/dictionaries/{id}/translations/{translationId}", Name = "UpdateTranslation")]
+        public async Task<IActionResult> Put(int id, int translationId, [FromBody]TranslationView translation)
+        {
+
+            var request = new PutTranslationRequest
+            {
+                DictionaryId = id,
+                TranslationId = translationId,
+                Translation = translation
+            };
+
+            await _commandProcessor.SendAsync(request);
             return NoContent();
         }
 
-        [HttpDelete("api/translations/{id}", Name = "DeleteTranslation")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("api/dictionaries/{id}/translations/{translationId}", Name = "DeleteTranslation")]
+        public async Task<IActionResult> Delete(int id, int translationId)
         {
-            var dictonary = await _queryProcessor.ExecuteAsync(new DictionaryByTranslationIdQuery { TranslationId = id });
-            if (dictonary == null || dictonary.UserId != _userHelper.GetUserId())
+            var request = new DeleteTranslationRequest
             {
-                return Unauthorized();
-            }
+                DictionaryId = id,
+                TranslationId = translationId
+            };
 
-            var response = await _queryProcessor.ExecuteAsync(new TranslationByIdQuery { Id = id });
-
-            if (response == null)
-            {
-                return NotFound();
-            }
-
-            await _commandProcessor.SendAsync(new DeleteWordTranslationCommand { TranslationId = id });
-
+            await _commandProcessor.SendAsync(request);
             return NoContent();
         }
     }

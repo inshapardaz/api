@@ -6,36 +6,40 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.Renderers
 {
-    public class DictionariesRenderer : RendrerBase, IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView>
+    public interface IRenderDictionaries
     {
-        private readonly IUserHelper _userHelper;
-        private readonly IRenderResponseFromObject<Dictionary, DictionaryView> _dictionaryRenderer;
+        DictionariesView Render(IEnumerable<Dictionary> source);
+    }
 
-        public DictionariesRenderer(IRenderLink linkRenderer,
-                    IUserHelper userHelper,
-                    IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer)
-            : base(linkRenderer)
+    public class DictionariesRenderer : IRenderDictionaries
+    {
+        private readonly IRenderLink _linkRenderer;
+        private readonly IUserHelper _userHelper;
+        private readonly IRenderDictionary _dictionaryRender;
+
+        public DictionariesRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderDictionary dictionaryRender)
         {
+            _linkRenderer = linkRenderer;
             _userHelper = userHelper;
-            _dictionaryRenderer = dictionaryRenderer;
+            _dictionaryRender = dictionaryRender;
         }
 
         public DictionariesView Render(IEnumerable<Dictionary> source)
         {
             var links = new List<LinkView>
                             {
-                                LinkRenderer.Render("GetDictionaries", "self", null)
+                                _linkRenderer.Render("GetDictionaries", "self", null)
                             };
 
             if (_userHelper.IsContributor)
             {
-                links.Add(LinkRenderer.Render("CreateDictionary", "create", null));
+                links.Add(_linkRenderer.Render("CreateDictionary", "create", null));
             }
 
-            return new DictionariesView()
+            return new DictionariesView
             {
                 Links = links,
-                Items = source.Select(d => _dictionaryRenderer.Render(d))
+                Items = source.Select(d => _dictionaryRender.Render(d))
             };
         }
     }

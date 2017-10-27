@@ -5,16 +5,21 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.Renderers
 {
-    public class WordDetailRenderer : RendrerBase,
-        IRenderResponseFromObject<WordDetail, WordDetailView>
+    public interface IRenderWordDetail
     {
+        WordDetailView Render(WordDetail source);
+    }
+
+    public class WordDetailRenderer : IRenderWordDetail
+    {
+        private readonly IRenderLink _linkRenderer;
         private readonly IRenderEnum _enumRenderer;
 
         private readonly IUserHelper _userHelper;
 
         public WordDetailRenderer(IRenderLink linkRenderer, IRenderEnum enumRenderer, IUserHelper userHelper)
-            : base(linkRenderer)
         {
+            _linkRenderer = linkRenderer;
             _enumRenderer = enumRenderer;
             _userHelper = userHelper;
         }
@@ -27,18 +32,18 @@ namespace Inshapardaz.Api.Renderers
             result.Language = _enumRenderer.Render((Languages)source.Language);
             var links = new List<LinkView>
             {
-                LinkRenderer.Render("GetDetailsById", "self", new {id = source.Id}),
-                LinkRenderer.Render("GetWordById", "word", new {id = source.WordInstanceId}),
-                LinkRenderer.Render("GetWordTranslationsByDetailId", "translations", new {id = source.Id}),
-                LinkRenderer.Render("GetWordMeaningByWordDetailId", "meanings", new {id = source.Id})
+                _linkRenderer.Render("GetDetailsById", "self", new {id = source.Id}),
+                _linkRenderer.Render("GetWordById", "word", new {id = source.WordInstanceId}),
+                _linkRenderer.Render("GetWordTranslationsByDetailId", "translations", new {id = source.Id}),
+                _linkRenderer.Render("GetWordMeaningByWordDetailId", "meanings", new {id = source.Id})
             };
 
             if (_userHelper.IsContributor)
             {
-                links.Add(LinkRenderer.Render("UpdateWordDetail", "update", new { id = source.Id }));
-                links.Add(LinkRenderer.Render("DeleteWordDetail", "delete", new { id = source.Id }));
-                links.Add(LinkRenderer.Render("AddTranslation", "addTranslation", new { id = source.Id }));
-                links.Add(LinkRenderer.Render("AddMeaning", "addMeaning", new { id = source.Id }));
+                links.Add(_linkRenderer.Render("UpdateWordDetail", "update", new { id = source.Id }));
+                links.Add(_linkRenderer.Render("DeleteWordDetail", "delete", new { id = source.Id }));
+                links.Add(_linkRenderer.Render("AddTranslation", "addTranslation", new { id = source.Id }));
+                links.Add(_linkRenderer.Render("AddMeaning", "addMeaning", new { id = source.Id }));
             }
 
             result.Links = links;

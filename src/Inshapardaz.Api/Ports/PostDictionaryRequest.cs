@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,9 +31,9 @@ namespace Inshapardaz.Api.Ports
     {
         private readonly IUserHelper _userHelper;
         private readonly IAmACommandProcessor _commandProcessor;
-        private readonly IRenderResponseFromObject<Dictionary, DictionaryView> _dictionaryRenderer;
+        private readonly IRenderDictionary _dictionaryRenderer;
 
-        public PostDictionaryRequestHandler(IAmACommandProcessor commandProcessor, IUserHelper userHelper, IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer)
+        public PostDictionaryRequestHandler(IAmACommandProcessor commandProcessor, IUserHelper userHelper, IRenderDictionary dictionaryRenderer)
         {
             _userHelper = userHelper;
             _commandProcessor = commandProcessor;
@@ -52,7 +51,7 @@ namespace Inshapardaz.Api.Ports
 
             addDictionaryCommand.Dictionary.UserId = userId;
 
-            await _commandProcessor.SendAsync(addDictionaryCommand);
+            await _commandProcessor.SendAsync(addDictionaryCommand, cancellationToken: cancellationToken);
 
             var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary);
 

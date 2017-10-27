@@ -10,9 +10,9 @@ namespace Inshapardaz.Api.Controllers
     [Route("api/[controller]")]
     public class JobsController : Controller
     {
-        private readonly IRenderResponseFromObject<JobStatus, JobStatusModel> _jobsStatusRenderer;
+        private readonly IRenderJobStatus _jobsStatusRenderer;
 
-        public JobsController(IRenderResponseFromObject<JobStatus, JobStatusModel> jobsStatusRenderer)
+        public JobsController(IRenderJobStatus jobsStatusRenderer)
         {
             _jobsStatusRenderer = jobsStatusRenderer;
         }

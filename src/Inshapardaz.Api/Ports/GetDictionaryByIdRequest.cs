@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
 using Microsoft.Extensions.Logging;
@@ -25,13 +24,13 @@ namespace Inshapardaz.Api.Ports
     public class GetDictionaryByIdRequestHandler : RequestHandlerAsync<GetDictionaryByIdRequest>
     {
         private readonly IUserHelper _userHelper;
-        private readonly IRenderResponseFromObject<Dictionary, DictionaryView> _dictionaryRenderer;
+        private readonly IRenderDictionary _dictionaryRenderer;
         private readonly ILogger<GetDictionaryByIdRequestHandler> _logger;
         private readonly IQueryProcessor _queryProcessor;
 
         public GetDictionaryByIdRequestHandler(IQueryProcessor queryProcessor, 
                                                IUserHelper userHelper,
-                                               IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer,
+                                               IRenderDictionary dictionaryRenderer,
                                                ILogger<GetDictionaryByIdRequestHandler> logger)
         {
             _queryProcessor = queryProcessor;

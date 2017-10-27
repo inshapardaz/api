@@ -5,14 +5,20 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.Renderers
 {
-    public class WordMeaningRenderer : RendrerBase, IRenderResponseFromObject<WordDetail, IEnumerable<MeaningContextView>>
+    public interface IRenderWordMeanings
+    {
+        IEnumerable<MeaningContextView> Render(WordDetail source);
+    }
+
+    public class WordMeaningsRenderer : IRenderWordMeanings
     {
         private const string DefaultContext = "Default";
-        private readonly IRenderResponseFromObject<Meaning, MeaningView> _meaningRenderer;
+        private readonly IRenderLink _linkRenderer;
+        private readonly IRenderMeaning _meaningRenderer;
 
-        public WordMeaningRenderer(IRenderLink linkRenderer, IRenderResponseFromObject<Meaning, MeaningView> meaningRenderer)
-            : base(linkRenderer)
+        public WordMeaningsRenderer(IRenderLink linkRenderer, IRenderMeaning meaningRenderer)
         {
+            _linkRenderer = linkRenderer;
             _meaningRenderer = meaningRenderer;
         }
 
@@ -22,18 +28,18 @@ namespace Inshapardaz.Api.Renderers
                    .Meaning
                    .GroupBy(m => m.Context)
                    .Select(
-                    @group => new MeaningContextView
+                    group => new MeaningContextView
                     {
-                        Context = !string.IsNullOrWhiteSpace(@group.Key) ? @group.Key : DefaultContext,
+                        Context = !string.IsNullOrWhiteSpace(group.Key) ? group.Key : DefaultContext,
                         Links =
                             new[]
                                 {
-                                    LinkRenderer.Render(
+                                    _linkRenderer.Render(
                                         "GetWordMeaningByContext",
                                         "self",
-                                        new { id = source.Id, context = !string.IsNullOrWhiteSpace(@group.Key) ? @group.Key : DefaultContext})
+                                        new { id = source.Id, context = !string.IsNullOrWhiteSpace(group.Key) ? group.Key : DefaultContext})
                                 },
-                        Meanings = @group.ToList().Select(v => _meaningRenderer.Render(v))
+                        Meanings = group.ToList().Select(v => _meaningRenderer.Render(v))
                     }).ToList();
         }
     }

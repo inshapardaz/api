@@ -1,5 +1,4 @@
 ﻿using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.Renderers
 {
@@ -19,7 +18,7 @@ namespace Inshapardaz.Api.Renderers
         public int PageSize { get; set; }
     }
 
-    public class DictionarSearchPageRouteArgs : PagedRouteArgs
+    public class DictionarySearchPageRouteArgs : PagedRouteArgs
     {
         public int Id { get; set; }
 

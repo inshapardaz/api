@@ -17,9 +17,9 @@ namespace Inshapardaz.Api.Ports
 
     public class GetEntryRequestHandler : RequestHandlerAsync<GetEntryRequest>
     {
-        private readonly IRenderResponse<EntryView> _entryRenderer;
+        private readonly IRenderEntry _entryRenderer;
 
-        public GetEntryRequestHandler(IRenderResponse<EntryView> entryRenderer)
+        public GetEntryRequestHandler(IRenderEntry entryRenderer)
         {
             _entryRenderer = entryRenderer;
         }

@@ -3,23 +3,30 @@ using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.Renderers
 {
-    public class EntryRenderer : RendrerBase, IRenderResponse<EntryView>
+    public interface IRenderEntry
     {
+        EntryView Render();
+    }
+
+    public class EntryRenderer : IRenderEntry
+    {
+        private readonly IRenderLink _linkRenderer;
+
         public EntryRenderer(IRenderLink linkRenderer)
-            : base(linkRenderer)
         {
+            _linkRenderer = linkRenderer;
         }
 
         public EntryView Render()
         {
             var links = new List<LinkView>
                             {
-                                LinkRenderer.Render("Entry", RelTypes.Self),
-                                LinkRenderer.Render("GetDictionaries", RelTypes.Dictionaries),
-                                LinkRenderer.Render("GetLanguages", RelTypes.Languages),
-                                LinkRenderer.Render("GetAttributes", RelTypes.Attributes),
-                                LinkRenderer.Render("GetRelationTypes", RelTypes.RelationshipTypes),
-                                LinkRenderer.Render("GetWordAlternatives", RelTypes.Thesaurus, new { word = "word" })
+                                _linkRenderer.Render("Entry", RelTypes.Self),
+                                _linkRenderer.Render("GetDictionaries", RelTypes.Dictionaries),
+                                _linkRenderer.Render("GetLanguages", RelTypes.Languages),
+                                _linkRenderer.Render("GetAttributes", RelTypes.Attributes),
+                                _linkRenderer.Render("GetRelationTypes", RelTypes.RelationshipTypes),
+                                _linkRenderer.Render("GetWordAlternatives", RelTypes.Thesaurus, new { word = "word" })
                             };
             return new EntryView { Links = links };
         }

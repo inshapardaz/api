@@ -35,13 +35,13 @@ namespace Inshapardaz.Api.Ports
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
         private readonly ILogger<PutDictionaryRequestHandler> _logger;
-        private readonly IRenderResponseFromObject<Dictionary, DictionaryView> _dictionaryRenderer;
+        private readonly IRenderDictionary _dictionaryRenderer;
         
         public PutDictionaryRequestHandler(IUserHelper userHelper, 
                                            IAmACommandProcessor commandProcessor, 
                                            IQueryProcessor queryProcessor,
                                            ILogger<PutDictionaryRequestHandler> logger, 
-                                           IRenderResponseFromObject<Dictionary, DictionaryView> dictionaryRenderer)
+                                           IRenderDictionary dictionaryRenderer)
         {
             _userHelper = userHelper;
             _commandProcessor = commandProcessor;

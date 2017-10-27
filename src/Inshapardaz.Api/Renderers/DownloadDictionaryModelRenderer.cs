@@ -5,7 +5,12 @@ using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.Renderers
 {
-    public class DownloadDictionaryModelRenderer : IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView>
+    public interface IRenderDownloadDictionary
+    {
+        DownloadDictionaryView Render(DownloadJobModel source);
+    }
+
+    public class DownloadDictionaryModelRenderer : IRenderDownloadDictionary
     {
         private readonly IRenderLink _linkRenderer;
 

@@ -33,6 +33,10 @@ namespace Inshapardaz.Api.Middlewares
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NotFound;
             }
+            catch (BadRequestException)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            }
             catch (NotImplementedException)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NotImplemented;

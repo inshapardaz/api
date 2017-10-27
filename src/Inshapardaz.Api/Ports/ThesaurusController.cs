@@ -1,8 +1,6 @@
 ﻿using Paramore.Darker;
 using Inshapardaz.Api.Renderers;
-using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +9,11 @@ namespace Inshapardaz.Api.Controllers
     public class ThesaurusController : Controller
     {
         private readonly IQueryProcessor _queryProcessor;
-        private readonly IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>> _pageRenderer;
+        private readonly IRenderWordPage _pageRenderer;
 
         public ThesaurusController(
             IQueryProcessor queryProcessor,
-            IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>> pageRenderer)
+            IRenderWordPage pageRenderer)
         {
             _queryProcessor = queryProcessor;
             _pageRenderer = pageRenderer;
@@ -42,7 +40,7 @@ namespace Inshapardaz.Api.Controllers
                 Page = results
             };
 
-            return new ObjectResult(_pageRenderer.Render(pageRenderArgs));
+            return new ObjectResult(_pageRenderer.Render(pageRenderArgs, -1));
         }
     }
 }

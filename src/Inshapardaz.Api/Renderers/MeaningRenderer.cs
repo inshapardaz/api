@@ -5,13 +5,19 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.Renderers
 {
-    public class MeaningRenderer : RendrerBase, IRenderResponseFromObject<Meaning, MeaningView>
+    public interface IRenderMeaning
     {
+        MeaningView Render(Meaning source);
+    }
+
+    public class MeaningRenderer : IRenderMeaning
+    {
+        private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
 
         public MeaningRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
-            : base(linkRenderer)
         {
+            _linkRenderer = linkRenderer;
             _userHelper = userHelper;
         }
 
@@ -20,15 +26,15 @@ namespace Inshapardaz.Api.Renderers
             var result = source.Map<Meaning, MeaningView>();
             var links = new List<LinkView>
             {
-                LinkRenderer.Render("GetMeaningById", "self", new { id = source.Id }),
-                LinkRenderer.Render("GetDetailsById", "worddetail", new { id = source.WordDetailId })
+                _linkRenderer.Render("GetMeaningById", "self", new { id = source.Id }),
+                _linkRenderer.Render("GetDetailsById", "worddetail", new { id = source.WordDetailId })
             };
             
 
             if (_userHelper.IsAuthenticated)
             {
-                links.Add(LinkRenderer.Render("UpdateMeaning", "update", new { id = source.Id }));
-                links.Add(LinkRenderer.Render("DeleteMeaning", "delete",  new { id = source.Id }));
+                links.Add(_linkRenderer.Render("UpdateMeaning", "update", new { id = source.Id }));
+                links.Add(_linkRenderer.Render("DeleteMeaning", "delete",  new { id = source.Id }));
             }
 
             result.Links = links;

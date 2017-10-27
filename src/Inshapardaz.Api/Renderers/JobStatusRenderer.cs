@@ -3,7 +3,12 @@ using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.Renderers
 {
-    public class JobStatusRenderer : IRenderResponseFromObject<JobStatus, JobStatusModel>
+    public interface IRenderJobStatus
+    {
+        JobStatusModel Render(JobStatus source);
+    }
+
+    public class JobStatusRenderer : IRenderJobStatus
     {
         private readonly IRenderLink _linkRenderer;
 

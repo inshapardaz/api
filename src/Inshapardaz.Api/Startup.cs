@@ -108,20 +108,20 @@ namespace Inshapardaz.Api
         }
         private void RegisterRenderer(IServiceCollection services)
         {
-            services.AddTransient<IRenderResponse<EntryView>, EntryRenderer>();
-            services.AddTransient<IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView>, DictionariesRenderer>();
-            services.AddTransient<IRenderResponseFromObject<Dictionary, DictionaryView>, DictionaryRenderer>();
             services.AddTransient<IRenderEnum, EnumRenderer>();
             services.AddTransient<IRenderLink, LinkRenderer>();
-            services.AddTransient<IRenderResponseFromObject<Word, WordView>, WordRenderer>();
-            services.AddTransient<IRenderResponseFromObject<WordDetail, WordDetailView>, WordDetailRenderer>();
-            services.AddTransient<IRenderResponseFromObject<Translation, TranslationView>, TranslationRenderer>();
-            services.AddTransient<IRenderResponseFromObject<WordRelation, RelationshipView>, RelationRenderer>();
-            services.AddTransient<IRenderResponseFromObject<WordDetail, IEnumerable<MeaningContextView>>, WordMeaningRenderer>();
-            services.AddTransient<IRenderResponseFromObject<Meaning, MeaningView>, MeaningRenderer>();
-            services.AddTransient<IRenderResponseFromObject<PageRendererArgs<Word>, PageView<WordView>>, WordIndexPageRenderer>();
-            services.AddTransient<IRenderResponseFromObject<DownloadJobModel, DownloadDictionaryView>, DictionaryDownloadRenderer>();
-            services.AddTransient<IRenderResponseFromObject<JobStatus, JobStatusModel>, JobStatusRenderer>();
+            services.AddTransient<IRenderEntry, EntryRenderer>();
+            services.AddTransient<IRenderDictionaries, DictionariesRenderer>();
+            services.AddTransient<IRenderDictionary, DictionaryRenderer>();
+            services.AddTransient<IRenderWord, WordRenderer>();
+            services.AddTransient<IRenderWordPage, WordIndexPageRenderer>();
+            services.AddTransient<IRenderWordDetail, WordDetailRenderer>();
+            services.AddTransient<IRenderWordMeanings, WordMeaningsRenderer>();
+            services.AddTransient<IRenderMeaning, MeaningRenderer>();
+            services.AddTransient<IRenderTranslation, TranslationRenderer>();
+            services.AddTransient<IRenderRelation, RelationRenderer>();
+            services.AddTransient<IRenderDictionaryDownload, DictionaryDownloadRenderer>();
+            services.AddTransient<IRenderJobStatus, JobStatusRenderer>();
 
         }
 

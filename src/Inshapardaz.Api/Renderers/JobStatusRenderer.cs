@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Renderers
                 Status = source.State,
                 Links = new List<LinkView>
                 {
-                    _linkRenderer.Render("JobStatus", "self", new {source.JobId})
+                    _linkRenderer.Render("JobStatus", RelTypes.Self, new {source.JobId})
                 }
             };
         }

@@ -16,6 +16,8 @@ namespace Inshapardaz.Api.Renderers
         public int PageNumber { get; set; }
 
         public int PageSize { get; set; }
+
+        public int DictionaryId { get; set; }
     }
 
     public class DictionarySearchPageRouteArgs : PagedRouteArgs

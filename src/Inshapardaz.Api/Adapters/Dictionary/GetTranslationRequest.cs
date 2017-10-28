@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             {
                 Id = command.TranslationId
             }, cancellationToken);
-            command.Result =  _translationRenderer.Render(translation);
+            command.Result =  _translationRenderer.Render(translation, command.DictionaryId);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
             await _commandProcessor.SendAsync(addWordDetailCommand, cancellationToken: cancellationToken);
 
-            var responseView = _wordDetailRenderer.Render(addWordDetailCommand.WordDetail);
+            var responseView = _wordDetailRenderer.Render(addWordDetailCommand.WordDetail, command.DictionaryId);
             command.Result.Location = responseView.Links.Single(x => x.Rel == "self").Href;
             command.Result.Response = responseView;
 

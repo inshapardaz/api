@@ -38,7 +38,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             };
 
             var wordDetailViews = await _queryProcessor.ExecuteAsync(query, cancellationToken);
-            command.Result = wordDetailViews.Select(w => _wordDetailRenderer.Render(w)).ToList();
+            command.Result = wordDetailViews.Select(w => _wordDetailRenderer.Render(w, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);
         }
     }

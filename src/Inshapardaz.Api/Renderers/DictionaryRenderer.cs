@@ -32,22 +32,22 @@ namespace Inshapardaz.Api.Renderers
         {
             var links = new List<LinkView>
             {
-                _linkRenderer.Render("GetDictionaryById", "self", new {id = source.Id}),
-                _linkRenderer.Render("GetWords", "index", new {id = source.Id}),
-                _linkRenderer.Render("SearchDictionary", "search", new {id = source.Id})
+                _linkRenderer.Render("GetDictionaryById", RelTypes.Self, new {id = source.Id}),
+                _linkRenderer.Render("GetWords", RelTypes.Index, new {id = source.Id}),
+                _linkRenderer.Render("SearchDictionary", RelTypes.Search, new {id = source.Id})
             };
 
             if (_userHelper.IsContributor)
             {
-                links.Add(_linkRenderer.Render("UpdateDictionary", "update", new {id = source.Id}));
-                links.Add(_linkRenderer.Render("DeleteDictionary", "delete", new {id = source.Id}));
-                links.Add(_linkRenderer.Render("CreateDictionaryDownload", "create-download", new {id = source.Id}));
-                links.Add(_linkRenderer.Render("CreateWord", "create-word", new {id = source.Id}));
+                links.Add(_linkRenderer.Render("UpdateDictionary", RelTypes.Update, new {id = source.Id}));
+                links.Add(_linkRenderer.Render("DeleteDictionary", RelTypes.Delete, new {id = source.Id}));
+                links.Add(_linkRenderer.Render("CreateDictionaryDownload", RelTypes.CreateDownload, new {id = source.Id}));
+                links.Add(_linkRenderer.Render("CreateWord", RelTypes.CreateWord, new {id = source.Id}));
             }
 
             if (source.IsPublic)
             {
-                links.Add(_linkRenderer.Render("DownloadDictionary", RelTypes.Download, new {id = source.Id, accept = ""}));
+                links.Add(_linkRenderer.Render("DownloadDictionary", RelTypes.Download, new {id = source.Id, accept = MimeTypes.SqlLite }));
             }
 
             var indexes = new List<LinkView>(_indexes.Select(i => _linkRenderer.Render("GetWordsListStartWith", i,

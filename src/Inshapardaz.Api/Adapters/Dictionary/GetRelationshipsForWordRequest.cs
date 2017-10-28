@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         public override async Task<GetRelationshipsForWordRequest> HandleAsync(GetRelationshipsForWordRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var relations = await _queryProcessor.ExecuteAsync(new RelationshipByWordIdQuery { WordId = command.WordId }, cancellationToken);
-            command.Result = relations.Select(r => _relationRender.Render(r)).ToList();
+            command.Result = relations.Select(r => _relationRender.Render(r, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);
         }
     }

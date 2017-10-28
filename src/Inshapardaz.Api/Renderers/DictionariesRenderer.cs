@@ -28,12 +28,12 @@ namespace Inshapardaz.Api.Renderers
         {
             var links = new List<LinkView>
                             {
-                                _linkRenderer.Render("GetDictionaries", "self", null)
+                                _linkRenderer.Render("GetDictionaries", RelTypes.Self, null)
                             };
 
             if (_userHelper.IsContributor)
             {
-                links.Add(_linkRenderer.Render("CreateDictionary", "create", null));
+                links.Add(_linkRenderer.Render("CreateDictionary", RelTypes.Create, null));
             }
 
             return new DictionariesView

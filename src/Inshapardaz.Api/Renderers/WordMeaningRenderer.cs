@@ -7,7 +7,7 @@ namespace Inshapardaz.Api.Renderers
 {
     public interface IRenderWordMeanings
     {
-        IEnumerable<MeaningContextView> Render(WordDetail source);
+        IEnumerable<MeaningContextView> Render(WordDetail source, int dictionaryId);
     }
 
     public class WordMeaningsRenderer : IRenderWordMeanings
@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Renderers
             _meaningRenderer = meaningRenderer;
         }
 
-        public IEnumerable<MeaningContextView> Render(WordDetail source)
+        public IEnumerable<MeaningContextView> Render(WordDetail source, int dictionaryId)
         {
             return source
                    .Meaning
@@ -34,12 +34,10 @@ namespace Inshapardaz.Api.Renderers
                         Links =
                             new[]
                                 {
-                                    _linkRenderer.Render(
-                                        "GetWordMeaningByContext",
-                                        "self",
-                                        new { id = source.Id, context = !string.IsNullOrWhiteSpace(group.Key) ? group.Key : DefaultContext})
+                                    _linkRenderer.Render("GetWordMeaningByContext", RelTypes.Self,
+                                        new { id = dictionaryId, wordId = source.Id, context = !string.IsNullOrWhiteSpace(group.Key) ? group.Key : DefaultContext})
                                 },
-                        Meanings = group.ToList().Select(v => _meaningRenderer.Render(v))
+                        Meanings = group.ToList().Select(v => _meaningRenderer.Render(v, dictionaryId))
                     }).ToList();
         }
     }

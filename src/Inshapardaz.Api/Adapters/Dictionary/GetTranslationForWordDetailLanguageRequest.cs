@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 Language = command.Language
             }, cancellationToken);
 
-            command.Result = translations.Select(t => _translationRenderer.Render(t)).ToList();
+            command.Result = translations.Select(t => _translationRenderer.Render(t, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);
         }
     }

@@ -7,7 +7,7 @@ namespace Inshapardaz.Api.Renderers
 {
     public interface IRenderTranslation
     {
-        TranslationView Render(Translation source);
+        TranslationView Render(Translation source, int dictionaryId);
     }
 
     public class TranslationRenderer : IRenderTranslation
@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Renderers
             _userHelper = userHelper;
         }
 
-        public TranslationView Render(Translation source)
+        public TranslationView Render(Translation source, int dictionaryId)
         {
             var result = source.Map<Translation, TranslationView>();
 
@@ -33,14 +33,14 @@ namespace Inshapardaz.Api.Renderers
 
             var links = new List<LinkView>
             {
-                _linkRenderer.Render("GetTranslationById", "self", new { id = source.Id }),
-                _linkRenderer.Render("GetWordDetailsById", "worddetail", new { id = source.WordDetailId })
+                _linkRenderer.Render("GetTranslationById", RelTypes.Self, new { id = dictionaryId, translationId = source.Id }),
+                _linkRenderer.Render("GetWordDetailsById",  RelTypes.WordDetails, new { id = dictionaryId, wordId = source.WordDetailId })
             };
 
             if (_userHelper.IsContributor)
             {
-                links.Add(_linkRenderer.Render("UpdateTranslation", "update", new { id = source.Id }));
-                links.Add(_linkRenderer.Render("DeleteTranslation", "delete", new { id = source.Id }));
+                links.Add(_linkRenderer.Render("UpdateTranslation", RelTypes.Update, new { id = dictionaryId, translationId = source.Id }));
+                links.Add(_linkRenderer.Render("DeleteTranslation", RelTypes.Delete, new { id = dictionaryId, translationId = source.Id }));
             }
             result.Links = links;
             return result;

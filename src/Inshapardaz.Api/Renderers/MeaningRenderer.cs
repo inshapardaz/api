@@ -7,7 +7,7 @@ namespace Inshapardaz.Api.Renderers
 {
     public interface IRenderMeaning
     {
-        MeaningView Render(Meaning source);
+        MeaningView Render(Meaning source, int dictionaryId);
     }
 
     public class MeaningRenderer : IRenderMeaning
@@ -21,20 +21,20 @@ namespace Inshapardaz.Api.Renderers
             _userHelper = userHelper;
         }
 
-        public MeaningView Render(Meaning source)
+        public MeaningView Render(Meaning source, int dictionaryId)
         {
             var result = source.Map<Meaning, MeaningView>();
             var links = new List<LinkView>
             {
-                _linkRenderer.Render("GetMeaningById", "self", new { id = source.Id }),
-                _linkRenderer.Render("GetDetailsById", "worddetail", new { id = source.WordDetailId })
+                _linkRenderer.Render("GetMeaningById", RelTypes.Self, new { id = dictionaryId, meaningId = source.Id }),
+                _linkRenderer.Render("GetDetailsById", RelTypes.WordDetails, new { id= dictionaryId, detailId = source.WordDetailId })
             };
             
 
             if (_userHelper.IsAuthenticated)
             {
-                links.Add(_linkRenderer.Render("UpdateMeaning", "update", new { id = source.Id }));
-                links.Add(_linkRenderer.Render("DeleteMeaning", "delete",  new { id = source.Id }));
+                links.Add(_linkRenderer.Render("UpdateMeaning", RelTypes.Update, new { id = dictionaryId, meaningId = source.Id }));
+                links.Add(_linkRenderer.Render("DeleteMeaning", RelTypes.Delete,  new { id = dictionaryId, meaningId = source.Id }));
             }
 
             result.Links = links;

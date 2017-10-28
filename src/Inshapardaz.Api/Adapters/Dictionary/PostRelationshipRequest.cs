@@ -74,7 +74,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             await _commandProcessor.SendAsync(addCommand, cancellationToken: cancellationToken);
 
             var newRelationship = await _queryProcessor.ExecuteAsync(new RelationshipByIdQuery { Id = addCommand.RelationId }, cancellationToken);
-            var response = _relationRender.Render(newRelationship);
+            var response = _relationRender.Render(newRelationship, command.DictionaryId);
             command.Result.Location =  response.Links.Single(x => x.Rel == "self").Href;
             command.Result.Response =  response;
             return await base.HandleAsync(command, cancellationToken);

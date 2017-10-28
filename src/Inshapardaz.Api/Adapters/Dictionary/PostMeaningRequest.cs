@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
             var addWOrdCommand = new AddWordMeaningCommand { WordDetailId = detail.Id, Meaning = command.Meaning.Map<MeaningView, Meaning>() };
             await _commandProcessor.SendAsync(addWOrdCommand, cancellationToken: cancellationToken);
-            var response = _meaningRenderer.Render(addWOrdCommand.Meaning);
+            var response = _meaningRenderer.Render(addWOrdCommand.Meaning, command.DictionaryId);
             command.Result.Location =  response.Links.Single(x => x.Rel == "self").Href;
             command.Result.Response =  response;
             return await base.HandleAsync(command, cancellationToken);

@@ -46,7 +46,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 Context = finalContext
             }, cancellationToken);
 
-            command.Result = result.Select(x => _meaningRenderer.Render(x)).ToList();
+            command.Result = result.Select(x => _meaningRenderer.Render(x, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);
         }
     }

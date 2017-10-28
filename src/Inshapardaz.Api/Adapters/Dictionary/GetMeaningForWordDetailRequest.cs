@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             {
                 WordDetailId = command.DetailId
             }, cancellationToken);
-            command.Result = meanings.Select(x => _meaningRenderer.Render(x)).ToList();
+            command.Result = meanings.Select(x => _meaningRenderer.Render(x, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);
         }
     }

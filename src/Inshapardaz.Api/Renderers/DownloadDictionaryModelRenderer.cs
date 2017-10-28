@@ -25,10 +25,9 @@ namespace Inshapardaz.Api.Renderers
             {
                 Links = new List<LinkView>
                 {
-                    _linkRenderer.Render("DownloadDictionary", "self", new
+                    _linkRenderer.Render("DownloadDictionary", RelTypes.Self, new
                     {
-                        Id = source.Id,
-                        source.Type
+                        source.Id
                     })
                 }
             };

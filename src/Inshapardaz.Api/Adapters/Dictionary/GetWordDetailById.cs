@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new NotFoundException();
             }
 
-            command.Result = _wordDetailRenderer.Render(details);
+            command.Result = _wordDetailRenderer.Render(details, command.DictionaryId);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

@@ -1,26 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
 using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class GetMeaningForWordRequest : IRequest
+    public class GetMeaningForWordRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
         public long WordId { get; set; }
 
         public List<MeaningView> Result { get; set; }
-
-        public int DictionaryId { get; set; }
     }
 
     public class GetMeaningForWordRequestHandler : RequestHandlerAsync<GetMeaningForWordRequest>
@@ -34,11 +28,10 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _meaningRenderer = meaningRenderer;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetMeaningForWordRequest> HandleAsync(GetMeaningForWordRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            //TODO :  Check for dictionary access
-
-            IEnumerable<Meaning> meanings = await _queryProcessor.ExecuteAsync(new WordMeaningByWordQuery
+            var meanings = await _queryProcessor.ExecuteAsync(new WordMeaningByWordQuery
             {
                 WordId = command.WordId
             }, cancellationToken);

@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordDetailsByWord()
         {
             FakeQueryProcessor.SetupResultFor<WordDetailsByWordQuery, IEnumerable<WordDetail>>(new List<WordDetail> { new WordDetail() });
-            Result = Controller.GetDetailForWord(0, 9).Result;
+            Result = Controller.GetDetailsForWord(0, 9).Result;
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordDetailsByWordThatDoesNotExist()
         {
             FakeQueryProcessor.SetupResultFor<WordDetailsByWordQuery, IEnumerable<WordDetail>>(new List<WordDetail>());
-            Result = Controller.GetDetailForWord(0, 9).Result;
+            Result = Controller.GetDetailsForWord(0, 9).Result;
         }
 
         [Fact]

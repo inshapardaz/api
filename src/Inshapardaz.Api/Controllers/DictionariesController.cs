@@ -52,7 +52,6 @@ namespace Inshapardaz.Api.Controllers
 
         [Authorize]
         [HttpPut("/api/dictionaries/{id}", Name = "UpdateDictionary")]
-        [Produces(typeof(DictionaryView))]
         [ValidateModel]
         public async Task<IActionResult> Put(int id, [FromBody] DictionaryView value)
         {
@@ -78,7 +77,7 @@ namespace Inshapardaz.Api.Controllers
 
         [Authorize]
         [HttpPost("/api/dictionaries/{id}/download", Name = "CreateDictionaryDownload")]
-        [Produces(typeof(DictionaryView))]
+        [Produces(typeof(DownloadDictionaryView))]
         public async Task<IActionResult> CreateDownloadForDictionary(int id)
         {
             var request = new CreateDictionaryDownloadRequest { DictionaryId = id };
@@ -88,6 +87,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("/api/dictionary/{id}/download", Name = "DownloadDictionary")]
+        [Produces(typeof(byte[]))]
         public async Task<IActionResult> DownloadDictionary(int id, [FromHeader(Name = "Accept")] string accept = MimeTypes.SqlLite)
         {
 

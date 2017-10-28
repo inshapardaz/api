@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
+using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
 
@@ -17,6 +19,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/translations", Name = "GetWordTranslationsById")]
+        [Produces(typeof(IEnumerable<TranslationView>))]
         public async Task<IActionResult> GetTranslationForWord(int id, int wordId)
         {
             var request = new GetTranslationForWordRequest
@@ -30,6 +33,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/translations/languages/{language}", Name = "GetWordTranslationsByWordIdAndLanguage")]
+        [Produces(typeof(IEnumerable<TranslationView>))]
         public async Task<IActionResult> GetTranslationForWord(int id, int wordId, Languages language)
         {
             var request = new GetTranslationForWordLanguageRequest
@@ -43,7 +47,8 @@ namespace Inshapardaz.Api.Controllers
             return Ok(request.Result);
         }
 
-        [HttpGet("api/dictionaries/{id}/detail/{id}/translations", Name = "GetWordTranslationsByDetailId")]
+        [HttpGet("api/dictionaries/{id}/detail/{wordId}/translations", Name = "GetWordTranslationsByDetailId")]
+        [Produces(typeof(IEnumerable<TranslationView>))]
         public async Task<IActionResult> GetTranslationForWordDetail(int id, int wordId)
         {
             var request = new GetTranslationForWordDetailRequest
@@ -56,20 +61,22 @@ namespace Inshapardaz.Api.Controllers
             return Ok(request.Result);
         }
 
-        [HttpGet("api/dictionaries/{id}/detail/{id}/translations/languages/{language}", Name = "GetWordTranslationsByDetailIdAndLanguage")]
-        public async Task<IActionResult> GetTranslationForWordDetail(int id, int wordId, Languages language)
+        [HttpGet("api/dictionaries/{id}/detail/{detailId}/translations/languages/{language}", Name = "GetWordTranslationsByDetailIdAndLanguage")]
+        [Produces(typeof(IEnumerable<TranslationView>))]
+        public async Task<IActionResult> GetTranslationForWordDetail(int id, int detailId, Languages language)
         {
             var request = new GetTranslationForWordDetailLanguageRequest
             {
                 DictionaryId = id,
-                WordDetailId = wordId
+                WordDetailId = detailId
             };
 
             await _commandProcessor.SendAsync(request);
             return Ok(request.Result);
         }
 
-        [HttpGet("api/dictionaries/{id}/translations/{detailId}", Name = "GetTranslationById")]
+        [HttpGet("api/dictionaries/{id}/translations/{translationId}", Name = "GetTranslationById")]
+        [Produces(typeof(TranslationView))]
         public async Task<IActionResult> Get(int id, int translationId)
         {
             var request = new GetTranslationRequest
@@ -83,6 +90,8 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("api/dictionaries/{id}/details/{detailId}/translations", Name = "AddTranslation")]
+        [Produces(typeof(TranslationView))]
+        [ValidateModel]
         public async Task<IActionResult> Post(int id, int detailId, [FromBody]TranslationView translation)
         {
             var request = new PostTranslationRequest
@@ -97,6 +106,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("api/dictionaries/{id}/translations/{translationId}", Name = "UpdateTranslation")]
+        [ValidateModel]
         public async Task<IActionResult> Put(int id, int translationId, [FromBody]TranslationView translation)
         {
 

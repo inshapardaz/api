@@ -12,12 +12,8 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class PutWordRequest : IRequest
+    public class PutWordRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
-        public int DictionaryId { get; set; }
-
         public WordView Word { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();
@@ -35,7 +31,6 @@ namespace Inshapardaz.Api.Adapters.Dictionary
     public class PutWordRequestHandler : RequestHandlerAsync<PutWordRequest>
     {
         private readonly IQueryProcessor _queryProcessor;
-        private readonly IUserHelper _userHelper;
         private readonly IAmACommandProcessor _commandProcessor;
 
         public PutWordRequestHandler(IQueryProcessor queryProcessor, 
@@ -43,26 +38,13 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                                       IUserHelper userHelper)
         {
             _queryProcessor = queryProcessor;
-            _userHelper = userHelper;
             _commandProcessor = commandProcessor;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PutWordRequest> HandleAsync(PutWordRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var userId = _userHelper.GetUserId();
-            if (userId == Guid.Empty)
-            {
-                throw new UnauthorizedAccessException();
-            }
-
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
-
-            if (dictionary == null)
-            {
-                throw new NotFoundException();
-            }
-
-            var response = await _queryProcessor.ExecuteAsync(new WordByIdQuery { WordId = command.WordId, UserId = userId }, cancellationToken);
+            var response = await _queryProcessor.ExecuteAsync(new WordByIdQuery { WordId = command.WordId }, cancellationToken);
 
             if (response == null)
             {

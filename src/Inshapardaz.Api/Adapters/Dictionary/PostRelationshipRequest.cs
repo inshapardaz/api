@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
@@ -14,15 +13,11 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class PostRelationshipRequest : IRequest
+    public class PostRelationshipRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
         public RelationshipView Relationship { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();
-
-        public int DictionaryId { get; set; }
 
         public long WordId { get; set; }
 
@@ -39,29 +34,19 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderRelation _relationRender;
-
-        private readonly IUserHelper _userHelper;
-
+        
         public PostRelationshipRequestHandler(IAmACommandProcessor commandProcessor, 
             IQueryProcessor queryProcessor,
-            IRenderRelation relationRender, 
-            IUserHelper userHelper)
+            IRenderRelation relationRender)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _relationRender = relationRender;
-
-            _userHelper = userHelper;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostRelationshipRequest> HandleAsync(PostRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
-            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
-            {
-                throw new UnauthorizedAccessException();
-            }
-
             var sourceWord = await _queryProcessor.ExecuteAsync(new WordByIdQuery { WordId = command.WordId }, cancellationToken);
             if (sourceWord == null)
             {
@@ -75,7 +60,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             }
 
             var dictionary2 = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = command.Relationship.RelatedWordId }, cancellationToken);
-            if (dictionary2 == null || dictionary2.Id != dictionary.Id)
+            if (dictionary2 == null || dictionary2.Id != command.DictionaryId)
             {
                 throw new BadRequestException();
             }

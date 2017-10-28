@@ -14,17 +14,13 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class PostMeaningRequest : IRequest
+    public class PostMeaningRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
         public long DetailId { get; set; }
 
         public MeaningView Meaning { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();
-
-        public int DictionaryId { get; set; }
 
         public class RequestResult
         {
@@ -39,28 +35,17 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderMeaning _meaningRenderer;
-        private readonly IUserHelper _userHelper;
 
-        public PostMeaningRequestHandler(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor, IRenderMeaning meaningRenderer, IUserHelper userHelper)
+        public PostMeaningRequestHandler(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor, IRenderMeaning meaningRenderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _meaningRenderer = meaningRenderer;
-            _userHelper = userHelper;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostMeaningRequest> HandleAsync(PostMeaningRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery
-            {
-                DictionaryId = command.DictionaryId
-            }, cancellationToken);
-
-            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
-            {
-                throw new UnauthorizedAccessException();
-            }
-
             var detail = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { WordDetailId = command.DetailId }, cancellationToken);
 
             if (detail == null)

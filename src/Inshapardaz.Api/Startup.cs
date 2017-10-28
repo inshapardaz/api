@@ -1,16 +1,12 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using AutoMapper;
 using Hangfire;
 using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
-using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
-using Inshapardaz.Api.View;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

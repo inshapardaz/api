@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Exception;
@@ -11,12 +9,8 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class GetWordByIdRequest : IRequest
+    public class GetWordByIdRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
-        public int DictionaryId { get; set; }
-
         public long WordId { get; set; }
 
         public WordView Result { get; set; }
@@ -25,32 +19,18 @@ namespace Inshapardaz.Api.Adapters.Dictionary
     public class GetWordByIdRequestHandler : RequestHandlerAsync<GetWordByIdRequest>
     {
         private readonly IQueryProcessor _queryProcessor;
-        private readonly IUserHelper _userHelper;
         private readonly IRenderWord _wordRenderer;
 
-        public GetWordByIdRequestHandler(IQueryProcessor queryProcessor, IUserHelper userHelper, IRenderWord wordRenderer)
+        public GetWordByIdRequestHandler(IQueryProcessor queryProcessor, IRenderWord wordRenderer)
         {
             _queryProcessor = queryProcessor;
-            _userHelper = userHelper;
             _wordRenderer = wordRenderer;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetWordByIdRequest> HandleAsync(GetWordByIdRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var userId = _userHelper.GetUserId();
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
-
-            if (dictionary == null)
-            {
-                throw new NotFoundException();
-            }
-
-            if (!dictionary.IsPublic && dictionary.UserId != userId)
-            {
-                throw new UnauthorizedAccessException();
-            }
-
-            var word = await _queryProcessor.ExecuteAsync(new WordByIdQuery { DictionaryId = command.DictionaryId, WordId = command.WordId, UserId = userId }, cancellationToken);
+            var word = await _queryProcessor.ExecuteAsync(new WordByIdQuery { DictionaryId = command.DictionaryId, WordId = command.WordId }, cancellationToken);
             if (word == null)
             {
                 throw new NotFoundException();

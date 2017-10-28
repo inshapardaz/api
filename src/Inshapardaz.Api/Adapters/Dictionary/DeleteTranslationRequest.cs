@@ -10,39 +10,25 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class DeleteTranslationRequest : IRequest
+    public class DeleteTranslationRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
         public long TranslationId { get; set; }
-
-        public int DictionaryId { get; set; }
     }
 
     public class DeleteTranslationRequestHandler : RequestHandlerAsync<DeleteTranslationRequest>
     {
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
-        private readonly IUserHelper _userHelper;
 
-        public DeleteTranslationRequestHandler(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor, IUserHelper userHelper)
+        public DeleteTranslationRequestHandler(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
-            _userHelper = userHelper;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteTranslationRequest> HandleAsync(DeleteTranslationRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery
-            {
-                DictionaryId = command.DictionaryId
-            }, cancellationToken);
-            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
-            {
-                throw new UnauthorizedAccessException();
-            }
-
             var response = await _queryProcessor.ExecuteAsync(new TranslationByIdQuery
             {
                 Id = command.TranslationId

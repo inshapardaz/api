@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Middlewares
             {
                 await _next.Invoke(context);
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedException)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             }

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
+using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.Controllers
@@ -16,6 +18,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/meanings", Name = "GetWordMeaningByWordId")]
+        [Produces(typeof(IEnumerable<MeaningView>))]
         public async Task<IActionResult> GetMeaningForWord(int id, int wordId)
         {
             var request = new GetMeaningForWordRequest
@@ -29,6 +32,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api/dictionaries/{id}/details/{detailId}/meanings", Name = "GetWordMeaningByWordDetailId")]
+        [Produces(typeof(IEnumerable<MeaningView>))]
         public async Task<IActionResult> GetMeaningForWordDetail(int id, int detailId)
         {
             var request = new GetMeaningForWordDetailRequest
@@ -41,6 +45,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api/dictionaries/{id}/meanings/{meaningId}", Name = "GetMeaningById")]
+        [Produces(typeof(MeaningView))]
         public async Task<IActionResult> Get(int id, int meaningId)
         {
             var request = new GetMeaningByIdRequest
@@ -53,7 +58,8 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/meanings/contexts/{context}", Name = "GetWordMeaningByContext")]
-        public async Task<IActionResult> GetMeaningForContext(int id, int wordId, string context)
+        [Produces(typeof(IEnumerable<MeaningView>))]
+        public async Task<IActionResult> GetMeaningsForContext(int id, int wordId, string context)
         {
             var request = new GetMeaningForContextRequest
             {
@@ -66,6 +72,8 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("api/dictionaries/{id}/details/{detailId}/meanings", Name = "AddMeaning")]
+        [Produces(typeof(MeaningView))]
+        [ValidateModel]
         public async Task<IActionResult> Post(int id, int detailId, [FromBody]MeaningView meaning)
         {
             var request = new PostMeaningRequest
@@ -79,6 +87,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("api/dictionaries/{id}/meanings/{meaningId}", Name = "UpdateMeaning")]
+        [ValidateModel]
         public async Task<IActionResult> Put(int id, int meaningId, [FromBody]MeaningView meaning)
         {
             var request = new PutMeaningRequest

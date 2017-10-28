@@ -2,6 +2,5 @@
 {
     public class BadRequestException : System.Exception
     {
-        
     }
 }

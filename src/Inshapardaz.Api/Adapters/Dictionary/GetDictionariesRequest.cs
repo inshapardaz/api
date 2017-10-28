@@ -6,7 +6,6 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
-using Paramore.Brighter.Logging.Attributes;
 using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
@@ -31,7 +30,6 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _dictionariesRenderer = dictionariesRenderer;
         }
 
-        [RequestLogging(step: 1, timing: HandlerTiming.Before)]
         public override async Task<GetDictionariesRequest> HandleAsync(GetDictionariesRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var userId = _userHelper.GetUserId();

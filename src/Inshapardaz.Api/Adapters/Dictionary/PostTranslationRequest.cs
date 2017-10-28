@@ -14,15 +14,11 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class PostTranslationRequest : IRequest
+    public class PostTranslationRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
         public TranslationView Translation { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();
-
-        public int DictionaryId { get; set; }
 
         public long WordDetailId { get; set; }
 
@@ -39,31 +35,19 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderTranslation _translationRenderer;
-        private readonly IUserHelper _userHelper;
 
         public PostTranslationRequestHandler(IAmACommandProcessor commandProcessor, 
             IQueryProcessor queryProcessor,
-            IRenderTranslation translationRenderer, 
-            IUserHelper userHelper)
+            IRenderTranslation translationRenderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _translationRenderer = translationRenderer;
-
-            _userHelper = userHelper;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostTranslationRequest> HandleAsync(PostTranslationRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery
-            {
-                DictionaryId = command.DictionaryId
-            }, cancellationToken);
-            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
-            {
-                throw new UnauthorizedAccessException();
-            }
-
             var detail = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery
             {
                 WordDetailId = command.WordDetailId

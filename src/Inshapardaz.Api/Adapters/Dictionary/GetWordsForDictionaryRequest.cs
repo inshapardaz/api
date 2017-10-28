@@ -1,23 +1,16 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
 using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class GetWordsRequest : IRequest
+    public class GetWordsForDictionaryRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
-        public int DictionaryId { get; set; }
-
         public int PageNumber { get; set; }
 
         public int PageSize { get; set; }
@@ -25,34 +18,20 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         public PageView<WordView> Result { get; set; }
     }
 
-    public class GetWordsRequestHandler : RequestHandlerAsync<GetWordsRequest>
+    public class GetWordsForDictionaryRequestHandler : RequestHandlerAsync<GetWordsForDictionaryRequest>
     {
-        private readonly IUserHelper _userHelper;
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderWordPage _pageRenderer;
 
-        public GetWordsRequestHandler(IQueryProcessor queryProcessor, IUserHelper userHelper, IRenderWordPage pageRenderer)
+        public GetWordsForDictionaryRequestHandler(IQueryProcessor queryProcessor, IRenderWordPage pageRenderer)
         {
             _queryProcessor = queryProcessor;
-            _userHelper = userHelper;
             _pageRenderer = pageRenderer;
         }
 
-        public override async Task<GetWordsRequest> HandleAsync(GetWordsRequest command, CancellationToken cancellationToken = new CancellationToken())
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
+        public override async Task<GetWordsForDictionaryRequest> HandleAsync(GetWordsForDictionaryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var userId = _userHelper.GetUserId();
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
-
-            if (dictionary == null)
-            {
-                throw new NotFoundException();
-            }
-
-            if (!dictionary.IsPublic && dictionary.UserId != userId)
-            {
-                throw new UnauthorizedAccessException();
-            }
-
             var query = new GetWordPageQuery
             {
                 DictionaryId = command.DictionaryId,

@@ -12,10 +12,8 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class PutRelationshipRequest : IRequest
+    public class PutRelationshipRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-        public int DictionaryId { get; set; }
         public int RelationshipId { get; set; }
         public RelationshipView Relationship { get; set; }
         public RequestResult Result { get; set; } = new RequestResult();
@@ -30,18 +28,17 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
     public class PutRelationshipRequestHandler : RequestHandlerAsync<PutRelationshipRequest>
     {
-        private readonly IUserHelper _userHelper;
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
 
-        public PutRelationshipRequestHandler(IUserHelper userHelper, 
-                                           IAmACommandProcessor commandProcessor, 
+        public PutRelationshipRequestHandler(IAmACommandProcessor commandProcessor, 
                                            IQueryProcessor queryProcessor)
         {
-            _userHelper = userHelper;
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
         }
+
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PutRelationshipRequest> HandleAsync(PutRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var relation1 = await _queryProcessor.ExecuteAsync(new RelationshipByIdQuery { Id = command.RelationshipId }, cancellationToken);
@@ -58,14 +55,8 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new BadRequestException();
             }
 
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = command.Relationship.SourceWordId }, cancellationToken);
-            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
-            {
-                throw new UnauthorizedAccessException();
-            }
-
             var dictionary2 = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = command.Relationship.RelatedWordId }, cancellationToken);
-            if (dictionary2 == null || dictionary2.Id != dictionary.Id)
+            if (dictionary2 == null || dictionary2.Id != command.DictionaryId)
             {
                 throw new BadRequestException();
             }

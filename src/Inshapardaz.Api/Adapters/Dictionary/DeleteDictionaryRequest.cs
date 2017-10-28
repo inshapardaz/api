@@ -11,11 +11,8 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class DeleteDictionaryRequest : IRequest
+    public class DeleteDictionaryRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
-        public int DictionaryId { get; set; }
     }
 
     public class DeleteDictionaryRequestHandler : RequestHandlerAsync<DeleteDictionaryRequest>
@@ -33,22 +30,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _logger = logger;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteDictionaryRequest> HandleAsync(DeleteDictionaryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var userId = _userHelper.GetUserId();
-            var existingDictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = command.DictionaryId }, cancellationToken);
-
-            if (existingDictionary == null)
-            {
-                _logger.LogDebug("Dictionary with id '{0}' not found. Nothing deleted", command.DictionaryId);
-                throw new NotFoundException();
-            }
-
-            _logger.LogDebug("Deleting dictionary with id '{0}'", command.DictionaryId);
-
             await _commandProcessor.SendAsync(new DeleteDictionaryCommand
             {
-                UserId = userId,
                 DictionaryId = command.DictionaryId
             }, cancellationToken: cancellationToken);
 

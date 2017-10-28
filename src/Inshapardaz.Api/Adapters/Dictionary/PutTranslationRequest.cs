@@ -11,10 +11,8 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class PutTranslationRequest : IRequest
+    public class PutTranslationRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-        public int DictionaryId { get; set; }
         public int TranslationId { get; set; }
         public TranslationView Translation { get; set; }
         public RequestResult Result { get; set; } = new RequestResult();
@@ -29,26 +27,19 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
     public class PutTranslationRequestHandler : RequestHandlerAsync<PutTranslationRequest>
     {
-        private readonly IUserHelper _userHelper;
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
 
-        public PutTranslationRequestHandler(IUserHelper userHelper, 
-                                           IAmACommandProcessor commandProcessor, 
+        public PutTranslationRequestHandler(IAmACommandProcessor commandProcessor, 
                                            IQueryProcessor queryProcessor)
         {
-            _userHelper = userHelper;
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
         }
+
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PutTranslationRequest> HandleAsync(PutTranslationRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
-            if (dictionary == null || dictionary.UserId != _userHelper.GetUserId())
-            {
-                throw new UnauthorizedAccessException();
-            }
-
             var response = await _queryProcessor.ExecuteAsync(new TranslationByIdQuery { Id = command.TranslationId }, cancellationToken);
 
             if (response == null)

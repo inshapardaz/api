@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Inshapardaz.Api.Ports;
+using Inshapardaz.Api.Adapters;
 using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;

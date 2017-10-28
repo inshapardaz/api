@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
+using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.Controllers
@@ -16,7 +18,8 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("/api/dictionaries/{id}/words/{wordId}/relationships", Name = "GetWordRelationsById")]
-        public async Task<IActionResult> GetRelationshipForWord(int id, int wordId)
+        [Produces(typeof(IEnumerable<RelationshipView>))]
+        public async Task<IActionResult> GetRelationshipsForWord(int id, int wordId)
         {
             var request = new GetRelationshipsForWordRequest
             {
@@ -28,6 +31,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("/api/dictionaries/{id}/relationships/{relationId}", Name = "GetRelationById")]
+        [Produces(typeof(RelationshipView))]
         public async Task<IActionResult> Get(int id, int relationId)
         {
             var request = new GetRelationshipRequest
@@ -40,6 +44,8 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("/api/dictionaries/{id}/words/{wordId}/relationships", Name = "AddRelation")]
+        [Produces(typeof(RelationshipView))]
+        [ValidateModel]
         public async Task<IActionResult> Post(int id, int wordId, [FromBody]RelationshipView relationship)
         {
             var request = new PostRelationshipRequest
@@ -53,6 +59,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("/api/dictionaries/{id}/relationships/{relationId}", Name = "UpdateRelation")]
+        [ValidateModel]
         public async Task<IActionResult> Put(int id, int relationId, [FromBody]RelationshipView relationship)
         {
             var request = new PutRelationshipRequest

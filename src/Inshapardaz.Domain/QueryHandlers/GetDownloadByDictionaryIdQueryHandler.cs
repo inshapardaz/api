@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Inshapardaz.Domain.Queries;
 using Paramore.Darker;
 using System.Threading;
@@ -22,24 +21,12 @@ namespace Inshapardaz.Domain.QueryHandlers
         public override async Task<File> ExecuteAsync(GetDownloadByDictionaryIdQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            IQueryable<Dictionary> result;
-            if (query.UserId != Guid.Empty)
-            {
-                result = _database.Dictionary
-                                  .Include(d => d.Downloads)
-                                  .ThenInclude(d => d.File)
-                                  .Where(d => d.Id == query.DictionaryId && 
-                                              (d.IsPublic || d.UserId == query.UserId));
-            }
-            else
-            {
-                result = _database.Dictionary
-                                  .Include(d => d.Downloads)
-                                  .ThenInclude(d => d.File)
-                                  .Where(d => d.Id == query.DictionaryId && d.IsPublic);
-            }
+            var result = _database.Dictionary
+                                         .Include(d => d.Downloads)
+                                         .ThenInclude(d => d.File)
+                                         .Where(d => d.Id == query.DictionaryId);
 
-            Dictionary dictionary = await result.SingleOrDefaultAsync(cancellationToken);
+            var dictionary = await result.SingleOrDefaultAsync(cancellationToken);
             return dictionary?.Downloads?.SingleOrDefault(d => d.MimeType == query.MimeType)?.File;
         }
     }

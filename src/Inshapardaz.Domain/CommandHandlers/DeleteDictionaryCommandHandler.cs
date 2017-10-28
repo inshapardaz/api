@@ -19,7 +19,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override async Task<DeleteDictionaryCommand> HandleAsync(DeleteDictionaryCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var d = await _database.Dictionary.SingleOrDefaultAsync(x => x.Id == command.DictionaryId && x.UserId == command.UserId, cancellationToken);
+            var d = await _database.Dictionary.SingleOrDefaultAsync(x => x.Id == command.DictionaryId, cancellationToken);
 
             if (d == null || d.Id != command.DictionaryId)
             {

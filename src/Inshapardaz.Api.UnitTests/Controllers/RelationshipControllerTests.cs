@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             FakeQueryProcessor.SetupResultFor<RelationshipByWordIdQuery, IEnumerable<WordRelation>>(new List<WordRelation> { new WordRelation() });
             FakeRelationshipRenderer.WithView(new RelationshipView());
-            Result = Controller.GetRelationshipForWord(9).Result;
+            Result = Controller.GetRelationshipsForWord(9).Result;
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingRelationshipsByWordThatDoesNotExist()
         {
             FakeQueryProcessor.SetupResultFor<RelationshipByWordIdQuery, IEnumerable<WordRelation>>(new List<WordRelation>());
-            Result = Controller.GetRelationshipForWord(9).Result;
+            Result = Controller.GetRelationshipsForWord(9).Result;
         }
 
         [Fact]

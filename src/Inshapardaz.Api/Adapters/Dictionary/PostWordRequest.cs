@@ -7,18 +7,12 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
-using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class PostWordRequest : IRequest
+    public class PostWordRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
-        public int DictionaryId { get; set; }
-
         public WordView Word { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();
@@ -33,32 +27,19 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
     public class PostWordRequestHandler : RequestHandlerAsync<PostWordRequest>
     {
-        private readonly IQueryProcessor _queryProcessor;
-        private readonly IUserHelper _userHelper;
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IRenderWord _wordRenderer;
 
-        public PostWordRequestHandler(IQueryProcessor queryProcessor, 
-                                      IAmACommandProcessor commandProcessor, 
-                                      IUserHelper userHelper,
+        public PostWordRequestHandler(IAmACommandProcessor commandProcessor,
                                       IRenderWord wordRenderer)
         {
-            _queryProcessor = queryProcessor;
-            _userHelper = userHelper;
             _wordRenderer = wordRenderer;
             _commandProcessor = commandProcessor;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostWordRequest> HandleAsync(PostWordRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var userId = _userHelper.GetUserId();
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = command.DictionaryId, UserId = userId }, cancellationToken);
-
-            if (userId == null || dictionary == null)
-            {
-                throw new UnauthorizedAccessException();
-            }
-
             var addWordCommand = new AddWordCommand { DictionaryId = command.DictionaryId, Word = command.Word.Map<WordView, Word>() };
             addWordCommand.Word.DictionaryId = command.DictionaryId;
             await _commandProcessor.SendAsync(addWordCommand, cancellationToken: cancellationToken);

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Exception;
@@ -11,12 +9,8 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class GetWordDetailByIdRequest : IRequest
+    public class GetWordDetailByIdRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
-        public int DictionaryId { get; set; }
-
         public long DetailId { get; set; }
 
         public WordDetailView Result { get; set; }
@@ -25,32 +19,17 @@ namespace Inshapardaz.Api.Adapters.Dictionary
     public class GetWordDetailByIdRequestHandler : RequestHandlerAsync<GetWordDetailByIdRequest>
     {
         private readonly IQueryProcessor _queryProcessor;
-        private readonly IUserHelper _userHelper;
         private readonly IRenderWordDetail _wordDetailRenderer;
 
-        public GetWordDetailByIdRequestHandler(IQueryProcessor queryProcessor, IUserHelper userHelper, IRenderWordDetail wordDetailRenderer)
+        public GetWordDetailByIdRequestHandler(IQueryProcessor queryProcessor, IRenderWordDetail wordDetailRenderer)
         {
             _queryProcessor = queryProcessor;
-            _userHelper = userHelper;
             _wordDetailRenderer = wordDetailRenderer;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetWordDetailByIdRequest> HandleAsync(GetWordDetailByIdRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var userId = _userHelper.GetUserId();
-
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
-
-            if (dictionary == null)
-            {
-                throw new NotFoundException();
-            }
-
-            if (!dictionary.IsPublic && dictionary.UserId != userId)
-            {
-                throw new UnauthorizedAccessException();
-            }
-
             var details = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { DictionaryId = command.DictionaryId, WordDetailId = command.DetailId }, cancellationToken);
 
             if (details == null)

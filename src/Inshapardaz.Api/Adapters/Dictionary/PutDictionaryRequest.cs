@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
-using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
-using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class PutDictionaryRequest : IRequest
+    public class PutDictionaryRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-        public int DictionaryId { get; set; }
         public DictionaryView Dictionary { get; set; }
         public RequestResult Result { get; set; } = new RequestResult();
 
@@ -30,56 +26,30 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
     public class PutDictionaryRequestHandler : RequestHandlerAsync<PutDictionaryRequest>
     {
-        private readonly IUserHelper _userHelper;
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
-        private readonly ILogger<PutDictionaryRequestHandler> _logger;
-        private readonly IRenderDictionary _dictionaryRenderer;
-        
-        public PutDictionaryRequestHandler(IUserHelper userHelper, 
-                                           IAmACommandProcessor commandProcessor, 
-                                           IQueryProcessor queryProcessor,
-                                           ILogger<PutDictionaryRequestHandler> logger, 
-                                           IRenderDictionary dictionaryRenderer)
+
+        public PutDictionaryRequestHandler(IAmACommandProcessor commandProcessor, 
+                                           IQueryProcessor queryProcessor)
         {
-            _userHelper = userHelper;
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
-            _logger = logger;
-            _dictionaryRenderer = dictionaryRenderer;
         }
+
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PutDictionaryRequest> HandleAsync(PutDictionaryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var userId = _userHelper.GetUserId();
-
-            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { UserId = userId, DictionaryId = command.DictionaryId }, cancellationToken);
+            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
 
             if (result == null)
             {
-                _logger.LogDebug("Existing dictionary not found. Creating new with name '{0}'", command.Dictionary.Name);
-                var addDictionaryCommand = new AddDictionaryCommand
-                {
-                    Dictionary = command.Dictionary.Map<DictionaryView, Domain.Database.Entities.Dictionary>()
-                };
-
-                addDictionaryCommand.Dictionary.UserId = userId;
-
-                await _commandProcessor.SendAsync(addDictionaryCommand, cancellationToken: cancellationToken);
-
-                var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary);
-                command.Result.Location = response.Links.Single(x => x.Rel == "self").Href;
-                command.Result.Response = response;
-                return command;
+                throw new NotFoundException();
             }
-
-            _logger.LogDebug("Updating existing dictionary with id '{0}'", command.DictionaryId);
 
             UpdateDictionaryCommand updateDictionaryCommand = new UpdateDictionaryCommand
             {
                 Dictionary = command.Dictionary.Map<DictionaryView, Domain.Database.Entities.Dictionary>()
             };
-
-            updateDictionaryCommand.Dictionary.UserId = userId;
 
             await _commandProcessor.SendAsync(updateDictionaryCommand, cancellationToken: cancellationToken);
 

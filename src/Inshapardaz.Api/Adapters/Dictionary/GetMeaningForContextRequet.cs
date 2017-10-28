@@ -11,17 +11,13 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class GetMeaningForContextRequest : IRequest
+    public class GetMeaningForContextRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
         public string Context { get; set; }
 
         public long WordId { get; set; }
 
         public IEnumerable<MeaningView> Result { get; set; }
-
-        public int DictionaryId { get; set; }
     }
 
     public class GetMeaningForContextRequestHandler : RequestHandlerAsync<GetMeaningForContextRequest>
@@ -35,9 +31,9 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _meaningRenderer = meaningRenderer;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetMeaningForContextRequest> HandleAsync(GetMeaningForContextRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            //TODO: check dictionary access
             var finalContext = string.Empty;
             if (command.Context != "default")
             {

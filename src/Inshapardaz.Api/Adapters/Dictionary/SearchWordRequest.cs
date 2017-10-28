@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
@@ -11,13 +10,9 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class SearchWordRequest : IRequest
+    public class SearchWordRequest : DictionaryRequest
     {
-        public Guid Id { get; set; }
-
         public string Query { get; set; }
-
-        public int DictionaryId { get; set; }
 
         public int PageSize { get; set; }
 
@@ -37,6 +32,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _pageRenderer = pageRenderer;
         }
 
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<SearchWordRequest> HandleAsync(SearchWordRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             if (string.IsNullOrWhiteSpace(command.Query))

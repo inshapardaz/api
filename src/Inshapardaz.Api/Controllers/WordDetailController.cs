@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
+using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -16,7 +18,8 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("/api/dictionaries/{id}/words/{wordId}/details", Name = "GetWordDetailsById")]
-        public async Task<IActionResult> GetDetailForWord(int id, int wordId)
+        [Produces(typeof(IEnumerable<WordDetailView>))]
+        public async Task<IActionResult> GetDetailsForWord(int id, int wordId)
         {
             var request = new GetDetailsByWordIdRequest
             {
@@ -29,6 +32,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("/api/dictionaries/{id}/details/{detailId}", Name = "GetDetailsById")]
+        [Produces(typeof(WordDetailView))]
         public async Task<IActionResult> GetWordDetailById(int id, int detailId)
         {
             var request = new GetWordDetailByIdRequest
@@ -42,6 +46,8 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("/api/dictionaries/{id}/words/{wordId}/details", Name = "AddWordDetail")]
+        [Produces(typeof(WordDetailView))]
+        [ValidateModel]
         public async Task<IActionResult> Post(int id, int wordId, [FromBody]WordDetailView wordDetail)
         {
             var request = new PostWordDetailRequest
@@ -56,6 +62,7 @@ namespace Inshapardaz.Api.Controllers
         }
         
         [HttpPut("/api/dictionaries/{id}/details/{detailId}", Name = "UpdateWordDetail")]
+        [ValidateModel]
         public async Task<IActionResult> Put(int id, int detailId, [FromBody]WordDetailView wordDetail)
         {
             var request = new PutWordDetailRequest

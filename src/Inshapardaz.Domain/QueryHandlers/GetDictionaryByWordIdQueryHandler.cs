@@ -20,8 +20,9 @@ namespace Inshapardaz.Domain.QueryHandlers
         public override async Task<Dictionary> ExecuteAsync(DictionaryByWordIdQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var word = await _database.Word.Include(w => w.Dictionary)
-                .SingleOrDefaultAsync(wd => wd.Id == query.WordId, cancellationToken);
+            var word = await _database.Word
+                                      .Include(w => w.Dictionary)
+                                      .SingleOrDefaultAsync(wd => wd.Id == query.WordId, cancellationToken);
             return word?.Dictionary;
         }
     }

@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Renderers
             var links = new List<LinkView>
             {
                 _linkRenderer.Render("GetMeaningById", RelTypes.Self, new { id = dictionaryId, meaningId = source.Id }),
-                _linkRenderer.Render("GetDetailsById", RelTypes.WordDetails, new { id= dictionaryId, detailId = source.WordDetailId })
+                _linkRenderer.Render("GetWordById", RelTypes.Word, new { id= dictionaryId, wordId = source.WordId })
             };
             
 

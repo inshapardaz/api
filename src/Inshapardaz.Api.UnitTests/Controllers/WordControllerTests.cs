@@ -1,6 +1,5 @@
 ﻿using System;
 using AutoMapper;
-using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.UnitTests.Fakes;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
@@ -104,7 +103,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordById()
         {
             _fakeUserHelper.AsContributor();
-            _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
+            _fakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(new Word());
             _result = _controller.GetWords(34).Result;
         }
 
@@ -128,7 +127,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingNonExistingWordById()
         {
-            _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(null);
+            _fakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(null);
             _result = _controller.GetWords(34).Result;
         }
 
@@ -146,14 +145,14 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordBelongingToPrivateDictionaryWithNoAccess()
         {
             _fakeUserHelper.WithUserId(_userId);
-            _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(null);
+            _fakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(null);
             _result = _controller.GetWords(34).Result;
         }
 
         [Fact]
         public void ShouldQueryForWordWithCorrectUser()
         {
-            _fakeQueryProcessor.AssertQueryExecuted<WordByIdQuery>(q => q.UserId == _userId);
+            _fakeQueryProcessor.AssertQueryExecuted<GetWordByIdQuery>(q => q.UserId == _userId);
         }
     }
 
@@ -173,7 +172,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
 
-            _fakeQueryProcessor.SetupResultFor<WordByIdQuery, WordView>(_wordView);
+            _fakeQueryProcessor.SetupResultFor<GetWordByIdQuery, WordView>(_wordView);
             _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
             _fakeWordRenderer.WithLink("self", new Uri("http://link.test/123"));
             _fakeUserHelper.WithUserId(Guid.NewGuid());
@@ -218,7 +217,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
         public WhenPostingInDictionaryWithNoWriteAccess()
         {
-            _fakeQueryProcessor.SetupResultFor<WordByIdQuery, WordView>(null);
+            _fakeQueryProcessor.SetupResultFor<GetWordByIdQuery, WordView>(null);
             _fakeWordRenderer.WithLink("self", new System.Uri("http://link.test/123"));
             _fakeUserHelper.WithUserId(Guid.NewGuid());
 
@@ -246,7 +245,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
                 Description = "Some description"
             };
 
-            _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
+            _fakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(new Word());
             _fakeUserHelper.WithUserId(Guid.NewGuid());
             _result = _controller.Put(0, wordId, wordView).Result;
         }
@@ -289,7 +288,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingAWord()
         {
             _fakeUserHelper.WithUserId(Guid.NewGuid());
-            _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
+            _fakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(new Word());
             _result = _controller.Delete(0, 34).Result;
         }
 
@@ -320,7 +319,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenDeleteingAWordFromDictionaryWithNoWriteAccess()
         {
-            _fakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
+            _fakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(new Word());
             _result = _controller.Delete(0, 34).Result;
         }
 

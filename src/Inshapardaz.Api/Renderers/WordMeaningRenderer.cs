@@ -7,7 +7,7 @@ namespace Inshapardaz.Api.Renderers
 {
     public interface IRenderWordMeanings
     {
-        IEnumerable<MeaningContextView> Render(WordDetail source, int dictionaryId);
+        IEnumerable<MeaningContextView> Render(Word source, int dictionaryId);
     }
 
     public class WordMeaningsRenderer : IRenderWordMeanings
@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Renderers
             _meaningRenderer = meaningRenderer;
         }
 
-        public IEnumerable<MeaningContextView> Render(WordDetail source, int dictionaryId)
+        public IEnumerable<MeaningContextView> Render(Word source, int dictionaryId)
         {
             return source
                    .Meaning

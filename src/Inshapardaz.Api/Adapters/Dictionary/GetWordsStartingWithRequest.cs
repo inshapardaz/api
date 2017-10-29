@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new NotFoundException();
             }
 
-            var query = new WordStartingWithQuery
+            var query = new GetWordStartingWithQuery
             {
                 PageSize = command.PageSize,
                 PageNumber = command.PageNumber,

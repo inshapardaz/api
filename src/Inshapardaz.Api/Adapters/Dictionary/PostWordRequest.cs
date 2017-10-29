@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             await _commandProcessor.SendAsync(addWordCommand, cancellationToken: cancellationToken);
 
             command.Result.Response = _wordRenderer.Render(addWordCommand.Word, command.DictionaryId);
-            command.Result.Location = command.Result.Response.Links.Single(x => x.Rel == "self").Href;
+            command.Result.Location = command.Result.Response.Links.Single(x => x.Rel == RelTypes.Self).Href;
             return await base.HandleAsync(command, cancellationToken);
         }
     }

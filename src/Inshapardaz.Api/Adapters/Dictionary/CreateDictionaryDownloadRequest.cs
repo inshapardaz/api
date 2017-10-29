@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 JobId = addDictionaryDownloadCommand.JobId
             });
 
-            command.Result.Location = result.Links.Single(x => x.Rel == "self").Href;
+            command.Result.Location = result.Links.Single(x => x.Rel == RelTypes.Self).Href;
             command.Result.Response = result;
             return await base.HandleAsync(command, cancellationToken);
         }

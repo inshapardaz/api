@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoMapper;
-using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.UnitTests.Fakes;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
@@ -21,7 +20,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingRelationshipsByWord()
         {
-            FakeQueryProcessor.SetupResultFor<RelationshipByWordIdQuery, IEnumerable<WordRelation>>(new List<WordRelation> { new WordRelation() });
+            FakeQueryProcessor.SetupResultFor<GetRelationshipByWordIdQuery, IEnumerable<WordRelation>>(new List<WordRelation> { new WordRelation() });
             FakeRelationshipRenderer.WithView(new RelationshipView());
             Result = Controller.GetRelationshipsForWord(9).Result;
         }
@@ -44,7 +43,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingRelationshipsByWordThatDoesNotExist()
         {
-            FakeQueryProcessor.SetupResultFor<RelationshipByWordIdQuery, IEnumerable<WordRelation>>(new List<WordRelation>());
+            FakeQueryProcessor.SetupResultFor<GetRelationshipByWordIdQuery, IEnumerable<WordRelation>>(new List<WordRelation>());
             Result = Controller.GetRelationshipsForWord(9).Result;
         }
 
@@ -59,7 +58,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingRelationshipById()
         {
-            FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
+            FakeQueryProcessor.SetupResultFor<GetRelationshipByIdQuery, WordRelation>(new WordRelation());
             FakeRelationshipRenderer.WithView(new RelationshipView());
             Result = Controller.Get(23).Result;
         }
@@ -115,8 +114,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
-            FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
+            FakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(new Word());
+            FakeQueryProcessor.SetupResultFor<GetRelationshipByIdQuery, WordRelation>(new WordRelation());
             FakeRelationshipRenderer.WithView(new RelationshipView());
             FakeRelationshipRenderer.WithLink("self", new System.Uri("http://link.test/123"));
 
@@ -151,7 +150,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenAddingRelationshipsForNonExistantWord()
         {
-            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(w => w.WordId == 12, new Word());
+            FakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(w => w.WordId == 12, new Word());
             Result = Controller.Post(23, new RelationshipView { RelatedWordId = 12 }).Result;
         }
 
@@ -166,7 +165,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenAddingRelationshipsToNonExistantWord()
         {
-            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(w => w.WordId == 23, new Word());
+            FakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(w => w.WordId == 23, new Word());
             Result = Controller.Post(23, new RelationshipView { RelatedWordId = 12 }).Result;
         }
 
@@ -183,7 +182,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             UserHelper.WithUserId(Guid.NewGuid());
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
-            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
+            FakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(new Word());
 
             Result = Controller.Post(23, new RelationshipView()).Result;
         }
@@ -202,7 +201,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(x => x.WordId == 23, new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
+            FakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(new Word());
 
             Result = Controller.Post(23, new RelationshipView { RelatedWordId = 45 }).Result;
         }
@@ -235,7 +234,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
+            FakeQueryProcessor.SetupResultFor<GetRelationshipByIdQuery, WordRelation>(new WordRelation());
             Result = Controller.Put(32, new RelationshipView()).Result;
         }
 
@@ -270,7 +269,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(q => q.Id == 32, new WordRelation());
+            FakeQueryProcessor.SetupResultFor<GetRelationshipByIdQuery, WordRelation>(q => q.Id == 32, new WordRelation());
             Result = Controller.Put(32, new RelationshipView { RelatedWordId = 344 }).Result;
         }
 
@@ -287,7 +286,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             UserHelper.WithUserId(Guid.NewGuid());
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
-            FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
+            FakeQueryProcessor.SetupResultFor<GetRelationshipByIdQuery, WordRelation>(new WordRelation());
             Result = Controller.Put(32, new RelationshipView()).Result;
         }
 
@@ -306,7 +305,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(q => q.WordId == 32, new Dictionary { Id = 3, UserId = userId });
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(q => q.WordId == 43, new Dictionary { Id = 4, UserId = userId });
-            FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
+            FakeQueryProcessor.SetupResultFor<GetRelationshipByIdQuery, WordRelation>(new WordRelation());
             Result = Controller.Put(32, new RelationshipView { SourceWordId = 32, RelatedWordId = 43 }).Result;
         }
 
@@ -324,7 +323,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
+            FakeQueryProcessor.SetupResultFor<GetRelationshipByIdQuery, WordRelation>(new WordRelation());
             Result = Controller.Delete(34).Result;
         }
 
@@ -358,7 +357,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             UserHelper.WithUserId(Guid.NewGuid());
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
-            FakeQueryProcessor.SetupResultFor<RelationshipByIdQuery, WordRelation>(new WordRelation());
+            FakeQueryProcessor.SetupResultFor<GetRelationshipByIdQuery, WordRelation>(new WordRelation());
             Result = Controller.Delete(34).Result;
         }
 

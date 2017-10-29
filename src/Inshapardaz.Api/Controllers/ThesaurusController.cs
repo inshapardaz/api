@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Controllers
                 return NotFound();
             }
 
-            var query = new WordRelationsByTitleQuery
+            var query = new GetWordRelationsByTitleQuery
             {
                 PageSize = pageSize,
                 PageNumber = pageNumber,

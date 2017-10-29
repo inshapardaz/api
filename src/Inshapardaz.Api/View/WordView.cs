@@ -22,10 +22,17 @@ namespace Inshapardaz.Api.View
         public string TitleWithMovements { get; set; }
 
         public string Description { get; set; }
-               
-        public IEnumerable<LinkView> Links { get; set; }
 
+        public string Attributes { get; set; }
+
+        public int AttributeValue { get; set; }
+
+        public string Language { get; set; }
+
+        public int LanguageId { get; set; }
 
         public string Pronunciation { get; set; }
+
+        public IEnumerable<LinkView> Links { get; set; }
     }
 }

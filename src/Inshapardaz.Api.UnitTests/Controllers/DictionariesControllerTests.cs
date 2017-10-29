@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using AutoMapper;
-using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.UnitTests.Fakes;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;

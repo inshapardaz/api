@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetWordByIdRequest> HandleAsync(GetWordByIdRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var word = await _queryProcessor.ExecuteAsync(new WordByIdQuery { DictionaryId = command.DictionaryId, WordId = command.WordId }, cancellationToken);
+            var word = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery { DictionaryId = command.DictionaryId, WordId = command.WordId }, cancellationToken);
             if (word == null)
             {
                 throw new NotFoundException();

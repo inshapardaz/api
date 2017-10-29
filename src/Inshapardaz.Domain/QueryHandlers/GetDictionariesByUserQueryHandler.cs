@@ -27,7 +27,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             IQueryable<Dictionary> result;
             if (query.UserId != Guid.Empty)
             {
-                result = _database.Dictionary.Where(d => d.IsPublic || (d.UserId == query.UserId));
+                result = _database.Dictionary.Where(d => d.IsPublic || d.UserId == query.UserId);
             }
             else
             {

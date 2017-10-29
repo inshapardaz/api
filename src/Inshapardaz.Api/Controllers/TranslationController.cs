@@ -47,34 +47,6 @@ namespace Inshapardaz.Api.Controllers
             return Ok(request.Result);
         }
 
-        [HttpGet("api/dictionaries/{id}/detail/{wordId}/translations", Name = "GetWordTranslationsByDetailId")]
-        [Produces(typeof(IEnumerable<TranslationView>))]
-        public async Task<IActionResult> GetTranslationForWordDetail(int id, int wordId)
-        {
-            var request = new GetTranslationForWordDetailRequest
-            {
-                DictionaryId = id,
-                WordDetailId = wordId
-            };
-
-            await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
-        }
-
-        [HttpGet("api/dictionaries/{id}/detail/{detailId}/translations/languages/{language}", Name = "GetWordTranslationsByDetailIdAndLanguage")]
-        [Produces(typeof(IEnumerable<TranslationView>))]
-        public async Task<IActionResult> GetTranslationForWordDetail(int id, int detailId, Languages language)
-        {
-            var request = new GetTranslationForWordDetailLanguageRequest
-            {
-                DictionaryId = id,
-                WordDetailId = detailId
-            };
-
-            await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
-        }
-
         [HttpGet("api/dictionaries/{id}/translations/{translationId}", Name = "GetTranslationById")]
         [Produces(typeof(TranslationView))]
         public async Task<IActionResult> Get(int id, int translationId)
@@ -89,15 +61,15 @@ namespace Inshapardaz.Api.Controllers
             return Ok(request.Result);
         }
 
-        [HttpPost("api/dictionaries/{id}/details/{detailId}/translations", Name = "AddTranslation")]
+        [HttpPost("api/dictionaries/{id}/words/{wordId}/translations", Name = "AddTranslation")]
         [Produces(typeof(TranslationView))]
         [ValidateModel]
-        public async Task<IActionResult> Post(int id, int detailId, [FromBody]TranslationView translation)
+        public async Task<IActionResult> Post(int id, int wordId, [FromBody]TranslationView translation)
         {
             var request = new PostTranslationRequest
             {
                 DictionaryId = id,
-                WordDetailId = detailId,
+                WordId = wordId,
                 Translation = translation
             };
 

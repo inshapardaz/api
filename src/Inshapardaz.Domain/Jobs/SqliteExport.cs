@@ -14,7 +14,6 @@ using Meaning = Inshapardaz.Data.Entities.Meaning;
 using RelationType = Inshapardaz.Data.Entities.RelationType;
 using Translation = Inshapardaz.Data.Entities.Translation;
 using Word = Inshapardaz.Data.Entities.Word;
-using WordDetail = Inshapardaz.Data.Entities.WordDetail;
 using WordRelation = Inshapardaz.Data.Entities.WordRelation;
 
 namespace Inshapardaz.Domain.Jobs
@@ -33,7 +32,8 @@ namespace Inshapardaz.Domain.Jobs
 
         public void ExportDictionary(int dictionaryId)
         {
-            var sqlitePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.dat");
+            throw new NotImplementedException();
+            /*var sqlitePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.dat");
             var connectionString = new SqliteConnectionStringBuilder
             {
                 DataSource = sqlitePath,
@@ -56,10 +56,8 @@ namespace Inshapardaz.Domain.Jobs
 
                 var dictionaries = _databaseContext.Dictionary.Where(d => d.Id == dictionaryId)
                                                    .Include(d => d.Word)
-                                                   .ThenInclude(w => w.WordDetail)
                                                    .ThenInclude(wd => wd.Meaning)
                                                    .Include(d => d.Word)
-                                                   .ThenInclude(w => w.WordDetail)
                                                    .ThenInclude(wd => wd.Translation)
                                                    .Include(d => d.Word)
                                                    .ThenInclude(w => w.WordRelationRelatedWord)
@@ -149,10 +147,10 @@ namespace Inshapardaz.Domain.Jobs
                 MimeType = MimeTypes.SqlLite,
                 File = file
             });
-            _databaseContext.SaveChanges();
+            _databaseContext.SaveChanges();*/
         }
 
-        private Word MapWord(Database.Entities.Word word)
+        /*private Word MapWord(Database.Entities.Word word)
         {
             return new Word
             {
@@ -225,6 +223,6 @@ namespace Inshapardaz.Domain.Jobs
                 Language = (Languages)translation.Language,
                 Value = translation.Value
             };
-        }
+        }*/
     }
 }

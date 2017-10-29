@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoMapper;
-using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.UnitTests.Fakes;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
@@ -113,7 +112,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
+            FakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(new Word());
             FakeWordDetailRenderer.WithLink("self", new System.Uri("http://link.test/123"));
 
             Result = Controller.Post(0, 23, new WordDetailView()).Result;

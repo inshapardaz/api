@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary);
 
             command.Result.Response = response;
-            command.Result.Location = response.Links.Single(x => x.Rel == "self").Href;
+            command.Result.Location = response.Links.Single(x => x.Rel == RelTypes.Self).Href;
 
             return await base.HandleAsync(command, cancellationToken);
         }

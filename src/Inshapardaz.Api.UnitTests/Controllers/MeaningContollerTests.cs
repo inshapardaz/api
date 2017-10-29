@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.UnitTests.Fakes;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
@@ -20,7 +19,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingMeaningsForAWord()
         {
-            FakeQueryProcessor.SetupResultFor<WordMeaningByWordQuery, IEnumerable<Meaning>>(new List<Meaning>());
+            FakeQueryProcessor.SetupResultFor<GetWordMeaningByWordQuery, IEnumerable<Meaning>>(new List<Meaning>());
             Result = Controller.GetMeaningForWord(0, 23).Result;
         }
 
@@ -43,7 +42,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingMeaningByWordDetailThatDoesNotExist()
         {
-            FakeQueryProcessor.SetupResultFor<WordMeaningByWordQuery, IEnumerable<Meaning>>(new List<Meaning>());
+            FakeQueryProcessor.SetupResultFor<GetWordMeaningByWordQuery, IEnumerable<Meaning>>(new List<Meaning>());
             Result = Controller.GetMeaningForWord(0, 9).Result;
         }
 
@@ -58,7 +57,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingMeaningByById()
         {
-            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
+            FakeQueryProcessor.SetupResultFor<GetWordMeaningByIdQuery, Meaning>(new Meaning());
             FakeMeaningRenderer.WithView(new MeaningView());
             Result = Controller.Get(0, 23).Result;
         }
@@ -114,7 +113,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
+            FakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(new Word());
             FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
             FakeMeaningRenderer.WithView(new MeaningView());
             FakeMeaningRenderer.WithLink("self", new Uri("http://link.test/123"));
@@ -185,7 +184,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
+            FakeQueryProcessor.SetupResultFor<GetWordMeaningByIdQuery, Meaning>(new Meaning());
             Result = Controller.Put(0, 32, new MeaningView()).Result;
         }
 
@@ -219,7 +218,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             UserHelper.WithUserId(Guid.NewGuid());
             FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
-            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
+            FakeQueryProcessor.SetupResultFor<GetWordMeaningByIdQuery, Meaning>(new Meaning());
             Result = Controller.Put(0, 32, new MeaningView()).Result;
         }
 
@@ -237,7 +236,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
             FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
+            FakeQueryProcessor.SetupResultFor<GetWordMeaningByIdQuery, Meaning>(new Meaning());
             Result = Controller.Delete(0, 34).Result;
         }
 
@@ -271,7 +270,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             UserHelper.WithUserId(Guid.NewGuid());
             FakeQueryProcessor.SetupResultFor<DictionaryByMeaningIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
-            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
+            FakeQueryProcessor.SetupResultFor<GetWordMeaningByIdQuery, Meaning>(new Meaning());
             Result = Controller.Delete(0, 34).Result;
         }
 

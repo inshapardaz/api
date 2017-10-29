@@ -47,13 +47,13 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostRelationshipRequest> HandleAsync(PostRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var sourceWord = await _queryProcessor.ExecuteAsync(new WordByIdQuery { WordId = command.WordId }, cancellationToken);
+            var sourceWord = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery { WordId = command.WordId }, cancellationToken);
             if (sourceWord == null)
             {
                 throw new NotFoundException();
             }
 
-            var relatedWord = await _queryProcessor.ExecuteAsync(new WordByIdQuery { WordId = command.Relationship.RelatedWordId }, cancellationToken);
+            var relatedWord = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery { WordId = command.Relationship.RelatedWordId }, cancellationToken);
             if (relatedWord == null)
             {
                 throw new NotFoundException();
@@ -73,9 +73,9 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             };
             await _commandProcessor.SendAsync(addCommand, cancellationToken: cancellationToken);
 
-            var newRelationship = await _queryProcessor.ExecuteAsync(new RelationshipByIdQuery { Id = addCommand.RelationId }, cancellationToken);
+            var newRelationship = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery { Id = addCommand.RelationId }, cancellationToken);
             var response = _relationRender.Render(newRelationship, command.DictionaryId);
-            command.Result.Location =  response.Links.Single(x => x.Rel == "self").Href;
+            command.Result.Location =  response.Links.Single(x => x.Rel == RelTypes.Self).Href;
             command.Result.Response =  response;
             return await base.HandleAsync(command, cancellationToken);
         }

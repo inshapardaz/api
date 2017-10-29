@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteRelationshipRequest> HandleAsync(DeleteRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var relations = await _queryProcessor.ExecuteAsync(new RelationshipByIdQuery { Id = command.RelationshipId }, cancellationToken);
+            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery { Id = command.RelationshipId }, cancellationToken);
 
             if (relations == null)
             {

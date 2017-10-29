@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
         public RequestResult Result { get; set; } = new RequestResult();
 
-        public long WordDetailId { get; set; }
+        public long WordId { get; set; }
 
         public class RequestResult
         {
@@ -48,25 +48,25 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostTranslationRequest> HandleAsync(PostTranslationRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var detail = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery
+            var word = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery
             {
-                WordDetailId = command.WordDetailId
+                WordId = command.WordId
             }, cancellationToken);
 
-            if (detail == null)
+            if (word == null)
             {
                 throw new BadRequestException();
             }
 
-            var addCommand = new AddWordTranslationCommand
+            var addCommand = new AddTranslationCommand
             {
-                WordDetailId = command.WordDetailId,
+                WordId = command.WordId,
                 Translation = command.Translation.Map<TranslationView, Translation>()
             };
             await _commandProcessor.SendAsync(addCommand, cancellationToken: cancellationToken);
 
             var response = _translationRenderer.Render(addCommand.Translation, command.DictionaryId);
-            command.Result.Location =  response.Links.Single(x => x.Rel == "self").Href;
+            command.Result.Location =  response.Links.Single(x => x.Rel == RelTypes.Self).Href;
             command.Result.Response =  response;
             return await base.HandleAsync(command, cancellationToken);
         }

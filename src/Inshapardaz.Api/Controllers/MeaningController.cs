@@ -31,19 +31,6 @@ namespace Inshapardaz.Api.Controllers
             return Ok(request.Result);
         }
 
-        [HttpGet("api/dictionaries/{id}/details/{detailId}/meanings", Name = "GetWordMeaningByWordDetailId")]
-        [Produces(typeof(IEnumerable<MeaningView>))]
-        public async Task<IActionResult> GetMeaningForWordDetail(int id, int detailId)
-        {
-            var request = new GetMeaningForWordDetailRequest
-            {
-                DictionaryId = id,
-                DetailId = detailId
-            };
-            await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
-        }
-
         [HttpGet("api/dictionaries/{id}/meanings/{meaningId}", Name = "GetMeaningById")]
         [Produces(typeof(MeaningView))]
         public async Task<IActionResult> Get(int id, int meaningId)
@@ -71,15 +58,15 @@ namespace Inshapardaz.Api.Controllers
             return Ok(request.Result);
         }
 
-        [HttpPost("api/dictionaries/{id}/details/{detailId}/meanings", Name = "AddMeaning")]
+        [HttpPost("api/dictionaries/{id}/words/{wordId}/meanings", Name = "AddMeaning")]
         [Produces(typeof(MeaningView))]
         [ValidateModel]
-        public async Task<IActionResult> Post(int id, int detailId, [FromBody]MeaningView meaning)
+        public async Task<IActionResult> Post(int id, int wordId, [FromBody]MeaningView meaning)
         {
             var request = new PostMeaningRequest
             {
                 DictionaryId = id,
-                DetailId = detailId,
+                WordId = wordId,
                 Meaning = meaning
             };
             await _commandProcessor.SendAsync(request);

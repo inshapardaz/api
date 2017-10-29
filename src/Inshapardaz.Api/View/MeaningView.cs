@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.View
 
         public string Example { get; set; }
 
-        public long WordDetailId { get; set; }
+        public long WordId { get; set; }
 
         public IEnumerable<LinkView> Links { get; set; }
     }

@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 finalContext = command.Context;
             }
 
-            var result = await _queryProcessor.ExecuteAsync(new WordMeaningByWordQuery
+            var result = await _queryProcessor.ExecuteAsync(new GetWordMeaningByWordQuery
             {
                 WordId = command.WordId,
                 Context = finalContext

@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class PostMeaningRequest : DictionaryRequest
     {
-        public long DetailId { get; set; }
+        public long WordId { get; set; }
 
         public MeaningView Meaning { get; set; }
 
@@ -46,17 +46,17 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostMeaningRequest> HandleAsync(PostMeaningRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var detail = await _queryProcessor.ExecuteAsync(new WordDetailByIdQuery { WordDetailId = command.DetailId }, cancellationToken);
+            var word = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery { WordId = command.WordId }, cancellationToken);
 
-            if (detail == null)
+            if (word == null)
             {
                 throw new BadRequestException();
             }
 
-            var addWOrdCommand = new AddWordMeaningCommand { WordDetailId = detail.Id, Meaning = command.Meaning.Map<MeaningView, Meaning>() };
+            var addWOrdCommand = new AddMeaningCommand { WordId = word.Id, Meaning = command.Meaning.Map<MeaningView, Meaning>() };
             await _commandProcessor.SendAsync(addWOrdCommand, cancellationToken: cancellationToken);
             var response = _meaningRenderer.Render(addWOrdCommand.Meaning, command.DictionaryId);
-            command.Result.Location =  response.Links.Single(x => x.Rel == "self").Href;
+            command.Result.Location =  response.Links.Single(x => x.Rel == RelTypes.Self).Href;
             command.Result.Response =  response;
             return await base.HandleAsync(command, cancellationToken);
         }

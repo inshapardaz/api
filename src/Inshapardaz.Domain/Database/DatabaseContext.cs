@@ -1,6 +1,5 @@
 using Inshapardaz.Domain.Database.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Inshapardaz.Domain.Database
 {
@@ -15,7 +14,6 @@ namespace Inshapardaz.Domain.Database
         public virtual DbSet<Meaning> Meaning { get; set; }
         public virtual DbSet<Translation> Translation { get; set; }
         public virtual DbSet<Word> Word { get; set; }
-        public virtual DbSet<WordDetail> WordDetail { get; set; }
         public virtual DbSet<WordRelation> WordRelation { get; set; }
         public virtual DbSet<DictionaryDownload> DictionaryDownload { get; set; }
         public virtual DbSet<File> File { get; set; }
@@ -45,10 +43,10 @@ namespace Inshapardaz.Domain.Database
             {
                 entity.ToTable("Meaning", "Inshapardaz");
 
-                entity.HasOne(d => d.WordDetail)
+                entity.HasOne(d => d.Word)
                     .WithMany(p => p.Meaning)
-                    .HasForeignKey(d => d.WordDetailId)
-                    .HasConstraintName("FK_Meaning_WordDetail")
+                    .HasForeignKey(d => d.WordId)
+                    .HasConstraintName("FK_Meaning_Word")
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -56,24 +54,13 @@ namespace Inshapardaz.Domain.Database
             {
                 entity.ToTable("Translation", "Inshapardaz");
 
-                entity.HasOne(d => d.WordDetail)
+                entity.HasOne(d => d.Word)
                     .WithMany(p => p.Translation)
-                    .HasForeignKey(d => d.WordDetailId)
-                    .HasConstraintName("FK_Translation_WordDetail")
+                    .HasForeignKey(d => d.WordId)
+                    .HasConstraintName("FK_Translation_Word")
                     .OnDelete(DeleteBehavior.Cascade);
             });
-
-            modelBuilder.Entity<WordDetail>(entity =>
-            {
-                entity.ToTable("WordDetail", "Inshapardaz");
-
-                entity.HasOne(d => d.WordInstance)
-                    .WithMany(p => p.WordDetail)
-                    .HasForeignKey(d => d.WordInstanceId)
-                    .HasConstraintName("FK_WordDetail_Word")
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
-
+            
             modelBuilder.Entity<WordRelation>(entity =>
             {
                 entity.ToTable("WordRelation", "Inshapardaz");

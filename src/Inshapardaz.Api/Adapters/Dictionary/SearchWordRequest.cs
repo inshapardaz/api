@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new NotFoundException();
             }
 
-            var wordQuery = new WordContainingTitleQuery
+            var wordQuery = new GetWordContainingTitleQuery
             {
                 DictionaryId = command.DictionaryId,
                 SearchTerm = command.Query,

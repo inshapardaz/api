@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 
-namespace Inshapardaz.Api.Configuration
+namespace Inshapardaz.Api
 {
     public class MappingProfile : Profile
     {
@@ -27,49 +26,41 @@ namespace Inshapardaz.Api.Configuration
                 .ForMember(s => s.TitleWithMovements, o => o.MapFrom(d => d.TitleWithMovements))
                 .ForMember(s => s.Description, o => o.MapFrom(d => d.Description))
                 .ForMember(s => s.Pronunciation, o => o.MapFrom(d => d.Pronunciation))
-                .ForMember(s => s.Links, o => o.Ignore())
-                .ReverseMap()
-                .ForMember(s => s.WordDetail, o => o.Ignore())
-                .ForMember(s => s.WordRelationSourceWord, o => o.Ignore())
-                .ForMember(s => s.WordRelationRelatedWord, o => o.Ignore())
-                .ForMember(s => s.Dictionary, o => o.Ignore())
-                .ForMember(s => s.DictionaryId, o => o.Ignore());
-
-            CreateMap<WordDetail, WordDetailView>()
-                .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
                 .ForMember(s => s.Attributes, o => o.MapFrom(d => d.Attributes))
                 .ForMember(s => s.AttributeValue, o => o.MapFrom(d => (int)d.Attributes))
                 .ForMember(s => s.Language, o => o.MapFrom(d => d.Language))
                 .ForMember(s => s.LanguageId, o => o.MapFrom(d => (int)d.Language))
-                .ForMember(s => s.WordId, o => o.MapFrom(d => d.WordInstanceId))
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ReverseMap()
+                .ForMember(s => s.WordRelationSourceWord, o => o.Ignore())
+                .ForMember(s => s.WordRelationRelatedWord, o => o.Ignore())
                 .ForMember(s => s.Attributes, o => o.MapFrom(d => (GrammaticalType)d.AttributeValue))
                 .ForMember(s => s.Language, o => o.MapFrom(d => (Languages)d.LanguageId))
                 .ForMember(s => s.Meaning, o => o.Ignore())
-                .ForMember(s => s.WordInstance, o => o.Ignore())
-                .ForMember(s => s.Translation, o => o.Ignore());
-
+                .ForMember(s => s.Translation, o => o.Ignore())
+                .ForMember(s => s.Dictionary, o => o.Ignore())
+                .ForMember(s => s.DictionaryId, o => o.Ignore());
+            
             CreateMap<Meaning, MeaningView>()
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
                 .ForMember(s => s.Context, o => o.MapFrom(d => d.Context))
                 .ForMember(s => s.Value, o => o.MapFrom(d => d.Value))
                 .ForMember(s => s.Example, o => o.MapFrom(d => d.Example))
-                .ForMember(s => s.WordDetailId, o => o.MapFrom(d => d.WordDetailId))
+                .ForMember(s => s.WordId, o => o.MapFrom(d => d.WordId))
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ReverseMap()
-                .ForMember(s => s.WordDetail, o => o.Ignore());
+                .ForMember(s => s.Word, o => o.Ignore());
 
             CreateMap<Translation, TranslationView>()
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
                 .ForMember(s => s.Language, o => o.MapFrom(d => d.Language))
                 .ForMember(s => s.LanguageId, o => o.MapFrom(d => (int)d.Language))
                 .ForMember(s => s.Value, o => o.MapFrom(d => d.Value))
-                .ForMember(s => s.WordId, o => o.MapFrom(d => d.WordDetailId))
+                .ForMember(s => s.WordId, o => o.MapFrom(d => d.WordId))
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ReverseMap()
                 .ForMember(s => s.Language, o => o.MapFrom(d => (Languages)d.LanguageId))
-                .ForMember(s => s.WordDetail, o => o.Ignore());
+                .ForMember(s => s.Word, o => o.Ignore());
 
             CreateMap<WordRelation, RelationshipView>()
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))

@@ -29,7 +29,8 @@ namespace Inshapardaz.Api.Renderers
                                {
                                    _linkRenderer.Render("GetWordById", RelTypes.Self, new { id = dictionaryId, wordId = result.Id }),
                                    _linkRenderer.Render("GetWordRelationsById", RelTypes.Relationships, new { id = dictionaryId, wordId = result.Id }),
-                                   _linkRenderer.Render("GetWordDetailsById", RelTypes.WordDetails, new { id = dictionaryId, wordId = result.Id }),
+                                   _linkRenderer.Render("GetWordTranslationsById", "translations", new {id = dictionaryId, wordId = source.Id}),
+                                   _linkRenderer.Render("GetWordMeaningByWordId", "meanings", new {id = dictionaryId, wordId = source.Id}),
                                    _linkRenderer.Render("GetDictionaryById", RelTypes.Dictionary, new {id = source.DictionaryId})
                                };
 
@@ -37,7 +38,8 @@ namespace Inshapardaz.Api.Renderers
             {
                 links.Add(_linkRenderer.Render("UpdateWord", RelTypes.Update, new { id = dictionaryId, wordId = result.Id }));
                 links.Add(_linkRenderer.Render("DeleteWord", RelTypes.Delete, new { id = dictionaryId, wordId = result.Id }));
-                links.Add(_linkRenderer.Render("AddWordDetail", RelTypes.AddDetail, new { id = dictionaryId, wordId = result.Id }));
+                links.Add(_linkRenderer.Render("AddTranslation", RelTypes.AddTranslation, new { id = dictionaryId, wordId = source.Id }));
+                links.Add(_linkRenderer.Render("AddMeaning", RelTypes.AddMeaning, new { id = dictionaryId, wordId = source.Id }));
                 links.Add(_linkRenderer.Render("AddRelation", RelTypes.AddRelation , new { id = dictionaryId, wordId = result.Id }));
             }
 

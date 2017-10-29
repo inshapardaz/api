@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using AutoMapper;
 using Hangfire;
-using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
@@ -110,8 +109,7 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderDictionaries, DictionariesRenderer>();
             services.AddTransient<IRenderDictionary, DictionaryRenderer>();
             services.AddTransient<IRenderWord, WordRenderer>();
-            services.AddTransient<IRenderWordPage, WordIndexPageRenderer>();
-            services.AddTransient<IRenderWordDetail, WordDetailRenderer>();
+            services.AddTransient<IRenderWordPage, WordPageRenderer>();
             services.AddTransient<IRenderWordMeanings, WordMeaningsRenderer>();
             services.AddTransient<IRenderMeaning, MeaningRenderer>();
             services.AddTransient<IRenderTranslation, TranslationRenderer>();

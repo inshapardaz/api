@@ -26,6 +26,7 @@ export class RelationsComponent {
     
     @Input() createRelationLink : string;
     @Input() dictionaryLink : string;
+    @Input() dictionaryId : string;
     @Input() sourceWord : Word;
     @Input()
     set relationsLink(relationsLink: string) {

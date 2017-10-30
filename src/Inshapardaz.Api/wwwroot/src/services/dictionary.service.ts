@@ -12,7 +12,6 @@ import { Dictionaries } from '../models/dictionaries';
 import { Dictionary } from '../models/dictionary';
 import { Link } from '../models/link';
 import { Word } from '../models/word';
-import { WordDetail } from '../models/worddetail';
 import { WordPage } from '../models/wordpage';
 import { Meaning } from '../models/meaning';
 import { Relation } from '../models/relation';
@@ -99,8 +98,10 @@ export class DictionaryService {
             .catch(this.handleError);
     }
 
-    getWordById(wordId): Observable<Word> {
-        return this.auth.AuthGet(this.wordUrl + wordId)
+    getWordById(dictionaryId, wordId): Observable<Word> {
+        console.log(dictionaryId);
+        console.log(wordId);
+        return this.auth.AuthGet(`${this.serverAddress}/api/dictionaries/${dictionaryId}/words/${wordId}`)
             .map(r => this.extractData(r, Mapper.MapWord))
             .catch(this.handleError);
     }
@@ -157,6 +158,7 @@ export class DictionaryService {
     }
 
     getWordRelations(url: string): Observable<Array<Relation>> {
+        console.log('relations url :' + url)
         return this.auth.AuthGet(url)
             .map(r => this.extractData(r, Mapper.MapRelations))
             .catch(this.handleError);
@@ -201,28 +203,6 @@ export class DictionaryService {
     }
 
     deleteMeaning(deleteLink : string) : Observable<void>{
-        return this.auth.AuthDelete(deleteLink)
-            .catch(this.handleError);
-    }
-
-
-    getWordDetails(url: string): Observable<Array<WordDetail>> {
-        return this.auth.AuthGet(url)
-            .map(r => this.extractData(r, Mapper.MapWordDetails))
-            .catch(this.handleError);
-    }
-
-    createWordDetail(url: string, wordDetail : WordDetail): Observable<WordDetail>{
-        return this.auth.AuthPost(url, wordDetail)
-                   .catch(this.handleError);
-    }
-
-    updateWordDetail(url: string, wordDetail : WordDetail): Observable<WordDetail>{
-        return this.auth.AuthPut(url, wordDetail)
-                   .catch(this.handleError);
-    }
-
-    deleteWordDetail(deleteLink : string) : Observable<void>{
         return this.auth.AuthDelete(deleteLink)
             .catch(this.handleError);
     }

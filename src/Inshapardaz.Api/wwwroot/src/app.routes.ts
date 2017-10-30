@@ -25,7 +25,7 @@ const appRoutes: Routes = [
     { path: 'dictionaryLink/:link',      component: DictionaryByLinkComponent},
     { path: 'dictionary/:id',      component: DictionaryComponent},
     { path: 'dictionary/:id/:page',      component: DictionaryComponent},
-    { path: 'word/:id', component: WordComponent },
+    { path: 'word/:id/:wordId', component: WordComponent },
     { path: 'thesaurus',     component: ThesaurusComponent },
     { path: 'translations',    component: TranslationsComponent },
     { path: 'error/unauthorised', component : UnauthorisedComponent },

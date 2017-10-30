@@ -6,6 +6,7 @@ import {TranslateService} from '@ngx-translate/core';
 import { DictionaryService } from '../../../services/dictionary.service';
 import { Word } from '../../../models/Word';
 import { Languages } from '../../../models/language';
+import { GrammaticTypes } from '../../../models/grammaticalTypes';
 import { AlertService } from '../../../services/alert.service';
 
 @Component({
@@ -16,6 +17,9 @@ export class EditWordComponent {
     model = new Word();
     languages : any[];
     languagesEnum = Languages;
+    attributesValues : any[];
+    attributeEnum = GrammaticTypes;
+
     _visible : boolean = false;
     isBusy : boolean = false;
     isCreating : boolean = false;
@@ -50,6 +54,7 @@ export class EditWordComponent {
                 private translate: TranslateService,
                 private alertService: AlertService) {
         this.languages = Object.keys(this.languagesEnum).filter(Number);
+        this.attributesValues = Object.keys(this.attributeEnum).filter(Number)
     }  
 
     onSubmit(){

@@ -18,7 +18,8 @@ export class WordComponent {
     isBusy : boolean = false;
     showEditDialog : boolean = false;
     errorMessage: string;
-    id : number;
+    dictionaryId : number;
+    wordId : number;
     word : Word;
     
     constructor(private route: ActivatedRoute,
@@ -29,7 +30,8 @@ export class WordComponent {
     }
     ngOnInit() {
         this.sub = this.route.params.subscribe(params => {
-            this.id = params['id'];
+            this.dictionaryId = params['id'];
+            this.wordId = params['wordId'];
             this.getWord();
         });
     }
@@ -40,7 +42,7 @@ export class WordComponent {
 
     getWord() {
         this.isBusy = true;
-        this.dictionaryService.getWordById(this.id)
+        this.dictionaryService.getWordById(this.dictionaryId, this.wordId)
             .subscribe(
             word => {
                 this.word = word;

@@ -42,8 +42,6 @@ import { DictionaryComponent, DictionaryByLinkComponent } from './app/dictionary
 import { EditDictionaryComponent } from './app/dictionary/edit-dictionary/edit-dictionary.component';
 import { EditWordComponent } from './app/dictionary/edit-word/edit-word.component';
 import { WordComponent } from './app/dictionary/word/word.component';
-import { WordDetailsComponent } from './app/dictionary/wordDetail/wordDetail.component';
-import { EditWordDetailComponent } from './app/dictionary/edit-wordDetail/edit-wordDetail.component';
 import { RelationsComponent } from './app/dictionary/relations/relations.component';
 import { EditWordRelationComponent } from './app/dictionary/edit-wordRelation/edit-wordRelation.component';
 import { MeaningsComponent } from './app/dictionary/meanings/meanings.component';
@@ -108,10 +106,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     DictionaryComponent,
     EditDictionaryComponent,
     EditWordComponent,
-    EditWordDetailComponent,
     EditWordRelationComponent,
     WordComponent,
-    WordDetailsComponent,
     RelationsComponent,
     MeaningsComponent,
     EditMeaningComponent,

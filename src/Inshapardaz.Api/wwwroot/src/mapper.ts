@@ -7,7 +7,6 @@ import { Dictionaries } from './models/dictionaries';
 import { Dictionary, DictionaryIndex } from './models/Dictionary';
 import { Word } from './models/Word';
 import { WordPage } from './models/wordpage';
-import { WordDetail } from './models/WordDetail';
 import { Translation } from './models/Translation';
 import { MeaningContext } from './models/MeaningContext';
 import { Meaning } from './models/Meaning';
@@ -94,48 +93,28 @@ export class Mapper{
         word.titleWithMovements = source.titleWithMovements;
         word.pronunciation = source.pronunciation;
         word.description = source.description;
+        word.attributes = source.attributes;
+        word.attributeValue = source.attributeValue;
+        word.language = source.language;
+        word.languageId = source.languageId;
+                
+        word.translations = Mapper.MapTranslations(source.translations);
+        word.meaningContexts = Mapper.MapMeaningContexts(source.meanings);
 
         word.selfLink = Mapper.findHrefWithRel(source.links, RelTypes.Self);
         word.relationsLink = Mapper.findHrefWithRel(source.links, RelTypes.Relations);
-        word.detailsLink = Mapper.findHrefWithRel(source.links, RelTypes.Details);
+        word.translationsLink = Mapper.findHrefWithRel(source.links, RelTypes.Translations);
+        word.meaningsLink = Mapper.findHrefWithRel(source.links, RelTypes.Meanings);
         word.dictionaryLink = Mapper.findHrefWithRel(source.links, RelTypes.Dictionary);
         word.updateLink = Mapper.findHrefWithRel(source.links, RelTypes.Update);
         word.deleteLink = Mapper.findHrefWithRel(source.links, RelTypes.Delete);
-        word.addDetailLink = Mapper.findHrefWithRel(source.links, RelTypes.AddDetail);
         word.addRelationLink = Mapper.findHrefWithRel(source.links, RelTypes.AddRelation);
-
+        word.createMeaningLink = Mapper.findHrefWithRel(source.links, RelTypes.AddMeaning);
+        word.createTranslationLink = Mapper.findHrefWithRel(source.links, RelTypes.AddTranslation);
         return word;
     }
 
-    public static MapWordDetails(source : any) : WordDetail[]{
-        var details = []
-        _.forEach(source, (v) => details.push(Mapper.MapWordDetail(v)));        
-        return details;
-    }
-
-    public static MapWordDetail(source : any) : WordDetail{
-        let detail = new WordDetail();
-        detail.id = source.id;
-        detail.wordId = source.wordId;
-        detail.attributes = source.attributes;
-        detail.attributeValue = source.attributeValue;
-        detail.language = source.language;
-        detail.languageId = source.languageId;
-                
-        detail.translations = Mapper.MapTranslations(source.translations);
-        detail.meaningContexts = Mapper.MapMeaningContexts(source.meanings);
-
-        detail.selfLink = Mapper.findHrefWithRel(source.links, RelTypes.Self);
-        detail.translationsLink = Mapper.findHrefWithRel(source.links, RelTypes.Translations);
-        detail.meaningsLink = Mapper.findHrefWithRel(source.links, RelTypes.Meanings)
-        detail.updateLink = Mapper.findHrefWithRel(source.links, RelTypes.Update);
-        detail.deleteLink = Mapper.findHrefWithRel(source.links, RelTypes.Delete);
-        detail.createMeaningLink = Mapper.findHrefWithRel(source.links, RelTypes.AddMeaning);
-        detail.createTranslationLink = Mapper.findHrefWithRel(source.links, RelTypes.AddTranslation);
-        return detail;
-    }
-
-    public static MapTranslations(source: any) : Translation[]{
+        public static MapTranslations(source: any) : Translation[]{
         var translations = [];
         _.forEach(source, (v) => translations.push(Mapper.MapTranslation(v)));
         return translations;
@@ -150,7 +129,7 @@ export class Mapper{
         translation.wordId = source.wordId;
 
         translation.selfLink = Mapper.findHrefWithRel(source.links, RelTypes.Self);
-        translation.parentLink = Mapper.findHrefWithRel(source.links, RelTypes.WordDetail);
+        translation.parentLink = Mapper.findHrefWithRel(source.links, RelTypes.Word);
         translation.updateLink = Mapper.findHrefWithRel(source.links, RelTypes.Update);
         translation.deleteLink = Mapper.findHrefWithRel(source.links, RelTypes.Delete);
 
@@ -182,11 +161,11 @@ export class Mapper{
     public static MapMeaning(source: any) : Meaning{
         let meaning = new Meaning();
         meaning.id = source.id;
-        meaning.wordDetailId = source.wordDetailId;
+        meaning.wordId = source.wordId;
         meaning.value = source.value;
         meaning.example = source.example;
         meaning.selfLink =  Mapper.findHrefWithRel(source.links, RelTypes.Self);
-        meaning.parentLink =  Mapper.findHrefWithRel(source.links, RelTypes.WordDetail);
+        meaning.parentLink =  Mapper.findHrefWithRel(source.links, RelTypes.Word);
         meaning.updateLink = Mapper.findHrefWithRel(source.links, RelTypes.Update);
         meaning.deleteLink = Mapper.findHrefWithRel(source.links, RelTypes.Delete);
 
@@ -231,13 +210,13 @@ export class RelTypes{
     public static readonly Self = "self";
     public static readonly Update = "update";
     public static readonly Delete = "delete";
+    public static readonly Word = "word";
     public static readonly RelatedWord = "related-word";
-    public static readonly WordDetail = "worddetail";
     public static readonly Translations = "translations";
     public static readonly Meanings = "meanings";
     public static readonly AddMeaning = "addMeaning";
     public static readonly AddTranslation = "addTranslation";
-    public static readonly Relations = "relations";
+    public static readonly Relations = "relationships";
 
     public static readonly Details = "details";
     public static readonly Dictionary = "dictionary";

@@ -1,6 +1,6 @@
 export class Meaning{
     public id: number;
-    public wordDetailId : number;
+    public wordId : number;
     
     public value : string;
     public example : string;

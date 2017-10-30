@@ -23,7 +23,7 @@ export class WordTranslationsComponent {
     showEditDialog : boolean = false;
 
     @Input() createLink : string;
-    @Input() wordDetailId : string;  
+    @Input() wordId : string;  
     @Input()
     set translationsLink(translationLink: string) {
         this._translationsLink = (translationLink) || '';

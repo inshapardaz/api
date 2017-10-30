@@ -83,7 +83,7 @@
                         <tr *ngFor="let word of wordPage.words">
                             <td>
                                 <h3 class="h3 font-w600 push-10">
-                                    <a class="link-effect" [routerLink]="['/word', word.id]" href="javascript:void(0)">{{word.title}}</a>
+                                    <a class="link-effect" [routerLink]="['/word', dictionary.id, word.id]" href="javascript:void(0)">{{word.title}}</a>
                                 </h3>
                                 <div class="font-s13 text-muted hidden-xs">
                                     <p>{{word.description}}</p>

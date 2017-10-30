@@ -22,7 +22,7 @@ export class MeaningsComponent {
     showEditDialog : boolean = false;
     selectedMeaning : Meaning = null;
     @Input() createLink : string;
-    @Input() wordDetailId : number;
+    @Input() wordId : number;
     @Input()
     set meaningsLink(relationsLink: string) {
         this._meaningsLink = (relationsLink) || '';

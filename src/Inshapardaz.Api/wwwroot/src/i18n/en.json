@@ -100,24 +100,6 @@
       "LOAD_FAILURE" : "Error loading page. Please try again."
     }
   },
-  "WORDDETAIL":{
-    "CREATENEW" : "Create new word type",
-    "EDIT" : "Edit word type",
-    "ACTIONS" : {
-      "ADDDETAIL" : "Add Details",
-      "DELETE" : "Delete word detail",
-      "DELETE_MESSAGE" : "Are you sure you want to delete word detail?"
-    },
-    "MESSAGES": {
-      "CREATION_SUCCESS" : "Word detail created.",
-      "CREATION_FAILURE" : "Unable to create word detail.",
-      "UPDATE_SUCCESS" : "Word detail saved.",
-      "UPDATE_FAILURE" : "Unable to save word detail.",
-      "DELETE_SUCCESS" : "Word detail removed.",
-      "DELETE_FAILURE" : "Unable to remove word detail.",
-      "LOAD_FAILURE" : "Error loading page. Please try again."
-    }
-  },
   "WORDTRANSLATION":{
     "CREATENEW" : "Create new Translation",
     "EDIT" : "Edit Translation",
@@ -149,7 +131,7 @@
       "TITLE" : "Meaning is requied"
     },
     "ACTIONS" : {
-      "ADDDETAIL" : "Add Meaning",
+      "ADD" : "Add Meaning",
       "DELETE" : "Delete meaning",
       "DELETE_MESSAGE" : "Are you sure you want to delete meaning?"
     },
@@ -168,6 +150,7 @@
     "TYPE" : "Relation Type",
     "RELATEDWORD" : "Related Word",
     "RELATEDWORDS" : "Related Words",
+    "EMPTY" : "No relation defined",
     "PLACEHOLDER" : {
       "RELATEDWORD" : "Related Word"
     },

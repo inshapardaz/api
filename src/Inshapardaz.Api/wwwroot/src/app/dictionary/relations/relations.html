@@ -13,9 +13,9 @@
                     <h3 class="block-title">{{'WORD.RELATIONS'|translate}}</h3>
                 </div>
                 <div class="block-content">
-                    <div class="table-responsive" *ngIf="relations != null && relations.length > 0">
+                    <div class="table-responsive">
                         <table class="table table-borderless table-striped table-vcenter">
-                            <tbody>
+                            <tbody *ngIf="relations != null && relations.length > 0">
                                 <tr *ngFor="let relation of relations">
                                     <td style="width: 80px;">
                                         <span class="label" [class.label-primary]="relation.relationTypeId==0" [class.label-success]="relation.relationTypeId==1"
@@ -25,7 +25,7 @@
                                             </span>
                                     </td>
                                     <td>
-                                        <a href="javascript:void(0)" [routerLink]="['/word', relation.relatedWordId]">
+                                        <a href="javascript:void(0)" [routerLink]="['/word', dictionaryId, relation.relatedWordId]">
                                                 {{relation.relatedWord}}
                                             </a>
                                     </td>
@@ -53,17 +53,18 @@
                                     </td>
                                 </tr>
                             </tbody>
+                            <tbody *ngIf="relations == null || relations.length < 1">
+                                    <div class="row">
+                                        <div class="content text-center overflow-hidden text-center">
+                                            <div class="row">
+                                                <div class="col-sm-6 col-sm-offset-3">
+                                                    <h2 class="h5 font-w300 push-50 animated fadeInUp">{{'RELATION.ACTIONS.ADD'|translate}}</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </tbody>
                         </table>
-                    </div>
-                    <div class="row" *ngIf="relations == null || relations.length < 1">
-                        <div class="col-lg-4" *ngIf="createLink">
-                            <a class="block block-link-hover3" (click)="addRelation()">
-                                <div class="block-content block-content-full clearfix">
-                                    <span class="h4 text-muted pull-right hand">{{'RELATION.ACTIONS.ADD'|translate}}</span>
-                                    <i class="si si-plus fa-2x text-muted pull-left"></i>
-                                </div>
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>

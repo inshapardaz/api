@@ -128,7 +128,7 @@
     "TITLE" : "Meaning",
     "EXAMPLE" : "EXAMPLE",
     "VALIDATION" : {
-      "TITLE" : "Meaning is requied"
+      "TITLE" : "Meaning is required"
     },
     "ACTIONS" : {
       "ADD" : "Add Meaning",

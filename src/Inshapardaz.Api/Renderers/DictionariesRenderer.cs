@@ -8,7 +8,7 @@ namespace Inshapardaz.Api.Renderers
 {
     public interface IRenderDictionaries
     {
-        DictionariesView Render(IEnumerable<Dictionary> source);
+        DictionariesView Render(IEnumerable<Dictionary> source, Dictionary<int, int> wordCounts);
     }
 
     public class DictionariesRenderer : IRenderDictionaries
@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Renderers
             _dictionaryRender = dictionaryRender;
         }
 
-        public DictionariesView Render(IEnumerable<Dictionary> source)
+        public DictionariesView Render(IEnumerable<Dictionary> source, Dictionary<int, int> wordCounts)
         {
             var links = new List<LinkView>
                             {
@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Renderers
             return new DictionariesView
             {
                 Links = links,
-                Items = source.Select(d => _dictionaryRender.Render(d))
+                Items = source.Select(d => _dictionaryRender.Render(d, wordCounts[d.Id]))
             };
         }
     }

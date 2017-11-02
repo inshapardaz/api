@@ -6,7 +6,9 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
@@ -31,12 +33,14 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         private readonly IUserHelper _userHelper;
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IRenderDictionary _dictionaryRenderer;
+        private readonly IQueryProcessor _queryProcessor;
 
-        public PostDictionaryRequestHandler(IAmACommandProcessor commandProcessor, IUserHelper userHelper, IRenderDictionary dictionaryRenderer)
+        public PostDictionaryRequestHandler(IAmACommandProcessor commandProcessor, IUserHelper userHelper, IRenderDictionary dictionaryRenderer, IQueryProcessor queryProcessor)
         {
             _userHelper = userHelper;
             _commandProcessor = commandProcessor;
             _dictionaryRenderer = dictionaryRenderer;
+            _queryProcessor = queryProcessor;
         }
 
         public override async Task<PostDictionaryRequest> HandleAsync(PostDictionaryRequest command, CancellationToken cancellationToken = new CancellationToken())
@@ -51,8 +55,9 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             addDictionaryCommand.Dictionary.UserId = userId;
 
             await _commandProcessor.SendAsync(addDictionaryCommand, cancellationToken: cancellationToken);
+            var wordCount = await _queryProcessor.ExecuteAsync(new DictionariesWordCountQuery { DictionaryId = command.Dictionary.Id }, cancellationToken);
 
-            var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary);
+            var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary, wordCount);
 
             command.Result.Response = response;
             command.Result.Location = response.Links.Single(x => x.Rel == RelTypes.Self).Href;

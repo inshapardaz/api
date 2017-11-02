@@ -7,6 +7,8 @@
         public const string Dictionary = "dictionary";
         public const string Languages = "languages";
         public const string Attributes = "attributes";
+        public const string Meanings = "meanings";
+        public const string Translations = "translations";
         public const string Relationships = "relationships";
         public const string RelationshipTypes = "relationshiptypes";
         public const string Thesaurus = "thesaurus";

@@ -8,7 +8,7 @@ namespace Inshapardaz.Api.Renderers
 {
     public interface IRenderDictionary
     {
-        DictionaryView Render(Dictionary source);
+        DictionaryView Render(Dictionary source, int wordCount);
     }
 
     public class DictionaryRenderer : IRenderDictionary
@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Renderers
             _userHelper = userHelper;
         }
 
-        public DictionaryView Render(Dictionary source)
+        public DictionaryView Render(Dictionary source, int wordCount)
         {
             var links = new List<LinkView>
             {
@@ -54,6 +54,7 @@ namespace Inshapardaz.Api.Renderers
                 new {id = source.Id, startingWith = i})));
 
             var result = source.Map<Dictionary, DictionaryView>();
+            result.WordCount = wordCount;
             result.Links = links;
             result.Indexes = indexes;
             return result;

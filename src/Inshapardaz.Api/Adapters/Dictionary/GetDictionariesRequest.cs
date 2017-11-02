@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
@@ -36,7 +37,15 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
             var results = await _queryProcessor.ExecuteAsync(new DictionariesByUserQuery { UserId = userId }, cancellationToken);
 
-            command.Result = _dictionariesRenderer.Render(results);
+            var wordCounts = new Dictionary<int, int>();
+            foreach (var dictionary in results)
+            {
+                wordCounts.Add(
+                    dictionary.Id,
+                    await _queryProcessor.ExecuteAsync(new DictionariesWordCountQuery {DictionaryId = dictionary.Id}, cancellationToken)
+                );
+            }
+            command.Result = _dictionariesRenderer.Render(results, wordCounts);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

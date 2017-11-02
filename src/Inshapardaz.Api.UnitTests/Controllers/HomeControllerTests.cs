@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using Inshapardaz.Api.Controllers;
-using Inshapardaz.Api.Ports;
+﻿using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Mvc;

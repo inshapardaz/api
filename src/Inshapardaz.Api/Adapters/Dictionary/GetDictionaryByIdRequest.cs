@@ -35,8 +35,9 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             {
                 throw new NotFoundException();
             }
-            
-            command.Result = _dictionaryRenderer.Render(result);
+
+            var wordCount = await _queryProcessor.ExecuteAsync(new DictionariesWordCountQuery {DictionaryId = command.DictionaryId}, cancellationToken);
+            command.Result = _dictionaryRenderer.Render(result, wordCount);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

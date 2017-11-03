@@ -99,8 +99,6 @@ export class DictionaryService {
     }
 
     getWordById(dictionaryId, wordId): Observable<Word> {
-        console.log(dictionaryId);
-        console.log(wordId);
         return this.auth.AuthGet(`${this.serverAddress}/api/dictionaries/${dictionaryId}/words/${wordId}`)
             .map(r => this.extractData(r, Mapper.MapWord))
             .catch(this.handleError);

@@ -19,6 +19,11 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override async Task<AddMeaningCommand> HandleAsync(AddMeaningCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (command.Meaning == null)
+            {
+                throw new BadRequestException();
+            }
+
             var word = await _database.Word.SingleOrDefaultAsync(w => w.Id == command.WordId, cancellationToken);
             if (word == null)
             {

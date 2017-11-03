@@ -58,11 +58,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new BadRequestException();
             }
 
-            var addCommand = new AddTranslationCommand
-            {
-                WordId = command.WordId,
-                Translation = command.Translation.Map<TranslationView, Translation>()
-            };
+            var addCommand = new AddTranslationCommand(
+            
+                command.WordId,
+                command.Translation.Map<TranslationView, Translation>()
+            );
             await _commandProcessor.SendAsync(addCommand, cancellationToken: cancellationToken);
 
             var response = _translationRenderer.Render(addCommand.Translation, command.DictionaryId);

@@ -43,7 +43,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCallingForWordFromPublicDictionary_ShouldReturnWord()
         {
-            var word = await _handler.ExecuteAsync(new GetWordByIdQuery { WordId = 23, UserId = _userId });
+            var word = await _handler.ExecuteAsync(new GetWordByIdQuery { WordId = 23 });
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 23);
@@ -52,7 +52,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenCallingForWordFromPrivateDictionary_ShouldReturnWord()
         {
-            var word = await _handler.ExecuteAsync(new GetWordByIdQuery { WordId = 22, UserId = _userId });
+            var word = await _handler.ExecuteAsync(new GetWordByIdQuery { WordId = 22 });
 
             Assert.NotNull(word);
             Assert.Equal(word.Id, 22);

@@ -36,7 +36,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         }
 
         [Fact]
-        public async Task WhenDeletinWordToDictionary_ShouldDeleteWord()
+        public async Task WhenDeletingWordFromDictionary_ShouldDeleteWord()
         {
             var command = new DeleteWordCommand(DictionaryId, WordId);
 
@@ -51,6 +51,16 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         public async Task WhenDeletingNonExistingWord_ShouldThrowNotFound()
         {
             var command = new DeleteWordCommand(DictionaryId, 532532);
+
+            await _handler.HandleAsync(command)
+                          .ShouldThrowAsync<NotFoundException>();
+        }
+
+
+        [Fact]
+        public async Task WhenDeletingWordFromIncorrectDictionary_ShouldThrowNotFound()
+        {
+            var command = new DeleteWordCommand(-3, WordId);
 
             await _handler.HandleAsync(command)
                           .ShouldThrowAsync<NotFoundException>();

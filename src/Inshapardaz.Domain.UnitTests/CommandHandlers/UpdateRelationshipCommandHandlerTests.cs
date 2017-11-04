@@ -60,8 +60,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             updatedRelation.RelatedWordId.ShouldBe(wordRelation.RelatedWordId);
             updatedRelation.RelationType.ShouldBe(wordRelation.RelationType);
         }
-
-
+        
         [Fact]
         public async Task WhenUpdatingNonExistingRelation_ShouldThrowNotFound()
         {
@@ -71,6 +70,12 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             };
 
             await _handler.HandleAsync(new UpdateWordRelationCommand(DictionaryId, relation)).ShouldThrowAsync<NotFoundException>();
+        }
+
+        [Fact]
+        public async Task WhenUpdatingRelationinIncorrect_ShouldThrowNotFound()
+        {
+            await _handler.HandleAsync(new UpdateWordRelationCommand(-4, _relation)).ShouldThrowAsync<NotFoundException>();
         }
     }
 }

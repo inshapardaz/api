@@ -59,7 +59,6 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             updatedWord.DictionaryId.ShouldBe(DictionaryId);
         }
 
-
         [Fact]
         public async Task WhenUpdatingNonExistingWord_ShouldThrowNotFound()
         {
@@ -69,6 +68,12 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             };
 
             await _handler.HandleAsync(new UpdateWordCommand(DictionaryId, word)).ShouldThrowAsync<NotFoundException>();
+        }
+
+        [Fact]
+        public async Task WhenUpdatingWordInIncorrectDictionary_ShouldThrowNotFound()
+        {
+            await _handler.HandleAsync(new UpdateWordCommand(-6, _word)).ShouldThrowAsync<NotFoundException>();
         }
     }
 }

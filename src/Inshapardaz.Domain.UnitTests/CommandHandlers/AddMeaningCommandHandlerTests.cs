@@ -61,5 +61,17 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             await _handler.HandleAsync(command)
                           .ShouldThrowAsync<NotFoundException>();
         }
+
+        [Fact]
+        public async Task WhenAddingMeaningToNonExistingDictionary_ShouldThrowNotFound()
+        {
+            var meaning = Builder<Meaning>
+                .CreateNew()
+                .Build();
+            var command = new AddMeaningCommand(32, WordId, meaning);
+
+            await _handler.HandleAsync(command)
+                          .ShouldThrowAsync<NotFoundException>();
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         }
 
         [Fact]
-        public async Task WhenDeletinWordToDictionary_ShouldDeleteWord()
+        public async Task WhenDeletingTranslationFromWord_ShouldDeleteTranlation()
         {
             var command = new DeleteWordTranslationCommand(DictionaryId, TranslationId);
 

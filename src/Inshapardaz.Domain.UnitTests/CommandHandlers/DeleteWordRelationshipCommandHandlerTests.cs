@@ -51,7 +51,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         }
 
         [Fact]
-        public async Task WhenDeletinWordToDictionary_ShouldDeleteWord()
+        public async Task WhenDeletingRelationship_ShouldDeleteRelation()
         {
             var command = new DeleteWordRelationshipCommand(DictionaryId, RelationshipId);
 
@@ -64,9 +64,18 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         }
 
         [Fact]
-        public async Task WhenDeletingNonExistingWord_ShouldThrowNotFound()
+        public async Task WhenDeletingNonExistingRelation_ShouldThrowNotFound()
         {
             var command = new DeleteWordRelationshipCommand(DictionaryId, 532532);
+
+            await _handler.HandleAsync(command)
+                          .ShouldThrowAsync<NotFoundException>();
+        }
+
+        [Fact]
+        public async Task WhenDeletingRelationFromIncorrectDictionary_ShouldThrowNotFound()
+        {
+            var command = new DeleteWordRelationshipCommand(-2, RelationshipId);
 
             await _handler.HandleAsync(command)
                           .ShouldThrowAsync<NotFoundException>();

@@ -42,7 +42,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         }
 
         [Fact]
-        public async Task WhenDeletinWordToDictionary_ShouldDeleteWord()
+        public async Task WhenDeletingMeaningFromWord_ShouldDeleteMeaning()
         {
             var command = new DeleteWordMeaningCommand(DictionaryId, MeaningId);
 
@@ -56,9 +56,18 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         }
 
         [Fact]
-        public async Task WhenDeletingNonExistingWord_ShouldThrowNotFound()
+        public async Task WhenDeletingNonExistingMeaning_ShouldThrowNotFound()
         {
             var command = new DeleteWordMeaningCommand(DictionaryId, 532532);
+
+            await _handler.HandleAsync(command)
+                          .ShouldThrowAsync<NotFoundException>();
+        }
+
+        [Fact]
+        public async Task WhenDeletingMeaningFromIncorrectDictionary_ShouldThrowNotFound()
+        {
+            var command = new DeleteWordMeaningCommand(-4, MeaningId);
 
             await _handler.HandleAsync(command)
                           .ShouldThrowAsync<NotFoundException>();

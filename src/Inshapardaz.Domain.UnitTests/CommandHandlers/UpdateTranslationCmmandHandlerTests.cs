@@ -37,7 +37,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         }
 
         [Fact]
-        public async Task WhenUpdateTranslation_ShouldUpdateWordFields()
+        public async Task WhenUpdateTranslation_ShouldUpdateTranslationFields()
         {
             var translation = Builder<Translation>
                 .CreateNew()
@@ -53,7 +53,6 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             updatedTranslation.WordId.ShouldBe(translation.WordId);
         }
 
-
         [Fact]
         public async Task WhenUpdatingNonExistingTranslation_ShouldThrowNotFound()
         {
@@ -63,6 +62,13 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             };
 
             await _handler.HandleAsync(new UpdateWordTranslationCommand(DictionaryId, meaning))
+                          .ShouldThrowAsync<NotFoundException>();
+        }
+
+        [Fact]
+        public async Task WhenUpdatingTranslationFromIncorrectDictionary_ShouldThrowNotFound()
+        {
+            await _handler.HandleAsync(new UpdateWordTranslationCommand(-5, _translation))
                           .ShouldThrowAsync<NotFoundException>();
         }
     }

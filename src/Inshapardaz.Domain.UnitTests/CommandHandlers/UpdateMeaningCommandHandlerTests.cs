@@ -52,8 +52,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             updatedMeaning.Value.ShouldBe(meaning.Value);
             updatedMeaning.WordId.ShouldBe(meaning.WordId);
         }
-
-
+        
         [Fact]
         public async Task WhenUpdatingNonExistingMeaning_ShouldThrowNotFound()
         {
@@ -63,6 +62,14 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             };
 
             await _handler.HandleAsync(new UpdateWordMeaningCommand(DictionaryId, meaning)).ShouldThrowAsync<NotFoundException>();
+        }
+
+        [Fact]
+        public async Task WhenUpdatingMeaningFromIncorrectDictionary_ShouldThrowNotFound()
+        {
+            var meaning = new Meaning{ Id = 30203 };
+
+            await _handler.HandleAsync(new UpdateWordMeaningCommand(-4, meaning)).ShouldThrowAsync<NotFoundException>();
         }
     }
 }

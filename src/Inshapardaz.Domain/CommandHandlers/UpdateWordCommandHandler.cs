@@ -19,17 +19,19 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override async Task<UpdateWordCommand> HandleAsync(UpdateWordCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var w = await _database.Word.SingleOrDefaultAsync(x => x.Id == command.Word.Id, cancellationToken);
+            var word = await _database.Word.SingleOrDefaultAsync(
+                w => w.Id == command.Word.Id & w.DictionaryId == command.DictionaryId, 
+                cancellationToken);
 
-            if (w == null || w.Id != command.Word.Id)
+            if (word == null || word.Id != command.Word.Id)
             {
                 throw new NotFoundException();
             }
 
-            w.Title = command.Word.Title;
-            w.TitleWithMovements = command.Word.TitleWithMovements;
-            w.Pronunciation = command.Word.Pronunciation;
-            w.Description = command.Word.Description;
+            word.Title = command.Word.Title;
+            word.TitleWithMovements = command.Word.TitleWithMovements;
+            word.Pronunciation = command.Word.Pronunciation;
+            word.Description = command.Word.Description;
 
             await _database.SaveChangesAsync(cancellationToken);
 

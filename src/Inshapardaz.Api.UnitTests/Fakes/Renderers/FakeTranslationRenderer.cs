@@ -1,6 +1,5 @@
 ﻿using System;
 using Inshapardaz.Api.Renderers;
-using Inshapardaz.Domain.Model;
 using System.Collections.Generic;
 using System.Linq;
 using Inshapardaz.Api.View;
@@ -8,12 +7,12 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
-    public class FakeTranslationRenderer : IRenderResponseFromObject<Translation, TranslationView>
+    public class FakeTranslationRenderer : IRenderTranslation
     {
         private TranslationView _view;
         private readonly List<LinkView> _links = new List<LinkView>();
 
-        public TranslationView Render(Translation source)
+        public TranslationView Render(Translation source, int dictionaryId)
         {
             _view.Links = _links;
             if (_view.Links == null || !_view.Links.Any())

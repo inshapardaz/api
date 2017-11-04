@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostWordRequest> HandleAsync(PostWordRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var addWordCommand = new AddWordCommand { DictionaryId = command.DictionaryId, Word = command.Word.Map<WordView, Word>() };
+            var addWordCommand = new AddWordCommand(command.DictionaryId, command.Word.Map<WordView, Word>());
             addWordCommand.Word.DictionaryId = command.DictionaryId;
             await _commandProcessor.SendAsync(addWordCommand, cancellationToken: cancellationToken);
 

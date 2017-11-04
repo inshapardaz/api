@@ -1,18 +1,17 @@
 ﻿using System;
 using Inshapardaz.Api.Renderers;
-using Inshapardaz.Domain.Model;
 using System.Collections.Generic;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
-    public class FakeMeaningRenderer : IRenderResponseFromObject<Meaning, MeaningView>
+    public class FakeMeaningRenderer : IRenderMeaning
     {
         private MeaningView _view;
         private readonly List<LinkView> _links = new List<LinkView>();
 
-        public MeaningView Render(Meaning source)
+        public MeaningView Render(Meaning source, int dictionaryId)
         {
             _view.Links = _links;
             return _view;

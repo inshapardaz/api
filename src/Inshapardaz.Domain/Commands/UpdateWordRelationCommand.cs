@@ -1,9 +1,18 @@
-﻿using Inshapardaz.Domain.Database.Entities;
+﻿using System;
+using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Commands
 {
     public class UpdateWordRelationCommand : Command
     {
-        public WordRelation Relation { get; set; }
+        public int DictionaryId { get; }
+
+        public UpdateWordRelationCommand(int dictionaryId, WordRelation relation)
+        {
+            DictionaryId = dictionaryId;
+            Relation = relation ?? throw new ArgumentNullException(nameof(relation));
+        }
+
+        public WordRelation Relation { get; }
     }
 }

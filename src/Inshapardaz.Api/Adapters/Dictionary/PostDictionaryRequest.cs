@@ -47,10 +47,9 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         {
             var userId = _userHelper.GetUserId();
 
-            var addDictionaryCommand = new AddDictionaryCommand
-            {
-                Dictionary = command.Dictionary.Map<DictionaryView, Domain.Database.Entities.Dictionary>()
-            };
+            var addDictionaryCommand = new AddDictionaryCommand(
+                command.Dictionary.Map<DictionaryView, Domain.Database.Entities.Dictionary>()
+            );
 
             addDictionaryCommand.Dictionary.UserId = userId;
 

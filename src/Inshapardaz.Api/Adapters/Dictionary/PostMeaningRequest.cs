@@ -53,7 +53,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new BadRequestException();
             }
 
-            var addWOrdCommand = new AddMeaningCommand { WordId = word.Id, Meaning = command.Meaning.Map<MeaningView, Meaning>() };
+            var addWOrdCommand = new AddMeaningCommand(command.DictionaryId, word.Id, command.Meaning.Map<MeaningView, Meaning>());
             await _commandProcessor.SendAsync(addWOrdCommand, cancellationToken: cancellationToken);
             var response = _meaningRenderer.Render(addWOrdCommand.Meaning, command.DictionaryId);
             command.Result.Location =  response.Links.Single(x => x.Rel == RelTypes.Self).Href;

@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new NotFoundException();
             }
 
-            await _commandProcessor.SendAsync(new DeleteWordCommand {WordId = word.Id}, cancellationToken: cancellationToken);
+            await _commandProcessor.SendAsync(new DeleteWordCommand(command.DictionaryId, command.WordId), cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

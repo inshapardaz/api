@@ -5,6 +5,7 @@ using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using Shouldly;
 using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
@@ -27,15 +28,16 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         [Fact]
         public async Task WhenRemovedPrivateDictionary_ShouldDeleteFromDatabase()
         {
-            await _handler.HandleAsync(new DeleteDictionaryCommand {DictionaryId = 3 });
+            await _handler.HandleAsync(new DeleteDictionaryCommand(3));
 
-            Assert.Null(DbContext.Dictionary.SingleOrDefault(d => d.Id == 3));
+            DbContext.Dictionary.SingleOrDefault(d => d.Id == 3).ShouldBeNull();
         }
 
         [Fact]
         public async Task IfDictionaryIsNotFound_ShouldThrowException()
         {
-            await Assert.ThrowsAsync<NotFoundException>(async () => await _handler.HandleAsync(new DeleteDictionaryCommand { DictionaryId = 7 }));
+            await _handler.HandleAsync(new DeleteDictionaryCommand(7))
+                          .ShouldThrowAsync<NotFoundException>();
         }
     }
 }

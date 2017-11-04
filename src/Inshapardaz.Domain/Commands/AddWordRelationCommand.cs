@@ -4,9 +4,20 @@ namespace Inshapardaz.Domain.Commands
 {
     public class AddWordRelationCommand : Command
     {
-        public long SourceWordId { get; set; }
-        public long RelatedWordId { get; set; }
-        public RelationType RelationType { get; set; }
-        public long RelationId { get; set; }
+        public AddWordRelationCommand(int dictionaryId, long sourceWordId, long relatedWordId, RelationType relationType)
+        {
+            DictionaryId = dictionaryId;
+            SourceWordId = sourceWordId;
+            RelatedWordId = relatedWordId;
+            RelationType = relationType;
+        }
+
+        public int DictionaryId { get; }
+
+        public long SourceWordId { get; }
+        public long RelatedWordId { get; }
+        public RelationType RelationType { get; }
+
+        public long Result { get; set; }
     }
 }

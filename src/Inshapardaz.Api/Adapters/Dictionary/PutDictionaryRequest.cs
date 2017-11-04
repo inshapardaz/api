@@ -47,9 +47,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             }
 
             UpdateDictionaryCommand updateDictionaryCommand = new UpdateDictionaryCommand
-            {
-                Dictionary = command.Dictionary.Map<DictionaryView, Domain.Database.Entities.Dictionary>()
-            };
+                (command.Dictionary.Map<DictionaryView, Domain.Database.Entities.Dictionary>());
 
             await _commandProcessor.SendAsync(updateDictionaryCommand, cancellationToken: cancellationToken);
 

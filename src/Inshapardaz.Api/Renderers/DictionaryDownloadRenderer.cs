@@ -1,16 +1,17 @@
 ﻿using System;
+using Inshapardaz.Api.Model;
 using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.Renderers
 {
     public interface IRenderDictionaryDownload
     {
-        DownloadDictionaryView Render(object source);
+        DownloadDictionaryView Render(DownloadJobModel source);
     }
 
     public class DictionaryDownloadRenderer : IRenderDictionaryDownload
     {
-        public DownloadDictionaryView Render(object source)
+        public DownloadDictionaryView Render(DownloadJobModel source)
         {
             return new DownloadDictionaryView()
             {

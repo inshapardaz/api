@@ -19,7 +19,9 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override async Task<DeleteWordTranslationCommand> HandleAsync(DeleteWordTranslationCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var translation = await _database.Translation.SingleOrDefaultAsync( t => t.Id == command.TranslationId, cancellationToken);
+            var translation = await _database.Translation.SingleOrDefaultAsync(
+                t => t.Id == command.TranslationId && t.Word.DictionaryId == command.DictionaryId, 
+                cancellationToken);
 
             if (translation == null)
             {

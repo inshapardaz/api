@@ -25,7 +25,9 @@ namespace Inshapardaz.Domain.CommandHandlers
                 throw new BadRequestException();
             }
 
-            var dictionary = await _database.Dictionary.SingleOrDefaultAsync(d => d.Id == command.DictionaryId, cancellationToken: cancellationToken);
+            var dictionary = await _database.Dictionary.SingleOrDefaultAsync(
+                d => d.Id == command.DictionaryId, 
+                cancellationToken);
             if (dictionary == null)
             {
                 throw new NotFoundException();

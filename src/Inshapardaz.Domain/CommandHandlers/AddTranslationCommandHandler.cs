@@ -20,7 +20,9 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override async Task<AddTranslationCommand> HandleAsync(AddTranslationCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var word = await _database.Word.SingleOrDefaultAsync( wd => wd.Id == command.WordId, cancellationToken);
+            var word = await _database.Word.SingleOrDefaultAsync(
+                t => t.Id == command.WordId && t.DictionaryId == command.DictioanryId, 
+                cancellationToken);
             if (word == null)
             {
                 throw new NotFoundException();

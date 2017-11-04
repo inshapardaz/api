@@ -19,7 +19,9 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override async Task<UpdateWordMeaningCommand> HandleAsync(UpdateWordMeaningCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var meaning = await _database.Meaning.SingleOrDefaultAsync(x => x.Id == command.Meaning.Id, cancellationToken);
+            var meaning = await _database.Meaning.SingleOrDefaultAsync(
+                m => m.Id == command.Meaning.Id && m.Word.DictionaryId == command.DictionaryId, 
+                cancellationToken);
 
             if (meaning == null)
             {

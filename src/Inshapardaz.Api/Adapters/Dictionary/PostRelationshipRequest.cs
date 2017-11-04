@@ -65,15 +65,15 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new BadRequestException();
             }
 
-            var addCommand = new AddWordRelationCommand
-            {
-                SourceWordId = command.WordId,
-                RelatedWordId = command.Relationship.RelatedWordId,
-                RelationType = (RelationType)command.Relationship.RelationTypeId
-            };
+            var addCommand = new AddWordRelationCommand(
+                command.DictionaryId,
+                command.WordId,
+                command.Relationship.RelatedWordId,
+                (RelationType) command.Relationship.RelationTypeId
+            );
             await _commandProcessor.SendAsync(addCommand, cancellationToken: cancellationToken);
 
-            var newRelationship = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery { Id = addCommand.RelationId }, cancellationToken);
+            var newRelationship = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery { Id = addCommand.Result }, cancellationToken);
             var response = _relationRender.Render(newRelationship, command.DictionaryId);
             command.Result.Location =  response.Links.Single(x => x.Rel == RelTypes.Self).Href;
             command.Result.Response =  response;

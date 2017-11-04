@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             }
 
             var addCommand = new AddTranslationCommand(
-            
+                command.DictionaryId,
                 command.WordId,
                 command.Translation.Map<TranslationView, Translation>()
             );

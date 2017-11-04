@@ -4,6 +4,11 @@ namespace Inshapardaz.Domain.Commands
 {
     public class DeleteDictionaryCommand : Command
     {
-        public int DictionaryId { get; set; }
+        public DeleteDictionaryCommand(int dictionaryId)
+        {
+            DictionaryId = dictionaryId;
+        }
+
+        public int DictionaryId { get; }
     }
 }

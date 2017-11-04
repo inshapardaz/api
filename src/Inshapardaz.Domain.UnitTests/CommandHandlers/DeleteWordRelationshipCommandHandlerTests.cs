@@ -1,0 +1,75 @@
+﻿using System.Linq;
+using System.Threading.Tasks;
+using FizzWare.NBuilder;
+using FizzWare.NBuilder.Extensions;
+using Inshapardaz.Domain.CommandHandlers;
+using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Exception;
+using Shouldly;
+using Xunit;
+
+namespace Inshapardaz.Domain.UnitTests.CommandHandlers
+{
+    public class DeleteWordRelationshipCommandHandlerTests : DatabaseTest
+    {
+        private readonly DeleteWordRelationshipCommandHandler _handler;
+        private readonly int DictionaryId = 3;
+        private readonly long WordId = 12;
+        private readonly long RelationshipId = 323;
+
+        public DeleteWordRelationshipCommandHandlerTests()
+        {
+            var dictionary = Builder<Dictionary>
+                        .CreateNew()
+                        .With(d => d.Id = DictionaryId)
+                        .Build();
+
+            var sourceWord = Builder<Word>
+                .CreateNew()
+                .With(w => w.Id = WordId)
+                .With(w => w.Dictionary = dictionary)
+                .Build();
+            var destinationWord = Builder<Word>
+                .CreateNew()
+                .With(w => w.Id = WordId)
+                .With(w => w.Dictionary = dictionary)
+                .Build();
+            var relationship = Builder<WordRelation>
+                .CreateNew()
+                .With(r => r.Id = RelationshipId)
+                .With(r => r.SourceWord = sourceWord)
+                .With(r => r.RelatedWord = destinationWord)
+                .Build();
+            sourceWord.WordRelationRelatedWord.Add(relationship);
+            dictionary.Word.Add(sourceWord);
+            DbContext.Dictionary.Add(dictionary);
+
+            DbContext.SaveChanges();
+
+            _handler = new DeleteWordRelationshipCommandHandler(DbContext);
+        }
+
+        [Fact]
+        public async Task WhenDeletinWordToDictionary_ShouldDeleteWord()
+        {
+            var command = new DeleteWordRelationshipCommand(DictionaryId, RelationshipId);
+
+            await _handler.HandleAsync(command);
+
+            var parentWord = DbContext.Word.SingleOrDefault(w => w.Id == WordId);
+            var removedRelationship = DbContext.WordRelation.SingleOrDefault(m => m.Id == RelationshipId);
+            parentWord.ShouldNotBeNull();
+            removedRelationship.ShouldBeNull();
+        }
+
+        [Fact]
+        public async Task WhenDeletingNonExistingWord_ShouldThrowNotFound()
+        {
+            var command = new DeleteWordRelationshipCommand(DictionaryId, 532532);
+
+            await _handler.HandleAsync(command)
+                          .ShouldThrowAsync<NotFoundException>();
+        }
+    }
+}

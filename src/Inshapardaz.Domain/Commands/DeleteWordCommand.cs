@@ -2,6 +2,14 @@
 {
     public class DeleteWordCommand : Command
     {
-        public long WordId { get; set; }
+        public DeleteWordCommand(int dictionaryId, long wordId)
+        {
+            DictionaryId = dictionaryId;
+            WordId = wordId;
+        }
+
+        public int DictionaryId { get; }
+
+        public long WordId { get; }
     }
 }

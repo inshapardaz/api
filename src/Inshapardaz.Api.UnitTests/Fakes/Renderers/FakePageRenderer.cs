@@ -1,43 +1,44 @@
 ﻿using System.Collections.Generic;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
-    public class FakePageRenderer<TModel, TView> : IRenderResponseFromObject<PageRendererArgs<TModel>, PageView<TView>>
+    public class FakePageRenderer : IRenderWordPage
     {
         private int _count;
         private int _size = 10;
         private int _currentIndex = 1;
-        private List<TView> _data;
+        private List<WordView> _data;
 
-        public PageView<TView> Render(PageRendererArgs<TModel> source)
+        public PageView<WordView> Render(PageRendererArgs<Word> source, int dictionaryId)
         {
-            return new PageView<TView>(_count, _size, _currentIndex)
+            return new PageView<WordView>(_count, _size, _currentIndex)
             {
-                Data = _data ?? new List<TView>()
+                Data = _data ?? new List<WordView>()
             };
         }
 
-        public FakePageRenderer<TModel, TView> WithCount(int count)
+        public FakePageRenderer WithCount(int count)
         {
             _count = count;
             return this;
         }
 
-        public FakePageRenderer<TModel, TView> WithPageSize(int size)
+        public FakePageRenderer WithPageSize(int size)
         {
             _size = size;
             return this;
         }
 
-        public FakePageRenderer<TModel, TView> WithCurrentPageIndex(int index)
+        public FakePageRenderer WithCurrentPageIndex(int index)
         {
             _currentIndex = index;
             return this;
         }
 
-        public FakePageRenderer<TModel, TView> WithData(List<TView> data)
+        public FakePageRenderer WithData(List<WordView> data)
         {
             _data = data;
             return this;

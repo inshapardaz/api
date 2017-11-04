@@ -5,6 +5,7 @@ using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using Shouldly;
 using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
@@ -33,18 +34,15 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             var word = Builder<Word>
                 .CreateNew()
                 .Build();
-            var command = new AddWordCommand
-            {
-                DictionaryId = DictionaryId,
-                Word = word
-            };
+            var command = new AddWordCommand(DictionaryId, word);
 
             await _handler.HandleAsync(command);
 
             var createdWord = DbContext.Word.SingleOrDefault(w => w.Title == word.Title);
 
-            Assert.NotNull(createdWord);
-            Assert.Equal(DictionaryId, createdWord.DictionaryId);
+            createdWord.ShouldNotBeNull();
+            createdWord.ShouldBeSameAs(word);
+            createdWord.DictionaryId.ShouldBe(DictionaryId);
         }
 
         [Fact]
@@ -53,25 +51,9 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             var word = Builder<Word>
                 .CreateNew()
                 .Build();
-            var command = new AddWordCommand
-            {
-                DictionaryId = Builder<int>.CreateNew().Build(),
-                Word = word
-            };
+            var command = new AddWordCommand(Builder<int>.CreateNew().Build(), word);
 
-            await Assert.ThrowsAsync<NotFoundException>(async () => await _handler.HandleAsync(command));
-        }
-
-        [Fact]
-        public async Task WhenNullWord_ShouldThrowBadRequest()
-        {
-            var command = new AddWordCommand
-            {
-                DictionaryId = Builder<int>.CreateNew().Build(),
-                Word = null
-            };
-
-            await Assert.ThrowsAsync<BadRequestException>(async () => await _handler.HandleAsync(command));
+            await _handler.HandleAsync(command).ShouldThrowAsync<NotFoundException>();
         }
     }
 }

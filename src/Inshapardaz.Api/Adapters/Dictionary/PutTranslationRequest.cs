@@ -47,7 +47,8 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new BadImageFormatException();
             }
 
-            await _commandProcessor.SendAsync(new UpdateWordTranslationCommand { Translation = command.Translation.Map<TranslationView, Translation>() }, cancellationToken: cancellationToken);
+            var updateCommand = new UpdateWordTranslationCommand( command.DictionaryId, command.Translation.Map<TranslationView, Translation>());
+            await _commandProcessor.SendAsync(updateCommand, cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

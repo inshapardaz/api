@@ -20,21 +20,32 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override async Task<AddWordRelationCommand> HandleAsync(AddWordRelationCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var word = await _database.Word.SingleOrDefaultAsync(w => w.Id == command.SourceWordId, cancellationToken);
-            if (word == null)
+            if (command.SourceWordId == command.RelatedWordId)
+            {
+                throw new BadRequestException();
+            }
+
+            var sourceWord = await _database.Word.SingleOrDefaultAsync(
+                w => w.Id == command.SourceWordId && w.DictionaryId == command.DictionaryId, 
+                cancellationToken);
+
+            if (sourceWord == null)
             {
                 throw new NotFoundException();
             }
 
-            var relatedWord = await _database.Word.SingleOrDefaultAsync(w => w.Id == command.RelatedWordId, cancellationToken);
-            if (relatedWord == null)
+            var relatedWord = await _database.Word.SingleOrDefaultAsync(
+                w => w.Id == command.RelatedWordId && w.DictionaryId == command.DictionaryId, 
+                cancellationToken);
+
+            if (relatedWord == null || sourceWord.DictionaryId != relatedWord.DictionaryId)
             {
-                throw new NotFoundException();
+                throw new BadRequestException();
             }
 
             var relation = new WordRelation
             {
-                SourceWord = word,
+                SourceWord = sourceWord,
                 SourceWordId = command.SourceWordId,
                 RelatedWord = relatedWord,
                 RelatedWordId = command.RelatedWordId,
@@ -44,7 +55,7 @@ namespace Inshapardaz.Domain.CommandHandlers
             _database.WordRelation.Add(relation);
             await _database.SaveChangesAsync(cancellationToken);
 
-            command.RelationId = relation.Id;
+            command.Result = relation.Id;
             return await base.HandleAsync(command, cancellationToken);
         }        
     }

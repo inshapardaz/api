@@ -2,6 +2,14 @@ namespace Inshapardaz.Domain.Commands
 {
     public class DeleteWordMeaningCommand : Command
     {
-        public long MeaningId { get; set; }
+        public DeleteWordMeaningCommand(int dictionaryId, long meaningId)
+        {
+            DictionaryId = dictionaryId;
+            MeaningId = meaningId;
+        }
+
+        public int DictionaryId { get; }
+
+        public long MeaningId { get; }
     }
 }

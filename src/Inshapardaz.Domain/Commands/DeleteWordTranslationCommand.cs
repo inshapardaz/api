@@ -2,6 +2,14 @@
 {
     public class DeleteWordTranslationCommand : Command
     {
-        public long TranslationId { get; set; }
+        public DeleteWordTranslationCommand(int dictionaryId, long translationId)
+        {
+            DictionaryId = dictionaryId;
+            TranslationId = translationId;
+        }
+
+        public int DictionaryId { get; }
+
+        public long TranslationId { get; }
     }
 }

@@ -3,7 +3,7 @@ using Inshapardaz.Api.View;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
-    public class FakeEntryRender : IRenderResponse<EntryView>
+    public class FakeEntryRender : IRenderEntry
     {
         private EntryView _entryView = new EntryView();
 

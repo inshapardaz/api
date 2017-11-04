@@ -51,7 +51,8 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new NotFoundException();
             }
 
-            await _commandProcessor.SendAsync(new UpdateWordCommand { Word = command.Word.Map<WordView, Word>() }, cancellationToken: cancellationToken);
+            var updateCommand = new UpdateWordCommand(command.DictionaryId, command.Word.Map<WordView, Word>());
+            await _commandProcessor.SendAsync(updateCommand, cancellationToken: cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

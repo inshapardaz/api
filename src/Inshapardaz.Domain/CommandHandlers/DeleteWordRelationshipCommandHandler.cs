@@ -8,18 +8,20 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
-    public class DeleteWordRelationCommandHandler : RequestHandlerAsync<DeleteWordRelationCommand>
+    public class DeleteWordRelationshipCommandHandler : RequestHandlerAsync<DeleteWordRelationshipCommand>
     {
         private readonly IDatabaseContext _database;
 
-        public DeleteWordRelationCommandHandler(IDatabaseContext database)
+        public DeleteWordRelationshipCommandHandler(IDatabaseContext database)
         {
             _database = database;
         }
 
-        public override async Task<DeleteWordRelationCommand> HandleAsync(DeleteWordRelationCommand command, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DeleteWordRelationshipCommand> HandleAsync(DeleteWordRelationshipCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var relation = await _database.WordRelation.SingleOrDefaultAsync(r => r.Id == command.RelationId, cancellationToken);
+            var relation = await _database.WordRelation.SingleOrDefaultAsync(
+                r => r.Id == command.RelationshipId && r.SourceWord.DictionaryId == command.DictionaryId, 
+                cancellationToken);
 
             if (relation == null)
             {

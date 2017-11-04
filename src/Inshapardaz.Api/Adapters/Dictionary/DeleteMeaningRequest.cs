@@ -27,21 +27,17 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteMeaningRequest> HandleAsync(DeleteMeaningRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var response = await _queryProcessor.ExecuteAsync(new GetWordMeaningByIdQuery
+            var meaning = await _queryProcessor.ExecuteAsync(new GetWordMeaningByIdQuery
             {
                 MeaningId = command.MeaningId
             }, cancellationToken);
 
-            if (response == null)
+            if (meaning == null)
             {
                 throw new NotFoundException();
             }
 
-            await _commandProcessor.SendAsync(new DeleteWordMeaningCommand
-            {
-                MeaningId = response.Id
-            }, cancellationToken: cancellationToken);
-
+            await _commandProcessor.SendAsync(new DeleteWordMeaningCommand(command.DictionaryId, meaning.Id), cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
-    public class FakeDictionaryRenderer : IRenderResponseFromObject<Dictionary, DictionaryView>
+    public class FakeDictionaryRenderer : IRenderDictionary
     {
         private readonly DictionaryView _response = new DictionaryView();
         private readonly List<LinkView> _links = new List<LinkView>();
 
-        public DictionaryView Render(Dictionary source)
+        public DictionaryView Render(Dictionary source, int wordCount)
         {
             _response.Links = _links;
+            _response.WordCount = wordCount;
             return _response;
         }
 

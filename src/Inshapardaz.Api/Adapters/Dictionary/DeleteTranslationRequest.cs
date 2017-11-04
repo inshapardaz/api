@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
@@ -39,10 +37,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new BadRequestException();
             }
 
-            await _commandProcessor.SendAsync(new DeleteWordTranslationCommand
-            {
-                TranslationId = command.TranslationId
-            }, cancellationToken: cancellationToken);
+            await _commandProcessor.SendAsync(new DeleteWordTranslationCommand(command.DictionaryId, command.TranslationId), cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

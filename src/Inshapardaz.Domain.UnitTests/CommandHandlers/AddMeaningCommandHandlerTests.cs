@@ -6,6 +6,7 @@ using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
 using Microsoft.EntityFrameworkCore;
+using Shouldly;
 using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
@@ -13,13 +14,15 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
     public class AddMeaningCommandHandlerTests : DatabaseTest
     {
         private readonly AddMeaningCommandHandler _handler;
-        private readonly int WordId = 3;
+        private readonly int DictionaryId = 3;
+        private readonly long WordId = 332;
 
         public AddMeaningCommandHandlerTests()
         {
             var word = Builder<Word>
                         .CreateNew()
                         .With(w => w.Id = WordId)
+                        .With(w => w.DictionaryId = DictionaryId)
                         .Build();
             DbContext.Word.Add(word);
             DbContext.SaveChanges();
@@ -34,19 +37,17 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             var meaning = Builder<Meaning>
                 .CreateNew()
                 .Build();
-            var command = new AddMeaningCommand
-            {
-                WordId = WordId,
-                Meaning = meaning
-            };
+            var command = new AddMeaningCommand(DictionaryId, WordId, meaning);
 
             await _handler.HandleAsync(command);
 
             var word = DbContext.Word.Include(w => w.Meaning).SingleOrDefault(w => w.Id == WordId);
 
-            Assert.NotNull(word);
-            Assert.NotEmpty(word.Meaning);
-            Assert.Equal(meaning, word.Meaning.First());
+            word.ShouldNotBeNull();
+            word.Meaning.ShouldNotBeEmpty();
+            var createdMeaning = word.Meaning.FirstOrDefault();
+            createdMeaning.ShouldNotBeNull();
+            createdMeaning.ShouldBeSameAs(meaning);
         }
 
         [Fact]
@@ -55,25 +56,10 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             var meaning = Builder<Meaning>
                 .CreateNew()
                 .Build();
-            var command = new AddMeaningCommand
-            {
-                WordId = 5334,
-                Meaning = meaning
-            };
+            var command = new AddMeaningCommand(DictionaryId, 5334, meaning);
 
-            await Assert.ThrowsAsync<NotFoundException>(async () => await _handler.HandleAsync(command));
-        }
-
-        [Fact]
-        public async Task WhenAddingNullMeaning_ShouldThrowBadRequest()
-        {
-            var command = new AddMeaningCommand
-            {
-                WordId = 5334,
-                Meaning = null
-            };
-
-            await Assert.ThrowsAsync<BadRequestException>(async () => await _handler.HandleAsync(command));
+            await _handler.HandleAsync(command)
+                          .ShouldThrowAsync<NotFoundException>();
         }
     }
 }

@@ -2,15 +2,12 @@
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
-    public class FakeDictionariesRenderer : IRenderResponseFromObject<IEnumerable<Dictionary>, DictionariesView>
+    public class FakeDictionariesRenderer : IRenderDictionaries
     {
-        private readonly DictionariesView _response = new DictionariesView();
-
-        public DictionariesView Render(IEnumerable<Dictionary> source)
+        public DictionariesView Render(IEnumerable<Dictionary> source, Dictionary<int, int> wordCounts)
         {
             return new DictionariesView
             {

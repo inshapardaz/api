@@ -24,7 +24,10 @@ namespace Inshapardaz.Domain.CommandHandlers
                 throw new BadRequestException();
             }
 
-            var word = await _database.Word.SingleOrDefaultAsync(w => w.Id == command.WordId, cancellationToken);
+            var word = await _database.Word.SingleOrDefaultAsync(
+                w => w.Id == command.WordId && w.DictionaryId == command.DictionaryId, 
+                cancellationToken);
+
             if (word == null)
             {
                 throw new NotFoundException();

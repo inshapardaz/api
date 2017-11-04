@@ -19,14 +19,16 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override async Task<DeleteWordCommand> HandleAsync(DeleteWordCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var w = await _database.Word.SingleOrDefaultAsync(x => x.Id == command.WordId, cancellationToken);
+            var word = await _database.Word.SingleOrDefaultAsync(
+                w => w.Id == command.WordId && w.DictionaryId == command.DictionaryId, 
+                cancellationToken);
 
-            if (w == null || w.Id != command.WordId)
+            if (word == null || word.Id != command.WordId)
             {
                 throw new NotFoundException();
             }
 
-            _database.Word.Remove(w);
+            _database.Word.Remove(word);
 
             await _database.SaveChangesAsync(cancellationToken);
 

@@ -5,12 +5,14 @@ namespace Inshapardaz.Domain.Commands
 {
     public class AddTranslationCommand : Command
     {
-        public AddTranslationCommand(long wordId, Translation translation)
+        public AddTranslationCommand(int dictioanryId, long wordId, Translation translation)
         {
+            DictioanryId = dictioanryId;
             WordId = wordId;
             Translation = translation ?? throw new ArgumentNullException(nameof(translation));
         }
 
+        public int DictioanryId { get; }
 
         public long WordId { get; }
 

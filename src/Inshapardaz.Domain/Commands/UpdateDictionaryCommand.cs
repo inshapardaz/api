@@ -4,6 +4,11 @@ namespace Inshapardaz.Domain.Commands
 {
     public class UpdateDictionaryCommand : Command
     {
-        public Dictionary Dictionary { get; set; }
+        public UpdateDictionaryCommand(Dictionary dictionary)
+        {
+            Dictionary = dictionary;
+        }
+
+        public Dictionary Dictionary { get; }
     }
 }

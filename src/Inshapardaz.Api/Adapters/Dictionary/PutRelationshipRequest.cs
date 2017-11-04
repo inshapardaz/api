@@ -61,7 +61,8 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new BadRequestException();
             }
 
-            await _commandProcessor.SendAsync(new UpdateWordRelationCommand { Relation = command.Relationship.Map<RelationshipView, WordRelation>() }, cancellationToken: cancellationToken);
+            var updateCommand = new UpdateWordRelationCommand(command.DictionaryId, command.Relationship.Map<RelationshipView, WordRelation>());
+            await _commandProcessor.SendAsync(updateCommand, cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

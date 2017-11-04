@@ -63,33 +63,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
 
             _fakeQueryProcessor.ShouldHaveExecuted<DictionariesByUserQuery>(q => q.UserId == userId);
         }
-
-        [Fact]
-        public void WhenAnonymousCall_ShouldQueryDictionaryAsPublicUser()
-        {
-            var dictionaryId = 2332;
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
-
-            var result = _controller.GetDictionaryById(dictionaryId).Result;
-
-            _fakeQueryProcessor.ShouldHaveExecuted<DictionaryByIdQuery>(
-                q => q.UserId == Guid.Empty && q.DictionaryId == dictionaryId);
-        }
-
-        [Fact]
-        public void WhenAuthenticatedCall_ShouldQueryDictionaryForUser()
-        {
-            var userId = Guid.NewGuid();
-            var dictionaryId = 2332;
-            _fakeUserHelper.WithUserId(userId);
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
-
-            var result = _controller.GetDictionaryById(dictionaryId).Result;
-
-            _fakeQueryProcessor.ShouldHaveExecuted<DictionaryByIdQuery>(
-                q => q.UserId == userId && q.DictionaryId == dictionaryId);
-        }
-
+        
         [Fact]
         public void WhenDictionaryNotFound_ShouldReturnNotFoundResult()
         {

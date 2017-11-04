@@ -1,10 +1,7 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Queries;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -33,10 +30,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteDictionaryRequest> HandleAsync(DeleteDictionaryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            await _commandProcessor.SendAsync(new DeleteDictionaryCommand
-            {
-                DictionaryId = command.DictionaryId
-            }, cancellationToken: cancellationToken);
+            await _commandProcessor.SendAsync(new DeleteDictionaryCommand (command.DictionaryId), cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

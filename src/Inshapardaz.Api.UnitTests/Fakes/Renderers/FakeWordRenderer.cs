@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
-    public class FakeWordRenderer : IRenderResponseFromObject<Word, WordView>
+    public class FakeWordRenderer : IRenderWord
     {
         private readonly WordView _response = new WordView();
         private readonly List<LinkView> _links = new List<LinkView>();
 
-        public WordView Render(Word source)
+        public WordView Render(Word source, int dictionaryId)
         {
             _response.Links = _links;
             return _response;

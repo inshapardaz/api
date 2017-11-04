@@ -43,9 +43,10 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             }
 
             await _commandProcessor.SendAsync(new UpdateWordMeaningCommand
-            {
-                Meaning = command.Meaning.Map<MeaningView, Meaning>()
-            }, cancellationToken: cancellationToken);
+            (
+                command.DictionaryId,
+                command.Meaning.Map<MeaningView, Meaning>()
+            ), cancellationToken: cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

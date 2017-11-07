@@ -31,10 +31,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetMeaningForWordRequest> HandleAsync(GetMeaningForWordRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var meanings = await _queryProcessor.ExecuteAsync(new GetWordMeaningByWordQuery
-            {
-                WordId = command.WordId
-            }, cancellationToken);
+            var meanings = await _queryProcessor.ExecuteAsync(new GetWordMeaningsByWordQuery(command.WordId), cancellationToken);
             command.Result = meanings.Select(x => _meaningRenderer.Render(x, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);
         }

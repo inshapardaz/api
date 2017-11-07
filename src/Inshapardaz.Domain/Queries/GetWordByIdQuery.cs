@@ -6,8 +6,14 @@ namespace Inshapardaz.Domain.Queries
 {
     public class GetWordByIdQuery : IQuery<Word>
     {
-        public long WordId { get; set; }
-        
-        public int DictionaryId { get; set; }
+        public GetWordByIdQuery(int dictionaryId, long wordId)
+        {
+            DictionaryId = dictionaryId;
+            WordId = wordId;
+        }
+
+        public int DictionaryId { get; }
+
+        public long WordId { get; }
     }
 }

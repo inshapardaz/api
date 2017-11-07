@@ -4,16 +4,13 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class GetWordMeaningsByContextQuery : IQuery<IEnumerable<Meaning>>
+    public class GetWordMeaningsByWordQuery : IQuery<IEnumerable<Meaning>>
     {
-        public GetWordMeaningsByContextQuery(long wordId, string context)
+        public GetWordMeaningsByWordQuery(long wordId)
         {
             WordId = wordId;
-            Context = context;
         }
 
         public long WordId { get; }
-
-        public string Context { get; }
     }
 }

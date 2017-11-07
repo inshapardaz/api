@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             {
                 wordCounts.Add(
                     dictionary.Id,
-                    await _queryProcessor.ExecuteAsync(new DictionariesWordCountQuery {DictionaryId = dictionary.Id}, cancellationToken)
+                    await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery {DictionaryId = dictionary.Id}, cancellationToken)
                 );
             }
             command.Result = _dictionariesRenderer.Render(results, wordCounts);

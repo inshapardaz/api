@@ -9,20 +9,20 @@ using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
-    public class GetDictionaryByWordIdQueryHandlerTests : DatabaseTest
+    public class GetDictionaryWordCountQueryHandlerTests : DatabaseTest
     {
-        private readonly GetDictionaryByWordIdQueryHandler _handler;
+        private readonly GetDictionaryWordCountQueryHandler _handler;
         private readonly IList<Word> _words;
         private readonly Dictionary _dictionary;
 
-        public GetDictionaryByWordIdQueryHandlerTests()
+        public GetDictionaryWordCountQueryHandlerTests()
         {
             _dictionary = Builder<Dictionary>
                 .CreateNew()
                 .With(d => d.Id = 23)
                 .Build();
             _words = Builder<Word>
-                .CreateListOfSize(3)
+                .CreateListOfSize(34)
                 .Build();
 
             foreach (var word in _words)
@@ -33,27 +33,26 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             DbContext.Dictionary.Add(_dictionary);
             DbContext.SaveChanges();
 
-            _handler = new GetDictionaryByWordIdQueryHandler(DbContext);
+            _handler = new GetDictionaryWordCountQueryHandler(DbContext);
         }
 
         [Fact]
         public async Task WhenCalledShouldReturnTheDictionary()
         {
-            var result = await _handler.ExecuteAsync(new DictionaryByWordIdQuery
+            var result = await _handler.ExecuteAsync(new GetDictionaryWordCountQuery
             {
-                WordId = _words[1].Id
+                DictionaryId = _dictionary.Id
             });
 
-            result.ShouldNotBeNull();
-            result.ShouldBe(_dictionary);
+            result.ShouldBe(_words.Count);
         }
 
         [Fact]
         public async Task WhenCalleddictionaryThatDoesnotExists_ShouldReturnNull()
         {
-            var result = await _handler.ExecuteAsync(new DictionaryByWordIdQuery {WordId = -9});
+            var result = await _handler.ExecuteAsync(new GetDictionaryWordCountQuery { DictionaryId = -9});
 
-            result.ShouldBeNull();
+            result.ShouldBe(0);
         }
     }
 }

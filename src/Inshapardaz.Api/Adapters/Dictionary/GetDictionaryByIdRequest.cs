@@ -29,14 +29,14 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetDictionaryByIdRequest> HandleAsync(GetDictionaryByIdRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
+            var result = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
 
             if (result == null)
             {
                 throw new NotFoundException();
             }
 
-            var wordCount = await _queryProcessor.ExecuteAsync(new DictionariesWordCountQuery {DictionaryId = command.DictionaryId}, cancellationToken);
+            var wordCount = await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery {DictionaryId = command.DictionaryId}, cancellationToken);
             command.Result = _dictionaryRenderer.Render(result, wordCount);
             return await base.HandleAsync(command, cancellationToken);
         }

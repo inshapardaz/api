@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
         public override async Task<T> HandleAsync(T command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var dictionary = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery
+            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery
             {
                 DictionaryId = command.DictionaryId
             }, cancellationToken);

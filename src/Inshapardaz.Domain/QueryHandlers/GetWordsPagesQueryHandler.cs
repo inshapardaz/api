@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Paramore.Darker;
@@ -34,9 +35,14 @@ namespace Inshapardaz.Domain.QueryHandlers
             {
                 PageNumber = query.PageNumber,
                 PageSize = query.PageSize,
-                TotalCount = count,
+                TotalCount = CalculateTotalPageCount(query, count),
                 Data = data
             };
+        }
+
+        private static int CalculateTotalPageCount(GetWordPageQuery query, int count)
+        {
+            return (int)Math.Ceiling((decimal)count / query.PageSize);
         }
     }
 }

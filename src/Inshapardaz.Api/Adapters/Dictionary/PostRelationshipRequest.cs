@@ -47,13 +47,13 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostRelationshipRequest> HandleAsync(PostRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var sourceWord = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery { WordId = command.WordId }, cancellationToken);
+            var sourceWord = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery(command.DictionaryId, command.WordId), cancellationToken);
             if (sourceWord == null)
             {
                 throw new NotFoundException();
             }
 
-            var relatedWord = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery { WordId = command.Relationship.RelatedWordId }, cancellationToken);
+            var relatedWord = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery(command.DictionaryId, command.Relationship.RelatedWordId), cancellationToken);
             if (relatedWord == null)
             {
                 throw new NotFoundException();

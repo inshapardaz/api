@@ -7,16 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class DictionariesWordCountQueryHandler : QueryHandlerAsync<DictionariesWordCountQuery, int>
+    public class GetDictionaryWordCountQueryHandler : QueryHandlerAsync<GetDictionaryWordCountQuery, int>
     {
         private readonly IDatabaseContext _database;
 
-        public DictionariesWordCountQueryHandler(IDatabaseContext database)
+        public GetDictionaryWordCountQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }
 
-        public override async Task<int> ExecuteAsync(DictionariesWordCountQuery query,
+        public override async Task<int> ExecuteAsync(GetDictionaryWordCountQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var count =  await _database.Word.CountAsync(d => d.DictionaryId == query.DictionaryId, cancellationToken: cancellationToken);

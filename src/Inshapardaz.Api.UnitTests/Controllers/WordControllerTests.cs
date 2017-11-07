@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingWordsForDictionary()
         {
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
             _fakeQueryProcessor.SetupResultFor<GetWordPageQuery, Page<Word>>(new Page<Word>());
             _result = _controller.GetWord(12, 1).Result;
         }
@@ -44,7 +44,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordsForPrivateDictionaryOfOthers()
         {
             _fakeUserHelper.WithUserId(Guid.NewGuid());
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary
             {
                 UserId = Guid.NewGuid(),
                 IsPublic = false
@@ -65,7 +65,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordsForPublicDictionaryOfOthers()
         {
             _fakeUserHelper.WithUserId(Guid.NewGuid());
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary
             {
                 UserId = Guid.NewGuid(),
                 IsPublic = true
@@ -87,7 +87,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenGettingWordsForDictionaryThatDoesNotExist()
         {
             _fakeUserHelper.WithUserId(Guid.NewGuid());
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(null);
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(null);
             _result = _controller.GetWord(12, 1).Result;
         }
 
@@ -173,7 +173,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
 
             _fakeQueryProcessor.SetupResultFor<GetWordByIdQuery, WordView>(_wordView);
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
             _fakeWordRenderer.WithLink("self", new Uri("http://link.test/123"));
             _fakeUserHelper.WithUserId(Guid.NewGuid());
             _result = _controller.Post(DictionaryId, _wordView).Result;

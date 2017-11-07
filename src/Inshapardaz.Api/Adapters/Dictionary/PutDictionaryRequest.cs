@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PutDictionaryRequest> HandleAsync(PutDictionaryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _queryProcessor.ExecuteAsync(new DictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
+            var result = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery { DictionaryId = command.DictionaryId }, cancellationToken);
 
             if (result == null)
             {

@@ -40,11 +40,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 finalContext = command.Context;
             }
 
-            var result = await _queryProcessor.ExecuteAsync(new GetWordMeaningByWordQuery
-            {
-                WordId = command.WordId,
-                Context = finalContext
-            }, cancellationToken);
+            var result = await _queryProcessor.ExecuteAsync(new GetWordMeaningsByContextQuery(command.WordId, command.Context), cancellationToken);
 
             command.Result = result.Select(x => _meaningRenderer.Render(x, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);

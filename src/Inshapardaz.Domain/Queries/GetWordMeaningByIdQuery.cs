@@ -5,6 +5,11 @@ namespace Inshapardaz.Domain.Queries
 {
     public class GetWordMeaningByIdQuery : IQuery<Meaning>
     {
-        public long MeaningId { get; set; }
+        public GetWordMeaningByIdQuery(long meaningId)
+        {
+            MeaningId = meaningId;
+        }
+
+        public long MeaningId { get; }
     }
 }

@@ -1,80 +1,44 @@
-﻿using System;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
+﻿using System.Threading.Tasks;
 using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
-using Microsoft.EntityFrameworkCore;
+using Shouldly;
 using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
-    public class GetDictionaryByIdQueryHandlerTests : IDisposable
+    public class GetDictionaryByIdQueryHandlerTests : DatabaseTest
     {
-        private GetDictionaryByIdQueryHandler _handler;
-        private DatabaseContext _database;
-        private readonly Guid _userId1;
-        private readonly Guid _userId2;
+        private readonly GetDictionaryByIdQueryHandler _handler;
+        private readonly Dictionary _dictionary1;
+        private readonly Dictionary _dictionary2;
 
         public GetDictionaryByIdQueryHandlerTests()
         {
-            var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            _database = new DatabaseContext(inMemoryDataContextOptions);
-            _database.Database.EnsureCreated();
-
-            _userId1 = Guid.NewGuid();
-            _userId2 = Guid.NewGuid();
-            _database.Dictionary.Add(new Dictionary {Id = 1, IsPublic = true, UserId = _userId1});
-            _database.Dictionary.Add(new Dictionary {Id = 2, IsPublic = true, UserId = _userId2});
-            _database.Dictionary.Add(new Dictionary {Id = 3, IsPublic = false, UserId = _userId2});
-            _database.Dictionary.Add(new Dictionary {Id = 4, IsPublic = false, UserId = _userId1});
+            _dictionary1 = new Dictionary {Id = 1, IsPublic = true };
+            DbContext.Dictionary.Add(_dictionary1);
+            _dictionary2 = new Dictionary {Id = 2, IsPublic = false };
+            DbContext.Dictionary.Add(_dictionary2);
             
-            _database.SaveChanges();
+            DbContext.SaveChanges();
 
-            _handler = new GetDictionaryByIdQueryHandler(_database);
-        }
-
-        public void Dispose()
-        {
-            _database.Database.EnsureDeleted();
+            _handler = new GetDictionaryByIdQueryHandler(DbContext);
         }
 
         [Fact]
-        public async Task WhenCalledAsAnonymousAnId_ShouldReturPublicDictionaryForOtherUser()
+        public async Task WhenCalledForADictionary_ShouldReturCorrectDictionary()
         {
-            var result = await _handler.ExecuteAsync(new Queries.DictionaryByIdQuery { DictionaryId = 2 });
+            var result = await _handler.ExecuteAsync(new GetDictionaryByIdQuery { DictionaryId = 2 });
 
-            Assert.NotNull(result);
-            Assert.True(result.IsPublic);
+            result.ShouldNotBeNull();
+            result.ShouldBe(_dictionary2);
         }
-
+        
         [Fact]
-        public async Task WhenCalledAsAnonymousForPrivateDictionary_ShouldNotReutrnMatchingDictionary()
+        public async Task WhenCalledForIncorrectDictionary_ShouldReturnNull()
         {
-            var result = await _handler.ExecuteAsync(new Queries.DictionaryByIdQuery { DictionaryId = 3 });
-
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task WhenCalledForUser_ShouldReturnPrivateDictionary()
-        {
-            var result = await _handler.ExecuteAsync(new Queries.DictionaryByIdQuery { DictionaryId = 3 });
-
-            Assert.NotNull(result);
-            Assert.False(result.IsPublic);
-        }
-
-        [Fact]
-        public async Task WhenCalledForUser_ShouldReturnPublicDictionary()
-        {
-            var result = await _handler.ExecuteAsync(new Queries.DictionaryByIdQuery { DictionaryId = 1 });
-
-            Assert.NotNull(result);
-            Assert.True(result.IsPublic);
-            Assert.NotEqual(result.UserId, _userId2);
+            var result = await _handler.ExecuteAsync(new GetDictionaryByIdQuery {DictionaryId = 1232});
+            result.ShouldBeNull();
         }
     }
 }

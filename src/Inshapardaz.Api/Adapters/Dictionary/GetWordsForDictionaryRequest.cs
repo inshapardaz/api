@@ -32,12 +32,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetWordsForDictionaryRequest> HandleAsync(GetWordsForDictionaryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var query = new GetWordPageQuery
-            {
-                DictionaryId = command.DictionaryId,
-                PageNumber = command.PageNumber,
-                PageSize = command.PageSize
-            };
+            var query = new GetWordPageQuery(command.DictionaryId, command.PageNumber, command.PageSize);
 
             var results = await _queryProcessor.ExecuteAsync(query, cancellationToken);
 

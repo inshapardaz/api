@@ -134,7 +134,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
                 Name = "test dictionary"
             };
             _fakeDictionaryRenderer.WithLink("self", new System.Uri("http://link.test/123"));
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
 
             var result = _controller.Put(dictionaryId, dictionaryView).Result;
 
@@ -161,7 +161,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             var userId = Guid.NewGuid();
             var dictionaryId = 344;
             _fakeUserHelper.WithUserId(userId);
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(null);
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(null);
 
             var dictionaryView = new DictionaryView
             {
@@ -213,7 +213,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public void WhenDeleted_ShouldRemoveDictionary()
         {
             const int dictionaryId = 23;
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
 
             var result = _controller.Delete(dictionaryId).Result;
 
@@ -227,7 +227,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public void WhenDeletingNonExistingDictionary_ShouldReturnNotFound()
         {
             const int dictionaryId = 23;
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(null);
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(null);
 
             var result = _controller.Delete(dictionaryId).Result;
 
@@ -238,7 +238,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public void WhenCreatingDownloadForDictionary_ShouldReturnCreated()
         {
             const int dictionaryId = 23;
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(new Dictionary());
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary());
 
             var result = _controller.CreateDownloadForDictionary(dictionaryId).Result;
 
@@ -249,7 +249,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public void WhenCreatingDownloadForDictionaryAndDictionaryNotFound_ShouldReturnCreated()
         {
             const int dictionaryId = 43;
-            _fakeQueryProcessor.SetupResultFor<DictionaryByIdQuery, Dictionary>(null);
+            _fakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(null);
 
             var result = _controller.CreateDownloadForDictionary(dictionaryId).Result;
 

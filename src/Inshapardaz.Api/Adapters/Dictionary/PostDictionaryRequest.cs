@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             addDictionaryCommand.Dictionary.UserId = userId;
 
             await _commandProcessor.SendAsync(addDictionaryCommand, cancellationToken: cancellationToken);
-            var wordCount = await _queryProcessor.ExecuteAsync(new DictionariesWordCountQuery { DictionaryId = command.Dictionary.Id }, cancellationToken);
+            var wordCount = await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery { DictionaryId = command.Dictionary.Id }, cancellationToken);
 
             var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary, wordCount);
 

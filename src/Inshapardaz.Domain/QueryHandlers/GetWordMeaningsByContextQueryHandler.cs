@@ -10,16 +10,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetWordMeaningByWordQueryHandler : QueryHandlerAsync<GetWordMeaningByWordQuery, IEnumerable<Meaning>>
+    public class GetWordMeaningsByContextQueryHandler : QueryHandlerAsync<GetWordMeaningsByContextQuery, IEnumerable<Meaning>>
     {
         private readonly IDatabaseContext _database;
 
-        public GetWordMeaningByWordQueryHandler(IDatabaseContext database)
+        public GetWordMeaningsByContextQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }
 
-        public override async Task<IEnumerable<Meaning>> ExecuteAsync(GetWordMeaningByWordQuery query,
+        public override async Task<IEnumerable<Meaning>> ExecuteAsync(GetWordMeaningsByContextQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(query.Context))

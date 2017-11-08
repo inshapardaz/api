@@ -6,6 +6,10 @@ namespace Inshapardaz.Domain.Queries
 {
     public class GetTranslationsByWordIdQuery : IQuery<IEnumerable<Translation>>
     {
-        public long WordId { get; set; }
+        public GetTranslationsByWordIdQuery(long wordId)
+        {
+            WordId = wordId;
+        }
+        public long WordId { get; }
     }
 }

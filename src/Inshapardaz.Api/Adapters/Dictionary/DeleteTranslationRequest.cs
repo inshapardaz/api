@@ -27,10 +27,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteTranslationRequest> HandleAsync(DeleteTranslationRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var response = await _queryProcessor.ExecuteAsync(new GetTranslationByIdQuery
-            {
-                Id = command.TranslationId
-            }, cancellationToken);
+            var response = await _queryProcessor.ExecuteAsync(new GetTranslationByIdQuery(command.TranslationId), cancellationToken);
 
             if (response == null)
             {

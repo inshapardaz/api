@@ -20,7 +20,7 @@ namespace Inshapardaz.Domain.QueryHandlers
         public override async Task<Translation> ExecuteAsync(GetTranslationByIdQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.Translation.SingleOrDefaultAsync(t => t.Id == query.Id, cancellationToken);
+            return await _database.Translation.SingleOrDefaultAsync(t => t.Id == query.TranslationId, cancellationToken);
         }
     }
 }

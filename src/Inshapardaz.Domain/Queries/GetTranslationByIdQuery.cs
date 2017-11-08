@@ -5,6 +5,11 @@ namespace Inshapardaz.Domain.Queries
 {
     public class GetTranslationByIdQuery : IQuery<Translation>
     {
-        public long Id { get; set; }
+        public GetTranslationByIdQuery(long translationId)
+        {
+            TranslationId = translationId;
+        }
+
+        public long TranslationId { get; }
     }
 }

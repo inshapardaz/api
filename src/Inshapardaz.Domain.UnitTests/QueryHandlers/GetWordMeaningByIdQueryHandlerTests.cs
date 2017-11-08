@@ -43,18 +43,18 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Fact]
         public async Task WhenGettingMeaningById_ShouldReturnCorrectMeaning()
         {
-            var word = await _handler.ExecuteAsync(new GetWordMeaningByIdQuery(_meanings[2].Id));
+            var meaning = await _handler.ExecuteAsync(new GetWordMeaningByIdQuery(_meanings[2].Id));
 
-            word.ShouldNotBeNull();
-            word.ShouldBe(_meanings[2]);
+            meaning.ShouldNotBeNull();
+            meaning.ShouldBe(_meanings[2]);
         }
 
         [Fact]
         public async Task WhenGetMeaningForIncorrectId_ShouldReturnNull()
         {
-            var word = await _handler.ExecuteAsync(new GetWordMeaningByIdQuery(-232));
+            var meaning = await _handler.ExecuteAsync(new GetWordMeaningByIdQuery(-232));
 
-            word.ShouldBeNull();
+            meaning.ShouldBeNull();
         }
     }
 }

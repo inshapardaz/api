@@ -29,10 +29,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetTranslationRequest> HandleAsync(GetTranslationRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var translation = await _queryProcessor.ExecuteAsync(new GetTranslationByIdQuery
-            {
-                Id = command.TranslationId
-            }, cancellationToken);
+            var translation = await _queryProcessor.ExecuteAsync(new GetTranslationByIdQuery(command.TranslationId), cancellationToken);
             command.Result =  _translationRenderer.Render(translation, command.DictionaryId);
             return await base.HandleAsync(command, cancellationToken);
         }

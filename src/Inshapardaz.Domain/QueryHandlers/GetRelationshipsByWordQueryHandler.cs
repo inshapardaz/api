@@ -10,17 +10,17 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
-    public class GetRelationshipByWordIdQueryHandler : QueryHandlerAsync<GetRelationshipByWordIdQuery,
+    public class GetRelationshipsByWordQueryHandler : QueryHandlerAsync<GetRelationshipsByWordQuery,
         IEnumerable<WordRelation>>
     {
         private readonly IDatabaseContext _database;
 
-        public GetRelationshipByWordIdQueryHandler(IDatabaseContext database)
+        public GetRelationshipsByWordQueryHandler(IDatabaseContext database)
         {
             _database = database;
         }
 
-        public override async Task<IEnumerable<WordRelation>> ExecuteAsync(GetRelationshipByWordIdQuery query,
+        public override async Task<IEnumerable<WordRelation>> ExecuteAsync(GetRelationshipsByWordQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _database.WordRelation

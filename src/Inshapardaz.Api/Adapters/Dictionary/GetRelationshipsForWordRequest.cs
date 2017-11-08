@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetRelationshipsForWordRequest> HandleAsync(GetRelationshipsForWordRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipByWordIdQuery { WordId = command.WordId }, cancellationToken);
+            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipsByWordQuery { WordId = command.WordId }, cancellationToken);
             command.Result = relations.Select(r => _relationRender.Render(r, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);
         }

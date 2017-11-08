@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.QueryHandlers
             return await _database.WordRelation
                 .Include(r => r.SourceWord)
                 .Include(r => r.RelatedWord)
-                .SingleOrDefaultAsync(t => t.Id == query.Id, cancellationToken);
+                .SingleOrDefaultAsync(t => t.Id == query.RelationshipId, cancellationToken);
         }
     }
 }

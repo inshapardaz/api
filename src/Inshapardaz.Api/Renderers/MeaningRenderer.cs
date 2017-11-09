@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Renderers
             };
             
 
-            if (_userHelper.IsAuthenticated)
+            if (_userHelper.IsContributor)
             {
                 links.Add(_linkRenderer.Render("UpdateMeaning", RelTypes.Update, new { id = dictionaryId, meaningId = source.Id }));
                 links.Add(_linkRenderer.Render("DeleteMeaning", RelTypes.Delete,  new { id = dictionaryId, meaningId = source.Id }));

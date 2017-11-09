@@ -71,7 +71,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             }
 
             [Fact]
-            public void ShouldRenderDictionaryLinks()
+            public void ShouldRenderLinks()
             {
                 _result.Links.ShouldNotBeNull();
             }
@@ -83,7 +83,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             }
 
             [Fact]
-            public void ShouldRenderDictionaryMeaningsLink()
+            public void ShouldRenderMeaningsLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Meanings);
             }
@@ -96,7 +96,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
 
             [Fact]
-            public void ShouldRenderDictionaryRelationsLink()
+            public void ShouldRenderRelationshipsLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Relationships);
             }

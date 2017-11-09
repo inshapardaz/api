@@ -39,7 +39,8 @@ namespace Inshapardaz.Api.Renderers
             return new DictionariesView
             {
                 Links = links,
-                Items = source.Select(d => _dictionaryRender.Render(d, wordCounts[d.Id]))
+                Items = source.Select(
+                    d => _dictionaryRender.Render(d, wordCounts.ContainsKey(d.Id) ? wordCounts[d.Id] : 0)).ToList()
             };
         }
     }

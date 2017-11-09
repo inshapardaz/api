@@ -41,21 +41,21 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PutRelationshipRequest> HandleAsync(PutRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var relation1 = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery { RelationshipId = command.RelationshipId }, cancellationToken);
+            var relation1 = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.RelationshipId), cancellationToken);
 
             if (relation1 == null)
             {
                 throw new NotFoundException();
             }
 
-            var relation2 = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery { RelationshipId = command.Relationship.SourceWordId }, cancellationToken);
+            var relation2 = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.Relationship.SourceWordId), cancellationToken);
 
             if (relation2 == null)
             {
                 throw new BadRequestException();
             }
 
-            var dictionary2 = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery { WordId = command.Relationship.RelatedWordId }, cancellationToken);
+            var dictionary2 = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery(command.Relationship.RelatedWordId), cancellationToken);
             if (dictionary2 == null || dictionary2.Id != command.DictionaryId)
             {
                 throw new BadRequestException();

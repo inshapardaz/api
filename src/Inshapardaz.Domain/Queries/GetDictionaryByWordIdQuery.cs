@@ -5,6 +5,11 @@ namespace Inshapardaz.Domain.Queries
 {
     public class DictionaryByWordIdQuery : IQuery<Dictionary>
     {
-        public long WordId { get; set; }
+        public DictionaryByWordIdQuery(long wordId)
+        {
+            WordId = wordId;
+        }
+
+        public long WordId { get; }
     }
 }

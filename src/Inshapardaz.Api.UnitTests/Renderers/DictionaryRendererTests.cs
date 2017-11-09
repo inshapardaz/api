@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
+using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Moq;
+using Shouldly;
 using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
@@ -16,6 +16,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
         public class WhenRendereingAnonymously
         {
             private readonly DictionaryView _result;
+            private int wordCount = 23;
 
             private readonly Dictionary _dictionary = new Dictionary
             {
@@ -23,89 +24,86 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 Name = "Test",
                 Language = Languages.French,
                 IsPublic = false,
-                UserId = Guid.NewGuid(),
-                Word = new List<Word> { new Word(), new Word() }
+                UserId = Guid.NewGuid()
             };
 
             public WhenRendereingAnonymously()
             {
                 Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
 
-                var mockLinkRenderer = new Mock<IRenderLink>();
+                var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper();
-                var renderer = new DictionaryRenderer(mockLinkRenderer.Object, fakeUserHelper);
+                var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                mockLinkRenderer.Setup(x => x.Render(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
-                    .Returns((string x, string r, object o) => new LinkView { Rel = r, Href = new Uri("http://link/") });
-
-                _result = renderer.Render(_dictionary);
+                _result = renderer.Render(_dictionary, wordCount);
             }
 
             [Fact]
             public void ShouldRenderDictionary()
             {
-                Assert.NotNull(_result);
+                _result.ShouldNotBeNull();
             }
 
             [Fact]
             public void ShouldRenderDictionaryId()
             {
-                Assert.Equal(_result.Id, _dictionary.Id);
+                _result.Id.ShouldBe(_dictionary.Id);
             }
 
             [Fact]
             public void ShouldRenderDictionaryName()
             {
-                Assert.Equal(_result.Name, _dictionary.Name);
+                _result.Name.ShouldBe(_dictionary.Name);
             }
 
             [Fact]
             public void ShouldRenderDictionaryLanguage()
             {
-                Assert.Equal(_result.Language, _dictionary.Language);
+                _result.Language.ShouldBe(_dictionary.Language);
             }
 
             [Fact]
             public void ShouldRenderWordCount()
             {
-                Assert.Equal(_result.WordCount, _dictionary.Word.Count);
+                _result.WordCount.ShouldBe(wordCount);
             }
 
             [Fact]
             public void ShouldRenderPublicFlag()
             {
-                Assert.Equal(_result.IsPublic, _dictionary.IsPublic);
+                _result.IsPublic.ShouldBe(_dictionary.IsPublic);
             }
 
             [Fact]
             public void ShouldRenderDictionaryLinks()
             {
-                Assert.NotNull(_result.Links);
+                _result.Links.ShouldNotBeNull();
+                _result.Links.ShouldNotBeEmpty();
             }
 
             [Fact]
             public void ShouldRenderIndexes()
             {
-                Assert.NotNull(_result.Indexes);
-                Assert.NotEqual(_result.Indexes.Count(), 0);
+                _result.Indexes.ShouldNotBeNull();
+                _result.Indexes.ShouldNotBeEmpty();
             }
 
             [Fact]
             public void ShouldRenderDictionarySelfLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "self"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
             [Fact]
             public void ShouldRenderDictionaryIndexLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "index"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Index);
             }
 
             [Fact]
             public void ShouldRenderDictionarySearchLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "search"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Search);
             }
         }
 
@@ -126,38 +124,35 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             {
                 Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
 
-                var mockLinkRenderer = new Mock<IRenderLink>();
+                var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
-                var renderer = new DictionaryRenderer(mockLinkRenderer.Object, fakeUserHelper);
+                var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                mockLinkRenderer.Setup(x => x.Render(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
-                    .Returns((string x, string r, object o) => new LinkView { Rel = r, Href = new Uri("http://link/") });
-
-                _result = renderer.Render(_dictionary);
+                _result = renderer.Render(_dictionary, 0);
             }
 
             [Fact]
             public void ShouldRenderDictionaryUpdateLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "update"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Update);
             }
 
             [Fact]
             public void ShouldRenderDictionaryDeleteLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "delete"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Delete);
             }
 
             [Fact]
             public void ShouldRenderDictionaryCreateWordLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "create-word"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.CreateWord);
             }
 
             [Fact]
             public void ShouldRenderDictionaryCreateDownloadLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "create-download"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.CreateDownload);
             }
         }
     }

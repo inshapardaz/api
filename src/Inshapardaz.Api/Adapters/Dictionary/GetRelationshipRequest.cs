@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetRelationshipRequest> HandleAsync(GetRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery { RelationshipId = command.RelationId }, cancellationToken);
+            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.RelationId), cancellationToken);
 
             if (relations == null)
             {

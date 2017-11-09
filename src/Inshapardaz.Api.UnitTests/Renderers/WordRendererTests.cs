@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
+using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
-using Moq;
+using Shouldly;
 using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
@@ -29,73 +28,77 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             {
                 Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
 
-                var mockLinkRenderer = new Mock<IRenderLink>();
+                var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper();
-                var renderer = new WordRenderer(mockLinkRenderer.Object, fakeUserHelper);
+                var renderer = new WordRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                mockLinkRenderer.Setup(x => x.Render(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
-                                .Returns((string x, string r, object o) => new LinkView { Rel = r, Href = new Uri("http://link/") });
-
-                _result = renderer.Render(_word);
+                _result = renderer.Render(_word, 1);
             }
 
             [Fact]
             public void ShouldRenderWord()
             {
-                Assert.NotNull(_result);
+                _result.ShouldNotBeNull();
             }
 
             [Fact]
             public void ShouldRenderId()
             {
-                Assert.Equal(_result.Id, _word.Id);
+                _result.Id.ShouldBe(_word.Id);
             }
 
             [Fact]
             public void ShouldRenderWordTitle()
             {
-                Assert.Equal(_result.Title, _word.Title);
+                _result.Title.ShouldBe(_word.Title);
             }
             [Fact]
             public void ShouldRenderWordTitleWithmovement()
             {
-                Assert.Equal(_result.TitleWithMovements, _word.TitleWithMovements);
+                _result.TitleWithMovements.ShouldBe(_word.TitleWithMovements);
             }
 
             [Fact]
             public void ShouldRenderPronunciation()
             {
-                Assert.Equal(_result.Pronunciation, _word.Pronunciation);
+                _result.Pronunciation.ShouldBe(_word.Pronunciation);
             }
 
             [Fact]
             public void ShouldRenderDescription()
             {
-                Assert.Equal(_result.Description, _word.Description);
+                _result.Description.ShouldBe(_word.Description);
             }
 
             [Fact]
             public void ShouldRenderDictionaryLinks()
             {
-                Assert.NotNull(_result.Links);
+                _result.Links.ShouldNotBeNull();
             }
 
             [Fact]
-            public void ShouldRenderDictionarySelfLink()
+            public void ShouldRenderSelfLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "self"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
             [Fact]
-            public void ShouldRenderDictionaryDetailsLink()
+            public void ShouldRenderDictionaryMeaningsLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "details"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Meanings);
             }
+
+            [Fact]
+            public void ShouldRenderTranslationLink()
+            {
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Translations);
+            }
+
 
             [Fact]
             public void ShouldRenderDictionaryRelationsLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "relations"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Relationships);
             }
         }
 
@@ -117,38 +120,41 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             {
                 Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
 
-                var mockLinkRenderer = new Mock<IRenderLink>();
+                var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
-                var renderer = new WordRenderer(mockLinkRenderer.Object, fakeUserHelper);
+                var renderer = new WordRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                mockLinkRenderer.Setup(x => x.Render(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()))
-                                .Returns((string x, string r, object o) => new LinkView { Rel = r, Href = new Uri("http://link/") });
-
-                _result = renderer.Render(_word);
+                _result = renderer.Render(_word, 1);
             }
 
             [Fact]
-            public void ShouldRenderDictionaryUpdateLink()
+            public void ShouldRenderUpdateLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "update"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Update);
             }
 
             [Fact]
-            public void ShouldRenderDictionaryDeleteLink()
+            public void ShouldRenderDeleteLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "delete"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Delete);
             }
 
             [Fact]
-            public void ShouldRenderDictionaryAddDetailLink()
+            public void ShouldRenderAddMeaningLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "add-detail"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.AddMeaning);
             }
 
             [Fact]
-            public void ShouldRenderDictionaryAddRelationLink()
+            public void ShouldRenderAddTranslationLink()
             {
-                Assert.NotNull(_result.Links.SingleOrDefault(l => l.Rel == "add-relation"));
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.AddTranslation);
+            }
+
+            [Fact]
+            public void ShouldRenderAddRelationLink()
+            {
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.AddRelation);
             }
         }
     }

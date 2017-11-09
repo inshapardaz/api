@@ -23,9 +23,9 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             {
                 new Translation()
             };
-            FakeQueryProcessor.SetupResultFor<TranslationsByWordIdQuery, IEnumerable<Translation>>(translations);
+            FakeQueryProcessor.SetupResultFor<GetTranslationsByWordIdQuery, IEnumerable<Translation>>(translations);
             FakeTranslationRenderer.WithView(new TranslationView());
-            Result = Controller.GetTranslationForWord(3).Result;
+            Result = Controller.GetTranslationForWord(1, 3).Result;
         }
 
         [Fact]
@@ -47,8 +47,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingTranslationsForWordThatDoesNotExist()
         {
-            FakeQueryProcessor.SetupResultFor<TranslationsByWordIdQuery, IEnumerable<Translation>>(new List<Translation>());
-            Result = Controller.GetTranslationForWord(9).Result;
+            FakeQueryProcessor.SetupResultFor<GetTranslationsByWordIdQuery, IEnumerable<Translation>>(new List<Translation>());
+            Result = Controller.GetTranslationForWord(1, 9).Result;
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             UserHelper.WithUserId(Guid.NewGuid());
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
-            Result = Controller.GetTranslationForWord(9).Result;
+            Result = Controller.GetTranslationForWord(1, 9).Result;
         }
 
         [Fact]
@@ -82,9 +82,9 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             {
                 new Translation()
             };
-            FakeQueryProcessor.SetupResultFor<TranslationsByLanguageQuery, IEnumerable<Translation>>(translations);
+            FakeQueryProcessor.SetupResultFor<GetTranslationsByLanguageQuery, IEnumerable<Translation>>(translations);
             FakeTranslationRenderer.WithView(new TranslationView());
-            Result = Controller.GetTranslationForWord(3, Languages.English).Result;
+            Result = Controller.GetTranslationForWord(1, 3, Languages.English).Result;
         }
 
         [Fact]
@@ -106,8 +106,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
     {
         public WhenGettingTranslationsForLanguageThatDoesNotExist()
         {
-            FakeQueryProcessor.SetupResultFor<TranslationsByLanguageQuery, IEnumerable<Translation>>(new List<Translation>());
-            Result = Controller.GetTranslationForWord(9, Languages.French).Result;
+            FakeQueryProcessor.SetupResultFor<GetTranslationsByLanguageQuery, IEnumerable<Translation>>(new List<Translation>());
+            Result = Controller.GetTranslationForWord(1, 9, Languages.French).Result;
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             UserHelper.WithUserId(Guid.NewGuid());
             FakeQueryProcessor.SetupResultFor<DictionaryByWordIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
-            Result = Controller.GetTranslationForWord(9, Languages.Hindi).Result;
+            Result = Controller.GetTranslationForWord(1, 9, Languages.Hindi).Result;
         }
 
         [Fact]
@@ -139,12 +139,11 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
-            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<WordByIdQuery, Word>(new Word());
-            FakeQueryProcessor.SetupResultFor<WordDetailByIdQuery, WordDetail>(new WordDetail());
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary { UserId = userId });
+            FakeQueryProcessor.SetupResultFor<GetWordByIdQuery, Word>(new Word());
             FakeTranslationRenderer.WithView(new TranslationView());
 
-            Result = Controller.Post(23, new TranslationView()).Result;
+            Result = Controller.Post(1, 23, new TranslationView()).Result;
         }
 
         [Fact]
@@ -177,8 +176,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
-            FakeQueryProcessor.SetupResultFor<DictionaryByWordDetailIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            Result = Controller.Post(23, new TranslationView()).Result;
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary { UserId = userId });
+            Result = Controller.Post(1, 23, new TranslationView()).Result;
         }
 
         [Fact]
@@ -193,7 +192,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenAddingTranslationToDictionaryWithNoWriteAccess()
         {
             UserHelper.AsReader();
-            Result = Controller.Post(23, new TranslationView()).Result;
+            Result = Controller.Post(1, 23, new TranslationView()).Result;
         }
 
         [Fact]
@@ -209,9 +208,9 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
-            FakeQueryProcessor.SetupResultFor<DictionaryByTranslationIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<TranslationByIdQuery, Translation>(new Translation());
-            Result = Controller.Put(32, new TranslationView()).Result;
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary { UserId = userId });
+            FakeQueryProcessor.SetupResultFor<GetTranslationByIdQuery, Translation>(new Translation());
+            Result = Controller.Put(1, 32, new TranslationView()).Result;
         }
 
         [Fact]
@@ -227,8 +226,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
-            FakeQueryProcessor.SetupResultFor<DictionaryByTranslationIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            Result = Controller.Put(32, new TranslationView()).Result;
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary { UserId = userId });
+            Result = Controller.Put(1, 32, new TranslationView()).Result;
         }
 
         [Fact]
@@ -243,9 +242,9 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenUpdatingATranslationInDictionaryUserHasNoWriteAccess()
         {
             UserHelper.WithUserId(Guid.NewGuid());
-            FakeQueryProcessor.SetupResultFor<DictionaryByTranslationIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
-            FakeQueryProcessor.SetupResultFor<WordMeaningByIdQuery, Meaning>(new Meaning());
-            Result = Controller.Put(32, new TranslationView()).Result;
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
+            FakeQueryProcessor.SetupResultFor<GetWordMeaningByIdQuery, Meaning>(new Meaning());
+            Result = Controller.Put(1, 32, new TranslationView()).Result;
         }
 
         [Fact]
@@ -261,9 +260,9 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
-            FakeQueryProcessor.SetupResultFor<DictionaryByTranslationIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            FakeQueryProcessor.SetupResultFor<TranslationByIdQuery, Translation>(new Translation());
-            Result = Controller.Delete(34).Result;
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary { UserId = userId });
+            FakeQueryProcessor.SetupResultFor<GetTranslationByIdQuery, Translation>(new Translation());
+            Result = Controller.Delete(1, 34).Result;
         }
 
         [Fact]
@@ -279,8 +278,8 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         {
             var userId = Guid.NewGuid();
             UserHelper.WithUserId(userId);
-            FakeQueryProcessor.SetupResultFor<DictionaryByTranslationIdQuery, Dictionary>(new Dictionary { UserId = userId });
-            Result = Controller.Delete(34).Result;
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary { UserId = userId });
+            Result = Controller.Delete(1, 34).Result;
         }
 
         [Fact]
@@ -295,9 +294,9 @@ namespace Inshapardaz.Api.UnitTests.Controllers
         public WhenDeleteingATranslationFromDictionaryWithNoWriteAccess()
         {
             UserHelper.WithUserId(Guid.NewGuid());
-            FakeQueryProcessor.SetupResultFor<DictionaryByTranslationIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
-            FakeQueryProcessor.SetupResultFor<TranslationByIdQuery, Translation>(new Translation());
-            Result = Controller.Delete(34).Result;
+            FakeQueryProcessor.SetupResultFor<GetDictionaryByIdQuery, Dictionary>(new Dictionary { UserId = Guid.NewGuid() });
+            FakeQueryProcessor.SetupResultFor<GetTranslationByIdQuery, Translation>(new Translation());
+            Result = Controller.Delete(1, 34).Result;
         }
 
         [Fact]
@@ -324,7 +323,7 @@ namespace Inshapardaz.Api.UnitTests.Controllers
             FakeTranslationRenderer = new FakeTranslationRenderer();
             FakeQueryProcessor = new FakeQueryProcessor();
             UserHelper = new FakeUserHelper();
-            Controller = new TranslationController(MockCommandProcessor.Object, FakeQueryProcessor, UserHelper, FakeTranslationRenderer);
+            Controller = new TranslationController(MockCommandProcessor.Object);
         }
     }
 }

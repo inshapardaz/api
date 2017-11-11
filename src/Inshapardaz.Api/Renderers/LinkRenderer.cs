@@ -24,14 +24,20 @@ namespace Inshapardaz.Api.Renderers
 
         public LinkView Render(string methodName, string rel)
         {
-            _log.LogTrace("Rendering link for {0}, with rel {1}", methodName, rel);
+            _log.LogTrace($"Rendering link for {methodName}, with rel {rel}");
             return new LinkView { Href = _urlHelper.RouteUrl(methodName, null, Scheme).ToUri(), Rel = rel };
         }
 
         public LinkView Render(string methodName, string rel, object data)
         {
-            _log.LogTrace("Rendering link for {0}, with rel {1} and data", methodName, rel, data);
+            _log.LogTrace($"Rendering link for {methodName}, with rel {rel} and {data}");
             return new LinkView { Href = _urlHelper.RouteUrl(methodName, data, Scheme).ToUri(), Rel = rel };
+        }
+
+        public LinkView Render(string methodName, string rel, string type, object data)
+        {
+            _log.LogTrace($"Rendering link for {methodName}, with rel {rel}, type {type} and {data}");
+            return new LinkView { Href = _urlHelper.RouteUrl(methodName, data, Scheme).ToUri(), Rel = rel, Type = type };
         }
     }
 }

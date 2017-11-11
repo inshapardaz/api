@@ -45,9 +45,9 @@ namespace Inshapardaz.Api.Renderers
                 links.Add(_linkRenderer.Render("CreateWord", RelTypes.CreateWord, new {id = source.Id}));
             }
 
-            if (source.IsPublic)
+            if (source.IsPublic || (!source.IsPublic && _userHelper.IsContributor))
             {
-                links.Add(_linkRenderer.Render("DownloadDictionary", RelTypes.Download, new {id = source.Id, accept = MimeTypes.SqlLite }));
+                links.Add(_linkRenderer.Render("DownloadDictionary", RelTypes.Download, MimeTypes.SqlLite, new {id = source.Id, accept = MimeTypes.SqlLite }));
             }
 
             var indexes = new List<LinkView>(_indexes.Select(i => _linkRenderer.Render("GetWordsListStartWith", i,

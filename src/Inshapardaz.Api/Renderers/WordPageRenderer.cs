@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Renderers
         {
             var page = new PageView<WordView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
-                Data = source.Page.Data.Select(x => _wordRenderer.Render(x, dictionaryId))
+                Data = source.Page.Data?.Select(x => _wordRenderer.Render(x, dictionaryId))
             };
 
             var links = new List<LinkView>
@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Renderers
                     CreateRouteParameters(source, dictionaryId, page.CurrentPageIndex + 1, page.PageSize)));
             }
 
-            if (page.CurrentPageIndex > 1)
+            if (page.PageCount > 1 && page.CurrentPageIndex > 1)
             {
                 links.Add(_linkRenderer.Render(source.RouteName, RelTypes.Previous,
                     CreateRouteParameters(source, dictionaryId, page.CurrentPageIndex - 1, page.PageSize)));

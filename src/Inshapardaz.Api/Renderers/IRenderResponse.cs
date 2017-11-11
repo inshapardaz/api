@@ -7,6 +7,8 @@ namespace Inshapardaz.Api.Renderers
         LinkView Render(string methodName, string rel);
 
         LinkView Render(string methodName, string rel, object data);
+
+        LinkView Render(string methodName, string rel, string type, object data);
     }
 
     public interface IRenderEnum

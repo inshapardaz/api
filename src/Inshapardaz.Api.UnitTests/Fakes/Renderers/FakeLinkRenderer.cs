@@ -15,5 +15,11 @@ namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
         {
             return new LinkView { Href = new Uri($"http://temp.link/{methodName}"), Rel = rel };
         }
+
+        public LinkView Render(string methodName, string rel, string type, object data)
+        {
+            return new LinkView { Href = new Uri($"http://temp.link/{methodName}"), Rel = rel, Type = type};
+
+        }
     }
 }

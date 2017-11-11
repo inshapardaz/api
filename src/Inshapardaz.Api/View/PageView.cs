@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.View
         {
             PageSize = pageSize;
             // ReSharper disable once PossibleLossOfFraction
-            PageCount = Convert.ToInt32(Math.Ceiling((double)(count / PageSize)));
+            PageCount = Convert.ToInt32(Math.Ceiling((double)count / PageSize));
             CurrentPageIndex = currentPageIndex;
 
             if (PageCount == 0)

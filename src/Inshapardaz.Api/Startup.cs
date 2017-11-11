@@ -110,7 +110,6 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderDictionary, DictionaryRenderer>();
             services.AddTransient<IRenderWord, WordRenderer>();
             services.AddTransient<IRenderWordPage, WordPageRenderer>();
-            services.AddTransient<IRenderWordMeanings, WordMeaningsRenderer>();
             services.AddTransient<IRenderMeaning, MeaningRenderer>();
             services.AddTransient<IRenderTranslation, TranslationRenderer>();
             services.AddTransient<IRenderRelation, RelationRenderer>();

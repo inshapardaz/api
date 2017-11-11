@@ -15,6 +15,7 @@ namespace Inshapardaz.Api.Renderers
         {
             return new DownloadDictionaryView()
             {
+                
             };
         }
     }

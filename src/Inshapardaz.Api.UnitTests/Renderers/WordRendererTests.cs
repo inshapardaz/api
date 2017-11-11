@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FizzWare.NBuilder;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
@@ -13,16 +14,9 @@ namespace Inshapardaz.Api.UnitTests.Renderers
     {
         public class WhenRendereingAnonymously
         {
-            WordView _result;
-            Word _word = new Word
-            {
-                Id = 1,
-                Title = "Test",
-                TitleWithMovements = "Test2",
-                Description = "Test description",
-                Pronunciation = "T^e`st",
-                DictionaryId = 12
-            };
+            readonly WordView _result;
+
+            private readonly Word _word = Builder<Word>.CreateNew().Build();
 
             public WhenRendereingAnonymously()
             {
@@ -106,15 +100,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
         {
             readonly WordView _result;
 
-            readonly Word _word = new Word
-            {
-                Id = 1,
-                Title = "Test",
-                TitleWithMovements = "Test2",
-                Description = "Test description",
-                Pronunciation = "T^e`st",
-                DictionaryId = 12
-            };
+            private readonly Word _word = Builder<Word>.CreateNew().Build();
 
             public WhenRendereingForOwner()
             {

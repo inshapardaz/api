@@ -20,4 +20,9 @@
     <ProjectReference Include="..\Inshapardaz.Domain\Inshapardaz.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AdapterTests\" />
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>

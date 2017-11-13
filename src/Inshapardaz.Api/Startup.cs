@@ -51,7 +51,7 @@ namespace Inshapardaz.Api
             ConfigureApiAuthentication(services);
             ConfigureDomain(services);
             services.AddAuthorization();
-            services.AddMvc();
+            ConfigureMvc(services);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -127,6 +127,11 @@ namespace Inshapardaz.Api
                 }
             );
             Mapper.AssertConfigurationIsValid();
+        }
+
+        protected virtual void ConfigureMvc(IServiceCollection services)
+        {
+            services.AddMvc();
         }
 
         protected virtual void ConfigureHangFire(IServiceCollection services)

@@ -1,4 +1,6 @@
-﻿using Inshapardaz.Domain.Database;
+﻿using System;
+using System.Reflection;
+using Inshapardaz.Domain.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,16 @@ namespace Inshapardaz.Api.IntegrationTests
 
         protected override void AddHangFire(IApplicationBuilder app)
         {
+            app.Use(async (context, next) =>
+            {
+                Console.WriteLine(context.Request.Path.Value);
+                await next();
+            });
+        }
+
+        protected override void ConfigureMvc(IServiceCollection services)
+        {
+            services.AddMvc().AddApplicationPart(typeof(Startup).Assembly);
         }
 
         protected override void ConfigureHangFire(IServiceCollection services)

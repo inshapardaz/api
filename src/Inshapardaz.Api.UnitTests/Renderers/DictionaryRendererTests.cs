@@ -6,13 +6,14 @@ using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class DictionaryRendererTests
     {
+        [TestFixture]
         public class WhenRendereingAnonymously
         {
             private readonly DictionaryView _result;
@@ -38,75 +39,76 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_dictionary, wordCount);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionary()
             {
                 _result.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionaryId()
             {
                 _result.Id.ShouldBe(_dictionary.Id);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionaryName()
             {
                 _result.Name.ShouldBe(_dictionary.Name);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionaryLanguage()
             {
                 _result.Language.ShouldBe(_dictionary.Language);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderWordCount()
             {
                 _result.WordCount.ShouldBe(wordCount);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderPublicFlag()
             {
                 _result.IsPublic.ShouldBe(_dictionary.IsPublic);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionaryLinks()
             {
                 _result.Links.ShouldNotBeNull();
                 _result.Links.ShouldNotBeEmpty();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderIndexes()
             {
                 _result.Indexes.ShouldNotBeNull();
                 _result.Indexes.ShouldNotBeEmpty();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionarySelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionaryIndexLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Index);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionarySearchLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Search);
             }
         }
 
+        [TestFixture]
         public class WhenRendereingPublicDictionaryWithDownloadAnonymously
         {
             private readonly DictionaryView _result;
@@ -136,7 +138,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_dictionary, wordCount);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDownloadLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Download);
@@ -144,6 +146,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             }
         }
 
+        [TestFixture]
         public class WhenRendereingPrivateDictionaryWithDownloadAnonymously
         {
             private readonly DictionaryView _result;
@@ -173,13 +176,14 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_dictionary, wordCount);
             }
 
-            [Fact]
+            [Test]
             public void ShouldNotRenderDownloadLink()
             {
                 _result.Links.ShouldNotContain(l => l.Rel == RelTypes.Download);
             }
         }
 
+        [TestFixture]
         public class WhenRendereingPrivateDictionaryWithDownloadAsContributor
         {
             private readonly DictionaryView _result;
@@ -209,7 +213,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_dictionary, wordCount);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDownloadLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Download);
@@ -217,6 +221,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             }
         }
 
+        [TestFixture]
         public class WhenRendereingPrivateDictionaryWithDownloadAsReader
         {
             private readonly DictionaryView _result;
@@ -246,13 +251,14 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_dictionary, wordCount);
             }
 
-            [Fact]
+            [Test]
             public void ShouldNotRenderDownloadLink()
             {
                 _result.Links.ShouldNotContain(l => l.Rel == RelTypes.Download);
             }
         }
 
+        [TestFixture]
         public class WhenRendereingForOwner
         {
             private readonly DictionaryView _result;
@@ -277,25 +283,25 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_dictionary, 0);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionaryUpdateLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Update);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionaryDeleteLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Delete);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionaryCreateWordLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.CreateWord);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionaryCreateDownloadLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.CreateDownload);

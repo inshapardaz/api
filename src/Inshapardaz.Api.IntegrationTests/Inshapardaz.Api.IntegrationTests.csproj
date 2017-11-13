@@ -10,9 +10,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
     <PackageReference Include="Shouldly" Version="2.8.3" />
-    <PackageReference Include="xunit" Version="2.3.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Inshapardaz.Api\Inshapardaz.Api.csproj" />

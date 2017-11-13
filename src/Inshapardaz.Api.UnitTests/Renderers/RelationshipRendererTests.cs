@@ -5,12 +5,13 @@ using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
+using NUnit.Framework;
 using EnumHelper = Inshapardaz.Api.Helpers.EnumHelper;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
 {
+    [TestFixture]
     public class RelationshipRendererTests
     {
         public class WhenRendereingRelationships
@@ -30,61 +31,61 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_relationship, _dictionaryId);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderRelationship()
             {
                 _result.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderId()
             {
                 _result.Id.ShouldBe(_relationship.Id);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderRelationType()
             {
                 _result.RelationType.ShouldBe(EnumHelper.GetEnumDescription(_relationship.RelationType));
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderRelationshipTypeId()
             {
                 _result.RelationTypeId.ShouldBe((int)_relationship.RelationType);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSourceWordId()
             {
                 _result.SourceWordId.ShouldBe(_relationship.SourceWordId);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderRelatedWordId()
             {
                 _result.RelatedWordId.ShouldBe(_result.RelatedWordId);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderLinks()
             {
                 _result.Links.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSourceWordLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.SourceWord);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderRelatedWordLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.RelatedWord);
@@ -108,13 +109,13 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_relationship, _dictionaryId);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderUpdateLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Update);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDeleteLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Delete);

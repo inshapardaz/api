@@ -5,11 +5,12 @@ using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Api.IntegrationTests
 {
+    [TestFixture]
     public class EntryTestsGettingEntryAsAnonymousUser : IDisposable
     {
         private readonly TestServer _server;
@@ -26,49 +27,49 @@ namespace Inshapardaz.Api.IntegrationTests
             _view = JsonConvert.DeserializeObject<EntryView>(_response.Content.ReadAsStringAsync().Result);
         }
 
-        [Fact]
+        [Test]
         public void ShouldReturn200()
         {
             _response.StatusCode.ShouldBe(HttpStatusCode.OK);
         }
 
-        [Fact]
+        [Test]
         public void ShouldHaveCorrectResponseBody()
         {
             _view.ShouldNotBeNull();
         }
 
-        [Fact]
+        [Test]
         public void ShouldHaveSelfLink()
         {
             _view.Links.ShouldContain(l => l.Rel == RelTypes.Self && l.Href != null);
         }
 
-        [Fact]
+        [Test]
         public void ShouldHaveDictionariesLink()
         {
             _view.Links.ShouldContain(l => l.Rel == RelTypes.Dictionaries && l.Href != null);
         }
 
-        [Fact]
+        [Test]
         public void ShouldHaveLanguagesLink()
         {
             _view.Links.ShouldContain(l => l.Rel == RelTypes.Languages && l.Href != null);
         }
 
-        [Fact]
+        [Test]
         public void ShouldHaveAttributesLink()
         {
             _view.Links.ShouldContain(l => l.Rel == RelTypes.Attributes && l.Href != null);
         }
 
-        [Fact]
+        [Test]
         public void ShouldHaveRelationshipTypesLink()
         {
             _view.Links.ShouldContain(l => l.Rel == RelTypes.RelationshipTypes && l.Href != null);
         }
 
-        [Fact]
+        [Test]
         public void ShouldHaveThesaurusLink()
         {
             _view.Links.ShouldContain(l => l.Rel == RelTypes.Thesaurus && l.Href != null);

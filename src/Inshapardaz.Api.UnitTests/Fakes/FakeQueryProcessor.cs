@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Paramore.Darker;
-using Xunit;
+using Shouldly;
 
 namespace Inshapardaz.Api.UnitTests.Fakes
 {
@@ -104,17 +104,17 @@ namespace Inshapardaz.Api.UnitTests.Fakes
 
         public void ShouldHaveExecuted<T>() where T : IQuery
         {
-            Assert.True(ExecutedQueries.Any(q => q is T));
+            ExecutedQueries.ShouldContain(q => q is T);
         }
 
         public void ShouldHaveExecuted<T>(Predicate<T> predicate) where T : IQuery
         {
-            Assert.True(ExecutedQueries.Any(q => q is T && predicate((T)q)));
+            ExecutedQueries.ShouldContain(q => q is T && predicate((T)q));
         }
 
         public void AssertQueryExecuted<TQuery>(Func<TQuery, bool> func) where TQuery : IQuery
         {
-            Assert.True(GetExecutedQueries<TQuery>().Any(func));
+            GetExecutedQueries<TQuery>().ShouldContain(q => func(q));
         }
     }
 }

@@ -3,13 +3,14 @@ using FizzWare.NBuilder;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class DictionaryDownloadRendererTests
     {
+        [TestFixture]
         public class WhenRendereingAnonymously
         {
             private readonly DownloadDictionaryView _result;
@@ -26,7 +27,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_downloadJob);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionary()
             {
                 _result.ShouldNotBeNull();

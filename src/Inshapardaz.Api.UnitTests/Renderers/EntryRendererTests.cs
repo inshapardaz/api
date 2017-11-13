@@ -1,13 +1,14 @@
 ﻿using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class EntryRendererTests
     {
+        [TestFixture]
         public class WhenGettingEntry
         {
 
@@ -21,37 +22,37 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _view = renderer.Render();
             }
 
-            [Fact]
+            [Test]
             public void ShouldReturnSelfLink()
             {
                 _view.Links.ShouldContain(x => x.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldReturnDictionariesLink()
             {
                 _view.Links.ShouldContain(x => x.Rel == RelTypes.Dictionaries);
             }
 
-            [Fact]
+            [Test]
             public void ShouldReturnThesaurusesLink()
             {
                 _view.Links.ShouldContain(x => x.Rel == RelTypes.Thesauruses);
             }
 
-            [Fact]
+            [Test]
             public void ShouldReturnLanguagesLink()
             {
                 _view.Links.ShouldContain(x => x.Rel == RelTypes.Languages);
             }
 
-            [Fact]
+            [Test]
             public void ShouldReturnAttributesLink()
             {
                 _view.Links.ShouldContain(x => x.Rel == RelTypes.Attributes);
             }
 
-            [Fact]
+            [Test]
             public void ShouldReturnRelationshipTypesLink()
             {
                 _view.Links.ShouldContain(x => x.Rel == RelTypes.RelationshipTypes);

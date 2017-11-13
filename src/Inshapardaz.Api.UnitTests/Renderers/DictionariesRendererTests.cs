@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FizzWare.NBuilder;
-using Xunit;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
+using NUnit.Framework;
 using Shouldly;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class DictionariesRendererTests
     {
+        [TestFixture]
         public class WhenRenderingDictionaryForAnonymousUser
         {
             private readonly DictionariesView _result;
@@ -28,19 +29,19 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_dictionaries, new Dictionary<int, int>());
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldNotRenderCreateLink()
             {
                 _result.Links.ShouldNotContain(l => l.Rel == RelTypes.Create);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDictionaries()
             {
                 _result.Items.ShouldNotBeNull();
@@ -49,6 +50,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             }
         }
 
+        [TestFixture]
         public class WhenRenderingDictionaryForLoggedInUser
         {
             private readonly DictionariesView _result;
@@ -63,13 +65,13 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(dictionaries, new Dictionary<int, int>());
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCreateLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Create);

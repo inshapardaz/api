@@ -1,13 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
-using Xunit;
+using NUnit.Framework;
 
 namespace Inshapardaz.Api.UnitTests.Ports
 {
+    [TestFixture]
     public class GetEntryCommandTests
     {
-        [Fact]
+        [Test]
         public async Task ShouldReturnEntryResponse()
         {
             var handler = new GetEntryRequestHandler(new FakeEntryRender());

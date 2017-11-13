@@ -5,13 +5,14 @@ using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class MeaningRendererTests
     {
+        [TestFixture]
         public class WhenRendereingMeanings
         {
             private readonly MeaningView _result;
@@ -29,61 +30,62 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_meaning, _dictionaryId);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderMeaning()
             {
                 _result.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderId()
             {
                 _result.Id.ShouldBe(_meaning.Id);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderContext()
             {
                 _result.Context.ShouldBe(_meaning.Context);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderMeaningValue()
             {
                 _result.Value.ShouldBe(_meaning.Value);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderExample()
             {
                 _result.Example.ShouldBe(_meaning.Example);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderWordId()
             {
                 _result.WordId.ShouldBe(_result.WordId);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderLinks()
             {
                 _result.Links.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderWordLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Word);
             }
         }
 
+        [TestFixture]
         public class WhenRendereingForOwner
         {
             private readonly MeaningView _result;
@@ -101,13 +103,13 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_meaning, _dictionaryId);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderUpdateLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Update);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDeleteLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Delete);

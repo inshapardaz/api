@@ -5,13 +5,14 @@ using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class WordRendererTests
     {
+        [TestFixture]
         public class WhenRendereingAnonymously
         {
             readonly WordView _result;
@@ -29,73 +30,74 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_word, 1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderWord()
             {
                 _result.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderId()
             {
                 _result.Id.ShouldBe(_word.Id);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderWordTitle()
             {
                 _result.Title.ShouldBe(_word.Title);
             }
-            [Fact]
+            [Test]
             public void ShouldRenderWordTitleWithmovement()
             {
                 _result.TitleWithMovements.ShouldBe(_word.TitleWithMovements);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderPronunciation()
             {
                 _result.Pronunciation.ShouldBe(_word.Pronunciation);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDescription()
             {
                 _result.Description.ShouldBe(_word.Description);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderLinks()
             {
                 _result.Links.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderMeaningsLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Meanings);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderTranslationLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Translations);
             }
 
 
-            [Fact]
+            [Test]
             public void ShouldRenderRelationshipsLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Relationships);
             }
         }
 
+        [TestFixture]
         public class WhenRendereingForOwner
         {
             readonly WordView _result;
@@ -113,31 +115,31 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_word, 1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderUpdateLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Update);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDeleteLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Delete);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderAddMeaningLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.AddMeaning);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderAddTranslationLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.AddTranslation);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderAddRelationLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.AddRelation);

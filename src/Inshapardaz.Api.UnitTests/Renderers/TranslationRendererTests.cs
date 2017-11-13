@@ -5,14 +5,15 @@ using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
+using NUnit.Framework;
 using EnumHelper = Inshapardaz.Api.Helpers.EnumHelper;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class TranslationRendererTests
     {
+        [TestFixture]
         public class WhenRendereingTranslations
         {
             private readonly TranslationView _result;
@@ -30,61 +31,62 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_translation, _dictionaryId);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderTranslation()
             {
                 _result.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderId()
             {
                 _result.Id.ShouldBe(_translation.Id);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderLanguage()
             {
                 _result.Language.ShouldBe(EnumHelper.GetEnumDescription(_translation.Language));
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderTranslationValue()
             {
                 _result.Value.ShouldBe(_translation.Value);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderLanguageId()
             {
                 _result.LanguageId.ShouldBe((int)_translation.Language);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderWordId()
             {
                 _result.WordId.ShouldBe(_result.WordId);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderLinks()
             {
                 _result.Links.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderWordLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Word);
             }
         }
 
+        [TestFixture]
         public class WhenRendereingForOwner
         {
             private readonly TranslationView _result;
@@ -102,13 +104,13 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(_translation, _dictionaryId);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderUpdateLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Update);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderDeleteLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Delete);

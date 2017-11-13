@@ -6,14 +6,14 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
 {
     public class WordPageRendererTests
     {
-
+        [TestFixture]
         public class WhenGettingFirstPageWithNoFurtherPages
         {
             private readonly PageView<WordView> _result;
@@ -37,55 +37,56 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(rendereArgs, 1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderAPage()
             {
                 _result.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectPageSize()
             {
                 _result.PageSize.ShouldBe(10);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectPageCount()
             {
                 _result.PageCount.ShouldBe(1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectCountIndex()
             {
                 _result.CurrentPageIndex.ShouldBe(1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderData()
             {
                 _result.Data.Count().ShouldBe(_words.Count);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldNotRenderNextLink()
             {
                 _result.Links.ShouldNotContain(l => l.Rel == RelTypes.Next);
             }
 
-            [Fact]
+            [Test]
             public void ShouldNotRenderPreviousLink()
             {
                 _result.Links.ShouldNotContain(l => l.Rel == RelTypes.Previous);
             }
         }
 
+        [TestFixture]
         public class WhenGettingFirstPageWithMorePages
         {
             private readonly PageView<WordView> _result;
@@ -109,55 +110,56 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(rendereArgs, 1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderAPage()
             {
                 _result.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderData()
             {
                 _result.Data.Count().ShouldBe(_words.Count);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectPageSize()
             {
                 _result.PageSize.ShouldBe(10);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectPageCount()
             {
                 _result.PageCount.ShouldBe(2);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectCountIndex()
             {
                 _result.CurrentPageIndex.ShouldBe(1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderNextLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Next);
             }
 
-            [Fact]
+            [Test]
             public void ShouldNotRenderPreviousLink()
             {
                 _result.Links.ShouldNotContain(l => l.Rel == RelTypes.Previous);
             }
         }
 
+        [TestFixture]
         public class WhenGettingSecondPageWithMorePages
         {
             private readonly PageView<WordView> _result;
@@ -181,55 +183,56 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(rendereArgs, 1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderAPage()
             {
                 _result.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderData()
             {
                 _result.Data.Count().ShouldBe(_words.Count);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectPageSize()
             {
                 _result.PageSize.ShouldBe(10);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectPageCount()
             {
                 _result.PageCount.ShouldBe(3);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectCountIndex()
             {
                 _result.CurrentPageIndex.ShouldBe(2);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderNextLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Next);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderPreviousLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Previous);
             }
         }
 
+        [TestFixture]
         public class WhenGettingLastPageWithPreviousPages
         {
             private readonly PageView<WordView> _result;
@@ -253,55 +256,56 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(rendereArgs, 1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderAPage()
             {
                 _result.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderData()
             {
                 _result.Data.Count().ShouldBe(_words.Count);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectPageSize()
             {
                 _result.PageSize.ShouldBe(10);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectPageCount()
             {
                 _result.PageCount.ShouldBe(3);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectCountIndex()
             {
                 _result.CurrentPageIndex.ShouldBe(3);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldNotRenderNextLink()
             {
                 _result.Links.ShouldNotContain(l => l.Rel == RelTypes.Next);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderPreviousLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Previous);
             }
         }
 
+        [TestFixture]
         public class WhenGettingPageBeyondPageLimit
         {
             private readonly PageView<WordView> _result;
@@ -323,49 +327,49 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 _result = renderer.Render(rendereArgs, 1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderAPage()
             {
                 _result.ShouldNotBeNull();
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderNoData()
             {
                 _result.Data.Count().ShouldBe(0);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectPageSize()
             {
                 _result.PageSize.ShouldBe(10);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectPageCount()
             {
                 _result.PageCount.ShouldBe(1);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderCorrectCountIndex()
             {
                 _result.CurrentPageIndex.ShouldBe(3);
             }
 
-            [Fact]
+            [Test]
             public void ShouldRenderSelfLink()
             {
                 _result.Links.ShouldContain(l => l.Rel == RelTypes.Self);
             }
 
-            [Fact]
+            [Test]
             public void ShouldNotRenderNextLink()
             {
                 _result.Links.ShouldNotContain(l => l.Rel == RelTypes.Next);
             }
 
-            [Fact]
+            [Test]
             public void ShouldNotRenderPreviousLink()
             {
                 _result.Links.ShouldNotContain(l => l.Rel == RelTypes.Previous);

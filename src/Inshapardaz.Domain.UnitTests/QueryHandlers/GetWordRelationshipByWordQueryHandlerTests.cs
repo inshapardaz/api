@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
+    [TestFixture]
     public class GetWordRelationshipByWordQueryHandlerTests : DatabaseTest
     {
         private readonly GetRelationshipsByWordQueryHandler _handler;
@@ -44,7 +44,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _handler = new GetRelationshipsByWordQueryHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGettingTranslationById_ShouldReturnCorrectTranslation()
         {
             var relations = await _handler.ExecuteAsync(new GetRelationshipsByWordQuery(_words[2].Id));
@@ -53,7 +53,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             relations.ShouldBe(_words[2].WordRelationSourceWord);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGetTranslationForIncorrectId_ShouldReturnNull()
         {
             var relations = await _handler.ExecuteAsync(new GetRelationshipsByWordQuery(-232));

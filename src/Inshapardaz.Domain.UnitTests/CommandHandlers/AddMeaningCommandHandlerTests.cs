@@ -6,11 +6,12 @@ using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
 using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class AddMeaningCommandHandlerTests : DatabaseTest
     {
         private readonly AddMeaningCommandHandler _handler;
@@ -30,7 +31,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new AddMeaningCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingMeaningToWord_ShouldSaveMeaningForTheWord()
         {
 
@@ -50,7 +51,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             createdMeaning.ShouldBeSameAs(meaning);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingMeaningToNonExistingWord_ShouldThrowNotFound()
         {
             var meaning = Builder<Meaning>
@@ -62,7 +63,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
                           .ShouldThrowAsync<NotFoundException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingMeaningToNonExistingDictionary_ShouldThrowNotFound()
         {
             var meaning = Builder<Meaning>

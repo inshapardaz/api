@@ -1,16 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class UpdateTranslationCmmandHandlerTests : DatabaseTest
     {
         private readonly UpdateWordTranslationCommandHandler _handler;
@@ -36,7 +36,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new UpdateWordTranslationCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdateTranslation_ShouldUpdateTranslationFields()
         {
             var translation = Builder<Translation>
@@ -53,7 +53,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             updatedTranslation.WordId.ShouldBe(translation.WordId);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdatingNonExistingTranslation_ShouldThrowNotFound()
         {
             var meaning = new Translation
@@ -65,7 +65,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
                           .ShouldThrowAsync<NotFoundException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdatingTranslationFromIncorrectDictionary_ShouldThrowNotFound()
         {
             await _handler.HandleAsync(new UpdateWordTranslationCommand(-5, _translation))

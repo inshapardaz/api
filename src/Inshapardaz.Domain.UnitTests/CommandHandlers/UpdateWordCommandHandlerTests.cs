@@ -1,22 +1,22 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class UpdateWordCommandHandlerTests : DatabaseTest
     {
         private readonly UpdateWordCommandHandler _handler;
         private readonly int DictionaryId = 5;
         private readonly Word _word;
-        private Dictionary _dictionary;
+        private readonly Dictionary _dictionary;
 
         public UpdateWordCommandHandlerTests()
         {
@@ -37,7 +37,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new UpdateWordCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdateWord_ShouldUpdateWordFields()
         {
             var word = Builder<Word>
@@ -59,7 +59,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             updatedWord.DictionaryId.ShouldBe(DictionaryId);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdatingNonExistingWord_ShouldThrowNotFound()
         {
             var word = new Word
@@ -70,7 +70,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             await _handler.HandleAsync(new UpdateWordCommand(DictionaryId, word)).ShouldThrowAsync<NotFoundException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdatingWordInIncorrectDictionary_ShouldThrowNotFound()
         {
             await _handler.HandleAsync(new UpdateWordCommand(-6, _word)).ShouldThrowAsync<NotFoundException>();

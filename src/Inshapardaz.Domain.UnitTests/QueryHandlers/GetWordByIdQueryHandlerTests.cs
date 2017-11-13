@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
+    [TestFixture]
     public class GetWordByIdQueryHandlerTests : DatabaseTest
     {
         private readonly GetWordByIdQueryHandler _handler;
@@ -36,7 +36,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _handler = new GetWordByIdQueryHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenCallingForWordFromADictionary_ShouldReturnWord()
         {
             var word = await _handler.ExecuteAsync(new GetWordByIdQuery(_dictionary.Id, _words[45].Id));
@@ -45,7 +45,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             word.ShouldBe(_words[45]);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenCallingForWordFromIncorrectDictionary_ShouldReturnNull()
         {
             var word = await _handler.ExecuteAsync(new GetWordByIdQuery(-3, _words[22].Id));
@@ -53,7 +53,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             word.ShouldBeNull();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenCallingForNonExistingWordFromDictionary_ShouldReturnNull()
         {
             var word = await _handler.ExecuteAsync(new GetWordByIdQuery(_dictionary.Id, -12423));

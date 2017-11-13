@@ -1,16 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class UpdateRelationshipCommandHandlerTests : DatabaseTest
     {
         private readonly UpdateWordRelationCommandHandler _handler;
@@ -44,7 +44,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new UpdateWordRelationCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdateRelation_ShouldUpdateRelationTypeAndRelatedWordFields()
         {
             var wordRelation = Builder<WordRelation>
@@ -61,7 +61,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             updatedRelation.RelationType.ShouldBe(wordRelation.RelationType);
         }
         
-        [Fact]
+        [Test]
         public async Task WhenUpdatingNonExistingRelation_ShouldThrowNotFound()
         {
             var relation = new WordRelation
@@ -72,7 +72,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             await _handler.HandleAsync(new UpdateWordRelationCommand(DictionaryId, relation)).ShouldThrowAsync<NotFoundException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdatingRelationinIncorrect_ShouldThrowNotFound()
         {
             await _handler.HandleAsync(new UpdateWordRelationCommand(-4, _relation)).ShouldThrowAsync<NotFoundException>();

@@ -1,16 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class UpdateMeaningCommandHandlerTests : DatabaseTest
     {
         private readonly UpdateWordMeaningCommandHandler _handler;
@@ -35,7 +35,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new UpdateWordMeaningCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdateMeaning_ShouldUpdateMeaningFields()
         {
             var meaning = Builder<Meaning>
@@ -53,7 +53,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             updatedMeaning.WordId.ShouldBe(meaning.WordId);
         }
         
-        [Fact]
+        [Test]
         public async Task WhenUpdatingNonExistingMeaning_ShouldThrowNotFound()
         {
             var meaning = new Meaning
@@ -64,7 +64,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             await _handler.HandleAsync(new UpdateWordMeaningCommand(DictionaryId, meaning)).ShouldThrowAsync<NotFoundException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdatingMeaningFromIncorrectDictionary_ShouldThrowNotFound()
         {
             var meaning = new Meaning{ Id = 30203 };

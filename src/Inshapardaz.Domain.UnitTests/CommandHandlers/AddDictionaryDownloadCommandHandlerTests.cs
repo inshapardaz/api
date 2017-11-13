@@ -8,10 +8,12 @@ using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Xunit;
+using NUnit.Framework;
+using Shouldly;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class AddDictionaryDownloadCommandHandlerTests
     {
         private readonly AddDictionaryDownloadCommandHandler _handler;
@@ -29,7 +31,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new AddDictionaryDownloadCommandHandler(_backgroundJobClient.Object);
         }
         
-        [Fact]
+        [Test]
         public async Task WhenAdded_ShouldSaveToDatabase()
         {
             var name = "Test";
@@ -39,7 +41,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
                 DownloadType = "something"
             });
 
-            Assert.Equal(response.JobId, "34");
+            response.JobId.ShouldBe("34");
             _backgroundJobClient.VerifyAll();
         }
     }

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
+    [TestFixture]
     public class GetWordMeaningByIdQueryHandlerTests : DatabaseTest
     {
         private readonly GetWordMeaningByIdQueryHandler _handler;
@@ -40,7 +40,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _handler = new GetWordMeaningByIdQueryHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGettingMeaningById_ShouldReturnCorrectMeaning()
         {
             var meaning = await _handler.ExecuteAsync(new GetWordMeaningByIdQuery(_meanings[2].Id));
@@ -49,7 +49,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             meaning.ShouldBe(_meanings[2]);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGetMeaningForIncorrectId_ShouldReturnNull()
         {
             var meaning = await _handler.ExecuteAsync(new GetWordMeaningByIdQuery(-232));

@@ -5,11 +5,12 @@ using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class AddWordCommandHandlerTests : DatabaseTest
     {
         private readonly AddWordCommandHandler _handler;
@@ -27,7 +28,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new AddWordCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingWordToDictionary_ShouldSaveMeaningForTheWord()
         {
 
@@ -45,7 +46,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             createdWord.DictionaryId.ShouldBe(DictionaryId);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingWordToNonExistingDictionary_ShouldThrowNotFound()
         {
             var word = Builder<Word>

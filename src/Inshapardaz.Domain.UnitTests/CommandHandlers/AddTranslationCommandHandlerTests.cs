@@ -6,11 +6,12 @@ using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
 using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class AddTranslationCommandHandlerTests : DatabaseTest
     {
         private readonly AddTranslationCommandHandler _handler;
@@ -30,7 +31,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new AddTranslationCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingTranslationToWord_ShouldSaveTranslationForTheWord()
         {
 
@@ -48,7 +49,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             word.Translation.First().ShouldBeSameAs(translation);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingTranslationToNonExistingWord_ShouldThrowNotFound()
         {
             var translation = Builder<Translation>
@@ -59,7 +60,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             await _handler.HandleAsync(command).ShouldThrowAsync<NotFoundException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingTranslationToNonExistingDictionary_ShouldThrowNotFound()
         {
             var translation = Builder<Translation>

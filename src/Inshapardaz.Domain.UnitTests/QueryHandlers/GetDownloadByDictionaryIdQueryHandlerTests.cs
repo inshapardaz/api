@@ -4,11 +4,12 @@ using FizzWare.NBuilder;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
+    [TestFixture]
     public class GetDownloadByDictionaryIdQueryHandlerTests : DatabaseTest
     {
         private readonly GetDownloadByDictionaryIdQueryHandler _handler;
@@ -38,7 +39,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _handler = new GetDownloadByDictionaryIdQueryHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenDownloadRequested_shouldReturnDownloadForCorretDictionary()
         {
             var result = await _handler.ExecuteAsync(new GetDownloadByDictionaryIdQuery
@@ -51,7 +52,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             result.ShouldBe(_file);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenDownloadForIncorrectMimeType_ShouldReturnNull()
         {
             var result = await _handler.ExecuteAsync(new GetDownloadByDictionaryIdQuery
@@ -63,7 +64,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             result.ShouldBeNull();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenDownloadForDictionaryThatDoesnotExists_ShouldReturnNull()
         {
             var result = await _handler.ExecuteAsync(new GetDownloadByDictionaryIdQuery { DictionaryId = -9 });

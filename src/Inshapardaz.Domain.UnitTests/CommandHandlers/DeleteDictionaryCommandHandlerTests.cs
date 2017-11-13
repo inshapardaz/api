@@ -5,11 +5,12 @@ using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class DeleteDictionaryCommandHandlerTests : DatabaseTest
     {
         private readonly DeleteDictionaryCommandHandler _handler;
@@ -25,7 +26,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new DeleteDictionaryCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenRemovedPrivateDictionary_ShouldDeleteFromDatabase()
         {
             await _handler.HandleAsync(new DeleteDictionaryCommand(3));
@@ -33,7 +34,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             DbContext.Dictionary.SingleOrDefault(d => d.Id == 3).ShouldBeNull();
         }
 
-        [Fact]
+        [Test]
         public async Task IfDictionaryIsNotFound_ShouldThrowException()
         {
             await _handler.HandleAsync(new DeleteDictionaryCommand(7))

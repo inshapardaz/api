@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class AddDictionaryCommandHandlerTests : DatabaseTest
     {
         private readonly AddDictionaryCommandHandler _handler;
@@ -18,7 +19,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new AddDictionaryCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAdded_ShouldSaveToDatabase()
         {
             var dictionary = new Dictionary

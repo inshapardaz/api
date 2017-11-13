@@ -5,11 +5,12 @@ using FizzWare.NBuilder;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
+    [TestFixture]
     public class GetWordsPagesQueryHandlerTests : DatabaseTest
     {
         private readonly GetWordsPagesQueryHandler _handler;
@@ -37,7 +38,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _handler = new GetWordsPagesQueryHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGettingFirstPageOfWords_ShouldReturnCorrectPage()
         {
             var page = await _handler.ExecuteAsync(new GetWordPageQuery(_dictionary.Id, 1, 3));
@@ -53,7 +54,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             page.Data.ElementAt(2).ShouldBe(_words[2]);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGettingSecondPageOfWords_ShouldReturnCorrectPage()
         {
             var page = await _handler.ExecuteAsync(new GetWordPageQuery(_dictionary.Id, 2, 3));
@@ -69,7 +70,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             page.Data.ElementAt(2).ShouldBe(_words[5]);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGettingLastPartialPageOfWords_ShouldReturnCorrectPage()
         {
             var page = await _handler.ExecuteAsync(new GetWordPageQuery(_dictionary.Id, 4, 3));
@@ -83,7 +84,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             page.Data.ElementAt(0).ShouldBe(_words[9]);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGettingNonExistantPageOfWords_ShouldReturnEmptyCollection()
         {
             var page = await _handler.ExecuteAsync(new GetWordPageQuery(_dictionary.Id, 20, 10));
@@ -94,7 +95,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             page.PageSize.ShouldBe(10);
             page.Data.ShouldBeEmpty();
         }
-        [Fact]
+        [Test]
         public async Task WhenGettingWordPageFromNonExistantDictionary_ShouldReturnEmptyCollection()
         {
             var page = await _handler.ExecuteAsync(new GetWordPageQuery(-1, 1, 4));

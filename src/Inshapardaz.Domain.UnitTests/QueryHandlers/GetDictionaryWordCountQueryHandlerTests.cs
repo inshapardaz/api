@@ -4,11 +4,12 @@ using FizzWare.NBuilder;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
+    [TestFixture]
     public class GetDictionaryWordCountQueryHandlerTests : DatabaseTest
     {
         private readonly GetDictionaryWordCountQueryHandler _handler;
@@ -36,7 +37,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _handler = new GetDictionaryWordCountQueryHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenCalledShouldReturnTheDictionary()
         {
             var result = await _handler.ExecuteAsync(new GetDictionaryWordCountQuery
@@ -47,7 +48,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             result.ShouldBe(_words.Count);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenCalleddictionaryThatDoesnotExists_ShouldReturnNull()
         {
             var result = await _handler.ExecuteAsync(new GetDictionaryWordCountQuery { DictionaryId = -9});

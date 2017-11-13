@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
+    [TestFixture]
     public class GetWordMeaningByContextQueryHandlerTests : DatabaseTest
     {
         private readonly GetWordMeaningsByContextQueryHandler _handler;
@@ -41,7 +41,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _handler = new GetWordMeaningsByContextQueryHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGettingContextMeaningFromAWord_ShouldReturnCorrectMeaning()
         {
             var meanings = await _handler.ExecuteAsync(new GetWordMeaningsByContextQuery(_word.Id, _meanings[2].Context));
@@ -51,7 +51,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             meanings.ShouldContain(_meanings[2]);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGettingContextMeaningFromIncorrectWord_ShouldReturnEmpty()
         {
             var meanings = await _handler.ExecuteAsync(new GetWordMeaningsByContextQuery(-1, _meanings[3].Context));

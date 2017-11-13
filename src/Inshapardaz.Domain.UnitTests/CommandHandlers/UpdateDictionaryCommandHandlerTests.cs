@@ -1,16 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class UpdateDictionaryCommandHandlerTests : DatabaseTest
     {
         private readonly UpdateDictionaryCommandHandler _handler;
@@ -27,7 +27,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new UpdateDictionaryCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenUpdatingDictionary_ShouldUpdateDictionaryFields()
         {
             var dictionary = Builder<Dictionary>
@@ -45,7 +45,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
         }
 
 
-        [Fact]
+        [Test]
         public async Task WhenUpdatingNonExistingDictionary_ShouldThrowNotFound()
         {
             await _handler.HandleAsync(new UpdateDictionaryCommand(

@@ -1,16 +1,16 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
-using FizzWare.NBuilder.Extensions;
 using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class DeleteWordRelationshipCommandHandlerTests : DatabaseTest
     {
         private readonly DeleteWordRelationshipCommandHandler _handler;
@@ -50,7 +50,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new DeleteWordRelationshipCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenDeletingRelationship_ShouldDeleteRelation()
         {
             var command = new DeleteWordRelationshipCommand(DictionaryId, RelationshipId);
@@ -63,7 +63,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             removedRelationship.ShouldBeNull();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenDeletingNonExistingRelation_ShouldThrowNotFound()
         {
             var command = new DeleteWordRelationshipCommand(DictionaryId, 532532);
@@ -72,7 +72,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
                           .ShouldThrowAsync<NotFoundException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenDeletingRelationFromIncorrectDictionary_ShouldThrowNotFound()
         {
             var command = new DeleteWordRelationshipCommand(-2, RelationshipId);

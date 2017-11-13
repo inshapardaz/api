@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
+    [TestFixture]
     public class GetWordTranslationByIdQueryHandlerTests : DatabaseTest
     {
         private readonly GetTranslationByIdQueryHandler _handler;
@@ -41,7 +41,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _handler = new GetTranslationByIdQueryHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGettingTranslationById_ShouldReturnCorrectTranslation()
         {
             var translation = await _handler.ExecuteAsync(new GetTranslationByIdQuery(_translations[2].Id));
@@ -50,7 +50,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             translation.ShouldBe(_translations[2]);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenGetTranslationForIncorrectId_ShouldReturnNull()
         {
             var translation = await _handler.ExecuteAsync(new GetTranslationByIdQuery(-232));

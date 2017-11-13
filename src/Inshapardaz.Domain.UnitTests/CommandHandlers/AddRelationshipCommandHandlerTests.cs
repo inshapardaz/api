@@ -5,11 +5,12 @@ using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class AddRelationshipCommandHandlerTests : DatabaseTest
     {
         private readonly AddWordRelationCommandHandler _handler;
@@ -45,7 +46,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new AddWordRelationCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingRelationshipToWord_ShouldSaveTranslationForTheWord()
         {
             var command = new AddWordRelationCommand(DictionaryId1, WordId1, WordId2, RelationType.Halat);
@@ -60,7 +61,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             relation.RelationType.ShouldBe(RelationType.Halat);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingRelationshipFromNonExistingWord_ShouldThrowNotFound()
         {
             var command = new AddWordRelationCommand(DictionaryId1, 2323, WordId2, RelationType.Acronym);
@@ -69,7 +70,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
                           .ShouldThrowAsync<NotFoundException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingRelationshipToNonExistingWord_ShouldThrowBadRequest()
         {
             var command = new AddWordRelationCommand(DictionaryId1, WordId1, 23234, RelationType.Acronym);
@@ -78,7 +79,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
                           .ShouldThrowAsync<BadRequestException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingRelationshipToNonExistingDictionary_ShouldThrowNotFoundException()
         {
             var command = new AddWordRelationCommand(-1, WordId1, WordId2, RelationType.Acronym);
@@ -87,7 +88,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
                           .ShouldThrowAsync<NotFoundException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingRelationshipToItself_ShouldThrowBadRequest()
         {
             var command = new AddWordRelationCommand(DictionaryId1, WordId1, WordId1, RelationType.Acronym);
@@ -96,7 +97,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
                           .ShouldThrowAsync<BadRequestException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenAddingRelationshipToWordInOtherDictionary_ShouldThrowBadRequest()
         {
             var command = new AddWordRelationCommand(DictionaryId1, WordId1, WordId3, RelationType.Acronym);

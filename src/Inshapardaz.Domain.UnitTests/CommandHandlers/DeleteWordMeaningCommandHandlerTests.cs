@@ -5,11 +5,12 @@ using Inshapardaz.Domain.CommandHandlers;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.CommandHandlers
 {
+    [TestFixture]
     public class DeleteWordMeaningCommandHandlerTests : DatabaseTest
     {
         private readonly DeleteWordMeaningCommandHandler _handler;
@@ -41,7 +42,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             _handler = new DeleteWordMeaningCommandHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenDeletingMeaningFromWord_ShouldDeleteMeaning()
         {
             var command = new DeleteWordMeaningCommand(DictionaryId, MeaningId);
@@ -55,7 +56,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
             removedMeaning.ShouldBeNull();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenDeletingNonExistingMeaning_ShouldThrowNotFound()
         {
             var command = new DeleteWordMeaningCommand(DictionaryId, 532532);
@@ -64,7 +65,7 @@ namespace Inshapardaz.Domain.UnitTests.CommandHandlers
                           .ShouldThrowAsync<NotFoundException>();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenDeletingMeaningFromIncorrectDictionary_ShouldThrowNotFound()
         {
             var command = new DeleteWordMeaningCommand(-4, MeaningId);

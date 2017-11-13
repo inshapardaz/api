@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
+    [TestFixture]
     public class GetDictionariesByUserQueryHandlerTests : DatabaseTest
     {
         private readonly GetDictionariesByUserQueryHandler _handler;
@@ -41,7 +42,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _handler = new GetDictionariesByUserQueryHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenCallingForAnonymous_ShouldReturnAllPublicDictionaries()
         {
             var result = await _handler.ExecuteAsync(new DictionariesByUserQuery());
@@ -58,7 +59,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             dictionaries[1].IsPublic.ShouldBeTrue();
         }
 
-        [Fact]
+        [Test]
         public async Task WhenCalledForAUser_ShouldReturnPublicAndPrivateDictionaries()
         {
             var result = await _handler.ExecuteAsync(new DictionariesByUserQuery {UserId = _userId2 });

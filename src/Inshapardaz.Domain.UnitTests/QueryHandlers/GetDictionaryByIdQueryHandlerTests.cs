@@ -2,11 +2,12 @@
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.QueryHandlers;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Inshapardaz.Domain.UnitTests.QueryHandlers
 {
+    [TestFixture]
     public class GetDictionaryByIdQueryHandlerTests : DatabaseTest
     {
         private readonly GetDictionaryByIdQueryHandler _handler;
@@ -25,7 +26,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             _handler = new GetDictionaryByIdQueryHandler(DbContext);
         }
 
-        [Fact]
+        [Test]
         public async Task WhenCalledForADictionary_ShouldReturCorrectDictionary()
         {
             var result = await _handler.ExecuteAsync(new GetDictionaryByIdQuery { DictionaryId = 2 });
@@ -34,7 +35,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
             result.ShouldBe(_dictionary2);
         }
         
-        [Fact]
+        [Test]
         public async Task WhenCalledForIncorrectDictionary_ShouldReturnNull()
         {
             var result = await _handler.ExecuteAsync(new GetDictionaryByIdQuery {DictionaryId = 1232});

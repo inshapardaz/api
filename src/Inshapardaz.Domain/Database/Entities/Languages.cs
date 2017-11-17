@@ -19,7 +19,7 @@ namespace Inshapardaz.Domain.Database.Entities
         /// <summary>
         ///     The none.
         /// </summary>
-        [Description("نامعلوم")]
+        [Description("")]
         None,
 
         /// <summary>

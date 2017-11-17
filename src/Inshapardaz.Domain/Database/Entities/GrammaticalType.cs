@@ -12,16 +12,13 @@ using System.ComponentModel;
 
 namespace Inshapardaz.Domain.Database.Entities
 {
-    /// <summary>
-    ///     The grammatical type.
-    /// </summary>
     [Flags]
     public enum GrammaticalType : long
     {
         /// <summary>
         ///     The none.
         /// </summary>
-        [Description("نامعلوم")]
+        [Description("")]
         None = 0x0000000000000000,
 
         /// <summary>
@@ -34,97 +31,97 @@ namespace Inshapardaz.Domain.Database.Entities
         ///     The female.
         /// </summary>
         [Description("مؤنث")]
-        Female = 0x0000000000000010, 
+        Female = 0x0000000000000010,
 
         /// <summary>
         ///     The singular.
         /// </summary>
         [Description("واحد")]
-        Singular = 0x0000000000000100, 
+        Singular = 0x0000000000000100,
 
         /// <summary>
         ///     The plural.
         /// </summary>
         [Description("جمع")]
-        Plural = 0x0000000000001000, 
+        Plural = 0x0000000000001000,
 
         /// <summary>
         ///     The ism.
         /// </summary>
         [Description("اسم")]
-        Ism = 0x0000000000010000, 
+        Ism = 0x0000000000010000,
 
         /// <summary>
         ///     The sift.
         /// </summary>
         [Description("صفت")]
-        Sift = 0x0000000000020000, 
+        Sift = 0x0000000000020000,
 
         /// <summary>
         ///     The feal.
         /// </summary>
         [Description("فعل")]
-        Feal = 0x0000000000030000, 
+        Feal = 0x0000000000030000,
 
         /// <summary>
         ///     The harf.
         /// </summary>
         [Description("حرف")]
-        Harf = 0x0000000000040000, 
+        Harf = 0x0000000000040000,
 
         /// <summary>
         ///     The ism nakra.
         /// </summary>
         [Description("اسم نکرہ")]
-        IsmNakra = 0x0000000000110000, 
+        IsmNakra = 0x0000000000110000,
 
         /// <summary>
         ///     The ism ala.
         /// </summary>
         [Description("اسم آلہ")]
-        IsmAla = 0x0000000001110000, 
+        IsmAla = 0x0000000001110000,
 
         /// <summary>
         ///     The ism soot.
         /// </summary>
         [Description("اسم صوت")]
-        IsmSoot = 0x0000000002110000, 
+        IsmSoot = 0x0000000002110000,
 
         /// <summary>
         ///     The ism tashgir.
         /// </summary>
         [Description("اسم تصغیر")]
-        IsmTashgir = 0x0000000003110000, 
+        IsmTashgir = 0x0000000003110000,
 
         /// <summary>
         ///     The ism masghar.
         /// </summary>
         [Description("اسم مصغّر")]
-        IsmMasghar = 0x0000000004110000, 
+        IsmMasghar = 0x0000000004110000,
 
         /// <summary>
         ///     The ism mukabbar.
         /// </summary>
         [Description("اسم مکبر")]
-        IsmMukabbar = 0x0000000005110000, 
+        IsmMukabbar = 0x0000000005110000,
 
         /// <summary>
         ///     The ism zarf.
         /// </summary>
         [Description("اسم ظرف")]
-        IsmZarf = 0x0000000006110000, 
+        IsmZarf = 0x0000000006110000,
 
         /// <summary>
         ///     The ism zarf makan.
         /// </summary>
         [Description("اسم ظرف مکاں")]
-        IsmZarfMakan = 0x0000000016110000, 
+        IsmZarfMakan = 0x0000000016110000,
 
         /// <summary>
         ///     The ism zarf zaman.
         /// </summary>
         [Description("اسم ظرف زماں")]
-        IsmZarfZaman = 0x0000000026110000, 
+        IsmZarfZaman = 0x0000000026110000,
 
         /// <summary>
         ///     The ism jama.
@@ -136,13 +133,68 @@ namespace Inshapardaz.Domain.Database.Entities
         ///     The ism muarfa.
         /// </summary>
         [Description("اسم معرفہ")]
-        IsmMuarfa = 0x0000000000210000, 
+        IsmMuarfa = 0x0000000000210000,
 
         /// <summary>
         ///     The ism alam.
         /// </summary>
         [Description("اسم علم")]
-        IsmAlam = 0x0000000001210000, 
+        IsmAlam = 0x0000000001210000,
+
+        /// <summary>
+        ///     The ism mosool.
+        /// </summary>
+        [Description("اسم موصول")]
+        IsmMosool = 0x0000000000510000,
+
+        /// <summary>
+        ///     The ism mujarrad.
+        /// </summary>
+        [Description("اسم مجرد")]
+        IsmMujarrad = 0x0000000000310000,
+
+        /// <summary>
+        ///     The ism kaifiat.
+        /// </summary>
+        [Description("اسم کیفیت")]
+        IsmKaifiat = 0x0000000000610000,
+
+        /// <summary>
+        ///     The ism hasil masdar.
+        /// </summary>
+        [Description("اسم حاصل مصدر")]
+        IsmHasilMasdar = 0x0000000000510000,
+
+        /// <summary>
+        ///     The ism jamid.
+        /// </summary>
+        [Description("اسم جامد")]
+        IsmJamid = 0x0000000000710000,
+
+        /// <summary>
+        ///     The ism maada.
+        /// </summary>
+        [Description("اسم مادہ")]
+        IsmMaada = 0x0000000000810000,
+
+        /// <summary>
+        ///     The ism addad.
+        /// </summary>
+        [Description("اسم عدد")]
+        IsmAddad = 0x0000000000910000,
+
+        /// <summary>
+        ///     The ism muawqza.
+        /// </summary>
+        [Description("اسم معاوضہ")]
+        IsmMuawqza = 0x0000000000A10000,
+
+        /// <summary>
+        ///     The ism tashgeer.
+        /// </summary>
+        [Description("اسم تصغیر")]
+        IsmTashgeer = 0x0000000000B10000,
+
 
         /// <summary>
         ///     The khitaab.
@@ -178,43 +230,43 @@ namespace Inshapardaz.Domain.Database.Entities
         ///     The ism zameer.
         /// </summary>
         [Description("اسم ضمیر")]
-        IsmZameer = 0x0000000000310000, 
+        IsmZameer = 0x0000000000310000,
 
         /// <summary>
         ///     The zameer shakhsi.
         /// </summary>
         [Description("ضمیر شخصی")]
-        ZameerShakhsi = 0x0000000001310000, 
+        ZameerShakhsi = 0x0000000001310000,
 
         /// <summary>
         ///     The ghaib.
         /// </summary>
         [Description("ضمیر شخصی غائب")]
-        Ghaib = 0x0000000011310000, 
+        Ghaib = 0x0000000011310000,
 
         /// <summary>
         ///     The hazir.
         /// </summary>
         [Description("ضمیر شخصی حاضر")]
-        Hazir = 0x0000000021310000, 
+        Hazir = 0x0000000021310000,
 
         /// <summary>
         ///     The mutakallam.
         /// </summary>
         [Description("ضمیر شخصی متکلم")]
-        Mutakallam = 0x0000000031310000, 
+        Mutakallam = 0x0000000031310000,
 
         /// <summary>
         ///     The mukhatib.
         /// </summary>
         [Description("ضمیر شخصی مخاطب")]
-        Mukhatib = 0x0000000041310000, 
+        Mukhatib = 0x0000000041310000,
 
         /// <summary>
         ///     The zameer ishara.
         /// </summary>
         [Description("ضمیر اشارہ")]
-        ZameerIshara = 0x0000000002310000, 
+        ZameerIshara = 0x0000000002310000,
 
         /// <summary>
         ///     The zameer ishara kareeb.
@@ -232,13 +284,13 @@ namespace Inshapardaz.Domain.Database.Entities
         ///     The zameer istafham.
         /// </summary>
         [Description("ضمیر استفہام")]
-        ZameerIstafham = 0x0000000003310000, 
+        ZameerIstafham = 0x0000000003310000,
 
         /// <summary>
         ///     The zameer mosula.
         /// </summary>
         [Description("ضمیر موصولہ")]
-        ZameerMosula = 0x0000000004310000, 
+        ZameerMosula = 0x0000000004310000,
 
         /// <summary>
         ///     The zameer tankeer.
@@ -250,13 +302,13 @@ namespace Inshapardaz.Domain.Database.Entities
         ///     The ism ishara.
         /// </summary>
         [Description("اسم اشارہ")]
-        IsmIshara = 0x0000000000410000, 
+        IsmIshara = 0x0000000000410000,
 
         /// <summary>
         ///     The ism ishara kareeb.
         /// </summary>
         [Description("اسم اشارہ قریب")]
-        IsmIsharaKareeb = 0x0000000001410000, 
+        IsmIsharaKareeb = 0x0000000001410000,
 
         /// <summary>
         ///     The ism ishara baeed.
@@ -264,59 +316,7 @@ namespace Inshapardaz.Domain.Database.Entities
         [Description("ضمیر اشارہ بعید")]
         IsmIsharaBaeed = 0x0000000002410000,
 
-        /// <summary>
-        ///     The ism mosool.
-        /// </summary>
-        [Description("اسم موصول")]
-        IsmMosool = 0x0000000000510000,
 
-        /// <summary>
-        ///     The ism mujarrad.
-        /// </summary>
-        [Description("اسم مجرد")]
-        IsmMujarrad = 0x0000000000310000, 
-
-        /// <summary>
-        ///     The ism kaifiat.
-        /// </summary>
-        [Description("اسم کیفیت")]
-        IsmKaifiat = 0x0000000000410000, 
-
-        /// <summary>
-        ///     The ism hasil masdar.
-        /// </summary>
-        [Description("اسم حاصل مصدر")]
-        IsmHasilMasdar = 0x0000000000510000, 
-
-        /// <summary>
-        ///     The ism jamid.
-        /// </summary>
-        [Description("اسم جامد")]
-        IsmJamid = 0x0000000000610000, 
-
-        /// <summary>
-        ///     The ism maada.
-        /// </summary>
-        [Description("اسم مادہ")]
-        IsmMaada = 0x0000000000710000, 
-
-        /// <summary>
-        ///     The ism addad.
-        /// </summary>
-        [Description("اسم عدد")]
-        IsmAddad = 0x0000000000810000, 
-
-        /// <summary>
-        ///     The ism muawqza.
-        /// </summary>
-        [Description("اسم معاوضہ")]
-        IsmMuawqza = 0x0000000000910000,
-
-        /// <summary>
-        ///     The ism tashgeer.
-        /// </summary>
-        [Description("اسم تصغیر")]
-        IsmTashgeer = 0x0000000000A10000,
 
         /// <summary>
         ///     The sift zati.
@@ -334,13 +334,13 @@ namespace Inshapardaz.Domain.Database.Entities
         ///     The sift adadi.
         /// </summary>
         [Description("صفت عددی")]
-        SiftAdadi = 0x0000000000320000, 
+        SiftAdadi = 0x0000000000320000,
 
         /// <summary>
         ///     The sift miqdari.
         /// </summary>
         [Description("صفت مقداری")]
-        SiftMiqdari = 0x0000000000420000, 
+        SiftMiqdari = 0x0000000000420000,
 
         /// <summary>
         ///     The sift ishara.
@@ -370,7 +370,7 @@ namespace Inshapardaz.Domain.Database.Entities
         ///     The feal nakis.
         /// </summary>
         [Description("فعل ناقص")]
-        FealNakis = 0x0000000000330000, 
+        FealNakis = 0x0000000000330000,
 
         /// <summary>
         ///     The feal imdadi.
@@ -574,6 +574,6 @@ namespace Inshapardaz.Domain.Database.Entities
         ///     The harf tamanna.
         /// </summary>
         [Description("حرف تمنا")]
-        HarfTamanna = 0x0000000001F40000,
+        HarfTamanna = 0x0000000001F40000
     }
 }

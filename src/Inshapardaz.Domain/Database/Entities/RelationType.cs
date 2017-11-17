@@ -16,6 +16,8 @@ namespace Inshapardaz.Domain.Database.Entities
     /// </summary>
     public enum RelationType
     {
+        [Description("")]
+        None = 0,
         /// <summary>
         ///     The synonym.
         /// </summary>

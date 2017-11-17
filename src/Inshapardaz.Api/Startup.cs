@@ -86,6 +86,7 @@ namespace Inshapardaz.Api
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseStatusCodeMiddleWare();
+            ConfigureCustoMiddleWare(app);
             app.UseMvc();
 
             AddHangFire(app);
@@ -101,6 +102,7 @@ namespace Inshapardaz.Api
                         options.RequireHttpsMetadata = false;
                     });
         }
+
         private void RegisterRenderer(IServiceCollection services)
         {
             services.AddTransient<IRenderEnum, EnumRenderer>();
@@ -132,6 +134,11 @@ namespace Inshapardaz.Api
         protected virtual void ConfigureMvc(IServiceCollection services)
         {
             services.AddMvc();
+        }
+
+        protected virtual void ConfigureCustoMiddleWare(IApplicationBuilder app)
+        {
+            
         }
 
         protected virtual void ConfigureHangFire(IServiceCollection services)

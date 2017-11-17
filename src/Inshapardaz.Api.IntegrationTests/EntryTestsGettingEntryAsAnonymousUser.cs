@@ -1,9 +1,6 @@
-using System;
 using System.Net;
 using System.Net.Http;
 using Inshapardaz.Api.View;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
@@ -11,19 +8,14 @@ using Shouldly;
 namespace Inshapardaz.Api.IntegrationTests
 {
     [TestFixture]
-    public class EntryTestsGettingEntryAsAnonymousUser : IDisposable
+    public class EntryTestsGettingEntryAsAnonymousUser : IntegrationTestBase
     {
-        private readonly TestServer _server;
-        private readonly HttpClient _client;
         private readonly HttpResponseMessage _response;
         private readonly EntryView _view;
 
         public EntryTestsGettingEntryAsAnonymousUser()
         {
-            _server = new TestServer(new WebHostBuilder()
-                                         .UseStartup<TestStartup>());
-            _client = _server.CreateClient();
-            _response = _client.GetAsync("/api").Result;
+            _response = GetClient().GetAsync("/api").Result;
             _view = JsonConvert.DeserializeObject<EntryView>(_response.Content.ReadAsStringAsync().Result);
         }
 
@@ -75,11 +67,14 @@ namespace Inshapardaz.Api.IntegrationTests
             _view.Links.ShouldContain(l => l.Rel == RelTypes.Thesaurus && l.Href != null);
         }
 
-        public void Dispose()
+        protected override void Dispose(bool isDisposing)
         {
-            _server?.Dispose();
-            _client?.Dispose();
-            _response?.Dispose();
+            base.Dispose(isDisposing);
+
+            if (isDisposing)
+            {
+                _response?.Dispose();
+            }
         }
     }
 }

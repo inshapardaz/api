@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.UnitTests
         protected DatabaseTest()
         {
             var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
             DbContext = new DatabaseContext(inMemoryDataContextOptions);

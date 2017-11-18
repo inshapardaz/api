@@ -1,4 +1,5 @@
 export enum RelationTypes {
+    None = 0,
     Synonym,
     Acronym,
     Compound,

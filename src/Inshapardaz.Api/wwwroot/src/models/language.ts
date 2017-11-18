@@ -1,5 +1,5 @@
 export enum Languages{
-        None= 0,
+        None = 0,
         Unknown,
         Urdu,
         Sanskrit,
@@ -23,5 +23,9 @@ export enum Languages{
         German,
         Local,
         Syriac,
-        Avestan
+        Avestan,
+        Gujarati,
+        Marhati,
+        Bengali,
+        Pali
 }

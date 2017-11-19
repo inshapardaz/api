@@ -87,10 +87,10 @@ export class DictionariesComponent {
     createDictionaryDownload(dictionary : Dictionary){
         this.dictionaryService.createDictionaryDownload(dictionary.createDownloadLink)
         .subscribe(data => {
-            this.alertService.success(this.translate.instant('DICTIONARIES.MESSAGES.CREATION_SUCCESS'));
+            this.alertService.success(this.translate.instant('DICTIONARIES.MESSAGES.DOWNLOAD_CREATION_SUCCESS', {name : dictionary.name}));
         }, e => {
             this.handlerError(); 
-            this.alertService.error(this.translate.instant('DICTIONARIES.MESSAGES.DOWNLOAD_REQUEST_FAILURE'));
+            this.alertService.error(this.translate.instant('DICTIONARIES.MESSAGES.DOWNLOAD_REQUEST_FAILURE', {name : dictionary.name}));
         });
     }
 

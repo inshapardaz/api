@@ -24,16 +24,15 @@ namespace Inshapardaz.Domain.Jobs
         private readonly ILogger<SqliteExport> _logger;
         private readonly IDatabaseContext _databaseContext;
 
-        public SqliteExport(ILoggerFactory loggerFactory, IDatabaseContext databaseContext)
+        public SqliteExport(ILogger<SqliteExport> logger, IDatabaseContext databaseContext)
         {
-            _logger = loggerFactory.CreateLogger<SqliteExport>();
+            _logger = logger;
             _databaseContext = databaseContext;
         }
 
         public void ExportDictionary(int dictionaryId)
         {
-            throw new NotImplementedException();
-            /*var sqlitePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.dat");
+            var sqlitePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.dat");
             var connectionString = new SqliteConnectionStringBuilder
             {
                 DataSource = sqlitePath,
@@ -41,20 +40,21 @@ namespace Inshapardaz.Domain.Jobs
             };
 
             var optionsBuilder = new DbContextOptionsBuilder<Data.DictionaryDatabase>();
-            optionsBuilder.UseSqlite(connectionString.ConnectionString);
+            optionsBuilder.UseSqlite(connectionString.ConnectionString)
+                          .EnableSensitiveDataLogging();
 
 
-            using (var database = new Data.DictionaryDatabase(optionsBuilder.Options))
+            using (var targetDatabase = new Data.DictionaryDatabase(optionsBuilder.Options))
             {
 
                 _logger.LogDebug("Starting creating target database");
-                database.Database.EnsureCreated();
+                targetDatabase.Database.EnsureCreated();
                 _logger.LogDebug("Target database created");
 
                 var wordIdMap = new Dictionary<long, long>();
                 var relationShips = new List<(long SourceWord, long RelatedWord, RelationType RelationType)>();
 
-                var dictionaries = _databaseContext.Dictionary.Where(d => d.Id == dictionaryId)
+                var sourceDictionary = _databaseContext.Dictionary.Where(d => d.Id == dictionaryId)
                                                    .Include(d => d.Word)
                                                    .ThenInclude(wd => wd.Meaning)
                                                    .Include(d => d.Word)
@@ -62,35 +62,45 @@ namespace Inshapardaz.Domain.Jobs
                                                    .Include(d => d.Word)
                                                    .ThenInclude(w => w.WordRelationRelatedWord)
                                                    .Include(d => d.Word)
-                                                   .ThenInclude(w => w.WordRelationSourceWord);
+                                                   .ThenInclude(w => w.WordRelationSourceWord)
+                                                   .FirstOrDefault();
 
                 _logger.LogDebug("Starting migrating data");
 
-                foreach (var dictionary in dictionaries)
+                targetDatabase.Dictionary.Add(new Data.Entities.Dictionary
                 {
-                    int count = 0;
-                    foreach (var word in dictionary.Word)
+                    Name = sourceDictionary.Name,
+                    Language = (Languages) sourceDictionary.Language,
+                    IsPublic = sourceDictionary.IsPublic
+                });
+
+                targetDatabase.SaveChanges();
+
+                var newDictionary = targetDatabase.Dictionary.First();
+
+                int count = 0;
+                foreach (var word in sourceDictionary.Word)
+                {
+                    var newWord = MapWord(word);
+                    newWord.DictionaryId = newDictionary.Id;
+                    targetDatabase.Word.Add(newWord);
+                    targetDatabase.SaveChanges();
+                    wordIdMap.Add(word.Id, newWord.Id);
+
+                    foreach (var relation in word.WordRelationRelatedWord)
                     {
-                        var newWord = MapWord(word);
-                        database.Word.Add(newWord);
-                        database.SaveChanges();
-                        wordIdMap.Add(word.Id, newWord.Id);
-
-                        foreach (var relation in word.WordRelationRelatedWord)
-                        {
-                            var newRelation =
-                                (
-                                SourceWord : relation.SourceWordId,
-                                RelatedWord : relation.RelatedWordId,
-                                RelationType : (RelationType) relation.RelationType
-                                );
-                            relationShips.Add(newRelation);
-                        }
-
-                        database.SaveChanges();
-                        count++;
-                        if (count > 1000) break;
+                        var newRelation =
+                            (
+                            SourceWord : relation.SourceWordId,
+                            RelatedWord : relation.RelatedWordId,
+                            RelationType : (RelationType) relation.RelationType
+                            );
+                        relationShips.Add(newRelation);
                     }
+
+                    targetDatabase.SaveChanges();
+                    count++;
+                    if (count > 1000) break;
                 }
 
                 _logger.LogDebug("Creating relations");
@@ -104,13 +114,13 @@ namespace Inshapardaz.Domain.Jobs
                     {
                         var sourceWordId = wordIdMap[relation.SourceWord];
                         var relatedWordId = wordIdMap[relation.RelatedWord];
-                        database.WordRelation.Add(new WordRelation
+                        targetDatabase.WordRelation.Add(new WordRelation
                         {
                             SourceWordId = sourceWordId,
                             RelatedWordId = relatedWordId,
                             RelationType = relation.RelationType
                         });
-                        database.SaveChanges();
+                        targetDatabase.SaveChanges();
                     }
                     count2++;
                     if (count2 > 1000) break;
@@ -147,10 +157,10 @@ namespace Inshapardaz.Domain.Jobs
                 MimeType = MimeTypes.SqlLite,
                 File = file
             });
-            _databaseContext.SaveChanges();*/
+            _databaseContext.SaveChanges();
         }
 
-        /*private Word MapWord(Database.Entities.Word word)
+        private Word MapWord(Database.Entities.Word word)
         {
             return new Word
             {
@@ -158,32 +168,13 @@ namespace Inshapardaz.Domain.Jobs
                 TitleWithMovements = word.TitleWithMovements,
                 Pronunciation = word.Pronunciation,
                 Description = word.Description,
-                WordDetail = MapDetails(word.WordDetail)
+                Attributes = (GrammaticalTypes)word.Attributes,
+                Language = (Languages)word.Language,
+                //Meaning = MapMeanings(word.Meaning),
+                //Translation = MapTranslations(word.Translation)
             };
         }
         
-        private ICollection<WordDetail> MapDetails(IEnumerable<Database.Entities.WordDetail> details)
-        {
-            var result = new List<WordDetail>();
-            foreach (var detail in details)
-            {
-                 result.Add(MapDetail(detail));
-            }
-
-            return result;
-        }
-
-        private WordDetail MapDetail(Database.Entities.WordDetail detail)
-        {
-            return new WordDetail
-            {
-                Attributes = (GrammaticalTypes) detail.Attributes,
-                Language = (Languages) detail.Language,
-                Translation = MapTranslations(detail.Translation),
-                Meaning = MapMeanings(detail.Meaning)
-            };
-        }
-
         private ICollection<Meaning> MapMeanings(IEnumerable<Database.Entities.Meaning> meanings)
         {
             var result = new List<Meaning>();
@@ -223,6 +214,6 @@ namespace Inshapardaz.Domain.Jobs
                 Language = (Languages)translation.Language,
                 Value = translation.Value
             };
-        }*/
+        }
     }
 }

@@ -45,8 +45,8 @@
       "DELETION_SUCCESS" : "Dictionary '{{name}}' deleted successfully.'",
       "DELETION_FAILURE" : "Unable to delete dictionary '{{name}}'.",
       "LOADING_FAILURE" : "Unable to load dictionaries. Please try again",
-      "DOWNLOAD_REQUEST_SUCCESS" : "Dictionary download request sent.",
-      "DOWNLOAD_REQUEST_FAILURE" : "Dictionary download request failed. Please try again."
+      "DOWNLOAD_REQUEST_SUCCESS" : "Dictionary '{{name}}' download request sent.",
+      "DOWNLOAD_REQUEST_FAILURE" : "Dictionary '{{name}}' download request failed. Please try again."
     },
     "VALIDATION" : {
       "NAME" : "Name is required",

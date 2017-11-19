@@ -12,6 +12,7 @@ namespace Inshapardaz.Domain.UnitTests
         {
             var inMemoryDataContextOptions = new DbContextOptionsBuilder<DatabaseContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .EnableSensitiveDataLogging()
                 .Options;
 
             DbContext = new DatabaseContext(inMemoryDataContextOptions);

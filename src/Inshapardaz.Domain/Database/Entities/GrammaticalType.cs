@@ -197,6 +197,16 @@ namespace Inshapardaz.Domain.Database.Entities
         [Description("جمع الجمع")]
         JamaUlJama = 0x0000000000050000,
         [Description("مبحول")]
-        Majhool = 0x0000000000060000
+        Majhool = 0x0000000000060000,
+        [Description("معروف")]
+        Maroof = 0x0000000000070000,
+        [Description("محاورہ")]
+        Proverb = 0x0000000000080000,
+        [Description("کہاوت")]
+        Saying = 0x0000000000090000,
+        [Description("سابقہ")]
+        PreFix = 0x00000000000A0000,
+        [Description("لاحقہ")]
+        PostFix = 0x00000000000B0000
     }
 }

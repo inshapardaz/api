@@ -143,10 +143,14 @@ namespace Inshapardaz.Domain.Jobs
             var exisitngDownload = _databaseContext.DictionaryDownload
                                                    .Include(d => d.File)
                                                    .SingleOrDefault(d => d.DictionaryId == dictionaryId && d.MimeType == MimeTypes.SqlLite);
-            if (exisitngDownload != null && exisitngDownload.File != null)
+            if (exisitngDownload != null)
             {
-                _databaseContext.File.Remove(exisitngDownload.File);
                 _databaseContext.DictionaryDownload.Remove(exisitngDownload);
+
+                if (exisitngDownload.File != null)
+                {
+                    _databaseContext.File.Remove(exisitngDownload.File);
+                }
             }
 
             _databaseContext.File.Add(file);

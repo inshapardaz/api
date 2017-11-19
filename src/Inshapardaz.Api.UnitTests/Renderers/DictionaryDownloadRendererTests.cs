@@ -2,6 +2,7 @@
 using FizzWare.NBuilder;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using NUnit.Framework;
 using Shouldly;
@@ -22,7 +23,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             {
                 Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
                 
-                var renderer = new DictionaryDownloadRenderer();
+                var renderer = new DictionaryDownloadRenderer(new FakeLinkRenderer());
 
                 _result = renderer.Render(_downloadJob);
             }

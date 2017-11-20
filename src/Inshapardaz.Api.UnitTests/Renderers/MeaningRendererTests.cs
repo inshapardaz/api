@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FizzWare.NBuilder;
+﻿using FizzWare.NBuilder;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
@@ -10,19 +9,19 @@ using Shouldly;
 
 namespace Inshapardaz.Api.UnitTests.Renderers
 {
+    [TestFixture]
     public class MeaningRendererTests
     {
         [TestFixture]
         public class WhenRendereingMeanings
         {
-            private readonly MeaningView _result;
+            private MeaningView _result;
             private readonly Meaning _meaning = Builder<Meaning>.CreateNew().Build();
             private readonly int _dictionaryId = 432;
 
-            public WhenRendereingMeanings()
+            [OneTimeSetUp]
+            public void Setup()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new MeaningRenderer(fakeLinkRenderer, fakeUserHelper);
@@ -94,8 +93,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingForOwner()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new MeaningRenderer(fakeLinkRenderer, fakeUserHelper);

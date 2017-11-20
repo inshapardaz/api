@@ -30,8 +30,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingAnonymously()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
@@ -129,8 +127,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingPublicDictionaryWithDownloadAnonymously()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
@@ -167,8 +163,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingPrivateDictionaryWithDownloadAnonymously()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
@@ -204,8 +198,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingPrivateDictionaryWithDownloadAsContributor()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
@@ -242,8 +234,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingPrivateDictionaryWithDownloadAsReader()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper().AsReader();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
@@ -274,8 +264,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingForOwner()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);

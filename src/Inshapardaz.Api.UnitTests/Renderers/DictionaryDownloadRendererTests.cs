@@ -15,14 +15,12 @@ namespace Inshapardaz.Api.UnitTests.Renderers
         public class WhenRendereingAnonymously
         {
             private readonly DownloadDictionaryView _result;
-            private int wordCount = 23;
+            private readonly int _wordCount = 23;
 
             private readonly DownloadJobModel _downloadJob = Builder<DownloadJobModel>.CreateNew().Build();
 
             public WhenRendereingAnonymously()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-                
                 var renderer = new DictionaryDownloadRenderer(new FakeLinkRenderer());
 
                 _result = renderer.Render(_downloadJob);

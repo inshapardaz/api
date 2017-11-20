@@ -22,8 +22,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenGettingFirstPageWithNoFurtherPages()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var rendereArgs = new PageRendererArgs<Word>
                 {
                     RouteName = "Words",
@@ -95,8 +93,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenGettingFirstPageWithMorePages()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var rendereArgs = new PageRendererArgs<Word>
                 {
                     RouteName = "Words",
@@ -168,8 +164,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenGettingSecondPageWithMorePages()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var rendereArgs = new PageRendererArgs<Word>
                 {
                     RouteName = "Words",
@@ -241,8 +235,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenGettingLastPageWithPreviousPages()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var rendereArgs = new PageRendererArgs<Word>
                 {
                     RouteName = "Words",
@@ -312,8 +304,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenGettingPageBeyondPageLimit()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var rendereArgs = new PageRendererArgs<Word>
                 {
                     RouteName = "Words",

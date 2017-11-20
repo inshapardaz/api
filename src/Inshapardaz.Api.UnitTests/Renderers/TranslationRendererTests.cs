@@ -22,8 +22,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingTranslations()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new TranslationRenderer(fakeLinkRenderer, new EnumRenderer(), fakeUserHelper);
@@ -95,8 +93,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingForOwner()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new TranslationRenderer(fakeLinkRenderer, new EnumRenderer(), fakeUserHelper);

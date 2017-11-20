@@ -21,8 +21,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingAnonymously()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new WordRenderer(fakeLinkRenderer, fakeUserHelper);
@@ -106,8 +104,6 @@ namespace Inshapardaz.Api.UnitTests.Renderers
 
             public WhenRendereingForOwner()
             {
-                Mapper.Initialize(c => c.AddProfile(new MappingProfile()));
-
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new WordRenderer(fakeLinkRenderer, fakeUserHelper);

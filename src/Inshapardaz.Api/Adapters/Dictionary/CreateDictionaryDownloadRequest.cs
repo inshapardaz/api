@@ -13,8 +13,12 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class CreateDictionaryDownloadRequest : DictionaryRequest
     {
-        public RequestResult Result { get; set; } = new RequestResult();
+        public CreateDictionaryDownloadRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
 
+        public RequestResult Result { get; set; } = new RequestResult();
 
         public class RequestResult
         {

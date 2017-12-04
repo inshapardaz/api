@@ -14,8 +14,15 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class PutRelationshipRequest : DictionaryRequest
     {
+        public PutRelationshipRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public int RelationshipId { get; set; }
+
         public RelationshipView Relationship { get; set; }
+
         public RequestResult Result { get; set; } = new RequestResult();
 
         public class RequestResult

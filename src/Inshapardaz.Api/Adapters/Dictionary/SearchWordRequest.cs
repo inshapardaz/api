@@ -12,6 +12,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class SearchWordRequest : DictionaryRequest
     {
+        public SearchWordRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public string Query { get; set; }
 
         public int PageSize { get; set; }

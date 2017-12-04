@@ -10,6 +10,10 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class DeleteDictionaryRequest : DictionaryRequest
     {
+        public DeleteDictionaryRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
     }
 
     public class DeleteDictionaryRequestHandler : RequestHandlerAsync<DeleteDictionaryRequest>

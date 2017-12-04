@@ -21,9 +21,8 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(IEnumerable<RelationshipView>))]
         public async Task<IActionResult> GetRelationshipsForWord(int id, int wordId)
         {
-            var request = new GetRelationshipsForWordRequest
+            var request = new GetRelationshipsForWordRequest(id)
             {
-                DictionaryId = id,
                 WordId = wordId
             };
             await _commandProcessor.SendAsync(request);
@@ -34,9 +33,8 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(RelationshipView))]
         public async Task<IActionResult> Get(int id, int relationId)
         {
-            var request = new GetRelationshipRequest
+            var request = new GetRelationshipRequest(id)
             {
-                DictionaryId = id,
                 RelationId = relationId
             };
             await _commandProcessor.SendAsync(request);
@@ -48,9 +46,8 @@ namespace Inshapardaz.Api.Controllers
         [ValidateModel]
         public async Task<IActionResult> Post(int id, int wordId, [FromBody]RelationshipView relationship)
         {
-            var request = new PostRelationshipRequest
+            var request = new PostRelationshipRequest(id)
             {
-                DictionaryId = id,
                 WordId = wordId,
                 Relationship = relationship
             };
@@ -62,9 +59,8 @@ namespace Inshapardaz.Api.Controllers
         [ValidateModel]
         public async Task<IActionResult> Put(int id, int relationId, [FromBody]RelationshipView relationship)
         {
-            var request = new PutRelationshipRequest
+            var request = new PutRelationshipRequest(id)
             {
-                DictionaryId = id,
                 RelationshipId = relationId,
                 Relationship = relationship
             };
@@ -75,9 +71,8 @@ namespace Inshapardaz.Api.Controllers
         [HttpDelete("/api/dictionaries/{id}/relationships/{relationId}", Name = "DeleteRelation")]
         public async Task<IActionResult> Delete(int id, int relationId)
         {
-            var request = new DeleteRelationshipRequest
+            var request = new DeleteRelationshipRequest(id)
             {
-                DictionaryId = id,
                 RelationshipId = relationId
             };
             await _commandProcessor.SendAsync(request);

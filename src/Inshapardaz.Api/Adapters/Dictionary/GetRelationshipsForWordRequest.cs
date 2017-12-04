@@ -12,6 +12,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class GetRelationshipsForWordRequest : DictionaryRequest
     {
+        public GetRelationshipsForWordRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public List<RelationshipView> Result { get; set; }
 
         public long WordId { get; set; }

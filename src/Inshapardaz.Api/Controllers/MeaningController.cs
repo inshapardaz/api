@@ -21,11 +21,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(IEnumerable<MeaningView>))]
         public async Task<IActionResult> GetMeaningForWord(int id, int wordId)
         {
-            var request = new GetMeaningForWordRequest
-            {
-                DictionaryId = id,
-                WordId = wordId
-            };
+            var request = new GetMeaningForWordRequest(id) { WordId = wordId };
 
             await _commandProcessor.SendAsync(request);
             return Ok(request.Result);
@@ -35,11 +31,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(MeaningView))]
         public async Task<IActionResult> Get(int id, int meaningId)
         {
-            var request = new GetMeaningByIdRequest
-            {
-                DictionaryId = id,
-                MeaningId = meaningId
-            };
+            var request = new GetMeaningByIdRequest(id) { MeaningId = meaningId };
             await _commandProcessor.SendAsync(request);
             return Ok(request.Result);
         }
@@ -48,9 +40,8 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(IEnumerable<MeaningView>))]
         public async Task<IActionResult> GetMeaningsForContext(int id, int wordId, string context)
         {
-            var request = new GetMeaningForContextRequest
+            var request = new GetMeaningForContextRequest(id)
             {
-                DictionaryId = id,
                 WordId = wordId,
                 Context = context
             };
@@ -63,9 +54,8 @@ namespace Inshapardaz.Api.Controllers
         [ValidateModel]
         public async Task<IActionResult> Post(int id, int wordId, [FromBody]MeaningView meaning)
         {
-            var request = new PostMeaningRequest
+            var request = new PostMeaningRequest(id)
             {
-                DictionaryId = id,
                 WordId = wordId,
                 Meaning = meaning
             };
@@ -77,9 +67,8 @@ namespace Inshapardaz.Api.Controllers
         [ValidateModel]
         public async Task<IActionResult> Put(int id, int meaningId, [FromBody]MeaningView meaning)
         {
-            var request = new PutMeaningRequest
+            var request = new PutMeaningRequest(id)
             {
-                DictionaryId = id,
                 MeaningId = meaningId,
                 Meaning = meaning
             };
@@ -90,9 +79,8 @@ namespace Inshapardaz.Api.Controllers
         [HttpDelete("api/dictionaries/{id}/meanings/{meaningId}", Name = "DeleteMeaning")]
         public async Task<IActionResult> Delete(int id, int meaningId)
         {
-            var request = new DeleteMeaningRequest
+            var request = new DeleteMeaningRequest(id)
             {
-                DictionaryId = id,
                 MeaningId = meaningId
             };
             await _commandProcessor.SendAsync(request);

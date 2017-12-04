@@ -10,6 +10,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class GetTranslationRequest : DictionaryRequest
     {
+        public GetTranslationRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public TranslationView Result { get; set; }
 
         public long TranslationId { get; set; }

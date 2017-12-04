@@ -12,6 +12,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class GetMeaningByIdRequest : DictionaryRequest
     {
+        public GetMeaningByIdRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public long MeaningId { get; set; }
 
         public MeaningView Result { get; set; }

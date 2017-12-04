@@ -13,6 +13,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class GetMeaningForContextRequest : DictionaryRequest
     {
+        public GetMeaningForContextRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public string Context { get; set; }
 
         public long WordId { get; set; }

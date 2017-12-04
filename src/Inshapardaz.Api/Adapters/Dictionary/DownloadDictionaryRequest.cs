@@ -9,6 +9,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class DownloadDictionaryRequest : DictionaryRequest
     {
+        public DownloadDictionaryRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public string MimeType { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();

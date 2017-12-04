@@ -10,6 +10,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class DeleteMeaningRequest : DictionaryRequest
     {
+        public DeleteMeaningRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public long MeaningId { get; set; }
     }
 

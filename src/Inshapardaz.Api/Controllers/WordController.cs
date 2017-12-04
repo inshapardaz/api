@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(PageView<WordView>))]
         public async Task<IActionResult> GetWords(int id, int pageNumber = 1, int pageSize = 10)
         {
-            var command = new GetWordsForDictionaryRequest{ DictionaryId = id, PageNumber = pageNumber, PageSize = pageSize };
+            var command = new GetWordsForDictionaryRequest(id){ PageNumber = pageNumber, PageSize = pageSize };
             await _commandProcessor.SendAsync(command);
             return Ok(command.Result);
         }
@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(WordView))]
         public async Task<IActionResult> GetWord(int id, int wordId)
         {
-            var command = new GetWordByIdRequest { DictionaryId = id, WordId = wordId };
+            var command = new GetWordByIdRequest(id) { WordId = wordId };
             await _commandProcessor.SendAsync(command);
             return Ok(command.Result);
         }
@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Controllers
         [ValidateModel]
         public async Task<IActionResult> Post(int id, [FromBody] WordView word)
         {
-            var command = new PostWordRequest { DictionaryId = id, Word = word };
+            var command = new PostWordRequest(id) { Word = word };
             await _commandProcessor.SendAsync(command);
             return Created(command.Result.Location, command.Result.Response);
         }
@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Controllers
         [ValidateModel]
         public async Task<IActionResult> Put(int id, int wordId, [FromBody] WordView word)
         {
-            var command = new PutWordRequest { DictionaryId = id, WordId = wordId, Word = word };
+            var command = new PutWordRequest(id) { WordId = wordId, Word = word };
             await _commandProcessor.SendAsync(command);
             return NoContent();
         }
@@ -56,7 +56,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpDelete("/api/dictionaries/{id}/words/{wordId}", Name = "DeleteWord")]
         public async Task<IActionResult> Delete(int id, int wordId)
         {
-            var command = new DeleteWordRequest { DictionaryId = id, WordId = wordId };
+            var command = new DeleteWordRequest(id) { WordId = wordId };
             await _commandProcessor.SendAsync(command);
             return NoContent();
         }

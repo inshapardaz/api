@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(DictionaryView))]
         public async Task<IActionResult> GetDictionaryById(int id)
         {
-            var request = new GetDictionaryByIdRequest { DictionaryId = id };
+            var request = new GetDictionaryByIdRequest(id);
             await _commandProcessor.SendAsync(request);
 
             return Ok(request.Result);
@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.Controllers
         [ValidateModel]
         public async Task<IActionResult> Put(int id, [FromBody] DictionaryView value)
         {
-            var request = new PutDictionaryRequest { Dictionary = value };
+            var request = new PutDictionaryRequest(id) { Dictionary = value };
             await _commandProcessor.SendAsync(request);
 
             if (request.Result.Response != null)
@@ -70,7 +70,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpDelete("/api/dictionaries/{id}", Name = "DeleteDictionary")]
         public async Task<IActionResult> Delete(int id)
         {
-            var request = new DeleteDictionaryRequest {DictionaryId = id};
+            var request = new DeleteDictionaryRequest(id);
             await _commandProcessor.SendAsync(request);
             return NoContent();
         }
@@ -80,7 +80,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(DownloadDictionaryView))]
         public async Task<IActionResult> CreateDownloadForDictionary(int id)
         {
-            var request = new CreateDictionaryDownloadRequest { DictionaryId = id };
+            var request = new CreateDictionaryDownloadRequest(id);
             await _commandProcessor.SendAsync(request);
             
             return Created(request.Result.Location, request.Result.Response);
@@ -91,7 +91,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> DownloadDictionary(int id, [FromHeader(Name = "Accept")] string accept = MimeTypes.SqlLite)
         {
 
-            var request = new DownloadDictionaryRequest {DictionaryId = id, MimeType = accept};
+            var request = new DownloadDictionaryRequest(id) { MimeType = accept};
             await _commandProcessor.SendAsync(request);
             
             return File(request.Result.Contents, accept, request.Result.FileName);

@@ -22,9 +22,8 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(IEnumerable<TranslationView>))]
         public async Task<IActionResult> GetTranslationForWord(int id, int wordId)
         {
-            var request = new GetTranslationForWordRequest
+            var request = new GetTranslationForWordRequest(id)
             {
-                DictionaryId = id,
                 WordId = wordId
             };
 
@@ -36,9 +35,8 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(IEnumerable<TranslationView>))]
         public async Task<IActionResult> GetTranslationForWord(int id, int wordId, Languages language)
         {
-            var request = new GetTranslationForWordLanguageRequest
+            var request = new GetTranslationForWordLanguageRequest(id)
             {
-                DictionaryId = id,
                 WordId = wordId,
                 Language = language
             };
@@ -51,9 +49,8 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(TranslationView))]
         public async Task<IActionResult> Get(int id, int translationId)
         {
-            var request = new GetTranslationRequest
+            var request = new GetTranslationRequest(id)
             {
-                DictionaryId = id,
                 TranslationId = translationId
             };
 
@@ -66,9 +63,8 @@ namespace Inshapardaz.Api.Controllers
         [ValidateModel]
         public async Task<IActionResult> Post(int id, int wordId, [FromBody]TranslationView translation)
         {
-            var request = new PostTranslationRequest
+            var request = new PostTranslationRequest(id)
             {
-                DictionaryId = id,
                 WordId = wordId,
                 Translation = translation
             };
@@ -82,9 +78,8 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> Put(int id, int translationId, [FromBody]TranslationView translation)
         {
 
-            var request = new PutTranslationRequest
+            var request = new PutTranslationRequest(id)
             {
-                DictionaryId = id,
                 TranslationId = translationId,
                 Translation = translation
             };
@@ -96,9 +91,8 @@ namespace Inshapardaz.Api.Controllers
         [HttpDelete("api/dictionaries/{id}/translations/{translationId}", Name = "DeleteTranslation")]
         public async Task<IActionResult> Delete(int id, int translationId)
         {
-            var request = new DeleteTranslationRequest
+            var request = new DeleteTranslationRequest(id)
             {
-                DictionaryId = id,
                 TranslationId = translationId
             };
 

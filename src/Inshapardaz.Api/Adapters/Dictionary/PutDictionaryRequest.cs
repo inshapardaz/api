@@ -13,7 +13,13 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class PutDictionaryRequest : DictionaryRequest
     {
+        public PutDictionaryRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public DictionaryView Dictionary { get; set; }
+
         public RequestResult Result { get; set; } = new RequestResult();
 
         public class RequestResult

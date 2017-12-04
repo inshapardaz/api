@@ -13,8 +13,15 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class PutTranslationRequest : DictionaryRequest
     {
+        public PutTranslationRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public int TranslationId { get; set; }
+
         public TranslationView Translation { get; set; }
+
         public RequestResult Result { get; set; } = new RequestResult();
 
         public class RequestResult

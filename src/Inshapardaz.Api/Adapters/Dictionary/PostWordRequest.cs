@@ -13,6 +13,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class PostWordRequest : DictionaryRequest
     {
+        public PostWordRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public WordView Word { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();

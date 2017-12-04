@@ -10,6 +10,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class DeleteRelationshipRequest : DictionaryRequest
     {
+        public DeleteRelationshipRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public long RelationshipId { get; set; }
     }
 

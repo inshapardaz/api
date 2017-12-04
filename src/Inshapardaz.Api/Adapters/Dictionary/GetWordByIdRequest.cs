@@ -11,6 +11,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class GetWordByIdRequest : DictionaryRequest
     {
+        public GetWordByIdRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public long WordId { get; set; }
 
         public WordView Result { get; set; }

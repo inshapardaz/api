@@ -13,6 +13,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class GetWordsStartingWithRequest : DictionaryRequest
     {
+        public GetWordsStartingWithRequest(int dictionaryId)
+            : base(dictionaryId)
+        {
+        }
+
         public string StartingWith { get; set; }
 
         public int PageSize { get; set; }

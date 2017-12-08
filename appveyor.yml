@@ -3,10 +3,6 @@ max_jobs: 1
 image: Visual Studio 2017 Preview
 before_build:
 - cmd: dotnet restore src/Inshapardaz.Api.sln
-- cmd: cd src/Inshapardaz.api/wwwroot
-- cmd: npm install
-- cmd: npm run build
-- cmd: cd ../../..
 build:
   project: src/Inshapardaz.api.sln
   publish_wap_xcopy: true

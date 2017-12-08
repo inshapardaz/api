@@ -29,21 +29,4 @@
     <Content Remove="wwwroot/.typingsrc" />
     <Content Remove="wwwroot/tscommand-c4df35cb.tmp.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="wwwroot\**\*">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="wwwroot\**" />
-    <Content Remove="wwwroot\**" />
-    <EmbeddedResource Remove="wwwroot\**" />
-    <None Remove="wwwroot\**" />
-    <Content Include="wwwroot\assets\**\*" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="wwwroot\icons*\**\*" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="wwwroot\images\**\*" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="wwwroot\i18n\**\*" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="wwwroot\*.html" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="wwwroot\*.js" CopyToPublishDirectory="PreserveNewest" />
-  </ItemGroup>
 </Project>

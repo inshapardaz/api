@@ -20,10 +20,10 @@ artifacts:
   type: WebDeployPackage
 deploy:
 - provider: WebDeploy
-  server: https://ipapi.scm.azurewebsites.net:443/msdeploy.axd?site=ipapi
-  website: ipapi
-  username: $ipapi
-  password: L6iRu7xou062FovaspAHlwDhNkJbCbk6mheJtwCv38WzAuTeD805aT9nfu7T
+  server: https://api-inshapardaz.scm.azurewebsites.net:443/msdeploy.axd?site=api-inshapardaz
+  website: api-inshapardaz
+  username: $api-inshapardaz
+  password: 9vW7BrBPgX6qJi4xK8mwvJuFfvXN6TXuJod4lefJbr8uK4kK3SgJHhsfA4QN
   artifact: api
   aspnet_core: true
   remove_files: true

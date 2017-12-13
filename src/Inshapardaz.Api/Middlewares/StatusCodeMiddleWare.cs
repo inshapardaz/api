@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Exception;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -41,8 +42,11 @@ namespace Inshapardaz.Api.Middlewares
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NotImplemented;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error processing request");
+                var telemetryClient = new TelemetryClient();
+                telemetryClient.TrackException(ex);
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             }
         }

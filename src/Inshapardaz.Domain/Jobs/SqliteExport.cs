@@ -69,6 +69,7 @@ namespace Inshapardaz.Domain.Jobs
 
                 targetDatabase.Dictionary.Add(new Data.Entities.Dictionary
                 {
+                    Id = sourceDictionary.Id,
                     Name = sourceDictionary.Name,
                     Language = (Languages) sourceDictionary.Language,
                     IsPublic = sourceDictionary.IsPublic

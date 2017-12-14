@@ -7,7 +7,7 @@ namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
     public class FakeDictionariesRenderer : IRenderDictionaries
     {
-        public DictionariesView Render(IEnumerable<Dictionary> source, Dictionary<int, int> wordCounts)
+        public DictionariesView Render(IEnumerable<Dictionary> source, Dictionary<int, int> wordCounts, Dictionary<int, IEnumerable<DictionaryDownload>> downloads)
         {
             return new DictionariesView
             {

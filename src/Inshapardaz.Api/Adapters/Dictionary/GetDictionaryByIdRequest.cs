@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Exception;
@@ -22,13 +23,16 @@ namespace Inshapardaz.Api.Adapters.Dictionary
     public class GetDictionaryByIdRequestHandler : RequestHandlerAsync<GetDictionaryByIdRequest>
     {
         private readonly IRenderDictionary _dictionaryRenderer;
+        private readonly IUserHelper _userHelper;
         private readonly IQueryProcessor _queryProcessor;
 
         public GetDictionaryByIdRequestHandler(IQueryProcessor queryProcessor, 
-                                               IRenderDictionary dictionaryRenderer)
+                                               IRenderDictionary dictionaryRenderer,
+                                               IUserHelper userHelper)
         {
             _queryProcessor = queryProcessor;
             _dictionaryRenderer = dictionaryRenderer;
+            _userHelper = userHelper;
         }
 
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
@@ -42,7 +46,8 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             }
 
             var wordCount = await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery {DictionaryId = command.DictionaryId}, cancellationToken);
-            command.Result = _dictionaryRenderer.Render(result, wordCount);
+            var downloads = await _queryProcessor.ExecuteAsync(new GetDictionaryDownloadsQuery { DictionaryId = command.DictionaryId, UserId = _userHelper.GetUserId() }, cancellationToken);
+            command.Result = _dictionaryRenderer.Render(result, wordCount, downloads);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

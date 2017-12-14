@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeDictionaryRenderer = new FakeDictionaryRenderer();
                 var renderer = new DictionariesRenderer(linkRenderer, fakeUserHelper, fakeDictionaryRenderer);
                 _dictionaries = Builder<Dictionary>.CreateListOfSize(3).Build();
-                _result = renderer.Render(_dictionaries, new Dictionary<int, int>());
+                _result = renderer.Render(_dictionaries, new Dictionary<int, int>(), new Dictionary<int, IEnumerable<DictionaryDownload>>());
             }
 
             [Test]
@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new DictionariesRenderer(linkRenderer, fakeUserHelper, fakeDictionaryRenderer);
                 var dictionaries = Builder<Dictionary>.CreateListOfSize(3).Build();
-                _result = renderer.Render(dictionaries, new Dictionary<int, int>());
+                _result = renderer.Render(dictionaries, new Dictionary<int, int>(), new Dictionary<int, IEnumerable<DictionaryDownload>>());
             }
 
             [Test]

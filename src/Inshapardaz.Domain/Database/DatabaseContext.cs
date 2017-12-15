@@ -3,20 +3,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.Database
 {
-    public class DatabaseContext : DbContext, IDatabaseContext
+    public sealed class DatabaseContext : DbContext, IDatabaseContext
     {
         public DatabaseContext(DbContextOptions options)
             : base(options)
         {
+            Database.SetCommandTimeout(3 * 60);
         }
 
-        public virtual DbSet<Dictionary> Dictionary { get; set; }
-        public virtual DbSet<Meaning> Meaning { get; set; }
-        public virtual DbSet<Translation> Translation { get; set; }
-        public virtual DbSet<Word> Word { get; set; }
-        public virtual DbSet<WordRelation> WordRelation { get; set; }
-        public virtual DbSet<DictionaryDownload> DictionaryDownload { get; set; }
-        public virtual DbSet<File> File { get; set; }
+        public DbSet<Dictionary> Dictionary { get; set; }
+        public DbSet<Meaning> Meaning { get; set; }
+        public DbSet<Translation> Translation { get; set; }
+        public DbSet<Word> Word { get; set; }
+        public DbSet<WordRelation> WordRelation { get; set; }
+        public DbSet<DictionaryDownload> DictionaryDownload { get; set; }
+        public DbSet<File> File { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

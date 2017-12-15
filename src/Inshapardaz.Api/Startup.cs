@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.IO;
 using AutoMapper;
 using Hangfire;
@@ -43,10 +44,10 @@ namespace Inshapardaz.Api
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             services.AddScoped<IUserHelper, UserHelper>();
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "Inshapardaz API", Version = "v1" }); });
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info {Title = "Inshapardaz API", Version = "v1"}); });
 
             ConfigureHangFire(services);
-            
+
             services.AddCors();
 
             ConfigureApiAuthentication(services);
@@ -73,7 +74,7 @@ namespace Inshapardaz.Api
                     await next();
                 }
             });
-            
+
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inshapardaz API"); });
 
@@ -139,7 +140,7 @@ namespace Inshapardaz.Api
 
         protected virtual void ConfigureCustoMiddleWare(IApplicationBuilder app)
         {
-            
+
         }
 
         protected virtual void ConfigureHangFire(IServiceCollection services)
@@ -162,12 +163,17 @@ namespace Inshapardaz.Api
                         options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
             services.AddTransient<IDatabaseContext, DatabaseContext>();
 
-            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            optionsBuilder.UseSqlServer(connectionString);
+            if (bool.Parse(Configuration["Application:RunDBMigrations"]))
+            {
+                Console.WriteLine("Running database migrations...");
+                var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+                optionsBuilder.UseSqlServer(connectionString);
 
-            var database = new DatabaseContext(optionsBuilder.Options).Database;
-            database.SetCommandTimeout(5 * 60);
-            database.Migrate();
+                var database = new DatabaseContext(optionsBuilder.Options).Database;
+                database.SetCommandTimeout(5 * 60);
+                database.Migrate();
+                Console.WriteLine("Database migrations completed.");
+            }
         }
     }
 }

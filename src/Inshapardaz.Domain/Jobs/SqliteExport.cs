@@ -5,6 +5,7 @@ using System.Linq;
 using Inshapardaz.Data.Entities;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Helpers;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -54,16 +55,7 @@ namespace Inshapardaz.Domain.Jobs
                 var wordIdMap = new Dictionary<long, long>();
                 var relationShips = new List<(long SourceWord, long RelatedWord, RelationType RelationType)>();
 
-                var sourceDictionary = _databaseContext.Dictionary.Where(d => d.Id == dictionaryId)
-                                                   .Include(d => d.Word)
-                                                   .ThenInclude(wd => wd.Meaning)
-                                                   .Include(d => d.Word)
-                                                   .ThenInclude(wd => wd.Translation)
-                                                   .Include(d => d.Word)
-                                                   .ThenInclude(w => w.WordRelationRelatedWord)
-                                                   .Include(d => d.Word)
-                                                   .ThenInclude(w => w.WordRelationSourceWord)
-                                                   .FirstOrDefault();
+                var sourceDictionary = _databaseContext.Dictionary.FirstOrDefault(d => d.Id == dictionaryId); ;
 
                 _logger.LogDebug("Starting migrating data");
 
@@ -78,30 +70,46 @@ namespace Inshapardaz.Domain.Jobs
                 targetDatabase.SaveChanges();
 
                 var newDictionary = targetDatabase.Dictionary.First();
+                var wordCount = _databaseContext.Word.Count(d => d.DictionaryId == dictionaryId);
+                var pageSize = 1000;
+
+                var numberOfPages = (wordCount / pageSize) + 1;
 
                 int count = 0;
-                foreach (var word in sourceDictionary.Word)
+
+                for (int i = 1; i <= numberOfPages; i++)
                 {
-                    var newWord = MapWord(word);
-                    newWord.DictionaryId = newDictionary.Id;
-                    targetDatabase.Word.Add(newWord);
-                    targetDatabase.SaveChanges();
-                    wordIdMap.Add(word.Id, newWord.Id);
+                    var words = _databaseContext.Word
+                                                .Where(w => w.DictionaryId == dictionaryId)
+                                                .OrderBy(w => w.Title)
+                                                .Paginate(i, pageSize)
+                                                .Include(wd => wd.Meaning)
+                                                .Include(wd => wd.Translation)
+                                                .Include(w => w.WordRelationRelatedWord)
+                                                .Include(w => w.WordRelationSourceWord);
 
-                    foreach (var relation in word.WordRelationRelatedWord)
+                    foreach (var word in words)
                     {
-                        var newRelation =
-                            (
-                            SourceWord : relation.SourceWordId,
-                            RelatedWord : relation.RelatedWordId,
-                            RelationType : (RelationType) relation.RelationType
-                            );
-                        relationShips.Add(newRelation);
-                    }
+                        var newWord = MapWord(word);
+                        newWord.DictionaryId = newDictionary.Id;
+                        targetDatabase.Word.Add(newWord);
+                        targetDatabase.SaveChanges();
+                        wordIdMap.Add(word.Id, newWord.Id);
 
-                    targetDatabase.SaveChanges();
-                    count++;
-                    if (count > 1000) break;
+                        foreach (var relation in word.WordRelationRelatedWord)
+                        {
+                            var newRelation =
+                                (
+                                SourceWord: relation.SourceWordId,
+                                RelatedWord: relation.RelatedWordId,
+                                RelationType: (RelationType)relation.RelationType
+                                );
+                            relationShips.Add(newRelation);
+                        }
+
+                        targetDatabase.SaveChanges();
+                        count++;
+                    }
                 }
 
                 _logger.LogDebug("Creating relations");

@@ -37,6 +37,7 @@ namespace Inshapardaz.Domain.Database
                       .HasForeignKey(d => d.DictionaryId)
                       .HasConstraintName("FK_Word_Dictionary")
                       .OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => e.Title);
             });
 
             modelBuilder.Entity<Meaning>(entity =>
@@ -48,6 +49,7 @@ namespace Inshapardaz.Domain.Database
                     .HasForeignKey(d => d.WordId)
                     .HasConstraintName("FK_Meaning_Word")
                     .OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(m => m.WordId);
             });
 
             modelBuilder.Entity<Translation>(entity =>
@@ -59,6 +61,7 @@ namespace Inshapardaz.Domain.Database
                     .HasForeignKey(d => d.WordId)
                     .HasConstraintName("FK_Translation_Word")
                     .OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => t.WordId);
             });
             
             modelBuilder.Entity<WordRelation>(entity =>
@@ -76,9 +79,14 @@ namespace Inshapardaz.Domain.Database
                     .HasForeignKey(d => d.SourceWordId)
                     .HasConstraintName("FK_WordRelation_SourceWord")
                     .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(t => t.SourceWordId);
             });
 
-            modelBuilder.Entity<File>(entity => { entity.ToTable("File", "Inshapardaz"); });
+            modelBuilder.Entity<File>(entity =>
+            {
+                entity.ToTable("File", "Inshapardaz");
+            });
 
             modelBuilder.Entity<DictionaryDownload>(entity =>
             {
@@ -87,7 +95,7 @@ namespace Inshapardaz.Domain.Database
                     .WithMany(d => d.Downloads)
                     .OnDelete(DeleteBehavior.Cascade);
                 entity.HasOne(d => d.File);
-
+                entity.HasIndex(f => f.DictionaryId);
             });
         }
     }

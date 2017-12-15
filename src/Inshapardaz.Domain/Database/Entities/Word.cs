@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Inshapardaz.Domain.Database.Entities
 {
@@ -6,18 +7,20 @@ namespace Inshapardaz.Domain.Database.Entities
     {
         public long Id { get; set; }
 
-        public GrammaticalType Attributes { get; set; }
-
-        public Languages Language { get; set; }
-
+        [Required]
         public string Title { get; set; }
 
         public string TitleWithMovements { get; set; }
 
         public string Description { get; set; }
 
+        public GrammaticalType Attributes { get; set; }
+
+        public Languages Language { get; set; }
+
         public string Pronunciation { get; set; }
 
+        [Required]
         public int DictionaryId { get; set; }
 
         public virtual Dictionary Dictionary { get; set; }

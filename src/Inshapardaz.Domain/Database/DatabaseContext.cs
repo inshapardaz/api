@@ -8,7 +8,6 @@ namespace Inshapardaz.Domain.Database
         public DatabaseContext(DbContextOptions options)
             : base(options)
         {
-            Database.SetCommandTimeout(3 * 60);
         }
 
         public DbSet<Dictionary> Dictionary { get; set; }

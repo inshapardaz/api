@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿
+using System.IO;
 using AutoMapper;
 using Hangfire;
 using Inshapardaz.Api.Helpers;
@@ -165,6 +166,7 @@ namespace Inshapardaz.Api
             optionsBuilder.UseSqlServer(connectionString);
 
             var database = new DatabaseContext(optionsBuilder.Options).Database;
+            database.SetCommandTimeout(5 * 60);
             database.Migrate();
         }
     }

@@ -24,7 +24,8 @@ namespace Inshapardaz.Domain.QueryHandlers
             var relations = _database.Word
                             .Where(x => x.Title == request.Title)
                             .SelectMany(w => w.WordRelationRelatedWord)
-                            .Select(x => x.RelatedWord);
+                            .Where(r => r.RelationType == RelationType.Synonym)
+                            .Select(x => x.SourceWord);
 
             var count = await relations.CountAsync(cancellationToken);
             var data = relations

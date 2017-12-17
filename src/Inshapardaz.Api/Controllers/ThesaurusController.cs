@@ -3,6 +3,7 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Controllers
 {
@@ -20,7 +21,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("api/alternates/{word}", Name = "GetWordAlternatives")]
-        public IActionResult Get(string word, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Get(string word, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrWhiteSpace(word))
             {
@@ -33,10 +34,10 @@ namespace Inshapardaz.Api.Controllers
                 PageNumber = pageNumber,
                 Title = word
             };
-            var results = _queryProcessor.Execute(query);
+            var results = await _queryProcessor.ExecuteAsync(query);
             var pageRenderArgs = new PageRendererArgs<Word>
             {
-                RouteName = "GetWordsListStartWith",
+                RouteName = "GetWordAlternatives",
                 Page = results
             };
 

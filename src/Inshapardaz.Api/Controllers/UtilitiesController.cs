@@ -43,5 +43,14 @@ namespace Inshapardaz.Api.Controllers
 
             return new ObjectResult(request.Response);
         }
+
+        [HttpPost("api/check/grammar", Name = "CheckGrammar")]
+        public async Task<IActionResult> CheckGrammar([FromBody]GrammarCheckRequestView grammarCheckRequest)
+        {
+            var request = new GrammarCheckRequest { Paragraph = grammarCheckRequest.Paragraph };
+            await _commandProcessor.SendAsync(request);
+
+            return new ObjectResult(request.Response);
+        }
     }
 }

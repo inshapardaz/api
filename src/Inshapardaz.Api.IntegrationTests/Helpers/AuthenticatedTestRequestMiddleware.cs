@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
     {
         public const string TestingCookieAuthentication = "TestCookieAuthentication";
         public const string TestingHeader = "X-Integration-Testing";
-        public const string TestingHeaderValue = "abcde-12345";
+        public const string TestingHeaderValue = "inshapardaz-integraion-test";
 
         private readonly RequestDelegate _next;
 

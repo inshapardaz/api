@@ -10,29 +10,31 @@ namespace Inshapardaz.Api.IntegrationTests
 {
     public abstract class IntegrationTestBase : IDisposable
     {
-        private readonly TestServer _testServer;
+        private static readonly TestServer TestServer;
         private HttpClient _authenticatedClient;
         private HttpClient _client;
-        protected IDatabaseContext DatabaseContext;
+        protected static IDatabaseContext DatabaseContext;
 
-        protected IntegrationTestBase()
+        static  IntegrationTestBase()
         {
-            _testServer = new TestServer(new WebHostBuilder()
+            TestServer = new TestServer(new WebHostBuilder()
                                              .UseStartup<TestStartup>());
-            DatabaseContext = _testServer.Host.Services.GetService<IDatabaseContext>();
+            DatabaseContext = TestServer.Host.Services.GetService<IDatabaseContext>();
         }
 
         protected HttpClient GetClient()
         {
             _client?.Dispose();
-            _client = _testServer.CreateClient();
+            _client = TestServer.CreateClient();
             return _client;
         }
 
-        protected HttpClient GetAuthenticatedClient(Guid? userGuid)
+        protected HttpClient GetAuthenticatedClient(Guid? userGuid, string userName = "integration.user")
         {
             _authenticatedClient?.Dispose();
-            _authenticatedClient = _testServer.CreateClient();
+            _authenticatedClient = TestServer.CreateClient();
+            _authenticatedClient.DefaultRequestHeaders.Add(AuthenticatedTestRequestMiddleware.TestingHeader, AuthenticatedTestRequestMiddleware.TestingHeaderValue);
+            _authenticatedClient.DefaultRequestHeaders.Add("my-name", userName);
             _authenticatedClient.DefaultRequestHeaders.Add("my-id", (userGuid ?? Guid.NewGuid()).ToString());
             return _authenticatedClient;
         }
@@ -46,7 +48,6 @@ namespace Inshapardaz.Api.IntegrationTests
         {
             if (isDisposing)
             {
-                _testServer?.Dispose();
                 _authenticatedClient?.Dispose();
                 _client?.Dispose();
             }

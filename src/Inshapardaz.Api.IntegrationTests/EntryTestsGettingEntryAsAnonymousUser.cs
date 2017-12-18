@@ -10,10 +10,11 @@ namespace Inshapardaz.Api.IntegrationTests
     [TestFixture]
     public class EntryTestsGettingEntryAsAnonymousUser : IntegrationTestBase
     {
-        private readonly HttpResponseMessage _response;
-        private readonly EntryView _view;
+        private HttpResponseMessage _response;
+        private EntryView _view;
 
-        public EntryTestsGettingEntryAsAnonymousUser()
+        [OneTimeSetUp]
+        public void Setup()
         {
             _response = GetClient().GetAsync("/api").Result;
             _view = JsonConvert.DeserializeObject<EntryView>(_response.Content.ReadAsStringAsync().Result);

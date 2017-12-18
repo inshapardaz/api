@@ -22,5 +22,10 @@ namespace Inshapardaz.Domain.Helpers
             }
             return result.ToString();
         }
+
+        public static string[] SplitIntoSentences(this string input)
+        {
+            return input.Split('?', '۔', '.', '\n');
+        }
     }
 }

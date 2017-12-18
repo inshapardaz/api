@@ -14,6 +14,8 @@ test_script:
 - cmd: dotnet test --no-build
 - cmd: cd ../Inshapardaz.Domain.UnitTests
 - cmd: dotnet test --no-build
+- cmd: cd ../Inshapardaz.Api.IntegrationTests
+- cmd: dotnet test --no-build
 artifacts:
 - path: src\Inshapardaz.Api\bin\Release\netcoreapp2.0\publish
   name: api

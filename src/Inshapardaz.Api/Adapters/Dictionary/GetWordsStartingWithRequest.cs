@@ -65,7 +65,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 }
             };
 
-            command.Result =  _pageRenderer.Render(pageRenderArgs, -1);
+            command.Result =  _pageRenderer.Render(pageRenderArgs, command.DictionaryId);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

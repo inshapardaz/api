@@ -27,5 +27,7 @@ namespace Inshapardaz.Api.View
         public string Value { get; set; }
 
         public long WordId { get; set; }
+
+        public bool IsTranspiling { get; set; }
     }
 }

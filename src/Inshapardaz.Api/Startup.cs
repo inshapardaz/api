@@ -163,7 +163,8 @@ namespace Inshapardaz.Api
                         options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
             services.AddTransient<IDatabaseContext, DatabaseContext>();
 
-            if (bool.Parse(Configuration["Application:RunDBMigrations"]))
+            bool.TryParse(Configuration["Application:RunDBMigrations"], out bool migrationEnabled);
+            if (migrationEnabled)
             {
                 Console.WriteLine("Running database migrations...");
                 var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();

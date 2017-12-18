@@ -63,6 +63,7 @@ namespace Inshapardaz.Api
                 .ForMember(s => s.Value, o => o.MapFrom(d => d.Value))
                 .ForMember(s => s.WordId, o => o.MapFrom(d => d.WordId))
                 .ForMember(s => s.Links, o => o.Ignore())
+                .ForMember(s => s.IsTranspiling, o => o.MapFrom(s => s.IsTrasnpiling))
                 .ReverseMap()
                 .ForMember(s => s.Language, o => o.MapFrom(d => (Languages)d.LanguageId))
                 .ForMember(s => s.Word, o => o.Ignore());

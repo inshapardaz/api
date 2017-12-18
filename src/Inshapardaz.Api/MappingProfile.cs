@@ -40,7 +40,12 @@ namespace Inshapardaz.Api
                 .ForMember(s => s.Translation, o => o.Ignore())
                 .ForMember(s => s.Dictionary, o => o.Ignore())
                 .ForMember(s => s.DictionaryId, o => o.Ignore());
-            
+
+            CreateMap<Word, SpellingOption>()
+                .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
+                .ForMember(d => d.Links, o => o.Ignore());
+
+
             CreateMap<Meaning, MeaningView>()
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
                 .ForMember(s => s.Context, o => o.MapFrom(d => d.Context))

@@ -8,6 +8,7 @@ using Inshapardaz.Api.Adapters.Dictionary;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Queries;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
@@ -59,14 +60,14 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
 
             if (request.FromLanguage == dictionary.Language)
             {
-                var requestStrings = request.Source.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var requestStrings = request.Source.SplitIntoWords().PreserveSpecialCharacters();
                 var translationQuery = new GetTranslationsForWordsByLanguageQuery(requestStrings, request.ToLanguage) { IsTranspiling = true };
                 var translations = await _queryProcessor.ExecuteAsync(translationQuery, cancellationToken);
                 result = Transpile(requestStrings, translations);
             }
             else if (request.ToLanguage == dictionary.Language)
             {
-                var requestStrings = request.Source.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var requestStrings = request.Source.SplitIntoWords().PreserveSpecialCharacters();
                 var translationQuery = new GetWordsForTranslationsByLanguageQuery(requestStrings, request.FromLanguage) { IsTranspiling = true };
                 var translations = await _queryProcessor.ExecuteAsync(translationQuery, cancellationToken);
                 result = Transpile(requestStrings, translations);

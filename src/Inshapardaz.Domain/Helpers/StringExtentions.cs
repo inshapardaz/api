@@ -1,5 +1,9 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Inshapardaz.Domain.Helpers
 {
@@ -26,6 +30,46 @@ namespace Inshapardaz.Domain.Helpers
         public static string[] SplitIntoSentences(this string input)
         {
             return input.Split('?', '۔', '.', '\n');
+        }
+
+        public static string[] SplitIntoWords(this string input)
+        {
+            return input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public static string[] PreserveSpecialCharacters(this string[] input)
+        {
+            char[] separators = {'?', '۔', '؟', '.', ',', '!', ':', ';', '\'', '/', '"', '&', '(', ')', '[', ']', '{', '}'};
+            var result = new List<string>();
+            foreach (var word in input)
+            {
+                var w = string.Empty;
+                foreach (var c in word)
+                {
+                    // found separator
+                    if (separators.Contains(c))
+                    {
+                        if (!string.IsNullOrWhiteSpace(w))
+                        {
+                            result.Add(w);
+                        }
+
+                        result.Add($"{c}");
+                        w = "";
+                    }
+                    else
+                    {
+                        w += c;
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(w))
+                {
+                    result.Add(w);
+                }
+            }
+
+            return result.ToArray();
         }
     }
 }

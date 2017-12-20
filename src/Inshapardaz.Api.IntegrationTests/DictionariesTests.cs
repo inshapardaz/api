@@ -102,11 +102,11 @@ namespace Inshapardaz.Api.IntegrationTests
             _view.Links.ShouldContain(l => l.Rel == RelTypes.Create && l.Href != null);
         }
 
-        [Test]
-        public void ShouldReturnUsersPublicDictionary()
-        {
-            _view.Items.ShouldContain(d => d.Id == 4);
-        }
+        //[Test]
+        //public void ShouldReturnUsersPublicDictionary()
+        //{
+        //    _view.Items.ShouldContain(d => d.Id == 4);
+        //}
 
         //[Test]
         //public void ShouldReturnUsersPrivateDictionary()

@@ -49,8 +49,10 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
             optionsBuilder.UseInMemoryDatabase(databaseName);
 
-            var database = new DatabaseContext(optionsBuilder.Options).Database;
-            database.EnsureCreated();
+            using (var context = new DatabaseContext(optionsBuilder.Options))
+            {
+                context.Database.EnsureCreated();
+            }
         }
     }
 }

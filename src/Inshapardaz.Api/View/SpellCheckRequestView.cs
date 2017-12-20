@@ -4,9 +4,4 @@
     {
         public string Sentence { get; set; }
     }
-
-    public class GrammarCheckRequestView
-    {
-        public string Paragraph { get; set; }
-    }
 }

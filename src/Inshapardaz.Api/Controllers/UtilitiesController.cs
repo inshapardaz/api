@@ -52,5 +52,19 @@ namespace Inshapardaz.Api.Controllers
 
             return new ObjectResult(request.Response);
         }
+
+        [HttpPost("api/dictionaries/{id}/transpile", Name = "Transpile")]
+        public async Task<IActionResult> ConvertScript(int id, [FromBody]TranspileRequestView transpileRequest)
+        {
+            var request = new TranspileRequest(id)
+            {
+                FromLanguage = transpileRequest.FromLanguage,
+                ToLanguage = transpileRequest.ToLanguage,
+                Source = transpileRequest.Source
+            };
+            await _commandProcessor.SendAsync(request);
+
+            return new ObjectResult(request.Response);
+        }
     }
 }

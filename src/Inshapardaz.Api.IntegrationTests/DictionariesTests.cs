@@ -67,11 +67,12 @@ namespace Inshapardaz.Api.IntegrationTests
         {
             var user1 = Guid.NewGuid();
             var user2 = Guid.NewGuid();
-            DatabaseContext.Dictionary.Add(new Dictionary { Id = 1, IsPublic = false, UserId = user1 });
-            DatabaseContext.Dictionary.Add(new Dictionary { Id = 2, IsPublic = true, UserId = user2 });
-            DatabaseContext.Dictionary.Add(new Dictionary { Id = 3, IsPublic = false, UserId = user2 });
-            DatabaseContext.Dictionary.Add(new Dictionary { Id = 4, IsPublic = true, UserId = user1 });
-            DatabaseContext.SaveChanges();
+            var context = DatabaseContext;
+            context.Dictionary.Add(new Dictionary { Id = 1, IsPublic = false, UserId = user1 });
+            context.Dictionary.Add(new Dictionary { Id = 2, IsPublic = true, UserId = user2 });
+            context.Dictionary.Add(new Dictionary { Id = 3, IsPublic = false, UserId = user2 });
+            context.Dictionary.Add(new Dictionary { Id = 4, IsPublic = true, UserId = user1 });
+            context.SaveChanges();
 
             _response = GetAuthenticatedClient(user1).GetAsync("/api/dictionaries").Result;
             _view = JsonConvert.DeserializeObject<DictionariesView>(_response.Content.ReadAsStringAsync().Result);
@@ -101,11 +102,11 @@ namespace Inshapardaz.Api.IntegrationTests
             _view.Links.ShouldContain(l => l.Rel == RelTypes.Create && l.Href != null);
         }
 
-        //[Test]
-        //public void ShouldReturnUsersPublicDictionary()
-        //{
-        //    _view.Items.ShouldContain(d => d.Id == 4);
-        //}
+        [Test]
+        public void ShouldReturnUsersPublicDictionary()
+        {
+            _view.Items.ShouldContain(d => d.Id == 4);
+        }
 
         //[Test]
         //public void ShouldReturnUsersPrivateDictionary()

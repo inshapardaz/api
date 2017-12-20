@@ -43,7 +43,7 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
 
         
 
-        public async override Task<SpellCheckRequest> HandleAsync(SpellCheckRequest request, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<SpellCheckRequest> HandleAsync(SpellCheckRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(request.Sentence))
             {

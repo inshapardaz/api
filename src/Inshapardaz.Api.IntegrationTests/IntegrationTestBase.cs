@@ -13,14 +13,14 @@ namespace Inshapardaz.Api.IntegrationTests
         private static readonly TestServer TestServer;
         private HttpClient _authenticatedClient;
         private HttpClient _client;
-        protected static IDatabaseContext DatabaseContext;
 
         static  IntegrationTestBase()
         {
             TestServer = new TestServer(new WebHostBuilder()
                                              .UseStartup<TestStartup>());
-            DatabaseContext = TestServer.Host.Services.GetService<IDatabaseContext>();
         }
+
+        protected IDatabaseContext DatabaseContext => TestServer.Host.Services.GetService<IDatabaseContext>();
 
         protected HttpClient GetClient()
         {

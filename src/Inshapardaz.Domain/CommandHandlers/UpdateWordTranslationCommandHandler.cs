@@ -30,6 +30,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
             translation.Language = command.Translation.Language;
             translation.Value = command.Translation.Value;
+            translation.IsTrasnpiling = command.Translation.IsTrasnpiling;
 
             await _database.SaveChangesAsync(cancellationToken);
 

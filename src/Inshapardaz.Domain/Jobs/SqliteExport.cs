@@ -71,7 +71,7 @@ namespace Inshapardaz.Domain.Jobs
 
                 var newDictionary = targetDatabase.Dictionary.First();
                 var wordCount = _databaseContext.Word.Count(d => d.DictionaryId == dictionaryId);
-                var pageSize = 1000;
+                var pageSize = wordCount/2;
 
                 var numberOfPages = (wordCount / pageSize) + 1;
 

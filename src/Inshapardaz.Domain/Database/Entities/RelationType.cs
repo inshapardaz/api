@@ -28,7 +28,7 @@ namespace Inshapardaz.Domain.Database.Entities
         OppositeGender,
         [Description("حالت‌‌‌ فعل")]
         FormOfFeal,
-        [Description("جالت")]
+        [Description("حالت")]
         Halat,
         [Description("حالت مفعولی")]
         HalatMafooli,

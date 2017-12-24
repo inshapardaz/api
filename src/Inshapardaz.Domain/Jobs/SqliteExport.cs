@@ -33,144 +33,159 @@ namespace Inshapardaz.Domain.Jobs
 
         public void ExportDictionary(int dictionaryId)
         {
-            var sqlitePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.dat");
-            var connectionString = new SqliteConnectionStringBuilder
+            _logger.LogDebug($"Started export for dictionary {dictionaryId}");
+
+            try
             {
-                DataSource = sqlitePath,
-                Mode = SqliteOpenMode.ReadWriteCreate
-            };
-
-            var optionsBuilder = new DbContextOptionsBuilder<Data.DictionaryDatabase>();
-            optionsBuilder.UseSqlite(connectionString.ConnectionString)
-                          .EnableSensitiveDataLogging();
-
-
-            using (var targetDatabase = new Data.DictionaryDatabase(optionsBuilder.Options))
-            {
-
-                _logger.LogDebug("Starting creating target database");
-                targetDatabase.Database.EnsureCreated();
-                _logger.LogDebug("Target database created");
-
-                var wordIdMap = new Dictionary<long, long>();
-                var relationShips = new List<(long SourceWord, long RelatedWord, RelationType RelationType)>();
-
-                var sourceDictionary = _databaseContext.Dictionary.FirstOrDefault(d => d.Id == dictionaryId); ;
-
-                _logger.LogDebug("Starting migrating data");
-
-                targetDatabase.Dictionary.Add(new Data.Entities.Dictionary
+                var sqlitePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.dat");
+                var connectionString = new SqliteConnectionStringBuilder
                 {
-                    Id = sourceDictionary.Id,
-                    Name = sourceDictionary.Name,
-                    Language = (Languages) sourceDictionary.Language,
-                    IsPublic = sourceDictionary.IsPublic
+                    DataSource = sqlitePath,
+                    Mode = SqliteOpenMode.ReadWriteCreate
+                };
+
+                var optionsBuilder = new DbContextOptionsBuilder<Data.DictionaryDatabase>();
+                optionsBuilder.UseSqlite(connectionString.ConnectionString)
+                              .EnableSensitiveDataLogging();
+
+
+                using (var targetDatabase = new Data.DictionaryDatabase(optionsBuilder.Options))
+                {
+
+                    _logger.LogDebug("Starting creating target database");
+                    targetDatabase.Database.EnsureCreated();
+                    _logger.LogDebug("Target database created");
+
+                    var wordIdMap = new Dictionary<long, long>();
+                    var relationShips = new List<(long SourceWord, long RelatedWord, RelationType RelationType)>();
+
+                    var sourceDictionary = _databaseContext.Dictionary.FirstOrDefault(d => d.Id == dictionaryId);
+                    ;
+
+                    _logger.LogDebug("Starting migrating data");
+
+                    targetDatabase.Dictionary.Add(new Data.Entities.Dictionary
+                    {
+                        Id = sourceDictionary.Id,
+                        Name = sourceDictionary.Name,
+                        Language = (Languages) sourceDictionary.Language,
+                        IsPublic = sourceDictionary.IsPublic
+                    });
+
+                    targetDatabase.SaveChanges();
+
+                    var newDictionary = targetDatabase.Dictionary.First();
+                    var wordCount = _databaseContext.Word.Count(d => d.DictionaryId == dictionaryId);
+                    var pageSize = 1000;
+
+                    var numberOfPages = (wordCount / pageSize) + 1;
+
+                    int count = 0;
+
+                    for (int i = 1; i <= numberOfPages; i++)
+                    {
+                        _logger.LogDebug($"Processing page {i} or {numberOfPages}");
+                        var words = _databaseContext.Word
+                                                    .Where(w => w.DictionaryId == dictionaryId)
+                                                    .OrderBy(w => w.Title)
+                                                    .Paginate(i, pageSize)
+                                                    .Include(wd => wd.Meaning)
+                                                    .Include(wd => wd.Translation)
+                                                    .Include(w => w.WordRelationRelatedWord)
+                                                    .Include(w => w.WordRelationSourceWord);
+
+                        foreach (var word in words)
+                        {
+                            var newWord = MapWord(word);
+                            newWord.DictionaryId = newDictionary.Id;
+                            targetDatabase.Word.Add(newWord);
+                            targetDatabase.SaveChanges();
+                            wordIdMap.Add(word.Id, newWord.Id);
+
+                            foreach (var relation in word.WordRelationRelatedWord)
+                            {
+                                var newRelation =
+                                    (
+                                    SourceWord: relation.SourceWordId,
+                                    RelatedWord: relation.RelatedWordId,
+                                    RelationType: (RelationType) relation.RelationType
+                                    );
+                                relationShips.Add(newRelation);
+                            }
+
+                            targetDatabase.SaveChanges();
+                            count++;
+                        }
+                    }
+
+                    _logger.LogDebug("Creating relationships");
+
+                    int count2 = 0;
+
+                    foreach (var relation in relationShips)
+                    {
+                        if (wordIdMap.ContainsKey(relation.SourceWord) &&
+                            wordIdMap.ContainsKey(relation.RelatedWord))
+                        {
+                            var sourceWordId = wordIdMap[relation.SourceWord];
+                            var relatedWordId = wordIdMap[relation.RelatedWord];
+                            targetDatabase.WordRelation.Add(new WordRelation
+                            {
+                                SourceWordId = sourceWordId,
+                                RelatedWordId = relatedWordId,
+                                RelationType = relation.RelationType
+                            });
+                            targetDatabase.SaveChanges();
+                        }
+                        count2++;
+                        if (count2 > 1000) break;
+                    }
+
+                }
+
+                _logger.LogDebug($"Writing sqlite file to {sqlitePath}");
+
+                var bytes = File.ReadAllBytes(sqlitePath);
+                var file = new Database.Entities.File
+                {
+                    MimeType = MimeTypes.SqlLite,
+                    Contents = bytes,
+                    FileName = $"{dictionaryId}.dat",
+                    DateCreated = DateTime.UtcNow,
+                    LiveUntil = DateTime.MaxValue
+                };
+
+
+                var exisitngDownload = _databaseContext.DictionaryDownload
+                                                       .Include(d => d.File)
+                                                       .SingleOrDefault(d => d.DictionaryId == dictionaryId && d.MimeType == MimeTypes.SqlLite);
+                if (exisitngDownload != null)
+                {
+                    _databaseContext.DictionaryDownload.Remove(exisitngDownload);
+
+                    if (exisitngDownload.File != null)
+                    {
+                        _databaseContext.File.Remove(exisitngDownload.File);
+                    }
+                }
+
+                _databaseContext.File.Add(file);
+
+                _databaseContext.DictionaryDownload.Add(new DictionaryDownload
+                {
+                    DictionaryId = dictionaryId,
+                    MimeType = MimeTypes.SqlLite,
+                    File = file
                 });
 
-                targetDatabase.SaveChanges();
-
-                var newDictionary = targetDatabase.Dictionary.First();
-                var wordCount = _databaseContext.Word.Count(d => d.DictionaryId == dictionaryId);
-                var pageSize = wordCount/2;
-
-                var numberOfPages = (wordCount / pageSize) + 1;
-
-                int count = 0;
-
-                for (int i = 1; i <= numberOfPages; i++)
-                {
-                    var words = _databaseContext.Word
-                                                .Where(w => w.DictionaryId == dictionaryId)
-                                                .OrderBy(w => w.Title)
-                                                .Paginate(i, pageSize)
-                                                .Include(wd => wd.Meaning)
-                                                .Include(wd => wd.Translation)
-                                                .Include(w => w.WordRelationRelatedWord)
-                                                .Include(w => w.WordRelationSourceWord);
-
-                    foreach (var word in words)
-                    {
-                        var newWord = MapWord(word);
-                        newWord.DictionaryId = newDictionary.Id;
-                        targetDatabase.Word.Add(newWord);
-                        targetDatabase.SaveChanges();
-                        wordIdMap.Add(word.Id, newWord.Id);
-
-                        foreach (var relation in word.WordRelationRelatedWord)
-                        {
-                            var newRelation =
-                                (
-                                SourceWord: relation.SourceWordId,
-                                RelatedWord: relation.RelatedWordId,
-                                RelationType: (RelationType)relation.RelationType
-                                );
-                            relationShips.Add(newRelation);
-                        }
-
-                        targetDatabase.SaveChanges();
-                        count++;
-                    }
-                }
-
-                _logger.LogDebug("Creating relations");
-
-                int count2 = 0;
-
-                foreach (var relation in relationShips)
-                {
-                    if (wordIdMap.ContainsKey(relation.SourceWord) &&
-                        wordIdMap.ContainsKey(relation.RelatedWord))
-                    {
-                        var sourceWordId = wordIdMap[relation.SourceWord];
-                        var relatedWordId = wordIdMap[relation.RelatedWord];
-                        targetDatabase.WordRelation.Add(new WordRelation
-                        {
-                            SourceWordId = sourceWordId,
-                            RelatedWordId = relatedWordId,
-                            RelationType = relation.RelationType
-                        });
-                        targetDatabase.SaveChanges();
-                    }
-                    count2++;
-                    if (count2 > 1000) break;
-                }
-
-                _logger.LogDebug("Data migration completed");
+                _databaseContext.SaveChanges();
+                _logger.LogDebug($"Finished export for dictionary {dictionaryId}");
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex, $"Finished export for dictionary with errors {dictionaryId}");
             }
 
-            var bytes = File.ReadAllBytes(sqlitePath);
-            var file = new Database.Entities.File
-            {
-                MimeType = MimeTypes.SqlLite,
-                Contents = bytes,
-                FileName = $"{dictionaryId}.dat",
-                DateCreated = DateTime.UtcNow,
-                LiveUntil = DateTime.MaxValue
-            };
-
-
-            var exisitngDownload = _databaseContext.DictionaryDownload
-                                                   .Include(d => d.File)
-                                                   .SingleOrDefault(d => d.DictionaryId == dictionaryId && d.MimeType == MimeTypes.SqlLite);
-            if (exisitngDownload != null)
-            {
-                _databaseContext.DictionaryDownload.Remove(exisitngDownload);
-
-                if (exisitngDownload.File != null)
-                {
-                    _databaseContext.File.Remove(exisitngDownload.File);
-                }
-            }
-
-            _databaseContext.File.Add(file);
-
-            _databaseContext.DictionaryDownload.Add(new DictionaryDownload
-            {
-                DictionaryId = dictionaryId,
-                MimeType = MimeTypes.SqlLite,
-                File = file
-            });
-            _databaseContext.SaveChanges();
         }
 
         private Word MapWord(Database.Entities.Word word)

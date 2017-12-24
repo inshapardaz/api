@@ -52,9 +52,9 @@ namespace Inshapardaz.Domain.Jobs
                 using (var targetDatabase = new Data.DictionaryDatabase(optionsBuilder.Options))
                 {
 
-                    _logger.LogDebug("Starting creating target database");
+                    _logger.LogDebug($"Starting creating target database for dictionary {dictionaryId}");
                     targetDatabase.Database.EnsureCreated();
-                    _logger.LogDebug("Target database created");
+                    _logger.LogDebug($"Target database created for dictionary {dictionaryId}");
 
                     var wordIdMap = new Dictionary<long, long>();
                     var relationShips = new List<(long SourceWord, long RelatedWord, RelationType RelationType)>();
@@ -62,7 +62,7 @@ namespace Inshapardaz.Domain.Jobs
                     var sourceDictionary = _databaseContext.Dictionary.FirstOrDefault(d => d.Id == dictionaryId);
                     ;
 
-                    _logger.LogDebug("Starting migrating data");
+                    _logger.LogDebug($"Starting migrating data for dictionary {dictionaryId}");
 
                     targetDatabase.Dictionary.Add(new Data.Entities.Dictionary
                     {
@@ -84,7 +84,7 @@ namespace Inshapardaz.Domain.Jobs
 
                     for (int i = 1; i <= numberOfPages; i++)
                     {
-                        _logger.LogDebug($"Processing page {i} or {numberOfPages}");
+                        _logger.LogDebug($"Processing page {i} or {numberOfPages} for dictionary {dictionaryId}");
                         var words = _databaseContext.Word
                                                     .Where(w => w.DictionaryId == dictionaryId)
                                                     .OrderBy(w => w.Title)
@@ -118,7 +118,7 @@ namespace Inshapardaz.Domain.Jobs
                         }
                     }
 
-                    _logger.LogDebug("Creating relationships");
+                    _logger.LogDebug($"Creating relationships for dictionary {dictionaryId}");
 
                     int count2 = 0;
 
@@ -143,7 +143,7 @@ namespace Inshapardaz.Domain.Jobs
 
                 }
 
-                _logger.LogDebug($"Writing sqlite file to {sqlitePath}");
+                _logger.LogDebug($"Writing sqlite file to {sqlitePath} for dictionary {dictionaryId}");
 
                 var bytes = File.ReadAllBytes(sqlitePath);
                 var file = new Database.Entities.File

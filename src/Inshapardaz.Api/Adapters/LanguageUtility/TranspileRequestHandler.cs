@@ -10,19 +10,15 @@ using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Queries;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.LanguageUtility
 {
-    public class TranspileRequest : DictionaryRequest
+    public class TranspileRequest : IRequest
     {
-        public TranspileRequest(int dictionaryId)
-            : base(dictionaryId)
-        {
-        }
-
         public Guid Id { get; set; }
 
         public Languages FromLanguage { get; set; }
@@ -38,15 +34,17 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
     {
         private readonly IQueryProcessor _queryProcessor;
         private readonly ILogger<TranspileRequestHandler> _logger;
+        private readonly IConfiguration _configuration;
 
-        public TranspileRequestHandler(IQueryProcessor queryProcessor, ILogger<TranspileRequestHandler> logger)
+        public TranspileRequestHandler(IQueryProcessor queryProcessor, 
+                    ILogger<TranspileRequestHandler> logger,
+                    IConfiguration configuration)
         {
             _queryProcessor = queryProcessor;
             _logger = logger;
+            _configuration = configuration;
         }
 
-
-        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<TranspileRequest> HandleAsync(TranspileRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(request.Source))
@@ -54,7 +52,8 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
                 throw new BadRequestException();
             }
 
-            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery {DictionaryId = request.DictionaryId}, cancellationToken);
+            int.TryParse(_configuration["Application:DefaultDictionaryId"], out int dictionaryId);
+            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery {DictionaryId = dictionaryId }, cancellationToken);
             
             string result = string.Empty;
 

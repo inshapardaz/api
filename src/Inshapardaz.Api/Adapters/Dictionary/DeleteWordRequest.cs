@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
@@ -39,9 +40,22 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new NotFoundException();
             }
 
+            await RemoveRelationships(command, cancellationToken);
+
             await _commandProcessor.SendAsync(new DeleteWordCommand(command.DictionaryId, command.WordId), cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
+        }
+
+        private async Task RemoveRelationships(DeleteWordRequest command, CancellationToken cancellationToken)
+        {
+            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipsByWordQuery(command.WordId), cancellationToken);
+            var relationTo = await _queryProcessor.ExecuteAsync(new GetRelationshipToWordQuery(command.WordId), cancellationToken);
+
+            foreach (var relation in relations.Union(relationTo))
+            {
+                await _commandProcessor.SendAsync(new DeleteRelationshipRequest(command.DictionaryId) { RelationshipId = relation.Id });
+            }
         }
     }
 }

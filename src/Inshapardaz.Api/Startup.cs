@@ -58,6 +58,7 @@ namespace Inshapardaz.Api
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            Console.WriteLine($"Configuring application with environment {env.EnvironmentName}");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -88,7 +89,7 @@ namespace Inshapardaz.Api
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseStatusCodeMiddleWare();
-            ConfigureCustoMiddleWare(app);
+            ConfigureCustomMiddleWare(app);
             app.UseMvc();
 
             AddHangFire(app);
@@ -119,7 +120,6 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderRelation, RelationRenderer>();
             services.AddTransient<IRenderDictionaryDownload, DictionaryDownloadRenderer>();
             services.AddTransient<IRenderJobStatus, JobStatusRenderer>();
-
         }
 
         public void ConfigureObjectMappings(IApplicationBuilder app)
@@ -138,14 +138,16 @@ namespace Inshapardaz.Api
             services.AddMvc();
         }
 
-        protected virtual void ConfigureCustoMiddleWare(IApplicationBuilder app)
+        protected virtual void ConfigureCustomMiddleWare(IApplicationBuilder app)
         {
 
         }
 
         protected virtual void ConfigureHangFire(IServiceCollection services)
         {
-            services.AddHangfire(x => x.UseSqlServerStorage(Configuration["ConnectionStrings:DefaultDatabase"]));
+            var connectionString = Configuration.GetConnectionString("DefaultDatabase");
+            Console.WriteLine($"Starting HangFire with connection string {connectionString}");
+            services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
         }
 
         protected virtual void AddHangFire(IApplicationBuilder app)
@@ -156,7 +158,7 @@ namespace Inshapardaz.Api
 
         protected virtual void ConfigureDomain(IServiceCollection services)
         {
-            var connectionString = Configuration["ConnectionStrings:DefaultDatabase"];
+            var connectionString = Configuration.GetConnectionString("DefaultDatabase");
 
             services.AddEntityFrameworkSqlServer()
                     .AddDbContext<DatabaseContext>(

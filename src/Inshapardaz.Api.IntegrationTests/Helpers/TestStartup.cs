@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
         {
         }
 
-        protected override void ConfigureCustoMiddleWare(IApplicationBuilder app)
+        protected override void ConfigureCustomMiddleWare(IApplicationBuilder app)
         {
             app.UseMiddleware<AuthenticatedTestRequestMiddleware>();
         }

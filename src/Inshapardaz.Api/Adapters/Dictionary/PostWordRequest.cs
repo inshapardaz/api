@@ -7,6 +7,7 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.IndexingService;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
@@ -33,13 +34,16 @@ namespace Inshapardaz.Api.Adapters.Dictionary
     public class PostWordRequestHandler : RequestHandlerAsync<PostWordRequest>
     {
         private readonly IAmACommandProcessor _commandProcessor;
+        private readonly IWriteDictionaryIndex _indexWriter;
         private readonly IRenderWord _wordRenderer;
 
         public PostWordRequestHandler(IAmACommandProcessor commandProcessor,
+                                      IWriteDictionaryIndex indexWriter,
                                       IRenderWord wordRenderer)
         {
             _wordRenderer = wordRenderer;
             _commandProcessor = commandProcessor;
+            _indexWriter = indexWriter;
         }
 
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
@@ -48,6 +52,8 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             var addWordCommand = new AddWordCommand(command.DictionaryId, command.Word.Map<WordView, Word>());
             addWordCommand.Word.DictionaryId = command.DictionaryId;
             await _commandProcessor.SendAsync(addWordCommand, cancellationToken: cancellationToken);
+
+            _indexWriter.AddWord(command.DictionaryId, addWordCommand.Word);
 
             command.Result.Response = _wordRenderer.Render(addWordCommand.Word, command.DictionaryId);
             command.Result.Location = command.Result.Response.Links.Single(x => x.Rel == RelTypes.Self).Href;

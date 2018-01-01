@@ -1,11 +1,9 @@
-﻿using System.Linq;
-using Inshapardaz.Domain.Queries;
+﻿using Inshapardaz.Domain.Queries;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Exception;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers

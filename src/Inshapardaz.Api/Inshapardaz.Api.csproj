@@ -6,11 +6,19 @@
     <ApplicationInsightsResourceId>/subscriptions/370dd9c3-24b1-4218-9896-403457c19ca2/resourcegroups/inshapardaz/providers/microsoft.insights/components/api-inshapardaz</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/370dd9c3-24b1-4218-9896-403457c19ca2/resourcegroups/inshapardaz/providers/microsoft.insights/components/api-inshapardaz</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="App_Data\**" />
+    <Content Remove="App_Data\**" />
+    <EmbeddedResource Remove="App_Data\**" />
+    <None Remove="App_Data\**" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.2.1" />
     <PackageReference Include="Hangfire" Version="1.6.17" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.6.17" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.0.2" />
+    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00005" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.0" />

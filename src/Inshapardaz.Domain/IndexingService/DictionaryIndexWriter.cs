@@ -130,7 +130,7 @@ namespace Inshapardaz.Domain.IndexingService
 
         public IEnumerable<long> Search(int dictionaryId, string searchQuery)
         { 
-            Query query = new TermQuery(new Term("title", searchQuery));
+            Query query = new WildcardQuery(new Term("title", searchQuery));
 
             var directory = FSDirectory.Open(_indexLocationProvider.GetDictionaryIndexFolder(dictionaryId));
             using (var reader = DirectoryReader.Open(directory))

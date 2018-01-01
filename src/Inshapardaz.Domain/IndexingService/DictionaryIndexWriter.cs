@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Inshapardaz.Domain.Database.Entities;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
+using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
 using Microsoft.Extensions.Logging;
@@ -18,7 +20,12 @@ namespace Inshapardaz.Domain.IndexingService
         void CreateIndex(int dictionaryId, IEnumerable<Word> words);
     }
 
-    public class DictionaryIndexWriter : IWriteDictionaryIndex
+    public interface IReadDictionaryIndex
+    {
+        IEnumerable<long> Search(int dictionaryId, string searchQuery);
+    }
+
+    public class DictionaryIndexWriter : IWriteDictionaryIndex, IReadDictionaryIndex
     {
         private readonly IProvideIndexLocation _indexLocationProvider;
         private readonly ILogger<DictionaryIndexWriter> _logger;
@@ -80,6 +87,33 @@ namespace Inshapardaz.Domain.IndexingService
             }
 
             _logger.LogDebug("Finished writing index for dictionary {0} to path : {1}", dictionaryId, directory);
+        }
+
+        public IEnumerable<long> Search(int dictionaryId, string searchQuery)
+        { 
+            Query query = new TermQuery(new Term("title", searchQuery));
+
+            var directory = FSDirectory.Open(_indexLocationProvider.GetDictionaryIndexFolder(dictionaryId));
+            using (var reader = DirectoryReader.Open(directory))
+            {
+                var searcher = new IndexSearcher(reader);
+
+                var sorter = new Sort(new SortField("title", SortFieldType.STRING));
+                var  hits = searcher.Search(query, Int32.MaxValue, sorter);
+
+                var result = new List<long>();
+                foreach (var hit in hits.ScoreDocs)
+                {
+                    var document = searcher.Doc(hit.Doc);
+                    var wordId = document.GetField("id").GetInt64Value();
+
+                    if (wordId.HasValue)
+                    {
+                        result.Add(wordId.Value);
+                    }
+                }
+                return result;
+            }
         }
     }
 }

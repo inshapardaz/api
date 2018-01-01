@@ -1,9 +1,11 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.IndexingService;
 using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -30,11 +32,13 @@ namespace Inshapardaz.Api.Adapters.Dictionary
     {
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderWordPage _pageRenderer;
+        private readonly IReadDictionaryIndex _indexReader;
 
-        public SearchWordRequestHandler(IQueryProcessor queryProcessor, IRenderWordPage pageRenderer)
+        public SearchWordRequestHandler(IQueryProcessor queryProcessor, IRenderWordPage pageRenderer, IReadDictionaryIndex indexReader)
         {
             _queryProcessor = queryProcessor;
             _pageRenderer = pageRenderer;
+            _indexReader = indexReader;
         }
 
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
@@ -45,15 +49,17 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new NotFoundException();
             }
 
-            var wordQuery = new GetWordContainingTitleQuery
+            var words = _indexReader.Search(command.DictionaryId, command.Query);
+            var wordQuery = new GetWordsByIdsQuery(command.DictionaryId, words)
             {
-                DictionaryId = command.DictionaryId,
-                SearchTerm = command.Query,
-                PageNumber = command.PageNumber,
-                PageSize = command.PageSize
+                PageSize = command.PageSize,
+                PageNumber = command.PageNumber
             };
 
             var response = await _queryProcessor.ExecuteAsync(wordQuery, cancellationToken);
+            response.PageSize = command.PageNumber;
+            response.PageSize = command.PageSize;
+
             var pageRenderArgs = new PageRendererArgs<Word>
             {
                 RouteName = "SearchDictionary",
@@ -61,7 +67,9 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 RouteArguments = new DictionarySearchPageRouteArgs
                 {
                     Id = command.DictionaryId,
-                    Query = command.Query
+                    Query = command.Query,
+                    PageNumber = command.PageNumber,
+                    PageSize = command.PageSize
                 }
             };
 

@@ -50,6 +50,7 @@ namespace Inshapardaz.Api
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddSingleton<IProvideIndexLocation, DictionaryIndexLocationProvider>();
             services.AddScoped<IWriteDictionaryIndex, DictionaryIndexWriter>();
+            services.AddScoped<IReadDictionaryIndex, DictionaryIndexWriter>();
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info {Title = "Inshapardaz API", Version = "v1"}); });
 

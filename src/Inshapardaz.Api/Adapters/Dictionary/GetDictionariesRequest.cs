@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         {
             var userId = _userHelper.GetUserId();
 
-            var results = await _queryProcessor.ExecuteAsync(new DictionariesByUserQuery { UserId = userId }, cancellationToken);
+            var results = await _queryProcessor.ExecuteAsync(new GetDictionariesByUserQuery { UserId = userId }, cancellationToken);
 
             var wordCounts = new Dictionary<int, int>();
             var downloads = new Dictionary<int, IEnumerable<DictionaryDownload>>();

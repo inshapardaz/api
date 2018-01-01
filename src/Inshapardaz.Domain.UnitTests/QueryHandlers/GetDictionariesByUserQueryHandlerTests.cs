@@ -45,7 +45,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Test]
         public async Task WhenCallingForAnonymous_ShouldReturnAllPublicDictionaries()
         {
-            var result = await _handler.ExecuteAsync(new DictionariesByUserQuery());
+            var result = await _handler.ExecuteAsync(new GetDictionariesByUserQuery());
 
             var dictionaries = result.ToArray();
 
@@ -62,7 +62,7 @@ namespace Inshapardaz.Domain.UnitTests.QueryHandlers
         [Test]
         public async Task WhenCalledForAUser_ShouldReturnPublicAndPrivateDictionaries()
         {
-            var result = await _handler.ExecuteAsync(new DictionariesByUserQuery {UserId = _userId2 });
+            var result = await _handler.ExecuteAsync(new GetDictionariesByUserQuery {UserId = _userId2 });
 
             var dictionaries = result.ToArray();
 

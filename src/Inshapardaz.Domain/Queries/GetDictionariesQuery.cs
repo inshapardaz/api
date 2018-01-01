@@ -6,8 +6,7 @@ using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Queries
 {
-    public class GetDictionariesByUserQuery : IQuery<IEnumerable<Dictionary>>
+    public class GetDictionariesQuery : IQuery<IEnumerable<Dictionary>>
     {
-        public Guid UserId { get; set; }
     }
 }

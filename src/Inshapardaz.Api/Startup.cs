@@ -3,11 +3,14 @@ using System;
 using System.IO;
 using AutoMapper;
 using Hangfire;
+using Inshapardaz.Api.Adapters.Dictionary;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.IndexingService;
+using Inshapardaz.Domain.Jobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Paramore.Brighter;
 using Paramore.Brighter.AspNetCore;
 using Paramore.Darker.AspNetCore;
 using Swashbuckle.AspNetCore.Swagger;
@@ -44,6 +48,9 @@ namespace Inshapardaz.Api
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             services.AddScoped<IUserHelper, UserHelper>();
+            services.AddSingleton<IProvideIndexLocation, DictionaryIndexLocationProvider>();
+            services.AddScoped<IWriteDictionaryIndex, DictionaryIndexWriter>();
+
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info {Title = "Inshapardaz API", Version = "v1"}); });
 
             ConfigureHangFire(services);
@@ -93,6 +100,9 @@ namespace Inshapardaz.Api
             app.UseMvc();
 
             AddHangFire(app);
+
+            var commandProcessor = app.ApplicationServices.GetService<IAmACommandProcessor>();
+            commandProcessor.SendAsync(new CreateDictionaryIndexRequest()).Wait(5 * 1000);
         }
 
         private void ConfigureApiAuthentication(IServiceCollection services)

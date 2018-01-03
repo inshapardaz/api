@@ -6,6 +6,9 @@ using Inshapardaz.Data.Entities;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Helpers;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -21,6 +24,7 @@ namespace Inshapardaz.Domain.Jobs
 {
     public class SqliteExport
     {
+        private readonly TelemetryClient _telemetryClient = new TelemetryClient(TelemetryConfiguration.Active);
 
         private readonly ILogger<SqliteExport> _logger;
         private readonly IDatabaseContext _databaseContext;
@@ -34,6 +38,8 @@ namespace Inshapardaz.Domain.Jobs
         public void ExportDictionary(int dictionaryId)
         {
             _logger.LogDebug($"Started export for dictionary {dictionaryId}");
+
+            var operation = _telemetryClient.StartOperation<RequestTelemetry>($"Export dictionary {dictionaryId}");
 
             try
             {
@@ -73,6 +79,7 @@ namespace Inshapardaz.Domain.Jobs
                     });
 
                     targetDatabase.SaveChanges();
+                    _telemetryClient.TrackTrace($"done dictionary creation");
 
                     var newDictionary = targetDatabase.Dictionary.First();
                     var wordCount = _databaseContext.Word.Count(d => d.DictionaryId == dictionaryId);
@@ -115,6 +122,7 @@ namespace Inshapardaz.Domain.Jobs
 
                             targetDatabase.SaveChanges();
                             count++;
+                            _telemetryClient.TrackTrace($"Adding words {count/wordCount*100}%");
                         }
                     }
 
@@ -138,7 +146,7 @@ namespace Inshapardaz.Domain.Jobs
                             targetDatabase.SaveChanges();
                         }
                         count2++;
-                        if (count2 > 1000) break;
+                        _telemetryClient.TrackTrace($"Adding relationships {count2 / relationShips.Count * 100}%");
                     }
 
                 }
@@ -184,6 +192,11 @@ namespace Inshapardaz.Domain.Jobs
             catch (System.Exception ex)
             {
                 _logger.LogError(ex, $"Finished export for dictionary with errors {dictionaryId}");
+                _telemetryClient.TrackException(ex);
+            }
+            finally
+            {
+                _telemetryClient.StopOperation(operation);
             }
 
         }
@@ -198,8 +211,8 @@ namespace Inshapardaz.Domain.Jobs
                 Description = word.Description,
                 Attributes = (GrammaticalTypes)word.Attributes,
                 Language = (Languages)word.Language,
-                //Meaning = MapMeanings(word.Meaning),
-                //Translation = MapTranslations(word.Translation)
+                Meaning = MapMeanings(word.Meaning),
+                Translation = MapTranslations(word.Translation)
             };
         }
         

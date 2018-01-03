@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FizzWare.NBuilder.Implementation;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Jobs;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -40,7 +43,7 @@ namespace Inshapardaz.Domain.UnitTests.Jobs
                 Translation = new List<Translation>
                 {
                     new Translation {Language = Languages.Arabic, Value = "رونر"},
-                    new Translation {Language = Languages.English, Value = "sfsdf"},
+                    new Translation {Language = Languages.English, Value = "sfsdf", IsTrasnpiling = true },
                 }
             };
 
@@ -88,6 +91,29 @@ namespace Inshapardaz.Domain.UnitTests.Jobs
 
             DbContext.DictionaryDownload.Count().ShouldBe(1);
             DbContext.File.Count().ShouldBe(1);
+
+            var tempFile = System.IO.Path.GetTempFileName();
+            System.IO.File.WriteAllBytes(tempFile, DbContext.File.First().Contents);
+
+
+            var connectionString = new SqliteConnectionStringBuilder
+            {
+                DataSource = tempFile,
+                Mode = SqliteOpenMode.ReadWriteCreate
+            };
+
+            var optionsBuilder = new DbContextOptionsBuilder<Data.DictionaryDatabase>();
+            optionsBuilder.UseSqlite(connectionString.ConnectionString)
+                          .EnableSensitiveDataLogging();
+
+            using (var database = new Data.DictionaryDatabase(optionsBuilder.Options))
+            {
+                Assert.That(database.Dictionary.Count(), Is.EqualTo(1));
+                Assert.That(database.Word.Count(), Is.EqualTo(3));
+                Assert.That(database.Meaning.Count(), Is.EqualTo(5));
+                Assert.That(database.Translation.Count(), Is.EqualTo(3));
+                Assert.That(database.WordRelation.Count(), Is.EqualTo(1));
+            }
         }
     }
 }

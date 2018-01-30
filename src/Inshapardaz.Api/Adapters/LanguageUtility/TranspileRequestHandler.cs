@@ -33,15 +33,15 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
     {
         private readonly IQueryProcessor _queryProcessor;
         private readonly ILogger<TranspileRequestHandler> _logger;
-        private readonly IConfiguration _configuration;
+        private readonly AppSettings _appSettings;
 
         public TranspileRequestHandler(IQueryProcessor queryProcessor, 
                     ILogger<TranspileRequestHandler> logger,
-                    IConfiguration configuration)
+                    AppSettings appSettings)
         {
             _queryProcessor = queryProcessor;
             _logger = logger;
-            _configuration = configuration;
+            _appSettings = appSettings;
         }
 
         public override async Task<TranspileRequest> HandleAsync(TranspileRequest request, CancellationToken cancellationToken = default(CancellationToken))
@@ -51,7 +51,7 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
                 throw new BadRequestException();
             }
 
-            int.TryParse(_configuration["Application:DefaultDictionaryId"], out int dictionaryId);
+            int dictionaryId = _appSettings.DefaultDictionaryId;
             var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery {DictionaryId = dictionaryId }, cancellationToken);
             
             string result = string.Empty;

@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.Api", "Inshapardaz.Api\Inshapardaz.Api.csproj", "{C9EA1ABC-5D8D-43AD-8801-19648F78D0FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api", "Inshapardaz.Api\Inshapardaz.Api.csproj", "{C9EA1ABC-5D8D-43AD-8801-19648F78D0FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.Domain", "Inshapardaz.Domain\Inshapardaz.Domain.csproj", "{B867197D-41E9-4D3E-9BDE-8BE32B4DDDCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Domain", "Inshapardaz.Domain\Inshapardaz.Domain.csproj", "{B867197D-41E9-4D3E-9BDE-8BE32B4DDDCA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{26B32815-EFF1-4EA6-A846-BE4432C7E6A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.Domain.UnitTests", "Inshapardaz.Domain.UnitTests\Inshapardaz.Domain.UnitTests.csproj", "{7A3530C7-BC0D-4F67-8F67-B1350137F1BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Domain.UnitTests", "Inshapardaz.Domain.UnitTests\Inshapardaz.Domain.UnitTests.csproj", "{7A3530C7-BC0D-4F67-8F67-B1350137F1BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.Api.UnitTests", "Inshapardaz.Api.UnitTests\Inshapardaz.Api.UnitTests.csproj", "{CF753C3C-8D9E-4EE3-A641-43965F644BE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api.UnitTests", "Inshapardaz.Api.UnitTests\Inshapardaz.Api.UnitTests.csproj", "{CF753C3C-8D9E-4EE3-A641-43965F644BE7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api.IntegrationTests", "Inshapardaz.Api.IntegrationTests\Inshapardaz.Api.IntegrationTests.csproj", "{96E70078-C74F-4B4C-A487-6648D0285839}"
 EndProject

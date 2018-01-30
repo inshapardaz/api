@@ -26,27 +26,24 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
     public class GrammarCheckRequestHandler : RequestHandlerAsync<GrammarCheckRequest>
     {
         private readonly IQueryProcessor _queryProcessor;
-        private readonly IRenderLink _linkRenderer;
-        private readonly IConfiguration _configuration;
+        private readonly AppSettings _appSettings;
         private readonly ILogger<SpellCheckRequestHandler> _logger;
         private int _dictionaryId = 0;
         public GrammarCheckRequestHandler(IQueryProcessor queryProcessor,
-                                        IRenderLink linkRenderer,
-                                        IConfiguration configuration,
+                                        AppSettings appSettings,
                                         ILogger<SpellCheckRequestHandler> logger)
         {
             _queryProcessor = queryProcessor;
-            _linkRenderer = linkRenderer;
-            _configuration = configuration;
+            _appSettings = appSettings;
             _logger = logger;
         }
 
 
 
-        public async override Task<GrammarCheckRequest> HandleAsync(GrammarCheckRequest request, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<GrammarCheckRequest> HandleAsync(GrammarCheckRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
-            int.TryParse(_configuration["Application:DefaultDictionaryId"], out _dictionaryId);
-
+            _dictionaryId = _appSettings.DefaultDictionaryId;
+            
             if (_dictionaryId == 0)
             {
                 throw new Exception("Default dictionary not found");

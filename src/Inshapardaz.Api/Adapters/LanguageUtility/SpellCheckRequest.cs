@@ -9,7 +9,6 @@ using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Queries;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -27,17 +26,17 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
     {
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderLink _linkRenderer;
-        private readonly IConfiguration _configuration;
+        private readonly AppSettings _appSettings;
         private readonly ILogger<SpellCheckRequestHandler> _logger;
 
         public SpellCheckRequestHandler(IQueryProcessor queryProcessor, 
                                         IRenderLink linkRenderer,
-                                        IConfiguration configuration, 
+                                        AppSettings appSettings, 
                                         ILogger<SpellCheckRequestHandler> logger)
         {
             _queryProcessor = queryProcessor;
             _linkRenderer = linkRenderer;
-            _configuration = configuration;
+            _appSettings = appSettings;
             _logger = logger;
         }
 
@@ -53,9 +52,9 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
             var words = new List<SpellCheckResultView>();
             var lastIndex = 0;
 
-            int.TryParse(_configuration["Application:DefaultDictionaryId"], out int defaultDictionaryId);
+            int defaultDictionaryId = _appSettings.DefaultDictionaryId;
 
-            if (defaultDictionaryId == 0)
+            if (_appSettings.DefaultDictionaryId == 0)
             {
                 throw new Exception("Default dictionary not found");
             }

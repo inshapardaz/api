@@ -10,7 +10,6 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.IndexingService;
-using Inshapardaz.Domain.Jobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +36,10 @@ namespace Inshapardaz.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var appSettings = new AppSettings();
+            Configuration.Bind("Application", appSettings);
+            services.AddSingleton(appSettings);
+
             RegisterRenderer(services);
             services.AddBrighter()
                     .AsyncHandlersFromAssemblies(typeof(Startup).Assembly)

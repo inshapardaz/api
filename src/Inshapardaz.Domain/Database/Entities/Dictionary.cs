@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nest;
 
 namespace Inshapardaz.Domain.Database.Entities
 {
+    [ElasticsearchType(IdProperty = nameof(Id))]
     public class Dictionary
     {
         public Dictionary()

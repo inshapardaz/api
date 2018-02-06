@@ -2,29 +2,50 @@
 using Inshapardaz.Domain.Queries;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
+using Inshapardaz.Domain.Elasticsearch;
+using Nest;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetWordsByTitlesQueryHandler : QueryHandlerAsync<GetWordsByTitlesQuery, IEnumerable<Word>>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public GetWordsByTitlesQueryHandler(IDatabaseContext database)
+        public GetWordsByTitlesQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<IEnumerable<Word>> ExecuteAsync(GetWordsByTitlesQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.Word
-                        .Where(x => x.DictionaryId == query.DictionaryId && query.Titles.Contains(x.Title))
-                        .ToListAsync(cancellationToken);
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
+
+            var response = await client.SearchAsync<Word>(s => s
+                                                               .Index(index)
+                                                               .Size(100)
+                                                               .Query(q => q
+                                                               .Bool(b => b
+                                                                .Must(m => m
+                                                                    .Term(term => AddValues(term.Field(f => f.Id), query.Titles)))
+                                                            )), cancellationToken);
+
+            return response.Documents;
+        }
+
+        private TermQueryDescriptor<Word> AddValues(TermQueryDescriptor<Word> field, IEnumerable<string> queryDs)
+        {
+            foreach (var id in queryDs)
+            {
+                field.Value(id);
+            }
+
+            return field;
         }
     }
 }

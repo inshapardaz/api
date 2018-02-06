@@ -2,36 +2,33 @@
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Exception;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class UpdateDictionaryCommandHandler : RequestHandlerAsync<UpdateDictionaryCommand>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
 
-        public UpdateDictionaryCommandHandler(IDatabaseContext database)
+        public UpdateDictionaryCommandHandler(IClientProvider clientProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
         }
 
         public override async Task<UpdateDictionaryCommand> HandleAsync(UpdateDictionaryCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var existingDictionary = await _database.Dictionary.SingleOrDefaultAsync(d => d.Id == command.Dictionary.Id, cancellationToken);
-
-            if (existingDictionary == null)
-            {
-                throw new NotFoundException();
-            }
-
-            existingDictionary.Name = command.Dictionary.Name;
-            existingDictionary.Language = command.Dictionary.Language;
-            existingDictionary.IsPublic = command.Dictionary.IsPublic;
-
-            await _database.SaveChangesAsync(cancellationToken);
-
+            var client = _clientProvider.GetClient();
+            await client.UpdateAsync(DocumentPath<Dictionary>.Id(command.Dictionary.Id), 
+                                     u => u
+                                        .Index(Indexes.Dictionaries)
+                                        .Type(DocumentTypes.Dictionary)
+                                        .DocAsUpsert()
+                                        .Doc(command.Dictionary), cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

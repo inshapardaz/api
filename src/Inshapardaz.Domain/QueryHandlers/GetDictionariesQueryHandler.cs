@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Elasticsearch;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
@@ -14,17 +15,20 @@ namespace Inshapardaz.Domain.QueryHandlers
     public class GetDictionariesQueryHandler : QueryHandlerAsync<GetDictionariesQuery,
         IEnumerable<Dictionary>>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
 
-        public GetDictionariesQueryHandler(IDatabaseContext database)
+        public GetDictionariesQueryHandler(IClientProvider clientProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
         }
 
         public override async Task<IEnumerable<Dictionary>> ExecuteAsync(GetDictionariesQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.Dictionary.ToListAsync(cancellationToken);
+            var client = _clientProvider.GetClient();
+            var response = await client.SearchAsync<Dictionary>(s => s.Query(q => q.MatchAll()), cancellationToken);
+
+            return response.Documents;
         }
     }
 }

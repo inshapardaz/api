@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
@@ -33,15 +34,15 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
     {
         private readonly IQueryProcessor _queryProcessor;
         private readonly ILogger<TranspileRequestHandler> _logger;
-        private readonly AppSettings _appSettings;
+        private readonly Settings _settings;
 
         public TranspileRequestHandler(IQueryProcessor queryProcessor, 
                     ILogger<TranspileRequestHandler> logger,
-                    AppSettings appSettings)
+                    Settings settings)
         {
             _queryProcessor = queryProcessor;
             _logger = logger;
-            _appSettings = appSettings;
+            _settings = settings;
         }
 
         public override async Task<TranspileRequest> HandleAsync(TranspileRequest request, CancellationToken cancellationToken = default(CancellationToken))
@@ -51,7 +52,7 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
                 throw new BadRequestException();
             }
 
-            int dictionaryId = _appSettings.DefaultDictionaryId;
+            int dictionaryId = _settings.DefaultDictionaryId;
             var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery {DictionaryId = dictionaryId }, cancellationToken);
             
             string result = string.Empty;

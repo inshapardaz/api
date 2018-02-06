@@ -1,42 +1,49 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Paramore.Darker;
-using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Queries;
-using Inshapardaz.Domain.Helpers;
-using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetWordStartingWithQueryHandler : QueryHandlerAsync<GetWordStartingWithQuery, Page<Word>>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public GetWordStartingWithQueryHandler(IDatabaseContext database)
+        public GetWordStartingWithQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
-        public override async Task<Page<Word>> ExecuteAsync(GetWordStartingWithQuery request, CancellationToken cancellationToken)
+        public override async Task<Page<Word>> ExecuteAsync(GetWordStartingWithQuery query, CancellationToken cancellationToken)
         {
-            var wordIndices = _database.Word.Where(x => x.DictionaryId == request.DictionaryId &&
-                                                        x.Title.StartsWith(request.Title));
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
 
-            var count = await wordIndices.CountAsync(cancellationToken);
-            var data = wordIndices
-                .OrderBy(x => x.Title.Length)
-                .ThenBy(x => x.Title)
-                .Paginate(request.PageNumber, request.PageSize)
-                .ToList();
+            var response = await client.SearchAsync<Word>(s => s
+                                        .Index(index)
+                                        .From(query.PageSize * (query.PageNumber - 1))
+                                        .Size(query.PageSize)
+                                        .Query(q => q
+                                        .Prefix(c => c
+                                        .Field(f => f.Title)
+                                        .Value(query.Title)))
+                                    , cancellationToken);
+
+            var words = response.Documents;
+
+            var count = response.HitsMetadata.Hits.Count;
+
 
             return new Page<Word>
             {
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
+                PageNumber = query.PageNumber,
+                PageSize = query.PageSize,
                 TotalCount = count,
-                Data = data
+                Data = words
             };
         }
     }

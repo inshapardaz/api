@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using Inshapardaz.Api.IntegrationTests.Helpers;
 using Inshapardaz.Domain.Database;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inshapardaz.Api.IntegrationTests
@@ -16,7 +18,12 @@ namespace Inshapardaz.Api.IntegrationTests
 
         static  IntegrationTestBase()
         {
+            var configuration = new ConfigurationBuilder()
+                                .SetBasePath(Directory.GetCurrentDirectory())
+                                .AddJsonFile("appsettings.json", optional: false)
+                                .Build();
             TestServer = new TestServer(new WebHostBuilder()
+                                        .UseConfiguration(configuration)
                                              .UseStartup<TestStartup>());
         }
 

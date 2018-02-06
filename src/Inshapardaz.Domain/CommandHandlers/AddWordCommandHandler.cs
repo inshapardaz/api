@@ -1,21 +1,22 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Exception;
-using Microsoft.EntityFrameworkCore;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class AddWordCommandHandler : RequestHandlerAsync<AddWordCommand>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public AddWordCommandHandler(IDatabaseContext database)
+        public AddWordCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<AddWordCommand> HandleAsync(AddWordCommand command, CancellationToken cancellationToken = default(CancellationToken))
@@ -25,16 +26,13 @@ namespace Inshapardaz.Domain.CommandHandlers
                 throw new BadRequestException();
             }
 
-            var dictionary = await _database.Dictionary.SingleOrDefaultAsync(
-                d => d.Id == command.DictionaryId, 
-                cancellationToken);
-            if (dictionary == null)
-            {
-                throw new NotFoundException();
-            }
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
 
-            dictionary.Word.Add(command.Word);
-            await _database.SaveChangesAsync(cancellationToken);
+            var count = await client.CountAsync<Word>(i => i.Index(index), cancellationToken);
+            command.Word.Id = count.Count + 1;
+
+            await client.IndexAsync(command.Word, i => i.Index(index).Type(DocumentTypes.Word), cancellationToken);
 
             return await  base.HandleAsync(command, cancellationToken);
         }

@@ -37,24 +37,25 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         {
             var userId = _userHelper.GetUserId();
 
-            var results = await _queryProcessor.ExecuteAsync(new GetDictionariesByUserQuery { UserId = userId }, cancellationToken);
+            var results = await _queryProcessor.ExecuteAsync(new GetDictionariesByUserQuery {UserId = userId}, cancellationToken);
 
             var wordCounts = new Dictionary<int, int>();
             var downloads = new Dictionary<int, IEnumerable<DictionaryDownload>>();
             foreach (var dictionary in results)
             {
-                wordCounts.Add(
-                    dictionary.Id,
-                    await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery {DictionaryId = dictionary.Id}, cancellationToken)
-                );
-
-                var download = await _queryProcessor.ExecuteAsync(new GetDictionaryDownloadsQuery {DictionaryId = dictionary.Id, UserId = _userHelper.GetUserId()}, cancellationToken);
-                if (download != null && download.Any())
+                var wordCount = await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery
                 {
-                    downloads.Add(dictionary.Id, download);
-                }
+                    DictionaryId = dictionary.Id
+                }, cancellationToken);
+                wordCounts.Add(dictionary.Id, wordCount);
 
+                //    var download = await _queryProcessor.ExecuteAsync(new GetDictionaryDownloadsQuery {DictionaryId = dictionary.Id, UserId = _userHelper.GetUserId()}, cancellationToken);
+                //    if (download != null && download.Any())
+                //    {
+                //        downloads.Add(dictionary.Id, download);
+                //    }
             }
+
             command.Result = _dictionariesRenderer.Render(results, wordCounts, downloads);
             return await base.HandleAsync(command, cancellationToken);
         }

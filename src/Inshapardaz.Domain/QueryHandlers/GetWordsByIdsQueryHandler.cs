@@ -1,43 +1,62 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Paramore.Darker;
-using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Queries;
-using Microsoft.EntityFrameworkCore;
+using Nest;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetWordsByIdsQueryHandler : QueryHandlerAsync<GetWordsByIdsQuery, Page<Word>>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public GetWordsByIdsQueryHandler(IDatabaseContext database)
+        public GetWordsByIdsQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<Page<Word>> ExecuteAsync(GetWordsByIdsQuery query, CancellationToken cancellationToken)
         {
-            var wordIndices = query.DictionaryId > 0
-                ? _database.Word.Where(
-                    x => x.DictionaryId == query.DictionaryId && query.IDs.Contains(x.Id))
-                : _database.Word.Where(x => query.IDs.Contains(x.Id));
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
 
-            var count = query.IDs.Count();
-            var data = await wordIndices
-                .Paginate(query.PageNumber, query.PageSize)
-                .ToListAsync(cancellationToken);
+            var response = await client.SearchAsync<Word>(s => s
+                                        .Index(index)
+                                        .From(query.PageSize * (query.PageNumber - 1))
+                                        .Size(query.PageSize)
+                                        .Query(q => q
+                                            .Bool(b => b
+                                            .Must(m => m
+                                            .Term(term => AddIds(term.Field(f => f.Id), query.IDs)))
+                                                    )), cancellationToken);
+
+            var words = response.Documents;
+
+            var count = response.HitsMetadata.Hits.Count;
+
 
             return new Page<Word>
             {
                 PageNumber = query.PageNumber,
                 PageSize = query.PageSize,
                 TotalCount = count,
-                Data = data
+                Data = words
             };
+        }
+
+        private TermQueryDescriptor<Word> AddIds(TermQueryDescriptor<Word> field, IEnumerable<long> queryDs)
+        {
+            foreach (var id in queryDs)
+            {
+                field.Value(id);
+            }
+
+            return field;
         }
     }
 }

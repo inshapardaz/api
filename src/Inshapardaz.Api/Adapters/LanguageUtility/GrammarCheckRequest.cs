@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain;
 using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.GrammarParser;
 using Inshapardaz.Domain.Helpers;
@@ -26,15 +27,15 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
     public class GrammarCheckRequestHandler : RequestHandlerAsync<GrammarCheckRequest>
     {
         private readonly IQueryProcessor _queryProcessor;
-        private readonly AppSettings _appSettings;
+        private readonly Settings _settings;
         private readonly ILogger<SpellCheckRequestHandler> _logger;
         private int _dictionaryId = 0;
         public GrammarCheckRequestHandler(IQueryProcessor queryProcessor,
-                                        AppSettings appSettings,
+                                        Settings settings,
                                         ILogger<SpellCheckRequestHandler> logger)
         {
             _queryProcessor = queryProcessor;
-            _appSettings = appSettings;
+            _settings = settings;
             _logger = logger;
         }
 
@@ -42,7 +43,7 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
 
         public override async Task<GrammarCheckRequest> HandleAsync(GrammarCheckRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _dictionaryId = _appSettings.DefaultDictionaryId;
+            _dictionaryId = _settings.DefaultDictionaryId;
             
             if (_dictionaryId == 0)
             {

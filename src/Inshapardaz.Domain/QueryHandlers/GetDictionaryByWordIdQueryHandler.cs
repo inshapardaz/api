@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
+    // REMOVE IT : 
     public class GetDictionaryByWordIdQueryHandler : QueryHandlerAsync<DictionaryByWordIdQuery, Dictionary>
     {
         private readonly IDatabaseContext _database;

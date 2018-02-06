@@ -37,22 +37,24 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
             app.UseMiddleware<AuthenticatedTestRequestMiddleware>();
         }
 
-        protected override void ConfigureDomain(IServiceCollection services)
-        {
-            var databaseName = Guid.NewGuid().ToString();
+        //protected override void ConfigureDomain(IServiceCollection services)
+        //{
+        //    //var databaseName = Guid.NewGuid().ToString();
 
-            services.AddEntityFrameworkSqlite()
-                    .AddDbContext<DatabaseContext>(options => options.UseInMemoryDatabase(databaseName));
+        //    //services.AddEntityFrameworkSqlite()
+        //    //        .AddDbContext<DatabaseContext>(options => options.UseInMemoryDatabase(databaseName));
 
-            services.AddTransient<IDatabaseContext, DatabaseContext>();
+        //    //services.AddTransient<IDatabaseContext, DatabaseContext>();
 
-            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            optionsBuilder.UseInMemoryDatabase(databaseName);
+        //    //var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+        //    //optionsBuilder.UseInMemoryDatabase(databaseName);
 
-            using (var context = new DatabaseContext(optionsBuilder.Options))
-            {
-                context.Database.EnsureCreated();
-            }
-        }
+        //    //using (var context = new DatabaseContext(optionsBuilder.Options))
+        //    //{
+        //    //    context.Database.EnsureCreated();
+        //    //}
+
+        //    base.ConfigureDomain(services);
+        //}
     }
 }

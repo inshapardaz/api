@@ -1,35 +1,34 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Data.Entities;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Exception;
-using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Elasticsearch;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class DeleteDictionaryCommandHandler : RequestHandlerAsync<DeleteDictionaryCommand>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public DeleteDictionaryCommandHandler(IDatabaseContext database)
+        public DeleteDictionaryCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<DeleteDictionaryCommand> HandleAsync(DeleteDictionaryCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var d = await _database.Dictionary.SingleOrDefaultAsync(x => x.Id == command.DictionaryId, cancellationToken);
+            var client = _clientProvider.GetClient();
+            await client.DeleteAsync<Dictionary>(command.DictionaryId,
+                                                 i => i
+                                                        .Index(Indexes.Dictionaries)
+                                                        .Type(DocumentTypes.Dictionary),
+                                                cancellationToken);
 
-            if (d == null || d.Id != command.DictionaryId)
-            {
-                throw new NotFoundException();
-            }
-
-            _database.Dictionary.Remove(d);
-
-            await _database.SaveChangesAsync(cancellationToken);
-
+            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
+            await client.DeleteIndexAsync(index, cancellationToken: cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Exception;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Brighter;
@@ -10,27 +12,25 @@ namespace Inshapardaz.Domain.CommandHandlers
 {
     public class DeleteWordCommandHandler : RequestHandlerAsync<DeleteWordCommand>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public DeleteWordCommandHandler(IDatabaseContext database)
+        public DeleteWordCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<DeleteWordCommand> HandleAsync(DeleteWordCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var word = await _database.Word.SingleOrDefaultAsync(
-                w => w.Id == command.WordId && w.DictionaryId == command.DictionaryId, 
-                cancellationToken);
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
 
-            if (word == null || word.Id != command.WordId)
-            {
-                throw new NotFoundException();
-            }
-
-            _database.Word.Remove(word);
-
-            await _database.SaveChangesAsync(cancellationToken);
+            await client.DeleteAsync<Word>(command.DictionaryId,
+                                                 i => i
+                                                      .Index(index)
+                                                      .Type(DocumentTypes.Word),
+                                                 cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

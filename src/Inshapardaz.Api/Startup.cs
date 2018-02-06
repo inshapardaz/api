@@ -9,6 +9,7 @@ using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.IndexingService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,11 +35,13 @@ namespace Inshapardaz.Api
 
         public IConfiguration Configuration { get; }
 
+        public Settings Settings { get; set; }
+
         public void ConfigureServices(IServiceCollection services)
         {
-            var appSettings = new AppSettings();
-            Configuration.Bind("Application", appSettings);
-            services.AddSingleton(appSettings);
+            Settings = new Settings();
+            Configuration.Bind("Application", Settings);
+            services.AddSingleton(Settings);
 
             RegisterRenderer(services);
             services.AddBrighter()
@@ -105,8 +108,9 @@ namespace Inshapardaz.Api
 
             AddHangFire(app);
 
-            var commandProcessor = app.ApplicationServices.GetService<IAmACommandProcessor>();
-            commandProcessor.SendAsync(new CreateDictionaryIndexRequest()).Wait(5 * 1000);
+            AddDomain(app);
+            //var commandProcessor = app.ApplicationServices.GetService<IAmACommandProcessor>();
+            //commandProcessor.SendAsync(new CreateDictionaryIndexRequest()).Wait(5 * 1000);
         }
 
         private void ConfigureApiAuthentication(IServiceCollection services)
@@ -172,25 +176,35 @@ namespace Inshapardaz.Api
 
         protected virtual void ConfigureDomain(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultDatabase");
+            //var connectionString = Configuration.GetConnectionString("DefaultDatabase");
 
-            services.AddEntityFrameworkSqlServer()
-                    .AddDbContext<DatabaseContext>(
-                        options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
-            services.AddTransient<IDatabaseContext, DatabaseContext>();
+            //services.AddEntityFrameworkSqlServer()
+            //        .AddDbContext<DatabaseContext>(
+            //            options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
+            //services.AddTransient<IDatabaseContext, DatabaseContext>();
 
-            bool.TryParse(Configuration["Application:RunDBMigrations"], out bool migrationEnabled);
-            if (migrationEnabled)
-            {
-                Console.WriteLine("Running database migrations...");
-                var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-                optionsBuilder.UseSqlServer(connectionString);
+            //bool.TryParse(Configuration["Application:RunDBMigrations"], out bool migrationEnabled);
+            //if (migrationEnabled)
+            //{
+            //    Console.WriteLine("Running database migrations...");
+            //    var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+            //    optionsBuilder.UseSqlServer(connectionString);
 
-                var database = new DatabaseContext(optionsBuilder.Options).Database;
-                database.SetCommandTimeout(5 * 60);
-                database.Migrate();
-                Console.WriteLine("Database migrations completed.");
-            }
+            //    var database = new DatabaseContext(optionsBuilder.Options).Database;
+            //    database.SetCommandTimeout(5 * 60);
+            //    database.Migrate();
+            //    Console.WriteLine("Database migrations completed.");
+            //}
+
+            services.AddTransient<IClientProvider, ClientProvider>();
+            services.AddTransient<IInitialiseElasticSearch, ElasticsearchInitializer>();
+            services.AddTransient<IProvideIndex, IndexProvider>();
+        }
+
+        private void AddDomain(IApplicationBuilder app)
+        {
+            var initialiser = app.ApplicationServices.GetService<IInitialiseElasticSearch>();
+            initialiser.Initialise();
         }
     }
 }

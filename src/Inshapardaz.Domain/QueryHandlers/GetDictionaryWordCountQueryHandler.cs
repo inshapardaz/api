@@ -1,26 +1,38 @@
-﻿using Inshapardaz.Domain.Queries;
+﻿using System.Linq;
+using Inshapardaz.Domain.Queries;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Elasticsearch;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetDictionaryWordCountQueryHandler : QueryHandlerAsync<GetDictionaryWordCountQuery, int>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public GetDictionaryWordCountQueryHandler(IDatabaseContext database)
+        public GetDictionaryWordCountQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<int> ExecuteAsync(GetDictionaryWordCountQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var count =  await _database.Word.CountAsync(d => d.DictionaryId == query.DictionaryId, cancellationToken: cancellationToken);
-            return count;
+            ;
+            var client = _clientProvider.GetClient();
+            var indexName = _indexProvider.GetIndexForDictionary(query.DictionaryId);
+
+            var result = await client.CountAsync<Word>(s => s.Index(indexName), cancellationToken);
+
+            return (int) result.Count;
+
         }
     }
 }

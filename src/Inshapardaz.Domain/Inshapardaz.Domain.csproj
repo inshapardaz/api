@@ -25,6 +25,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="NBuilder" Version="5.0.0" />
+    <PackageReference Include="nest" Version="6.0.0" />
     <PackageReference Include="Paramore.Brighter" Version="7.1.5" />
     <PackageReference Include="Paramore.Darker" Version="1.0.1" />
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />

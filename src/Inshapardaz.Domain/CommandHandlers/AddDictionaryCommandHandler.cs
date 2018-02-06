@@ -1,24 +1,38 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Elasticsearch;
+using Nest;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class AddDictionaryCommandHandler : RequestHandlerAsync<AddDictionaryCommand>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public AddDictionaryCommandHandler(IDatabaseContext database)
+        public AddDictionaryCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<AddDictionaryCommand> HandleAsync(AddDictionaryCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await _database.Dictionary.AddAsync(command.Dictionary, cancellationToken);
-            await _database.SaveChangesAsync(cancellationToken);
+            var client = _clientProvider.GetClient();
+            
+            var count = await client.CountAsync<Dictionary>(s => s.Index(Indexes.Dictionaries), cancellationToken);
+            command.Dictionary.Id = (int)count.Count + 1;
+            
+            await client.IndexAsync(command.Dictionary, i => i
+                                                       .Index(Indexes.Dictionaries)
+                                                       .Type(DocumentTypes.Dictionary)
+                                    , cancellationToken);
+
+            var index = _indexProvider.GetIndexForDictionary(command.Dictionary.Id);
+            await client.CreateIndexAsync(index, cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

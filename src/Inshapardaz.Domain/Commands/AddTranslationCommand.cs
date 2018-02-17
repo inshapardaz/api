@@ -1,18 +1,18 @@
 ﻿using System;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Domain.Commands
 {
     public class AddTranslationCommand : Command
     {
-        public AddTranslationCommand(int dictioanryId, long wordId, Translation translation)
+        public AddTranslationCommand(int dictionaryId, long wordId, Translation translation)
         {
-            DictioanryId = dictioanryId;
+            DictionaryId = dictionaryId;
             WordId = wordId;
             Translation = translation ?? throw new ArgumentNullException(nameof(translation));
         }
 
-        public int DictioanryId { get; }
+        public int DictionaryId { get; }
 
         public long WordId { get; }
 

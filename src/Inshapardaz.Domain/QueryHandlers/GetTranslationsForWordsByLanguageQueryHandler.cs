@@ -1,31 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
-using Microsoft.EntityFrameworkCore;
+using Nest;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetTranslationsForWordsByLanguageQueryHandler : QueryHandlerAsync<GetTranslationsForWordsByLanguageQuery, Dictionary<string, Translation>>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public GetTranslationsForWordsByLanguageQueryHandler(IDatabaseContext database)
+        public GetTranslationsForWordsByLanguageQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<Dictionary<string, Translation>> ExecuteAsync(GetTranslationsForWordsByLanguageQuery query,
                                                                           CancellationToken cancellationToken = default(CancellationToken))
         {
-            var words = await _database.Word
-                                       .Include(w => w.Translation)
-                                       .Where(w => query.Words.Contains(w.Title)).ToListAsync(cancellationToken);
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
+
+            var response = await client.SearchAsync<Word>(s => s
+                                        .Index(index)
+                                        .Size(50)
+                                        .Query(q => q
+                                        .Bool(b => b
+                                        .Must(m => m
+                                        .Term(term => AddIds(term.Field(f => f.Title), query.Words)))
+                                )), cancellationToken);
+
+            var words = response.Documents.ToList();
 
             var result = new Dictionary<string, Translation>();
             foreach (var word in words)
@@ -54,6 +65,16 @@ namespace Inshapardaz.Domain.QueryHandlers
             }
 
             return result;
+        }
+
+        private TermQueryDescriptor<Word> AddIds(TermQueryDescriptor<Word> field, IEnumerable<string> querys)
+        {
+            foreach (var id in querys)
+            {
+                field.Value(id);
+            }
+
+            return field;
         }
     }
 }

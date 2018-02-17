@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using Inshapardaz.Api.IntegrationTests.DataHelper;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
@@ -14,12 +16,28 @@ namespace Inshapardaz.Api.IntegrationTests
     {
         private HttpResponseMessage _response;
         private DictionariesView _view;
+        private DictionaryDataHelpers _dictionaryDataHelper;
 
         [OneTimeSetUp]
         public void Setup()
         {
+            _dictionaryDataHelper = new DictionaryDataHelpers(Settings);
+
+            _dictionaryDataHelper.CreateDictionary(new Dictionary { Id =  -1, IsPublic = true, Name = "Test1"});
+            _dictionaryDataHelper.CreateDictionary(new Dictionary { Id =  -2, IsPublic = true, Name = "Test2"});
+            _dictionaryDataHelper.CreateDictionary(new Dictionary { Id =  -3, IsPublic = false, Name = "Test3", UserId = Guid.NewGuid()});
+            _dictionaryDataHelper.RefreshIndex();
+
             _response = GetClient().GetAsync("/api/dictionaries").Result;
             _view = JsonConvert.DeserializeObject<DictionariesView>(_response.Content.ReadAsStringAsync().Result);
+        }
+
+        [OneTimeTearDown]
+        public void Cleanup()
+        {
+            _dictionaryDataHelper.DeleteDictionary(-1);
+            _dictionaryDataHelper.DeleteDictionary(-2);
+            _dictionaryDataHelper.DeleteDictionary(-3);
         }
 
         [Test]
@@ -31,7 +49,7 @@ namespace Inshapardaz.Api.IntegrationTests
         [Test]
         public void ShouldHaveCorrectResponseBody()
         {
-            _view.ShouldNotBeNull();
+            Assert.That(_view, Is.Not.Null);
         }
 
         [Test]
@@ -45,7 +63,20 @@ namespace Inshapardaz.Api.IntegrationTests
         {
             _view.Links.ShouldNotContain(l => l.Rel == RelTypes.Create && l.Href != null);
         }
-        
+
+        [Test]
+        public void ShouldReturnPublicDictionaries()
+        {
+            _view.Items.Count().ShouldBe(2);
+            _view.Items.ShouldAllBe(d => d.IsPublic);
+        }
+
+        [Test]
+        public void ShouldNotReturnPrivateDictionaries()
+        {
+            _view.Items.ShouldNotContain(d => d.IsPublic == false);
+        }
+
         protected override void Dispose(bool isDisposing)
         {
             base.Dispose(isDisposing);
@@ -61,21 +92,33 @@ namespace Inshapardaz.Api.IntegrationTests
     {
         private HttpResponseMessage _response;
         private DictionariesView _view;
+        private DictionaryDataHelpers _dictionaryDataHelper;
 
         [OneTimeSetUp]
         public void Setup()
         {
             var user1 = Guid.NewGuid();
             var user2 = Guid.NewGuid();
-            var context = DatabaseContext;
-            context.Dictionary.Add(new Dictionary { Id = 1, IsPublic = false, UserId = user1 });
-            context.Dictionary.Add(new Dictionary { Id = 2, IsPublic = true, UserId = user2 });
-            context.Dictionary.Add(new Dictionary { Id = 3, IsPublic = false, UserId = user2 });
-            context.Dictionary.Add(new Dictionary { Id = 4, IsPublic = true, UserId = user1 });
-            context.SaveChanges();
+            _dictionaryDataHelper = new DictionaryDataHelpers(Settings);
+
+            _dictionaryDataHelper.CreateDictionary(new Dictionary { Id = -1, IsPublic = true, Name = "Test1", UserId = user1 });
+            _dictionaryDataHelper.CreateDictionary(new Dictionary { Id = -2, IsPublic = false, Name = "Test2", UserId = user1 });
+            _dictionaryDataHelper.CreateDictionary(new Dictionary { Id = -3, IsPublic = false, Name = "Test3", UserId = user2 });
+            _dictionaryDataHelper.CreateDictionary(new Dictionary { Id = -4, IsPublic = true, Name = "Test4", UserId = user2 });
+            _dictionaryDataHelper.RefreshIndex();
+
 
             _response = GetAuthenticatedClient(user1).GetAsync("/api/dictionaries").Result;
             _view = JsonConvert.DeserializeObject<DictionariesView>(_response.Content.ReadAsStringAsync().Result);
+        }
+
+        [OneTimeTearDown]
+        public void Cleanup()
+        {
+            _dictionaryDataHelper.DeleteDictionary(-1);
+            _dictionaryDataHelper.DeleteDictionary(-2);
+            _dictionaryDataHelper.DeleteDictionary(-3);
+            _dictionaryDataHelper.DeleteDictionary(-4);
         }
 
         [Test]
@@ -102,29 +145,29 @@ namespace Inshapardaz.Api.IntegrationTests
             _view.Links.ShouldContain(l => l.Rel == RelTypes.Create && l.Href != null);
         }
 
-        //[Test]
-        //public void ShouldReturnUsersPublicDictionary()
-        //{
-        //    _view.Items.ShouldContain(d => d.Id == 4);
-        //}
+        [Test]
+        public void ShouldReturnUsersPublicDictionary()
+        {
+            _view.Items.ShouldContain(d => d.Id == -1);
+        }
 
-        //[Test]
-        //public void ShouldReturnUsersPrivateDictionary()
-        //{
-        //    _view.Items.ShouldContain(d => d.Id == 1);
-        //}
+        [Test]
+        public void ShouldReturnUsersPrivateDictionary()
+        {
+            _view.Items.ShouldContain(d => d.Id == -2);
+        }
 
         [Test]
         public void ShouldNotReturnOtherUsersPrivateDictionary()
         {
-            _view.Items.ShouldNotContain(d => d.Id == 3);
+            _view.Items.ShouldNotContain(d => d.Id == -3);
         }
 
-        //[Test]
-        //public void ShouldReturnOtherUsersPublicDictionary()
-        //{
-        //    _view.Items.ShouldContain(d => d.Id == 2);
-        //}
+        [Test]
+        public void ShouldReturnOtherUsersPublicDictionary()
+        {
+            _view.Items.ShouldContain(d => d.Id == -4);
+        }
 
         protected override void Dispose(bool isDisposing)
         {

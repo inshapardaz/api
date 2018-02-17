@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Paramore.Darker;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Elasticsearch;
-using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
-using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
@@ -38,7 +34,7 @@ namespace Inshapardaz.Domain.QueryHandlers
 
             var words = response.Documents;
 
-            var count = response.HitsMetadata.Hits.Count;
+            var count = response.HitsMetadata.Total;
 
             return new Page<Word>
             {

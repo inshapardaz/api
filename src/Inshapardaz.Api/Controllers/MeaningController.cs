@@ -27,24 +27,20 @@ namespace Inshapardaz.Api.Controllers
             return Ok(request.Result);
         }
 
-        [HttpGet("api/dictionaries/{id}/meanings/{meaningId}", Name = "GetMeaningById")]
+        [HttpGet("api/dictionaries/{id}/words/{wordId}/meanings/{meaningId}", Name = "GetMeaningById")]
         [Produces(typeof(MeaningView))]
-        public async Task<IActionResult> Get(int id, int meaningId)
+        public async Task<IActionResult> Get(int id, long wordId, long meaningId)
         {
-            var request = new GetMeaningByIdRequest(id) { MeaningId = meaningId };
+            var request = new GetMeaningByIdRequest(id, wordId, meaningId);
             await _commandProcessor.SendAsync(request);
             return Ok(request.Result);
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/meanings/contexts/{context}", Name = "GetWordMeaningByContext")]
         [Produces(typeof(IEnumerable<MeaningView>))]
-        public async Task<IActionResult> GetMeaningsForContext(int id, int wordId, string context)
+        public async Task<IActionResult> GetMeaningsForContext(int id, long wordId, string context)
         {
-            var request = new GetMeaningForContextRequest(id)
-            {
-                WordId = wordId,
-                Context = context
-            };
+            var request = new GetMeaningForContextRequest(id, wordId, context);
             await _commandProcessor.SendAsync(request);
             return Ok(request.Result);
         }
@@ -63,26 +59,22 @@ namespace Inshapardaz.Api.Controllers
             return Created(request.Result.Location, request.Result.Response);
         }
 
-        [HttpPut("api/dictionaries/{id}/meanings/{meaningId}", Name = "UpdateMeaning")]
+        [HttpPut("api/dictionaries/{id}/words{wordId}/meanings/{meaningId}", Name = "UpdateMeaning")]
         [ValidateModel]
-        public async Task<IActionResult> Put(int id, int meaningId, [FromBody]MeaningView meaning)
+        public async Task<IActionResult> Put(int id, long wordId, int meaningId, [FromBody]MeaningView meaning)
         {
-            var request = new PutMeaningRequest(id)
+            var request = new PutMeaningRequest(id, wordId, meaningId)
             {
-                MeaningId = meaningId,
                 Meaning = meaning
             };
             await _commandProcessor.SendAsync(request);
             return NoContent();
         }
 
-        [HttpDelete("api/dictionaries/{id}/meanings/{meaningId}", Name = "DeleteMeaning")]
-        public async Task<IActionResult> Delete(int id, int meaningId)
+        [HttpDelete("api/dictionaries/{id}/words{wordId}/meanings/{meaningId}", Name = "DeleteMeaning")]
+        public async Task<IActionResult> Delete(int id, int wordId, int meaningId)
         {
-            var request = new DeleteMeaningRequest(id)
-            {
-                MeaningId = meaningId
-            };
+            var request = new DeleteMeaningRequest(id, wordId, meaningId);
             await _commandProcessor.SendAsync(request);
             return NoContent();
         }

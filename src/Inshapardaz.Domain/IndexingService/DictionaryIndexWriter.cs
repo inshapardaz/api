@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Inshapardaz.Domain.Database.Entities
+namespace Inshapardaz.Domain.Entities
 {
     public class Page<T>
     {
@@ -8,7 +8,7 @@ namespace Inshapardaz.Domain.Database.Entities
 
         public int PageSize { get; set; } = 10;
 
-        public int TotalCount { get; set; }
+        public long TotalCount { get; set; }
 
         public IEnumerable<T> Data { get; set; }
     }

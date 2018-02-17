@@ -1,5 +1,4 @@
-﻿using System;
-using Inshapardaz.Domain.Database.Entities;
+﻿using Inshapardaz.Domain.Entities;
 using Nest;
 
 namespace Inshapardaz.Domain.Elasticsearch
@@ -33,11 +32,19 @@ namespace Inshapardaz.Domain.Elasticsearch
             {
                 client.CreateIndex(Indexes.Dictionaries, c => c
                                           .InitializeUsing(indexConfig)
-                                          .Mappings(m => m.Map<Dictionary>(mp => mp.AutoMap()))
-                                          .Mappings(m => m.Map<Word>(mp => mp.AutoMap()))
-                                          .Mappings(m => m.Map<Meaning>(mp => mp.AutoMap()))
-                                          .Mappings(m => m.Map<Translation>(mp => mp.AutoMap())));
-                
+                                          .Mappings(m => m.Map<Dictionary>(mp => mp.AutoMap()
+                                                            .Properties(ps => ps
+                                                                .Object<DictionaryDownload>( dd => dd.Name(n => n.Downloads).AutoMap())))
+                                   ));
+                client.CreateIndex(Indexes.Dictionary, c => c
+                                          .InitializeUsing(indexConfig)
+                                          .Mappings(m => m.Map<Word>(mp => mp
+                                                          .AutoMap()
+                                                          .Properties(ps => ps
+                                                            .Object<Meaning>(pm => pm.Name(n => n.Meaning).AutoMap())
+                                                            .Object<Translation>(pt => pt.Name(n => n.Translation).AutoMap())
+                                                            .Object<WordRelation>(pr => pr.Name(n => n.Relations).AutoMap())
+                                    ))));
             }
 
             client.PutIndexTemplate("dictionary-template",

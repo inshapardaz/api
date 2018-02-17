@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
+using Inshapardaz.Domain.Entities;
 using Paramore.Darker;
-using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Queries
 {
     public class GetTranslationsByLanguageQuery : IQuery<IEnumerable<Translation>>
     {
-        public GetTranslationsByLanguageQuery(long wordId, Languages language)
+        public GetTranslationsByLanguageQuery(int dictionaryId, long wordId, Languages language)
         {
+            DictionaryId = dictionaryId;
             WordId = wordId;
             Language = language;
         }
+
+        public int DictionaryId { get; }
 
         public long WordId { get; }
 

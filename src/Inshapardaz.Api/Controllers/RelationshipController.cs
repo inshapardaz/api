@@ -29,14 +29,11 @@ namespace Inshapardaz.Api.Controllers
             return Ok(request.Result);
         }
 
-        [HttpGet("/api/dictionaries/{id}/relationships/{relationId}", Name = "GetRelationById")]
+        [HttpGet("/api/dictionaries/{id}/words/{wordId}/relationships/{relationId}", Name = "GetRelationById")]
         [Produces(typeof(RelationshipView))]
-        public async Task<IActionResult> Get(int id, int relationId)
+        public async Task<IActionResult> Get(int id, long wordId, int relationId)
         {
-            var request = new GetRelationshipRequest(id)
-            {
-                RelationId = relationId
-            };
+            var request = new GetRelationshipRequest(id, wordId, relationId);
             await _commandProcessor.SendAsync(request);
             return Ok(request.Result);
         }
@@ -55,26 +52,22 @@ namespace Inshapardaz.Api.Controllers
             return Created(request.Result.Location, request.Result.Response);
         }
 
-        [HttpPut("/api/dictionaries/{id}/relationships/{relationId}", Name = "UpdateRelation")]
+        [HttpPut("/api/dictionaries/{id}/words/{wordId}/relationships/{relationId}", Name = "UpdateRelation")]
         [ValidateModel]
-        public async Task<IActionResult> Put(int id, int relationId, [FromBody]RelationshipView relationship)
+        public async Task<IActionResult> Put(int id, long wordId, int relationId, [FromBody]RelationshipView relationship)
         {
-            var request = new PutRelationshipRequest(id)
+            var request = new PutRelationshipRequest(id, wordId, relationId)
             {
-                RelationshipId = relationId,
                 Relationship = relationship
             };
             await _commandProcessor.SendAsync(request);
             return NoContent();
         }
 
-        [HttpDelete("/api/dictionaries/{id}/relationships/{relationId}", Name = "DeleteRelation")]
-        public async Task<IActionResult> Delete(int id, int relationId)
+        [HttpDelete("/api/dictionaries/{id}/words/{wordId}/relationships/{relationId}", Name = "DeleteRelation")]
+        public async Task<IActionResult> Delete(int id, long wordId, int relationId)
         {
-            var request = new DeleteRelationshipRequest(id)
-            {
-                RelationshipId = relationId
-            };
+            var request = new DeleteRelationshipRequest(id, wordId, relationId);
             await _commandProcessor.SendAsync(request);
             return NoContent();
         }

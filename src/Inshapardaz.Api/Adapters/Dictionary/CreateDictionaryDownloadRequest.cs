@@ -6,7 +6,7 @@ using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Api.Adapters.Dictionary

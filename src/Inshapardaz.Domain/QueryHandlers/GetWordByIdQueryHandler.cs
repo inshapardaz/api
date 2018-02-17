@@ -3,11 +3,8 @@ using Paramore.Darker;
 using Inshapardaz.Domain.Queries;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Elasticsearch;
-using Microsoft.EntityFrameworkCore;
-using Nest;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {

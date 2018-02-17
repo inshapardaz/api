@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Model;
 
 namespace Inshapardaz.Domain
@@ -15,9 +15,7 @@ namespace Inshapardaz.Domain
                 .ForMember(d => d.IsPublic, o => o.MapFrom(s => s.IsPublic))
                 .ForMember(d => d.UserId, o => o.MapFrom(s => s.UserId))
                 .ReverseMap()
-                .ForMember(d => d.Word, o => o.Ignore())
-                .ForMember(d => d.Downloads, o => o.Ignore())
-                .ForMember(d => d.Word, o => o.Ignore());
+                .ForMember(d => d.Downloads, o => o.Ignore());
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Exception;
@@ -49,12 +48,12 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
         private async Task RemoveRelationships(DeleteWordRequest command, CancellationToken cancellationToken)
         {
-            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipsByWordQuery(command.WordId), cancellationToken);
-            var relationTo = await _queryProcessor.ExecuteAsync(new GetRelationshipToWordQuery(command.WordId), cancellationToken);
-
-            foreach (var relation in relations.Union(relationTo))
+            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipsByWordQuery(command.DictionaryId, command.WordId), cancellationToken);
+            
+            foreach (var relation in relations)
             {
-                await _commandProcessor.SendAsync(new DeleteRelationshipRequest(command.DictionaryId) { RelationshipId = relation.Id });
+                await _commandProcessor.SendAsync(new DeleteRelationshipRequest(command.DictionaryId, command.WordId, relation.Id), cancellationToken: cancellationToken);
+                await _commandProcessor.SendAsync(new DeleteWordRelationshipByRelatedWordIdCommand(command.DictionaryId, relation.RelatedWordId, command.WordId), cancellationToken: cancellationToken);
             }
         }
     }

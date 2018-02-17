@@ -1,16 +1,19 @@
 using System.Collections.Generic;
+using Inshapardaz.Domain.Entities;
 using Paramore.Darker;
-using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Queries
 {
     public class GetWordMeaningsByContextQuery : IQuery<IEnumerable<Meaning>>
     {
-        public GetWordMeaningsByContextQuery(long wordId, string context)
+        public GetWordMeaningsByContextQuery(int dictionaryId, long wordId, string context)
         {
+            DictionaryId = dictionaryId;
             WordId = wordId;
             Context = context;
         }
+
+        public int DictionaryId { get; }
 
         public long WordId { get; }
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Inshapardaz.Domain.Commands
+﻿namespace Inshapardaz.Domain.Commands
 {
     public class DeleteDictionaryCommand : Command
     {

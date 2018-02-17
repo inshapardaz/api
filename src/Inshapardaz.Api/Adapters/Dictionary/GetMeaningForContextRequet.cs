@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,9 +12,11 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class GetMeaningForContextRequest : DictionaryRequest
     {
-        public GetMeaningForContextRequest(int dictionaryId)
+        public GetMeaningForContextRequest(int dictionaryId, long wordId, string context)
             : base(dictionaryId)
         {
+            WordId = wordId;
+            Context = context;
         }
 
         public string Context { get; set; }
@@ -45,7 +46,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 finalContext = command.Context;
             }
 
-            var result = await _queryProcessor.ExecuteAsync(new GetWordMeaningsByContextQuery(command.WordId, command.Context), cancellationToken);
+            var result = await _queryProcessor.ExecuteAsync(new GetWordMeaningsByContextQuery(command.DictionaryId, command.WordId, finalContext), cancellationToken);
 
             command.Result = result.Select(x => _meaningRenderer.Render(x, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);

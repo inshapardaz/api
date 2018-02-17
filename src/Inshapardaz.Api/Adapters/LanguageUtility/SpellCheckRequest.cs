@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Queries;

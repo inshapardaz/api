@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Inshapardaz.Domain.Elasticsearch
+﻿namespace Inshapardaz.Domain.Elasticsearch
 {
     public interface IProvideIndex
     {
         string GetIndexForDictionary(int dictionaryId);
+        string GetAllDicionaryIndexes();
     }
 
     public class IndexProvider : IProvideIndex
@@ -14,6 +11,11 @@ namespace Inshapardaz.Domain.Elasticsearch
         public string GetIndexForDictionary(int dictionaryId)
         {
             return $"dictionary-{dictionaryId}";
+        }
+
+        public string GetAllDicionaryIndexes()
+        {
+            return "dictionary-*";
         }
     }
 }

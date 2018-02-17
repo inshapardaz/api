@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Paramore.Darker;
-using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
 using Nest;
 
@@ -37,7 +37,7 @@ namespace Inshapardaz.Domain.QueryHandlers
 
             var words = response.Documents;
 
-            var count = response.HitsMetadata.Hits.Count;
+            var count = response.HitsMetadata.Total;
 
 
             return new Page<Word>

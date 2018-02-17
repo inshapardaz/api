@@ -11,14 +11,18 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class GetRelationshipRequest : DictionaryRequest
     {
-        public GetRelationshipRequest(int dictionaryId)
+        public GetRelationshipRequest(int dictionaryId, long wordId, int relationId)
             : base(dictionaryId)
         {
+            WordId = wordId;
+            RelationId = relationId;
         }
 
         public RelationshipView Result { get; set; }
 
-        public long RelationId { get; set; }
+        public long WordId { get; }
+
+        public int RelationId { get; set; }
     }
 
     public class GetRelationshipRequestHandler : RequestHandlerAsync<GetRelationshipRequest>
@@ -35,7 +39,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetRelationshipRequest> HandleAsync(GetRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.RelationId), cancellationToken);
+            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.DictionaryId, command.WordId, command.RelationId), cancellationToken);
 
             if (relations == null)
             {

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetTranslationForWordLanguageRequest> HandleAsync(GetTranslationForWordLanguageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var translations = await _queryProcessor.ExecuteAsync(new GetTranslationsByLanguageQuery(command.WordId, command.Language), cancellationToken);
+            var translations = await _queryProcessor.ExecuteAsync(new GetTranslationsByLanguageQuery(command.DictionaryId, command.WordId, command.Language), cancellationToken);
 
             command.Result = translations.Select(t => _translationRenderer.Render(t, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);

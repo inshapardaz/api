@@ -6,8 +6,7 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Entities;
 using Paramore.Brighter;
 using Paramore.Darker;
 
@@ -49,7 +48,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             var userId = _userHelper.GetUserId();
 
             var addDictionaryCommand = new AddDictionaryCommand(
-                command.Dictionary.Map<DictionaryView, Domain.Database.Entities.Dictionary>()
+                command.Dictionary.Map<DictionaryView, Domain.Entities.Dictionary>()
             );
 
             addDictionaryCommand.Dictionary.UserId = userId;

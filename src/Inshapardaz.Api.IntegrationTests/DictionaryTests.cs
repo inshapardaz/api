@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.IntegrationTests
 {
     [TestFixture]
-    public class DictionaryTests : IntegrationTestBase
+    public class WhenCreatingDictionaryAsAnonymous : IntegrationTestBase
     {
         private HttpResponseMessage _response;
         private EntryView _view;

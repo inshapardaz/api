@@ -32,12 +32,9 @@ namespace Inshapardaz.Domain.QueryHandlers
                                     .Index(Indexes.Dictionaries)
                                     .Size(100)
                                     .Query(q => q
-                                    .Bool(b => b
-                                        .Must(m => m
-                                            .Term(term => term .Field(f => f.IsPublic).Value(true)),
-                                             m => m.Term(r => r.Field(x => x.UserId).Value(query.UserId))
-                                                )
-                                    )), cancellationToken);
+                                        .Term(p => p.IsPublic, true) || q
+                                        .Term(p => p.UserId, query.UserId)
+                                    ), cancellationToken);
             }
             else
             {

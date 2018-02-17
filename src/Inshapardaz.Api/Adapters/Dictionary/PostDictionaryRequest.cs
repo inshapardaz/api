@@ -7,6 +7,7 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
 using Paramore.Darker;
 
@@ -54,10 +55,9 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             addDictionaryCommand.Dictionary.UserId = userId;
 
             await _commandProcessor.SendAsync(addDictionaryCommand, cancellationToken: cancellationToken);
-            var wordCount = 0; //await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery { DictionaryId = command.Dictionary.Id }, cancellationToken);
-            var downloads = new DictionaryDownload[0];// await _queryProcessor.ExecuteAsync(new GetDictionaryDownloadsQuery { DictionaryId = command.Dictionary.Id, UserId = _userHelper.GetUserId() }, cancellationToken);
+            var wordCount = await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery { DictionaryId = command.Dictionary.Id }, cancellationToken);
 
-            var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary, wordCount, downloads);
+            var response = _dictionaryRenderer.Render(addDictionaryCommand.Dictionary, wordCount);
 
             command.Result.Response = response;
             command.Result.Location = response.Links.Single(x => x.Rel == RelTypes.Self).Href;

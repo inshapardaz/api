@@ -38,7 +38,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         {
             var query = new GetRelationshipsByWordQuery(command.DictionaryId, command.WordId);
             var relations = await _queryProcessor.ExecuteAsync(query, cancellationToken);
-            command.Result = relations.Select(r => _relationRender.Render(r, command.DictionaryId)).ToList();
+            command.Result = relations.Select(r => _relationRender.Render(r, command.DictionaryId, command.WordId)).ToList();
             return await base.HandleAsync(command, cancellationToken);
         }
     }

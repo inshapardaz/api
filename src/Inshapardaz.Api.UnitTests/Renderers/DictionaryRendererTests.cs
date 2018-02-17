@@ -4,7 +4,7 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using NUnit.Framework;
 using Shouldly;
 
@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, wordCount, new DictionaryDownload[0]);
+                _result = renderer.Render(_dictionary, wordCount);
             }
 
             [Test]
@@ -117,14 +117,13 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 Name = "Test",
                 Language = Languages.French,
                 IsPublic = true,
-                UserId = Guid.NewGuid()
-            };
-
-            private readonly List<DictionaryDownload> _downloads = new List<DictionaryDownload>
-            {
-                new DictionaryDownload
+                UserId = Guid.NewGuid(),
+                Downloads = new List<DictionaryDownload>
                 {
-                    MimeType = MimeTypes.SqlLite
+                    new DictionaryDownload
+                    {
+                        MimeType = MimeTypes.SqlLite
+                    }
                 }
             };
 
@@ -134,7 +133,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, wordCount, _downloads);
+                _result = renderer.Render(_dictionary, wordCount);
             }
 
             [Test]
@@ -170,7 +169,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, wordCount, new DictionaryDownload[0]);
+                _result = renderer.Render(_dictionary, wordCount);
             }
 
             [Test]
@@ -193,19 +192,18 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 Language = Languages.French,
                 IsPublic = false,
                 UserId = Guid.NewGuid(),
-            };
+                Downloads = new List<DictionaryDownload>
+                {
+                    new DictionaryDownload
+                    {
+                        MimeType = MimeTypes.SqlLite
+                    },
+                    new DictionaryDownload
+                    {
+                        MimeType = "text/plain"
+                    }
 
-            private readonly List<DictionaryDownload> _downloads = new List<DictionaryDownload>
-            {
-                new DictionaryDownload
-                {
-                    MimeType = MimeTypes.SqlLite
-                },
-                new DictionaryDownload
-                {
-                    MimeType = "text/plain"
                 }
-
             };
 
             public WhenRendereingPrivateDictionaryWithDownloadAsContributor()
@@ -214,7 +212,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, wordCount, _downloads);
+                _result = renderer.Render(_dictionary, wordCount);
             }
 
             [Test]
@@ -252,7 +250,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper().AsReader();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, wordCount, new DictionaryDownload[0]);
+                _result = renderer.Render(_dictionary, wordCount);
             }
 
             [Test]
@@ -282,7 +280,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, 0, new DictionaryDownload[0]);
+                _result = renderer.Render(_dictionary, 0);
             }
 
             [Test]

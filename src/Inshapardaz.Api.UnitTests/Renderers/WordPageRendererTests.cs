@@ -5,7 +5,7 @@ using FizzWare.NBuilder;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using NUnit.Framework;
 using Shouldly;
 

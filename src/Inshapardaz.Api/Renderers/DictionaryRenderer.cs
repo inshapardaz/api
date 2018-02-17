@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Renderers
                 links.Add(_linkRenderer.Render("CreateWord", RelTypes.CreateWord, new {id = source.Id}));
             }
 
-            if (source.Downloads != null)
+            if (source.Downloads != null && (source.IsPublic || _userHelper.IsContributor))
             {
                 foreach (var download in source.Downloads)
                 {

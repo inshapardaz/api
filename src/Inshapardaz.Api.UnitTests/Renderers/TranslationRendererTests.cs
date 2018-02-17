@@ -4,7 +4,7 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using NUnit.Framework;
 using EnumHelper = Inshapardaz.Api.Helpers.EnumHelper;
 using Shouldly;

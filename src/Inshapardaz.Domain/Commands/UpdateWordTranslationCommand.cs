@@ -1,5 +1,5 @@
 ﻿using System;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Domain.Commands
 {
@@ -7,11 +7,14 @@ namespace Inshapardaz.Domain.Commands
     {
         public int DictionaryId { get; }
 
-        public UpdateWordTranslationCommand(int dictionaryId, Translation translation)
+        public UpdateWordTranslationCommand(int dictionaryId, long wordId, Translation translation)
         {
             DictionaryId = dictionaryId;
+            WordId = wordId;
             Translation = translation ?? throw new ArgumentNullException(nameof(translation));
         }
+
+        public long WordId { get; }
 
         public Translation Translation { get; }
     }

@@ -2,9 +2,9 @@
 using Inshapardaz.Domain.Queries;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database.Entities;
 using System.Collections.Generic;
 using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 using Nest;
 
 namespace Inshapardaz.Domain.QueryHandlers

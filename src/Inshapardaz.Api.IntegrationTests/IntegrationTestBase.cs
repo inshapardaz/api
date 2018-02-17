@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using Inshapardaz.Api.IntegrationTests.Helpers;
-using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.IntegrationTests
                                              .UseStartup<TestStartup>());
         }
 
-        protected IDatabaseContext DatabaseContext => TestServer.Host.Services.GetService<IDatabaseContext>();
+        protected Settings Settings => TestServer.Host.Services.GetService<Settings>();
 
         protected HttpClient GetClient()
         {

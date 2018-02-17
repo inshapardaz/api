@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Inshapardaz.Domain.Database.Entities
+namespace Inshapardaz.Domain.Entities
 {
     [Flags]
     public enum GrammaticalType : long

@@ -10,12 +10,16 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class DeleteTranslationRequest : DictionaryRequest
     {
-        public DeleteTranslationRequest(int dictionaryId)
+        public DeleteTranslationRequest(int dictionaryId, long wordId, int translationId)
             : base(dictionaryId)
         {
+            WordId = wordId;
+            TranslationId = translationId;
         }
 
-        public long TranslationId { get; set; }
+        public long WordId { get; }
+
+        public int TranslationId { get; set; }
     }
 
     public class DeleteTranslationRequestHandler : RequestHandlerAsync<DeleteTranslationRequest>
@@ -32,14 +36,14 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteTranslationRequest> HandleAsync(DeleteTranslationRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var response = await _queryProcessor.ExecuteAsync(new GetTranslationByIdQuery(command.TranslationId), cancellationToken);
+            var response = await _queryProcessor.ExecuteAsync(new GetTranslationByIdQuery(command.DictionaryId, command.WordId, command.TranslationId), cancellationToken);
 
             if (response == null)
             {
                 throw new BadRequestException();
             }
 
-            await _commandProcessor.SendAsync(new DeleteWordTranslationCommand(command.DictionaryId, command.TranslationId), cancellationToken: cancellationToken);
+            await _commandProcessor.SendAsync(new DeleteWordTranslationCommand(command.DictionaryId, command.WordId, command.TranslationId), cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

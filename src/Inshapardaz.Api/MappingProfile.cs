@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Api
 {
@@ -16,9 +16,8 @@ namespace Inshapardaz.Api
                 .ForMember(s => s.UserId, o => o.MapFrom(d => d.UserId))
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ForMember(s => s.Indexes, o => o.Ignore())
-                .ForMember(s => s.WordCount, o => o.MapFrom(d => d.Word.Count))
-                .ReverseMap()
-                .ForMember(s => s.Word, o => o.Ignore());
+                .ForMember(s => s.WordCount, o => o.Ignore())
+                .ReverseMap();
 
             CreateMap<Word, WordView>()
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
@@ -32,13 +31,11 @@ namespace Inshapardaz.Api
                 .ForMember(s => s.LanguageId, o => o.MapFrom(d => (int)d.Language))
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ReverseMap()
-                .ForMember(s => s.WordRelationSourceWord, o => o.Ignore())
-                .ForMember(s => s.WordRelationRelatedWord, o => o.Ignore())
+                .ForMember(s => s.Relations, o => o.Ignore())
                 .ForMember(s => s.Attributes, o => o.MapFrom(d => (GrammaticalType)d.AttributeValue))
                 .ForMember(s => s.Language, o => o.MapFrom(d => (Languages)d.LanguageId))
                 .ForMember(s => s.Meaning, o => o.Ignore())
                 .ForMember(s => s.Translation, o => o.Ignore())
-                .ForMember(s => s.Dictionary, o => o.Ignore())
                 .ForMember(s => s.DictionaryId, o => o.Ignore());
 
             CreateMap<Word, SpellingOption>()
@@ -53,8 +50,7 @@ namespace Inshapardaz.Api
                 .ForMember(s => s.Example, o => o.MapFrom(d => d.Example))
                 .ForMember(s => s.WordId, o => o.MapFrom(d => d.WordId))
                 .ForMember(s => s.Links, o => o.Ignore())
-                .ReverseMap()
-                .ForMember(s => s.Word, o => o.Ignore());
+                .ReverseMap();
 
             CreateMap<Translation, TranslationView>()
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
@@ -65,23 +61,19 @@ namespace Inshapardaz.Api
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ForMember(s => s.IsTranspiling, o => o.MapFrom(s => s.IsTrasnpiling))
                 .ReverseMap()
-                .ForMember(s => s.Language, o => o.MapFrom(d => (Languages)d.LanguageId))
-                .ForMember(s => s.Word, o => o.Ignore());
+                .ForMember(s => s.Language, o => o.MapFrom(d => (Languages)d.LanguageId));
 
             CreateMap<WordRelation, RelationshipView>()
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
-                .ForMember(s => s.SourceWordId, o => o.MapFrom(d => d.SourceWordId))
                 .ForMember(s => s.RelatedWordId, o => o.MapFrom(d => d.RelatedWordId))
-                .ForMember(s => s.SourceWord, o => o.MapFrom(d => d.SourceWord.Title))
                 .ForMember(s => s.RelationType, o => o.MapFrom(d => d.RelationType))
                 .ForMember(s => s.RelationTypeId, o => o.MapFrom(d => (int)d.RelationType))
-                .ForMember(s => s.RelatedWord, o => o.MapFrom(d => d.RelatedWord.Title))
+                .ForMember(s => s.RelatedWord, o => o.Ignore())
+                .ForMember(s => s.SourceWord, o => o.Ignore())
+                .ForMember(s => s.SourceWordId, o => o.Ignore())
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ReverseMap()
-                .ForMember(s => s.RelationType, o => o.MapFrom(d => (RelationType)d.RelationTypeId))
-                .ForMember(s => s.SourceWordId, o => o.MapFrom(d => d.SourceWordId))
-                .ForMember(s => s.RelatedWord, o => o.Ignore())
-                .ForMember(s => s.SourceWord, o => o.Ignore());
+                .ForMember(s => s.RelationType, o => o.MapFrom(d => (RelationType)d.RelationTypeId));
         }
     }
 }

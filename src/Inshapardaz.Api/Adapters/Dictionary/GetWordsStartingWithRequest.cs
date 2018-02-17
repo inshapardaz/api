@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;

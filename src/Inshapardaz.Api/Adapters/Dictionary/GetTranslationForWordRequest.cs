@@ -36,7 +36,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetTranslationForWordRequest> HandleAsync(GetTranslationForWordRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var translations = await _queryProcessor.ExecuteAsync(new GetTranslationsByWordIdQuery(command.WordId), cancellationToken);
+            var translations = await _queryProcessor.ExecuteAsync(new GetTranslationsByWordIdQuery(command.DictionaryId, command.WordId), cancellationToken);
             command.Result =  translations.Select(t => _translationRenderer.Render(t, command.DictionaryId)).ToList();
             return await base.HandleAsync(command, cancellationToken);
         }

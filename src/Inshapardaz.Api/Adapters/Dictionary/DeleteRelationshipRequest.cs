@@ -10,12 +10,16 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class DeleteRelationshipRequest : DictionaryRequest
     {
-        public DeleteRelationshipRequest(int dictionaryId)
+        public DeleteRelationshipRequest(int dictionaryId, long wordId, int relationshipId)
             : base(dictionaryId)
         {
+            WordId = wordId;
+            RelationshipId = relationshipId;
         }
 
-        public long RelationshipId { get; set; }
+        public long WordId { get; }
+
+        public int RelationshipId { get; }
     }
 
     public class DeleteRelationshipRequestHandler : RequestHandlerAsync<DeleteRelationshipRequest>
@@ -32,7 +36,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteRelationshipRequest> HandleAsync(DeleteRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.RelationshipId), cancellationToken);
+            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.DictionaryId, command.WordId, command.RelationshipId), cancellationToken);
 
             if (relations == null)
             {

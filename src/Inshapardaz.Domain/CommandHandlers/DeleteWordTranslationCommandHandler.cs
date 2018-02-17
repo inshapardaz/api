@@ -1,35 +1,58 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Exception;
-using Microsoft.EntityFrameworkCore;
+using Nest;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class DeleteWordTranslationCommandHandler : RequestHandlerAsync<DeleteWordTranslationCommand>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public DeleteWordTranslationCommandHandler(IDatabaseContext database)
+        public DeleteWordTranslationCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<DeleteWordTranslationCommand> HandleAsync(DeleteWordTranslationCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var translation = await _database.Translation.SingleOrDefaultAsync(
-                t => t.Id == command.TranslationId && t.Word.DictionaryId == command.DictionaryId, 
-                cancellationToken);
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
 
-            if (translation == null)
+            var response = await client.SearchAsync<Word>(s => s
+                                        .Index(index)
+                                        .Size(1)
+                                        .Query(q => q
+                                        .Bool(b => b
+                                        .Must(m => m
+                                        .Term(term => term.Field(f => f.Id).Value(command.WordId)))
+                                    )), cancellationToken);
+
+            var word = response.Documents.SingleOrDefault();
+
+            if (word == null)
             {
                 throw new NotFoundException();
             }
 
-            _database.Translation.Remove(translation);
-            await _database.SaveChangesAsync(cancellationToken);
+            var translation = word.Translation.SingleOrDefault(m => m.Id == command.TranslationId);
+            if (translation != null)
+            {
+                word.Translation.Remove(translation);
+                await client.UpdateAsync(DocumentPath<Word>.Id(command.DictionaryId),
+                                         u => u
+                                              .Index(index)
+                                              .Type(DocumentTypes.Word)
+                                              .DocAsUpsert()
+                                              .Doc(word), cancellationToken);
+            }
 
             return await base.HandleAsync(command, cancellationToken);
         }

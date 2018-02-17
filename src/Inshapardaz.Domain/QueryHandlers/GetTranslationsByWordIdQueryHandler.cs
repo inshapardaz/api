@@ -1,31 +1,43 @@
-﻿using System.Linq;
-using Paramore.Darker;
+﻿using Paramore.Darker;
 using Inshapardaz.Domain.Queries;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
-using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetTranslationsByWordIdQueryHandler : QueryHandlerAsync<GetTranslationsByWordIdQuery,
         IEnumerable<Translation>>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public GetTranslationsByWordIdQueryHandler(IDatabaseContext database)
+        public GetTranslationsByWordIdQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<IEnumerable<Translation>> ExecuteAsync(GetTranslationsByWordIdQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.Translation
-                .Where(t => t.WordId == query.WordId)
-                .ToListAsync(cancellationToken);
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
+
+            var response = await client.SearchAsync<Word>(s => s
+                                        .Index(index)
+                                        .Size(1)
+                                        .Query(q => q
+                                        .Bool(b => b
+                                        .Must(m => m
+                                        .Term(term => term.Field(f => f.Id).Value(query.WordId)))
+                                  )), cancellationToken);
+
+            var word = response.Documents.SingleOrDefault();
+            return word?.Translation;
         }
     }
 }

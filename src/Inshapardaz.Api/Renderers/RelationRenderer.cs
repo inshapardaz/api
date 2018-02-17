@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Api.Renderers
 {
@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Renderers
             var links = new List<LinkView>
                                {
                                    _linkRenderer.Render("GetRelationById", RelTypes.Self, new { id = dictionaryId, relationId = source.Id }),
-                                   _linkRenderer.Render("GetWordById", RelTypes.SourceWord, new { id = dictionaryId, wordId = source.SourceWordId }),
+                                   //_linkRenderer.Render("GetWordById", RelTypes.SourceWord, new { id = dictionaryId, wordId = source.  }),
                                    _linkRenderer.Render("GetWordById", RelTypes.RelatedWord, new { id = dictionaryId, wordId = source.RelatedWordId })
                                };
 

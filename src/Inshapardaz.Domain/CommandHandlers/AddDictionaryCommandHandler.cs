@@ -1,9 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Elasticsearch;
-using Nest;
+using Inshapardaz.Domain.Entities;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
@@ -27,9 +26,9 @@ namespace Inshapardaz.Domain.CommandHandlers
             command.Dictionary.Id = (int)count.Count + 1;
             
             await client.IndexAsync(command.Dictionary, i => i
-                                                       .Index(Indexes.Dictionaries)
-                                                       .Type(DocumentTypes.Dictionary)
-                                    , cancellationToken);
+                                    .Index(Indexes.Dictionaries)
+                                    .Type(DocumentTypes.Dictionary), 
+                                    cancellationToken);
 
             var index = _indexProvider.GetIndexForDictionary(command.Dictionary.Id);
             await client.CreateIndexAsync(index, cancellationToken: cancellationToken);

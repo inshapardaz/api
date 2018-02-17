@@ -1,26 +1,41 @@
-﻿using Paramore.Darker;
+﻿using System.Linq;
+using Paramore.Darker;
 using Inshapardaz.Domain.Queries;
-using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetWordMeaningByIdQueryHandler : QueryHandlerAsync<GetWordMeaningByIdQuery, Meaning>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public GetWordMeaningByIdQueryHandler(IDatabaseContext database)
+        public GetWordMeaningByIdQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<Meaning> ExecuteAsync(GetWordMeaningByIdQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.Meaning.SingleOrDefaultAsync(t => t.Id == query.MeaningId, cancellationToken);
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
+
+            var response = await client.SearchAsync<Word>(s => s
+                                                               .Index(index)
+                                                               .Size(1)
+                                                               .Query(q => q
+                                                                          .Bool(b => b
+                                                                                    .Must(m => m
+                                                                                              .Term(term => term.Field(f => f.Id).Value(query.WordId)))
+                                                                          )), cancellationToken);
+
+            var word = response.Documents.SingleOrDefault();
+            return word?.Meaning.SingleOrDefault(m => m.Id == query.MeaningId);
         }
     }
 }

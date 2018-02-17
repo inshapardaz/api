@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Api.Controllers
 {
@@ -45,14 +45,11 @@ namespace Inshapardaz.Api.Controllers
             return Ok(request.Result);
         }
 
-        [HttpGet("api/dictionaries/{id}/translations/{translationId}", Name = "GetTranslationById")]
+        [HttpGet("api/dictionaries/{id}/words/{wordId}/translations/{translationId}", Name = "GetTranslationById")]
         [Produces(typeof(TranslationView))]
-        public async Task<IActionResult> Get(int id, int translationId)
+        public async Task<IActionResult> Get(int id, long wordId, int translationId)
         {
-            var request = new GetTranslationRequest(id)
-            {
-                TranslationId = translationId
-            };
+            var request = new GetTranslationRequest(id, wordId, translationId);
 
             await _commandProcessor.SendAsync(request);
             return Ok(request.Result);
@@ -73,14 +70,13 @@ namespace Inshapardaz.Api.Controllers
             return Created(request.Result.Location, request.Result.Response);
         }
 
-        [HttpPut("api/dictionaries/{id}/translations/{translationId}", Name = "UpdateTranslation")]
+        [HttpPut("api/dictionaries/{id}/words/{wordId}/translations/{translationId}", Name = "UpdateTranslation")]
         [ValidateModel]
-        public async Task<IActionResult> Put(int id, int translationId, [FromBody]TranslationView translation)
+        public async Task<IActionResult> Put(int id, long wordId, int translationId, [FromBody]TranslationView translation)
         {
 
-            var request = new PutTranslationRequest(id)
+            var request = new PutTranslationRequest(id, wordId, translationId)
             {
-                TranslationId = translationId,
                 Translation = translation
             };
 
@@ -88,13 +84,10 @@ namespace Inshapardaz.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("api/dictionaries/{id}/translations/{translationId}", Name = "DeleteTranslation")]
-        public async Task<IActionResult> Delete(int id, int translationId)
+        [HttpDelete("api/dictionaries/{id}/words/{wordId}/translations/{translationId}", Name = "DeleteTranslation")]
+        public async Task<IActionResult> Delete(int id, long wordId, int translationId)
         {
-            var request = new DeleteTranslationRequest(id)
-            {
-                TranslationId = translationId
-            };
+            var request = new DeleteTranslationRequest(id, wordId, translationId);
 
             await _commandProcessor.SendAsync(request);
             return NoContent();

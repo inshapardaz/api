@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Inshapardaz.Domain.Entities;
 using Paramore.Darker;
-using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Queries
 {

@@ -3,12 +3,10 @@ using System;
 using System.IO;
 using AutoMapper;
 using Hangfire;
-using Inshapardaz.Api.Adapters.Dictionary;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain;
-using Inshapardaz.Domain.Database;
 using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.IndexingService;
 using Microsoft.AspNetCore.Builder;
@@ -16,10 +14,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Paramore.Brighter;
 using Paramore.Brighter.AspNetCore;
 using Paramore.Darker.AspNetCore;
 using Swashbuckle.AspNetCore.Swagger;
@@ -39,9 +35,7 @@ namespace Inshapardaz.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Settings = new Settings();
-            Configuration.Bind("Application", Settings);
-            services.AddSingleton(Settings);
+            ConfigureSettings(services);
 
             RegisterRenderer(services);
             services.AddBrighter()
@@ -159,6 +153,13 @@ namespace Inshapardaz.Api
         protected virtual void ConfigureCustomMiddleWare(IApplicationBuilder app)
         {
 
+        }
+
+        protected virtual void ConfigureSettings(IServiceCollection services)
+        {
+            Settings = new Settings();
+            Configuration.Bind("Application", Settings);
+            services.AddSingleton(Settings);
         }
 
         protected virtual void ConfigureHangFire(IServiceCollection services)

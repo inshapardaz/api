@@ -1,13 +1,9 @@
-﻿using System.Linq;
-using Inshapardaz.Domain.Queries;
+﻿using Inshapardaz.Domain.Queries;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Elasticsearch;
-using Microsoft.EntityFrameworkCore;
-using Nest;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {

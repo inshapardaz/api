@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Api.View
 {

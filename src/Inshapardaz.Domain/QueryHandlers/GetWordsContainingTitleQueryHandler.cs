@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Paramore.Darker;
-using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
 
 namespace Inshapardaz.Domain.QueryHandlers

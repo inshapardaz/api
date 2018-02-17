@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Inshapardaz.Domain.Database.Entities
+namespace Inshapardaz.Domain.Entities
 {
     public class List
     {

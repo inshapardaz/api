@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Inshapardaz.Domain.Queries;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Elasticsearch;
-using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Entities;
 using Nest;
 
 namespace Inshapardaz.Domain.QueryHandlers

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
 using Paramore.Darker;

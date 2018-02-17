@@ -1,41 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
-using Microsoft.EntityFrameworkCore;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetDictionaryDownloadsQueryHandler : QueryHandlerAsync<GetDictionaryDownloadsQuery, IEnumerable<DictionaryDownload>>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
 
-        public GetDictionaryDownloadsQueryHandler(IDatabaseContext database)
+        public GetDictionaryDownloadsQueryHandler(IClientProvider clientProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
         }
 
         public override async Task<IEnumerable<DictionaryDownload>> ExecuteAsync(GetDictionaryDownloadsQuery query,
                                                       CancellationToken cancellationToken = default(CancellationToken))
-        {         
-            if (query.UserId == Guid.Empty)
+        {
+            var client = _clientProvider.GetClient();
+
+            var response = await client.SearchAsync<Dictionary>(s => s
+                                        .Index(Indexes.Dictionaries)
+                                        .Size(1)
+                                        .Query(q => q
+                                        .Bool(b => b
+                                        .Must(m => m
+                                        .Term(term => term.Field(f => f.Id).Value(query.DictionaryId)))
+                                    )), cancellationToken);
+
+            var dictionary = response.Documents.SingleOrDefault();
+
+            if (dictionary == null)
+                return new DictionaryDownload[0];
+
+            if (dictionary.IsPublic || query.UserId == dictionary.UserId )
             {
-                return await _database.DictionaryDownload
-                                  .Where(d => d.DictionaryId == query.DictionaryId && d.Dictionary.IsPublic)
-                                  .ToListAsync(cancellationToken);
-                
+                return dictionary.Downloads;
             }
 
-            return await _database.DictionaryDownload
-                                  .Where(d => d.DictionaryId == query.DictionaryId && (d.Dictionary.IsPublic || d.Dictionary.UserId == query.UserId))
-                                  .ToListAsync(cancellationToken);
-
+            return new DictionaryDownload[0];
         }
     }
 }

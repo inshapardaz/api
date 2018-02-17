@@ -1,11 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
 using Inshapardaz.Domain.Elasticsearch;
-using Inshapardaz.Domain.Exception;
-using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Entities;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers

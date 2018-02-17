@@ -3,35 +3,50 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Paramore.Darker;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
-using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetWordMeaningsByContextQueryHandler : QueryHandlerAsync<GetWordMeaningsByContextQuery, IEnumerable<Meaning>>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public GetWordMeaningsByContextQueryHandler(IDatabaseContext database)
+        public GetWordMeaningsByContextQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<IEnumerable<Meaning>> ExecuteAsync(GetWordMeaningsByContextQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (string.IsNullOrWhiteSpace(query.Context))
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
+
+            var response = await client.SearchAsync<Word>(s => s
+                                        .Index(index)
+                                        .Size(1)
+                                        .Query(q => q
+                                        .Bool(b => b
+                                        .Must(m => m
+                                        .Term(term => term.Field(f => f.Id).Value(query.WordId)))
+                                        )), cancellationToken);
+
+            var word = response.Documents.SingleOrDefault();
+            if (word != null)
             {
-                return await _database.Meaning
-                    .Where(t => t.WordId == query.WordId)
-                    .ToListAsync(cancellationToken);
+                if (string.IsNullOrWhiteSpace(query.Context))
+                {
+                    return word.Meaning;
+                }
+
+                return word.Meaning.Where(m => m.Context == query.Context);
             }
 
-            return await _database.Meaning
-                .Where(t => t.WordId == query.WordId && t.Context == query.Context)
-                .ToListAsync(cancellationToken);
+            return new Meaning[0];
         }
     }
 }

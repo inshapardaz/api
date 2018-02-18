@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using Inshapardaz.Api.IntegrationTests.DataHelper;
 using Inshapardaz.Api.IntegrationTests.Helpers;
 using Inshapardaz.Domain;
+using Inshapardaz.Domain.Elasticsearch;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +30,11 @@ namespace Inshapardaz.Api.IntegrationTests
         }
 
         protected Settings Settings => TestServer.Host.Services.GetService<Settings>();
+
+        protected DictionaryDataHelpers DictionaryDataHelper => new DictionaryDataHelpers(Settings);
+        protected WordDataHelper WordDataHelper => new WordDataHelper(Settings, TestServer.Host.Services.GetService<IProvideIndex>());
+
+        protected HttpResponseMessage Response;
 
         protected HttpClient GetClient()
         {
@@ -55,6 +62,7 @@ namespace Inshapardaz.Api.IntegrationTests
         {
             if (isDisposing)
             {
+                Response?.Dispose();
                 _authenticatedClient?.Dispose();
                 _client?.Dispose();
             }

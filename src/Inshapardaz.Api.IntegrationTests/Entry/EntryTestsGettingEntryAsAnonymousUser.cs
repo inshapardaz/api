@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests
+namespace Inshapardaz.Api.IntegrationTests.Entry
 {
     [TestFixture]
     public class EntryTestsGettingEntryAsAnonymousUser : IntegrationTestBase

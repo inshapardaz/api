@@ -164,15 +164,15 @@ namespace Inshapardaz.Api
 
         protected virtual void ConfigureHangFire(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultDatabase");
-            Console.WriteLine($"Starting HangFire with connection string {connectionString}");
-            services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
+            //var connectionString = Configuration.GetConnectionString("DefaultDatabase");
+            //Console.WriteLine($"Starting HangFire with connection string {connectionString}");
+            //services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
         }
 
         protected virtual void AddHangFire(IApplicationBuilder app)
         {
-            app.UseHangfireServer();
-            app.UseHangfireDashboard();
+            //app.UseHangfireServer();
+            //app.UseHangfireDashboard();
         }
 
         protected virtual void ConfigureDomain(IServiceCollection services)

@@ -16,16 +16,12 @@ namespace Inshapardaz.Api.Helpers
 
         public bool IsAuthenticated => _contextAccessor.HttpContext.User.Identity.IsAuthenticated;
 
-        // public bool IsAdmin => IsAuthenticated && _contextAccessor.HttpContext.User.IsInRole(UserRoles.Admin.ToDescription());
-        // public bool IsContributor => IsAdmin || (IsAuthenticated && _contextAccessor.HttpContext.User.IsInRole(UserRoles.Contributor.ToDescription()));
-        // public bool IsReader => IsContributor || (IsAuthenticated && _contextAccessor.HttpContext.User.IsInRole(UserRoles.Reader.ToDescription()));
+        public bool IsAdmin => IsAuthenticated && _contextAccessor.HttpContext.User.HasClaim(ClaimTypes.Role, "admin");
 
-        public bool IsAdmin => IsAuthenticated;
-
-        public bool IsContributor => IsAuthenticated;
+        public bool IsContributor => IsAdmin || (IsAuthenticated && _contextAccessor.HttpContext.User.HasClaim(ClaimTypes.Role, "contributor"));
 
         public bool IsReader => IsAuthenticated;
-
+        
         public Guid GetUserId()
         {
             var nameIdentifier = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -36,6 +32,7 @@ namespace Inshapardaz.Api.Helpers
             
             return Guid.Empty;
         }
+
 
     }
 }

@@ -10,54 +10,51 @@ using Shouldly;
 
 namespace Inshapardaz.Api.IntegrationTests.Dictionary
 {
-    public partial class DictionariesTests
+    [TestFixture]
+    public class WhenGettingOtherUsersPrivateDictionary : IntegrationTestBase
     {
-        [TestFixture]
-        public class WhenGettingOtherUsersPrivateDictionary : IntegrationTestBase
+        private DictionaryView _view;
+        private Domain.Entities.Dictionary _dictionary;
+
+        [OneTimeSetUp]
+        public async Task Setup()
         {
-            private DictionaryView _view;
-            private Domain.Entities.Dictionary _dictionary;
-
-            [OneTimeSetUp]
-            public async Task Setup()
+            var userId = Guid.NewGuid();
+            _dictionary = new Domain.Entities.Dictionary
             {
-                var userId = Guid.NewGuid();
-                _dictionary = new Domain.Entities.Dictionary
+                Id = -1,
+                IsPublic = false,
+                Name = "Test1",
+                UserId = userId,
+                Downloads = new List<DictionaryDownload>
                 {
-                    Id = -1,
-                    IsPublic = false,
-                    Name = "Test1",
-                    UserId = userId,
-                    Downloads = new List<DictionaryDownload>
-                    {
-                        new DictionaryDownload { Id = -101, DictionaryId = -1, File = "223323", MimeType = MimeTypes.SqlLite },
-                        new DictionaryDownload { Id = -102, DictionaryId = -1, File = "223324", MimeType = MimeTypes.Csv }
-                    }
-                };
-                DictionaryDataHelper.CreateDictionary(_dictionary);
-                DictionaryDataHelper.RefreshIndex();
+                    new DictionaryDownload {Id = -101, DictionaryId = -1, File = "223323", MimeType = MimeTypes.SqlLite},
+                    new DictionaryDownload {Id = -102, DictionaryId = -1, File = "223324", MimeType = MimeTypes.Csv}
+                }
+            };
+            DictionaryDataHelper.CreateDictionary(_dictionary);
+            DictionaryDataHelper.RefreshIndex();
 
-                Response = await GetAuthenticatedClient(Guid.NewGuid()).GetAsync("/api/dictionaries/-1");
-                _view = JsonConvert.DeserializeObject<DictionaryView>(await Response.Content.ReadAsStringAsync());
-            }
+            Response = await GetContributorClient(Guid.NewGuid()).GetAsync("/api/dictionaries/-1");
+            _view = JsonConvert.DeserializeObject<DictionaryView>(await Response.Content.ReadAsStringAsync());
+        }
 
-            [OneTimeTearDown]
-            public void Cleanup()
-            {
-                DictionaryDataHelper.DeleteDictionary(-1);
-            }
+        [OneTimeTearDown]
+        public void Cleanup()
+        {
+            DictionaryDataHelper.DeleteDictionary(-1);
+        }
 
-            [Test]
-            public void ShouldReturnUnauthorised()
-            {
-                Response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
-            }
+        [Test]
+        public void ShouldReturnUnauthorised()
+        {
+            Response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        }
 
-            [Test]
-            public void ShouldHaveEmptyResponseBody()
-            {
-                Assert.That(_view, Is.Null);
-            }
+        [Test]
+        public void ShouldHaveEmptyResponseBody()
+        {
+            Assert.That(_view, Is.Null);
         }
     }
 }

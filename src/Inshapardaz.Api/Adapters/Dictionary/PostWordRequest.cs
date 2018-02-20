@@ -46,7 +46,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _indexWriter = indexWriter;
         }
 
-        //[DictionaryRequestValidation(1, HandlerTiming.Before)]
+        [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostWordRequest> HandleAsync(PostWordRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var addWordCommand = new AddWordCommand(command.DictionaryId, command.Word.Map<WordView, Word>());

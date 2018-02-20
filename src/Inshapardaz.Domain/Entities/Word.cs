@@ -11,14 +11,12 @@ namespace Inshapardaz.Domain.Entities
 
         public string TitleWithMovements { get; set; }
 
-        [Text(Ignore = true)]
         public string Description { get; set; }
 
         public GrammaticalType Attributes { get; set; }
 
         public Languages Language { get; set; }
 
-        [Text(Ignore = true)]
         public string Pronunciation { get; set; }
 
         public int DictionaryId { get; set; }

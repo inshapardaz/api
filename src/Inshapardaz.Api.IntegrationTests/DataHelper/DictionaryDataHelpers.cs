@@ -9,15 +9,16 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
     public class DictionaryDataHelpers
     {
         private readonly Settings _settings;
+        private readonly IProvideIndex _indexProvider;
 
-        public DictionaryDataHelpers(Settings settings)
+        public DictionaryDataHelpers(Settings settings, IProvideIndex indexProvider)
         {
             _settings = settings;
+            _indexProvider = indexProvider;
         }
 
         public Domain.Entities.Dictionary GetDictionary(int id)
         {
-            if (id > 0) throw new Exception("Non test data cannot be manipulated using this helper");
             var client = new ElasticClient(new Uri(_settings.ElasticsearchUrl));
 
             var response = client.Search<Domain.Entities.Dictionary>(s => s
@@ -37,7 +38,6 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
 
         public void CreateDictionary(Domain.Entities.Dictionary dictionary)
         {
-            if (dictionary.Id > 0) throw new Exception("Non test data cannot be manipulated using this helper");
             var client = new ElasticClient(new Uri(_settings.ElasticsearchUrl));
 
             var response = client.Index(dictionary, i => i.Index(Indexes.Dictionaries).Type(DocumentTypes.Dictionary));
@@ -48,14 +48,15 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
 
         public void DeleteDictionary(int id)
         {
-            if (id > 0) throw new Exception("Non test data cannot be manipulated using this helper");
             var client = new ElasticClient(new Uri(_settings.ElasticsearchUrl));
             var response = client.Delete<Domain.Entities.Dictionary>(id, i => i
                                             .Index(Indexes.Dictionaries)
                                             .Type(DocumentTypes.Dictionary));
-
             if (!response.IsValid)
                 throw new Exception(response.DebugInformation);
+
+            var index = _indexProvider.GetIndexForDictionary(id);
+            client.DeleteIndex(index);
         }
 
         public void RefreshIndex()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Inshapardaz.Api.IntegrationTests.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Entities;
 using Newtonsoft.Json;
@@ -10,11 +11,11 @@ using Shouldly;
 namespace Inshapardaz.Api.IntegrationTests.Word
 {
     [TestFixture]
-    public class WhenGettingWordFromDictionary : IntegrationTestBase
+    public class WhenAddingAWordToDictionary : IntegrationTestBase
     {
         private WordView _view;
         private Domain.Entities.Dictionary _dictionary;
-        private Domain.Entities.Word _word;
+        private WordView _word;
         private readonly Guid _userId = Guid.NewGuid();
 
         [OneTimeSetUp]
@@ -28,22 +29,20 @@ namespace Inshapardaz.Api.IntegrationTests.Word
                 Name = "Test1"
             };
 
-            _word = new Domain.Entities.Word
+            _word = new WordView
             {
                 Id = -2,
                 Title = "abc",
                 TitleWithMovements = "xyz",
-                Language = Languages.Bangali,
+                LanguageId = (int) Languages.Bangali,
                 Pronunciation = "pas",
-                Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
-                DictionaryId = _dictionary.Id
+                AttributeValue = (int) GrammaticalType.FealImdadi & (int) GrammaticalType.Male,
             };
 
             DictionaryDataHelper.CreateDictionary(_dictionary);
-            WordDataHelper.CreateWord(_dictionary.Id, _word);
             DictionaryDataHelper.RefreshIndex();
 
-            Response = await GetContributorClient(_userId).GetAsync($"/api/dictionaries/{_dictionary.Id}/words/{_word.Id}");
+            Response = await GetContributorClient(_userId).PostJson($"/api/dictionaries/{_dictionary.Id}/words", _word);
             _view = JsonConvert.DeserializeObject<WordView>(await Response.Content.ReadAsStringAsync());
         }
 
@@ -54,9 +53,9 @@ namespace Inshapardaz.Api.IntegrationTests.Word
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldReturnCreated()
         {
-            Response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            Response.StatusCode.ShouldBe(HttpStatusCode.Created);
         }
 
         [Test]
@@ -122,13 +121,12 @@ namespace Inshapardaz.Api.IntegrationTests.Word
         [Test]
         public void ShouldReturnCorrectWordData()
         {
-            _view.Id.ShouldBe(_word.Id);
             _view.Title.ShouldBe(_word.Title);
             _view.TitleWithMovements.ShouldBe(_word.TitleWithMovements);
             _view.Pronunciation.ShouldBe(_word.Pronunciation);
             _view.Description.ShouldBe(_word.Description);
-            _view.LanguageId.ShouldBe((int) _word.Language);
-            _view.AttributeValue.ShouldBe((int) _word.Attributes);
+            _view.LanguageId.ShouldBe(_word.LanguageId);
+            _view.AttributeValue.ShouldBe(_word.AttributeValue);
         }
     }
 }

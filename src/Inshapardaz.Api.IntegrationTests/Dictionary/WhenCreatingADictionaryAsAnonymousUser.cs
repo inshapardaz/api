@@ -9,44 +9,41 @@ using Shouldly;
 
 namespace Inshapardaz.Api.IntegrationTests.Dictionary
 {
-    public partial class DictionariesTests
+    [TestFixture]
+    public class WhenCreatingADictionaryAsAnonymousUser : IntegrationTestBase
     {
-        [TestFixture]
-        public class WhenCreatingADictionaryAsAnonymousUser : IntegrationTestBase
+        private Domain.Entities.Dictionary _dictionary;
+
+        [OneTimeSetUp]
+        public async Task Setup()
         {
-            private Domain.Entities.Dictionary _dictionary;
-
-            [OneTimeSetUp]
-            public async Task Setup()
+            var userId = Guid.NewGuid();
+            _dictionary = new Domain.Entities.Dictionary
             {
-                var userId = Guid.NewGuid();
-                _dictionary = new Domain.Entities.Dictionary
+                Id = -1,
+                IsPublic = false,
+                Name = "Test1",
+                UserId = userId,
+                Downloads = new List<DictionaryDownload>
                 {
-                    Id = -1,
-                    IsPublic = false,
-                    Name = "Test1",
-                    UserId = userId,
-                    Downloads = new List<DictionaryDownload>
-                    {
-                        new DictionaryDownload { Id = -101, DictionaryId = -1, File = "223323", MimeType = MimeTypes.SqlLite },
-                        new DictionaryDownload { Id = -102, DictionaryId = -1, File = "223324", MimeType = MimeTypes.Csv }
-                    }
-                };
+                    new DictionaryDownload {Id = -101, DictionaryId = -1, File = "223323", MimeType = MimeTypes.SqlLite},
+                    new DictionaryDownload {Id = -102, DictionaryId = -1, File = "223324", MimeType = MimeTypes.Csv}
+                }
+            };
 
-                Response = await GetClient().PostJson("/api/dictionaries", _dictionary);
-            }
+            Response = await GetClient().PostJson("/api/dictionaries", _dictionary);
+        }
 
-            [OneTimeTearDown]
-            public void Cleanup()
-            {
-                DictionaryDataHelper.DeleteDictionary(-1);
-            }
+        [OneTimeTearDown]
+        public void Cleanup()
+        {
+            DictionaryDataHelper.DeleteDictionary(-1);
+        }
 
-            [Test]
-            public void ShouldReturnUnauthorised()
-            {
-                Response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
-            }
+        [Test]
+        public void ShouldReturnUnauthorised()
+        {
+            Response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         }
     }
 }

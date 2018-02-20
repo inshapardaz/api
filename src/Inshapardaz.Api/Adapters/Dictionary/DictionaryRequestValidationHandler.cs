@@ -33,11 +33,12 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new NotFoundException();
             }
 
-            if (!dictionary.IsPublic && dictionary.UserId != _userHelper.GetUserId())
+            var userId = _userHelper.GetUserId();
+            if (!dictionary.IsPublic && dictionary.UserId != userId)
             {
                 throw new UnauthorizedException();
             }
-
+            
             return await base.HandleAsync(command, cancellationToken);
         }
     }

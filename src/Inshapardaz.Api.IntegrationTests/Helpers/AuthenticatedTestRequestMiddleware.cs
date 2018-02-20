@@ -39,6 +39,8 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
 
                     }, TestingCookieAuthentication);
 
+                    if (context.Request.Headers.ContainsKey("contributor"))
+                        claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "contributor"));
                     ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                     context.User = claimsPrincipal;
                 }

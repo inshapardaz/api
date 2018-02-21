@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
 using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,22 @@ namespace Inshapardaz.Api.Controllers
         public SearchController(IAmACommandProcessor commandProcessor)
         {
             _commandProcessor = commandProcessor;
+        }
+
+        [HttpGet("api/dictionaries/Search", Name = "SearchAllDictionaries")]
+        [Produces(typeof(PageView<WordView>))]
+        public async Task<IActionResult> SearchDictionary(string query, int pageNumber = 1, int pageSize = 10)
+        {
+            //var request = new SearchWordRequest(id)
+            //{
+            //    Query = query,
+            //    PageNumber = pageNumber,
+            //    PageSize = pageSize
+            //};
+            //await _commandProcessor.SendAsync(request);
+
+            //return Ok(request.Result);
+            throw new NotImplementedException();
         }
 
         [HttpGet("api/dictionaries/{id}/Search", Name = "SearchDictionary")]

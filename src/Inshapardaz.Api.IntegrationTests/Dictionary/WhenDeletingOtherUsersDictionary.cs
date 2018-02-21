@@ -14,6 +14,7 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
         private Domain.Entities.Dictionary _dictionary;
         private readonly Guid _userId1 = Guid.NewGuid();
         private readonly Guid _userId2 = Guid.NewGuid();
+        private Domain.Entities.Dictionary _view;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,6 +39,9 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
             _dictionary.Name = "Test1 updated";
             _dictionary.Language = Languages.Arabic;
             Response = await GetContributorClient(_userId2).DeleteAsync($"/api/dictionaries/{_dictionary.Id}");
+
+            DictionaryDataHelper.RefreshIndex();
+            _view = DictionaryDataHelper.GetDictionary(_dictionary.Id);
         }
 
         [OneTimeTearDown]
@@ -50,6 +54,12 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
         public void ShouldReturnUnauthorised()
         {
             Response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        }
+
+        [Test]
+        public void ShouldNotDeleteDictionary()
+        {
+            _view.ShouldNotBeNull();
         }
     }
 }

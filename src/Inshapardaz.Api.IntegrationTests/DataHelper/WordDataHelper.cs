@@ -22,6 +22,13 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
             if (dictionaryId > 0) throw new Exception("Non test data cannot be manipulated using this helper");
             var client = new ElasticClient(new Uri(_settings.ElasticsearchUrl));
             var index = _indexProvider.GetIndexForDictionary(dictionaryId);
+
+            var existsResponse = client.IndexExists(index);
+            if (!existsResponse.Exists)
+            {
+                return null;
+            }
+
             var response = client.Search<Domain.Entities.Word>(s => s
                                 .Index(index)
                                 .Size(1)

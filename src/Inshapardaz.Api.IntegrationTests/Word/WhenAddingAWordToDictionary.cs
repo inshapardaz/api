@@ -59,6 +59,12 @@ namespace Inshapardaz.Api.IntegrationTests.Word
         }
 
         [Test]
+        public void ShouldReturnLocationHeader()
+        {
+            Response.Headers.Location.ShouldNotBeNull();
+        }
+
+        [Test]
         public void ShouldReturnSelfLink()
         {
             _view.Links.ShouldContain(l => l.Rel == RelTypes.Self & l.Href != null);

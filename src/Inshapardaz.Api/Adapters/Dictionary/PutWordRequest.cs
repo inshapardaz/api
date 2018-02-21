@@ -39,8 +39,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         private readonly IAmACommandProcessor _commandProcessor;
 
         public PutWordRequestHandler(IQueryProcessor queryProcessor, 
-                                      IAmACommandProcessor commandProcessor, 
-                                      IUserHelper userHelper)
+                                      IAmACommandProcessor commandProcessor)
         {
             _queryProcessor = queryProcessor;
             _commandProcessor = commandProcessor;

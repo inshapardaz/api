@@ -25,6 +25,12 @@ namespace Inshapardaz.Domain.QueryHandlers
             var client = _clientProvider.GetClient();
             var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
 
+            var existsResponse = await client.IndexExistsAsync(index, cancellationToken: cancellationToken);
+            if (!existsResponse.Exists)
+            {
+                return null;
+            }
+
             var response = await client.SearchAsync<Word>(s => s
                                         .Index(index)
                                         .Size(1)

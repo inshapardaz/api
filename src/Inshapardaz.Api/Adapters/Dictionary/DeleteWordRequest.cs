@@ -34,14 +34,12 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         {
             var word = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery(command.DictionaryId, command.WordId), cancellationToken);
 
-            if (word == null)
+            if (word != null)
             {
-                throw new NotFoundException();
+                await RemoveRelationships(command, cancellationToken);
+
+                await _commandProcessor.SendAsync(new DeleteWordCommand(command.DictionaryId, command.WordId), cancellationToken: cancellationToken);
             }
-
-            await RemoveRelationships(command, cancellationToken);
-
-            await _commandProcessor.SendAsync(new DeleteWordCommand(command.DictionaryId, command.WordId), cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

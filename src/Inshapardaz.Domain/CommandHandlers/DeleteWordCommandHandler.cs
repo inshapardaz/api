@@ -22,12 +22,15 @@ namespace Inshapardaz.Domain.CommandHandlers
         {
             var client = _clientProvider.GetClient();
             var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
-
-            await client.DeleteAsync<Word>(command.DictionaryId,
-                                                 i => i
-                                                      .Index(index)
-                                                      .Type(DocumentTypes.Word),
-                                                 cancellationToken);
+            var existsResponse = await client.IndexExistsAsync(index, cancellationToken: cancellationToken);
+            if (existsResponse.Exists)
+            {
+                var response = await client.DeleteAsync<Word>(command.WordId,
+                                               i => i
+                                                    .Index(index)
+                                                    .Type(DocumentTypes.Word),
+                                               cancellationToken);
+            }
 
             return await base.HandleAsync(command, cancellationToken);
         }

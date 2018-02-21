@@ -32,7 +32,14 @@ namespace Inshapardaz.Api.Middlewares
             }
             catch (NotFoundException)
             {
-                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                if (context.Request.Method == "GET")
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                }
+                else
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                }
             }
             catch (BadRequestException)
             {

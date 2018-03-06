@@ -16,11 +16,11 @@ namespace Inshapardaz.Api.Helpers
 
         public bool IsAuthenticated => _contextAccessor.HttpContext.User.Identity.IsAuthenticated;
 
-        public bool IsAdmin => IsAuthenticated && _contextAccessor.HttpContext.User.HasClaim(ClaimTypes.Role, "admin");
+        public bool IsAdmin => IsAuthenticated && _contextAccessor.HttpContext.User.HasClaim(ClaimTypes.Role, "Administrator");
 
-        public bool IsContributor => IsAdmin || (IsAuthenticated && _contextAccessor.HttpContext.User.HasClaim(ClaimTypes.Role, "contributor"));
+        public bool IsContributor => IsAdmin || (IsAuthenticated && _contextAccessor.HttpContext.User.HasClaim(ClaimTypes.Role, "Contributor"));
 
-        public bool IsReader => IsAuthenticated;
+        public bool IsReader => IsAdmin || (IsAuthenticated && _contextAccessor.HttpContext.User.HasClaim(ClaimTypes.Role, "Reader"));
         
         public Guid GetUserId()
         {

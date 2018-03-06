@@ -26,15 +26,15 @@ namespace Inshapardaz.Api.Renderers
             var result = source.Map<Meaning, MeaningView>();
             var links = new List<LinkView>
             {
-                _linkRenderer.Render("GetMeaningById", RelTypes.Self, new { id = dictionaryId, meaningId = source.Id }),
+                _linkRenderer.Render("GetMeaningById", RelTypes.Self, new { id = dictionaryId, wordId = source.WordId, meaningId = source.Id }),
                 _linkRenderer.Render("GetWordById", RelTypes.Word, new { id= dictionaryId, wordId = source.WordId })
             };
             
 
             if (_userHelper.IsContributor)
             {
-                links.Add(_linkRenderer.Render("UpdateMeaning", RelTypes.Update, new { id = dictionaryId, meaningId = source.Id }));
-                links.Add(_linkRenderer.Render("DeleteMeaning", RelTypes.Delete,  new { id = dictionaryId, meaningId = source.Id }));
+                links.Add(_linkRenderer.Render("UpdateMeaning", RelTypes.Update, new { id = dictionaryId, wordId = source.WordId, meaningId = source.Id }));
+                links.Add(_linkRenderer.Render("DeleteMeaning", RelTypes.Delete,  new { id = dictionaryId, wordId = source.WordId, meaningId = source.Id }));
             }
 
             result.Links = links;

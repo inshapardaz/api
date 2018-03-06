@@ -23,6 +23,7 @@ namespace Inshapardaz.Domain.CommandHandlers
 
         public override async Task<AddMeaningCommand> HandleAsync(AddMeaningCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
+            command.Meaning.WordId = command.WordId;
             var client = _clientProvider.GetClient();
             var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
 

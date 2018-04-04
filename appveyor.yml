@@ -12,8 +12,6 @@ after_build:
 test_script:
 - cmd: cd src/Inshapardaz.Api.UnitTests
 - cmd: dotnet test --no-build
-- cmd: cd ../Inshapardaz.Domain.UnitTests
-- cmd: dotnet test --no-build
 #- cmd: cd ../Inshapardaz.Api.IntegrationTests
 #- cmd: dotnet test --no-build
 artifacts:

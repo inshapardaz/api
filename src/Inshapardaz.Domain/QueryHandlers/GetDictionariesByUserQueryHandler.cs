@@ -1,40 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Inshapardaz.Domain.Queries;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
-using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
+using Nest;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetDictionariesByUserQueryHandler : QueryHandlerAsync<GetDictionariesByUserQuery,
         IEnumerable<Dictionary>>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
 
-        public GetDictionariesByUserQueryHandler(IDatabaseContext database)
+        public GetDictionariesByUserQueryHandler(IClientProvider clientProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
         }
 
         public override async Task<IEnumerable<Dictionary>> ExecuteAsync(GetDictionariesByUserQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            IQueryable<Dictionary> result;
+            var client = _clientProvider.GetClient();
+            
+            ISearchResponse<Dictionary> response = null;
             if (query.UserId != Guid.Empty)
             {
-                result = _database.Dictionary.Where(d => d.IsPublic || d.UserId == query.UserId);
+                response = await client.SearchAsync<Dictionary>(s => s
+                                    .Index(Indexes.Dictionaries)
+                                    .Size(100)
+                                    .Query(q => q
+                                        .Term(p => p.IsPublic, true) || q
+                                        .Term(p => p.UserId, query.UserId)
+                                    ), cancellationToken);
             }
             else
             {
-                result = _database.Dictionary.Where(d => d.IsPublic);
+                response = await client.SearchAsync<Dictionary>(s => s
+                            .Index(Indexes.Dictionaries)
+                            .Size(100)
+                            .Query(q => q
+                            .Bool(b => b
+                                .Must(m => m
+                                    .Term(term => term.Field(f => f.IsPublic).Value(true))
+                                )
+                            )), cancellationToken);
             }
 
-            return await result.ToListAsync(cancellationToken);
+            return response.Documents;
         }
     }
 }

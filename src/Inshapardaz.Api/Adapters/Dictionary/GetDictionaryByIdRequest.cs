@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
@@ -46,8 +47,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             }
 
             var wordCount = await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery {DictionaryId = command.DictionaryId}, cancellationToken);
-            var downloads = await _queryProcessor.ExecuteAsync(new GetDictionaryDownloadsQuery { DictionaryId = command.DictionaryId, UserId = _userHelper.GetUserId() }, cancellationToken);
-            command.Result = _dictionaryRenderer.Render(result, wordCount, downloads);
+            command.Result = _dictionaryRenderer.Render(result, wordCount);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

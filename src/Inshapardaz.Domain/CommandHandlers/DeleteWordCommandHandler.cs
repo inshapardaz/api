@@ -1,36 +1,36 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Exception;
-using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class DeleteWordCommandHandler : RequestHandlerAsync<DeleteWordCommand>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public DeleteWordCommandHandler(IDatabaseContext database)
+        public DeleteWordCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<DeleteWordCommand> HandleAsync(DeleteWordCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var word = await _database.Word.SingleOrDefaultAsync(
-                w => w.Id == command.WordId && w.DictionaryId == command.DictionaryId, 
-                cancellationToken);
-
-            if (word == null || word.Id != command.WordId)
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
+            var existsResponse = await client.IndexExistsAsync(index, cancellationToken: cancellationToken);
+            if (existsResponse.Exists)
             {
-                throw new NotFoundException();
+                var response = await client.DeleteAsync<Word>(command.WordId,
+                                               i => i
+                                                    .Index(index)
+                                                    .Type(DocumentTypes.Word),
+                                               cancellationToken);
             }
-
-            _database.Word.Remove(word);
-
-            await _database.SaveChangesAsync(cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -13,14 +13,18 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class PutTranslationRequest : DictionaryRequest
     {
-        public PutTranslationRequest(int dictionaryId)
+        public PutTranslationRequest(int dictionaryId, long wordId, int translationId)
             : base(dictionaryId)
         {
+            WordId = wordId;
+            TranslationId = translationId;
         }
 
-        public int TranslationId { get; set; }
+        public int TranslationId { get; }
 
         public TranslationView Translation { get; set; }
+
+        public long WordId { get; }
 
         public RequestResult Result { get; set; } = new RequestResult();
 
@@ -47,14 +51,14 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PutTranslationRequest> HandleAsync(PutTranslationRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var response = await _queryProcessor.ExecuteAsync(new GetTranslationByIdQuery(command.TranslationId), cancellationToken);
+            var response = await _queryProcessor.ExecuteAsync(new GetTranslationByIdQuery(command.DictionaryId, command.WordId, command.TranslationId), cancellationToken);
 
             if (response == null)
             {
                 throw new BadImageFormatException();
             }
 
-            var updateCommand = new UpdateWordTranslationCommand( command.DictionaryId, command.Translation.Map<TranslationView, Translation>());
+            var updateCommand = new UpdateWordTranslationCommand(command.DictionaryId, command.WordId, command.Translation.Map<TranslationView, Translation>());
             await _commandProcessor.SendAsync(updateCommand, cancellationToken: cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);

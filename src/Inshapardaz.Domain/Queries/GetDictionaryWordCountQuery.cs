@@ -1,5 +1,4 @@
-﻿using System;
-using Paramore.Darker;
+﻿using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Queries
 {

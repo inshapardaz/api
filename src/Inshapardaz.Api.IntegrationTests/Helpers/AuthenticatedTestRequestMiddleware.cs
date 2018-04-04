@@ -35,10 +35,12 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
                     var claimsIdentity = new ClaimsIdentity(new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, name),
-                        new Claim(ClaimTypes.NameIdentifier, id),
+                        new Claim("sub", id),
 
                     }, TestingCookieAuthentication);
 
+                    if (context.Request.Headers.ContainsKey("contributor"))
+                        claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "contributor"));
                     ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                     context.User = claimsPrincipal;
                 }

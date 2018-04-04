@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
+using Inshapardaz.Domain.Entities;
 using Paramore.Darker;
-using Inshapardaz.Domain.Database.Entities;
 
 namespace Inshapardaz.Domain.Queries
 {
     public class GetRelationshipsByWordQuery : IQuery<IEnumerable<WordRelation>>
     {
-        public GetRelationshipsByWordQuery(long wordId)
+        public GetRelationshipsByWordQuery(int dictionaryId, long wordId)
         {
+            DictionaryId = dictionaryId;
             WordId = wordId;
         }
+
+        public int DictionaryId { get; }
 
         public long WordId { get; }
     }

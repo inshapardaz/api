@@ -1,10 +1,9 @@
-﻿using AutoMapper;
-using FizzWare.NBuilder;
+﻿using FizzWare.NBuilder;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using NUnit.Framework;
 using EnumHelper = Inshapardaz.Api.Helpers.EnumHelper;
 using Shouldly;
@@ -19,6 +18,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             private readonly RelationshipView _result;
             private readonly WordRelation _relationship = Builder<WordRelation>.CreateNew().Build();
             private readonly int _dictionaryId = 432;
+            private readonly long _wordId = 324223;
 
             public WhenRendereingRelationships()
             {
@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new RelationRenderer(fakeLinkRenderer, new EnumRenderer(), fakeUserHelper);
 
-                _result = renderer.Render(_relationship, _dictionaryId);
+                _result = renderer.Render(_relationship, _dictionaryId, _wordId);
             }
 
             [Test]
@@ -56,7 +56,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             [Test]
             public void ShouldRenderSourceWordId()
             {
-                _result.SourceWordId.ShouldBe(_relationship.SourceWordId);
+                _result.SourceWordId.ShouldBe(_wordId);
             }
 
             [Test]
@@ -95,6 +95,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             private readonly RelationshipView _result;
             private readonly WordRelation _relationship = Builder<WordRelation>.CreateNew().Build();
             private readonly int _dictionaryId = 121;
+            private readonly long _wordId = 23121;
 
             public WhenRendereingForOwner()
             {
@@ -102,7 +103,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new RelationRenderer(fakeLinkRenderer, new EnumRenderer(), fakeUserHelper);
 
-                _result = renderer.Render(_relationship, _dictionaryId);
+                _result = renderer.Render(_relationship, _dictionaryId, _wordId);
             }
 
             [Test]

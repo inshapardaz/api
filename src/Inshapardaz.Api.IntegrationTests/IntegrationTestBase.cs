@@ -1,9 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
+using Inshapardaz.Api.IntegrationTests.DataHelper;
 using Inshapardaz.Api.IntegrationTests.Helpers;
-using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain;
+using Inshapardaz.Domain.Elasticsearch;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inshapardaz.Api.IntegrationTests
@@ -16,11 +20,21 @@ namespace Inshapardaz.Api.IntegrationTests
 
         static  IntegrationTestBase()
         {
+            var configuration = new ConfigurationBuilder()
+                                .SetBasePath(Directory.GetCurrentDirectory())
+                                .AddJsonFile("appsettings.json", optional: false)
+                                .Build();
             TestServer = new TestServer(new WebHostBuilder()
+                                        .UseConfiguration(configuration)
                                              .UseStartup<TestStartup>());
         }
 
-        protected IDatabaseContext DatabaseContext => TestServer.Host.Services.GetService<IDatabaseContext>();
+        protected Settings Settings => TestServer.Host.Services.GetService<Settings>();
+
+        protected DictionaryDataHelpers DictionaryDataHelper => new DictionaryDataHelpers(Settings, TestServer.Host.Services.GetService<IProvideIndex>());
+        protected WordDataHelper WordDataHelper => new WordDataHelper(Settings, TestServer.Host.Services.GetService<IProvideIndex>());
+
+        protected HttpResponseMessage Response;
 
         protected HttpClient GetClient()
         {
@@ -29,7 +43,18 @@ namespace Inshapardaz.Api.IntegrationTests
             return _client;
         }
 
-        protected HttpClient GetAuthenticatedClient(Guid? userGuid, string userName = "integration.user")
+        protected HttpClient GetContributorClient(Guid? userGuid, string userName = "integration.user")
+        {
+            _authenticatedClient?.Dispose();
+            _authenticatedClient = TestServer.CreateClient();
+            _authenticatedClient.DefaultRequestHeaders.Add(AuthenticatedTestRequestMiddleware.TestingHeader, AuthenticatedTestRequestMiddleware.TestingHeaderValue);
+            _authenticatedClient.DefaultRequestHeaders.Add("my-name", userName);
+            _authenticatedClient.DefaultRequestHeaders.Add("my-id", (userGuid ?? Guid.NewGuid()).ToString());
+            _authenticatedClient.DefaultRequestHeaders.Add("contributor", bool.TrueString);
+            return _authenticatedClient;
+        }
+
+        protected HttpClient GetReaderClient(Guid? userGuid, string userName = "integration.user")
         {
             _authenticatedClient?.Dispose();
             _authenticatedClient = TestServer.CreateClient();
@@ -48,6 +73,7 @@ namespace Inshapardaz.Api.IntegrationTests
         {
             if (isDisposing)
             {
+                Response?.Dispose();
                 _authenticatedClient?.Dispose();
                 _client?.Dispose();
             }

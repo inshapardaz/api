@@ -1,42 +1,57 @@
-﻿using Inshapardaz.Domain.Commands;
+﻿using System.Linq;
+using Inshapardaz.Domain.Commands;
 using Paramore.Brighter;
 using Inshapardaz.Domain.Exception;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
+using Nest;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class AddMeaningCommandHandler : RequestHandlerAsync<AddMeaningCommand>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public AddMeaningCommandHandler(IDatabaseContext database)
+        public AddMeaningCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<AddMeaningCommand> HandleAsync(AddMeaningCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (command.Meaning == null)
-            {
-                throw new BadRequestException();
-            }
+            command.Meaning.WordId = command.WordId;
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
 
-            var word = await _database.Word.SingleOrDefaultAsync(
-                w => w.Id == command.WordId && w.DictionaryId == command.DictionaryId, 
-                cancellationToken);
+            var response = await client.SearchAsync<Word>(s => s
+                                        .Index(index)
+                                        .Size(1)
+                                        .Query(q => q
+                                        .Bool(b => b
+                                        .Must(m => m
+                                        .Term(term => term.Field(f => f.Id).Value(command.WordId)))
+                                )), cancellationToken);
+
+            var word = response.Documents.SingleOrDefault();
 
             if (word == null)
             {
                 throw new NotFoundException();
             }
 
+            command.Meaning.Id = word.Meaning.Count + 1;
             word.Meaning.Add(command.Meaning);
 
-            await _database.SaveChangesAsync(cancellationToken);
-
+            await client.UpdateAsync(DocumentPath<Word>.Id(command.DictionaryId),
+                                     u => u
+                                          .Index(index)
+                                          .Type(DocumentTypes.Word)
+                                          .DocAsUpsert()
+                                          .Doc(word), cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

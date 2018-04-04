@@ -1,40 +1,36 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Exception;
-using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
+using Nest;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class UpdateWordCommandHandler : RequestHandlerAsync<UpdateWordCommand>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public UpdateWordCommandHandler(IDatabaseContext database)
+        public UpdateWordCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<UpdateWordCommand> HandleAsync(UpdateWordCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var word = await _database.Word.SingleOrDefaultAsync(
-                w => w.Id == command.Word.Id & w.DictionaryId == command.DictionaryId, 
-                cancellationToken);
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
 
-            if (word == null || word.Id != command.Word.Id)
-            {
-                throw new NotFoundException();
-            }
-
-            word.Title = command.Word.Title;
-            word.TitleWithMovements = command.Word.TitleWithMovements;
-            word.Pronunciation = command.Word.Pronunciation;
-            word.Description = command.Word.Description;
-
-            await _database.SaveChangesAsync(cancellationToken);
-
+            await client.UpdateAsync(DocumentPath<Word>.Id(command.Word.Id),
+                                     u => u
+                                          .Index(index)
+                                          .Type(DocumentTypes.Word)
+                                          .DocAsUpsert()
+                                          .Doc(command.Word), cancellationToken);
+            
             return await base.HandleAsync(command, cancellationToken);
         }
     }

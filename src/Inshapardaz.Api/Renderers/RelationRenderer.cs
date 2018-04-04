@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Api.Renderers
 {
     public interface IRenderRelation
     {
-        RelationshipView Render(WordRelation source, int dictionaryId);
+        RelationshipView Render(WordRelation source, int dictionaryId, long wordId);
     }
 
     public class RelationRenderer : IRenderRelation
@@ -23,13 +23,14 @@ namespace Inshapardaz.Api.Renderers
             _userHelper = userHelper;
         }
 
-        public RelationshipView Render(WordRelation source, int dictionaryId)
+        public RelationshipView Render(WordRelation source, int dictionaryId, long wordId)
         {
             var result = source.Map<WordRelation, RelationshipView>();
+            result.SourceWordId = wordId;
             var links = new List<LinkView>
                                {
                                    _linkRenderer.Render("GetRelationById", RelTypes.Self, new { id = dictionaryId, relationId = source.Id }),
-                                   _linkRenderer.Render("GetWordById", RelTypes.SourceWord, new { id = dictionaryId, wordId = source.SourceWordId }),
+                                   _linkRenderer.Render("GetWordById", RelTypes.SourceWord, new { id = dictionaryId, wordId = wordId  }),
                                    _linkRenderer.Render("GetWordById", RelTypes.RelatedWord, new { id = dictionaryId, wordId = source.RelatedWordId })
                                };
 

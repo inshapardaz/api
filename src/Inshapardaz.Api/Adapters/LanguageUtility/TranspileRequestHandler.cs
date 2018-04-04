@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Queries;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -33,15 +33,15 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
     {
         private readonly IQueryProcessor _queryProcessor;
         private readonly ILogger<TranspileRequestHandler> _logger;
-        private readonly AppSettings _appSettings;
+        private readonly Settings _settings;
 
         public TranspileRequestHandler(IQueryProcessor queryProcessor, 
                     ILogger<TranspileRequestHandler> logger,
-                    AppSettings appSettings)
+                    Settings settings)
         {
             _queryProcessor = queryProcessor;
             _logger = logger;
-            _appSettings = appSettings;
+            _settings = settings;
         }
 
         public override async Task<TranspileRequest> HandleAsync(TranspileRequest request, CancellationToken cancellationToken = default(CancellationToken))
@@ -51,7 +51,7 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
                 throw new BadRequestException();
             }
 
-            int dictionaryId = _appSettings.DefaultDictionaryId;
+            int dictionaryId = _settings.DefaultDictionaryId;
             var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery {DictionaryId = dictionaryId }, cancellationToken);
             
             string result = string.Empty;
@@ -59,14 +59,14 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
             if (request.FromLanguage == dictionary.Language)
             {
                 var requestStrings = request.Source.SplitIntoWords().PreserveSpecialCharacters();
-                var translationQuery = new GetTranslationsForWordsByLanguageQuery(requestStrings, request.ToLanguage) { IsTranspiling = true };
+                var translationQuery = new GetTranslationsForWordsByLanguageQuery(dictionaryId, requestStrings, request.ToLanguage) { IsTranspiling = true };
                 var translations = await _queryProcessor.ExecuteAsync(translationQuery, cancellationToken);
                 result = Transpile(requestStrings, translations);
             }
             else if (request.ToLanguage == dictionary.Language)
             {
                 var requestStrings = request.Source.SplitIntoWords().PreserveSpecialCharacters();
-                var translationQuery = new GetWordsForTranslationsByLanguageQuery(requestStrings, request.FromLanguage) { IsTranspiling = true };
+                var translationQuery = new GetWordsForTranslationsByLanguageQuery(dictionaryId, requestStrings, request.FromLanguage) { IsTranspiling = true };
                 var translations = await _queryProcessor.ExecuteAsync(translationQuery, cancellationToken);
                 result = Transpile(requestStrings, translations);
             }

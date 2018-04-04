@@ -16,19 +16,15 @@ namespace Inshapardaz.Api.Helpers
 
         public bool IsAuthenticated => _contextAccessor.HttpContext.User.Identity.IsAuthenticated;
 
-        // public bool IsAdmin => IsAuthenticated && _contextAccessor.HttpContext.User.IsInRole(UserRoles.Admin.ToDescription());
-        // public bool IsContributor => IsAdmin || (IsAuthenticated && _contextAccessor.HttpContext.User.IsInRole(UserRoles.Contributor.ToDescription()));
-        // public bool IsReader => IsContributor || (IsAuthenticated && _contextAccessor.HttpContext.User.IsInRole(UserRoles.Reader.ToDescription()));
+        public bool IsAdmin => IsAuthenticated; // && (IsUserInRole("Administrator") ||IsUserInRole("Owner"));
 
-        public bool IsAdmin => IsAuthenticated;
+        public bool IsContributor => IsAdmin;  //|| (IsAuthenticated && IsUserInRole("Contributor"));
 
-        public bool IsContributor => IsAuthenticated;
-
-        public bool IsReader => IsAuthenticated;
-
+        public bool IsReader => IsAdmin;// || (IsAuthenticated && IsUserInRole("Reader"));
+        
         public Guid GetUserId()
         {
-            var nameIdentifier = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var nameIdentifier = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
             if (nameIdentifier != null)
             {
                 return Guid.Parse(nameIdentifier);
@@ -37,5 +33,9 @@ namespace Inshapardaz.Api.Helpers
             return Guid.Empty;
         }
 
+        private bool IsUserInRole(string role)
+        {
+            return _contextAccessor.HttpContext.User.HasClaim(ClaimTypes.Role, role);
+        }
     }
 }

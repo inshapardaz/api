@@ -3,7 +3,7 @@ using Inshapardaz.Api.Renderers;
 using System.Collections.Generic;
 using System.Linq;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {
@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
         private RelationshipView _view;
         private readonly List<LinkView> _links = new List<LinkView>();
 
-        public RelationshipView Render(WordRelation source, int dictionaryId)
+        public RelationshipView Render(WordRelation source, int dictionaryId, long wordId)
         {
             _view.Links = _links;
             if (_view.Links == null || !_view.Links.Any())

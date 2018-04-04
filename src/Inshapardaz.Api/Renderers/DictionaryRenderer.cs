@@ -2,13 +2,13 @@
 using System.Linq;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Api.Renderers
 {
     public interface IRenderDictionary
     {
-        DictionaryView Render(Dictionary source, int wordCount, IEnumerable<DictionaryDownload> downloads);
+        DictionaryView Render(Dictionary source, int wordCount);
     }
 
     public class DictionaryRenderer : IRenderDictionary
@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Renderers
             _userHelper = userHelper;
         }
 
-        public DictionaryView Render(Dictionary source, int wordCount, IEnumerable<DictionaryDownload> downloads)
+        public DictionaryView Render(Dictionary source, int wordCount)
         {
             var links = new List<LinkView>
             {
@@ -45,9 +45,12 @@ namespace Inshapardaz.Api.Renderers
                 links.Add(_linkRenderer.Render("CreateWord", RelTypes.CreateWord, new {id = source.Id}));
             }
 
-            foreach (var download in downloads)
+            if (source.Downloads != null && (source.IsPublic || _userHelper.IsContributor))
             {
-                links.Add(_linkRenderer.Render("DownloadDictionary", RelTypes.Download, download.MimeType, new {id = source.Id, accept = download.MimeType }));
+                foreach (var download in source.Downloads)
+                {
+                    links.Add(_linkRenderer.Render("DownloadDictionary", RelTypes.Download, download.MimeType, new {id = source.Id, accept = download.MimeType}));
+                }
             }
 
             var indexes = new List<LinkView>(_indexes.Select(i => _linkRenderer.Render("GetWordsListStartWith", i,

@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.View
         /// <param name="currentPageIndex">
         /// The current page index.
         /// </param>
-        public PageView(int count, int pageSize, int currentPageIndex)
+        public PageView(long count, int pageSize, int currentPageIndex)
         {
             PageSize = pageSize;
             // ReSharper disable once PossibleLossOfFraction

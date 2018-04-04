@@ -1,6 +1,6 @@
 ﻿using Paramore.Darker;
-using Inshapardaz.Domain.Database.Entities;
 using System.Collections.Generic;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Domain.Queries
 {

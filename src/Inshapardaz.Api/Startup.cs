@@ -1,24 +1,27 @@
 ﻿
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
-using Hangfire;
-using Inshapardaz.Api.Adapters.Dictionary;
+using IdentityServer4.AccessTokenValidation;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain;
-using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.IndexingService;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Paramore.Brighter;
+using Microsoft.IdentityModel.Tokens;
 using Paramore.Brighter.AspNetCore;
 using Paramore.Darker.AspNetCore;
 using Swashbuckle.AspNetCore.Swagger;
@@ -34,11 +37,11 @@ namespace Inshapardaz.Api
 
         public IConfiguration Configuration { get; }
 
+        public Settings Settings { get; set; }
+
         public void ConfigureServices(IServiceCollection services)
         {
-            var appSettings = new AppSettings();
-            Configuration.Bind("Application", appSettings);
-            services.AddSingleton(appSettings);
+            ConfigureSettings(services);
 
             RegisterRenderer(services);
             services.AddBrighter()
@@ -63,7 +66,6 @@ namespace Inshapardaz.Api
 
             ConfigureApiAuthentication(services);
             ConfigureDomain(services);
-            services.AddAuthorization();
             ConfigureMvc(services);
         }
 
@@ -105,8 +107,7 @@ namespace Inshapardaz.Api
 
             AddHangFire(app);
 
-            var commandProcessor = app.ApplicationServices.GetService<IAmACommandProcessor>();
-            commandProcessor.SendAsync(new CreateDictionaryIndexRequest()).Wait(5 * 1000);
+            AddDomain(app);
         }
 
         private void ConfigureApiAuthentication(IServiceCollection services)
@@ -157,40 +158,57 @@ namespace Inshapardaz.Api
 
         }
 
+        protected virtual void ConfigureSettings(IServiceCollection services)
+        {
+            Settings = new Settings();
+            Configuration.Bind("Application", Settings);
+            services.AddSingleton(Settings);
+        }
+
         protected virtual void ConfigureHangFire(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultDatabase");
-            Console.WriteLine($"Starting HangFire with connection string {connectionString}");
-            services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
+            //var connectionString = Configuration.GetConnectionString("DefaultDatabase");
+            //Console.WriteLine($"Starting HangFire with connection string {connectionString}");
+            //services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
         }
 
         protected virtual void AddHangFire(IApplicationBuilder app)
         {
-            app.UseHangfireServer();
-            app.UseHangfireDashboard();
+            //app.UseHangfireServer();
+            //app.UseHangfireDashboard();
         }
 
         protected virtual void ConfigureDomain(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultDatabase");
+            //var connectionString = Configuration.GetConnectionString("DefaultDatabase");
 
-            services.AddEntityFrameworkSqlServer()
-                    .AddDbContext<DatabaseContext>(
-                        options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
-            services.AddTransient<IDatabaseContext, DatabaseContext>();
+            //services.AddEntityFrameworkSqlServer()
+            //        .AddDbContext<DatabaseContext>(
+            //            options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
+            //services.AddTransient<IDatabaseContext, DatabaseContext>();
 
-            bool.TryParse(Configuration["Application:RunDBMigrations"], out bool migrationEnabled);
-            if (migrationEnabled)
-            {
-                Console.WriteLine("Running database migrations...");
-                var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-                optionsBuilder.UseSqlServer(connectionString);
+            //bool.TryParse(Configuration["Application:RunDBMigrations"], out bool migrationEnabled);
+            //if (migrationEnabled)
+            //{
+            //    Console.WriteLine("Running database migrations...");
+            //    var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+            //    optionsBuilder.UseSqlServer(connectionString);
 
-                var database = new DatabaseContext(optionsBuilder.Options).Database;
-                database.SetCommandTimeout(5 * 60);
-                database.Migrate();
-                Console.WriteLine("Database migrations completed.");
-            }
+            //    var database = new DatabaseContext(optionsBuilder.Options).Database;
+            //    database.SetCommandTimeout(5 * 60);
+            //    database.Migrate();
+            //    Console.WriteLine("Database migrations completed.");
+            //}
+
+            services.AddTransient<IClientProvider, ClientProvider>();
+            services.AddTransient<IInitialiseElasticSearch, ElasticsearchInitializer>();
+            services.AddTransient<IProvideIndex, IndexProvider>();
+        }
+
+        private void AddDomain(IApplicationBuilder app)
+        {
+            var initialiser = app.ApplicationServices.GetService<IInitialiseElasticSearch>();
+            initialiser.Initialise();
         }
     }
 }

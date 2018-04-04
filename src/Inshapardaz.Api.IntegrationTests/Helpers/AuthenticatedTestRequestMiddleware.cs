@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
                     var claimsIdentity = new ClaimsIdentity(new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, name),
-                        new Claim(ClaimTypes.NameIdentifier, id),
+                        new Claim("sub", id),
 
                     }, TestingCookieAuthentication);
 

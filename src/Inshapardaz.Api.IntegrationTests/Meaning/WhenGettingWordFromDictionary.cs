@@ -7,16 +7,15 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Word
+namespace Inshapardaz.Api.IntegrationTests.Meaning
 {
-    [TestFixture, Ignore("Security not implemented completely")]
-    public class WhenGettingWordFromDictionaryAsDifferentUser : IntegrationTestBase
+    [TestFixture]
+    public class WhenGettingWordFromDictionary : IntegrationTestBase
     {
         private WordView _view;
         private Domain.Entities.Dictionary _dictionary;
         private Domain.Entities.Word _word;
-        private readonly Guid _userId1 = Guid.NewGuid();
-        private readonly Guid _userId2 = Guid.NewGuid();
+        private readonly Guid _userId = Guid.NewGuid();
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -24,8 +23,8 @@ namespace Inshapardaz.Api.IntegrationTests.Word
             _dictionary = new Domain.Entities.Dictionary
             {
                 Id = -1,
-                IsPublic = true,
-                UserId = _userId1,
+                IsPublic = false,
+                UserId = _userId,
                 Name = "Test1"
             };
 
@@ -44,7 +43,7 @@ namespace Inshapardaz.Api.IntegrationTests.Word
             WordDataHelper.CreateWord(_dictionary.Id, _word);
             DictionaryDataHelper.RefreshIndex();
 
-            Response = await GetReaderClient(_userId2).GetAsync($"/api/dictionaries/{_dictionary.Id}/words/{_word.Id}");
+            Response = await GetContributorClient(_userId).GetAsync($"/api/dictionaries/{_dictionary.Id}/words/{_word.Id}");
             _view = JsonConvert.DeserializeObject<WordView>(await Response.Content.ReadAsStringAsync());
         }
 
@@ -91,33 +90,33 @@ namespace Inshapardaz.Api.IntegrationTests.Word
         }
 
         [Test]
-        public void ShouldNotReturnUpdateLink()
+        public void ShouldReturnUpdateLink()
         {
-            _view.Links.ShouldNotContain(l => l.Rel == RelTypes.Update);
+            _view.Links.ShouldContain(l => l.Rel == RelTypes.Update & l.Href != null);
         }
 
         [Test]
-        public void ShouldNotReturnDeleteLink()
+        public void ShouldReturnDeleteLink()
         {
-            _view.Links.ShouldNotContain(l => l.Rel == RelTypes.Delete & l.Href != null);
+            _view.Links.ShouldContain(l => l.Rel == RelTypes.Delete & l.Href != null);
         }
 
         [Test]
-        public void ShouldReturnnotAddMeaningLink()
+        public void ShouldReturnAddMeaningLink()
         {
-            _view.Links.ShouldNotContain(l => l.Rel == RelTypes.AddMeaning & l.Href != null);
+            _view.Links.ShouldContain(l => l.Rel == RelTypes.AddMeaning & l.Href != null);
         }
 
         [Test]
-        public void ShouldNotReturnAddTranslationLink()
+        public void ShouldReturnAddTranslationLink()
         {
-            _view.Links.ShouldNotContain(l => l.Rel == RelTypes.AddTranslation & l.Href != null);
+            _view.Links.ShouldContain(l => l.Rel == RelTypes.AddTranslation & l.Href != null);
         }
 
         [Test]
-        public void ShouldNotReturnAddRelationLink()
+        public void ShouldReturnAddRelationLink()
         {
-            _view.Links.ShouldNotContain(l => l.Rel == RelTypes.AddRelation & l.Href != null);
+            _view.Links.ShouldContain(l => l.Rel == RelTypes.AddRelation & l.Href != null);
         }
 
         [Test]

@@ -1,21 +1,27 @@
 ﻿
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
-using Hangfire;
+using IdentityServer4.AccessTokenValidation;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.IndexingService;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Paramore.Brighter.AspNetCore;
 using Paramore.Darker.AspNetCore;
 using Swashbuckle.AspNetCore.Swagger;
@@ -60,7 +66,6 @@ namespace Inshapardaz.Api
 
             ConfigureApiAuthentication(services);
             ConfigureDomain(services);
-            services.AddAuthorization();
             ConfigureMvc(services);
         }
 
@@ -103,8 +108,6 @@ namespace Inshapardaz.Api
             AddHangFire(app);
 
             AddDomain(app);
-            //var commandProcessor = app.ApplicationServices.GetService<IAmACommandProcessor>();
-            //commandProcessor.SendAsync(new CreateDictionaryIndexRequest()).Wait(5 * 1000);
         }
 
         private void ConfigureApiAuthentication(IServiceCollection services)

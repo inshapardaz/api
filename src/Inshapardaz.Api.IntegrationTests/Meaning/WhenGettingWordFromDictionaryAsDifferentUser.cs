@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Word
+namespace Inshapardaz.Api.IntegrationTests.Meaning
 {
     [TestFixture, Ignore("Security not implemented completely")]
     public class WhenGettingWordFromDictionaryAsDifferentUser : IntegrationTestBase

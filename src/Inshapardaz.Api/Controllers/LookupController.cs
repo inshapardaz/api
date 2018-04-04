@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Inshapardaz.Domain.Database.Entities;
-using Inshapardaz.Domain.Model;
+using Inshapardaz.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inshapardaz.Api.Controllers

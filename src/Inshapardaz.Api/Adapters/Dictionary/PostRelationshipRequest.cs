@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
@@ -78,8 +78,8 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             );
             await _commandProcessor.SendAsync(addCommand, cancellationToken: cancellationToken);
 
-            var newRelationship = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(addCommand.Result), cancellationToken);
-            var response = _relationRender.Render(newRelationship, command.DictionaryId);
+            var newRelationship = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.DictionaryId, command.WordId, addCommand.Result), cancellationToken);
+            var response = _relationRender.Render(newRelationship, command.DictionaryId, command.WordId);
             command.Result.Location =  response.Links.Single(x => x.Rel == RelTypes.Self).Href;
             command.Result.Response =  response;
             return await base.HandleAsync(command, cancellationToken);

@@ -1,7 +1,6 @@
 ﻿using System;
-using Inshapardaz.Domain.Database;
+using Inshapardaz.Domain;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -32,27 +31,16 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
         {
         }
 
+        protected override void ConfigureSettings(IServiceCollection services)
+        {
+            Settings = new Settings();
+            Settings.ElasticsearchUrl = "http://localhost:9200";
+            services.AddSingleton(Settings);
+        }
+
         protected override void ConfigureCustomMiddleWare(IApplicationBuilder app)
         {
             app.UseMiddleware<AuthenticatedTestRequestMiddleware>();
-        }
-
-        protected override void ConfigureDomain(IServiceCollection services)
-        {
-            var databaseName = Guid.NewGuid().ToString();
-
-            services.AddEntityFrameworkSqlite()
-                    .AddDbContext<DatabaseContext>(options => options.UseInMemoryDatabase(databaseName));
-
-            services.AddTransient<IDatabaseContext, DatabaseContext>();
-
-            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            optionsBuilder.UseInMemoryDatabase(databaseName);
-
-            using (var context = new DatabaseContext(optionsBuilder.Options))
-            {
-                context.Database.EnsureCreated();
-            }
         }
     }
 }

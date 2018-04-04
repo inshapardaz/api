@@ -1,29 +1,41 @@
-﻿using Paramore.Darker;
+﻿using System.Linq;
+using Paramore.Darker;
 using Inshapardaz.Domain.Queries;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
-using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetRelationshipByIdQueryHandler : QueryHandlerAsync<GetRelationshipByIdQuery, WordRelation>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
+        private readonly IProvideIndex _indexProvider;
 
-        public GetRelationshipByIdQueryHandler(IDatabaseContext database)
+        public GetRelationshipByIdQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
+            _indexProvider = indexProvider;
         }
 
         public override async Task<WordRelation> ExecuteAsync(GetRelationshipByIdQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _database.WordRelation
-                .Include(r => r.SourceWord)
-                .Include(r => r.RelatedWord)
-                .SingleOrDefaultAsync(t => t.Id == query.RelationshipId, cancellationToken);
+            var client = _clientProvider.GetClient();
+            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
+
+            var response = await client.SearchAsync<Word>(s => s
+                                        .Index(index)
+                                        .Size(1)
+                                        .Query(q => q
+                                        .Bool(b => b
+                                        .Must(m => m
+                                        .Term(term => term.Field(f => f.Id).Value(query.WordId)))
+                                 )), cancellationToken);
+
+            var word = response.Documents.SingleOrDefault();
+            return word?.Relations.SingleOrDefault(m => m.Id == query.RelationshipId);
         }
     }
 }

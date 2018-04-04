@@ -1,0 +1,1 @@
+docker run -it --rm -p 9200:9200 -p 5601:5601  --mount source=esdata,target=/usr/share/elasticsearch/data --name esk nshou/elasticsearch-kibana

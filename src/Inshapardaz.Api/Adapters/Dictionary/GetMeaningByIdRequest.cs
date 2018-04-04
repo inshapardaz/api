@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
@@ -12,14 +11,18 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 {
     public class GetMeaningByIdRequest : DictionaryRequest
     {
-        public GetMeaningByIdRequest(int dictionaryId)
+        public GetMeaningByIdRequest(int dictionaryId, long wordId, long meaningId)
             : base(dictionaryId)
         {
+            MeaningId = meaningId;
+            WordId = wordId;
         }
 
-        public long MeaningId { get; set; }
+        public long MeaningId { get; }
 
-        public MeaningView Result { get; set; }
+        public long WordId { get; }
+
+        public MeaningView Result { get; set;  }
     }
     
     public class GetMeaningByIdRequestHandler : RequestHandlerAsync<GetMeaningByIdRequest>
@@ -36,7 +39,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetMeaningByIdRequest> HandleAsync(GetMeaningByIdRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var meaning = await _queryProcessor.ExecuteAsync(new GetWordMeaningByIdQuery(command.MeaningId), cancellationToken);
+            var meaning = await _queryProcessor.ExecuteAsync(new GetWordMeaningByIdQuery(command.DictionaryId, command.WordId, command.MeaningId), cancellationToken);
 
             if (meaning == null)
             {

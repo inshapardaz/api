@@ -1,5 +1,5 @@
 ﻿using System;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Domain.Commands
 {

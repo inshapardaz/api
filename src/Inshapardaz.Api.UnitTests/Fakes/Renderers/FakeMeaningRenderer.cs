@@ -2,7 +2,7 @@
 using Inshapardaz.Api.Renderers;
 using System.Collections.Generic;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Database.Entities;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {

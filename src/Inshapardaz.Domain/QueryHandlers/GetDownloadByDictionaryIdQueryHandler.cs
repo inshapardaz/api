@@ -1,33 +1,26 @@
-﻿using System.Linq;
+﻿using System;
 using Inshapardaz.Domain.Queries;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Database;
-using Inshapardaz.Domain.Database.Entities;
-using Microsoft.EntityFrameworkCore;
+using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetDownloadByDictionaryIdQueryHandler : QueryHandlerAsync<GetDownloadByDictionaryIdQuery, File>
     {
-        private readonly IDatabaseContext _database;
+        private readonly IClientProvider _clientProvider;
 
-        public GetDownloadByDictionaryIdQueryHandler(IDatabaseContext database)
+        public GetDownloadByDictionaryIdQueryHandler(IClientProvider clientProvider)
         {
-            _database = database;
+            _clientProvider = clientProvider;
         }
 
         public override async Task<File> ExecuteAsync(GetDownloadByDictionaryIdQuery query,
-            CancellationToken cancellationToken = default(CancellationToken))
+                                                            CancellationToken cancellationToken = default(CancellationToken))
         {
-            var result = _database.Dictionary
-                                         .Include(d => d.Downloads)
-                                         .ThenInclude(d => d.File)
-                                         .Where(d => d.Id == query.DictionaryId);
-
-            var dictionary = await result.SingleOrDefaultAsync(cancellationToken);
-            return dictionary?.Downloads?.SingleOrDefault(d => d.MimeType == query.MimeType)?.File;
+            throw new NotImplementedException();
         }
     }
 }

@@ -34,7 +34,6 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
             };
 
             DictionaryDataHelper.CreateDictionary(_dictionary);
-            DictionaryDataHelper.RefreshIndex();
 
             _dictionary.Name = "Test1 updated";
             _dictionary.Language = Languages.Arabic;

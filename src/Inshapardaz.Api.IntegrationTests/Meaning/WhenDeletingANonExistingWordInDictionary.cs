@@ -38,7 +38,6 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
             };
 
             DictionaryDataHelper.CreateDictionary(_dictionary);
-            DictionaryDataHelper.RefreshIndex();
 
             word.Title += "updated";
             word.TitleWithMovements += "updated";

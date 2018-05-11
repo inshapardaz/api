@@ -1,52 +1,25 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Paramore.Darker;
-using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Repositories;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetWordMeaningsByContextQueryHandler : QueryHandlerAsync<GetWordMeaningsByContextQuery, IEnumerable<Meaning>>
     {
-        private readonly IClientProvider _clientProvider;
-        private readonly IProvideIndex _indexProvider;
+        private readonly IMeaningRepository _meaningRepository;
 
-        public GetWordMeaningsByContextQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
+        public GetWordMeaningsByContextQueryHandler(IMeaningRepository meaningRepository)
         {
-            _clientProvider = clientProvider;
-            _indexProvider = indexProvider;
+            _meaningRepository = meaningRepository;
         }
-
-        public override async Task<IEnumerable<Meaning>> ExecuteAsync(GetWordMeaningsByContextQuery query,
-            CancellationToken cancellationToken = default(CancellationToken))
+        
+        public override async Task<IEnumerable<Meaning>> ExecuteAsync(GetWordMeaningsByContextQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            var client = _clientProvider.GetClient();
-            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
-
-            var response = await client.SearchAsync<Word>(s => s
-                                        .Index(index)
-                                        .Size(1)
-                                        .Query(q => q
-                                        .Bool(b => b
-                                        .Must(m => m
-                                        .Term(term => term.Field(f => f.Id).Value(query.WordId)))
-                                        )), cancellationToken);
-
-            var word = response.Documents.SingleOrDefault();
-            if (word != null)
-            {
-                if (string.IsNullOrWhiteSpace(query.Context))
-                {
-                    return word.Meaning;
-                }
-
-                return word.Meaning.Where(m => m.Context == query.Context);
-            }
-
-            return new Meaning[0];
+            return await _meaningRepository.GetMeaningByContext(query.DictionaryId, query.WordId, query.Context, cancellationToken);
         }
     }
 }

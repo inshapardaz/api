@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>Inshapardaz.Ports.Elasticsearch</AssemblyName>
+    <RootNamespace>Inshapardaz.Ports.Elasticsearch</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="nest" Version="6.0.0" />
+    <PackageReference Include="Paramore.Brighter" Version="7.1.5" />
+    <PackageReference Include="Paramore.Darker" Version="1.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Inshapardaz.Domain\Inshapardaz.Domain.csproj" />
+  </ItemGroup>
+</Project>

@@ -40,7 +40,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
 
             DictionaryDataHelper.CreateDictionary(_dictionary);
             WordDataHelper.CreateWord(_dictionary.Id, word);
-            DictionaryDataHelper.RefreshIndex();
 
             word.Title += "updated";
             word.TitleWithMovements += "updated";
@@ -51,7 +50,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
 
             Response = await GetContributorClient(_userId2).DeleteAsync($"/api/dictionaries/{_dictionary.Id}/words/{word.Id}");
 
-            DictionaryDataHelper.RefreshIndex();
             _word = WordDataHelper.GetWord(_dictionary.Id, word.Id);
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
-using Nest;
 
-namespace Inshapardaz.Domain.Elasticsearch
+namespace Inshapardaz.Ports.Elasticsearch
 {
     public interface IClientProvider
     {

@@ -18,6 +18,6 @@ namespace Inshapardaz.Domain.Commands
         public long RelatedWordId { get; }
         public RelationType RelationType { get; }
 
-        public long Result { get; set; }
+        public WordRelation Result { get; set; }
     }
 }

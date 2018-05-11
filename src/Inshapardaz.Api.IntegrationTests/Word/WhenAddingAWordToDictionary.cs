@@ -40,7 +40,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
             };
 
             DictionaryDataHelper.CreateDictionary(_dictionary);
-            DictionaryDataHelper.RefreshIndex();
 
             Response = await GetContributorClient(_userId).PostJson($"/api/dictionaries/{_dictionary.Id}/words", _word);
             _view = JsonConvert.DeserializeObject<WordView>(await Response.Content.ReadAsStringAsync());

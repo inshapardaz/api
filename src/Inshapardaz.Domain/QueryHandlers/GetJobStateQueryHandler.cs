@@ -1,10 +1,9 @@
-﻿using Inshapardaz.Domain.Queries;
-
-using Paramore.Darker;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Hangfire.Storage;
+using Inshapardaz.Domain.Queries;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {

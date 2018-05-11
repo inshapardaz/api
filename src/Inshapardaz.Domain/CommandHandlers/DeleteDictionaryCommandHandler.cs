@@ -1,34 +1,23 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Data.Entities;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class DeleteDictionaryCommandHandler : RequestHandlerAsync<DeleteDictionaryCommand>
     {
-        private readonly IClientProvider _clientProvider;
-        private readonly IProvideIndex _indexProvider;
+        private readonly IDictionaryRepository _dictionaryRepository;
 
-        public DeleteDictionaryCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
+        public DeleteDictionaryCommandHandler(IDictionaryRepository dictionaryRepository)
         {
-            _clientProvider = clientProvider;
-            _indexProvider = indexProvider;
+            _dictionaryRepository = dictionaryRepository;
         }
 
         public override async Task<DeleteDictionaryCommand> HandleAsync(DeleteDictionaryCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var client = _clientProvider.GetClient();
-            await client.DeleteAsync<Dictionary>(command.DictionaryId,
-                                                 i => i
-                                                        .Index(Indexes.Dictionaries)
-                                                        .Type(DocumentTypes.Dictionary),
-                                                cancellationToken);
-
-            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
-            await client.DeleteIndexAsync(index, cancellationToken: cancellationToken);
+            await _dictionaryRepository.DeleteDictionary(command.DictionaryId, cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

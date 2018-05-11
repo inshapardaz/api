@@ -1,50 +1,24 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Paramore.Darker;
-using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Repositories;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetWordStartingWithQueryHandler : QueryHandlerAsync<GetWordStartingWithQuery, Page<Word>>
     {
-        private readonly IClientProvider _clientProvider;
-        private readonly IProvideIndex _indexProvider;
+        private readonly IWordRepository _wordRepository;
 
-        public GetWordStartingWithQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
+        public GetWordStartingWithQueryHandler(IWordRepository wordRepository)
         {
-            _clientProvider = clientProvider;
-            _indexProvider = indexProvider;
+            _wordRepository = wordRepository;
         }
-
-        public override async Task<Page<Word>> ExecuteAsync(GetWordStartingWithQuery query, CancellationToken cancellationToken)
+        
+        public override async Task<Page<Word>> ExecuteAsync(GetWordStartingWithQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            var client = _clientProvider.GetClient();
-            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
-
-            var response = await client.SearchAsync<Word>(s => s
-                                        .Index(index)
-                                        .From(query.PageSize * (query.PageNumber - 1))
-                                        .Size(query.PageSize)
-                                        .Query(q => q
-                                        .Prefix(c => c
-                                        .Field(f => f.Title)
-                                        .Value(query.Title)))
-                                    , cancellationToken);
-
-            var words = response.Documents;
-
-            var count = response.HitsMetadata.Total;
-
-
-            return new Page<Word>
-            {
-                PageNumber = query.PageNumber,
-                PageSize = query.PageSize,
-                TotalCount = count,
-                Data = words
-            };
+            return await _wordRepository.GetWords(query.DictionaryId, query.PageNumber, query.PageSize, cancellationToken);
         }
     }
 }

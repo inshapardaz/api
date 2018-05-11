@@ -1,6 +1,4 @@
-﻿using Nest;
-
-namespace Inshapardaz.Domain.Elasticsearch
+﻿namespace Inshapardaz.Ports.Elasticsearch
 {
     public static class Indexes
     {

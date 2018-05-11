@@ -4,7 +4,7 @@ using System.Net.Http;
 using Inshapardaz.Api.IntegrationTests.DataHelper;
 using Inshapardaz.Api.IntegrationTests.Helpers;
 using Inshapardaz.Domain;
-using Inshapardaz.Domain.Elasticsearch;
+using Inshapardaz.Domain.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -31,8 +31,8 @@ namespace Inshapardaz.Api.IntegrationTests
 
         protected Settings Settings => TestServer.Host.Services.GetService<Settings>();
 
-        protected DictionaryDataHelpers DictionaryDataHelper => new DictionaryDataHelpers(Settings, TestServer.Host.Services.GetService<IProvideIndex>());
-        protected WordDataHelper WordDataHelper => new WordDataHelper(Settings, TestServer.Host.Services.GetService<IProvideIndex>());
+        protected DictionaryDataHelpers DictionaryDataHelper => new DictionaryDataHelpers(TestServer.Host.Services.GetService<IDictionaryRepository>());
+        protected WordDataHelper WordDataHelper => new WordDataHelper(TestServer.Host.Services.GetService<IWordRepository>());
 
         protected HttpResponseMessage Response;
 

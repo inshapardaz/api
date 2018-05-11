@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
-using Paramore.Darker;
 using Inshapardaz.Domain.Queries;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {

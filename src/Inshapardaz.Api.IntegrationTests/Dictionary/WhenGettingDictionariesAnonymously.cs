@@ -21,7 +21,6 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
             DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -1, IsPublic = true, Name = "Test1"});
             DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -2, IsPublic = true, Name = "Test2"});
             DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -3, IsPublic = false, Name = "Test3", UserId = Guid.NewGuid()});
-            DictionaryDataHelper.RefreshIndex();
 
             Response = await GetClient().GetAsync("/api/dictionaries");
             _view = JsonConvert.DeserializeObject<DictionariesView>(await Response.Content.ReadAsStringAsync());

@@ -47,7 +47,6 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
 
             DictionaryDataHelper.CreateDictionary(_dictionary);
             WordDataHelper.CreateWord(_dictionary.Id, _word);
-            DictionaryDataHelper.RefreshIndex();
 
             Response = await GetContributorClient(_userId2).PostJson($"/api/dictionaries/{_dictionary.Id}/words/-34/meanings", _meaning);
         }

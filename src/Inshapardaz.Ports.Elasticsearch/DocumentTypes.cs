@@ -1,4 +1,4 @@
-﻿namespace Inshapardaz.Domain.Elasticsearch
+﻿namespace Inshapardaz.Ports.Elasticsearch
 {
     public static class DocumentTypes
     {

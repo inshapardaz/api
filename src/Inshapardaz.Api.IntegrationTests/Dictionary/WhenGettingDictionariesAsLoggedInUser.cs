@@ -23,7 +23,6 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
             DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -2, IsPublic = false, Name = "Test2", UserId = user1});
             DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -3, IsPublic = false, Name = "Test3", UserId = user2});
             DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -4, IsPublic = true, Name = "Test4", UserId = user2});
-            DictionaryDataHelper.RefreshIndex();
 
 
             Response = await GetContributorClient(user1).GetAsync("/api/dictionaries");

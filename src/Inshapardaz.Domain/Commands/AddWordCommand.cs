@@ -14,5 +14,7 @@ namespace Inshapardaz.Domain.Commands
         public int DictionaryId { get; }
 
         public Word Word { get; }
+
+        public Word Result { get; set; }
     }
 }

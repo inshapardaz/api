@@ -1,37 +1,23 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Elasticsearch;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class AddDictionaryCommandHandler : RequestHandlerAsync<AddDictionaryCommand>
     {
-        private readonly IClientProvider _clientProvider;
-        private readonly IProvideIndex _indexProvider;
+        private readonly IDictionaryRepository _dictionaryRepository;
 
-        public AddDictionaryCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
+        public AddDictionaryCommandHandler(IDictionaryRepository dictionaryRepository)
         {
-            _clientProvider = clientProvider;
-            _indexProvider = indexProvider;
+            _dictionaryRepository = dictionaryRepository;
         }
 
         public override async Task<AddDictionaryCommand> HandleAsync(AddDictionaryCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var client = _clientProvider.GetClient();
-            
-            var count = await client.CountAsync<Dictionary>(s => s.Index(Indexes.Dictionaries), cancellationToken);
-            command.Dictionary.Id = (int)count.Count + 1;
-            
-            await client.IndexAsync(command.Dictionary, i => i
-                                    .Index(Indexes.Dictionaries)
-                                    .Type(DocumentTypes.Dictionary), 
-                                    cancellationToken);
-
-            var index = _indexProvider.GetIndexForDictionary(command.Dictionary.Id);
-            await client.CreateIndexAsync(index, cancellationToken: cancellationToken);
+            command.Result = await _dictionaryRepository.AddDictionary(command.Dictionary, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

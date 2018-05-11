@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Inshapardaz.Domain\Inshapardaz.Domain.csproj" />
+    <ProjectReference Include="..\Inshapardaz.Ports.Database\Inshapardaz.Ports.Database.csproj" />
   </ItemGroup>
 
   <ItemGroup>

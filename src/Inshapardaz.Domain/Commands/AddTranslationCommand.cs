@@ -18,5 +18,7 @@ namespace Inshapardaz.Domain.Commands
 
 
         public Translation Translation { get;  }
+
+        public Translation Result { get; set; }
     }
 }

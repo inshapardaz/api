@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api.UnitTests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api.IntegrationTests", "Inshapardaz.Api.IntegrationTests\Inshapardaz.Api.IntegrationTests.csproj", "{96E70078-C74F-4B4C-A487-6648D0285839}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.Ports.Elasticsearch", "Inshapardaz.Ports.Elasticsearch\Inshapardaz.Ports.Elasticsearch.csproj", "{89C9263C-2672-4FDE-B0AB-16ECB191C3E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.Ports.Database", "Inshapardaz.Ports.Database\Inshapardaz.Ports.Database.csproj", "{EFB37C52-0CFF-4B3A-944F-41B35628EFB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +39,14 @@ Global
 		{96E70078-C74F-4B4C-A487-6648D0285839}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96E70078-C74F-4B4C-A487-6648D0285839}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96E70078-C74F-4B4C-A487-6648D0285839}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89C9263C-2672-4FDE-B0AB-16ECB191C3E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89C9263C-2672-4FDE-B0AB-16ECB191C3E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89C9263C-2672-4FDE-B0AB-16ECB191C3E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89C9263C-2672-4FDE-B0AB-16ECB191C3E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFB37C52-0CFF-4B3A-944F-41B35628EFB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFB37C52-0CFF-4B3A-944F-41B35628EFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFB37C52-0CFF-4B3A-944F-41B35628EFB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFB37C52-0CFF-4B3A-944F-41B35628EFB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -42,7 +42,6 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
 
             DictionaryDataHelper.CreateDictionary(_dictionary);
             WordDataHelper.CreateWord(_dictionary.Id, _word);
-            DictionaryDataHelper.RefreshIndex();
             
             _meaning = new Domain.Entities.Meaning
             {

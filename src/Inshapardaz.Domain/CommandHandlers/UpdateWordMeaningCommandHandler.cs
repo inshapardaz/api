@@ -1,63 +1,40 @@
-﻿using System.Linq;
+﻿using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Elasticsearch;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Exception;
-using Nest;
+using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class UpdateWordMeaningCommandHandler : RequestHandlerAsync<UpdateWordMeaningCommand>
     {
-        private readonly IClientProvider _clientProvider;
-        private readonly IProvideIndex _indexProvider;
+        private readonly IWordRepository _wordRepository;
+        private readonly IMeaningRepository _meaningRepository;
 
-        public UpdateWordMeaningCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
+        public UpdateWordMeaningCommandHandler(IWordRepository wordRepository, IMeaningRepository meaningRepository)
         {
-            _clientProvider = clientProvider;
-            _indexProvider = indexProvider;
+            _meaningRepository = meaningRepository;
+            _wordRepository = wordRepository;
         }
 
         public override async Task<UpdateWordMeaningCommand> HandleAsync(UpdateWordMeaningCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var client = _clientProvider.GetClient();
-            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
-
-            var response = await client.SearchAsync<Word>(s => s
-                                        .Index(index)
-                                        .Size(1)
-                                        .Query(q => q
-                                        .Bool(b => b
-                                        .Must(m => m
-                                        .Term(term => term.Field(f => f.Id).Value(command.WordId)))
-                                     )), cancellationToken);
-
-            var word = response.Documents.SingleOrDefault();
+            var word = await _wordRepository.GetWordById(command.DictionaryId, command.WordId, cancellationToken);
 
             if (word == null)
             {
                 throw new NotFoundException();
             }
 
-            var meaning = word.Meaning.SingleOrDefault(m => m.Id == command.Meaning.Id);
-            if (meaning== null)
+            var meaning = await _meaningRepository.GetMeaningById(command.DictionaryId, command.WordId, command.Meaning.Id, cancellationToken);
+            if (meaning == null)
             {
                 throw new NotFoundException();
             }
 
-            meaning.Context = command.Meaning.Context;
-            meaning.Value = command.Meaning.Value;
-            meaning.Example = command.Meaning.Example;
-
-            await client.UpdateAsync(DocumentPath<Word>.Id(command.DictionaryId),
-                                     u => u
-                                          .Index(index)
-                                          .Type(DocumentTypes.Word)
-                                          .DocAsUpsert()
-                                          .Doc(word), cancellationToken);
+            await _meaningRepository.UpdateMeaning(command.DictionaryId, command.WordId, meaning, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

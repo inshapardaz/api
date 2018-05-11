@@ -18,5 +18,6 @@ namespace Inshapardaz.Domain.Commands
 
         public Meaning Meaning { get; }
 
+        public Meaning Result { get; set; }
     }
 }

@@ -1,30 +1,27 @@
 ﻿using System.Collections.Generic;
-using Inshapardaz.Domain.Queries;
-using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Repositories;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetDictionariesQueryHandler : QueryHandlerAsync<GetDictionariesQuery,
         IEnumerable<Dictionary>>
     {
-        private readonly IClientProvider _clientProvider;
+        private readonly IDictionaryRepository _dictionaryRepository;
 
-        public GetDictionariesQueryHandler(IClientProvider clientProvider)
+        public GetDictionariesQueryHandler(IDictionaryRepository dictionaryRepository)
         {
-            _clientProvider = clientProvider;
+            _dictionaryRepository = dictionaryRepository;
         }
 
         public override async Task<IEnumerable<Dictionary>> ExecuteAsync(GetDictionariesQuery query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var client = _clientProvider.GetClient();
-            var response = await client.SearchAsync<Dictionary>(s => s.Query(q => q.MatchAll()), cancellationToken);
-
-            return response.Documents;
+            return await _dictionaryRepository.GetAllDictionaries(cancellationToken);
         }
     }
 }

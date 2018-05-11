@@ -2,65 +2,48 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class AddWordRelationCommandHandler : RequestHandlerAsync<AddWordRelationCommand>
     {
-        //    private readonly IDatabaseContext _database;
-
-        //    public AddWordRelationCommandHandler(IDatabaseContext database)
-        //    {
-        //        _database = database;
-        //    }
-
-        //    public override async Task<AddWordRelationCommand> HandleAsync(AddWordRelationCommand command, CancellationToken cancellationToken = default(CancellationToken))
-        //    {
-        //        if (command.SourceWordId == command.RelatedWordId)
-        //        {
-        //            throw new BadRequestException();
-        //        }
-
-        //        var sourceWord = await _database.Word.SingleOrDefaultAsync(
-        //            w => w.Id == command.SourceWordId && w.DictionaryId == command.DictionaryId, 
-        //            cancellationToken);
-
-        //        if (sourceWord == null)
-        //        {
-        //            throw new NotFoundException();
-        //        }
-
-        //        var relatedWord = await _database.Word.SingleOrDefaultAsync(
-        //            w => w.Id == command.RelatedWordId && w.DictionaryId == command.DictionaryId, 
-        //            cancellationToken);
-
-        //        if (relatedWord == null || sourceWord.DictionaryId != relatedWord.DictionaryId)
-        //        {
-        //            throw new BadRequestException();
-        //        }
-
-        //        var relation = new WordRelation
-        //        {
-        //            SourceWord = sourceWord,
-        //            SourceWordId = command.SourceWordId,
-        //            RelatedWord = relatedWord,
-        //            RelatedWordId = command.RelatedWordId,
-        //            RelationType = command.RelationType
-        //        };
-
-        //        _database.WordRelation.Add(relation);
-        //        await _database.SaveChangesAsync(cancellationToken);
-
-        //        command.Result = relation.Id;
-        //        return await base.HandleAsync(command, cancellationToken);
-        //    }        
-        //}
-        public override Task<AddWordRelationCommand> HandleAsync(AddWordRelationCommand command, CancellationToken cancellationToken = new CancellationToken())
+        private readonly IRelationshipRepository _relationshipRepository;
+        private readonly IWordRepository _wordRepository;
+        public AddWordRelationCommandHandler(IWordRepository wordRepository, IRelationshipRepository relationshipRepository)
         {
-            throw new NotImplementedException();
+            _relationshipRepository = relationshipRepository;
+            _wordRepository = wordRepository;
+        }
+        
+        public override async Task<AddWordRelationCommand> HandleAsync(AddWordRelationCommand command, CancellationToken cancellationToken = new CancellationToken())
+        {
+            if (command.SourceWordId == command.RelatedWordId)
+            {
+                throw new BadRequestException();
+            }
 
-            return base.HandleAsync(command, cancellationToken);
+            var source = await _wordRepository.GetWordById(command.DictionaryId, command.SourceWordId, cancellationToken);
+            var related = await _wordRepository.GetWordById(command.DictionaryId, command.RelatedWordId, cancellationToken);
+
+            if (source == null || related == null)
+            {
+                throw new NotFoundException();
+            }
+           
+            var relation = new WordRelation
+            {
+                SourceWordId = command.SourceWordId,
+                RelatedWordId = command.RelatedWordId,
+                RelationType = command.RelationType
+            };
+
+            command.Result = await _relationshipRepository.AddRelationship(command.DictionaryId, relation, cancellationToken);
+
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

@@ -41,7 +41,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
 
             DictionaryDataHelper.CreateDictionary(_dictionary);
             WordDataHelper.CreateWord(_dictionary.Id, _word);
-            DictionaryDataHelper.RefreshIndex();
 
             Response = await GetContributorClient(_userId).GetAsync($"/api/dictionaries/{_dictionary.Id}/words/{_word.Id}");
             _view = JsonConvert.DeserializeObject<WordView>(await Response.Content.ReadAsStringAsync());

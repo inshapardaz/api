@@ -1,35 +1,27 @@
 ﻿using System;
-using Paramore.Darker;
-using Inshapardaz.Domain.Queries;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Repositories;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetRelationshipToWordQueryHandler : QueryHandlerAsync<GetRelationshipToWordQuery,
         IEnumerable<WordRelation>>
     {
-        private readonly IClientProvider _clientProvider;
-        private readonly IProvideIndex _indexProvider;
+        private readonly IRelationshipRepository _relationshipRepository;
 
-        public GetRelationshipToWordQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
+        public GetRelationshipToWordQueryHandler(IRelationshipRepository relationshipRepository)
         {
-            _clientProvider = clientProvider;
-            _indexProvider = indexProvider;
+            _relationshipRepository = relationshipRepository;
         }
 
-        public override async Task<IEnumerable<WordRelation>> ExecuteAsync(GetRelationshipToWordQuery query,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<IEnumerable<WordRelation>> ExecuteAsync(GetRelationshipToWordQuery query, CancellationToken cancellationToken = default(CancellationToken))
         {
-            //return await _database.WordRelation
-            //    .Include(r => r.RelatedWord)
-            //    .Include(r => r.SourceWord)
-            //    .Where(t => t.RelatedWordId == query.WordId)
-            //    .ToListAsync(cancellationToken);
-            throw new NotImplementedException();
+            return await _relationshipRepository.GetRelationshipToWord(query.DictionaryId, query.WordId, cancellationToken);
         }
     }
 }

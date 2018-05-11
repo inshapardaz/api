@@ -34,7 +34,6 @@ namespace Inshapardaz.Api.IntegrationTests.WordList
                 WordDataHelper.CreateWord(_dictionary.Id, word);
             }
 
-            DictionaryDataHelper.RefreshIndex();
 
             Response = await GetClient().GetAsync($"/api/dictionaries/{_dictionary.Id}/words?pageNumber=2");
             _view = JsonConvert.DeserializeObject<PageView<WordView>>(await Response.Content.ReadAsStringAsync());

@@ -1,19 +1,13 @@
 ﻿
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoMapper;
-using IdentityServer4.AccessTokenValidation;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Domain;
-using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.IndexingService;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Inshapardaz.Ports.Database;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,7 +15,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Paramore.Brighter.AspNetCore;
 using Paramore.Darker.AspNetCore;
 using Swashbuckle.AspNetCore.Swagger;
@@ -143,6 +136,8 @@ namespace Inshapardaz.Api
                 {
                     c.AddProfile(new MappingProfile());
                     c.AddProfile(new DomainMappingProfile());
+                    c.AddProfile(DatabaseModule.GetMappingProfile());
+                    //c.AddProfile(ElasticsearchModule.GetMappingProfile());
                 }
             );
             Mapper.AssertConfigurationIsValid();
@@ -180,35 +175,13 @@ namespace Inshapardaz.Api
 
         protected virtual void ConfigureDomain(IServiceCollection services)
         {
-            //var connectionString = Configuration.GetConnectionString("DefaultDatabase");
-
-            //services.AddEntityFrameworkSqlServer()
-            //        .AddDbContext<DatabaseContext>(
-            //            options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
-            //services.AddTransient<IDatabaseContext, DatabaseContext>();
-
-            //bool.TryParse(Configuration["Application:RunDBMigrations"], out bool migrationEnabled);
-            //if (migrationEnabled)
-            //{
-            //    Console.WriteLine("Running database migrations...");
-            //    var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            //    optionsBuilder.UseSqlServer(connectionString);
-
-            //    var database = new DatabaseContext(optionsBuilder.Options).Database;
-            //    database.SetCommandTimeout(5 * 60);
-            //    database.Migrate();
-            //    Console.WriteLine("Database migrations completed.");
-            //}
-
-            services.AddTransient<IClientProvider, ClientProvider>();
-            services.AddTransient<IInitialiseElasticSearch, ElasticsearchInitializer>();
-            services.AddTransient<IProvideIndex, IndexProvider>();
+            DatabaseModule.ConfigureDatabase(services, Configuration);
+            //ElasticsearchModule.ConfigureElasticsearch(services, Configuration);
         }
 
         private void AddDomain(IApplicationBuilder app)
         {
-            var initialiser = app.ApplicationServices.GetService<IInitialiseElasticSearch>();
-            initialiser.Initialise();
+            //ElasticsearchModule.AddElasticSearch(app);
         }
     }
 }

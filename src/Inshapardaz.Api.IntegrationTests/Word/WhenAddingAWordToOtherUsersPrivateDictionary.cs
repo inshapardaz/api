@@ -39,7 +39,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
             };
 
             DictionaryDataHelper.CreateDictionary(_dictionary);
-            DictionaryDataHelper.RefreshIndex();
 
             Response = await GetContributorClient(_userId2).PostJson($"/api/dictionaries/{_dictionary.Id}/words", _word);
         }

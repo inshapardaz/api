@@ -11,5 +11,7 @@ namespace Inshapardaz.Domain.Commands
         }
 
         public Dictionary Dictionary { get; }
+
+        public Dictionary Result { get; set; }
     }
 }

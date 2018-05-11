@@ -1,56 +1,23 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Elasticsearch;
-using Inshapardaz.Domain.Entities;
-using Inshapardaz.Domain.Exception;
-using Nest;
+using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class AddTranslationCommandHandler : RequestHandlerAsync<AddTranslationCommand>
     {
-        private readonly IClientProvider _clientProvider;
-        private readonly IProvideIndex _indexProvider;
+        private readonly ITranslationRepository _translationRepository;
 
-        public AddTranslationCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
+        public AddTranslationCommandHandler(ITranslationRepository translationRepository)
         {
-            _clientProvider = clientProvider;
-            _indexProvider = indexProvider;
+            _translationRepository = translationRepository;
         }
-
+        
         public override async Task<AddTranslationCommand> HandleAsync(AddTranslationCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var client = _clientProvider.GetClient();
-            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
-
-            var response = await client.SearchAsync<Word>(s => s
-                                        .Index(index)
-                                        .Size(1)
-                                        .Query(q => q
-                                        .Bool(b => b
-                                        .Must(m => m
-                                        .Term(term => term.Field(f => f.Id).Value(command.WordId)))
-                                   )), cancellationToken);
-
-            var word = response.Documents.SingleOrDefault();
-
-            if (word == null)
-            {
-                throw new NotFoundException();
-            }
-
-            command.Translation.Id = word.Translation.Count;
-            word.Translation.Add(command.Translation);
-
-            await client.UpdateAsync(DocumentPath<Word>.Id(command.DictionaryId),
-                                     u => u
-                                          .Index(index)
-                                          .Type(DocumentTypes.Word)
-                                          .DocAsUpsert()
-                                          .Doc(word), cancellationToken);
+            command.Result = await _translationRepository.AddTranslation(command.DictionaryId, command.WordId, command.Translation, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

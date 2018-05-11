@@ -33,7 +33,6 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
                 }
             };
             DictionaryDataHelper.CreateDictionary(_dictionary);
-            DictionaryDataHelper.RefreshIndex();
 
             Response = await GetContributorClient(Guid.NewGuid()).GetAsync("/api/dictionaries/-1");
             _view = JsonConvert.DeserializeObject<DictionaryView>(await Response.Content.ReadAsStringAsync());

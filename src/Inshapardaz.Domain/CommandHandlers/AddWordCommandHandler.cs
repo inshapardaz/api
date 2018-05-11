@@ -1,22 +1,19 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Elasticsearch;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class AddWordCommandHandler : RequestHandlerAsync<AddWordCommand>
     {
-        private readonly IClientProvider _clientProvider;
-        private readonly IProvideIndex _indexProvider;
+        private readonly IWordRepository _wordRepository;
 
-        public AddWordCommandHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
+        public AddWordCommandHandler(IWordRepository wordRepository)
         {
-            _clientProvider = clientProvider;
-            _indexProvider = indexProvider;
+            _wordRepository = wordRepository;
         }
 
         public override async Task<AddWordCommand> HandleAsync(AddWordCommand command, CancellationToken cancellationToken = default(CancellationToken))
@@ -26,16 +23,12 @@ namespace Inshapardaz.Domain.CommandHandlers
                 throw new BadRequestException();
             }
 
-            var client = _clientProvider.GetClient();
-            var index = _indexProvider.GetIndexForDictionary(command.DictionaryId);
-
-            var count = await client.CountAsync<Word>(i => i.Index(index), cancellationToken);
-            command.Word.Id = count.Count + 1;
             command.Word.DictionaryId = command.DictionaryId;
 
-            await client.IndexAsync(command.Word, i => i.Index(index).Type(DocumentTypes.Word), cancellationToken);
+            var newWord = await _wordRepository.AddWord(command.DictionaryId, command.Word, cancellationToken);
+            command.Result = newWord;
 
-            return await  base.HandleAsync(command, cancellationToken);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

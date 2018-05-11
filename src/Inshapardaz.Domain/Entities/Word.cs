@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Nest;
-
 namespace Inshapardaz.Domain.Entities
 {
     public class Word
@@ -21,10 +19,16 @@ namespace Inshapardaz.Domain.Entities
 
         public int DictionaryId { get; set; }
 
+        public virtual Dictionary Dictionary { get; set; }
+
         public ICollection<Meaning> Meaning { get; set; } = new List<Meaning>();
 
         public ICollection<Translation> Translation { get; set; } = new List<Translation>();
 
         public ICollection<WordRelation> Relations { get; set; } = new List<WordRelation>();
+
+        public virtual ICollection<WordRelation> WordRelationRelatedWord { get; set; } = new HashSet<WordRelation>();
+
+        public virtual ICollection<WordRelation> WordRelationSourceWord { get; set; } = new HashSet<WordRelation>();
     }
 }

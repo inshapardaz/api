@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
 using Paramore.Darker;
@@ -11,14 +10,14 @@ namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetWordsForTranslationsByLanguageQueryHandler : QueryHandlerAsync<GetWordsForTranslationsByLanguageQuery, Dictionary<string, Word>>
     {
-        private readonly IClientProvider _clientProvider;
-        private readonly IProvideIndex _indexProvider;
+        //private readonly IClientProvider _clientProvider;
+        //private readonly IProvideIndex _indexProvider;
 
-        public GetWordsForTranslationsByLanguageQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
-        {
-            _clientProvider = clientProvider;
-            _indexProvider = indexProvider;
-        }
+        //public GetWordsForTranslationsByLanguageQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
+        //{
+        //    _clientProvider = clientProvider;
+        //    _indexProvider = indexProvider;
+        //}
 
         public override async Task<Dictionary<string, Word>> ExecuteAsync(GetWordsForTranslationsByLanguageQuery query,
                                                                                   CancellationToken cancellationToken = default(CancellationToken))

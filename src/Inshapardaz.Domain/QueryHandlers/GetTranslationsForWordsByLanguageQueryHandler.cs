@@ -2,45 +2,32 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Elasticsearch;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Queries;
-using Nest;
+using Inshapardaz.Domain.Repositories;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.QueryHandlers
 {
     public class GetTranslationsForWordsByLanguageQueryHandler : QueryHandlerAsync<GetTranslationsForWordsByLanguageQuery, Dictionary<string, Translation>>
     {
-        private readonly IClientProvider _clientProvider;
-        private readonly IProvideIndex _indexProvider;
+        private readonly IWordRepository _wordRepository;
+        private readonly ITranslationRepository _translationRepository;
 
-        public GetTranslationsForWordsByLanguageQueryHandler(IClientProvider clientProvider, IProvideIndex indexProvider)
+        public GetTranslationsForWordsByLanguageQueryHandler(IWordRepository wordRepository, ITranslationRepository translationRepository)
         {
-            _clientProvider = clientProvider;
-            _indexProvider = indexProvider;
+            _translationRepository = translationRepository;
+            _wordRepository = wordRepository;
         }
-
-        public override async Task<Dictionary<string, Translation>> ExecuteAsync(GetTranslationsForWordsByLanguageQuery query,
-                                                                          CancellationToken cancellationToken = default(CancellationToken))
+        
+        public override async Task<Dictionary<string, Translation>> ExecuteAsync(GetTranslationsForWordsByLanguageQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            var client = _clientProvider.GetClient();
-            var index = _indexProvider.GetIndexForDictionary(query.DictionaryId);
-
-            var response = await client.SearchAsync<Word>(s => s
-                                        .Index(index)
-                                        .Size(50)
-                                        .Query(q => q
-                                        .Bool(b => b
-                                        .Must(m => m
-                                        .Term(term => AddIds(term.Field(f => f.Title), query.Words)))
-                                )), cancellationToken);
-
-            var words = response.Documents.ToList();
+            var words = await _wordRepository.GetWordsByTitles(query.DictionaryId, query.Words, cancellationToken);
 
             var result = new Dictionary<string, Translation>();
             foreach (var word in words)
             {
+                var translations = await _translationRepository.GetWordTranslationsByLanguage(query.DictionaryId, word.Id, query.Language, cancellationToken);
                 if (result.ContainsKey(word.Title))
                 {
                     // IMPORVE : We have mulitple translations for this word. 
@@ -50,12 +37,11 @@ namespace Inshapardaz.Domain.QueryHandlers
                 Translation translation;
                 if (query.IsTranspiling.HasValue)
                 {
-                    translation = word.Translation.FirstOrDefault(t => t.Language == query.Language && 
-                                                                      t.IsTrasnpiling == query.IsTranspiling);
+                    translation = translations.FirstOrDefault(t => t.IsTrasnpiling == query.IsTranspiling);
                 }
                 else
                 {
-                    translation = word.Translation.FirstOrDefault(t => t.Language == query.Language);
+                    translation = translations.FirstOrDefault();
                 }
 
                 if (translation != null)
@@ -63,18 +49,8 @@ namespace Inshapardaz.Domain.QueryHandlers
                     result.Add(word.Title, translation);
                 }
             }
-
             return result;
-        }
 
-        private TermQueryDescriptor<Word> AddIds(TermQueryDescriptor<Word> field, IEnumerable<string> querys)
-        {
-            foreach (var id in querys)
-            {
-                field.Value(id);
-            }
-
-            return field;
         }
     }
 }

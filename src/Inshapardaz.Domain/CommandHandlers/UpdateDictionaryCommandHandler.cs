@@ -1,31 +1,23 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Elasticsearch;
-using Inshapardaz.Domain.Entities;
-using Nest;
+using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.CommandHandlers
 {
     public class UpdateDictionaryCommandHandler : RequestHandlerAsync<UpdateDictionaryCommand>
     {
-        private readonly IClientProvider _clientProvider;
+        private readonly IDictionaryRepository _dictionaryRepository;
 
-        public UpdateDictionaryCommandHandler(IClientProvider clientProvider)
+        public UpdateDictionaryCommandHandler(IDictionaryRepository dictionaryRepository)
         {
-            _clientProvider = clientProvider;
+            _dictionaryRepository = dictionaryRepository;
         }
 
         public override async Task<UpdateDictionaryCommand> HandleAsync(UpdateDictionaryCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var client = _clientProvider.GetClient();
-            await client.UpdateAsync(DocumentPath<Dictionary>.Id(command.Dictionary.Id), 
-                                     u => u
-                                        .Index(Indexes.Dictionaries)
-                                        .Type(DocumentTypes.Dictionary)
-                                        .DocAsUpsert()
-                                        .Doc(command.Dictionary), cancellationToken);
+            await _dictionaryRepository.UpdateDictionary(command.Dictionary.Id, command.Dictionary, cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

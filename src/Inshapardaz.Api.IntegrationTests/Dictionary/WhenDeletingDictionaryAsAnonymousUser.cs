@@ -33,13 +33,11 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
             };
 
             DictionaryDataHelper.CreateDictionary(_dictionary);
-            DictionaryDataHelper.RefreshIndex();
 
             _dictionary.Name = "Test1 updated";
             _dictionary.Language = Languages.Arabic;
             Response = await GetClient().DeleteAsync($"/api/dictionaries/{_dictionary.Id}");
 
-            DictionaryDataHelper.RefreshIndex();
             _view = DictionaryDataHelper.GetDictionary(_dictionary.Id);
         }
 

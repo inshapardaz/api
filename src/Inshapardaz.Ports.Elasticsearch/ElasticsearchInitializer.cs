@@ -1,7 +1,6 @@
-﻿using Inshapardaz.Domain.Entities;
-using Nest;
+﻿using System;
 
-namespace Inshapardaz.Domain.Elasticsearch
+namespace Inshapardaz.Ports.Elasticsearch
 {
     public interface IInitialiseElasticSearch
     {
@@ -19,6 +18,7 @@ namespace Inshapardaz.Domain.Elasticsearch
 
         public void Initialise()
         {
+            Console.WriteLine("Initializing Mappings");
             var settings = new IndexSettings { NumberOfReplicas = 1, NumberOfShards = 2 };
 
             var indexConfig = new IndexState
@@ -30,13 +30,17 @@ namespace Inshapardaz.Domain.Elasticsearch
 
             if (!client.IndexExists(Indexes.Dictionaries).Exists)
             {
-                client.CreateIndex(Indexes.Dictionaries, c => c
+                var result = client.CreateIndex(Indexes.Dictionaries, c => c
                                           .InitializeUsing(indexConfig)
                                           .Mappings(m => m.Map<Dictionary>(mp => mp.AutoMap()
                                                             .Properties(ps => ps
                                                                 .Object<DictionaryDownload>( dd => dd.Name(n => n.Downloads).AutoMap())))
                                    ));
-                client.CreateIndex(Indexes.Dictionary, c => c
+                if (!result.IsValid){
+                    throw new System.Exception(result.DebugInformation);
+                }
+
+                var result2 = client.CreateIndex(Indexes.Dictionary, c => c
                                           .InitializeUsing(indexConfig)
                                           .Mappings(m => m.Map<Word>(mp => mp
                                                           .AutoMap()
@@ -45,16 +49,23 @@ namespace Inshapardaz.Domain.Elasticsearch
                                                             .Object<Translation>(pt => pt.Name(n => n.Translation).AutoMap())
                                                             .Object<WordRelation>(pr => pr.Name(n => n.Relations).AutoMap())
                                     ))));
+                
+                if (!result2.IsValid){
+                    throw new System.Exception(result2.DebugInformation);
+                }
             }
 
-            client.PutIndexTemplate("dictionary-template",
+            var result3 = client.PutIndexTemplate("dictionary-template",
                 template => template
+                    .IndexPatterns("dictionary-*")
                     .Mappings(mappings => mappings
                         .Map<Word>("word", order => order
-                            .Dynamic(DynamicMapping.Strict)
                             .AutoMap())
                     )
                 );
+            if (!result3.IsValid){
+                throw new System.Exception(result3.DebugInformation);
+            }
         }
     }
 }

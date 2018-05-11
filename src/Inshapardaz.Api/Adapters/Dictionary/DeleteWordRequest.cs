@@ -51,7 +51,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             foreach (var relation in relations)
             {
                 await _commandProcessor.SendAsync(new DeleteRelationshipRequest(command.DictionaryId, command.WordId, relation.Id), cancellationToken: cancellationToken);
-                await _commandProcessor.SendAsync(new DeleteWordRelationshipByRelatedWordIdCommand(command.DictionaryId, relation.RelatedWordId, command.WordId), cancellationToken: cancellationToken);
+                await _commandProcessor.SendAsync(new DeleteWordRelationshipByRelatedWordIdCommand(command.DictionaryId, relation.RelatedWordId), cancellationToken: cancellationToken);
             }
         }
     }

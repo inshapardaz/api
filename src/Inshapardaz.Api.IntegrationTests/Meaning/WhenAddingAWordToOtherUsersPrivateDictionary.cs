@@ -23,30 +23,29 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         {
             _dictionary = new Domain.Entities.Dictionary
             {
-                Id = -1,
                 IsPublic = false,
                 UserId = _userId1,
                 Name = "Test1"
             };
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
 
             _word = new Domain.Entities.Word
             {
-                Id = -2,
+                DictionaryId = _dictionary.Id,
                 Title = "abc",
                 TitleWithMovements = "xyz",
                 Language = Languages.Bangali,
                 Pronunciation = "pas",
                 Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
             };
+            _word = WordDataHelper.CreateWord(_dictionary.Id, _word);
+
             _meaning = new Domain.Entities.Meaning
             {
                 Context = "default",
                 Value = "meaning value",
                 Example = "example text"
             };
-
-            DictionaryDataHelper.CreateDictionary(_dictionary);
-            WordDataHelper.CreateWord(_dictionary.Id, _word);
 
             Response = await GetContributorClient(_userId2).PostJson($"/api/dictionaries/{_dictionary.Id}/words/-34/meanings", _meaning);
         }

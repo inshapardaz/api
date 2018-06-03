@@ -15,6 +15,11 @@ namespace Inshapardaz.Ports.Elasticsearch
                 .ForMember(d => d.UserId, o => o.MapFrom(s => s.UserId))
                 .ReverseMap()
                 .ForMember(d => d.Downloads, o => o.Ignore());
+
+            CreateMap<Word, Entities.Word>();
+            CreateMap<Meaning, Entities.Meaning>();
+            CreateMap<Translation, Entities.Translation>();
+            CreateMap<WordRelation, Entities.WordRelation>();
         }
     }
 }

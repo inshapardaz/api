@@ -13,23 +13,20 @@ namespace Inshapardaz.Api.IntegrationTests.Word
         private Domain.Entities.Word _word;
         private Domain.Entities.Dictionary _dictionary;
         private readonly Guid _userId = Guid.NewGuid();
-        private int _wordId;
+        private long _wordId;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _dictionary = new Domain.Entities.Dictionary
             {
-                Id = -1,
                 IsPublic = false,
                 UserId = _userId,
                 Name = "Test1"
             };
 
-            _wordId = -2;
             var word = new Domain.Entities.Word
             {
-                Id = _wordId,
                 Title = "abc",
                 TitleWithMovements = "xyz",
                 Language = Languages.Bangali,
@@ -37,8 +34,9 @@ namespace Inshapardaz.Api.IntegrationTests.Word
                 Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
             };
 
-            DictionaryDataHelper.CreateDictionary(_dictionary);
-            WordDataHelper.CreateWord(_dictionary.Id, word);
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
+            _word = WordDataHelper.CreateWord(_dictionary.Id, word);
+            _wordId = word.Id;
 
             word.Title += "updated";
             word.TitleWithMovements += "updated";

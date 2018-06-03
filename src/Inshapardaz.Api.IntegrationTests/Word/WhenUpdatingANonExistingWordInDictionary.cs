@@ -21,7 +21,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
         {
             _dictionary = new Domain.Entities.Dictionary
             {
-                Id = -1,
                 IsPublic = false,
                 UserId = _userId,
                 Name = "Test1"
@@ -29,7 +28,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
 
             _word = new Domain.Entities.Word
             {
-                Id = -2,
                 Title = "abc",
                 TitleWithMovements = "xyz",
                 Language = Languages.Bangali,
@@ -37,7 +35,7 @@ namespace Inshapardaz.Api.IntegrationTests.Word
                 Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
             };
 
-            DictionaryDataHelper.CreateDictionary(_dictionary);
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
 
             _word.Title += "updated";
             _word.TitleWithMovements += "updated";

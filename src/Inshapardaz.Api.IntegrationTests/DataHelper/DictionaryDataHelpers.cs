@@ -18,14 +18,17 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
             return _dictionaryRepository.GetDictionaryById(id, CancellationToken.None).Result;
         }
 
-        public void CreateDictionary(Domain.Entities.Dictionary dictionary)
+        public Domain.Entities.Dictionary CreateDictionary(Domain.Entities.Dictionary dictionary)
         {
-            _dictionaryRepository.AddDictionary(dictionary, CancellationToken.None).Wait();
+            return _dictionaryRepository.AddDictionary(dictionary, CancellationToken.None).Result;
         }
 
         public void DeleteDictionary(int id)
         {
-            _dictionaryRepository.DeleteDictionary(id, CancellationToken.None).Wait();
+            if (_dictionaryRepository.GetDictionaryById(id, CancellationToken.None).Result != null)
+            {
+                _dictionaryRepository.DeleteDictionary(id, CancellationToken.None).Wait();
+            }
         }
     }
 }

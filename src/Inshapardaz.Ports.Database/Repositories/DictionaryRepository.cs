@@ -56,6 +56,7 @@ namespace Inshapardaz.Ports.Database.Repositories
         public async Task<IEnumerable<Dictionary>> GetAllDictionaries(CancellationToken cancellationToken)
         {
             return await _database.Dictionary
+                                  .Include(d => d.Downloads)
                                   .Select(d => d.Map<Entities.Dictionary, Dictionary>())
                                   .ToListAsync(cancellationToken);
         }
@@ -63,6 +64,7 @@ namespace Inshapardaz.Ports.Database.Repositories
         public async Task<IEnumerable<Dictionary>> GetPublicDictionaries(CancellationToken cancellationToken)
         {
             return await _database.Dictionary
+                                  .Include(d => d.Downloads)
                                   .Where(d => d.IsPublic)
                                   .Select(d => d.Map<Entities.Dictionary, Dictionary>())
                                   .ToListAsync(cancellationToken);
@@ -71,14 +73,17 @@ namespace Inshapardaz.Ports.Database.Repositories
         public async Task<IEnumerable<Dictionary>> GetAllDictionariesForUser(Guid userId, CancellationToken cancellationToken)
         {
             return await _database.Dictionary
-                                  .Where(d =>  d.UserId == userId)
+                                  .Include(d => d.Downloads)
+                                  .Where(d =>  d.UserId == userId || d.IsPublic)
                                   .Select(d => d.Map<Entities.Dictionary, Dictionary>())
                                   .ToListAsync(cancellationToken);
         }
 
         public async Task<Dictionary> GetDictionaryById(int dictionaryId, CancellationToken cancellationToken)
         {
-            return (await _database.Dictionary.SingleOrDefaultAsync(d => d.Id == dictionaryId, cancellationToken)).Map<Entities.Dictionary, Dictionary>();
+            return (await _database.Dictionary
+                                   .Include(d => d.Downloads)
+                                   .SingleOrDefaultAsync(d => d.Id == dictionaryId, cancellationToken)).Map<Entities.Dictionary, Dictionary>();
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using Inshapardaz.Domain;
+using Nest;
 
 namespace Inshapardaz.Ports.Elasticsearch
 {

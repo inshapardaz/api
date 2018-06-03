@@ -175,8 +175,8 @@ namespace Inshapardaz.Api
 
         protected virtual void ConfigureDomain(IServiceCollection services)
         {
+            DatabaseModule.UseSqlServer(services, Configuration);
             DatabaseModule.ConfigureDatabase(services, Configuration);
-            //ElasticsearchModule.ConfigureElasticsearch(services, Configuration);
         }
 
         private void AddDomain(IApplicationBuilder app)

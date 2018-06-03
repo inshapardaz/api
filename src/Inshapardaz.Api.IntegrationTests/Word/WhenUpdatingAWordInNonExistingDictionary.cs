@@ -19,7 +19,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
         {
             _word = new Domain.Entities.Word
             {
-                Id = -2,
                 Title = "abc",
                 TitleWithMovements = "xyz",
                 Language = Languages.Bangali,

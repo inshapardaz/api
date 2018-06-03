@@ -16,6 +16,15 @@ namespace Inshapardaz.Ports.Database
             return new MappingProfile();
         }
 
+        public static void UseSqlServer(IServiceCollection services, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("DefaultDatabase");
+
+            services.AddEntityFrameworkSqlServer()
+                    .AddDbContext<DatabaseContext>(
+                        options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
+        }
+
         public static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IDictionaryRepository, DictionaryRepository>();
@@ -24,16 +33,14 @@ namespace Inshapardaz.Ports.Database
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<IRelationshipRepository, RelationshipRepository>();
 
-            var connectionString = configuration.GetConnectionString("DefaultDatabase");
-
-            services.AddEntityFrameworkSqlServer()
-                    .AddDbContext<DatabaseContext>(
-                        options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
             services.AddTransient<IDatabaseContext, DatabaseContext>();
 
             bool.TryParse(configuration["Application:RunDBMigrations"], out bool migrationEnabled);
             if (migrationEnabled)
             {
+
+                var connectionString = configuration.GetConnectionString("DefaultDatabase");
+
                 Console.WriteLine("Running database migrations...");
                 var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
                 optionsBuilder.UseSqlServer(connectionString);

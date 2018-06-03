@@ -38,18 +38,22 @@ namespace Inshapardaz.Ports.Database
             bool.TryParse(configuration["Application:RunDBMigrations"], out bool migrationEnabled);
             if (migrationEnabled)
             {
-
-                var connectionString = configuration.GetConnectionString("DefaultDatabase");
-
-                Console.WriteLine("Running database migrations...");
-                var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-                optionsBuilder.UseSqlServer(connectionString);
-
-                var database = new DatabaseContext(optionsBuilder.Options).Database;
-                database.SetCommandTimeout(5 * 60);
-                database.Migrate();
-                Console.WriteLine("Database migrations completed.");
+                Initialise(configuration);
             }
+        }
+
+        public static void Initialise(IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("DefaultDatabase");
+
+            Console.WriteLine("Running database migrations...");
+            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+            optionsBuilder.UseSqlServer(connectionString);
+
+            var database = new DatabaseContext(optionsBuilder.Options).Database;
+            database.SetCommandTimeout(5 * 60);
+            database.Migrate();
+            Console.WriteLine("Database migrations completed.");
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Renderers
 
             var links = new List<LinkView>
             {
-                _linkRenderer.Render("GetTranslationById", RelTypes.Self, new { id = dictionaryId, translationId = source.Id }),
+                _linkRenderer.Render("GetTranslationById", RelTypes.Self, new { id = dictionaryId,  wordId = source.WordId , translationId = source.Id }),
                 _linkRenderer.Render("GetWordById", RelTypes.Word, new { id= dictionaryId, wordId = source.WordId })
             };
 

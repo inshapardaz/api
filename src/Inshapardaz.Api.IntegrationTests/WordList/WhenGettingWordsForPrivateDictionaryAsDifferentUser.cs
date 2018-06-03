@@ -22,18 +22,19 @@ namespace Inshapardaz.Api.IntegrationTests.WordList
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dictionary = new Domain.Entities.Dictionary {Id = -1, IsPublic = false, Name = "Test1", UserId = user1};
-            _words = new List<Domain.Entities.Word>();
+            _dictionary = new Domain.Entities.Dictionary { IsPublic = false, Name = "Test1", UserId = user1};
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
+            var words = new List<Domain.Entities.Word>();
 
             for (int i = 0; i < 5; i++)
             {
-                _words.Add(new Domain.Entities.Word {DictionaryId = _dictionary.Id, Id = i, Title = $"abc {i}", TitleWithMovements = "a$5fv", Attributes = GrammaticalType.FealLazim, Language = Languages.Bangali, Description = "d", Pronunciation = "p"});
+                words.Add(new Domain.Entities.Word {DictionaryId = _dictionary.Id, Title = $"abc {i}", TitleWithMovements = "a$5fv", Attributes = GrammaticalType.FealLazim, Language = Languages.Bangali, Description = "d", Pronunciation = "p"});
             }
 
-            DictionaryDataHelper.CreateDictionary(_dictionary);
+            _words = new List<Domain.Entities.Word>();
             foreach (var word in _words)
             {
-                WordDataHelper.CreateWord(_dictionary.Id, word);
+                _words.Add(WordDataHelper.CreateWord(_dictionary.Id, word));
             }
 
 

@@ -154,5 +154,10 @@ namespace Inshapardaz.Ports.Database.Repositories
                 Data = data
             };
         }
+
+        public async Task<int> GetWordCountByDictionary(int dictionaryId, CancellationToken cancellationToken)
+        {
+            return  await _databaseContext.Word.CountAsync(d => d.Id == dictionaryId, cancellationToken);
+        }
     }
 }

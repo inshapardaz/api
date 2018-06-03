@@ -17,20 +17,18 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         [OneTimeSetUp]
         public async Task Setup()
         {
-
             _dictionary = new Domain.Entities.Dictionary
             {
-                Id = -1,
                 UserId = _userId
             };
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
+
             _meaning = new Domain.Entities.Meaning
             {
                 Context = "default",
                 Value = "meaning value",
                 Example = "example text"
             };
-
-            DictionaryDataHelper.CreateDictionary(_dictionary);
 
             Response = await GetContributorClient(_userId).PostJson($"/api/dictionaries/{_dictionary.Id}/words/-34/meanings", _meaning);
         }

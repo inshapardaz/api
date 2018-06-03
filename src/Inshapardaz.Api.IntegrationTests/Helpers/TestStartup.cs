@@ -1,6 +1,8 @@
 ﻿using System;
 using Inshapardaz.Domain;
+using Inshapardaz.Ports.Database;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,6 +31,18 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
 
         protected override void ConfigureHangFire(IServiceCollection services)
         {
+        }
+
+        protected override void ConfigureDomain(IServiceCollection services)
+        {
+            base.ConfigureDomain(services);
+            return;
+            var databaseName = Guid.NewGuid().ToString();
+
+            services.AddEntityFrameworkSqlite()
+                    .AddDbContext<DatabaseContext>(options => options.UseInMemoryDatabase(databaseName));
+
+            DatabaseModule.ConfigureDatabase(services, Configuration);
         }
 
         protected override void ConfigureSettings(IServiceCollection services)

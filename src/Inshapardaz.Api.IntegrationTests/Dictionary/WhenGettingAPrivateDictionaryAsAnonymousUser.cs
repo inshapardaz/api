@@ -21,18 +21,17 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
         {
             _dictionary = new Domain.Entities.Dictionary
             {
-                Id = -1,
                 IsPublic = false,
                 Name = "Test1",
                 UserId = Guid.NewGuid(),
                 Downloads = new List<DictionaryDownload>
                 {
-                    new DictionaryDownload {Id = -101, DictionaryId = -1, File = "223323", MimeType = MimeTypes.SqlLite}
+                    new DictionaryDownload { File = "223323", MimeType = MimeTypes.SqlLite}
                 }
             };
-            DictionaryDataHelper.CreateDictionary(_dictionary);
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
 
-            Response = await GetClient().GetAsync("/api/dictionaries/-1");
+            Response = await GetClient().GetAsync($"/api/dictionaries/{_dictionary.Id}");
             _view = JsonConvert.DeserializeObject<DictionaryView>(await Response.Content.ReadAsStringAsync());
         }
 

@@ -13,6 +13,7 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
     {
         private Domain.Entities.Word _word;
         private readonly Guid _userId = Guid.NewGuid();
+
         private Domain.Entities.Meaning _meaning;
 
         [OneTimeSetUp]
@@ -35,15 +36,7 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
                 Example = "example text"
             };
 
-            WordDataHelper.CreateWord(-434, _word);
-
-            Response = await GetContributorClient(_userId).PostJson($"/api/dictionaries/{-2}/words/{_word.Id}/meanings", _meaning);
-        }
-
-        [OneTimeTearDown]
-        public void Teardown()
-        {
-            WordDataHelper.DeleteWord(-434, _word.Id);
+            Response = await GetContributorClient(_userId).PostJson($"/api/dictionaries/{-2313}/words/{_word.Id}/meanings", _meaning);
         }
         
         [Test]

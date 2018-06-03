@@ -19,9 +19,9 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
             return _wordRepository.GetWordById(dictionaryId, wordId, CancellationToken.None).Result;
         }
 
-        public void CreateWord(int dictionaryId, Domain.Entities.Word word)
+        public Domain.Entities.Word CreateWord(int dictionaryId, Domain.Entities.Word word)
         {
-            _wordRepository.AddWord(dictionaryId, word, CancellationToken.None).Wait();
+            return _wordRepository.AddWord(dictionaryId, word, CancellationToken.None).Result;
         }
 
         public void DeleteWord(int dictionaryId, long wordId)

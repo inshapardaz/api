@@ -22,19 +22,18 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
             var userId = Guid.NewGuid();
             _dictionary = new Domain.Entities.Dictionary
             {
-                Id = -1,
                 IsPublic = false,
                 Name = "Test1",
                 UserId = userId,
                 Downloads = new List<DictionaryDownload>
                 {
-                    new DictionaryDownload {Id = -101, DictionaryId = -1, File = "223323", MimeType = MimeTypes.SqlLite},
-                    new DictionaryDownload {Id = -102, DictionaryId = -1, File = "223324", MimeType = MimeTypes.Csv}
+                    new DictionaryDownload { File = "223323", MimeType = MimeTypes.SqlLite },
+                    new DictionaryDownload { File = "223324", MimeType = MimeTypes.Csv }
                 }
             };
-            DictionaryDataHelper.CreateDictionary(_dictionary);
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
 
-            Response = await GetContributorClient(userId).GetAsync("/api/dictionaries/-1");
+            Response = await GetContributorClient(userId).GetAsync($"/api/dictionaries/{_dictionary.Id}");
             _view = JsonConvert.DeserializeObject<DictionaryView>(await Response.Content.ReadAsStringAsync());
         }
 

@@ -20,24 +20,21 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         {
             _dictionary = new Domain.Entities.Dictionary
             {
-                Id = -1,
                 IsPublic = false,
                 UserId = _userId,
                 Name = "Test1"
             };
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
 
-            _wordId = -2;
             var word = new Domain.Entities.Word
             {
-                Id = _wordId,
+                DictionaryId = _dictionary.Id,
                 Title = "abc",
                 TitleWithMovements = "xyz",
                 Language = Languages.Bangali,
                 Pronunciation = "pas",
                 Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
             };
-
-            DictionaryDataHelper.CreateDictionary(_dictionary);
 
             word.Title += "updated";
             word.TitleWithMovements += "updated";

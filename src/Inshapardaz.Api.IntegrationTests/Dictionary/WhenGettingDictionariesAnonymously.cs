@@ -13,14 +13,17 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
     public class WhenGettingDictionariesAnonymously : IntegrationTestBase
     {
         private DictionariesView _view;
+        private Domain.Entities.Dictionary _dictionary1;
+        private Domain.Entities.Dictionary _dictionary2;
+        private Domain.Entities.Dictionary _dictionary3;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
 
-            DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -1, IsPublic = true, Name = "Test1"});
-            DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -2, IsPublic = true, Name = "Test2"});
-            DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -3, IsPublic = false, Name = "Test3", UserId = Guid.NewGuid()});
+            _dictionary1 = DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary { IsPublic = true, Name = "Test1"});
+            _dictionary2 = DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary { IsPublic = true, Name = "Test2"});
+            _dictionary3 = DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary { IsPublic = false, Name = "Test3", UserId = Guid.NewGuid()});
 
             Response = await GetClient().GetAsync("/api/dictionaries");
             _view = JsonConvert.DeserializeObject<DictionariesView>(await Response.Content.ReadAsStringAsync());
@@ -29,9 +32,9 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
         [OneTimeTearDown]
         public void Cleanup()
         {
-            DictionaryDataHelper.DeleteDictionary(-1);
-            DictionaryDataHelper.DeleteDictionary(-2);
-            DictionaryDataHelper.DeleteDictionary(-3);
+            DictionaryDataHelper.DeleteDictionary(_dictionary1.Id);
+            DictionaryDataHelper.DeleteDictionary(_dictionary2.Id);
+            DictionaryDataHelper.DeleteDictionary(_dictionary3.Id);
         }
 
         [Test]

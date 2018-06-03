@@ -12,6 +12,10 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
     public class WhenGettingDictionariesAsLoggedInUser : IntegrationTestBase
     {
         private DictionariesView _view;
+        private Domain.Entities.Dictionary _dictionary1;
+        private Domain.Entities.Dictionary _dictionary2;
+        private Domain.Entities.Dictionary _dictionary3;
+        private Domain.Entities.Dictionary _dictionary4;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -19,10 +23,10 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
             var user1 = Guid.NewGuid();
             var user2 = Guid.NewGuid();
 
-            DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -1, IsPublic = true, Name = "Test1", UserId = user1});
-            DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -2, IsPublic = false, Name = "Test2", UserId = user1});
-            DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -3, IsPublic = false, Name = "Test3", UserId = user2});
-            DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary {Id = -4, IsPublic = true, Name = "Test4", UserId = user2});
+            _dictionary1 = DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary { IsPublic = true, Name = "Test1", UserId = user1 });
+            _dictionary2 = DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary { IsPublic = false, Name = "Test2", UserId = user1 });
+            _dictionary3 = DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary { IsPublic = false, Name = "Test3", UserId = user2 });
+            _dictionary4 = DictionaryDataHelper.CreateDictionary(new Domain.Entities.Dictionary { IsPublic = true, Name = "Test4", UserId = user2 });
 
 
             Response = await GetContributorClient(user1).GetAsync("/api/dictionaries");
@@ -32,10 +36,10 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
         [OneTimeTearDown]
         public void Cleanup()
         {
-            DictionaryDataHelper.DeleteDictionary(-1);
-            DictionaryDataHelper.DeleteDictionary(-2);
-            DictionaryDataHelper.DeleteDictionary(-3);
-            DictionaryDataHelper.DeleteDictionary(-4);
+            DictionaryDataHelper.DeleteDictionary(_dictionary1.Id);
+            DictionaryDataHelper.DeleteDictionary(_dictionary2.Id);
+            DictionaryDataHelper.DeleteDictionary(_dictionary3.Id);
+            DictionaryDataHelper.DeleteDictionary(_dictionary4.Id);
         }
 
         [Test]
@@ -65,25 +69,25 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
         [Test]
         public void ShouldReturnUsersPublicDictionary()
         {
-            _view.Items.ShouldContain(d => d.Id == -1);
+            _view.Items.ShouldContain(d => d.Id == _dictionary1.Id);
         }
 
         [Test]
         public void ShouldReturnUsersPrivateDictionary()
         {
-            _view.Items.ShouldContain(d => d.Id == -2);
+            _view.Items.ShouldContain(d => d.Id == _dictionary2.Id);
         }
 
         [Test]
         public void ShouldNotReturnOtherUsersPrivateDictionary()
         {
-            _view.Items.ShouldNotContain(d => d.Id == -3);
+            _view.Items.ShouldNotContain(d => d.Id == _dictionary3.Id);
         }
 
         [Test]
         public void ShouldReturnOtherUsersPublicDictionary()
         {
-            _view.Items.ShouldContain(d => d.Id == -4);
+            _view.Items.ShouldContain(d => d.Id == _dictionary4.Id);
         }
     }
 }

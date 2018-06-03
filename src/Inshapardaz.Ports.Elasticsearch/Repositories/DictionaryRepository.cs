@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Repositories;
+using Nest;
 
 namespace Inshapardaz.Ports.Elasticsearch.Repositories
 {
@@ -22,8 +24,8 @@ namespace Inshapardaz.Ports.Elasticsearch.Repositories
         {
             var client = _clientProvider.GetClient();
 
-            var count = await client.CountAsync<Dictionary<,>>(s => s.Index(Indexes.Dictionaries), cancellationToken);
-            dictionary.Id = (int)count.Count + 1;
+            var count = await client.CountAsync<Dictionary>(s => s.Index(Indexes.Dictionaries), cancellationToken);
+            dictionary.Id = (int) (count.Count + 1);
 
             await client.IndexAsync(dictionary, i => i
                                                              .Index(Indexes.Dictionaries)
@@ -36,34 +38,80 @@ namespace Inshapardaz.Ports.Elasticsearch.Repositories
             return dictionary;
         }
 
-        public Task<Dictionary> UpdateDictionary(int dictionaryId, Dictionary dictionary, CancellationToken cancellationToken)
+        public async Task UpdateDictionary(int dictionaryId, Dictionary dictionary, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var client = _clientProvider.GetClient();
+            await client.UpdateAsync(DocumentPath<Dictionary>.Id(dictionaryId),
+                                     u => u
+                                          .Index(Indexes.Dictionaries)
+                                          .Type(DocumentTypes.Dictionary)
+                                          .DocAsUpsert()
+                                          .Doc(dictionary), cancellationToken);
         }
 
-        public Task<Dictionary> DeleteDictionary(int dictionaryId, CancellationToken cancellationToken)
+        public async Task DeleteDictionary(int dictionaryId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var client = _clientProvider.GetClient();
+            await client.DeleteAsync<Dictionary>(dictionaryId,
+                                                 i => i
+                                                      .Index(Indexes.Dictionaries)
+                                                      .Type(DocumentTypes.Dictionary),
+                                                 cancellationToken);
+
+            var index = _indexProvider.GetIndexForDictionary(dictionaryId);
+            await client.DeleteIndexAsync(index, cancellationToken: cancellationToken);
         }
 
-        public Task<IEnumerable<Dictionary>> GetAllDictionaries(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Dictionary>> GetAllDictionaries(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var client = _clientProvider.GetClient();
+            var response = await client.SearchAsync<Dictionary>(s => s
+                                                                     .Index(Indexes.Dictionaries)
+                                                                     .Size(100)
+                                                                     .Query(q => q), cancellationToken);
+            return response.Documents;
         }
 
-        public Task<IEnumerable<Dictionary>> GetPublicDictionaries(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Dictionary>> GetPublicDictionaries(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var client = _clientProvider.GetClient();
+            var response = await client.SearchAsync<Dictionary>(s => s
+                                                                 .Index(Indexes.Dictionaries)
+                                                                 .Size(100)
+                                                                 .Query(q => q
+                                                                                 .Term(p => p.IsPublic, true)
+                                                                 ), cancellationToken);
+            return response.Documents;
         }
 
-        public Task<IEnumerable<Dictionary>> GetAllDictionariesForUser(Guid userId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Dictionary>> GetAllDictionariesForUser(Guid userId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var client = _clientProvider.GetClient();
+            var response = await client.SearchAsync<Dictionary>(s => s
+                                                                 .Index(Indexes.Dictionaries)
+                                                                 .Size(100)
+                                                                 .Query(q => q.Term(p => p.UserId, userId)
+                                                                 ), cancellationToken);
+
+            return response.Documents;
         }
 
-        public Task<Dictionary> GetDictionaryById(int dictionaryId, CancellationToken cancellationToken)
+        public async Task<Dictionary> GetDictionaryById(int dictionaryId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var client = _clientProvider.GetClient();
+
+            ISearchResponse<Dictionary> response =
+                await client.SearchAsync<Dictionary>(s => s
+                                                          .Index(Indexes.Dictionaries)
+                                                          .Size(1)
+                                                          .Query(q => q
+                                                                     .Bool(b => b
+                                                                               .Must(m => m
+                                                                                         .Term(term => term.Field(f => f.Id).Value(dictionaryId)))
+                                                                     )), cancellationToken);
+
+            return response.Documents.SingleOrDefault();
+
         }
     }
 }

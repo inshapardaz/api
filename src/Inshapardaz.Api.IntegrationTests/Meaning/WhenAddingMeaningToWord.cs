@@ -24,15 +24,15 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         {
             _dictionary = new Domain.Entities.Dictionary
             {
-                Id = -1,
                 IsPublic = false,
                 UserId = _userId,
                 Name = "Test1"
             };
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
 
             _word = new Domain.Entities.Word
             {
-                Id = -2,
+                DictionaryId = _dictionary.Id,
                 Title = "abc",
                 TitleWithMovements = "xyz",
                 Language = Languages.Bangali,
@@ -40,8 +40,7 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
                 Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
             };
 
-            DictionaryDataHelper.CreateDictionary(_dictionary);
-            WordDataHelper.CreateWord(_dictionary.Id, _word);
+            _word = WordDataHelper.CreateWord(_dictionary.Id, _word);
             
             _meaning = new Domain.Entities.Meaning
             {

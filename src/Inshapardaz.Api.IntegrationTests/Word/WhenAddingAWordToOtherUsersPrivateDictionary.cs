@@ -22,7 +22,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
         {
             _dictionary = new Domain.Entities.Dictionary
             {
-                Id = -1,
                 IsPublic = false,
                 UserId = _userId1,
                 Name = "Test1"
@@ -30,7 +29,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
 
             _word = new WordView
             {
-                Id = -2,
                 Title = "abc",
                 TitleWithMovements = "xyz",
                 LanguageId = (int)Languages.Bangali,
@@ -38,7 +36,7 @@ namespace Inshapardaz.Api.IntegrationTests.Word
                 AttributeValue = (int)GrammaticalType.FealImdadi & (int)GrammaticalType.Male,
             };
 
-            DictionaryDataHelper.CreateDictionary(_dictionary);
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
 
             Response = await GetContributorClient(_userId2).PostJson($"/api/dictionaries/{_dictionary.Id}/words", _word);
         }

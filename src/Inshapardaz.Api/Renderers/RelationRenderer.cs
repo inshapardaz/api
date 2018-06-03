@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Renderers
             result.SourceWordId = wordId;
             var links = new List<LinkView>
                                {
-                                   _linkRenderer.Render("GetRelationById", RelTypes.Self, new { id = dictionaryId, relationId = source.Id }),
+                                   _linkRenderer.Render("GetRelationById", RelTypes.Self, new { id = dictionaryId, wordId = wordId, relationId = source.Id }),
                                    _linkRenderer.Render("GetWordById", RelTypes.SourceWord, new { id = dictionaryId, wordId = wordId  }),
                                    _linkRenderer.Render("GetWordById", RelTypes.RelatedWord, new { id = dictionaryId, wordId = source.RelatedWordId })
                                };

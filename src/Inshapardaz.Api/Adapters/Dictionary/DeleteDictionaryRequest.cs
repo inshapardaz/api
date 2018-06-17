@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _logger = logger;
         }
 
-        [DictionaryRequestValidation(1, HandlerTiming.Before)]
+        [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteDictionaryRequest> HandleAsync(DeleteDictionaryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             await _commandProcessor.SendAsync(new DeleteDictionaryCommand (command.DictionaryId), cancellationToken: cancellationToken);

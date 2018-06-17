@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _relationRender = relationRender;
         }
 
-        [DictionaryRequestValidation(1, HandlerTiming.Before)]
+        [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostRelationshipRequest> HandleAsync(PostRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var sourceWord = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery(command.DictionaryId, command.WordId), cancellationToken);

@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _meaningRenderer = meaningRenderer;
         }
 
-        [DictionaryRequestValidation(1, HandlerTiming.Before)]
+        [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostMeaningRequest> HandleAsync(PostMeaningRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var word = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery(command.DictionaryId, command.WordId), cancellationToken);

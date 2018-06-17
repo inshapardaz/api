@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _queryProcessor = queryProcessor;
         }
 
-        [DictionaryRequestValidation(1, HandlerTiming.Before)]
+        [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteRelationshipRequest> HandleAsync(DeleteRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.DictionaryId, command.WordId, command.RelationshipId), cancellationToken);

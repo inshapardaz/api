@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             _translationRenderer = translationRenderer;
         }
 
-        [DictionaryRequestValidation(1, HandlerTiming.Before)]
+        [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PostTranslationRequest> HandleAsync(PostTranslationRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var word = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery(command.DictionaryId, command.WordId), cancellationToken);

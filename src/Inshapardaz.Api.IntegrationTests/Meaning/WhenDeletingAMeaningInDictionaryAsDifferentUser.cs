@@ -8,7 +8,7 @@ using Shouldly;
 namespace Inshapardaz.Api.IntegrationTests.Meaning
 {
     [TestFixture]
-    public class WhenDeletingAMeaningInDictionary : IntegrationTestBase
+    public class WhenDeletingAMeaningInDictionaryAsDifferentUser : IntegrationTestBase
     {
         private Domain.Entities.Meaning _meaning;
         private Domain.Entities.Dictionary _dictionary;
@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         {
             _dictionary = new Domain.Entities.Dictionary
             {
-                IsPublic = false,
+                IsPublic = true,
                 UserId = _userId,
                 Name = "Test1"
             };
@@ -35,7 +35,6 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
                 Pronunciation = "pas",
                 Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
             };
-
             word = WordDataHelper.CreateWord(_dictionary.Id, word);
             _wordId = word.Id;
 
@@ -50,7 +49,7 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
 
             _meaningId = meaning.Id;
 
-            Response = await GetContributorClient(_userId).DeleteAsync($"api/dictionaries/{_dictionary.Id}/words/{_wordId}/meanings/{_meaningId}");
+            Response = await GetContributorClient(Guid.NewGuid()).DeleteAsync($"api/dictionaries/{_dictionary.Id}/words/{_wordId}/meanings/{_meaningId}");
 
             _meaning = MeaningDataHelper.GetMeaning(_dictionary.Id, word.Id, _meaningId);
         }
@@ -64,15 +63,15 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         }
 
         [Test]
-        public void ShouldReturnNoContent()
+        public void ShouldReturnUnauthorised()
         {
-            Response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+            Response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         }
 
         [Test]
-        public void ShouldHaveDeletedTheWord()
+        public void ShouldnotHaveDeletedTheWord()
         {
-            _meaning.ShouldBeNull();
+            _meaning.ShouldNotBeNull();
         }
     }
 }

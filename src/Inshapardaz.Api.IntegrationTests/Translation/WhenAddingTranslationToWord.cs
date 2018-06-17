@@ -8,15 +8,15 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Meaning
+namespace Inshapardaz.Api.IntegrationTests.Translation
 {
     [TestFixture]
-    public class WhenAddingMeaningToWord : IntegrationTestBase
+    public class WhenAddingTranslationToWord : IntegrationTestBase
     {
-        private MeaningView _view;
+        private TranslationView _view;
         private Domain.Entities.Dictionary _dictionary;
         private Domain.Entities.Word _word;
-        private MeaningView _meaning;
+        private TranslationView _translation;
         private readonly Guid _userId = Guid.NewGuid();
 
         [OneTimeSetUp]
@@ -42,14 +42,14 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
 
             _word = WordDataHelper.CreateWord(_dictionary.Id, _word);
             
-            _meaning = new MeaningView
+            _translation = new TranslationView
             {
-                Context = "default",
+                LanguageId = (int)Languages.Hindi,
                 Value = "meaning value",
-                Example = "example text"
+                IsTranspiling = true
             };
-            Response = await GetContributorClient(_userId).PostJson($"/api/dictionaries/{_dictionary.Id}/words/{_word.Id}/meanings", _meaning);
-            _view = JsonConvert.DeserializeObject<MeaningView>(await Response.Content.ReadAsStringAsync());
+            Response = await GetContributorClient(_userId).PostJson($"/api/dictionaries/{_dictionary.Id}/words/{_word.Id}/translations", _translation);
+            _view = JsonConvert.DeserializeObject<TranslationView>(await Response.Content.ReadAsStringAsync());
         }
 
         [OneTimeTearDown]
@@ -96,11 +96,11 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         }
         
         [Test]
-        public void ShouldReturnCorrectTranslationData()
+        public void ShouldReturnCorrectMeaningData()
         {
-            _view.Context.ShouldBe(_meaning.Context);
-            _view.Example.ShouldBe(_meaning.Example);
-            _view.Value.ShouldBe(_meaning.Value);
+            _view.LanguageId.ShouldBe(_translation.LanguageId);
+            _view.IsTranspiling.ShouldBe(_translation.IsTranspiling);
+            _view.Value.ShouldBe(_translation.Value);
         }
     }
 }

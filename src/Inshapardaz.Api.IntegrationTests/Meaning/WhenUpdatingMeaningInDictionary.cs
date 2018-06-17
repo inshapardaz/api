@@ -11,10 +11,12 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
     [TestFixture]
     public class WhenUpdatingMeaningInDictionary : IntegrationTestBase
     {
-        private Domain.Entities.Word _updatedWord;
+        private Domain.Entities.Meaning _meaning;
         private Domain.Entities.Dictionary _dictionary;
-        private Domain.Entities.Word _word;
         private readonly Guid _userId = Guid.NewGuid();
+        private long _wordId;
+        private long _meaningId;
+        private Domain.Entities.Meaning _oldMeaning;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,7 +29,7 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
             };
             _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
 
-            _word = new Domain.Entities.Word
+            var word = new Domain.Entities.Word
             {
                 Title = "abc",
                 TitleWithMovements = "xyz",
@@ -36,24 +38,32 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
                 Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
             };
 
-            _word = WordDataHelper.CreateWord(_dictionary.Id, _word);
+            word = WordDataHelper.CreateWord(_dictionary.Id, word);
+            _wordId = word.Id;
 
-            _word.Title += "updated";
-            _word.TitleWithMovements += "updated";
-            _word.Language = Languages.Pali;
-            _word.Attributes = GrammaticalType.HarfSoot;
-            _word.Description += "updated";
-            _word.Pronunciation += "updated";
-            
-            Response = await GetContributorClient(_userId).PutJson($"/api/dictionaries/{_dictionary.Id}/words/{_word.Id}", _word.Map());
+            _oldMeaning = new Domain.Entities.Meaning
+            {
+                Context = "default",
+                Value = "meaning value",
+                Example = "example text"
+            };
 
-            _updatedWord = WordDataHelper.GetWord(_dictionary.Id, _word.Id);
+            _oldMeaning = MeaningDataHelper.CreateMeaning(_dictionary.Id, _wordId, _oldMeaning);
+
+            _meaningId = _oldMeaning.Id;
+
+            _oldMeaning.Value = "New Meaning";
+
+            Response = await GetContributorClient(_userId).PutJson($"api/dictionaries/{_dictionary.Id}/words/{_wordId}/meanings/{_meaningId}", _oldMeaning.Map());
+
+            _meaning = MeaningDataHelper.GetMeaning(_dictionary.Id, word.Id, _meaningId);
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
-            WordDataHelper.DeleteWord(_dictionary.Id, _word.Id);
+            MeaningDataHelper.DeleteMeaning(_dictionary.Id, _wordId, _meaningId);
+            WordDataHelper.DeleteWord(_dictionary.Id, _wordId);
             DictionaryDataHelper.DeleteDictionary(_dictionary.Id);
         }
 
@@ -64,14 +74,11 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         }
 
         [Test]
-        public void ShouldUpdateTheWord()
+        public void ShouldHaveUpdateTheMeaning()
         {
-            _updatedWord.Title.ShouldBe(_word.Title);
-            _updatedWord.TitleWithMovements.ShouldBe(_word.TitleWithMovements);
-            _updatedWord.Pronunciation.ShouldBe(_word.Pronunciation);
-            _updatedWord.Description.ShouldBe(_word.Description);
-            _updatedWord.Language.ShouldBe(_word.Language);
-            _updatedWord.Attributes.ShouldBe(_word.Attributes);
+            _meaning.Value.ShouldBe(_oldMeaning.Value);
+            _meaning.Context.ShouldBe(_oldMeaning.Context);
+            _meaning.Example.ShouldBe(_oldMeaning.Example);
         }
     }
 }

@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Inshapardaz.Api.IntegrationTests.Helpers;
 using Inshapardaz.Domain.Entities;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Meaning
+namespace Inshapardaz.Api.IntegrationTests.Translation
 {
     [TestFixture]
-    public class WhenDeletingAMeaningInDictionary : IntegrationTestBase
+    public class WhenUpdatingATranslationInDictionary : IntegrationTestBase
     {
-        private Domain.Entities.Meaning _meaning;
+        private Domain.Entities.Translation _translation;
         private Domain.Entities.Dictionary _dictionary;
         private readonly Guid _userId = Guid.NewGuid();
         private long _wordId;
-        private long _meaningId;
+        private long _translationId;
+        private Domain.Entities.Translation _oldTranslation;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -39,26 +41,28 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
             word = WordDataHelper.CreateWord(_dictionary.Id, word);
             _wordId = word.Id;
 
-            var meaning = new Domain.Entities.Meaning
+            _oldTranslation = new Domain.Entities.Translation
             {
-                Context = "default",
-                Value = "meaning value",
-                Example = "example text"
+                IsTrasnpiling = true,
+                Value = "translation value",
+                Language = Languages.English
             };
 
-            meaning = MeaningDataHelper.CreateMeaning(_dictionary.Id, _wordId, meaning);
+            _oldTranslation = TranslationDataHelper.CreateTranslation(_dictionary.Id, _wordId, _oldTranslation);
 
-            _meaningId = meaning.Id;
+            _translationId = _oldTranslation.Id;
 
-            Response = await GetContributorClient(_userId).DeleteAsync($"api/dictionaries/{_dictionary.Id}/words/{_wordId}/meanings/{_meaningId}");
+            _oldTranslation.Language = Languages.German;
 
-            _meaning = MeaningDataHelper.GetMeaning(_dictionary.Id, word.Id, _meaningId);
+            Response = await GetContributorClient(_userId).PutJson($"api/dictionaries/{_dictionary.Id}/words/{_wordId}/translations/{_translationId}", _oldTranslation.Map());
+
+            _translation = TranslationDataHelper.GetTranslation(_dictionary.Id, word.Id, _translationId);
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
-            MeaningDataHelper.DeleteMeaning(_dictionary.Id, _wordId, _meaningId);
+            TranslationDataHelper.DeleteTranslation(_dictionary.Id, _wordId, _translationId);
             WordDataHelper.DeleteWord(_dictionary.Id, _wordId);
             DictionaryDataHelper.DeleteDictionary(_dictionary.Id);
         }
@@ -70,9 +74,11 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         }
 
         [Test]
-        public void ShouldHaveDeletedTheWord()
+        public void ShouldHaveUpdateTheTranslation()
         {
-            _meaning.ShouldBeNull();
+            _translation.Language.ShouldBe(_oldTranslation.Language);
+            _translation.Value.ShouldBe(_oldTranslation.Value);
+            _translation.IsTrasnpiling.ShouldBe(_oldTranslation.IsTrasnpiling);
         }
     }
 }

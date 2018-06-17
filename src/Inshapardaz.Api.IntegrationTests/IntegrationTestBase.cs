@@ -33,6 +33,8 @@ namespace Inshapardaz.Api.IntegrationTests
 
         protected DictionaryDataHelpers DictionaryDataHelper => new DictionaryDataHelpers(TestServer.Host.Services.GetService<IDictionaryRepository>());
         protected WordDataHelper WordDataHelper => new WordDataHelper(TestServer.Host.Services.GetService<IWordRepository>());
+        protected MeaningDataHelper MeaningDataHelper => new MeaningDataHelper(TestServer.Host.Services.GetService<IMeaningRepository>());
+        protected TranslationDataHelper TranslationDataHelper => new TranslationDataHelper(TestServer.Host.Services.GetService<ITranslationRepository>());
 
         protected HttpResponseMessage Response;
 

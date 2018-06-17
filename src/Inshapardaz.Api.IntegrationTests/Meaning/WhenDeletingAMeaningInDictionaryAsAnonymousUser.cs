@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
@@ -8,13 +10,13 @@ using Shouldly;
 namespace Inshapardaz.Api.IntegrationTests.Meaning
 {
     [TestFixture]
-    public class WhenDeletingAWordInPrivateDictionaryOfOtherUser : IntegrationTestBase
+    public class WhenDeletingAMeaningInDictionaryAsAnonymousUser : IntegrationTestBase
     {
-        private Domain.Entities.Word _word;
+        private Domain.Entities.Meaning _meaning;
         private Domain.Entities.Dictionary _dictionary;
-        private readonly Guid _userId1 = Guid.NewGuid();
-        private readonly Guid _userId2 = Guid.NewGuid();
-        private int _wordId;
+        private readonly Guid _userId = Guid.NewGuid();
+        private long _wordId;
+        private long _meaningId;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -22,38 +24,42 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
             _dictionary = new Domain.Entities.Dictionary
             {
                 IsPublic = false,
-                UserId = _userId1,
+                UserId = _userId,
                 Name = "Test1"
             };
             _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
 
             var word = new Domain.Entities.Word
             {
-                DictionaryId = _dictionary.Id,
                 Title = "abc",
                 TitleWithMovements = "xyz",
                 Language = Languages.Bangali,
                 Pronunciation = "pas",
                 Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
             };
-
             word = WordDataHelper.CreateWord(_dictionary.Id, word);
+            _wordId = word.Id;
 
-            word.Title += "updated";
-            word.TitleWithMovements += "updated";
-            word.Language = Languages.Pali;
-            word.Attributes = GrammaticalType.HarfSoot;
-            word.Description += "updated";
-            word.Pronunciation += "updated";
+            var meaning = new Domain.Entities.Meaning
+            {
+                Context = "default",
+                Value = "meaning value",
+                Example = "example text"
+            };
 
-            Response = await GetContributorClient(_userId2).DeleteAsync($"/api/dictionaries/{_dictionary.Id}/words/{word.Id}");
+            meaning = MeaningDataHelper.CreateMeaning(_dictionary.Id, _wordId, meaning);
 
-            _word = WordDataHelper.GetWord(_dictionary.Id, word.Id);
+            _meaningId = meaning.Id;
+
+            Response = await GetContributorClient(Guid.Empty).DeleteAsync($"api/dictionaries/{_dictionary.Id}/words/{_wordId}/meanings/{_meaningId}");
+
+            _meaning = MeaningDataHelper.GetMeaning(_dictionary.Id, word.Id, _meaningId);
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
+            MeaningDataHelper.DeleteMeaning(_dictionary.Id, _wordId, _meaningId);
             WordDataHelper.DeleteWord(_dictionary.Id, _wordId);
             DictionaryDataHelper.DeleteDictionary(_dictionary.Id);
         }
@@ -65,9 +71,9 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         }
 
         [Test]
-        public void ShouldNotHaveDeletedTheWord()
+        public void ShouldnotHaveDeletedTheWord()
         {
-            _word.ShouldNotBeNull();
+            _meaning.ShouldNotBeNull();
         }
     }
 }

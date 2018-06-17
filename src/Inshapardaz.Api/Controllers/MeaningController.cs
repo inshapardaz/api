@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.Controllers
             return Created(request.Result.Location, request.Result.Response);
         }
 
-        [HttpPut("api/dictionaries/{id}/words{wordId}/meanings/{meaningId}", Name = "UpdateMeaning")]
+        [HttpPut("api/dictionaries/{id}/words/{wordId}/meanings/{meaningId}", Name = "UpdateMeaning")]
         [ValidateModel]
         public async Task<IActionResult> Put(int id, long wordId, int meaningId, [FromBody]MeaningView meaning)
         {
@@ -71,7 +71,7 @@ namespace Inshapardaz.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("api/dictionaries/{id}/words{wordId}/meanings/{meaningId}", Name = "DeleteMeaning")]
+        [HttpDelete("api/dictionaries/{id}/words/{wordId}/meanings/{meaningId}", Name = "DeleteMeaning")]
         public async Task<IActionResult> Delete(int id, int wordId, int meaningId)
         {
             var request = new DeleteMeaningRequest(id, wordId, meaningId);

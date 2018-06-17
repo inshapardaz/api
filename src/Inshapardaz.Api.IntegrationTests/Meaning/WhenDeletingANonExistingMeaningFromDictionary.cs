@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using Inshapardaz.Api.IntegrationTests.Helpers;
 using Inshapardaz.Domain.Entities;
 using NUnit.Framework;
 using Shouldly;
@@ -9,12 +8,13 @@ using Shouldly;
 namespace Inshapardaz.Api.IntegrationTests.Meaning
 {
     [TestFixture]
-    public class WhenUpdatingANonExistingWordInDictionary : IntegrationTestBase
+    public class WhenDeletingANonExistingMeaningFromDictionary : IntegrationTestBase
     {
-        private Domain.Entities.Word _updatedWord;
-        private Domain.Entities.Dictionary _dictionary;
         private Domain.Entities.Word _word;
+        private Domain.Entities.Dictionary _dictionary;
         private readonly Guid _userId = Guid.NewGuid();
+        private long _wordId;
+        private long _meaningId;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
             };
             _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
 
-            _word = new Domain.Entities.Word
+            var word = new Domain.Entities.Word
             {
                 Title = "abc",
                 TitleWithMovements = "xyz",
@@ -35,27 +35,25 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
                 Pronunciation = "pas",
                 Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
             };
+            _word = WordDataHelper.CreateWord(_dictionary.Id, word);
+            _wordId = _word.Id;
 
-            _word.Title += "updated";
-            _word.TitleWithMovements += "updated";
-            _word.Language = Languages.Pali;
-            _word.Attributes = GrammaticalType.HarfSoot;
-            _word.Description += "updated";
-            _word.Pronunciation += "updated";
+            _meaningId = -1234456;
 
-            Response = await GetContributorClient(_userId).PutJson($"/api/dictionaries/{_dictionary.Id}/words/{_word.Id}", _word.Map());
+            Response = await GetContributorClient(_userId).DeleteAsync($"api/dictionaries/{_dictionary.Id}/words/{_wordId}/meanings/{_meaningId}");
 
-            _updatedWord = WordDataHelper.GetWord(_dictionary.Id, _word.Id);
+            _word = WordDataHelper.GetWord(_dictionary.Id, word.Id);
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
+            WordDataHelper.DeleteWord(_dictionary.Id, _wordId);
             DictionaryDataHelper.DeleteDictionary(_dictionary.Id);
         }
 
         [Test]
-        public void ShouldReturnBadRequrest()
+        public void ShouldReturnBadRequest()
         {
             Response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }

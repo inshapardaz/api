@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Inshapardaz.Api.IntegrationTests.Helpers;
 using Inshapardaz.Domain.Entities;
 using NUnit.Framework;
 using Shouldly;
@@ -8,20 +9,21 @@ using Shouldly;
 namespace Inshapardaz.Api.IntegrationTests.Meaning
 {
     [TestFixture]
-    public class WhenDeletingAMeaningInDictionary : IntegrationTestBase
+    public class WhenUpdatingAMeaningInDictionaryAsAnonymousUser : IntegrationTestBase
     {
-        private Domain.Entities.Meaning _meaning;
+        private Domain.Entities.Meaning _translation;
         private Domain.Entities.Dictionary _dictionary;
         private readonly Guid _userId = Guid.NewGuid();
         private long _wordId;
         private long _meaningId;
+        private Domain.Entities.Meaning _oldMeaning;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _dictionary = new Domain.Entities.Dictionary
             {
-                IsPublic = false,
+                IsPublic = true,
                 UserId = _userId,
                 Name = "Test1"
             };
@@ -39,20 +41,22 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
             word = WordDataHelper.CreateWord(_dictionary.Id, word);
             _wordId = word.Id;
 
-            var meaning = new Domain.Entities.Meaning
+            _oldMeaning = new Domain.Entities.Meaning
             {
                 Context = "default",
                 Value = "meaning value",
                 Example = "example text"
             };
 
-            meaning = MeaningDataHelper.CreateMeaning(_dictionary.Id, _wordId, meaning);
+            _oldMeaning = MeaningDataHelper.CreateMeaning(_dictionary.Id, _wordId, _oldMeaning);
 
-            _meaningId = meaning.Id;
+            _meaningId = _oldMeaning.Id;
 
-            Response = await GetContributorClient(_userId).DeleteAsync($"api/dictionaries/{_dictionary.Id}/words/{_wordId}/meanings/{_meaningId}");
+            _oldMeaning.Example = "Some new example";
 
-            _meaning = MeaningDataHelper.GetMeaning(_dictionary.Id, word.Id, _meaningId);
+            Response = await GetContributorClient(Guid.Empty).PutJson($"api/dictionaries/{_dictionary.Id}/words/{_wordId}/meanings/{_meaningId}", _oldMeaning.Map());
+
+            _translation = MeaningDataHelper.GetMeaning(_dictionary.Id, word.Id, _meaningId);
         }
 
         [OneTimeTearDown]
@@ -64,15 +68,17 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
         }
 
         [Test]
-        public void ShouldReturnNoContent()
+        public void ShouldReturnUnauthorised()
         {
-            Response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+            Response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         }
 
         [Test]
-        public void ShouldHaveDeletedTheWord()
+        public void ShouldNotHaveUpdateTheMeaning()
         {
-            _meaning.ShouldBeNull();
+            _translation.Context.ShouldBe(_oldMeaning.Context);
+            _translation.Value.ShouldBe(_oldMeaning.Value);
+            _translation.Example.ShouldNotBe(_oldMeaning.Example);
         }
     }
 }

@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary
         [Test]
         public void ShouldReturnPublicDictionaries()
         {
-            _view.Items.Count().ShouldBe(2);
+            _view.Items.Count().ShouldBeGreaterThanOrEqualTo(2);
             _view.Items.ShouldAllBe(d => d.IsPublic);
         }
 

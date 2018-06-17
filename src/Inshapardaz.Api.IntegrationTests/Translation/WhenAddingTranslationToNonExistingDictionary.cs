@@ -6,13 +6,15 @@ using Inshapardaz.Domain.Entities;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Meaning
+namespace Inshapardaz.Api.IntegrationTests.Translation
 {
     [TestFixture]
-    public class WhenUpdatingAWordInNonExistingDictionary : IntegrationTestBase
+    public class WhenAddingTranslationToNonExistingDictionary : IntegrationTestBase
     {
         private Domain.Entities.Word _word;
         private readonly Guid _userId = Guid.NewGuid();
+
+        private Domain.Entities.Translation _translation;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,16 +29,16 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
                 Attributes = GrammaticalType.FealImdadi & GrammaticalType.Male,
             };
 
-            _word.Title += "updated";
-            _word.TitleWithMovements += "updated";
-            _word.Language = Languages.Pali;
-            _word.Attributes = GrammaticalType.HarfSoot;
-            _word.Description += "updated";
-            _word.Pronunciation += "updated";
+            _translation = new Domain.Entities.Translation
+            {
+                Language = Languages.French,
+                Value = "meaning value",
+                IsTrasnpiling = true
+            };
 
-            Response = await GetContributorClient(_userId).PutJson($"/api/dictionaries/{-243243}/words/{_word.Id}", _word.Map());
+            Response = await GetContributorClient(_userId).PostJson($"/api/dictionaries/{-2313}/words/{_word.Id}/translations", _translation);
         }
-
+        
         [Test]
         public void ShouldReturnBadRequest()
         {

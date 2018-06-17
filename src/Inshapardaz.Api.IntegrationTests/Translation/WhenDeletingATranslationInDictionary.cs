@@ -5,15 +5,16 @@ using Inshapardaz.Domain.Entities;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Meaning
+namespace Inshapardaz.Api.IntegrationTests.Translation
 {
     [TestFixture]
-    public class WhenDeletingAWordInDictionaryAsAnonymousUser : IntegrationTestBase
+    public class WhenDeletingATranslationInDictionary : IntegrationTestBase
     {
-        private Domain.Entities.Word _word;
+        private Domain.Entities.Translation _translation;
         private Domain.Entities.Dictionary _dictionary;
         private readonly Guid _userId = Guid.NewGuid();
-        private int _wordId;
+        private long _wordId;
+        private long _translationId;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -28,7 +29,6 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
 
             var word = new Domain.Entities.Word
             {
-                DictionaryId = _dictionary.Id,
                 Title = "abc",
                 TitleWithMovements = "xyz",
                 Language = Languages.Bangali,
@@ -37,36 +37,42 @@ namespace Inshapardaz.Api.IntegrationTests.Meaning
             };
 
             word = WordDataHelper.CreateWord(_dictionary.Id, word);
+            _wordId = word.Id;
 
-            word.Title += "updated";
-            word.TitleWithMovements += "updated";
-            word.Language = Languages.Pali;
-            word.Attributes = GrammaticalType.HarfSoot;
-            word.Description += "updated";
-            word.Pronunciation += "updated";
+            var translation = new Domain.Entities.Translation
+            {
+                IsTrasnpiling = true,
+                Value = "translation value",
+                Language = Languages.English
+            };
 
-            Response = await GetClient().DeleteAsync($"/api/dictionaries/{_dictionary.Id}/words/{word.Id}");
+            translation = TranslationDataHelper.CreateTranslation(_dictionary.Id, _wordId, translation);
 
-            _word = WordDataHelper.GetWord(_dictionary.Id, word.Id);
+            _translationId = translation.Id;
+
+            Response = await GetContributorClient(_userId).DeleteAsync($"api/dictionaries/{_dictionary.Id}/words/{_wordId}/translations/{_translationId}");
+
+            _translation = TranslationDataHelper.GetTranslation(_dictionary.Id, word.Id, _translationId);
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
+            TranslationDataHelper.DeleteTranslation(_dictionary.Id, _wordId, _translationId);
             WordDataHelper.DeleteWord(_dictionary.Id, _wordId);
             DictionaryDataHelper.DeleteDictionary(_dictionary.Id);
         }
 
         [Test]
-        public void ShouldReturnUnauthorised()
+        public void ShouldReturnNoContent()
         {
-            Response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+            Response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         }
 
         [Test]
-        public void ShouldNotHaveDeletedTheWord()
+        public void ShouldHaveDeletedTheTranslation()
         {
-            _word.ShouldNotBeNull();
+            _translation.ShouldBeNull();
         }
     }
 }

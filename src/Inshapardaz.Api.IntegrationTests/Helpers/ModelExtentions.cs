@@ -22,5 +22,30 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
                 Description = word.Description
             };
         }
+
+        public static MeaningView Map(this Domain.Entities.Meaning meaning)
+        {
+            return new MeaningView
+            {
+                Id = meaning.Id,
+                Context = meaning.Context,
+                Value = meaning.Value,
+                Example = meaning.Example,
+                WordId = meaning.WordId
+            };
+        }
+
+        public static TranslationView Map(this Domain.Entities.Translation translation)
+        {
+            return new TranslationView
+            {
+                Id = translation.Id,
+                Language = translation.Language.ToString(),
+                LanguageId = (int)translation.Language,
+                Value = translation.Value,
+                IsTranspiling = translation.IsTrasnpiling,
+                WordId = translation.WordId
+            };
+        }
     }
 }

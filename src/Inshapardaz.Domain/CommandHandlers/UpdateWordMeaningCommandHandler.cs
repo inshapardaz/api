@@ -34,7 +34,7 @@ namespace Inshapardaz.Domain.CommandHandlers
                 throw new NotFoundException();
             }
 
-            await _meaningRepository.UpdateMeaning(command.DictionaryId, command.WordId, meaning, cancellationToken);
+            await _meaningRepository.UpdateMeaning(command.DictionaryId, command.WordId, command.Meaning, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

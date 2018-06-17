@@ -9,7 +9,7 @@ using Shouldly;
 
 namespace Inshapardaz.Api.IntegrationTests.Word
 {
-    [TestFixture, Ignore("Security not implemented completely")]
+    [TestFixture]
     public class WhenGettingWordFromDictionaryAsDifferentUser : IntegrationTestBase
     {
         private WordView _view;
@@ -23,7 +23,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
         {
             _dictionary = new Domain.Entities.Dictionary
             {
-                Id = -1,
                 IsPublic = true,
                 UserId = _userId1,
                 Name = "Test1"
@@ -31,7 +30,6 @@ namespace Inshapardaz.Api.IntegrationTests.Word
 
             _word = new Domain.Entities.Word
             {
-                Id = -2,
                 Title = "abc",
                 TitleWithMovements = "xyz",
                 Language = Languages.Bangali,
@@ -40,8 +38,8 @@ namespace Inshapardaz.Api.IntegrationTests.Word
                 DictionaryId = _dictionary.Id
             };
 
-            DictionaryDataHelper.CreateDictionary(_dictionary);
-            WordDataHelper.CreateWord(_dictionary.Id, _word);
+            _dictionary = DictionaryDataHelper.CreateDictionary(_dictionary);
+            _word = WordDataHelper.CreateWord(_dictionary.Id, _word);
 
             Response = await GetReaderClient(_userId2).GetAsync($"/api/dictionaries/{_dictionary.Id}/words/{_word.Id}");
             _view = JsonConvert.DeserializeObject<WordView>(await Response.Content.ReadAsStringAsync());
@@ -102,7 +100,7 @@ namespace Inshapardaz.Api.IntegrationTests.Word
         }
 
         [Test]
-        public void ShouldReturnnotAddMeaningLink()
+        public void ShouldNotReturnAddMeaningLink()
         {
             _view.Links.ShouldNotContain(l => l.Rel == RelTypes.AddMeaning & l.Href != null);
         }

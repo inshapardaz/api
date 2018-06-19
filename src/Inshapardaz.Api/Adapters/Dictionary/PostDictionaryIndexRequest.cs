@@ -9,23 +9,23 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class CreateDictionaryIndexRequest : IRequest
+    public class PostDictionaryIndexRequest : IRequest
     {
         public Guid Id { get; set; }
     }
 
-    public class CreateDictionaryIndexRequestHandler : RequestHandlerAsync<CreateDictionaryIndexRequest>
+    public class PostDictionaryIndexRequestHandler : RequestHandlerAsync<PostDictionaryIndexRequest>
     {
         private readonly IQueryProcessor _queryProcessor;
         private readonly IBackgroundJobClient _jobClient;
 
-        public CreateDictionaryIndexRequestHandler(IQueryProcessor queryProcessor, IBackgroundJobClient jobClient)
+        public PostDictionaryIndexRequestHandler(IQueryProcessor queryProcessor, IBackgroundJobClient jobClient)
         {
             _queryProcessor = queryProcessor;
             _jobClient = jobClient;
         }
         
-        public override async Task<CreateDictionaryIndexRequest> HandleAsync(CreateDictionaryIndexRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<PostDictionaryIndexRequest> HandleAsync(PostDictionaryIndexRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var dictionaries = await _queryProcessor.ExecuteAsync(new GetDictionariesQuery(), cancellationToken);
             foreach (var dictionary in dictionaries)

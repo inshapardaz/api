@@ -68,9 +68,9 @@ namespace Inshapardaz.Api
                 .ForMember(s => s.RelatedWordId, o => o.MapFrom(d => d.RelatedWordId))
                 .ForMember(s => s.RelationType, o => o.MapFrom(d => d.RelationType))
                 .ForMember(s => s.RelationTypeId, o => o.MapFrom(d => (int)d.RelationType))
-                .ForMember(s => s.RelatedWord, o => o.Ignore())
-                .ForMember(s => s.SourceWord, o => o.Ignore())
-                .ForMember(s => s.SourceWordId, o => o.Ignore())
+                .ForMember(s => s.RelatedWord, o => o.MapFrom(d => d.RelatedWord.Title))
+                .ForMember(s => s.SourceWord, o => o.MapFrom(d => d.SourceWord.Title))
+                .ForMember(s => s.SourceWordId, o => o.MapFrom(d => d.SourceWordId))
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ReverseMap()
                 .ForMember(s => s.RelationType, o => o.MapFrom(d => (RelationType)d.RelationTypeId));

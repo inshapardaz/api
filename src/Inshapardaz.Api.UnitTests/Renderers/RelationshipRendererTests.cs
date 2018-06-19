@@ -80,7 +80,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
             [Test]
             public void ShouldRenderSourceWordLink()
             {
-                _result.Links.ShouldContain(l => l.Rel == RelTypes.SourceWord);
+                _result.Links.ShouldContain(l => l.Rel == RelTypes.Word);
             }
 
             [Test]

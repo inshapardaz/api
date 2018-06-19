@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Queries;
 using Paramore.Brighter;
 using Paramore.Darker;
 
@@ -36,39 +42,53 @@ namespace Inshapardaz.Api.Adapters.Dictionary
     {
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
+        private readonly IRenderRelation _relationRender;
+
 
         public PutRelationshipRequestHandler(IAmACommandProcessor commandProcessor, 
-                                           IQueryProcessor queryProcessor)
+                                             IQueryProcessor queryProcessor, 
+                                             IRenderRelation relationRender)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
+            _relationRender = relationRender;
         }
 
         [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<PutRelationshipRequest> HandleAsync(PutRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            //var relation1 = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.DictionaryId, command.Relationship.SourceWordId, command.RelationshipId), cancellationToken);
+            var relation1 = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.DictionaryId, command.Relationship.SourceWordId, command.RelationshipId), cancellationToken);
 
-            //if (relation1 == null)
-            //{
-            //    throw new NotFoundException();
-            //}
+            if (relation1 == null)
+            {
+                throw new NotFoundException();
+            }
 
-            //var relation2 = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.DictionaryId, command.Relationship.SourceWordId), cancellationToken);
+            var sourceWord = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery(command.DictionaryId, command.WordId), cancellationToken);
+            if (sourceWord == null)
+            {
+                throw new NotFoundException();
+            }
 
-            //if (relation2 == null)
-            //{
-            //    throw new BadRequestException();
-            //}
+            var relatedWord = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery(command.DictionaryId, command.Relationship.RelatedWordId), cancellationToken);
+            if (relatedWord == null)
+            {
+                throw new BadRequestException();
+            }
 
-            //var dictionary2 = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery(command.Relationship.RelatedWordId), cancellationToken);
-            //if (dictionary2 == null || dictionary2.Id != command.DictionaryId)
-            //{
-            //    throw new BadRequestException();
-            //}
+            if (sourceWord.DictionaryId != relatedWord.DictionaryId)
+            {
+                throw new BadRequestException();
+            }
 
-            //var updateCommand = new UpdateWordRelationCommand(command.DictionaryId, command.Relationship.Map<RelationshipView, WordRelation>());
-            //await _commandProcessor.SendAsync(updateCommand, cancellationToken: cancellationToken);
+            var wordRelation = command.Relationship.Map<RelationshipView, WordRelation>();
+            var updateCommand = new UpdateWordRelationCommand(command.DictionaryId, wordRelation);
+            await _commandProcessor.SendAsync(updateCommand, cancellationToken: cancellationToken);
+
+            wordRelation.SourceWord = sourceWord;
+            wordRelation.RelatedWord = relatedWord;
+            var response = _relationRender.Render(wordRelation, command.DictionaryId, command.WordId);
+            command.Result.Response = response;
 
             return await base.HandleAsync(command, cancellationToken);
         }

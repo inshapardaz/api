@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(DownloadDictionaryView))]
         public async Task<IActionResult> CreateDownloadForDictionary(int id)
         {
-            var request = new CreateDictionaryDownloadRequest(id);
+            var request = new PostDictionaryDownloadRequest(id);
             await _commandProcessor.SendAsync(request);
 
             return Created(request.Result.Location, request.Result.Response);

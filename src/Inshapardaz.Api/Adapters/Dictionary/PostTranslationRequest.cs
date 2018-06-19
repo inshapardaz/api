@@ -67,7 +67,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             );
             await _commandProcessor.SendAsync(addCommand, cancellationToken: cancellationToken);
 
-            var response = _translationRenderer.Render(addCommand.Translation, command.DictionaryId);
+            var response = _translationRenderer.Render(addCommand.Result, command.DictionaryId);
             command.Result.Location =  response.Links.Single(x => x.Rel == RelTypes.Self).Href;
             command.Result.Response =  response;
             return await base.HandleAsync(command, cancellationToken);

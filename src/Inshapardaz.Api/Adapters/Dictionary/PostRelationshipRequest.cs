@@ -61,11 +61,10 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             var relatedWord = await _queryProcessor.ExecuteAsync(new GetWordByIdQuery(command.DictionaryId, command.Relationship.RelatedWordId), cancellationToken);
             if (relatedWord == null)
             {
-                throw new NotFoundException();
+                throw new BadRequestException();
             }
 
-            var dictionary2 = await _queryProcessor.ExecuteAsync(new DictionaryByWordIdQuery(command.Relationship.RelatedWordId), cancellationToken);
-            if (dictionary2 == null || dictionary2.Id != command.DictionaryId)
+            if (sourceWord.DictionaryId != relatedWord.DictionaryId)
             {
                 throw new BadRequestException();
             }
@@ -78,8 +77,10 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             );
             await _commandProcessor.SendAsync(addCommand, cancellationToken: cancellationToken);
 
-            var newRelationship = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.DictionaryId, command.WordId, command.Relationship.Id), cancellationToken);
-            var response = _relationRender.Render(newRelationship, command.DictionaryId, command.WordId);
+            var result = addCommand.Result;
+            result.SourceWord = sourceWord;
+            result.RelatedWord = relatedWord;
+            var response = _relationRender.Render(result, command.DictionaryId, command.WordId);
             command.Result.Location =  response.Links.Single(x => x.Rel == RelTypes.Self).Href;
             command.Result.Response =  response;
             return await base.HandleAsync(command, cancellationToken);

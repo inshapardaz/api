@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
             _indexWriter.AddWord(command.DictionaryId, addWordCommand.Word);
 
-            command.Result.Response = _wordRenderer.Render(addWordCommand.Word, command.DictionaryId);
+            command.Result.Response = _wordRenderer.Render(addWordCommand.Result, command.DictionaryId);
             command.Result.Location = command.Result.Response.Links.Single(x => x.Rel == RelTypes.Self).Href;
             return await base.HandleAsync(command, cancellationToken);
         }

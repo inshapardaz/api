@@ -47,5 +47,16 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
                 WordId = translation.WordId
             };
         }
+
+        public static RelationshipView Map(this Domain.Entities.WordRelation relation)
+        {
+            return new RelationshipView
+            {
+                Id = relation.Id,
+                SourceWordId = relation.SourceWordId,
+                RelatedWordId = relation.RelatedWordId,
+                RelationTypeId = (int)relation.RelationType
+            };
+        }
     }
 }

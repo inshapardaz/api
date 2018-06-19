@@ -60,7 +60,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
             var addWOrdCommand = new AddMeaningCommand(command.DictionaryId, word.Id, command.Meaning.Map<MeaningView, Meaning>());
             await _commandProcessor.SendAsync(addWOrdCommand, cancellationToken: cancellationToken);
-            var response = _meaningRenderer.Render(addWOrdCommand.Meaning, command.DictionaryId);
+            var response = _meaningRenderer.Render(addWOrdCommand.Result, command.DictionaryId);
             command.Result.Location =  response.Links.Single(x => x.Rel == RelTypes.Self).Href;
             command.Result.Response =  response;
             return await base.HandleAsync(command, cancellationToken);

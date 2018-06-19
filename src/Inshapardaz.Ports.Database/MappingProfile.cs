@@ -72,8 +72,8 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.SourceWord, o => o.Ignore())
                 .ForMember(d => d.SourceWordId, o => o.MapFrom(s => s.SourceWordId))
                 .ReverseMap()
-                .ForMember(d => d.RelatedWord, o => o.Ignore())
-                .ForMember(d => d.SourceWord, o => o.Ignore());
+                .ForMember(d => d.RelatedWord, o => o.MapFrom(s => s.RelatedWord))
+                .ForMember(d => d.SourceWord, o => o.MapFrom(s => s.SourceWord));
         }
     }
 }

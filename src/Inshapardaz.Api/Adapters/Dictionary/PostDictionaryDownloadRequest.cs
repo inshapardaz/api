@@ -11,9 +11,9 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Api.Adapters.Dictionary
 {
-    public class CreateDictionaryDownloadRequest : DictionaryRequest
+    public class PostDictionaryDownloadRequest : DictionaryRequest
     {
-        public CreateDictionaryDownloadRequest(int dictionaryId)
+        public PostDictionaryDownloadRequest(int dictionaryId)
             : base(dictionaryId)
         {
         }
@@ -28,12 +28,12 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         }
     }
 
-    public class CreateDictionaryDownloadRequestHandler : RequestHandlerAsync<CreateDictionaryDownloadRequest>
+    public class PostDictionaryDownloadRequestHandler : RequestHandlerAsync<PostDictionaryDownloadRequest>
     {
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IRenderDictionaryDownload _dictionaryDownloadRenderer;
 
-        public CreateDictionaryDownloadRequestHandler(IAmACommandProcessor commandProcessor,
+        public PostDictionaryDownloadRequestHandler(IAmACommandProcessor commandProcessor,
             IRenderDictionaryDownload dictionaryDownloadRenderer)
         {
             _dictionaryDownloadRenderer = dictionaryDownloadRenderer;
@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         }
 
         [DictionaryRequestValidation(1, HandlerTiming.Before)]
-        public override async Task<CreateDictionaryDownloadRequest> HandleAsync(CreateDictionaryDownloadRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<PostDictionaryDownloadRequest> HandleAsync(PostDictionaryDownloadRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var addDictionaryDownloadCommand = new AddDictionaryDownloadCommand
             {

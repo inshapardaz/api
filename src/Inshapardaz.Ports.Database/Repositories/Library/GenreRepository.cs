@@ -11,29 +11,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
-    public class GenereRepository : IGenereRepository
+    public class GenreRepository : IGenreRepository
     {
         private readonly IDatabaseContext _databaseContext;
 
-        public GenereRepository(IDatabaseContext databaseContext)
+        public GenreRepository(IDatabaseContext databaseContext)
         {
             _databaseContext = databaseContext;
         }
 
-        public async Task<Genere> AddGenere(Genere genere, CancellationToken cancellationToken)
+        public async Task<Genre> AddGenre(Genre genre, CancellationToken cancellationToken)
         {
-            var item = genere.Map<Genere, Entities.Library.Genere>();
+            var item = genre.Map<Genre, Entities.Library.Genre>();
             _databaseContext.Genere.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
-            return item.Map<Entities.Library.Genere, Genere>();
+            return item.Map<Entities.Library.Genre, Genre>();
         }
 
-        public async Task UpdateGenere(Genere genere, CancellationToken cancellationToken)
+        public async Task UpdateGenre(Genre genre, CancellationToken cancellationToken)
         {
             var existingEntity = await _databaseContext.Genere
-                                                       .SingleOrDefaultAsync(g => g.Id == genere.Id,
+                                                       .SingleOrDefaultAsync(g => g.Id == genre.Id,
                                                                              cancellationToken);
 
             if (existingEntity == null)
@@ -41,12 +41,12 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 throw new NotFoundException();
             }
 
-            existingEntity.Name = genere.Name;
+            existingEntity.Name = genre.Name;
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task DeleteGenere(int genereId, CancellationToken cancellationToken)
+        public async Task DeleteGenre(int genereId, CancellationToken cancellationToken)
         {
             var genere = await _databaseContext.Genere.SingleOrDefaultAsync(g => g.Id == genereId, cancellationToken);
 
@@ -59,19 +59,19 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Genere>> GetGeneres(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Genre>> GetGenres(CancellationToken cancellationToken)
         {
             return await _databaseContext.Genere
-                                         .Select(t => t.Map<Entities.Library.Genere, Genere>())
+                                         .Select(t => t.Map<Entities.Library.Genre, Genre>())
                                          .ToListAsync(cancellationToken);
         }
 
-        public async Task<Genere> GetGenereById(int genereId, CancellationToken cancellationToken)
+        public async Task<Genre> GetGenreById(int genereId, CancellationToken cancellationToken)
         {
             var genere = await _databaseContext.Genere
                                                     .SingleOrDefaultAsync(t => t.Id == genereId,
                                                                           cancellationToken);
-            return genere.Map<Entities.Library.Genere, Genere>();
+            return genere.Map<Entities.Library.Genre, Genre>();
         }
     }
 }

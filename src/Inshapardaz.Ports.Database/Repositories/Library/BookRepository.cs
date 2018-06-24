@@ -97,7 +97,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             var count = book.Count();
             var data = await book
-                             .Where(b => b.Generes.Any(g => g.Id == genereId))
+                             .Where(b => b.Generes.Any(g => g.GenereId == genereId))
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())
                              .ToListAsync(cancellationToken);

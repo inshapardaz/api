@@ -86,7 +86,7 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ReverseMap();
 
-            CreateMap<Genere, GenereView>()
+            CreateMap<Genre, GenreView>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
                 .ForMember(d => d.Links, o => o.Ignore())

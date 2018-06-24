@@ -77,9 +77,10 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.RelatedWord, o => o.MapFrom(s => s.RelatedWord))
                 .ForMember(d => d.SourceWord, o => o.MapFrom(s => s.SourceWord));
 
-            CreateMap<Genere, Entities.Library.Genere>()
+            CreateMap<Genre, Entities.Library.Genre>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.BookGeneres, o => o.Ignore())
                 .ReverseMap();
 
             CreateMap<Author, Entities.Library.Author>()

@@ -20,7 +20,7 @@ namespace Inshapardaz.Ports.Database
         public DbSet<DictionaryDownload> DictionaryDownload { get; set; }
         public DbSet<File> File { get; set; }
 
-        public DbSet<Genere> Genere { get; set; }
+        public DbSet<Genre> Genere { get; set; }
         public DbSet<Author> Author { get; set; }
         public DbSet<Book> Book { get; set; }
         public DbSet<Chapter> Chapter { get; set; }
@@ -106,10 +106,53 @@ namespace Inshapardaz.Ports.Database
             });
 
 
+            modelBuilder.Entity<Author>(entity =>
+            {
+                entity.ToTable("Author", "Library");
+            });
+
+            modelBuilder.Entity<Book>(entity =>
+            {
+                entity.ToTable("Book", "Library");
+            });
+
+            modelBuilder.Entity<BookImage>(entity =>
+            {
+                entity.ToTable("BookImage", "Library");
+            });
+
+            modelBuilder.Entity<BookGenre>(entity =>
+            {
+                entity.ToTable("BookGenre", "Library");
+            });
+
             modelBuilder.Entity<Chapter>(entity =>
             {
-                entity.HasKey(t => new {t.Id, t.ChapterNumber});
+                entity.ToTable("Chapter", "Library");
             });
+
+            modelBuilder.Entity<ChapterText>(entity =>
+            {
+                entity.ToTable("ChapterText", "Library");
+            });
+
+            modelBuilder.Entity<Genre>(entity =>
+            {
+                entity.ToTable("Genre", "Library");
+            });
+
+            modelBuilder.Entity<BookGenre>()
+                        .HasKey(t => new { t.BookId, t.GenereId });
+
+            modelBuilder.Entity<BookGenre>()
+                        .HasOne(bg => bg.Book)
+                        .WithMany(b => b.Generes)
+                        .HasForeignKey(pt => pt.GenereId);
+
+            modelBuilder.Entity<BookGenre>()
+                        .HasOne(pt => pt.Genre)
+                        .WithMany(t => t.BookGeneres)
+                        .HasForeignKey(pt => pt.GenereId);
         }
     }
 }

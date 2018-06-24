@@ -2,8 +2,10 @@
 using AutoMapper;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Dictionary;
+using Inshapardaz.Domain.Repositories.Library;
 using Inshapardaz.Ports.Database.Repositories;
 using Inshapardaz.Ports.Database.Repositories.Dictionary;
+using Inshapardaz.Ports.Database.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +36,11 @@ namespace Inshapardaz.Ports.Database
             services.AddTransient<IMeaningRepository, MeaningRepository>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<IRelationshipRepository, RelationshipRepository>();
+
+            services.AddTransient<IAuthorRepository, AuthorRepository>();
+            services.AddTransient<IGenreRepository, GenreRepository>();
+            services.AddTransient<IBookRepository, BookRepository>();
+            services.AddTransient<IChapterRepository, ChapterRepository>();
 
             services.AddTransient<IDatabaseContext, DatabaseContext>();
 

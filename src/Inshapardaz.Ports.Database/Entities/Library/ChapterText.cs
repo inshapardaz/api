@@ -9,9 +9,8 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public string Content { get; set; }
 
-        [Required]
         public int ChapterId { get; set; }
 
-        public virtual Chapter Chapter { get; set; }
+        public Chapter Chapter { get; set; }
     }
 }

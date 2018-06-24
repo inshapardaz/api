@@ -10,7 +10,7 @@ namespace Inshapardaz.Domain.Entities.Library
 
         public string Description { get; set; }
 
-        public IEnumerable<Genere> Generes { get; set; }
+        public IEnumerable<Genre> Generes { get; set; }
 
         public Languages Language { get; set; }
 

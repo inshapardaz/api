@@ -2,8 +2,11 @@
 using Inshapardaz.Api.Renderers;
 using System.Collections.Generic;
 using System.Linq;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.View;
+using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Entities.Dictionary;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Entities.Dictionary;
 using Nest;
 
 namespace Inshapardaz.Ports.Elasticsearch.Entities

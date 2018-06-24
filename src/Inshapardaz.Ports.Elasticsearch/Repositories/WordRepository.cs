@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Dictionary;
 using Nest;
 
 namespace Inshapardaz.Ports.Elasticsearch.Repositories

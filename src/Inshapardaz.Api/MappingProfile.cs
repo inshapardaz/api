@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Inshapardaz.Api.View;
+using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Entities.Dictionary;
 
 namespace Inshapardaz.Api
 {

@@ -2,9 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.View;
+using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Queries.Dictionary;
 using Paramore.Brighter;
 using Paramore.Darker;
 

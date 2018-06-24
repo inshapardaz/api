@@ -1,4 +1,6 @@
-﻿namespace Inshapardaz.Ports.Database.Entities
+﻿using Inshapardaz.Ports.Database.Entities.Dictionary;
+
+namespace Inshapardaz.Ports.Database.Entities
 {
     public class Meaning
     {

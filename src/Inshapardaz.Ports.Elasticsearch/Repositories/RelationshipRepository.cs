@@ -4,7 +4,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Dictionary;
 
 namespace Inshapardaz.Ports.Elasticsearch.Repositories
 {

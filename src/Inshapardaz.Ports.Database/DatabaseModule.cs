@@ -1,7 +1,9 @@
 ﻿using System;
 using AutoMapper;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Dictionary;
 using Inshapardaz.Ports.Database.Repositories;
+using Inshapardaz.Ports.Database.Repositories.Dictionary;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

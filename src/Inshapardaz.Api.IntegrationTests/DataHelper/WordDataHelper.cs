@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading;
 using Inshapardaz.Domain;
+using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Dictionary;
 
 namespace Inshapardaz.Api.IntegrationTests.DataHelper
 {
@@ -14,12 +16,12 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
             _wordRepository = wordRepository;
         }
 
-        public Domain.Entities.Word GetWord(int dictionaryId, long wordId)
+        public Word GetWord(int dictionaryId, long wordId)
         {
             return _wordRepository.GetWordById(dictionaryId, wordId, CancellationToken.None).Result;
         }
 
-        public Domain.Entities.Word CreateWord(int dictionaryId, Domain.Entities.Word word)
+        public Word CreateWord(int dictionaryId, Word word)
         {
             return _wordRepository.AddWord(dictionaryId, word, CancellationToken.None).Result;
         }

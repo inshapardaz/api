@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Commands.Dictionary;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using Paramore.Darker;

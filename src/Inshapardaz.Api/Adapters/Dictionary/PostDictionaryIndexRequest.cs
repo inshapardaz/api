@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Hangfire;
 using Inshapardaz.Domain.Jobs;
 using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Queries.Dictionary;
 using Paramore.Brighter;
 using Paramore.Darker;
 

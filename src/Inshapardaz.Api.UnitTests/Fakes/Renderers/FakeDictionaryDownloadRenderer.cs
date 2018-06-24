@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.View;
+using Inshapardaz.Api.View.Dictionary;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
 {

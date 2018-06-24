@@ -5,6 +5,7 @@ using Inshapardaz.Api.IntegrationTests.DataHelper;
 using Inshapardaz.Api.IntegrationTests.Helpers;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Dictionary;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;

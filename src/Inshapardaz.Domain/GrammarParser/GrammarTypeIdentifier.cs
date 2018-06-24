@@ -1,5 +1,6 @@
 ﻿using System;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Entities.Dictionary;
 
 namespace Inshapardaz.Domain.GrammarParser
 {

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Entities.Dictionary;
 
 namespace Inshapardaz.Ports.Database
 {
@@ -7,7 +8,7 @@ namespace Inshapardaz.Ports.Database
     {
         public MappingProfile()
         {
-            CreateMap<Dictionary, Entities.Dictionary>()
+            CreateMap<Dictionary, Entities.Dictionary.Dictionary>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
                 .ForMember(d => d.Language, o => o.MapFrom(s => s.Language))
@@ -27,7 +28,7 @@ namespace Inshapardaz.Ports.Database
                 .ReverseMap();
 
 
-            CreateMap<Word, Entities.Word>()
+            CreateMap<Word, Entities.Dictionary.Word>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Attributes, o => o.MapFrom(s => s.Attributes))
                 .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
@@ -54,7 +55,7 @@ namespace Inshapardaz.Ports.Database
                 .ReverseMap()
                 .ForMember(d => d.Word, o => o.Ignore());
 
-            CreateMap<Translation, Entities.Translation>()
+            CreateMap<Translation, Entities.Dictionary.Translation>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.IsTrasnpiling, o => o.MapFrom(s => s.IsTrasnpiling))
                 .ForMember(d => d.Language, o => o.MapFrom(s => s.Language))
@@ -64,7 +65,7 @@ namespace Inshapardaz.Ports.Database
                 .ReverseMap()
                 .ForMember(d => d.Word, o => o.Ignore());
 
-            CreateMap<WordRelation, Entities.WordRelation>()
+            CreateMap<WordRelation, Entities.Dictionary.WordRelation>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.RelatedWord, o => o.Ignore())
                 .ForMember(d => d.RelatedWordId, o => o.MapFrom(s => s.RelatedWordId))

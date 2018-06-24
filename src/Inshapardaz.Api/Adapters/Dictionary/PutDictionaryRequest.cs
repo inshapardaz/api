@@ -3,9 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Commands.Dictionary;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Queries.Dictionary;
 using Paramore.Brighter;
 using Paramore.Darker;
 
@@ -53,7 +56,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             }
 
             UpdateDictionaryCommand updateDictionaryCommand = new UpdateDictionaryCommand
-                (command.Dictionary.Map<DictionaryView, Domain.Entities.Dictionary>());
+                (command.Dictionary.Map<DictionaryView, Domain.Entities.Dictionary.Dictionary>());
 
             await _commandProcessor.SendAsync(updateDictionaryCommand, cancellationToken: cancellationToken);
 

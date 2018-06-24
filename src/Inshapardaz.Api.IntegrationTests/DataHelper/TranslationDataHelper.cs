@@ -1,5 +1,7 @@
 ﻿using System.Threading;
+using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Dictionary;
 
 namespace Inshapardaz.Api.IntegrationTests.DataHelper
 {
@@ -12,12 +14,12 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
             _translationRepository = translationRepository;
         }
 
-        public Domain.Entities.Translation CreateTranslation(int dictionaryId, long wordId, Domain.Entities.Translation translation)
+        public Translation CreateTranslation(int dictionaryId, long wordId, Translation translation)
         {
             return _translationRepository.AddTranslation(dictionaryId, wordId, translation, CancellationToken.None).Result;
         }
 
-        public Domain.Entities.Translation GetTranslation(int dictionaryId, long wordId, long meaningId)
+        public Translation GetTranslation(int dictionaryId, long wordId, long meaningId)
         {
             return _translationRepository.GetTranslationById(dictionaryId, wordId, meaningId, CancellationToken.None).Result;
         }

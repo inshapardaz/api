@@ -31,10 +31,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                 throw new NotFoundException();
             }
 
-            var item = meaning.Map<Meaning, Entities.Meaning>();
+            var item = meaning.Map<Meaning, Entities.Dictionary.Meaning>();
             word.Meaning.Add(item);
             await _databaseContext.SaveChangesAsync(cancellationToken);
-            return item.Map<Entities.Meaning, Meaning>();
+            return item.Map<Entities.Dictionary.Meaning, Meaning>();
         }
 
         public async Task DeleteMeaning(int dictionaryId, long wordId, long meaningId, CancellationToken cancellationToken)
@@ -58,7 +58,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                                                 .SingleOrDefaultAsync(m => m.Id == meaningId && 
                                                                            m.Word.DictionaryId == dictionaryId, 
                                                                       cancellationToken);
-            return meaning.Map<Entities.Meaning, Meaning>();
+            return meaning.Map<Entities.Dictionary.Meaning, Meaning>();
         }
 
         public async Task UpdateMeaning(int dictionaryId, IFormattable wordId, Meaning meaning, CancellationToken cancellationToken)
@@ -85,7 +85,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                                            .Where(m => m.Context == context &&
                                                        m.WordId == wordId &&
                                                        m.Word.DictionaryId == dictionaryId)
-                                           .Select(s => s.Map<Entities.Meaning, Meaning>())
+                                           .Select(s => s.Map<Entities.Dictionary.Meaning, Meaning>())
                                            .ToListAsync(cancellationToken);
         }
 
@@ -94,7 +94,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
             return await _databaseContext.Meaning
                                           .Where(m => m.WordId == wordId &&
                                                       m.Word.DictionaryId == dictionaryId)
-                                          .Select(s => s.Map<Entities.Meaning, Meaning>())
+                                          .Select(s => s.Map<Entities.Dictionary.Meaning, Meaning>())
                                           .ToListAsync(cancellationToken);
         }
     }

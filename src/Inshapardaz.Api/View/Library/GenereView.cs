@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.View.Library
 {
-    public class AuthorView
+    public class GenereView
     {
         public int Id { get; set; }
 

@@ -1,4 +1,4 @@
-﻿namespace Inshapardaz.Ports.Database.Entities
+﻿namespace Inshapardaz.Ports.Database.Entities.Dictionary
 {
     public class DictionaryDownload
     {
@@ -10,7 +10,7 @@
 
         public string MimeType { get; set; }
 
-        public virtual Dictionary.Dictionary Dictionary { get; set; }
+        public virtual Entities.Dictionary.Dictionary Dictionary { get; set; }
 
         public virtual File File { get; set; }
     }

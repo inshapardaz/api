@@ -6,6 +6,7 @@ using Inshapardaz.Api.IntegrationTests.Helpers;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Dictionary;
+using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +38,7 @@ namespace Inshapardaz.Api.IntegrationTests
         protected MeaningDataHelper MeaningDataHelper => new MeaningDataHelper(TestServer.Host.Services.GetService<IMeaningRepository>());
         protected TranslationDataHelper TranslationDataHelper => new TranslationDataHelper(TestServer.Host.Services.GetService<ITranslationRepository>());
         protected RelationshipDataHelper RelationshipDataHelper => new RelationshipDataHelper(TestServer.Host.Services.GetService<IRelationshipRepository>());
+        protected GenreDataHelper GenreDataHelper => new GenreDataHelper(TestServer.Host.Services.GetService<IGenreRepository>());
 
         protected HttpResponseMessage Response;
 
@@ -45,6 +47,17 @@ namespace Inshapardaz.Api.IntegrationTests
             _client?.Dispose();
             _client = TestServer.CreateClient();
             return _client;
+        }
+
+        protected HttpClient GetAdminClient(Guid? userGuid, string userName = "integration.user")
+        {
+            _authenticatedClient?.Dispose();
+            _authenticatedClient = TestServer.CreateClient();
+            _authenticatedClient.DefaultRequestHeaders.Add(AuthenticatedTestRequestMiddleware.TestingHeader, AuthenticatedTestRequestMiddleware.TestingHeaderValue);
+            _authenticatedClient.DefaultRequestHeaders.Add("my-name", userName);
+            _authenticatedClient.DefaultRequestHeaders.Add("my-id", (userGuid ?? Guid.NewGuid()).ToString());
+            _authenticatedClient.DefaultRequestHeaders.Add("administrator", bool.TrueString);
+            return _authenticatedClient;
         }
 
         protected HttpClient GetContributorClient(Guid? userGuid, string userName = "integration.user")

@@ -13,7 +13,7 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public string Description { get; set; }
 
-        public virtual ICollection<Genere> Generes { get; set; }
+        public virtual ICollection<BookGenre> Generes { get; set; }
 
         public virtual ICollection<Chapter> Chapters { get; set; }
 

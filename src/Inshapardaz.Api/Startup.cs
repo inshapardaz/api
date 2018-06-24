@@ -6,6 +6,7 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.Renderers.Dictionary;
+using Inshapardaz.Api.Renderers.Library;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.IndexingService;
 using Inshapardaz.Ports.Database;
@@ -129,6 +130,9 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderRelation, RelationRenderer>();
             services.AddTransient<IRenderDictionaryDownload, DictionaryDownloadRenderer>();
             services.AddTransient<IRenderJobStatus, JobStatusRenderer>();
+
+            services.AddTransient<IRenderGenre, GenreRenderer>();
+            services.AddTransient<IRenderGenres, GenresRenderer>();
         }
 
         public void ConfigureObjectMappings(IApplicationBuilder app)

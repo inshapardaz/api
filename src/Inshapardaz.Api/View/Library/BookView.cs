@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.View.Library
 
         public string Description { get; set; }
 
-        public IEnumerable<GenereView> Generes { get; set; }
+        public IEnumerable<GenreView> Generes { get; set; }
 
         public Languages Language { get; set; }
 

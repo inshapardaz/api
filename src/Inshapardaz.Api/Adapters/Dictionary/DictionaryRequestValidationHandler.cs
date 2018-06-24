@@ -1,9 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Queries.Dictionary;
 using Paramore.Brighter;
 using Paramore.Darker;

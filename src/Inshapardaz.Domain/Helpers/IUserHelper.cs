@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Inshapardaz.Api.Helpers
+namespace Inshapardaz.Domain.Helpers
 {
     public interface IUserHelper
     {

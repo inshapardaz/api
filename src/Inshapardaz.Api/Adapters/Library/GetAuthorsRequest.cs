@@ -6,6 +6,7 @@ using Inshapardaz.Api.Renderers.Library;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Queries.Library;
 using Paramore.Brighter;
 using Paramore.Darker;

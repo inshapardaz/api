@@ -1,14 +1,13 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Commands.Dictionary;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.Queries.Dictionary;
+using Inshapardaz.Domain.Repositories.Dictionary;
 using Paramore.Brighter;
 using Paramore.Darker;
 
-namespace Inshapardaz.Api.Adapters.Dictionary
+namespace Inshapardaz.Domain.Ports.Dictionary
 {
     public class DeleteMeaningRequest : DictionaryRequest
     {
@@ -26,29 +25,27 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
     public class DeleteMeaningRequestHandler : RequestHandlerAsync<DeleteMeaningRequest>
     {
-        private readonly IAmACommandProcessor _commandProcessor;
-        private readonly IQueryProcessor _queryProcessor;
+        private readonly IMeaningRepository _meaningRepository;
 
-        public DeleteMeaningRequestHandler(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor)
+        public DeleteMeaningRequestHandler(IMeaningRepository meaningRepository)
         {
-            _commandProcessor = commandProcessor;
-            _queryProcessor = queryProcessor;
+            _meaningRepository = meaningRepository;
         }
 
         [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteMeaningRequest> HandleAsync(DeleteMeaningRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var meaning = await _queryProcessor.ExecuteAsync(new GetWordMeaningByIdQuery(command.DictionaryId, command.WordId, command.MeaningId), cancellationToken);
+            var meaning = await _meaningRepository.GetMeaningById(command.DictionaryId, command.WordId, command.MeaningId, cancellationToken);
 
             if (meaning == null)
             {
                 throw new NotFoundException();
             }
 
-            await _commandProcessor.SendAsync(new DeleteWordMeaningCommand(
-                                                  command.DictionaryId, 
-                                                  command.WordId,
-                                                  meaning.Id), cancellationToken: cancellationToken);
+            await _meaningRepository.DeleteMeaning(command.DictionaryId, 
+                                                   command.WordId,
+                                                   meaning.Id,
+                                                   cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

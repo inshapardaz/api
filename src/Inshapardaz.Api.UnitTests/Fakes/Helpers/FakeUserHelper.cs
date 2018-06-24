@@ -1,5 +1,5 @@
 ﻿using System;
-using Inshapardaz.Api.Helpers;
+using Inshapardaz.Domain.Helpers;
 
 namespace Inshapardaz.Api.UnitTests.Fakes.Helpers
 {

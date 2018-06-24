@@ -8,6 +8,7 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.Renderers.Library;
 using Inshapardaz.Domain;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.IndexingService;
 using Inshapardaz.Ports.Database;
 using Microsoft.Extensions.DependencyInjection;

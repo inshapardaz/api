@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Helpers;
+using ObjectMapper = Inshapardaz.Api.Helpers.ObjectMapper;
 
 namespace Inshapardaz.Api.Renderers.Library
 {
@@ -24,7 +25,7 @@ namespace Inshapardaz.Api.Renderers.Library
         }
         public ListView<GenreView> RenderResult(IEnumerable<Genre> genres)
         {
-            var items = genres.Select(g => g.Map<Genre, GenreView>());
+            var items = genres.Select(g => ObjectMapper.Map<Genre, GenreView>(g));
             var view = new ListView<GenreView> { Items = items };
             view.Links.Add(_linkRenderer.Render("GetGenres", RelTypes.Self));
 

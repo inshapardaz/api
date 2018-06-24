@@ -1,4 +1,6 @@
 using Inshapardaz.Ports.Database.Entities;
+using Inshapardaz.Ports.Database.Entities.Dictionary;
+using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Ports.Database
@@ -17,6 +19,11 @@ namespace Inshapardaz.Ports.Database
         public DbSet<WordRelation> WordRelation { get; set; }
         public DbSet<DictionaryDownload> DictionaryDownload { get; set; }
         public DbSet<File> File { get; set; }
+
+        public DbSet<Genere> Genere { get; set; }
+        public DbSet<Author> Author { get; set; }
+        public DbSet<Book> Book { get; set; }
+        public DbSet<Chapter> Chapter { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

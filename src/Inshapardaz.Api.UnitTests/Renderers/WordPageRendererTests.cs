@@ -2,9 +2,12 @@
 using System.Linq;
 using FizzWare.NBuilder;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Entities.Dictionary;
 using NUnit.Framework;
 using Shouldly;
 

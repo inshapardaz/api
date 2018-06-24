@@ -1,5 +1,7 @@
 ﻿using System.Threading;
+using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Dictionary;
 
 namespace Inshapardaz.Api.IntegrationTests.DataHelper
 {
@@ -12,12 +14,12 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
             _meaningRepository = meaningRepository;
         }
 
-        public Domain.Entities.Meaning CreateMeaning(int dictionaryId, long wordId, Domain.Entities.Meaning meaning)
+        public Meaning CreateMeaning(int dictionaryId, long wordId, Meaning meaning)
         {
             return _meaningRepository.AddMeaning(dictionaryId, wordId, meaning, CancellationToken.None).Result;
         }
 
-        public Domain.Entities.Meaning GetMeaning(int dictionaryId, long wordId, long meaningId)
+        public Meaning GetMeaning(int dictionaryId, long wordId, long meaningId)
         {
             return _meaningRepository.GetMeaningById(dictionaryId, wordId, meaningId, CancellationToken.None).Result;
         }

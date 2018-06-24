@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Dictionary;
 
 namespace Inshapardaz.Api.IntegrationTests.DataHelper
 {
@@ -13,12 +14,12 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
             _dictionaryRepository = dictionaryRepository;
         }
 
-        public Domain.Entities.Dictionary GetDictionary(int id)
+        public Domain.Entities.Dictionary.Dictionary GetDictionary(int id)
         {
             return _dictionaryRepository.GetDictionaryById(id, CancellationToken.None).Result;
         }
 
-        public Domain.Entities.Dictionary CreateDictionary(Domain.Entities.Dictionary dictionary)
+        public Domain.Entities.Dictionary.Dictionary CreateDictionary(Domain.Entities.Dictionary.Dictionary dictionary)
         {
             return _dictionaryRepository.AddDictionary(dictionary, CancellationToken.None).Result;
         }

@@ -5,6 +5,7 @@ using AutoMapper;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.IndexingService;
 using Inshapardaz.Ports.Database;
@@ -39,9 +40,9 @@ namespace Inshapardaz.Api
             RegisterRenderer(services);
             services.AddBrighter()
                     .AsyncHandlersFromAssemblies(typeof(Startup).Assembly)
-                    .AsyncHandlersFromAssemblies(typeof(DomainMappingProfile).Assembly);
+                    .AsyncHandlersFromAssemblies(typeof(Settings).Assembly);
             services.AddDarker()
-                    .AddHandlersFromAssemblies(typeof(DomainMappingProfile).Assembly);
+                    .AddHandlersFromAssemblies(typeof(Settings).Assembly);
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
@@ -135,7 +136,6 @@ namespace Inshapardaz.Api
             Mapper.Initialize(c =>
                 {
                     c.AddProfile(new MappingProfile());
-                    c.AddProfile(new DomainMappingProfile());
                     c.AddProfile(DatabaseModule.GetMappingProfile());
                     //c.AddProfile(ElasticsearchModule.GetMappingProfile());
                 }

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 using Inshapardaz.Api.View;
+using Inshapardaz.Api.View.Dictionary;
+using Inshapardaz.Domain.Entities.Dictionary;
 
 namespace Inshapardaz.Api.IntegrationTests.Helpers
 {
     public static class ModelExtentions
     {
-        public static WordView Map(this Domain.Entities.Word word)
+        public static WordView Map(this Word word)
         {
             return new WordView
             {
@@ -23,7 +25,7 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
             };
         }
 
-        public static MeaningView Map(this Domain.Entities.Meaning meaning)
+        public static MeaningView Map(this Meaning meaning)
         {
             return new MeaningView
             {
@@ -35,7 +37,7 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
             };
         }
 
-        public static TranslationView Map(this Domain.Entities.Translation translation)
+        public static TranslationView Map(this Translation translation)
         {
             return new TranslationView
             {
@@ -48,7 +50,7 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
             };
         }
 
-        public static RelationshipView Map(this Domain.Entities.WordRelation relation)
+        public static RelationshipView Map(this WordRelation relation)
         {
             return new RelationshipView
             {

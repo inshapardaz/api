@@ -2,8 +2,10 @@
 using FizzWare.NBuilder;
 using Inshapardaz.Api.Model;
 using Inshapardaz.Api.Renderers;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
+using Inshapardaz.Api.View.Dictionary;
 using NUnit.Framework;
 using Shouldly;
 

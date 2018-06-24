@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Dictionary;
 using Inshapardaz.Ports.Elasticsearch.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;

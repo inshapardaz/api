@@ -1,8 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Commands;
+using Inshapardaz.Domain.Commands.Dictionary;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Queries;
+using Inshapardaz.Domain.Queries.Dictionary;
 using Paramore.Brighter;
 using Paramore.Darker;
 

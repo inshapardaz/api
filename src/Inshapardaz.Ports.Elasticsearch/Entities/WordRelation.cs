@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Entities.Dictionary;
 
 namespace Inshapardaz.Ports.Elasticsearch.Entities
 {

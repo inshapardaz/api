@@ -22,6 +22,8 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public virtual Author Author { get; set; }
 
+        public virtual BookImage Image { get; set; }
+
         [Required]
         public Languages Language { get; set; }
 

@@ -104,6 +104,12 @@ namespace Inshapardaz.Ports.Database
                 entity.HasOne(d => d.File);
                 entity.HasIndex(f => f.DictionaryId);
             });
+
+
+            modelBuilder.Entity<Chapter>(entity =>
+            {
+                entity.HasKey(t => new {t.Id, t.ChapterNumber});
+            });
         }
     }
 }

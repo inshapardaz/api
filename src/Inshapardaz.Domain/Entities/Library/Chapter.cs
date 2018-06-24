@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-        public uint ChapterNumber { get; set; }
+        public int ChapterNumber { get; set; }
 
         public string Title { get; set; }
 

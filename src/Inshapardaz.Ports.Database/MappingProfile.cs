@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
+using Inshapardaz.Domain.Entities.Library;
 
 namespace Inshapardaz.Ports.Database
 {
@@ -18,7 +19,7 @@ namespace Inshapardaz.Ports.Database
                 .ReverseMap()
                 .ForMember(d => d.Downloads, o => o.MapFrom(s => s.Downloads));
 
-            CreateMap<DictionaryDownload, Entities.DictionaryDownload>()
+            CreateMap<DictionaryDownload, Entities.Dictionary.DictionaryDownload>()
                 .ForMember(d => d.DictionaryId, o => o.MapFrom(s => s.DictionaryId))
                 .ForMember(d => d.MimeType, o => o.MapFrom(s => s.MimeType))
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
@@ -45,7 +46,7 @@ namespace Inshapardaz.Ports.Database
                 .ReverseMap()
                 .ForMember(d => d.Relations, o => o.Ignore());
 
-            CreateMap<Meaning, Entities.Meaning>()
+            CreateMap<Meaning, Entities.Dictionary.Meaning>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Context, o => o.MapFrom(s => s.Context))
                 .ForMember(d => d.Example, o => o.MapFrom(s => s.Example))
@@ -75,6 +76,38 @@ namespace Inshapardaz.Ports.Database
                 .ReverseMap()
                 .ForMember(d => d.RelatedWord, o => o.MapFrom(s => s.RelatedWord))
                 .ForMember(d => d.SourceWord, o => o.MapFrom(s => s.SourceWord));
+
+            CreateMap<Genere, Entities.Library.Genere>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ReverseMap();
+
+            CreateMap<Author, Entities.Library.Author>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.Books, o => o.Ignore())
+                .ReverseMap();
+
+            CreateMap<Book, Entities.Library.Book>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
+                .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
+                .ForMember(d => d.AuthorId, o => o.MapFrom(s => s.AuthorId))
+                .ForMember(d => d.IsPublic, o => o.MapFrom(s => s.IsPublic))
+                .ForMember(d => d.Language, o => o.MapFrom(s => s.Language))
+                .ForMember(d => d.Chapters, o => o.Ignore())
+                .ForMember(d => d.Generes, o => o.Ignore())
+                .ForMember(d => d.Image, o => o.Ignore())
+                .ForMember(d => d.Author, o => o.Ignore())
+                .ReverseMap();
+
+            CreateMap<Chapter, Entities.Library.Chapter>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
+                .ForMember(d => d.BookId, o => o.MapFrom(s => s.BookId))
+                .ForMember(d => d.Content, o => o.Ignore())
+                .ForMember(d => d.Book, o => o.Ignore())
+                .ReverseMap();
         }
     }
 }

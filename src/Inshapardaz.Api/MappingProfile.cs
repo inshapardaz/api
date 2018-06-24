@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
+using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
+using Inshapardaz.Domain.Entities.Library;
 
 namespace Inshapardaz.Api
 {
@@ -76,6 +78,40 @@ namespace Inshapardaz.Api
                 .ForMember(s => s.Links, o => o.Ignore())
                 .ReverseMap()
                 .ForMember(s => s.RelationType, o => o.MapFrom(d => (RelationType)d.RelationTypeId));
+
+
+            CreateMap<Author, AuthorView>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.Links, o => o.Ignore())
+                .ReverseMap();
+
+            CreateMap<Genere, GenereView>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.Links, o => o.Ignore())
+                .ReverseMap();
+
+            CreateMap<Book, BookView>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
+                .ForMember(d => d.AuthorId, o => o.MapFrom(s => s.AuthorId))
+                .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
+                .ForMember(d => d.IsPublic, o => o.MapFrom(s => s.IsPublic))
+                .ForMember(d => d.Language, o => o.MapFrom(s => s.Language))
+                .ForMember(d => d.LanguageId, o => o.MapFrom(s => (int)s.Language))
+                .ForMember(d => d.Links, o => o.Ignore())
+                .ReverseMap()
+                .ForMember(d => d.Language, o => o.MapFrom(s => (Languages)s.LanguageId));
+
+            CreateMap<Chapter, ChapterView>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
+                .ForMember(d => d.ChapterNumber, o => o.MapFrom(s => s.ChapterNumber))
+                .ForMember(d => d.BookId, o => o.MapFrom(s => s.BookId))
+                .ForMember(d => d.Content, o => o.MapFrom(s => s.Content))
+                .ForMember(d => d.Links, o => o.Ignore())
+                .ReverseMap();
         }
     }
 }

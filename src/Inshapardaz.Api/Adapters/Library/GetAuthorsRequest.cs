@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Renderers;
-using Inshapardaz.Api.Renderers.Dictionary;
+using Inshapardaz.Api.Renderers.Library;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
+using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Queries.Library;
 using Paramore.Brighter;
 using Paramore.Darker;
 
@@ -29,32 +31,27 @@ namespace Inshapardaz.Api.Adapters.Library
     {
         private readonly IUserHelper _userHelper;
         private readonly IQueryProcessor _queryProcessor;
-        private readonly IRenderDictionaries _dictionariesRenderer;
+        private readonly IRenderAuthors _authorRenderer;
 
-        public GetAuthorsRequestHandler(IQueryProcessor queryProcessor, IUserHelper userHelper, IRenderDictionaries dictionariesRenderer)
+        public GetAuthorsRequestHandler(IQueryProcessor queryProcessor, IUserHelper userHelper, IRenderAuthors authorRenderer)
         {
             _queryProcessor = queryProcessor;
             _userHelper = userHelper;
-            _dictionariesRenderer = dictionariesRenderer;
+            _authorRenderer = authorRenderer;
         }
 
         public override async Task<GetAuthorsRequest> HandleAsync(GetAuthorsRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            /*var userId = _userHelper.GetUserId();
+            var results = await _queryProcessor.ExecuteAsync(new GetAuthorsQuery {PageSize = command.PageSize, PageNumber = command.PageNumber}, cancellationToken);
 
-            var results = await _queryProcessor.ExecuteAsync(new GetDictionariesByUserQuery {UserId = userId}, cancellationToken);
-
-            var wordCounts = new Dictionary<int, int>();
-            var downloads = new Dictionary<int, IEnumerable<DictionaryDownload>>();
-            foreach (var dictionary in results)
+            var pageRenderArgs = new PageRendererArgs<Author>
             {
-                var wordCount = await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery
-                {
-                    DictionaryId = dictionary.Id
-                }, cancellationToken);
-                wordCounts.Add(dictionary.Id, wordCount);
+                RouteName = "GetAuthors",
+                Page = results
+            };
 
-            command.Result = _dictionariesRenderer.Render(results, wordCounts, downloads);*/
+            //TODO : Add count all logic
+            command.Result = _authorRenderer.Render(pageRenderArgs, 0);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

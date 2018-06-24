@@ -1,14 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Commands;
-using Inshapardaz.Domain.Commands.Dictionary;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Queries;
-using Inshapardaz.Domain.Queries.Dictionary;
+using Inshapardaz.Domain.Repositories.Dictionary;
 using Paramore.Brighter;
-using Paramore.Darker;
 
-namespace Inshapardaz.Api.Adapters.Dictionary
+namespace Inshapardaz.Domain.Ports.Dictionary
 {
     public class DeleteRelationshipRequest : DictionaryRequest
     {
@@ -26,26 +22,24 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
     public class DeleteRelationshipRequestHandler : RequestHandlerAsync<DeleteRelationshipRequest>
     {
-        private readonly IAmACommandProcessor _commandProcessor;
-        private readonly IQueryProcessor _queryProcessor;
+        private readonly IRelationshipRepository _relationshipRepository;
 
-        public DeleteRelationshipRequestHandler(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor)
+        public DeleteRelationshipRequestHandler(IRelationshipRepository relationshipRepository)
         {
-            _commandProcessor = commandProcessor;
-            _queryProcessor = queryProcessor;
+            _relationshipRepository = relationshipRepository;
         }
 
         [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteRelationshipRequest> HandleAsync(DeleteRelationshipRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var relations = await _queryProcessor.ExecuteAsync(new GetRelationshipByIdQuery(command.DictionaryId, command.WordId, command.RelationshipId), cancellationToken);
+            var relations = await _relationshipRepository.GetRelationshipById(command.DictionaryId, command.RelationshipId, cancellationToken);
 
             if (relations == null)
             {
                 throw new NotFoundException();
             }
 
-            await _commandProcessor.SendAsync(new DeleteWordRelationshipCommand(command.DictionaryId, command.RelationshipId), cancellationToken: cancellationToken);
+            await _relationshipRepository.DeleteRelationship(command.DictionaryId, command.RelationshipId, cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

@@ -6,6 +6,7 @@ using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
+using Inshapardaz.Domain.Ports.Dictionary;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 

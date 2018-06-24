@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Helpers;
+using ObjectMapper = Inshapardaz.Api.Helpers.ObjectMapper;
 
 namespace Inshapardaz.Api.Renderers.Library
 {
@@ -24,7 +25,7 @@ namespace Inshapardaz.Api.Renderers.Library
 
         public AuthorView Render(Author source)
         {
-            var result = source.Map<Author, AuthorView>();
+            var result = ObjectMapper.Map<Author, AuthorView>(source);
 
             var links = new List<LinkView>
             {

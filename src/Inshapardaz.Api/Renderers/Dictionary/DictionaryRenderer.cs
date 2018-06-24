@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
+using Inshapardaz.Domain.Helpers;
+using ObjectMapper = Inshapardaz.Api.Helpers.ObjectMapper;
 
 namespace Inshapardaz.Api.Renderers.Dictionary
 {
@@ -56,7 +57,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
             var indexes = new List<LinkView>(_indexes.Select(i => _linkRenderer.Render("GetWordsListStartWith", i,
                 new {id = source.Id, startingWith = i})));
 
-            var result = source.Map<Domain.Entities.Dictionary.Dictionary, DictionaryView>();
+            var result = ObjectMapper.Map<Domain.Entities.Dictionary.Dictionary, DictionaryView>(source);
             result.WordCount = wordCount;
             result.Links = links;
             result.Indexes = indexes;

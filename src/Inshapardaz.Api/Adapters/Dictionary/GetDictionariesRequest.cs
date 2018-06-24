@@ -9,6 +9,7 @@ using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.Queries.Dictionary;
 using Paramore.Brighter;

@@ -1,34 +1,31 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
-using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.Queries.Dictionary;
+using Inshapardaz.Domain.Repositories.Dictionary;
 using Paramore.Brighter;
 using Paramore.Darker;
 
-namespace Inshapardaz.Api.Adapters.Dictionary
+namespace Inshapardaz.Domain.Ports.Dictionary
 {
-    public class DictionaryWriteRequestValidationHandler<T> 
+    public class DictionaryRequestValidationHandler<T> 
         : RequestHandlerAsync<T> where T : DictionaryRequest
     {
-        private readonly IQueryProcessor _queryProcessor;
+        private readonly IDictionaryRepository _dictionaryRepository;
+
         private readonly IUserHelper _userHelper;
 
-        public DictionaryWriteRequestValidationHandler(IQueryProcessor queryProcessor, IUserHelper userHelper)
+        public DictionaryRequestValidationHandler(IDictionaryRepository dictionaryRepository, IUserHelper userHelper)
         {
-            _queryProcessor = queryProcessor;
+            _dictionaryRepository = dictionaryRepository;
             _userHelper = userHelper;
         }
 
         public override async Task<T> HandleAsync(T command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var dictionary = await _queryProcessor.ExecuteAsync(new GetDictionaryByIdQuery
-            {
-                DictionaryId = command.DictionaryId
-            }, cancellationToken);
+            var dictionary = await _dictionaryRepository.GetDictionaryById(command.DictionaryId, cancellationToken);
 
             if (dictionary == null)
             {
@@ -36,7 +33,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             }
 
             var userId = _userHelper.GetUserId();
-            if (dictionary.UserId != userId)
+            if (!dictionary.IsPublic && dictionary.UserId != userId)
             {
                 throw new UnauthorizedException();
             }
@@ -45,9 +42,9 @@ namespace Inshapardaz.Api.Adapters.Dictionary
         }
     }
 
-    public class DictionaryWriteRequestValidationAttribute : RequestHandlerAttribute
+    public class DictionaryRequestValidationAttribute : RequestHandlerAttribute
     {
-        public DictionaryWriteRequestValidationAttribute(int step, HandlerTiming timing)
+        public DictionaryRequestValidationAttribute(int step, HandlerTiming timing)
             : base(step, timing)
         { }
 
@@ -58,7 +55,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
         public override Type GetHandlerType()
         {
-            return typeof(DictionaryWriteRequestValidationHandler<>);
+            return typeof(DictionaryRequestValidationHandler<>);
         }
     }
 }

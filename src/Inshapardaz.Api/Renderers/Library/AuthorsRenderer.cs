@@ -4,6 +4,7 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Helpers;
 
 namespace Inshapardaz.Api.Renderers.Library
 {

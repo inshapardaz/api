@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
+using Inshapardaz.Domain.Helpers;
+using ObjectMapper = Inshapardaz.Api.Helpers.ObjectMapper;
 
 namespace Inshapardaz.Api.Renderers.Dictionary
 {
@@ -27,7 +28,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
 
         public RelationshipView Render(WordRelation source, int dictionaryId, long wordId)
         {
-            var result = source.Map<WordRelation, RelationshipView>();
+            var result = ObjectMapper.Map<WordRelation, RelationshipView>(source);
             result.SourceWordId = wordId;
             var links = new List<LinkView>
                                {

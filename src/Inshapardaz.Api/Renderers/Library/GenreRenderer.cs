@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using ObjectMapper = Inshapardaz.Api.Helpers.ObjectMapper;
 
 namespace Inshapardaz.Api.Renderers.Library
 {
@@ -25,7 +26,7 @@ namespace Inshapardaz.Api.Renderers.Library
         }
         public GenreView RenderResult(Genre genre)
         {
-            var view = genre.Map<Genre, GenreView>();
+            var view = ObjectMapper.Map<Genre, GenreView>(genre);
 
             view.Links.Add(_linkRenderer.Render("GetGenreById", RelTypes.Self, new { id = genre.Id }));
 

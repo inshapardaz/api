@@ -1,14 +1,13 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Commands;
 using Inshapardaz.Domain.Commands.Dictionary;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Queries;
 using Inshapardaz.Domain.Queries.Dictionary;
+using Inshapardaz.Domain.Repositories.Dictionary;
 using Paramore.Brighter;
 using Paramore.Darker;
 
-namespace Inshapardaz.Api.Adapters.Dictionary
+namespace Inshapardaz.Domain.Ports.Dictionary
 {
     public class DeleteTranslationRequest : DictionaryRequest
     {
@@ -26,26 +25,23 @@ namespace Inshapardaz.Api.Adapters.Dictionary
 
     public class DeleteTranslationRequestHandler : RequestHandlerAsync<DeleteTranslationRequest>
     {
-        private readonly IAmACommandProcessor _commandProcessor;
-        private readonly IQueryProcessor _queryProcessor;
+        private readonly ITranslationRepository _translationRepository;
 
-        public DeleteTranslationRequestHandler(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor)
+        public DeleteTranslationRequestHandler(ITranslationRepository translationRepository)
         {
-            _commandProcessor = commandProcessor;
-            _queryProcessor = queryProcessor;
+            _translationRepository = translationRepository;
         }
-
         [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteTranslationRequest> HandleAsync(DeleteTranslationRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var response = await _queryProcessor.ExecuteAsync(new GetTranslationByIdQuery(command.DictionaryId, command.WordId, command.TranslationId), cancellationToken);
+            var response = await _translationRepository.GetTranslationById(command.DictionaryId, command.WordId, command.TranslationId, cancellationToken);
 
             if (response == null)
             {
                 throw new BadRequestException();
             }
 
-            await _commandProcessor.SendAsync(new DeleteWordTranslationCommand(command.DictionaryId, command.WordId, command.TranslationId), cancellationToken: cancellationToken);
+            await _translationRepository.DeleteTranslation(command.DictionaryId, command.WordId, command.TranslationId, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

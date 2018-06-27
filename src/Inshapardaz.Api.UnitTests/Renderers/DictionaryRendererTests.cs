@@ -35,8 +35,9 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
+                _dictionary.WordCount = wordCount;
 
-                _result = renderer.Render(_dictionary, wordCount);
+                _result = renderer.Render(_dictionary);
             }
 
             [Test]
@@ -136,7 +137,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, wordCount);
+                _result = renderer.Render(_dictionary);
             }
 
             [Test]
@@ -172,7 +173,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, wordCount);
+                _result = renderer.Render(_dictionary);
             }
 
             [Test]
@@ -215,7 +216,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, wordCount);
+                _result = renderer.Render(_dictionary);
             }
 
             [Test]
@@ -253,7 +254,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper().AsReader();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, wordCount);
+                _result = renderer.Render(_dictionary);
             }
 
             [Test]
@@ -283,7 +284,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new DictionaryRenderer(fakeLinkRenderer, fakeUserHelper);
 
-                _result = renderer.Render(_dictionary, 0);
+                _result = renderer.Render(_dictionary);
             }
 
             [Test]

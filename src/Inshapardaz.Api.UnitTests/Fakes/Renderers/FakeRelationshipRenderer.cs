@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
         private RelationshipView _view;
         private readonly List<LinkView> _links = new List<LinkView>();
 
-        public RelationshipView Render(WordRelation source, int dictionaryId, long wordId)
+        public RelationshipView Render(WordRelation source, int dictionaryId)
         {
             _view.Links = _links;
             if (_view.Links == null || !_view.Links.Any())

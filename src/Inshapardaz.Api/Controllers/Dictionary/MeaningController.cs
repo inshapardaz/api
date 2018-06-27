@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
-using Inshapardaz.Api.View;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.View.Dictionary;
+using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Ports.Dictionary;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -13,10 +15,12 @@ namespace Inshapardaz.Api.Controllers.Dictionary
     public class MeaningController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
+        private readonly IRenderMeaning _meaningRenderer;
 
-        public MeaningController(IAmACommandProcessor commandProcessor)
+        public MeaningController(IAmACommandProcessor commandProcessor, IRenderMeaning meaningRenderer)
         {
             _commandProcessor = commandProcessor;
+            _meaningRenderer = meaningRenderer;
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/meanings", Name = "GetWordMeaningByWordId")]
@@ -52,24 +56,24 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [ValidateModel]
         public async Task<IActionResult> Post(int id, int wordId, [FromBody]MeaningView meaning)
         {
-            var request = new PostMeaningRequest(id)
-            {
-                WordId = wordId,
-                Meaning = meaning
-            };
+            var request = new AddMeaningRequest(id, wordId, meaning.Map<MeaningView, Meaning>());
             await _commandProcessor.SendAsync(request);
-            return Created(request.Result.Location, request.Result.Response);
+            var response = _meaningRenderer.Render(request.Result, id);
+            return Created(response.Links.Self(), response);
         }
 
         [HttpPut("api/dictionaries/{id}/words/{wordId}/meanings/{meaningId}", Name = "UpdateMeaning")]
         [ValidateModel]
         public async Task<IActionResult> Put(int id, long wordId, int meaningId, [FromBody]MeaningView meaning)
         {
-            var request = new PutMeaningRequest(id, wordId, meaningId)
-            {
-                Meaning = meaning
-            };
+            var request = new UpdateMeaningRequest(id, wordId, meaning.Map<MeaningView, Meaning>());
             await _commandProcessor.SendAsync(request);
+            if (request.Result.HasAddedNew)
+            {
+                var response = _meaningRenderer.Render(request.Result.Meaning, id);
+                return Created(response.Links.Self(), response);
+            }
+
             return NoContent();
         }
 

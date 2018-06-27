@@ -42,7 +42,11 @@ namespace Inshapardaz.Api.Renderers.Dictionary
             return new DictionariesView
             {
                 Links = links,
-                Items = source.Select(d => _dictionaryRender.Render(d, wordCounts.ContainsKey(d.Id) ? wordCounts[d.Id] : 0)).ToList()
+                Items = source.Select(d =>
+                {
+                    d.WordCount = wordCounts.ContainsKey(d.Id) ? wordCounts[d.Id] : 0;
+                    return _dictionaryRender.Render(d);
+                }).ToList()
             };
         }
     }

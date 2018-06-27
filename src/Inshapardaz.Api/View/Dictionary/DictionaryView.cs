@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.View.Dictionary
 
         public long WordCount { get; set; }
 
-        public IEnumerable<LinkView> Links { get; set; }
+        public List<LinkView> Links { get; set; }
 
         public IEnumerable<LinkView> Indexes { get; set; }
     }

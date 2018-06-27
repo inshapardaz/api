@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.Helpers
             return new Uri(url);
         }
 
-        public static Uri Self(this List<LinkView> source)
+        public static Uri Self(this IEnumerable<LinkView> source)
         {
             return source.SingleOrDefault(l => l.Rel == RelTypes.Self )?.Href;
         }

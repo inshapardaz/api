@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
-using Inshapardaz.Api.View;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
@@ -15,10 +16,12 @@ namespace Inshapardaz.Api.Controllers.Dictionary
     public class TranslationController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
+        private readonly IRenderTranslation _translationRenderer;
 
-        public TranslationController(IAmACommandProcessor commandProcessor)
+        public TranslationController(IAmACommandProcessor commandProcessor, IRenderTranslation translationRenderer)
         {
             _commandProcessor = commandProcessor;
+            _translationRenderer = translationRenderer;
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/translations", Name = "GetWordTranslationsById")]
@@ -63,14 +66,10 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [ValidateModel]
         public async Task<IActionResult> Post(int id, int wordId, [FromBody]TranslationView translation)
         {
-            var request = new PostTranslationRequest(id)
-            {
-                WordId = wordId,
-                Translation = translation
-            };
-
+            var request = new AddTranslationRequest(id, wordId, translation.Map<TranslationView, Translation>());
             await _commandProcessor.SendAsync(request);
-            return Created(request.Result.Location, request.Result.Response);
+            var response = _translationRenderer.Render(request.Result, id);
+            return Created(response.Links.Self(), response);
         }
 
         [HttpPut("api/dictionaries/{id}/words/{wordId}/translations/{translationId}", Name = "UpdateTranslation")]
@@ -78,12 +77,14 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         public async Task<IActionResult> Put(int id, long wordId, int translationId, [FromBody]TranslationView translation)
         {
 
-            var request = new PutTranslationRequest(id, wordId, translationId)
-            {
-                Translation = translation
-            };
-
+            var request = new UpdateTranslationRequest(id, wordId, translation.Map<TranslationView, Translation>());
             await _commandProcessor.SendAsync(request);
+            if (request.Result.HasAddedNew)
+            {
+                var response = _translationRenderer.Render(request.Result.Translation, id);
+                return Created(response.Links.Self(), response);
+            }
+
             return NoContent();
         }
 

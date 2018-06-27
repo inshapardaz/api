@@ -51,7 +51,8 @@ namespace Inshapardaz.Api.Adapters.Dictionary
             }
 
             var wordCount = await _queryProcessor.ExecuteAsync(new GetDictionaryWordCountQuery {DictionaryId = command.DictionaryId}, cancellationToken);
-            command.Result = _dictionaryRenderer.Render(result, wordCount);
+            result.WordCount = wordCount;
+            command.Result = _dictionaryRenderer.Render(result);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

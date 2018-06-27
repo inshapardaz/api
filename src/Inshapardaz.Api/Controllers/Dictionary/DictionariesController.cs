@@ -1,22 +1,31 @@
 ﻿using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
-using Inshapardaz.Api.View;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.View.Dictionary;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Ports.Dictionary;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
+using ObjectMapper = Inshapardaz.Domain.Helpers.ObjectMapper;
 
 namespace Inshapardaz.Api.Controllers.Dictionary
 {
     public class DictionariesController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
+        private readonly IUserHelper _userHelper;
+        private readonly IRenderDictionaries _dictionariesRenderer;
+        private readonly IRenderDictionary _dictionaryRenderer;
 
-        public DictionariesController(IAmACommandProcessor commandProcessor)
+        public DictionariesController(IAmACommandProcessor commandProcessor, IUserHelper userHelper, IRenderDictionaries dictionariesRenderer, IRenderDictionary dictionaryRenderer)
         {
             _commandProcessor = commandProcessor;
+            _userHelper = userHelper;
+            _dictionariesRenderer = dictionariesRenderer;
+            _dictionaryRenderer = dictionaryRenderer;
         }
 
         [HttpGet("/api/dictionaries", Name = "GetDictionaries")]
@@ -45,10 +54,11 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [ValidateModel]
         public async Task<IActionResult> Post([FromBody]DictionaryView value)
         {
-            var request = new PostDictionaryRequest { Dictionary = value };
+            var request = new AddDictionaryRequest(_userHelper.GetUserId(), ObjectMapper.Map<DictionaryView, Domain.Entities.Dictionary.Dictionary>(value));
             await _commandProcessor.SendAsync(request);
 
-            return Created(request.Result.Location, request.Result.Response);
+            var response = _dictionaryRenderer.Render(request.Result);
+            return Created(response.Links.Self(), response);
         }
 
         [Authorize]
@@ -56,12 +66,13 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [ValidateModel]
         public async Task<IActionResult> Put(int id, [FromBody] DictionaryView value)
         {
-            var request = new PutDictionaryRequest(id) { Dictionary = value };
+            var request = new UpdateDictionaryRequest(id, ObjectMapper.Map<DictionaryView, Domain.Entities.Dictionary.Dictionary>(value));
             await _commandProcessor.SendAsync(request);
 
-            if (request.Result.Response != null)
+            if (request.Result.HasAddedNew)
             {
-                return Created(request.Result.Location, request.Result.Response);
+                var response = _dictionaryRenderer.Render(request.Result.Dictionary);
+                return Created(response.Links.Self(), response);
             }
 
             return NoContent();

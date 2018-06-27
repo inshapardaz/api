@@ -14,10 +14,9 @@ namespace Inshapardaz.Api.UnitTests.Fakes.Renderers
         private readonly DictionaryView _response = new DictionaryView();
         private readonly List<LinkView> _links = new List<LinkView>();
 
-        public DictionaryView Render(Dictionary source, int wordCount)
+        public DictionaryView Render(Dictionary source)
         {
             _response.Links = _links;
-            _response.WordCount = wordCount;
             return _response;
         }
 

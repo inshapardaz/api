@@ -28,8 +28,9 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeLinkRenderer = new FakeLinkRenderer();
                 var fakeUserHelper = new FakeUserHelper();
                 var renderer = new RelationRenderer(fakeLinkRenderer, new EnumRenderer(), fakeUserHelper);
+                _relationship.SourceWordId = _wordId;
 
-                _result = renderer.Render(_relationship, _dictionaryId, _wordId);
+                _result = renderer.Render(_relationship, _dictionaryId);
             }
 
             [Test]
@@ -106,7 +107,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new RelationRenderer(fakeLinkRenderer, new EnumRenderer(), fakeUserHelper);
 
-                _result = renderer.Render(_relationship, _dictionaryId, _wordId);
+                _result = renderer.Render(_relationship, _dictionaryId);
             }
 
             [Test]

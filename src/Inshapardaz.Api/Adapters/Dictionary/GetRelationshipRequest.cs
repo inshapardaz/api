@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Adapters.Dictionary
                 throw new BadRequestException();
             }
 
-            command.Result = _relationRender.Render(relations, command.DictionaryId, command.WordId);
+            command.Result = _relationRender.Render(relations, command.DictionaryId);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

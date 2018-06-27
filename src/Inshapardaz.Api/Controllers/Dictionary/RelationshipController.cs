@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
-using Inshapardaz.Api.View;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.View.Dictionary;
+using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Ports.Dictionary;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -13,10 +15,12 @@ namespace Inshapardaz.Api.Controllers.Dictionary
     public class RelationshipController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
+        private readonly IRenderRelation _relationRender;
 
-        public RelationshipController(IAmACommandProcessor commandProcessor)
+        public RelationshipController(IAmACommandProcessor commandProcessor, IRenderRelation relationRender)
         {
             _commandProcessor = commandProcessor;
+            _relationRender = relationRender;
         }
 
         [HttpGet("/api/dictionaries/{id}/words/{wordId}/relationships", Name = "GetWordRelationsById")]
@@ -45,24 +49,24 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [ValidateModel]
         public async Task<IActionResult> Post(int id, int wordId, [FromBody]RelationshipView relationship)
         {
-            var request = new PostRelationshipRequest(id)
-            {
-                WordId = wordId,
-                Relationship = relationship
-            };
+            var request = new AddRelationshipRequest(id, wordId, relationship.Map<RelationshipView, WordRelation>());
             await _commandProcessor.SendAsync(request);
-            return Created(request.Result.Location, request.Result.Response);
+            var response = _relationRender.Render(request.Result, id);
+            return Created(response.Links.Self(), response);
         }
 
         [HttpPut("/api/dictionaries/{id}/words/{wordId}/relationships/{relationId}", Name = "UpdateRelation")]
         [ValidateModel]
         public async Task<IActionResult> Put(int id, long wordId, int relationId, [FromBody]RelationshipView relationship)
         {
-            var request = new PutRelationshipRequest(id, wordId, relationId)
-            {
-                Relationship = relationship
-            };
+            var request = new UpdateRelationshipRequest(id, wordId, relationship.Map<RelationshipView, WordRelation>());
             await _commandProcessor.SendAsync(request);
+            if (request.Result.HasAddedNew)
+            {
+                var response = _relationRender.Render(request.Result.Relationship, id);
+                return Created(response.Links.Self(), response);
+            }
+
             return NoContent();
         }
 

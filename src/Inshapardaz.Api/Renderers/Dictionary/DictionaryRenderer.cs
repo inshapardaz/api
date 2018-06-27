@@ -9,7 +9,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
 {
     public interface IRenderDictionary
     {
-        DictionaryView Render(Domain.Entities.Dictionary.Dictionary source, int wordCount);
+        DictionaryView Render(Domain.Entities.Dictionary.Dictionary source);
     }
 
     public class DictionaryRenderer : IRenderDictionary
@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
             _userHelper = userHelper;
         }
 
-        public DictionaryView Render(Domain.Entities.Dictionary.Dictionary source, int wordCount)
+        public DictionaryView Render(Domain.Entities.Dictionary.Dictionary source)
         {
             var links = new List<LinkView>
             {
@@ -58,7 +58,6 @@ namespace Inshapardaz.Api.Renderers.Dictionary
                 new {id = source.Id, startingWith = i})));
 
             var result = ObjectMapper.Map<Domain.Entities.Dictionary.Dictionary, DictionaryView>(source);
-            result.WordCount = wordCount;
             result.Links = links;
             result.Indexes = indexes;
             return result;

@@ -16,5 +16,7 @@ namespace Inshapardaz.Domain.Entities.Dictionary
         public Guid UserId { get; set; }
 
         public virtual IEnumerable<DictionaryDownload> Downloads { get; set; }
+
+        public int WordCount { get; set; }
     }
 }

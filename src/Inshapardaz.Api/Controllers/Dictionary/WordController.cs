@@ -1,8 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
+using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Ports.Dictionary;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -12,10 +15,12 @@ namespace Inshapardaz.Api.Controllers.Dictionary
     public class WordController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
+        private readonly IRenderWord _wordRenderer;
 
-        public WordController(IAmACommandProcessor commandProcessor)
+        public WordController(IAmACommandProcessor commandProcessor, IRenderWord wordRenderer)
         {
             _commandProcessor = commandProcessor;
+            _wordRenderer = wordRenderer;
         }
 
         [HttpGet("api/dictionaries/{id}/words", Name = "GetWords")]
@@ -41,17 +46,26 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [ValidateModel]
         public async Task<IActionResult> Post(int id, [FromBody] WordView word)
         {
-            var command = new PostWordRequest(id) { Word = word };
+            var command = new AddWordRequest(id, word.Map<WordView, Word>());
             await _commandProcessor.SendAsync(command);
-            return Created(command.Result.Location, command.Result.Response);
+
+            var response = _wordRenderer.Render(command.Result, id);
+            return Created(response.Links.Self(), response);
         }
 
         [HttpPut("/api/dictionaries/{id}/words/{wordId}", Name = "UpdateWord")]
         [ValidateModel]
         public async Task<IActionResult> Put(int id, int wordId, [FromBody] WordView word)
         {
-            var command = new PutWordRequest(id) { WordId = wordId, Word = word };
-            await _commandProcessor.SendAsync(command);
+            var request = new UpdateWordRequest(id, word.Map<WordView, Word>() );
+            await _commandProcessor.SendAsync(request);
+
+            if (request.Result.HasAddedNew)
+            {
+                var response = _wordRenderer.Render(request.Result.Word, id);
+                return Created(response.Links.Self(), response);
+            }
+
             return NoContent();
         }
 

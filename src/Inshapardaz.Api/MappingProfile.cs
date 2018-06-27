@@ -18,9 +18,9 @@ namespace Inshapardaz.Api
                 .ForMember(s => s.Language, o => o.MapFrom(d => d.Language))
                 .ForMember(s => s.IsPublic, o => o.MapFrom(d => d.IsPublic))
                 .ForMember(s => s.UserId, o => o.MapFrom(d => d.UserId))
-                .ForMember(s => s.Links, o => o.Ignore())
-                .ForMember(s => s.Indexes, o => o.Ignore())
-                .ForMember(s => s.WordCount, o => o.Ignore())
+                .ForMember(d => d.Links, o => o.Ignore())
+                .ForMember(d => d.Indexes, o => o.Ignore())
+                .ForMember(d => d.WordCount, o => o.MapFrom(s => s.WordCount))
                 .ReverseMap();
 
             CreateMap<Word, WordView>()

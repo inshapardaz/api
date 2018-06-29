@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Entities.Dictionary;
 
 namespace Inshapardaz.Domain.Repositories.Dictionary
 {
@@ -19,5 +20,11 @@ namespace Inshapardaz.Domain.Repositories.Dictionary
         Task<IEnumerable<Entities.Dictionary.Dictionary>> GetAllDictionariesForUser(Guid userId, CancellationToken cancellationToken);
 
         Task<Entities.Dictionary.Dictionary> GetDictionaryById(int dictionaryId, CancellationToken cancellationToken);
+
+        Task<IEnumerable<Entities.Dictionary.DictionaryDownload>> GetDictionaryDownloads(int dictionaryId, CancellationToken cancellationToken);
+
+        Task<DictionaryDownload> GetDictionaryDownloadById(int dictionaryId, string mimeType, CancellationToken cancellationToken);
+
+        Task<DictionaryDownload> AddDictionaryDownload(int dictionaryId, string mimeType, CancellationToken cancellationToken);
     }
 }

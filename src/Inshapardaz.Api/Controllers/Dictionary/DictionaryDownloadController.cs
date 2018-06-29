@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
-using Inshapardaz.Api.View;
+using Inshapardaz.Api.Model;
+using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Ports.Dictionary;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -14,10 +16,12 @@ namespace Inshapardaz.Api.Controllers.Dictionary
     public class DictionaryDownloadController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
+        private readonly IRenderDictionaryDownload _dictionaryDownload;
 
-        public DictionaryDownloadController(IAmACommandProcessor commandProcessor)
+        public DictionaryDownloadController(IAmACommandProcessor commandProcessor, IRenderDictionaryDownload dictionaryDownload)
         {
             _commandProcessor = commandProcessor;
+            _dictionaryDownload = dictionaryDownload;
         }
 
         [HttpGet("/api/dictionary/{id}/download", Name = "DownloadDictionary")]
@@ -25,7 +29,7 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         public async Task<IActionResult> DownloadDictionary(int id, [FromHeader(Name = "Accept")] string accept = MimeTypes.SqlLite)
         {
 
-            var request = new DownloadDictionaryRequest(id) { MimeType = accept };
+            var request = new GetDownloadDictionaryRequest(id) { MimeType = accept };
             await _commandProcessor.SendAsync(request);
 
             return File(request.Result.Contents, accept, request.Result.FileName);
@@ -36,10 +40,11 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [Produces(typeof(DownloadDictionaryView))]
         public async Task<IActionResult> CreateDownloadForDictionary(int id)
         {
-            var request = new PostDictionaryDownloadRequest(id);
-            await _commandProcessor.SendAsync(request);
+            //var request = new PostDictionaryDownloadRequest(id);
+            //await _commandProcessor.SendAsync(request);
 
-            return Created(request.Result.Location, request.Result.Response);
+            //return Created(_dictionaryDownload.Render(new DownloadJobModel(){}}) request.Result));
+            return NotFound();
         }
     }
 }

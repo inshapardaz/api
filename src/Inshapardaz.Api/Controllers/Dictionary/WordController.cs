@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Inshapardaz.Api.Adapters.Dictionary;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
+using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
@@ -16,29 +16,39 @@ namespace Inshapardaz.Api.Controllers.Dictionary
     {
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IRenderWord _wordRenderer;
+        private readonly IRenderWordPage _wordPageRenderer;
 
-        public WordController(IAmACommandProcessor commandProcessor, IRenderWord wordRenderer)
+        public WordController(IAmACommandProcessor commandProcessor, IRenderWord wordRenderer, IRenderWordPage wordPageRenderer)
         {
             _commandProcessor = commandProcessor;
             _wordRenderer = wordRenderer;
+            _wordPageRenderer = wordPageRenderer;
         }
 
         [HttpGet("api/dictionaries/{id}/words", Name = "GetWords")]
         [Produces(typeof(PageView<WordView>))]
         public async Task<IActionResult> GetWords(int id, int pageNumber = 1, int pageSize = 10)
         {
-            var command = new GetWordsForDictionaryRequest(id){ PageNumber = pageNumber, PageSize = pageSize };
+            var command = new GetWordsForDictionaryRequest(id, pageNumber, pageSize);
             await _commandProcessor.SendAsync(command);
-            return Ok(command.Result);
+
+            var args = new PageRendererArgs<Word>
+            {
+                Page = command.Result,
+                RouteArguments = new PagedRouteArgs { DictionaryId =  id, PageNumber = pageNumber, PageSize = pageSize},
+                RouteName = "GetWords"
+            };
+            return Ok(_wordPageRenderer.Render(args, id));
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}", Name = "GetWordById")]
         [Produces(typeof(WordView))]
         public async Task<IActionResult> GetWord(int id, int wordId)
         {
-            var command = new GetWordByIdRequest(id) { WordId = wordId };
+            var command = new GetWordByIdRequest(id, wordId);
             await _commandProcessor.SendAsync(command);
-            return Ok(command.Result);
+
+            return Ok(_wordRenderer.Render(command.Result, id));
         }
 
         [HttpPost("/api/dictionaries/{id}/words", Name = "CreateWord")]

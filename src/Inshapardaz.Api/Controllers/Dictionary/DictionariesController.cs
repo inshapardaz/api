@@ -32,10 +32,10 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [Produces(typeof(DictionariesView))]
         public async Task<IActionResult> GetDictionaries()
         {
-            var request = new GetDictionariesRequest();
+            var request = new GetDictionariesRequest(_userHelper.GetUserId());
             await _commandProcessor.SendAsync(request);
             
-            return Ok(request.Result);
+            return Ok(_dictionariesRenderer.Render(request.Result) );
         }
 
         [HttpGet("/api/dictionaries/{id}", Name = "GetDictionaryById")]
@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Controllers.Dictionary
             var request = new GetDictionaryByIdRequest(id);
             await _commandProcessor.SendAsync(request);
 
-            return Ok(request.Result);
+            return Ok(_dictionaryRenderer.Render(request.Result));
         }
 
         [Authorize]

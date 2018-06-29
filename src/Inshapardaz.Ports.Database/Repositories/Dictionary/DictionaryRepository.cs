@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Dictionary;
+using Inshapardaz.Ports.Database.Entities.Dictionary;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Ports.Database.Repositories.Dictionary
@@ -83,6 +84,28 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
             return (await _database.Dictionary
                                    .Include(d => d.Downloads)
                                    .SingleOrDefaultAsync(d => d.Id == dictionaryId, cancellationToken)).Map<Entities.Dictionary.Dictionary, Domain.Entities.Dictionary.Dictionary>();
+        }
+
+        public async Task<IEnumerable<Domain.Entities.Dictionary.DictionaryDownload>> GetDictionaryDownloads(int dictionaryId, CancellationToken cancellationToken)
+        {
+            return await _database.DictionaryDownload
+                                   .Where(d => d.DictionaryId == dictionaryId)
+                                   .Select(d => d.Map<DictionaryDownload, Domain.Entities.Dictionary.DictionaryDownload>())
+                                   .ToListAsync(cancellationToken);
+        }
+
+        public async Task<Domain.Entities.Dictionary.DictionaryDownload> GetDictionaryDownloadById(int dictionaryId, string mimeType, CancellationToken cancellationToken)
+        {
+            return (await _database.DictionaryDownload
+                                  .Include(d => d.File)
+                                  .Where(d => d.DictionaryId == dictionaryId && d.MimeType == mimeType)
+                                  .SingleOrDefaultAsync(cancellationToken))
+                                  .Map<DictionaryDownload, Domain.Entities.Dictionary.DictionaryDownload>();
+        }
+
+        public Task<Domain.Entities.Dictionary.DictionaryDownload> AddDictionaryDownload(int dictionaryId, string mimeType, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

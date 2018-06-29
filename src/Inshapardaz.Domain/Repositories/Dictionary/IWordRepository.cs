@@ -18,5 +18,6 @@ namespace Inshapardaz.Domain.Repositories.Dictionary
         Task<Page<Word>> GetWordsContaining(int dictionaryId, string searchTerm, int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<Page<Word>> GetWords(int dictionaryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<int> GetWordCountByDictionary(int dictionaryId, CancellationToken cancellationToken);
+        Task<Page<Word>> GetWordsStartingWith(int dictionaryId, string startingWith, int pageNumber, int pageSize, CancellationToken cancellationToken);
     }
 }

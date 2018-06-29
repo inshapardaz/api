@@ -16,11 +16,11 @@ namespace Inshapardaz.Domain.Ports.Library
         public int GenreIdId { get; }
     }
 
-    public class DeleteAuthorRequestHandler : RequestHandlerAsync<DeleteGenreRequest>
+    public class DeleteGenreRequestHandler : RequestHandlerAsync<DeleteGenreRequest>
     {
         private readonly IGenreRepository _genreRepository;
 
-        public DeleteAuthorRequestHandler(IGenreRepository genreRepository)
+        public DeleteGenreRequestHandler(IGenreRepository genreRepository)
         {
             _genreRepository = genreRepository;
         }

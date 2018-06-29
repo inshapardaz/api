@@ -1,11 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Commands.Dictionary;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Queries.Dictionary;
 using Inshapardaz.Domain.Repositories.Dictionary;
 using Paramore.Brighter;
-using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Dictionary
 {

@@ -86,7 +86,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
             return translation.Map<Entities.Dictionary.Translation, Translation>();
         }
 
-        public async Task<IEnumerable<Translation>> GetWordTranslationsByLanguage(int dictionaryId, long wordId, Languages language, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Translation>> GetTranslationsByLanguage(int dictionaryId, long wordId, Languages language, CancellationToken cancellationToken)
         {
             return await _databaseContext.Translation
                                          .Where(t => t.Word.DictionaryId == dictionaryId &&
@@ -96,7 +96,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                                          .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Translation>> GetWordTranslations(int dictionaryId, long wordId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Translation>> GetTranslationsByWordId(int dictionaryId, long wordId, CancellationToken cancellationToken)
         {
             return await _databaseContext.Translation
                                          .Where(t => t.Word.DictionaryId == dictionaryId &&

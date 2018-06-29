@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Controllers.Dictionary
                 return NotFound();
             }
 
-            var request = new ThesaususRequest
+            var request = new ThesaurusRequest
             {
                 PageSize = pageSize,
                 PageNumber = pageNumber,

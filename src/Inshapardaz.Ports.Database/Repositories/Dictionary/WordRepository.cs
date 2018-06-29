@@ -160,5 +160,25 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
         {
             return  await _databaseContext.Word.CountAsync(d => d.Id == dictionaryId, cancellationToken);
         }
+
+        public async Task<Page<Word>> GetWordsStartingWith(int dictionaryId, string startingWith, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var words = _databaseContext.Word.Where(x => x.DictionaryId == dictionaryId);
+
+            var count = words.Count();
+            var data = await words
+                             .Where(w => w.Title.StartsWith(startingWith))
+                             .Paginate(pageNumber, pageSize)
+                             .Select(w => w.Map<Entities.Dictionary.Word, Word>())
+                             .ToListAsync(cancellationToken);
+
+            return new Page<Word>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = count,
+                Data = data
+            };
+        }
     }
 }

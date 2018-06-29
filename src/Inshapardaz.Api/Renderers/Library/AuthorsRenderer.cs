@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
@@ -10,7 +9,7 @@ namespace Inshapardaz.Api.Renderers.Library
 {
     public interface IRenderAuthors
     {
-        PageView<AuthorView> Render(PageRendererArgs<Author> source, int authorCount);
+        PageView<AuthorView> Render(PageRendererArgs<Author> source);
     }
 
     public class AuthorsRenderer : IRenderAuthors
@@ -26,7 +25,7 @@ namespace Inshapardaz.Api.Renderers.Library
             _userHelper = userHelper;
         }
 
-        public PageView<AuthorView> Render(PageRendererArgs<Author> source, int authorCount)
+        public PageView<AuthorView> Render(PageRendererArgs<Author> source)
         {
             var page = new PageView<AuthorView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {

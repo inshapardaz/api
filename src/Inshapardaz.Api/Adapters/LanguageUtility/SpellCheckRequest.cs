@@ -7,15 +7,12 @@ using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
-using Inshapardaz.Domain.Queries;
-using Inshapardaz.Domain.Queries.Dictionary;
+using Inshapardaz.Domain.Repositories.Dictionary;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
-using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.LanguageUtility
 {
@@ -28,17 +25,17 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
 
     public class SpellCheckRequestHandler : RequestHandlerAsync<SpellCheckRequest>
     {
-        private readonly IQueryProcessor _queryProcessor;
+        private readonly IWordRepository _wordRepository;
         private readonly IRenderLink _linkRenderer;
         private readonly Settings _settings;
         private readonly ILogger<SpellCheckRequestHandler> _logger;
 
-        public SpellCheckRequestHandler(IQueryProcessor queryProcessor, 
+        public SpellCheckRequestHandler(IWordRepository wordRepository, 
                                         IRenderLink linkRenderer,
                                         Settings settings, 
                                         ILogger<SpellCheckRequestHandler> logger)
         {
-            _queryProcessor = queryProcessor;
+            _wordRepository = wordRepository;
             _linkRenderer = linkRenderer;
             _settings = settings;
             _logger = logger;
@@ -75,7 +72,7 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
                 var sanitisedWord = item.TrimSpecialCharacters();
                 var index = request.Sentence.IndexOf(sanitisedWord, lastIndex);
 
-                var foundWord = await _queryProcessor.ExecuteAsync(new GetWordByTitleQuery(defaultDictionaryId, sanitisedWord));
+                var foundWord = await _wordRepository.GetWordByTitle(defaultDictionaryId, sanitisedWord, cancellationToken);
 
                 words.Add(new SpellCheckResultView
                 {
@@ -224,7 +221,7 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
             }
 
             var uniqueOptions = options.Distinct();
-            var optionResults = await _queryProcessor.ExecuteAsync(new GetWordsByTitlesQuery(dictionaryId, uniqueOptions));
+            var optionResults = await _wordRepository.GetWordsByTitles(dictionaryId, uniqueOptions, cancellationToken);
 
             return optionResults.Select(r => Convert(dictionaryId, r));
         }

@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FizzWare.NBuilder;
-using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.Renderers.Dictionary;
 using Inshapardaz.Api.UnitTests.Fakes.Helpers;
 using Inshapardaz.Api.UnitTests.Fakes.Renderers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
 using NUnit.Framework;
 using Shouldly;
@@ -29,7 +27,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeDictionaryRenderer = new FakeDictionaryRenderer();
                 var renderer = new DictionariesRenderer(linkRenderer, fakeUserHelper, fakeDictionaryRenderer);
                 _dictionaries = Builder<Dictionary>.CreateListOfSize(3).Build();
-                _result = renderer.Render(_dictionaries, new Dictionary<int, int>(), new Dictionary<int, IEnumerable<DictionaryDownload>>());
+                _result = renderer.Render(_dictionaries);
             }
 
             [Test]
@@ -65,7 +63,7 @@ namespace Inshapardaz.Api.UnitTests.Renderers
                 var fakeUserHelper = new FakeUserHelper().AsContributor();
                 var renderer = new DictionariesRenderer(linkRenderer, fakeUserHelper, fakeDictionaryRenderer);
                 var dictionaries = Builder<Dictionary>.CreateListOfSize(3).Build();
-                _result = renderer.Render(dictionaries, new Dictionary<int, int>(), new Dictionary<int, IEnumerable<DictionaryDownload>>());
+                _result = renderer.Render(dictionaries);
             }
 
             [Test]

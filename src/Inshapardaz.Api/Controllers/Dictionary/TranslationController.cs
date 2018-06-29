@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
 using Inshapardaz.Api.Helpers;
@@ -28,27 +29,20 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [Produces(typeof(IEnumerable<TranslationView>))]
         public async Task<IActionResult> GetTranslationForWord(int id, int wordId)
         {
-            var request = new GetTranslationForWordRequest(id)
-            {
-                WordId = wordId
-            };
+            var request = new GetTranslationForWordRequest(id, wordId);
 
             await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
+            return Ok(request.Result.Select(t => _translationRenderer.Render(t, id)));
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/translations/languages/{language}", Name = "GetWordTranslationsByWordIdAndLanguage")]
         [Produces(typeof(IEnumerable<TranslationView>))]
         public async Task<IActionResult> GetTranslationForWord(int id, int wordId, Languages language)
         {
-            var request = new GetTranslationForWordLanguageRequest(id)
-            {
-                WordId = wordId,
-                Language = language
-            };
+            var request = new GetTranslationForWordLanguageRequest(id, wordId, language);
 
             await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
+            return Ok(request.Result.Select(t => _translationRenderer.Render(t, id)));
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/translations/{translationId}", Name = "GetTranslationById")]
@@ -58,7 +52,7 @@ namespace Inshapardaz.Api.Controllers.Dictionary
             var request = new GetTranslationRequest(id, wordId, translationId);
 
             await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
+            return Ok(_translationRenderer.Render(request.Result, id));
         }
 
         [HttpPost("api/dictionaries/{id}/words/{wordId}/translations", Name = "AddTranslation")]

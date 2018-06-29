@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Helpers;
 
@@ -11,7 +9,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
 {
     public interface IRenderDictionaries
     {
-        DictionariesView Render(IEnumerable<Domain.Entities.Dictionary.Dictionary> source, Dictionary<int, int> wordCounts, Dictionary<int, IEnumerable<DictionaryDownload>> downloads);
+        DictionariesView Render(IEnumerable<Domain.Entities.Dictionary.Dictionary> source);
     }
 
     public class DictionariesRenderer : IRenderDictionaries
@@ -27,7 +25,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
             _dictionaryRender = dictionaryRender;
         }
 
-        public DictionariesView Render(IEnumerable<Domain.Entities.Dictionary.Dictionary> source, Dictionary<int, int> wordCounts, Dictionary<int, IEnumerable<DictionaryDownload>> downloads)
+        public DictionariesView Render(IEnumerable<Domain.Entities.Dictionary.Dictionary> source)
         {
             var links = new List<LinkView>
                             {
@@ -42,11 +40,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
             return new DictionariesView
             {
                 Links = links,
-                Items = source.Select(d =>
-                {
-                    d.WordCount = wordCounts.ContainsKey(d.Id) ? wordCounts[d.Id] : 0;
-                    return _dictionaryRender.Render(d);
-                }).ToList()
+                Items = source.Select(d => _dictionaryRender.Render(d)).ToList()
             };
         }
     }

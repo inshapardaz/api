@@ -1,20 +1,17 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
 using Inshapardaz.Domain;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.GrammarParser;
 using Inshapardaz.Domain.Helpers;
-using Inshapardaz.Domain.Queries;
-using Inshapardaz.Domain.Queries.Dictionary;
+using Inshapardaz.Domain.Repositories.Dictionary;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
-using Paramore.Darker;
 
 namespace Inshapardaz.Api.Adapters.LanguageUtility
 {
@@ -27,15 +24,15 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
 
     public class GrammarCheckRequestHandler : RequestHandlerAsync<GrammarCheckRequest>
     {
-        private readonly IQueryProcessor _queryProcessor;
+        private readonly IWordRepository _wordRepository;
         private readonly Settings _settings;
         private readonly ILogger<SpellCheckRequestHandler> _logger;
         private int _dictionaryId = 0;
-        public GrammarCheckRequestHandler(IQueryProcessor queryProcessor,
+        public GrammarCheckRequestHandler(IWordRepository wordRepository,
                                         Settings settings,
                                         ILogger<SpellCheckRequestHandler> logger)
         {
-            _queryProcessor = queryProcessor;
+            _wordRepository = wordRepository;
             _settings = settings;
             _logger = logger;
         }
@@ -51,22 +48,22 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
                 throw new Exception("Default dictionary not found");
             }
 
-            await ParseGrammarAsync(request.Paragraph);
+            await ParseGrammarAsync(request.Paragraph, cancellationToken);
             return await base.HandleAsync(request, cancellationToken);
         }
 
-        private async Task ParseGrammarAsync(string paragraph)
+        private async Task ParseGrammarAsync(string paragraph, CancellationToken cancellationToken)
         {
             var sentences = paragraph.SplitIntoSentences();
             foreach (var s in sentences)
             {
-                await CheckSentence(s);
+                await CheckSentence(s, cancellationToken);
             }
         }
 
-        private async Task<bool> CheckSentence(string sentence)
+        private async Task<bool> CheckSentence(string sentence, CancellationToken cancellationToken)
         {
-            var tokens = await Tokenise(sentence);
+            var tokens = await Tokenise(sentence, cancellationToken);
             if (IsAmrONahi(tokens))
             {
                 // TODO : Add success
@@ -116,11 +113,11 @@ namespace Inshapardaz.Api.Adapters.LanguageUtility
             return false;
         }
 
-        private async Task<Stack<Word>> Tokenise(string sentence)
+        private async Task<Stack<Word>> Tokenise(string sentence, CancellationToken cancellationToken)
         {
             var words = sentence.TrimSpecialCharacters().SplitIntoSentences();
 
-            return new Stack<Word>(await _queryProcessor.ExecuteAsync(new GetWordsByTitlesQuery(_dictionaryId, words)));
+            return new Stack<Word>(await _wordRepository.GetWordsByTitles(_dictionaryId, words, cancellationToken));
         }
         
         private bool IsAmrONahi(Stack<Word> tokens)

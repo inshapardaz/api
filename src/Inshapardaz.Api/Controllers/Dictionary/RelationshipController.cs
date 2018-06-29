@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Adapters.Dictionary;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers.Dictionary;
@@ -27,12 +27,10 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [Produces(typeof(IEnumerable<RelationshipView>))]
         public async Task<IActionResult> GetRelationshipsForWord(int id, int wordId)
         {
-            var request = new GetRelationshipsForWordRequest(id)
-            {
-                WordId = wordId
-            };
+            var request = new GetRelationshipsForWordRequest(id, wordId);
             await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
+
+            return Ok(request.Result.Select(r => _relationRender.Render(r,id)));
         }
 
         [HttpGet("/api/dictionaries/{id}/words/{wordId}/relationships/{relationId}", Name = "GetRelationById")]
@@ -41,7 +39,7 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         {
             var request = new GetRelationshipRequest(id, wordId, relationId);
             await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
+            return Ok(_relationRender.Render(request.Result, id));
         }
 
         [HttpPost("/api/dictionaries/{id}/words/{wordId}/relationships", Name = "AddRelation")]

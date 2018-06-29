@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters.Dictionary;
 using Inshapardaz.Api.Helpers;
@@ -27,10 +28,10 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         [Produces(typeof(IEnumerable<MeaningView>))]
         public async Task<IActionResult> GetMeaningForWord(int id, int wordId)
         {
-            var request = new GetMeaningForWordRequest(id) { WordId = wordId };
+            var request = new GetMeaningForWordRequest(id, wordId);
 
             await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
+            return Ok(request.Result.Select(m => _meaningRenderer.Render(m, id)));
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/meanings/{meaningId}", Name = "GetMeaningById")]
@@ -39,7 +40,8 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         {
             var request = new GetMeaningByIdRequest(id, wordId, meaningId);
             await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
+
+            return Ok(_meaningRenderer.Render(request.Result, id));
         }
 
         [HttpGet("api/dictionaries/{id}/words/{wordId}/meanings/contexts/{context}", Name = "GetWordMeaningByContext")]
@@ -48,7 +50,7 @@ namespace Inshapardaz.Api.Controllers.Dictionary
         {
             var request = new GetMeaningForContextRequest(id, wordId, context);
             await _commandProcessor.SendAsync(request);
-            return Ok(request.Result);
+            return Ok(request.Result.Select(m => _meaningRenderer.Render(m, id)));
         }
 
         [HttpPost("api/dictionaries/{id}/words/{wordId}/meanings", Name = "AddMeaning")]

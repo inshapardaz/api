@@ -39,6 +39,8 @@ namespace Inshapardaz.Api.IntegrationTests
         protected TranslationDataHelper TranslationDataHelper => new TranslationDataHelper(TestServer.Host.Services.GetService<ITranslationRepository>());
         protected RelationshipDataHelper RelationshipDataHelper => new RelationshipDataHelper(TestServer.Host.Services.GetService<IRelationshipRepository>());
         protected GenreDataHelper GenreDataHelper => new GenreDataHelper(TestServer.Host.Services.GetService<IGenreRepository>());
+        protected AuthorDataHelper AuthorDataHelper => new AuthorDataHelper(TestServer.Host.Services.GetService<IAuthorRepository>());
+        protected BookDataHelper BookDataHelper => new BookDataHelper(TestServer.Host.Services.GetService<IBookRepository>());
 
         protected HttpResponseMessage Response;
 

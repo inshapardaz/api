@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Library;
@@ -15,10 +16,14 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<Page<Book>> GetBooks(int pageNumber, int pageSize, CancellationToken cancellationToken);
 
+        Task<Page<Book>> GetPublicBooks(int pageNumber, int pageSize, CancellationToken cancellationToken);
+
         Task<Page<Book>> GetBooksByGenere(int genereId, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<Page<Book>> GetBooksByAuthor(int authorId, int pageNumber, int pageSize, CancellationToken cancellationToken);
-        
+
+        Task<Page<Book>> GetPublicBooksByAuthor(int authorId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
         Task<Book> GetBookById(int bookId, CancellationToken cancellationToken);
     }
 }

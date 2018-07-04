@@ -134,6 +134,10 @@ namespace Inshapardaz.Api
 
             services.AddTransient<IRenderGenre, GenreRenderer>();
             services.AddTransient<IRenderGenres, GenresRenderer>();
+            services.AddTransient<IRenderAuthors, AuthorsRenderer>();
+            services.AddTransient<IRenderAuthor, AuthorRenderer>();
+            services.AddTransient<IRenderBooks, BooksRenderer>();
+            services.AddTransient<IRenderBook, BookRenderer>();
         }
 
         public void ConfigureObjectMappings(IApplicationBuilder app)

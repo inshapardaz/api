@@ -29,7 +29,7 @@
         public const string CreateDownload = "create-download";
         public const string SourceWord = "source-word";
         public const string RelatedWord = "related-word";
-
         public const string Books = "books";
+        public const string Author = "author";
     }
 }

@@ -7,27 +7,27 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Library.Genre
+namespace Inshapardaz.Api.IntegrationTests.Library.Author
 {
     [TestFixture]
-    public class WhenGettingGenreByIdAsAnonymous : IntegrationTestBase
+    public class WhenGettingAuthorByIdAsAnonymous : IntegrationTestBase
     {
-        private GenreView _view;
-        private Domain.Entities.Library.Genre _genre;
+        private AuthorView _view;
+        private Domain.Entities.Library.Author _author;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genre = GenreDataHelper.Create("Genre2323");
+            _author = AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "Author2323" });
 
-            Response = await GetClient().GetAsync($"/api/genres/{_genre.Id}");
-            _view = JsonConvert.DeserializeObject<GenreView>(await Response.Content.ReadAsStringAsync());
+            Response = await GetClient().GetAsync($"/api/authors/{_author.Id}");
+            _view = JsonConvert.DeserializeObject<AuthorView>(await Response.Content.ReadAsStringAsync());
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
-            GenreDataHelper.Delete(_genre.Id);
+            AuthorDataHelper.Delete(_author.Id);
         }
 
         [Test]
@@ -37,15 +37,15 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Genre
         }
 
         [Test]
-        public void ShouldReturnGenreWithCorrectId()
+        public void ShouldReturnAuthorWithCorrectId()
         {
             _view.Id.ShouldBe(_view.Id);
         }
 
         [Test]
-        public void ShouldReturnGenreWithCorrectName()
+        public void ShouldReturnAuthorWithCorrectName()
         {
-            _view.Name.ShouldBe(_genre.Name);
+            _view.Name.ShouldBe(_author.Name);
         }
 
         [Test]

@@ -32,7 +32,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
 
             var item = book.Map<Book, Entities.Library.Book>();
-            author.Books.Add(item);
+            _databaseContext.Book.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
@@ -93,11 +93,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
         public async Task<Page<Book>> GetBooksByGenere(int genereId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var book = _databaseContext.Book;
+            var book = _databaseContext.Book
+                                       .Where(b => b.Generes.Any(g => g.GenereId == genereId));
 
             var count = book.Count();
             var data = await book
-                             .Where(b => b.Generes.Any(g => g.GenereId == genereId))
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())
                              .ToListAsync(cancellationToken);
@@ -113,11 +113,52 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
         public async Task<Page<Book>> GetBooksByAuthor(int authorId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var book = _databaseContext.Book;
+            var book = _databaseContext
+                        .Book
+                        .Where(b => b.AuthorId == authorId);
 
             var count = book.Count();
             var data = await book
-                             .Where(b => b.AuthorId == authorId)
+                             .Paginate(pageNumber, pageSize)
+                             .Select(a => a.Map<Entities.Library.Book, Book>())
+                             .ToListAsync(cancellationToken);
+
+            return new Page<Book>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = count,
+                Data = data
+            };
+        }
+
+        public async Task<Page<Book>> GetPublicBooksByAuthor(int authorId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var book = _databaseContext
+                       .Book
+                       .Where(b => b.AuthorId == authorId && b.IsPublic);
+
+            var count = book.Count();
+            var data = await book
+                             .Paginate(pageNumber, pageSize)
+                             .Select(a => a.Map<Entities.Library.Book, Book>())
+                             .ToListAsync(cancellationToken);
+
+            return new Page<Book>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = count,
+                Data = data
+            };
+        }
+
+        public async Task<Page<Book>> GetPublicBooks(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var book = _databaseContext.Book.Where(b => b.IsPublic);
+
+            var count = book.Count();
+            var data = await book
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())
                              .ToListAsync(cancellationToken);

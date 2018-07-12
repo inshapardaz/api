@@ -31,5 +31,7 @@
         public const string RelatedWord = "related-word";
         public const string Books = "books";
         public const string Author = "author";
+        public const string Authors = "authors";
+        public const string Genres = "genres";
     }
 }

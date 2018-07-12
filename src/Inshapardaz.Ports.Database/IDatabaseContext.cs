@@ -4,6 +4,7 @@ using Inshapardaz.Ports.Database.Entities;
 using Inshapardaz.Ports.Database.Entities.Dictionary;
 using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Inshapardaz.Ports.Database
 {
@@ -22,7 +23,7 @@ namespace Inshapardaz.Ports.Database
         DbSet<Book> Book { get; set; }
         DbSet<Chapter> Chapter { get; set; }
 
-
+        DatabaseFacade Database { get; }
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

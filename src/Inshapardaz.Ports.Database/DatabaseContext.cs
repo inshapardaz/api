@@ -142,17 +142,17 @@ namespace Inshapardaz.Ports.Database
             });
 
             modelBuilder.Entity<BookGenre>()
-                        .HasKey(t => new { t.BookId, t.GenereId });
+                        .HasKey(t => new { t.BookId, t.GenreId });
 
             modelBuilder.Entity<BookGenre>()
                         .HasOne(bg => bg.Book)
                         .WithMany(b => b.Generes)
-                        .HasForeignKey(pt => pt.GenereId);
+                        .HasForeignKey(pt => pt.GenreId);
 
             modelBuilder.Entity<BookGenre>()
                         .HasOne(pt => pt.Genre)
                         .WithMany(t => t.BookGeneres)
-                        .HasForeignKey(pt => pt.GenereId);
+                        .HasForeignKey(pt => pt.GenreId);
         }
     }
 }

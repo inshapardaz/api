@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
-using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
+using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.EntityFrameworkCore;
+using Book = Inshapardaz.Domain.Entities.Library.Book;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
@@ -32,11 +33,29 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
 
             var item = book.Map<Book, Entities.Library.Book>();
+            item.Generes.Clear();
+            item.Author = author;
+
             _databaseContext.Book.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
-            return item.Map<Entities.Library.Book, Book>();
+            item.Generes = new List<BookGenre>();
+            foreach (var genre in book.Generes)
+            {
+                var gen = await _databaseContext.Genere.SingleOrDefaultAsync(g => g.Id == genre.Id, cancellationToken);
+                if (gen != null)
+                    item.Generes.Add(new BookGenre { BookId = item.Id, Book = item, GenreId = gen.Id, Genre = gen});
+            }
+            
+            await _databaseContext.SaveChangesAsync(cancellationToken);
+
+            var newBook = await _databaseContext.Book
+                                                .Include(b => b.Author)
+                                                .Include(b => b.Generes)
+                                                .SingleOrDefaultAsync(t => t.Id == item.Id,
+                                                                      cancellationToken);
+            return newBook.Map<Entities.Library.Book, Book>();
         }
 
         public async Task UpdateBook(Book book, CancellationToken cancellationToken)
@@ -78,6 +97,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             var count = book.Count();
             var data = await book
+                             .Include(b => b.Author)
+                             .Include(b => b.Generes)
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())
                              .ToListAsync(cancellationToken);
@@ -94,10 +115,12 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         public async Task<Page<Book>> GetBooksByGenere(int genereId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var book = _databaseContext.Book
-                                       .Where(b => b.Generes.Any(g => g.GenereId == genereId));
+                                       .Where(b => b.Generes.Any(g => g.GenreId == genereId));
 
             var count = book.Count();
             var data = await book
+                             .Include(b => b.Author)
+                             .Include(b => b.Generes)
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())
                              .ToListAsync(cancellationToken);
@@ -119,6 +142,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             var count = book.Count();
             var data = await book
+                             .Include(b => b.Author)
+                             .Include(b => b.Generes)
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())
                              .ToListAsync(cancellationToken);
@@ -140,6 +165,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             var count = book.Count();
             var data = await book
+                             .Include(b => b.Author)
+                             .Include(b => b.Generes)
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())
                              .ToListAsync(cancellationToken);
@@ -159,6 +186,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             var count = book.Count();
             var data = await book
+                             .Include(b => b.Author)
+                             .Include(b => b.Generes)
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())
                              .ToListAsync(cancellationToken);
@@ -175,7 +204,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         public async Task<Book> GetBookById(int bookId, CancellationToken cancellationToken)
         {
             var book = await _databaseContext.Book
-                                               .SingleOrDefaultAsync(t => t.Id == bookId,
+                                             .Include(b => b.Author)
+                                             .Include(b => b.Generes)
+                                             .SingleOrDefaultAsync(t => t.Id == bookId,
                                                                      cancellationToken);
             return book.Map<Entities.Library.Book, Book>();
         }

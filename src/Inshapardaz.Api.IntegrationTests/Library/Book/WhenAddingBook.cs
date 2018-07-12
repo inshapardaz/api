@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Inshapardaz.Api.IntegrationTests.Helpers;
@@ -18,18 +19,21 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         private BookView _book;
         private readonly Guid _userId = Guid.NewGuid();
         private Domain.Entities.Library.Author _author;
+        private Domain.Entities.Library.Genre _genre;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _author = AuthorDataHelper.Create(new Domain.Entities.Library.Author {Name = "author1"});
+            _genre = GenreDataHelper.Create("genre1");
             _book = new BookView
             {
                 Title = "BookName",
                 Description = "Some description",
                 LanguageId = (int)Languages.Chinese,
                 IsPublic = true,
-                AuthorId = _author.Id
+                AuthorId = _author.Id,
+                Generes = new List<GenreView> { _genre.Map() }
             };
 
             Response = await GetAdminClient(_userId).PostJson("/api/books", _book);
@@ -107,6 +111,13 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         public void ShouldReturnCorrectAuthor()
         {
             _view.AuthorId.ShouldBe(_book.AuthorId);
+        }
+
+        [Test]
+        public void ShouldReturnCorrectGenre()
+        {
+            _view.Generes.ShouldContain(g => g.Id == _genre.Id);
+            _view.Generes.ShouldContain(g => g.Name == _genre.Name);
         }
     }
 }

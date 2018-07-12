@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
+using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Dictionary;
+using Inshapardaz.Domain.Entities.Library;
 
 namespace Inshapardaz.Api.IntegrationTests.Helpers
 {
@@ -58,6 +60,15 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
                 SourceWordId = relation.SourceWordId,
                 RelatedWordId = relation.RelatedWordId,
                 RelationTypeId = (int)relation.RelationType
+            };
+        }
+
+        public static GenreView Map(this Genre genre)
+        {
+            return new GenreView
+            {
+                Id = genre.Id,
+                Name = genre.Name
             };
         }
     }

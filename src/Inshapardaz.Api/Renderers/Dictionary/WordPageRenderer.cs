@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
 
         private object CreateRouteParameters(PageRendererArgs<Word> source, int dictionaryId, int pageNumber, int pageSize)
         {
-            var args = source.RouteArguments ?? new PagedRouteArgs();
+            var args = source.RouteArguments as DictionaryPagedRouteArgs ?? new DictionaryPagedRouteArgs();
             args.DictionaryId = dictionaryId;
             args.PageNumber = pageNumber;
             args.PageSize = pageSize;

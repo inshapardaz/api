@@ -23,6 +23,8 @@ namespace Inshapardaz.Api.Renderers
                             {
                                 _linkRenderer.Render("Entry", RelTypes.Self),
                                 _linkRenderer.Render("GetDictionaries", RelTypes.Dictionaries),
+                                _linkRenderer.Render("GetAuthors", RelTypes.Authors),
+                                _linkRenderer.Render("GetGenres", RelTypes.Genres),
                                 _linkRenderer.Render("GetLanguages", RelTypes.Languages),
                                 _linkRenderer.Render("GetAttributes", RelTypes.Attributes),
                                 _linkRenderer.Render("GetRelationTypes", RelTypes.RelationshipTypes),

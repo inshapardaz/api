@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.IntegrationTests.Dictionary.Dictionary
         }
 
         [Test]
-        public void ShouldCreateCorrectDictionary()
+        public void ShouldUpdateCorrectDictionary()
         {
             _createdDictionary.Name.ShouldBe(_dictionary.Name);
             _createdDictionary.Language.ShouldBe(_dictionary.Language);

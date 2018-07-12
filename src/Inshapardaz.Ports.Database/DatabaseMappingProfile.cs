@@ -5,9 +5,9 @@ using Inshapardaz.Domain.Entities.Library;
 
 namespace Inshapardaz.Ports.Database
 {
-    public class MappingProfile : Profile
+    public class DatabaseMappingProfile : Profile
     {
-        public MappingProfile()
+        public DatabaseMappingProfile()
         {
             CreateMap<Dictionary, Entities.Dictionary.Dictionary>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
@@ -97,10 +97,11 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.IsPublic, o => o.MapFrom(s => s.IsPublic))
                 .ForMember(d => d.Language, o => o.MapFrom(s => s.Language))
                 .ForMember(d => d.Chapters, o => o.Ignore())
-                .ForMember(d => d.Generes, o => o.Ignore())
+                .ForMember(d => d.Generes, o => o.MapFrom(s => s.Generes))
                 .ForMember(d => d.Image, o => o.Ignore())
                 .ForMember(d => d.Author, o => o.Ignore())
-                .ReverseMap();
+                .ReverseMap()
+                    .ForMember(d => d.Generes, o => o.Ignore());
 
             CreateMap<Chapter, Entities.Library.Chapter>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))

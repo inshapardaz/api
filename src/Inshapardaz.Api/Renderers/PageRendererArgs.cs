@@ -16,11 +16,14 @@ namespace Inshapardaz.Api.Renderers
         public int PageNumber { get; set; }
 
         public int PageSize { get; set; }
+    }
 
+    public class DictionaryPagedRouteArgs : PagedRouteArgs
+    {
         public int DictionaryId { get; set; }
     }
 
-    public class DictionarySearchPageRouteArgs : PagedRouteArgs
+    public class DictionarySearchPageRouteArgs : DictionaryPagedRouteArgs
     {
         public int Id { get; set; }
 

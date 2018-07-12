@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Controllers.Dictionary
             var args = new PageRendererArgs<Word>
             {
                 Page = command.Result,
-                RouteArguments = new PagedRouteArgs { DictionaryId =  id, PageNumber = pageNumber, PageSize = pageSize},
+                RouteArguments = new DictionaryPagedRouteArgs { DictionaryId =  id, PageNumber = pageNumber, PageSize = pageSize},
                 RouteName = "GetWords"
             };
             return Ok(_wordPageRenderer.Render(args, id));

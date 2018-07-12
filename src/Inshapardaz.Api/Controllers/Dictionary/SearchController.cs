@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Controllers.Dictionary
             {
                 RouteName = "SearchDictionary",
                 Page = request.Result,
-                RouteArguments = new PagedRouteArgs
+                RouteArguments = new DictionaryPagedRouteArgs
                 {
                     PageNumber = pageNumber,
                     PageSize = pageSize,
@@ -73,7 +73,7 @@ namespace Inshapardaz.Api.Controllers.Dictionary
             {
                 RouteName = "GetWordsListStartWith",
                 Page = request.Result,
-                RouteArguments = new PagedRouteArgs
+                RouteArguments = new DictionaryPagedRouteArgs
                 {
                     PageNumber = pageNumber,
                     PageSize = pageSize,

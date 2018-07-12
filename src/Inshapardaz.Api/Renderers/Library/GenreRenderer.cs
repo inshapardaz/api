@@ -29,6 +29,7 @@ namespace Inshapardaz.Api.Renderers.Library
             var view = ObjectMapper.Map<Genre, GenreView>(genre);
 
             view.Links.Add(_linkRenderer.Render("GetGenreById", RelTypes.Self, new { id = genre.Id }));
+            view.Links.Add(_linkRenderer.Render("GetBooksByGenre", RelTypes.Books, new { id = genre.Id }));
 
             if (_userHelper.IsAdmin)
             {

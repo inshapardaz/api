@@ -96,13 +96,13 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
                 .ForMember(d => d.AuthorId, o => o.MapFrom(s => s.AuthorId))
+                .ForMember(d => d.AuthorName, o => o.MapFrom(s => s.AuthorName))
                 .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
                 .ForMember(d => d.IsPublic, o => o.MapFrom(s => s.IsPublic))
-                .ForMember(d => d.Language, o => o.MapFrom(s => s.Language))
-                .ForMember(d => d.LanguageId, o => o.MapFrom(s => (int)s.Language))
+                .ForMember(d => d.Language, o => o.MapFrom(s => (int)s.Language))
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ReverseMap()
-                .ForMember(d => d.Language, o => o.MapFrom(s => (Languages)s.LanguageId));
+                .ForMember(d => d.Language, o => o.MapFrom(s => (Languages)s.Language));
 
             CreateMap<Chapter, ChapterView>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))

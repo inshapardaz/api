@@ -101,6 +101,7 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.Image, o => o.Ignore())
                 .ForMember(d => d.Author, o => o.Ignore())
                 .ReverseMap()
+                    .ForMember(d => d.AuthorName, o => o.MapFrom(s => s.Author.Name))
                     .ForMember(d => d.Generes, o => o.Ignore());
 
             CreateMap<Chapter, Entities.Library.Chapter>()

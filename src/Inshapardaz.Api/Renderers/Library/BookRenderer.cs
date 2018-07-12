@@ -16,17 +16,18 @@ namespace Inshapardaz.Api.Renderers.Library
     {
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
+        private readonly IRenderEnum _enumRenderer;
 
-        public BookRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
+        public BookRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderEnum enumRenderer)
         {
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
+            _enumRenderer = enumRenderer;
         }
 
         public BookView Render(Book source)
         {
             var result = ObjectMapper.Map<Book, BookView>(source);
-
             var links = new List<LinkView>
             {
                 _linkRenderer.Render("GetBookById", RelTypes.Self, new { id = source.Id }),

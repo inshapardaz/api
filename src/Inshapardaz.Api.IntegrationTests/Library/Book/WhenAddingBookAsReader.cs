@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
             {
                 Title = "BookName",
                 Description = "Some description",
-                LanguageId = (int)Languages.Chinese,
+                Language = (int)Languages.Chinese,
                 IsPublic = true,
                 AuthorId = _author.Id
             };

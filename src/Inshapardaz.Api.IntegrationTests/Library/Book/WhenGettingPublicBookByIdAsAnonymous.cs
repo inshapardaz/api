@@ -28,7 +28,8 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
                 Description = "Some description",
                 Language = Languages.Chinese,
                 IsPublic = true,
-                AuthorId = _author.Id
+                AuthorId = _author.Id,
+                AuthorName = _author.Name
             };
 
             Response = await GetClient().GetAsync($"/api/books/{_book.Id}");
@@ -98,13 +99,14 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         [Test]
         public void ShouldReturnCorrectLanguage()
         {
-            _view.LanguageId.ShouldBe((int)_book.Language);
+            _view.Language.ShouldBe((int)_book.Language);
         }
 
         [Test]
         public void ShouldReturnCorrectAuthor()
         {
             _view.AuthorId.ShouldBe(_book.AuthorId);
+            _view.AuthorName.ShouldBe(_book.AuthorName);
         }
     }
 }

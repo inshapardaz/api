@@ -16,12 +16,11 @@ namespace Inshapardaz.Api.View.Library
 
         public IEnumerable<GenreView> Generes { get; set; }
 
-        public Languages Language { get; set; }
+        public int Language { get; set; }
 
         public bool IsPublic { get; set; }
 
         public int AuthorId { get; set; }
-
-        public int LanguageId { get; set; }
+        public string AuthorName { get; set; }
     }
 }

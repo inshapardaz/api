@@ -102,7 +102,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         [Test]
         public void ShouldReturnCorrectLanguage()
         {
-            _view.LanguageId.ShouldBe((int)_book.Language);
+            _view.Language.ShouldBe((int)_book.Language);
         }
 
         [Test]

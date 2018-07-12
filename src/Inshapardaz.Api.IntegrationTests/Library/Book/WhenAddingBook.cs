@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
             {
                 Title = "BookName",
                 Description = "Some description",
-                LanguageId = (int)Languages.Chinese,
+                Language = (int)Languages.Chinese,
                 IsPublic = true,
                 AuthorId = _author.Id,
                 Generes = new List<GenreView> { _genre.Map() }
@@ -104,7 +104,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         [Test]
         public void ShouldReturnCorrectLanguage()
         {
-            _view.LanguageId.ShouldBe(_book.LanguageId);
+            _view.Language.ShouldBe(_book.Language);
         }
 
         [Test]

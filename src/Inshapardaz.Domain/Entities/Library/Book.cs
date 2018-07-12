@@ -17,5 +17,6 @@ namespace Inshapardaz.Domain.Entities.Library
         public bool IsPublic { get; set; }
 
         public int AuthorId { get; set; }
+        public string AuthorName { get; set; }
     }
 }

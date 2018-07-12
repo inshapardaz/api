@@ -44,7 +44,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
             var updatedView = new BookView
             {
                 Id = _book.Id,
-                LanguageId = (int)_book.Language,
+                Language = (int)_book.Language,
                 Title = _book.Title,
                 Description = _book.Description,
                 IsPublic = _book.IsPublic,

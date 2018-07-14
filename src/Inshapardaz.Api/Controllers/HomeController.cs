@@ -18,6 +18,12 @@ namespace Inshapardaz.Api.Controllers
             _commandProcessor = commandProcessor;
         }
 
+        [HttpGet("/")]
+        public IActionResult HomeIndex()
+        {
+            return RedirectToAction("Index");
+        }
+
         [HttpGet("api", Name = "Entry")]
         [Produces(typeof(EntryView))]
         public async Task<IActionResult> Index()

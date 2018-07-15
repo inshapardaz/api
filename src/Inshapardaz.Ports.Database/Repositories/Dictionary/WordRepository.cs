@@ -158,7 +158,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
 
         public async Task<int> GetWordCountByDictionary(int dictionaryId, CancellationToken cancellationToken)
         {
-            return  await _databaseContext.Word.CountAsync(d => d.Id == dictionaryId, cancellationToken);
+            return  await _databaseContext.Word.CountAsync(d => d.DictionaryId == dictionaryId, cancellationToken);
         }
 
         public async Task<Page<Word>> GetWordsStartingWith(int dictionaryId, string startingWith, int pageNumber, int pageSize, CancellationToken cancellationToken)

@@ -33,6 +33,7 @@ namespace Inshapardaz.Domain.Ports.Dictionary
             _wordRepository = wordRepository;
             _meaningRepository = meaningRepository;
         }
+
         [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<AddMeaningRequest> HandleAsync(AddMeaningRequest command, CancellationToken cancellationToken = new CancellationToken())
         {

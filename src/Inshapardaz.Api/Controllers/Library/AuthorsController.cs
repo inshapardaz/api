@@ -50,7 +50,9 @@ namespace Inshapardaz.Api.Controllers.Library
             var request = new GetAuthorByIdRequest(id);
             await _commandProcessor.SendAsync(request);
 
-            return Ok(_authorRenderer.Render(request.Result));
+            if (request.Result != null)
+                return Ok(_authorRenderer.Render(request.Result));
+            return NotFound();
         }
 
         [Authorize]

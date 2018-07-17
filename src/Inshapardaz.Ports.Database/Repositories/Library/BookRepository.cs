@@ -112,6 +112,27 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             };
         }
 
+        public async Task<Page<Book>> SearchBooks(string searchText, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var query = _databaseContext.Book
+                             .Include(b => b.Author)
+                             .Include(b => b.Generes)
+                             .Where(b => b.Title.Contains(searchText));
+            var count = query.Count();
+            var data = await query
+                             .Paginate(pageNumber, pageSize)
+                             .Select(a => a.Map<Entities.Library.Book, Book>())
+                             .ToListAsync(cancellationToken);
+
+            return new Page<Book>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = count,
+                Data = data
+            };
+        }
+
         public async Task<Page<Book>> GetBooksByGenere(int genereId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var book = _databaseContext.Book
@@ -188,6 +209,27 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var data = await book
                              .Include(b => b.Author)
                              .Include(b => b.Generes)
+                             .Paginate(pageNumber, pageSize)
+                             .Select(a => a.Map<Entities.Library.Book, Book>())
+                             .ToListAsync(cancellationToken);
+
+            return new Page<Book>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = count,
+                Data = data
+            };
+        }
+
+        public async Task<Page<Book>> SearchPublicBooks(string searchText, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var query = _databaseContext.Book
+                             .Include(b => b.Author)
+                             .Include(b => b.Generes)
+                             .Where(b => b.IsPublic && b.Title.Contains(searchText));
+            var count = query.Count();
+            var data = await  query
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())
                              .ToListAsync(cancellationToken);

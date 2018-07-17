@@ -34,11 +34,12 @@ namespace Inshapardaz.Api.Controllers.Library
 
         [HttpGet("/api/books", Name = "GetBooks")]
         [Produces(typeof(IEnumerable<BookView>))]
-        public async Task<IActionResult> GetBooks(int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IActionResult> GetBooks(string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new GetBooksRequest(pageNumber, pageSize)
             {
-                UserId = _userHelper.GetUserId()
+                UserId = _userHelper.GetUserId(),
+                Query = query
             };
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
@@ -94,7 +95,9 @@ namespace Inshapardaz.Api.Controllers.Library
             var request = new GetBookByIdRequest(id);
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
-            return Ok(_renderBook.Render(request.Result));
+            if (request.Result != null)
+                return Ok(_renderBook.Render(request.Result));
+            return NotFound();
         }
 
         [Authorize]

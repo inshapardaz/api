@@ -23,6 +23,8 @@ namespace Inshapardaz.Domain.Ports.Library
         public Guid UserId { get; set; }
 
         public Page<Book> Result { get; set; }
+
+        public string Query { get; set; }
     }
 
     public class GetBooksRequestHandler : RequestHandlerAsync<GetBooksRequest>
@@ -36,10 +38,21 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<GetBooksRequest> HandleAsync(GetBooksRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var books = command.UserId == Guid.Empty
-                ? await _bookRepository.GetPublicBooks(command.PageNumber, command.PageSize, cancellationToken)
-                : await _bookRepository.GetBooks(command.PageNumber, command.PageSize, cancellationToken);
-            command.Result = books;
+            if (string.IsNullOrWhiteSpace(command.Query))
+            {
+                var books = command.UserId == Guid.Empty
+                    ? await _bookRepository.GetPublicBooks(command.PageNumber, command.PageSize, cancellationToken)
+                    : await _bookRepository.GetBooks(command.PageNumber, command.PageSize, cancellationToken);
+                command.Result = books;
+            }
+            else
+            {
+                var books = command.UserId == Guid.Empty
+                    ? await _bookRepository.SearchPublicBooks(command.Query, command.PageNumber, command.PageSize, cancellationToken)
+                    : await _bookRepository.SearchBooks(command.Query, command.PageNumber, command.PageSize, cancellationToken);
+                command.Result = books;
+            }
+
             return await base.HandleAsync(command, cancellationToken);
         }
     }

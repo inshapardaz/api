@@ -43,7 +43,9 @@ namespace Inshapardaz.Api.Controllers.Library
             var request = new GetGenreByIdRequest(id);
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
-            return Ok(_renderGenre.RenderResult(request.Result));
+            if (request.Result != null)
+                return Ok(_renderGenre.RenderResult(request.Result));
+            return NotFound();
         }
 
         [Authorize]

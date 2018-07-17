@@ -18,6 +18,11 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<Page<Book>> GetPublicBooks(int pageNumber, int pageSize, CancellationToken cancellationToken);
 
+        Task<Page<Book>> SearchBooks(string searchText, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+        Task<Page<Book>> SearchPublicBooks(string searchText, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+
         Task<Page<Book>> GetBooksByGenere(int genereId, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<Page<Book>> GetBooksByAuthor(int authorId, int pageNumber, int pageSize, CancellationToken cancellationToken);

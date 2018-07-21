@@ -13,6 +13,7 @@ namespace Inshapardaz.Api
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseApplicationInsights()
+                .CaptureStartupErrors(true)
                 .UseStartup<Startup>()
                 .Build();
     }

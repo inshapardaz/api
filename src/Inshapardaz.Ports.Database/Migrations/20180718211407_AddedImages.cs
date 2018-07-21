@@ -28,7 +28,7 @@ namespace Inshapardaz.Ports.Database.Migrations
                 schema: "Library",
                 table: "Book",
                 type: "int",
-                nullable: false,
+                nullable: true,
                 oldClrType: typeof(int),
                 oldNullable: true);
 
@@ -37,7 +37,7 @@ namespace Inshapardaz.Ports.Database.Migrations
                 schema: "Library",
                 table: "Author",
                 type: "int",
-                nullable: false,
+                nullable: true,
                 defaultValue: 0);
         }
 

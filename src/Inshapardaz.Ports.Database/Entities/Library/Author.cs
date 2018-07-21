@@ -14,6 +14,6 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public virtual ICollection<Book> Books { get; set; }
 
-        public int ImageId { get; set; }
+        public int? ImageId { get; set; }
     }
 }

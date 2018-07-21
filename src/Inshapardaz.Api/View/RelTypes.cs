@@ -33,5 +33,7 @@
         public const string Author = "author";
         public const string Authors = "authors";
         public const string Genres = "genres";
+        public const string Image = "image";
+        public const string ImageUpload = "image-upload";
     }
 }

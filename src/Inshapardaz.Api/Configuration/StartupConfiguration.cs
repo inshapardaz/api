@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using AutoMapper;
-using AutoMapper.Configuration;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
@@ -9,9 +8,11 @@ using Inshapardaz.Api.Renderers.Library;
 using Inshapardaz.Domain;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.IndexingService;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Dictionary;
 using Inshapardaz.Domain.Repositories.Library;
 using Inshapardaz.Ports.Database;
+using Inshapardaz.Ports.Database.Repositories;
 using Inshapardaz.Ports.Database.Repositories.Dictionary;
 using Inshapardaz.Ports.Database.Repositories.Library;
 using Microsoft.AspNetCore.Builder;
@@ -19,7 +20,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,6 +67,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRenderRelation, RelationRenderer>();
             services.AddTransient<IRenderDictionaryDownload, DictionaryDownloadRenderer>();
             services.AddTransient<IRenderJobStatus, JobStatusRenderer>();
+            services.AddTransient<IRenderFile, FileRenderer>();
 
             services.AddTransient<IRenderGenre, GenreRenderer>();
             services.AddTransient<IRenderGenres, GenresRenderer>();
@@ -146,6 +147,7 @@ namespace Inshapardaz.Api.Configuration
                 services.AddTransient<IDatabaseContext, DatabaseContext>();
             }
 
+            services.AddTransient<IFileRepository, FileRepository>();
             services.AddTransient<IDictionaryRepository, DictionaryRepository>();
             services.AddTransient<IWordRepository, WordRepository>();
             services.AddTransient<IMeaningRepository, MeaningRepository>();

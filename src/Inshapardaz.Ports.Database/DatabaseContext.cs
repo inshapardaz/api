@@ -116,11 +116,6 @@ namespace Inshapardaz.Ports.Database
                 entity.ToTable("Book", "Library");
             });
 
-            modelBuilder.Entity<BookImage>(entity =>
-            {
-                entity.ToTable("BookImage", "Library");
-            });
-
             modelBuilder.Entity<BookGenre>(entity =>
             {
                 entity.ToTable("BookGenre", "Library");

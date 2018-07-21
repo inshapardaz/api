@@ -3,7 +3,6 @@ using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Helpers;
-using ObjectMapper = Inshapardaz.Api.Helpers.ObjectMapper;
 
 namespace Inshapardaz.Api.Renderers.Library
 {
@@ -25,7 +24,7 @@ namespace Inshapardaz.Api.Renderers.Library
 
         public AuthorView Render(Author source)
         {
-            var result = ObjectMapper.Map<Author, AuthorView>(source);
+            var result = source.Map<Author, AuthorView>();
 
             var links = new List<LinkView>
             {
@@ -33,10 +32,16 @@ namespace Inshapardaz.Api.Renderers.Library
                 _linkRenderer.Render("GetBooksByAuthor", RelTypes.Books, new { id = source.Id })
             };
 
+            if (source.ImageId > 0)
+            {
+                links.Add(_linkRenderer.Render("GetFileById", RelTypes.Image, new { id = source.ImageId }));
+            }
+
             if (_userHelper.IsContributor)
             {
                 links.Add(_linkRenderer.Render("UpdateAuthor", RelTypes.Update, new { id = source.Id }));
                 links.Add(_linkRenderer.Render("DeleteAuthor", RelTypes.Delete, new { id = source.Id }));
+                links.Add(_linkRenderer.Render("UpdateAuthorImage", RelTypes.ImageUpload, new { id = source.Id }));
             }
 
             result.Links = links;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
@@ -11,9 +12,9 @@ using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Ports.Library;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
-using ObjectMapper = Inshapardaz.Api.Helpers.ObjectMapper;
 
 namespace Inshapardaz.Api.Controllers.Library
 {
@@ -23,13 +24,15 @@ namespace Inshapardaz.Api.Controllers.Library
         private readonly IUserHelper _userHelper;
         private readonly IRenderBooks _booksRenderer;
         private readonly IRenderBook _renderBook;
+        private readonly IRenderFile _fileRenderer;
 
-        public BookController(IAmACommandProcessor commandProcessor, IUserHelper userHelper, IRenderBooks booksRenderer, IRenderBook renderBook)
+        public BookController(IAmACommandProcessor commandProcessor, IUserHelper userHelper, IRenderBooks booksRenderer, IRenderBook renderBook, IRenderFile fileRenderer)
         {
             _commandProcessor = commandProcessor;
             _userHelper = userHelper;
             _booksRenderer = booksRenderer;
             _renderBook = renderBook;
+            _fileRenderer = fileRenderer;
         }
 
         [HttpGet("/api/books", Name = "GetBooks")]
@@ -106,7 +109,7 @@ namespace Inshapardaz.Api.Controllers.Library
         [ValidateModel]
         public async Task<IActionResult> Post([FromBody]BookView value, CancellationToken cancellationToken)
         {
-            var request = new AddBookRequest(ObjectMapper.Map<BookView, Book>(value));
+            var request = new AddBookRequest(value.Map<BookView, Book>());
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
             var renderResult = _renderBook.Render(request.Result);
@@ -118,7 +121,7 @@ namespace Inshapardaz.Api.Controllers.Library
         [ValidateModel]
         public async Task<IActionResult> Put(int id, [FromBody] BookView value, CancellationToken cancellationToken)
         {
-            var request = new UpdateBookRequest(ObjectMapper.Map<BookView, Book>(value));
+            var request = new UpdateBookRequest(value.Map<BookView, Book>());
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
             if (request.Result.HasAddedNew)
@@ -128,6 +131,39 @@ namespace Inshapardaz.Api.Controllers.Library
             }
 
             return NoContent();
+        }
+
+        [Authorize]
+        [HttpPost("/api/books/{id}/image", Name = "UpdateBookImage")]
+        [ValidateModel]
+        public async Task<IActionResult> PutImage(int id, IFormFile file)
+        {
+            var content = new byte[file.Length];
+            using (var stream = new MemoryStream(content))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var request = new UpdateBookImageRequest(id)
+            {
+                Image = new Domain.Entities.File
+                {
+                    FileName = file.FileName,
+                    MimeType = file.ContentType,
+                    Contents = content
+                }
+            };
+
+            await _commandProcessor.SendAsync(request);
+
+
+            if (request.Result.HasAddedNew)
+            {
+                var response = _fileRenderer.Render(request.Result.File);
+                return Created(response.Links.Self(), response);
+            }
+
+            return BadRequest();
         }
 
         [Authorize]

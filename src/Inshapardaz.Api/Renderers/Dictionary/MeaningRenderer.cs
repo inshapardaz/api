@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Helpers;
-using ObjectMapper = Inshapardaz.Api.Helpers.ObjectMapper;
 
 namespace Inshapardaz.Api.Renderers.Dictionary
 {
@@ -26,7 +24,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
 
         public MeaningView Render(Meaning source, int dictionaryId)
         {
-            var result = ObjectMapper.Map<Meaning, MeaningView>(source);
+            var result = source.Map<Meaning, MeaningView>();
             var links = new List<LinkView>
             {
                 _linkRenderer.Render("GetMeaningById", RelTypes.Self, new { id = dictionaryId, wordId = source.WordId, meaningId = source.Id }),

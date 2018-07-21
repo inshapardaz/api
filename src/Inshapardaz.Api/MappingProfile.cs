@@ -12,6 +12,15 @@ namespace Inshapardaz.Api
     {
         public MappingProfile()
         {
+            CreateMap<File, FileView>()
+                .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
+                .ForMember(s => s.DateCreated, o => o.MapFrom(d => d.DateCreated))
+                .ForMember(s => s.FileName, o => o.MapFrom(d => d.FileName))
+                .ForMember(s => s.LiveUntil, o => o.MapFrom(d => d.LiveUntil))
+                .ForMember(s => s.MimeType, o => o.MapFrom(d => d.MimeType))
+                .ForMember(d => d.Links, o => o.Ignore())
+                .ReverseMap();
+
             CreateMap<Dictionary, DictionaryView>()
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
                 .ForMember(s => s.Name, o => o.MapFrom(d => d.Name))
@@ -84,7 +93,8 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
                 .ForMember(d => d.Links, o => o.Ignore())
-                .ReverseMap();
+                .ReverseMap()
+                .ForMember(d => d.ImageId, o => o.Ignore());
 
             CreateMap<Genre, GenreView>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
@@ -102,7 +112,8 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Language, o => o.MapFrom(s => (int)s.Language))
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ReverseMap()
-                .ForMember(d => d.Language, o => o.MapFrom(s => (Languages)s.Language));
+                .ForMember(d => d.Language, o => o.MapFrom(s => (Languages)s.Language))
+                .ForMember(d => d.ImageId, o => o.Ignore());
 
             CreateMap<Chapter, ChapterView>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))

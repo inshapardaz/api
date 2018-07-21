@@ -1,13 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
 using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.Renderers.Library;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Ports.Library;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 
@@ -18,12 +22,14 @@ namespace Inshapardaz.Api.Controllers.Library
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IRenderAuthors _authorsRenderer;
         private readonly IRenderAuthor _authorRenderer;
+        private readonly IRenderFile _fileRenderer;
 
-        public AuthorsController(IAmACommandProcessor commandProcessor, IRenderAuthors authorsRenderer, IRenderAuthor authorRenderer)
+        public AuthorsController(IAmACommandProcessor commandProcessor, IRenderAuthors authorsRenderer, IRenderAuthor authorRenderer, IRenderFile fileRenderer)
         {
             _commandProcessor = commandProcessor;
             _authorsRenderer = authorsRenderer;
             _authorRenderer = authorRenderer;
+            _fileRenderer = fileRenderer;
         }
 
         [HttpGet("/api/authors", Name = "GetAuthors")]
@@ -83,6 +89,39 @@ namespace Inshapardaz.Api.Controllers.Library
             }
 
             return NoContent();
+        }
+
+        [Authorize]
+        [HttpPost("/api/authors/{id}/image", Name = "UpdateAuthorImage")]
+        [ValidateModel]
+        public async Task<IActionResult> PutImage(int id, IFormFile file)
+        {
+            var content = new byte[file.Length];
+            using (var stream = new MemoryStream(content))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var request = new UpdateAuthorImageRequest(id)
+            {
+                Image = new Domain.Entities.File
+                {
+                    FileName = file.FileName,
+                    MimeType = file.ContentType,
+                    Contents = content
+                }
+            };
+
+            await _commandProcessor.SendAsync(request);
+
+
+            if (request.Result.HasAddedNew)
+            {
+                var response = _fileRenderer.Render(request.Result.File);
+                return Created(response.Links.Self(), response);
+            }
+
+            return BadRequest();
         }
 
         [Authorize]

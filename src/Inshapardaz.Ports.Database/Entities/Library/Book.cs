@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Ports.Database.Entities.Library
@@ -13,6 +14,8 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public string Description { get; set; }
 
+        public bool IsPublic { get; set; }
+
         public virtual ICollection<BookGenre> Generes { get; set; }
 
         public virtual ICollection<Chapter> Chapters { get; set; }
@@ -22,11 +25,9 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public virtual Author Author { get; set; }
 
-        public virtual BookImage Image { get; set; }
+        public int ImageId { get; set; }    
 
         [Required]
         public Languages Language { get; set; }
-
-        public bool IsPublic { get; set; }
     }
 }

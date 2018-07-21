@@ -74,6 +74,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             existingEntity.AuthorId = book.AuthorId;
             existingEntity.IsPublic = book.IsPublic;
             existingEntity.Language = book.Language;
+            existingEntity.ImageId = book.ImageId;
+            
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }

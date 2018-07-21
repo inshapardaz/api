@@ -86,6 +86,7 @@ namespace Inshapardaz.Ports.Database
             CreateMap<Author, Entities.Library.Author>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
                 .ForMember(d => d.Books, o => o.Ignore())
                 .ReverseMap();
 
@@ -98,7 +99,7 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.Language, o => o.MapFrom(s => s.Language))
                 .ForMember(d => d.Chapters, o => o.Ignore())
                 .ForMember(d => d.Generes, o => o.MapFrom(s => s.Generes))
-                .ForMember(d => d.Image, o => o.Ignore())
+                .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
                 .ForMember(d => d.Author, o => o.Ignore())
                 .ReverseMap()
                     .ForMember(d => d.AuthorName, o => o.MapFrom(s => s.Author.Name))

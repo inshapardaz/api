@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Dictionary;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Helpers;
-using ObjectMapper = Inshapardaz.Api.Helpers.ObjectMapper;
 
 namespace Inshapardaz.Api.Renderers.Dictionary
 {
@@ -26,7 +24,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
 
         public WordView Render(Word source, int dictionaryId)
         {
-            var result = ObjectMapper.Map<Word, WordView>(source);  
+            var result = source.Map<Word, WordView>();  
 
             var links = new List<LinkView>
                                {

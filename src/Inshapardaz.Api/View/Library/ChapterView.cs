@@ -11,8 +11,6 @@ namespace Inshapardaz.Api.View.Library
 
         public string Title { get; set; }
 
-        public string Content { get; set; }
-
         public int BookId { get; set; }
 
         public IEnumerable<LinkView> Links { get; set; }

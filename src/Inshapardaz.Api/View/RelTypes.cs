@@ -30,10 +30,16 @@
         public const string SourceWord = "source-word";
         public const string RelatedWord = "related-word";
         public const string Books = "books";
+        public const string Book = "book";
         public const string Author = "author";
         public const string Authors = "authors";
         public const string Genres = "genres";
         public const string Image = "image";
         public const string ImageUpload = "image-upload";
+        public const string Contents = "contents";
+
+        public const string Chapters = "chapters";
+        public const string CreateChapter = "create-chapter";
+        public const string UpdateContents = "update-contents";
     }
 }

@@ -120,7 +120,7 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
                 .ForMember(d => d.ChapterNumber, o => o.MapFrom(s => s.ChapterNumber))
                 .ForMember(d => d.BookId, o => o.MapFrom(s => s.BookId))
-                .ForMember(d => d.Content, o => o.MapFrom(s => s.Content))
+                //.ForMember(d => d.Content, o => o.MapFrom(s => s.Content))
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ReverseMap();
         }

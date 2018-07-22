@@ -27,27 +27,27 @@ namespace Inshapardaz.Domain.Ports.Library
 
     public class UpdateBookRequestHandler : RequestHandlerAsync<UpdateBookRequest>
     {
-        private readonly IBookRepository _authorRepository;
+        private readonly IBookRepository _bookRepository;
 
-        public UpdateBookRequestHandler(IBookRepository authorRepository)
+        public UpdateBookRequestHandler(IBookRepository bookRepository)
         {
-            _authorRepository = authorRepository;
+            _bookRepository = bookRepository;
         }
 
         public override async Task<UpdateBookRequest> HandleAsync(UpdateBookRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _authorRepository.GetBookById(command.Book.Id, cancellationToken);
+            var result = await _bookRepository.GetBookById(command.Book.Id, cancellationToken);
 
             if (result == null)
             {
                 var author = command.Book;
                 author.Id = default(int);
-                command.Result.Book =  await  _authorRepository.AddBook(author, cancellationToken);
+                command.Result.Book =  await  _bookRepository.AddBook(author, cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                await _authorRepository.UpdateBook(command.Book, cancellationToken);
+                await _bookRepository.UpdateBook(command.Book, cancellationToken);
                 command.Result.Book = command.Book;
             }
 

@@ -20,10 +20,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             _databaseContext = databaseContext;
         }
 
-        public async Task<Chapter> AddChapter(Chapter chapter, CancellationToken cancellationToken)
+        public async Task<Chapter> AddChapter(int bookId, Chapter chapter, CancellationToken cancellationToken)
         {
             var book = await _databaseContext.Book
-                                               .SingleOrDefaultAsync(t => t.Id == chapter.BookId,
+                                               .SingleOrDefaultAsync(t => t.Id == bookId,
                                                                      cancellationToken);
             if (book == null)
             {
@@ -31,7 +31,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
 
             var item = chapter.Map<Chapter, Entities.Library.Chapter>();
-            book.Chapters.Add(item);
+
+            item.Book = book;
+            _databaseContext.Chapter.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
@@ -52,7 +54,6 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             existingEntity.Title = chapter.Title;
             existingEntity.ChapterNumber = chapter.ChapterNumber;
             existingEntity.BookId = chapter.BookId;
-            existingEntity.Content.Content = chapter.Content;
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
@@ -73,8 +74,16 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         public async Task<IEnumerable<Chapter>> GetChaptersByBook(int bookId, CancellationToken cancellationToken)
         {
             return await _databaseContext.Chapter
+                                         .Where(c => c.BookId == bookId)
+                                         .OrderBy(c => c.ChapterNumber)
                                          .Select(t => t.Map<Entities.Library.Chapter, Chapter>())
                                          .ToListAsync(cancellationToken);
+        }
+
+        public async Task<int> GetChapterCountByBook(int bookId, CancellationToken cancellationToken)
+        {
+            return await _databaseContext.Chapter
+                                         .CountAsync(c => c.BookId == bookId, cancellationToken);
         }
 
         public async Task<Chapter> GetChapterById(int chapterId, CancellationToken cancellationToken)

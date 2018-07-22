@@ -75,6 +75,8 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRenderAuthor, AuthorRenderer>();
             services.AddTransient<IRenderBooks, BooksRenderer>();
             services.AddTransient<IRenderBook, BookRenderer>();
+            services.AddTransient<IRenderChapters, ChaptersRenderer>();
+            services.AddTransient<IRenderChapter, ChapterRenderer>();
 
             return services;
         }

@@ -3,6 +3,7 @@ using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Ports.Library;
 
 namespace Inshapardaz.Api.Renderers.Library
 {
@@ -15,13 +16,11 @@ namespace Inshapardaz.Api.Renderers.Library
     {
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
-        private readonly IRenderEnum _enumRenderer;
 
-        public ChapterRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderEnum enumRenderer)
+        public ChapterRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
         {
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
-            _enumRenderer = enumRenderer;
         }
 
         public ChapterView Render(Chapter source)
@@ -29,16 +28,23 @@ namespace Inshapardaz.Api.Renderers.Library
             var result = source.Map<Chapter, ChapterView>();
             var links = new List<LinkView>
             {
-                _linkRenderer.Render("GetChapterById", RelTypes.Self, new { bookId = source.BookId, chapterId = source.Id }),
-                _linkRenderer.Render("GetBookById", RelTypes.Book, new { id = source.BookId }),
-                _linkRenderer.Render("GetChapterContents", RelTypes.Contents, new { id = source.BookId, chapterId = source.Id })
+                _linkRenderer.Render("GetChapterById", RelTypes.Self, new {bookId = source.BookId, chapterId = source.Id}),
+                _linkRenderer.Render("GetBookById", RelTypes.Book, new {id = source.BookId}),
+            };
+
+            if (source.HasContents)
+            {
+                links.Add(_linkRenderer.Render("GetChapterContents", RelTypes.Contents, new {bookId = source.BookId, chapterId = source.Id}));
             };
 
             if (_userHelper.IsContributor)
             {
                 links.Add(_linkRenderer.Render("UpdateChapter", RelTypes.Update, new { bookId = source.BookId, chapterId = source.Id }));
                 links.Add(_linkRenderer.Render("DeleteChapter", RelTypes.Delete, new { bookId = source.BookId, chapterId = source.Id }));
-                links.Add(_linkRenderer.Render("UpdateChapterContents", RelTypes.UpdateContents, new { bookId = source.BookId, chapterId = source.Id }));
+                if (!source.HasContents)
+                {
+                    links.Add(_linkRenderer.Render("AddChapterContents", RelTypes.AddContents, new { bookId = source.BookId, chapterId = source.Id }));
+                }
             }
 
             result.Links = links;

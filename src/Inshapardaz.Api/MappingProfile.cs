@@ -120,7 +120,15 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
                 .ForMember(d => d.ChapterNumber, o => o.MapFrom(s => s.ChapterNumber))
                 .ForMember(d => d.BookId, o => o.MapFrom(s => s.BookId))
-                //.ForMember(d => d.Content, o => o.MapFrom(s => s.Content))
+                .ForMember(d => d.Links, o => o.Ignore())
+                .ReverseMap()
+                    .ForMember(d => d.HasContents, o => o.Ignore());
+
+
+            CreateMap<ChapterContent, ChapterContentView>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Contents, o => o.MapFrom(s => s.Content))
+                .ForMember(d => d.ChapterId, o => o.MapFrom(s => s.ChapterId))
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ReverseMap();
         }

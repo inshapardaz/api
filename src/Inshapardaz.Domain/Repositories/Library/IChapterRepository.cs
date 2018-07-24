@@ -18,5 +18,13 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task<Chapter> GetChapterById(int chapterId, CancellationToken cancellationToken);
 
         Task<int> GetChapterCountByBook(int bookId, CancellationToken cancellationToken);
+
+        Task<ChapterContent> GetChapterContents(int bookId, int chapterId, CancellationToken cancellationToken);
+
+        Task<ChapterContent> AddChapterContent(ChapterContent content, CancellationToken cancellationToken);
+
+        Task UpdateChapterContent(ChapterContent contents, CancellationToken cancellationToken);
+
+        Task<bool> HasChapterContents(int bookId, int chapterId, CancellationToken cancellationToken);
     }
 }

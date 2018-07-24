@@ -40,6 +40,8 @@
 
         public const string Chapters = "chapters";
         public const string CreateChapter = "create-chapter";
-        public const string UpdateContents = "update-contents";
+        public const string AddContents = "add-contents";
+
+        public const string Chapter = "chapter";
     }
 }

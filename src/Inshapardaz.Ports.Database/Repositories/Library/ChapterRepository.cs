@@ -7,7 +7,9 @@ using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
+using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.EntityFrameworkCore;
+using Chapter = Inshapardaz.Domain.Entities.Library.Chapter;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
@@ -84,6 +86,42 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             return await _databaseContext.Chapter
                                          .CountAsync(c => c.BookId == bookId, cancellationToken);
+        }
+
+        public async Task<ChapterContent> GetChapterContents(int bookId, int chapterId, CancellationToken cancellationToken)
+        {
+            return await _databaseContext.ChapterText
+                                         .Include(c => c.Chapter)
+                                         .Where(c => c.ChapterId == chapterId)
+                                         .Select(t => t.Map<ChapterText, ChapterContent>())
+                                         .SingleOrDefaultAsync(cancellationToken);
+        }
+        
+        public async Task<ChapterContent> AddChapterContent(ChapterContent content, CancellationToken cancellationToken)
+        {
+            var chapterText = new ChapterText
+            {
+                ChapterId = content.ChapterId,
+                Content = content.Content
+            };
+            _databaseContext.ChapterText
+                                         .Add(chapterText);
+
+            await _databaseContext.SaveChangesAsync(cancellationToken);
+
+            return chapterText.Map<ChapterText, ChapterContent>();
+        }
+
+        public async Task UpdateChapterContent(ChapterContent contents, CancellationToken cancellationToken)
+        {
+            var content = await _databaseContext.ChapterText.SingleAsync(c => c.ChapterId == contents.ChapterId, cancellationToken);
+            content.Content = contents.Content;
+            await _databaseContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<bool> HasChapterContents(int bookId, int chapterId, CancellationToken cancellationToken)
+        {
+            return await _databaseContext.ChapterText.AnyAsync(c => c.ChapterId == chapterId, cancellationToken);
         }
 
         public async Task<Chapter> GetChapterById(int chapterId, CancellationToken cancellationToken)

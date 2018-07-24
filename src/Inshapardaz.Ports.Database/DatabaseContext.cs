@@ -24,6 +24,7 @@ namespace Inshapardaz.Ports.Database
         public DbSet<Author> Author { get; set; }
         public DbSet<Book> Book { get; set; }
         public DbSet<Chapter> Chapter { get; set; }
+        public DbSet<ChapterText> ChapterText { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

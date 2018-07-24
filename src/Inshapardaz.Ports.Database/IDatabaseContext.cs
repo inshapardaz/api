@@ -23,6 +23,8 @@ namespace Inshapardaz.Ports.Database
         DbSet<Book> Book { get; set; }
         DbSet<Chapter> Chapter { get; set; }
 
+        DbSet<ChapterText> ChapterText { get; set; }
+
         DatabaseFacade Database { get; }
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);

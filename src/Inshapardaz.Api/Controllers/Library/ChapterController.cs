@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
-using Inshapardaz.Api.Renderers;
 using Inshapardaz.Api.Renderers.Library;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Ports.Library;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 
@@ -24,15 +19,15 @@ namespace Inshapardaz.Api.Controllers.Library
         private readonly IUserHelper _userHelper;
         private readonly IRenderChapters _chaptersRenderer;
         private readonly IRenderChapter _renderChapter;
-        private readonly IRenderFile _fileRenderer;
+        private readonly IRenderChapterContent _chapterContentRender;
 
-        public ChapterController(IAmACommandProcessor commandProcessor, IUserHelper userHelper, IRenderChapters chaptersRenderer, IRenderChapter renderChapter, IRenderFile fileRenderer)
+        public ChapterController(IAmACommandProcessor commandProcessor, IUserHelper userHelper, IRenderChapters chaptersRenderer, IRenderChapter renderChapter, IRenderChapterContent chapterContentRender)
         {
             _commandProcessor = commandProcessor;
             _userHelper = userHelper;
             _chaptersRenderer = chaptersRenderer;
             _renderChapter = renderChapter;
-            _fileRenderer = fileRenderer;
+            _chapterContentRender = chapterContentRender;
         }
 
         [HttpGet("/api/books/{bookId}/chapters", Name = "GetChaptersForBook")]
@@ -96,45 +91,54 @@ namespace Inshapardaz.Api.Controllers.Library
             return NoContent();
         }
 
-        [Authorize]
-        [HttpPost("/api/books/{bookId}/chapters/{chapterId}/contents", Name = "GetChapterContents")]
+        [HttpGet("/api/books/{bookId}/chapters/{chapterId}/contents", Name = "GetChapterContents")]
         [ValidateModel]
         public async Task<IActionResult> GetChapterContents(int bookId, int chapterId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var request = new GetChapterContentRequest(bookId, chapterId);
+            await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
+
+            if (request.Result == null)
+                return NotFound();
+            return Ok(_chapterContentRender.Render(request.Result));
         }
 
         [Authorize]
-        [HttpPost("/api/books/{bookId}/chapters/{chapterId}/contents", Name = "UpdateChapterContents")]
+        [HttpPost("/api/books/{bookId}/chapters/{chapterId}/contents", Name = "AddChapterContents")]
         [ValidateModel]
-        public async Task<IActionResult> PutContents(int bookId, int chapterId, IFormFile file, CancellationToken cancellationToken)
+        public async Task<IActionResult> PostContents(int bookId, int chapterId, [FromBody] string content, CancellationToken cancellationToken)
         {
-            var content = new byte[file.Length];
-            using (var stream = new MemoryStream(content))
+            var request = new AddChapterContentRequest(new ChapterContent
             {
-                await file.CopyToAsync(stream);
+                BookId = bookId,
+                ChapterId = chapterId,
+                Content = content
+            });
+            await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpPut("/api/books/{bookId}/chapters/{chapterId}/contents", Name = "UpdateChapterContents")]
+        [ValidateModel]
+        public async Task<IActionResult> Put(int bookId, int chapterId, [FromBody] string content, CancellationToken cancellationToken)
+        {
+                var request = new UpdateChapterContentRequest(new ChapterContent
+            {
+                BookId = bookId,
+                ChapterId = chapterId,
+                Content = content
+            });
+            await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
+
+            if (request.Result.HasAddedNew)
+            {
+                var renderResult = _chapterContentRender.Render(request.Result.ChapterContent);
+                return Created(renderResult.Links.Self(), renderResult);
             }
 
-            //    var request = new UpdateBookImageRequest(id)
-            //    {
-            //        Image = new Domain.Entities.File
-            //        {
-            //            FileName = file.FileName,
-            //            MimeType = file.ContentType,
-            //            Contents = content
-            //        }
-            //    };
-
-            //    await _commandProcessor.SendAsync(request);
-
-
-            //    if (request.Result.HasAddedNew)
-            //    {
-            //        var response = _fileRenderer.Render(request.Result.File);
-            //        return Created(response.Links.Self(), response);
-            //    }
-
-            return BadRequest();
+            return NoContent();
         }
 
         [Authorize]

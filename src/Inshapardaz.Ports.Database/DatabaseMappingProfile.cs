@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Ports.Database.Entities.Library;
+using Author = Inshapardaz.Domain.Entities.Library.Author;
+using Book = Inshapardaz.Domain.Entities.Library.Book;
+using Chapter = Inshapardaz.Domain.Entities.Library.Chapter;
+using Genre = Inshapardaz.Domain.Entities.Library.Genre;
 
 namespace Inshapardaz.Ports.Database
 {
@@ -112,6 +116,14 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.Content, o => o.Ignore())
                 .ForMember(d => d.Book, o => o.Ignore())
                 .ReverseMap();
+
+            CreateMap<ChapterContent, ChapterText>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.ChapterId, o => o.MapFrom(s => s.ChapterId))
+                .ForMember(d => d.Content, o => o.MapFrom(s => s.Content))
+                .ForMember(d => d.Chapter, o => o.Ignore())
+                .ReverseMap()
+                .ForMember(d => d.BookId, o => o.MapFrom(s => s.Chapter!= null ? s.Chapter.BookId : 0));
         }
     }
 }

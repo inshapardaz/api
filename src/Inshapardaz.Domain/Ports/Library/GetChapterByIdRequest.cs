@@ -31,6 +31,7 @@ namespace Inshapardaz.Domain.Ports.Library
         public override async Task<GetChapterByIdRequest> HandleAsync(GetChapterByIdRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var chapter = await _chapterRepository.GetChapterById(command.ChapterId, cancellationToken);
+            chapter.HasContents = await _chapterRepository.HasChapterContents(command.BookId, command.ChapterId, cancellationToken);
             command.Result = chapter;
             
             return await base.HandleAsync(command, cancellationToken);

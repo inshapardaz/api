@@ -19,6 +19,8 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public int PageSize { get; private set; }
 
+        public string Query { get; set; }
+
         public Page<Author> Result { get; set; }
     }
 
@@ -33,7 +35,14 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<GetAuthorsRequest> HandleAsync(GetAuthorsRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            command.Result = await _authorRepository.GetAuthors(command.PageNumber, command.PageSize, cancellationToken);
+            if (string.IsNullOrWhiteSpace(command.Query))
+            {
+                command.Result = await _authorRepository.GetAuthors(command.PageNumber, command.PageSize, cancellationToken);
+            }
+            else
+            {
+                command.Result = await _authorRepository.FindAuthors(command.Query, command.PageNumber, command.PageSize, cancellationToken);
+            }
             return await base.HandleAsync(command, cancellationToken);
         }
     }

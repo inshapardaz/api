@@ -34,9 +34,12 @@ namespace Inshapardaz.Api.Controllers.Library
 
         [HttpGet("/api/authors", Name = "GetAuthors")]
         [Produces(typeof(PageView<AuthorView>))]
-        public async Task<IActionResult> GetAuthors(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> GetAuthors(string query, int pageNumber = 1, int pageSize = 10)
         {
-            var request = new GetAuthorsRequest(pageNumber, pageSize);
+            var request = new GetAuthorsRequest(pageNumber, pageSize)
+            {
+                Query = query
+            };
             await _commandProcessor.SendAsync(request);
 
             var args = new PageRendererArgs<Author>

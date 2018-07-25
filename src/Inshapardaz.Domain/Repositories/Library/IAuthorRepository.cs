@@ -16,5 +16,7 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task<Page<Author>> GetAuthors(int pageNumber, int pageSize, CancellationToken cancellationToken);
         
         Task<Author> GetAuthorById(int authorId, CancellationToken cancellationToken);
+
+        Task<Page<Author>> FindAuthors(string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
     }
 }

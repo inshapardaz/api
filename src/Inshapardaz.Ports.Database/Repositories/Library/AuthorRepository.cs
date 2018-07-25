@@ -85,5 +85,25 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                                                      cancellationToken);
             return author.Map<Entities.Library.Author, Author>();
         }
+
+        public async Task<Page<Author>> FindAuthors(string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var author = _databaseContext.Author;
+
+            var count = author.Count();
+            var data = await author
+                             .Where(a => a.Name.Contains(query))
+                             .Paginate(pageNumber, pageSize)
+                             .Select(a => a.Map<Entities.Library.Author, Author>())
+                             .ToListAsync(cancellationToken);
+
+            return new Page<Author>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = count,
+                Data = data
+            };
+        }
     }
 }

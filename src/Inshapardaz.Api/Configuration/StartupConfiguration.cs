@@ -23,6 +23,8 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Paramore.Brighter.AspNetCore;
 using Paramore.Darker.AspNetCore;
 using Swashbuckle.AspNetCore.Swagger;
@@ -145,7 +147,11 @@ namespace Inshapardaz.Api.Configuration
                 var connectionString = configuration.GetConnectionString("DefaultDatabase");
                 services.AddEntityFrameworkSqlServer()
                         .AddDbContext<DatabaseContext>(
-                            options => options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging()));
+                            options =>
+                            {
+                                options.UseLoggerFactory(MyLoggerFactory);
+                                options.UseSqlServer(connectionString, o => o.UseRowNumberForPaging());
+                            });
 
                 services.AddTransient<IDatabaseContext, DatabaseContext>();
             }
@@ -221,7 +227,8 @@ namespace Inshapardaz.Api.Configuration
             return app;
         }
 
-
+        public static readonly LoggerFactory MyLoggerFactory
+            = new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => true, true) });
 
     }
 }

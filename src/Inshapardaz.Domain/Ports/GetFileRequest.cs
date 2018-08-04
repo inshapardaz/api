@@ -1,8 +1,11 @@
-﻿using System.Threading;
+﻿using System;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
+using SixLabors.ImageSharp;
+using File = Inshapardaz.Domain.Entities.File;
 
 namespace Inshapardaz.Domain.Ports
 {
@@ -34,6 +37,17 @@ namespace Inshapardaz.Domain.Ports
         public override async Task<GetFileRequest> HandleAsync(GetFileRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             command.Response = await _fileRepository.GetFileById(command.ImageId, cancellationToken);
+            using (var stream = new MemoryStream(command.Response.Contents))
+            using (var output = new MemoryStream())
+            {
+                using (Image<Rgba32> image = Image.Load(stream))
+                {
+                    image.Mutate(x => x.Resize(command.Width, command.Height));
+                    image.Save(output, ImageFormats.Jpeg);
+                    command.Response.Contents = output.GetBuffer();
+                }
+            }
+
             return await base.HandleAsync(command, cancellationToken);
         }
     }

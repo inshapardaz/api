@@ -19,13 +19,13 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         private BookView _book;
         private readonly Guid _userId = Guid.NewGuid();
         private Domain.Entities.Library.Author _author;
-        private Domain.Entities.Library.Genre _genre;
+        private Domain.Entities.Library.Category _category;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _author = AuthorDataHelper.Create(new Domain.Entities.Library.Author {Name = "author1"});
-            _genre = GenreDataHelper.Create("genre1");
+            _category = CategoryDataHelper.Create("category1");
             _book = new BookView
             {
                 Title = "BookName",
@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
                 Language = (int)Languages.Chinese,
                 IsPublic = true,
                 AuthorId = _author.Id,
-                Generes = new List<GenreView> { _genre.Map() }
+                Categories = new List<CategoryView> { _category.Map() }
             };
 
             Response = await GetAdminClient(_userId).PostJson("/api/books", _book);
@@ -114,10 +114,10 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         }
 
         [Test]
-        public void ShouldReturnCorrectGenre()
+        public void ShouldReturnCorrectCategory()
         {
-            _view.Generes.ShouldContain(g => g.Id == _genre.Id);
-            _view.Generes.ShouldContain(g => g.Name == _genre.Name);
+            _view.Categories.ShouldContain(g => g.Id == _category.Id);
+            _view.Categories.ShouldContain(g => g.Name == _category.Name);
         }
     }
 }

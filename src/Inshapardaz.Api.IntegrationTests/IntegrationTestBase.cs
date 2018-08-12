@@ -46,7 +46,7 @@ namespace Inshapardaz.Api.IntegrationTests
 
         protected RelationshipDataHelper RelationshipDataHelper => new RelationshipDataHelper(TestServer.Host.Services.GetService<IRelationshipRepository>());
 
-        protected GenreDataHelper GenreDataHelper => new GenreDataHelper(TestServer.Host.Services.GetService<IGenreRepository>());
+        protected CategoryDataHelper CategoryDataHelper => new CategoryDataHelper(TestServer.Host.Services.GetService<ICategoryRepository>());
 
         protected AuthorDataHelper AuthorDataHelper => new AuthorDataHelper(TestServer.Host.Services.GetService<IAuthorRepository>());
 

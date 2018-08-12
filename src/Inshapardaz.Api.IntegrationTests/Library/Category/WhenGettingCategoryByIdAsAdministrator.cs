@@ -7,28 +7,28 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Library.Genre
+namespace Inshapardaz.Api.IntegrationTests.Library.Category
 {
     [TestFixture]
-    public class WhenGettingGenreByIdAsAdministrator : IntegrationTestBase
+    public class WhenGettingCategoryByIdAsAdministrator : IntegrationTestBase
     {
-        private GenreView _view;
+        private CategoryView _view;
         private readonly Guid _userId = Guid.NewGuid();
-        private Domain.Entities.Library.Genre _genre;
+        private Domain.Entities.Library.Category _category;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genre = GenreDataHelper.Create("Genre2323");
+            _category = CategoryDataHelper.Create("Category2323");
 
-            Response = await GetAdminClient(_userId).GetAsync($"/api/genres/{_genre.Id}");
-            _view = JsonConvert.DeserializeObject<GenreView>(await Response.Content.ReadAsStringAsync());
+            Response = await GetAdminClient(_userId).GetAsync($"/api/categories/{_category.Id}");
+            _view = JsonConvert.DeserializeObject<CategoryView>(await Response.Content.ReadAsStringAsync());
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
-            GenreDataHelper.Delete(_genre.Id);
+            CategoryDataHelper.Delete(_category.Id);
         }
 
         [Test]
@@ -38,15 +38,15 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Genre
         }
 
         [Test]
-        public void ShouldReturnGenreWithCorrectId()
+        public void ShouldReturnCategoryWithCorrectId()
         {
             _view.Id.ShouldBe(_view.Id);
         }
 
         [Test]
-        public void ShouldReturnGenreWithCorrectName()
+        public void ShouldReturnCategoryWithCorrectName()
         {
-            _view.Name.ShouldBe(_genre.Name);
+            _view.Name.ShouldBe(_category.Name);
         }
 
         [Test]

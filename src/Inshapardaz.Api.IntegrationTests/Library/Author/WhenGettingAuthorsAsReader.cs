@@ -14,16 +14,16 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
     [TestFixture, Ignore("Security not implemented")]
     public class WhenGettingAuthorsAsReader : IntegrationTestBase
     {
-        private readonly List<Domain.Entities.Library.Author> _genres = new List<Domain.Entities.Library.Author>();
+        private readonly List<Domain.Entities.Library.Author> _authors = new List<Domain.Entities.Library.Author>();
         private ListView<AuthorView> _view;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 1" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 2" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 3" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 4" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 1" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 2" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 3" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 4" }));
 
              Response = await GetReaderClient(Guid.NewGuid()).GetAsync($"/api/authors");
             _view = JsonConvert.DeserializeObject<ListView<AuthorView>>(await Response.Content.ReadAsStringAsync());
@@ -32,9 +32,9 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
         [OneTimeTearDown]
         public void Cleanup()
         {
-            foreach (var genre in _genres)
+            foreach (var author in _authors)
             {
-                AuthorDataHelper.Delete(genre.Id);
+                AuthorDataHelper.Delete(author.Id);
             }
         }
 
@@ -47,7 +47,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
         [Test]
         public void ShouldContainAllAuthor()
         {
-            _view.Items.Count().ShouldBe(_genres.Count);
+            _view.Items.Count().ShouldBe(_authors.Count);
         }
 
         [Test]

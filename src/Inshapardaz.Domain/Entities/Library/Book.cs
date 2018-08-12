@@ -10,13 +10,14 @@ namespace Inshapardaz.Domain.Entities.Library
 
         public string Description { get; set; }
 
-        public IEnumerable<Genre> Generes { get; set; }
+        public IEnumerable<Category> Categories { get; set; }
 
         public Languages Language { get; set; }
 
         public bool IsPublic { get; set; }
 
         public int AuthorId { get; set; }
+        
         public string AuthorName { get; set; }
 
         public int ImageId { get; set; }

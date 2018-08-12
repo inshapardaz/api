@@ -63,12 +63,12 @@ namespace Inshapardaz.Api.IntegrationTests.Helpers
             };
         }
 
-        public static GenreView Map(this Genre genre)
+        public static CategoryView Map(this Category category)
         {
-            return new GenreView
+            return new CategoryView
             {
-                Id = genre.Id,
-                Name = genre.Name
+                Id = category.Id,
+                Name = category.Name
             };
         }
     }

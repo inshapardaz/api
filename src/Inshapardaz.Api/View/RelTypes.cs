@@ -33,15 +33,13 @@
         public const string Book = "book";
         public const string Author = "author";
         public const string Authors = "authors";
-        public const string Genres = "genres";
+        public const string Categories = "categories";
         public const string Image = "image";
         public const string ImageUpload = "image-upload";
         public const string Contents = "contents";
-
         public const string Chapters = "chapters";
         public const string CreateChapter = "create-chapter";
         public const string AddContents = "add-contents";
-
         public const string Chapter = "chapter";
     }
 }

@@ -8,32 +8,31 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Library.Genre
+namespace Inshapardaz.Api.IntegrationTests.Library.Category
 {
     [TestFixture]
-    public class WhenUpdatingANonExistingGenre : IntegrationTestBase
+    public class WhenAddingCategory : IntegrationTestBase
     {
-        private GenreView _view;
-        private GenreView _genre;
+        private CategoryView _view;
+        private CategoryView _category;
         private readonly Guid _userId = Guid.NewGuid();
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genre = new GenreView
+            _category = new CategoryView
             {
-                Id = -3434,
-                Name = "GenreName"
+                Name = "CategoryName"
             };
 
-            Response = await GetAdminClient(_userId).PutJson($"/api/genres/{_genre.Id}", _genre);
-            _view = JsonConvert.DeserializeObject<GenreView>(await Response.Content.ReadAsStringAsync());
+            Response = await GetAdminClient(_userId).PostJson("/api/categories", _category);
+            _view = JsonConvert.DeserializeObject<CategoryView>(await Response.Content.ReadAsStringAsync());
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
-            GenreDataHelper.Delete(_view.Id);
+            CategoryDataHelper.Delete(_view.Id);
         }
 
         [Test]
@@ -69,7 +68,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Genre
         [Test]
         public void ShouldReturnCorrectMeaningData()
         {
-            _view.Name.ShouldBe(_genre.Name);
+            _view.Name.ShouldBe(_category.Name);
         }
     }
 }

@@ -14,13 +14,14 @@ namespace Inshapardaz.Api.View.Library
 
         public string Description { get; set; }
 
-        public IEnumerable<GenreView> Generes { get; set; }
+        public IEnumerable<CategoryView> Categories { get; set; }
 
         public int Language { get; set; }
 
         public bool IsPublic { get; set; }
 
         public int AuthorId { get; set; }
+
         public string AuthorName { get; set; }
     }
 }

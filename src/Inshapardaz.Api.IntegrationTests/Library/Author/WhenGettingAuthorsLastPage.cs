@@ -14,18 +14,18 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
     [TestFixture]
     public class WhenGettingAuthorsLastPage : IntegrationTestBase
     {
-        private readonly List<Domain.Entities.Library.Author> _genres = new List<Domain.Entities.Library.Author>();
+        private readonly List<Domain.Entities.Library.Author> _authors = new List<Domain.Entities.Library.Author>();
         private PageView<AuthorView> _view;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 1" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 2" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 3" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 4" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 5" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 6" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 1" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 2" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 3" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 4" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 5" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 6" }));
 
              Response = await GetAdminClient(Guid.NewGuid()).GetAsync($"/api/authors?pageNumber=3&pageSize=2");
             _view = JsonConvert.DeserializeObject<PageView<AuthorView>>(await Response.Content.ReadAsStringAsync());
@@ -34,9 +34,9 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
         [OneTimeTearDown]
         public void Cleanup()
         {
-            foreach (var genre in _genres)
+            foreach (var author in _authors)
             {
-                AuthorDataHelper.Delete(genre.Id);
+                AuthorDataHelper.Delete(author.Id);
             }
         }
 

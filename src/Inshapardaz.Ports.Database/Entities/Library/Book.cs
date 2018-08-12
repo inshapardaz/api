@@ -16,9 +16,10 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public bool IsPublic { get; set; }
 
-        public virtual ICollection<BookGenre> Generes { get; set; }
+        public ICollection<BookCategory> BookCategory { get; set; } = new List<BookCategory>();
 
         public virtual ICollection<Chapter> Chapters { get; set; }
+
 
         [Required]
         public int AuthorId { get; set; }

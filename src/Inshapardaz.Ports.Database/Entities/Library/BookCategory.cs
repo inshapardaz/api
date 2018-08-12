@@ -1,13 +1,13 @@
 ﻿namespace Inshapardaz.Ports.Database.Entities.Library
 {
-    public class BookGenre
+    public class BookCategory
     {
         public int BookId { get; set; }
 
         public Book Book { get; set; }
 
-        public int GenreId { get; set; }
+        public int CategoryId { get; set; }
 
-        public Genre Genre { get; set; }
+        public Category Category { get; set; }
     }
 }

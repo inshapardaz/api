@@ -1,6 +1,6 @@
 ﻿namespace Inshapardaz.Domain.Entities.Library
 {
-    public class Genre
+    public class Category
     {
         public int Id { get; set; }
 

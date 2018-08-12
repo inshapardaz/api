@@ -18,7 +18,7 @@ namespace Inshapardaz.Ports.Database
         DbSet<DictionaryDownload> DictionaryDownload { get; set; }
         DbSet<File> File { get; set; }
 
-        DbSet<Genre> Genere { get; set; }
+        DbSet<Category> Category { get; set; }
         DbSet<Author> Author { get; set; }
         DbSet<Book> Book { get; set; }
         DbSet<Chapter> Chapter { get; set; }

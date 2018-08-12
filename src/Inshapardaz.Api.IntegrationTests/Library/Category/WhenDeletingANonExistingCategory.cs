@@ -4,15 +4,15 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Library.Genre
+namespace Inshapardaz.Api.IntegrationTests.Library.Category
 {
     [TestFixture]
-    public class WhenDeletingANonExistingGenre : IntegrationTestBase
+    public class WhenDeletingANonExistingCategory : IntegrationTestBase
     {
         [OneTimeSetUp]
         public async Task Setup()
         {
-            Response = await GetAdminClient(Guid.NewGuid()).DeleteAsync($"api/genres/{-23243}");
+            Response = await GetAdminClient(Guid.NewGuid()).DeleteAsync($"api/categories/{-23243}");
         }
 
         [Test]

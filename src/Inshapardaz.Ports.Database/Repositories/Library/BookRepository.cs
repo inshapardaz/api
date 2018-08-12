@@ -75,7 +75,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             existingEntity.AuthorId = book.AuthorId;
             existingEntity.IsPublic = book.IsPublic;
             existingEntity.Language = book.Language;
-            existingEntity.ImageId = book.ImageId;
+            if (book.ImageId > 0)
+            {
+                existingEntity.ImageId = book.ImageId;
+            }
+
             existingEntity.BookCategory.Clear();
 
             await _databaseContext.SaveChangesAsync(cancellationToken);

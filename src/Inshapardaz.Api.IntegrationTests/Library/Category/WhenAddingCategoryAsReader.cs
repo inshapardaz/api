@@ -9,22 +9,22 @@ using Inshapardaz.Domain.Entities.Dictionary;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Library.Genre
+namespace Inshapardaz.Api.IntegrationTests.Library.Category
 {
     [TestFixture, Ignore("Security not implemented")]
-    public class WhenAddingGenreAsReader : IntegrationTestBase
+    public class WhenAddingCategoryAsReader : IntegrationTestBase
     {
-        private GenreView _genreView;
+        private CategoryView _categoryView;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genreView = new GenreView
+            _categoryView = new CategoryView
             {
                 Name = "Some Name"
             };
 
-            Response = await GetReaderClient(Guid.NewGuid()).PostJson($"/api/genres", _genreView);
+            Response = await GetReaderClient(Guid.NewGuid()).PostJson($"/api/categories", _categoryView);
         }
         
         [Test]

@@ -20,7 +20,7 @@ namespace Inshapardaz.Ports.Database
         public DbSet<DictionaryDownload> DictionaryDownload { get; set; }
         public DbSet<File> File { get; set; }
 
-        public DbSet<Genre> Genere { get; set; }
+        public DbSet<Category> Category { get; set; }
         public DbSet<Author> Author { get; set; }
         public DbSet<Book> Book { get; set; }
         public DbSet<Chapter> Chapter { get; set; }
@@ -117,9 +117,9 @@ namespace Inshapardaz.Ports.Database
                 entity.ToTable("Book", "Library");
             });
 
-            modelBuilder.Entity<BookGenre>(entity =>
+            modelBuilder.Entity<BookCategory>(entity =>
             {
-                entity.ToTable("BookGenre", "Library");
+                entity.ToTable("BookCategory", "Library");
             });
 
             modelBuilder.Entity<Chapter>(entity =>
@@ -132,23 +132,13 @@ namespace Inshapardaz.Ports.Database
                 entity.ToTable("ChapterText", "Library");
             });
 
-            modelBuilder.Entity<Genre>(entity =>
+            modelBuilder.Entity<Category>(entity =>
             {
-                entity.ToTable("Genre", "Library");
+                entity.ToTable("Category", "Library");
             });
 
-            modelBuilder.Entity<BookGenre>()
-                        .HasKey(t => new { t.BookId, t.GenreId });
-
-            modelBuilder.Entity<BookGenre>()
-                        .HasOne(bg => bg.Book)
-                        .WithMany(b => b.Generes)
-                        .HasForeignKey(pt => pt.GenreId);
-
-            modelBuilder.Entity<BookGenre>()
-                        .HasOne(pt => pt.Genre)
-                        .WithMany(t => t.BookGeneres)
-                        .HasForeignKey(pt => pt.GenreId);
+            modelBuilder.Entity<BookCategory>()
+                        .HasKey(t => new { t.BookId, t.CategoryId });
         }
     }
 }

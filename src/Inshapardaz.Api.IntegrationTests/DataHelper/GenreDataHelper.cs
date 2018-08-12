@@ -4,28 +4,28 @@ using Inshapardaz.Domain.Repositories.Library;
 
 namespace Inshapardaz.Api.IntegrationTests.DataHelper
 {
-    public class GenreDataHelper
+    public class CategoryDataHelper
     {
-        private readonly IGenreRepository _genreRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public GenreDataHelper(IGenreRepository genreRepository)
+        public CategoryDataHelper(ICategoryRepository categoryRepository)
         {
-            _genreRepository = genreRepository;
+            _categoryRepository = categoryRepository;
         }
 
-        public Genre Create(string genre)
+        public Category Create(string category)
         {
-            return _genreRepository.AddGenre(new Genre { Name = genre} , CancellationToken.None).Result;
+            return _categoryRepository.AddCategory(new Category { Name = category} , CancellationToken.None).Result;
         }
 
-        public Genre Get(int genreId)
+        public Category Get(int categoryId)
         {
-            return _genreRepository.GetGenreById(genreId, CancellationToken.None).Result;
+            return _categoryRepository.GetCategoryById(categoryId, CancellationToken.None).Result;
         }
 
-        public void Delete(int genreId)
+        public void Delete(int categoryId)
         {
-            _genreRepository.DeleteGenre(genreId, CancellationToken.None).Wait();
+            _categoryRepository.DeleteCategory(categoryId, CancellationToken.None).Wait();
         }
     }
 }

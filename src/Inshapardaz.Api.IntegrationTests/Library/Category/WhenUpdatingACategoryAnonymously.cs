@@ -6,29 +6,29 @@ using Inshapardaz.Api.View.Library;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Library.Genre
+namespace Inshapardaz.Api.IntegrationTests.Library.Category
 {
     [TestFixture]
-    public class WhenUpdatingAGenreAnonymously : IntegrationTestBase
+    public class WhenUpdatingACategoryAnonymously : IntegrationTestBase
     {
-        private Domain.Entities.Library.Genre _genre;
+        private Domain.Entities.Library.Category _category;
         private readonly Guid _userId = Guid.NewGuid();
-        private GenreView _updatedGenre;
+        private CategoryView _updatedCategory;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genre = GenreDataHelper.Create("genre1");
+            _category = CategoryDataHelper.Create("category1");
 
-            _updatedGenre = new GenreView {Id = _genre.Id, Name = "Some New Name"};
+            _updatedCategory = new CategoryView {Id = _category.Id, Name = "Some New Name"};
 
-            Response = await GetClient().PutJson($"api/genres/{_genre.Id}", _updatedGenre);
+            Response = await GetClient().PutJson($"api/categories/{_category.Id}", _updatedCategory);
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
-            GenreDataHelper.Delete(_genre.Id);
+            CategoryDataHelper.Delete(_category.Id);
         }
 
         [Test]

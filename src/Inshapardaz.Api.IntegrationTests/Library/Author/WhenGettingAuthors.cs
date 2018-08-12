@@ -14,17 +14,17 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
     [TestFixture]
     public class WhenGettingAuthors : IntegrationTestBase
     {
-        private readonly List<Domain.Entities.Library.Author> _genres = new List<Domain.Entities.Library.Author>();
+        private readonly List<Domain.Entities.Library.Author> _authors = new List<Domain.Entities.Library.Author>();
         private PageView<AuthorView> _view;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
 
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 1" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 2" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 3" }));
-            _genres.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "genre 4" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 1" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 2" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 3" }));
+            _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 4" }));
 
              Response = await GetAdminClient(Guid.NewGuid()).GetAsync($"/api/authors");
             _view = JsonConvert.DeserializeObject<PageView<AuthorView>>(await Response.Content.ReadAsStringAsync());
@@ -33,9 +33,9 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
         [OneTimeTearDown]
         public void Cleanup()
         {
-            foreach (var genre in _genres)
+            foreach (var author in _authors)
             {
-                AuthorDataHelper.Delete(genre.Id);
+                AuthorDataHelper.Delete(author.Id);
             }
         }
 
@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
         [Test]
         public void ShouldContainAllAuthor()
         {
-            _view.Data.Count().ShouldBe(_genres.Count);
+            _view.Data.Count().ShouldBe(_authors.Count);
         }
 
         [Test]

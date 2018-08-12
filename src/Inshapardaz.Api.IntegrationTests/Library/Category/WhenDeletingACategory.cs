@@ -4,29 +4,29 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Inshapardaz.Api.IntegrationTests.Library.Genre
+namespace Inshapardaz.Api.IntegrationTests.Library.Category
 {
     [TestFixture]
-    public class WhenDeletingAGenre : IntegrationTestBase
+    public class WhenDeletingACategory : IntegrationTestBase
     {
-        private Domain.Entities.Library.Genre _view;
-        private Domain.Entities.Library.Genre _genre;
+        private Domain.Entities.Library.Category _view;
+        private Domain.Entities.Library.Category _category;
         private readonly Guid _userId = Guid.NewGuid();
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genre = GenreDataHelper.Create("genre1");
+            _category = CategoryDataHelper.Create("category1");
 
-            Response = await GetAdminClient(_userId).DeleteAsync($"api/genres/{_genre.Id}");
+            Response = await GetAdminClient(_userId).DeleteAsync($"api/categories/{_category.Id}");
 
-            _view = GenreDataHelper.Get(_genre.Id);
+            _view = CategoryDataHelper.Get(_category.Id);
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
-            GenreDataHelper.Delete(_genre.Id);
+            CategoryDataHelper.Delete(_category.Id);
         }
 
         [Test]

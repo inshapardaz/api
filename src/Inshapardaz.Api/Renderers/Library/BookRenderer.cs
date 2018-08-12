@@ -16,12 +16,14 @@ namespace Inshapardaz.Api.Renderers.Library
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
         private readonly IRenderEnum _enumRenderer;
+        private readonly IRenderCategory _categoryRenderer;
 
-        public BookRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderEnum enumRenderer)
+        public BookRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderEnum enumRenderer, IRenderCategory categoryRenderer)
         {
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
             _enumRenderer = enumRenderer;
+            _categoryRenderer = categoryRenderer;
         }
 
         public BookView Render(Book source)
@@ -48,6 +50,18 @@ namespace Inshapardaz.Api.Renderers.Library
             }
 
             result.Links = links;
+
+            if (source.Categories != null)
+            {
+                var categories = new List<CategoryView>();
+                foreach (var category in source.Categories)
+                {
+                    categories.Add(_categoryRenderer.RenderResult(category));
+                }
+
+                result.Categories = categories;
+            }
+
             return result;
         }
     }

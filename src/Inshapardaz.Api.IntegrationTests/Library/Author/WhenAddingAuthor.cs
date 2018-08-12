@@ -14,18 +14,18 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
     public class WhenAddingAuthor : IntegrationTestBase
     {
         private AuthorView _view;
-        private AuthorView _genre;
+        private AuthorView _author;
         private readonly Guid _userId = Guid.NewGuid();
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genre = new AuthorView
+            _author = new AuthorView
             {
                 Name = "AuthorName"
             };
 
-            Response = await GetAdminClient(_userId).PostJson("/api/authors", _genre);
+            Response = await GetAdminClient(_userId).PostJson("/api/authors", _author);
             _view = JsonConvert.DeserializeObject<AuthorView>(await Response.Content.ReadAsStringAsync());
         }
 
@@ -68,7 +68,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
         [Test]
         public void ShouldReturnCorrectName()
         {
-            _view.Name.ShouldBe(_genre.Name);
+            _view.Name.ShouldBe(_author.Name);
         }
     }
 }

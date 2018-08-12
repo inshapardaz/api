@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
     [TestFixture, Ignore("Security not implemented")]
     public class WhenAddingBookAsReader : IntegrationTestBase
     {
-        private BookView _genreView;
+        private BookView _categoryView;
         private Domain.Entities.Library.Author _author;
 
         [OneTimeSetUp]
@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         {
             _author = AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author1" });
 
-            _genreView = new BookView
+            _categoryView = new BookView
             {
                 Title = "BookName",
                 Description = "Some description",
@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
                 AuthorId = _author.Id
             };
 
-            Response = await GetReaderClient(Guid.NewGuid()).PostJson($"/api/books", _genreView);
+            Response = await GetReaderClient(Guid.NewGuid()).PostJson($"/api/books", _categoryView);
         }
 
         [OneTimeTearDown]

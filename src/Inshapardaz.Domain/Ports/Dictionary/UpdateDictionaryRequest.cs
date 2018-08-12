@@ -42,9 +42,9 @@ namespace Inshapardaz.Domain.Ports.Dictionary
             if (result == null)
             {
                 command.Dictionary.Id = default(int);
-                var newGenre = await _dictionaryRepository.AddDictionary(command.Dictionary, cancellationToken);
+                var newCategory = await _dictionaryRepository.AddDictionary(command.Dictionary, cancellationToken);
                 command.Result.HasAddedNew = true;
-                command.Result.Dictionary = newGenre;
+                command.Result.Dictionary = newCategory;
             }
             else
             {

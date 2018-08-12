@@ -11,17 +11,17 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
     [TestFixture, Ignore("Security not implemented")]
     public class WhenAddingAuthorAsReader : IntegrationTestBase
     {
-        private AuthorView _genreView;
+        private AuthorView _authorView;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genreView = new AuthorView
+            _authorView = new AuthorView
             {
                 Name = "Some Name"
             };
 
-            Response = await GetReaderClient(Guid.NewGuid()).PostJson($"/api/authors", _genreView);
+            Response = await GetReaderClient(Guid.NewGuid()).PostJson($"/api/authors", _authorView);
         }
         
         [Test]

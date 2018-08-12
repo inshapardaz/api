@@ -11,24 +11,24 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
     [TestFixture]
     public class WhenUpdatingAnAuthorAnonymously : IntegrationTestBase
     {
-        private Domain.Entities.Library.Author _genre;
+        private Domain.Entities.Library.Author _author;
         private readonly Guid _userId = Guid.NewGuid();
         private AuthorView _updatedAuthor;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _genre = AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author31" });
+            _author = AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author31" });
 
-            _updatedAuthor = new AuthorView {Id = _genre.Id, Name = "Some New Name"};
+            _updatedAuthor = new AuthorView {Id = _author.Id, Name = "Some New Name"};
 
-            Response = await GetClient().PutJson($"api/authors/{_genre.Id}", _updatedAuthor);
+            Response = await GetClient().PutJson($"api/authors/{_author.Id}", _updatedAuthor);
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
-            AuthorDataHelper.Delete(_genre.Id);
+            AuthorDataHelper.Delete(_author.Id);
         }
 
         [Test]

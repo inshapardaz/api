@@ -71,8 +71,8 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRenderJobStatus, JobStatusRenderer>();
             services.AddTransient<IRenderFile, FileRenderer>();
 
-            services.AddTransient<IRenderGenre, GenreRenderer>();
-            services.AddTransient<IRenderGenres, GenresRenderer>();
+            services.AddTransient<IRenderCategory, CategoryRenderer>();
+            services.AddTransient<IRenderCategories, CategoriesRenderer>();
             services.AddTransient<IRenderAuthors, AuthorsRenderer>();
             services.AddTransient<IRenderAuthor, AuthorRenderer>();
             services.AddTransient<IRenderBooks, BooksRenderer>();
@@ -164,7 +164,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRelationshipRepository, RelationshipRepository>();
 
             services.AddTransient<IAuthorRepository, AuthorRepository>();
-            services.AddTransient<IGenreRepository, GenreRepository>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IBookRepository, BookRepository>();
             services.AddTransient<IChapterRepository, ChapterRepository>();
 

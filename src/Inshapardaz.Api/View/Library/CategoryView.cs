@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.View.Library
 {
-    public class GenreView : LinkBasedView
+    public class CategoryView : LinkBasedView
     {
         public int Id { get; set; }
 

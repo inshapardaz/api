@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Inshapardaz.Ports.Database.Entities.Library
 {
-    public class Genre
+    public class Category
     {
         [Key]
         public int Id { get; set; }
@@ -11,6 +11,6 @@ namespace Inshapardaz.Ports.Database.Entities.Library
         [Required]
         public string Name { get; set; }
 
-        public virtual ICollection<BookGenre> BookGeneres { get; set; }
+        public ICollection<BookCategory> BookCategories { get; set; } = new List<BookCategory>();
     }
 }

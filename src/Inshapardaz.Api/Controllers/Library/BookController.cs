@@ -73,19 +73,18 @@ namespace Inshapardaz.Api.Controllers.Library
             return Ok(_booksRenderer.Render(args));
         }
 
-        [HttpGet("/api/genre/{id}/books", Name = "GetBooksByGenre")]
+        [HttpGet("/api/categories/{id}/books", Name = "GetBooksByCategory")]
         [Produces(typeof(IEnumerable<BookView>))]
-        public async Task<IActionResult> GetBooksByGenre(int id, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IActionResult> GetBooksByCategory(int id, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
         {
-            throw new NotImplementedException();
-            var request = new GetBooksByAuthorRequest(id, pageNumber, pageSize) { UserId = _userHelper.GetUserId() };
+            var request = new GetBooksByCategoryRequest(id, pageNumber, pageSize) { UserId = _userHelper.GetUserId() };
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
             var args = new PageRendererArgs<Book>
             {
                 Page = request.Result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-                RouteName = "GetBooksByGenre"
+                RouteName = "GetBooksByCategory"
             };
 
             return Ok(_booksRenderer.Render(args));

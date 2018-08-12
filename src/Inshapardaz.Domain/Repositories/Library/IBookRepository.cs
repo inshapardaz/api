@@ -22,12 +22,13 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<Page<Book>> SearchPublicBooks(string searchText, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
-
-        Task<Page<Book>> GetBooksByGenere(int genereId, int pageNumber, int pageSize, CancellationToken cancellationToken);
-
         Task<Page<Book>> GetBooksByAuthor(int authorId, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<Page<Book>> GetPublicBooksByAuthor(int authorId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+        Task<Page<Book>> GetBooksByCategory(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+        Task<Page<Book>> GetPublicBooksByCategory(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<Book> GetBookById(int bookId, CancellationToken cancellationToken);
     }

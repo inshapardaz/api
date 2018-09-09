@@ -101,10 +101,12 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.AuthorId, o => o.MapFrom(s => s.AuthorId))
                 .ForMember(d => d.IsPublic, o => o.MapFrom(s => s.IsPublic))
                 .ForMember(d => d.Language, o => o.MapFrom(s => s.Language))
+                .ForMember(d => d.Status, o => o.Ignore())
                 .ForMember(d => d.Chapters, o => o.Ignore())
                 .ForMember(d => d.BookCategory, o => o.MapFrom(s => s.Categories))
                 .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
                 .ForMember(d => d.Author, o => o.Ignore())
+                .ForMember(d => d.Pages, o => o.Ignore())
                 .ReverseMap()
                     .ForMember(d => d.AuthorName, o => o.MapFrom(s => s.Author.Name))
                     .ForMember(d => d.Categories, o => o.MapFrom(s => s.BookCategory));

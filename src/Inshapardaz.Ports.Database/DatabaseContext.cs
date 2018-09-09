@@ -25,6 +25,7 @@ namespace Inshapardaz.Ports.Database
         public DbSet<Book> Book { get; set; }
         public DbSet<Chapter> Chapter { get; set; }
         public DbSet<ChapterText> ChapterText { get; set; }
+        public DbSet<BookPage> BookPages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -135,6 +136,11 @@ namespace Inshapardaz.Ports.Database
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.ToTable("Category", "Library");
+            });
+
+            modelBuilder.Entity<BookPage>(entity =>
+            {
+                entity.ToTable("BookPage", "Library");
             });
 
             modelBuilder.Entity<BookCategory>()

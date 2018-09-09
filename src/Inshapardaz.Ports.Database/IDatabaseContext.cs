@@ -23,6 +23,7 @@ namespace Inshapardaz.Ports.Database
         DbSet<Book> Book { get; set; }
         DbSet<Chapter> Chapter { get; set; }
 
+        DbSet <BookPage> BookPages { get; set; }
         DbSet<ChapterText> ChapterText { get; set; }
 
         DatabaseFacade Database { get; }

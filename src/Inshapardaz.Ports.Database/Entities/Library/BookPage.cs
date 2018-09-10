@@ -9,6 +9,8 @@ namespace Inshapardaz.Ports.Database.Entities.Library
         [Required]
         public int BookId { get; set; }
 
+        public int? PageNumber { get; set; }
+
         public virtual Book Book { get; set; }
 
         public string Text { get; set; }

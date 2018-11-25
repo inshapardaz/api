@@ -154,7 +154,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         public async Task<IEnumerable<Book>> GtLatestBooks(CancellationToken cancellationToken)
         {
             return await _databaseContext.Book
-                                         .OrderBy(b => b.DateAdded)
+                                         .OrderByDescending(b => b.DateAdded)
                                          .Take(10)
                                          .Select(a => a.Map<Entities.Library.Book, Book>())
                                          .ToListAsync(cancellationToken);
@@ -354,11 +354,50 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var recents = await _databaseContext.RecentBooks
                                                 .Include(r => r.Book)
                                                 .Where(r => r.UserId == userId)
-                                                .OrderBy(r => r.DateRead)
+                                                .OrderByDescending(r => r.DateRead)
                                                 .Take(count)
                                                 .Select(r => r.Book)
                                                 .ToListAsync(cancellationToken);
             return recents.Select(b => b.Map<Entities.Library.Book, Book>());
+        }
+
+        public async Task AddBookToFavorites(Guid userId, int bookId, CancellationToken cancellationToken)
+        {
+            var book = await _databaseContext.Book.SingleOrDefaultAsync(b => b.Id == bookId, cancellationToken);
+            if (book == null)
+            {
+                throw new NotFoundException();
+            }
+
+            var fav = await _databaseContext.FavoriteBooks.SingleOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId, cancellationToken);
+
+            if (fav == null)
+            {
+                fav = new FavoriteBook
+                {
+                    UserId = userId,
+                    BookId = bookId,
+                    DateAdded = DateTime.UtcNow,
+                    Book = book
+                };
+                await _databaseContext.FavoriteBooks.AddAsync(fav, cancellationToken);
+                await _databaseContext.SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        public async Task DeleteBookFromFavorites(Guid userId, int bookId, CancellationToken cancellationToken)
+        {
+            var fav = await _databaseContext
+                                .FavoriteBooks
+                                .SingleOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId, cancellationToken);
+
+            if (fav == null)
+            {
+                throw new NotFoundException();
+            }
+
+            _databaseContext.FavoriteBooks.Remove(fav);
+            await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<Page<Book>> GetFavoriteBooksByUser(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken)

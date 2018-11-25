@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
+using Inshapardaz.Domain.Entities;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
@@ -12,10 +12,13 @@ using Shouldly;
 namespace Inshapardaz.Api.IntegrationTests.Library.Book
 {
     [TestFixture]
-    public class WhenGettingLatestBooks : IntegrationTestBase
+    public class WhenGettingFavoriteBooks : IntegrationTestBase
     {
         private readonly List<Domain.Entities.Library.Book> _books = new List<Domain.Entities.Library.Book>();
-        private IEnumerable<BookView> _view;
+        private readonly List<Domain.Entities.Library.Book> _favorites = new List<Domain.Entities.Library.Book>();
+        private readonly Guid UserId = Guid.NewGuid();
+
+        private Page<BookView> _view;
         private Domain.Entities.Library.Author _author;
 
         [OneTimeSetUp]
@@ -28,8 +31,11 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
             _books.Add(BookDataHelper.Create(new Domain.Entities.Library.Book { Title = "book 3", AuthorId = _author.Id, DateAdded = DateTime.Today.AddDays(-3) }));
             _books.Add(BookDataHelper.Create(new Domain.Entities.Library.Book { Title = "book 4", AuthorId = _author.Id, DateAdded = DateTime.Today.AddDays(-1) }));
 
-             Response = await GetAdminClient(Guid.NewGuid()).GetAsync($"/api/books/latest");
-            _view = JsonConvert.DeserializeObject<IEnumerable<BookView>>(await Response.Content.ReadAsStringAsync());
+            _favorites.Add(BookDataHelper.AddToFavorites(UserId, _books[0]));
+            _favorites.Add(BookDataHelper.AddToFavorites(UserId, _books[3]));
+
+            Response = await GetReaderClient(UserId).GetAsync($"/api/books/favorite");
+            _view = JsonConvert.DeserializeObject<Page<BookView>>(await Response.Content.ReadAsStringAsync());
         }
 
         [OneTimeTearDown]
@@ -38,6 +44,11 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
             foreach (var book in _books)
             {
                 BookDataHelper.Delete(book.Id);
+            }
+
+            foreach (var book in _favorites)
+            {
+                BookDataHelper.RemoveFromFavorites(UserId, book);
             }
 
             AuthorDataHelper.Delete(_author.Id);
@@ -52,18 +63,14 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         [Test]
         public void ShouldContainAllBook()
         {
-            _view.Count().ShouldBe(_books.Count);
+            _view.Data.Count().ShouldBe(_favorites.Count);
         }
 
         [Test]
         public void ShouldReturnBooksFromNewestToOldest()
         {
-            var sortedList = _books.OrderByDescending(b => b.DateAdded).ToList();
-
-            _view.ElementAt(0).Id.ShouldBe(sortedList[0].Id);
-            _view.ElementAt(1).Id.ShouldBe(sortedList[1].Id);
-            _view.ElementAt(2).Id.ShouldBe(sortedList[2].Id);
-            _view.ElementAt(3).Id.ShouldBe(sortedList[3].Id);
+            _view.Data.ShouldContain(b => b.Id == _books[0].Id);
+            _view.Data.ShouldContain(b => b.Id == _books[3].Id);
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
@@ -38,6 +38,11 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<GetFavoriteBooksRequest> HandleAsync(GetFavoriteBooksRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
+            if (command.UserId == Guid.Empty)
+            {
+                throw new NotFoundException();
+            }
+
             var books = await _bookRepository.GetFavoriteBooksByUser(command.UserId, command.PageNumber, command.PageSize, cancellationToken);
             command.Result = books;
             return await base.HandleAsync(command, cancellationToken);

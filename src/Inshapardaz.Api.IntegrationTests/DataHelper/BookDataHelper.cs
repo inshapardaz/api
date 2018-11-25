@@ -31,13 +31,24 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
 
         public Book AddRecent(Guid userId, Book book)
         {
-            _bookRepository.AddRecentBook(userId, book.Id, CancellationToken.None);
+            _bookRepository.AddRecentBook(userId, book.Id, CancellationToken.None).Wait();
             return book;
         }
 
         public void RemoveFromRecent(Guid userId, Book book)
         {
-            _bookRepository.DeleteBookFromRecent(userId, book.Id, CancellationToken.None);
+            _bookRepository.DeleteBookFromRecent(userId, book.Id, CancellationToken.None).Wait();
+        }
+
+        public Book AddToFavorites(Guid userId, Book book)
+        {
+            _bookRepository.AddBookToFavorites(userId, book.Id, CancellationToken.None).Wait();
+            return book;
+        }
+
+        public void RemoveFromFavorites(Guid userId, Book book)
+        {
+            _bookRepository.DeleteBookFromFavorites(userId, book.Id, CancellationToken.None).Wait();
         }
     }
 }

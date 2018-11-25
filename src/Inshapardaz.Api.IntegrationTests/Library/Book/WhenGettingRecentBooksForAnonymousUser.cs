@@ -3,21 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Inshapardaz.Api.View.Library;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
 
 namespace Inshapardaz.Api.IntegrationTests.Library.Book
 {
     [TestFixture]
-    public class WhenGettingRecentBooks : IntegrationTestBase
+    public class WhenGettingRecentBooksForAnonymousUser : IntegrationTestBase
     {
         private readonly List<Domain.Entities.Library.Book> _books = new List<Domain.Entities.Library.Book>();
         private readonly List<Domain.Entities.Library.Book> _recents = new List<Domain.Entities.Library.Book>();
 
         private readonly Guid UserId = Guid.NewGuid();
-        private IEnumerable<BookView> _view;
         private Domain.Entities.Library.Author _author;
 
         [OneTimeSetUp]
@@ -33,8 +30,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
             _recents.Add(BookDataHelper.AddRecent(UserId, _books[0]));
             _recents.Add(BookDataHelper.AddRecent(UserId, _books[3]));
             
-            Response = await GetReaderClient(UserId).GetAsync("/api/books/recent");
-            _view = JsonConvert.DeserializeObject<IEnumerable<BookView>>(await Response.Content.ReadAsStringAsync());
+            Response = await GetClient().GetAsync("/api/books/recent");
         }
 
         [OneTimeTearDown]
@@ -54,19 +50,9 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldReturnNotFound()
         {
-            Response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        }
-
-        [Test]
-        public void ShouldContainAllRecentBook()
-        {
-            _view.Count().ShouldBe(_recents.Count);
-            foreach (var book in _recents)
-            {
-                Assert.That(_view.Any(b => b.Id == book.Id), $"Expected book ${book.Id} to be in recents");
-            }
+            Response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
     }
 }

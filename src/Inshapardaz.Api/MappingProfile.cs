@@ -92,9 +92,11 @@ namespace Inshapardaz.Api
             CreateMap<Author, AuthorView>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.BookCount, o => o.MapFrom(s => s.BookCount))
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ReverseMap()
-                .ForMember(d => d.ImageId, o => o.Ignore());
+                .ForMember(d => d.ImageId, o => o.Ignore())
+                .ForMember(d => d.BookCount, o => o.Ignore());
 
             CreateMap<Category, CategoryView>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))

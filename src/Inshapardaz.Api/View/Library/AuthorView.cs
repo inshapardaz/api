@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Inshapardaz.Api.View.Library
 {
@@ -10,6 +7,8 @@ namespace Inshapardaz.Api.View.Library
         public int Id { get; set; }
 
         public string Name { get; set; }
+
+        public int BookCount { get; set; }
 
         public IEnumerable<LinkView> Links { get; set; }
     }

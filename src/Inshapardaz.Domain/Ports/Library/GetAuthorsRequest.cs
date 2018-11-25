@@ -27,10 +27,12 @@ namespace Inshapardaz.Domain.Ports.Library
     public class GetAuthorsRequestHandler : RequestHandlerAsync<GetAuthorsRequest>
     {
         private readonly IAuthorRepository _authorRepository;
+        private readonly IBookRepository _bookRepository;
 
-        public GetAuthorsRequestHandler(IAuthorRepository authorRepository)
+        public GetAuthorsRequestHandler(IAuthorRepository authorRepository, IBookRepository bookRepository)
         {
             _authorRepository = authorRepository;
+            _bookRepository = bookRepository;
         }
 
         public override async Task<GetAuthorsRequest> HandleAsync(GetAuthorsRequest command, CancellationToken cancellationToken = new CancellationToken())
@@ -43,6 +45,12 @@ namespace Inshapardaz.Domain.Ports.Library
             {
                 command.Result = await _authorRepository.FindAuthors(command.Query, command.PageNumber, command.PageSize, cancellationToken);
             }
+
+            foreach (var author in command.Result.Data)
+            {
+                author.BookCount = await _bookRepository.GetBookCountByAuthor(author.Id, cancellationToken);
+            }
+
             return await base.HandleAsync(command, cancellationToken);
         }
     }

@@ -47,5 +47,6 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task DeleteBookFromFavorites(Guid userId, int bookId, CancellationToken cancellationToken);
 
         Task<Page<Book>> GetFavoriteBooksByUser(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+        Task<int> GetBookCountByAuthor(int authorId, CancellationToken cancellationToken);
     }
 }

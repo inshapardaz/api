@@ -420,5 +420,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 Data = data
             };
         }
+
+        public async Task<int> GetBookCountByAuthor(int authorId, CancellationToken cancellationToken)
+        {
+            return await _databaseContext.Book.CountAsync(b => b.AuthorId == authorId, cancellationToken);
+        }
     }
 }

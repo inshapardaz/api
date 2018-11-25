@@ -307,5 +307,79 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                                                      cancellationToken);
             return book.Map<Entities.Library.Book, Book>();
         }
+
+        public async Task AddRecentBook(Guid userId, int bookId, CancellationToken cancellationToken)
+        {
+            var book = await _databaseContext.Book.SingleOrDefaultAsync(b => b.Id == bookId, cancellationToken);
+            if (book == null)
+            {
+                throw new NotFoundException();
+            }
+
+            var recent = await _databaseContext.RecentBooks.SingleOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId, cancellationToken);
+
+            if (recent == null)
+            {
+                recent = new RecentBook
+                {
+                    UserId = userId,
+                    BookId = bookId,
+                    DateRead = DateTime.UtcNow,
+                    Book = book
+                };
+                await _databaseContext.RecentBooks.AddAsync(recent, cancellationToken);
+            }
+            else
+            {
+                recent.DateRead = DateTime.UtcNow;
+            }
+            await _databaseContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task DeleteBookFromRecent(Guid userId, int bookId, CancellationToken cancellationToken)
+        {
+            var recent = await _databaseContext.RecentBooks.SingleOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId, cancellationToken);
+
+            if (recent == null)
+            {
+                throw new NotFoundException();
+            }
+
+            _databaseContext.RecentBooks.Remove(recent);
+            await _databaseContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<Book>> GetRecentBooksByUser(Guid userId, int count, CancellationToken cancellationToken)
+        {
+            var recents = await _databaseContext.RecentBooks
+                                                .Include(r => r.Book)
+                                                .Where(r => r.UserId == userId)
+                                                .OrderBy(r => r.DateRead)
+                                                .Take(count)
+                                                .Select(r => r.Book)
+                                                .ToListAsync(cancellationToken);
+            return recents.Select(b => b.Map<Entities.Library.Book, Book>());
+        }
+
+        public async Task<Page<Book>> GetFavoriteBooksByUser(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var query = _databaseContext.FavoriteBooks
+                                                .Include(r => r.Book)
+                                                .Where(r => r.UserId == userId)
+                                                .OrderBy(r => r.Book.Title);
+            var count = await query.CountAsync(cancellationToken);
+            var data = await query.Paginate(pageNumber, pageSize)
+                                                .Select(r => r.Book)
+                                                .Select(a => a.Map<Entities.Library.Book, Book>())
+                                                .ToListAsync(cancellationToken);
+
+            return new Page<Book>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = count,
+                Data = data
+            };
+        }
     }
 }

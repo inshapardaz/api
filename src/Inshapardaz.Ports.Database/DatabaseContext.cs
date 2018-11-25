@@ -26,6 +26,8 @@ namespace Inshapardaz.Ports.Database
         public DbSet<Chapter> Chapter { get; set; }
         public DbSet<ChapterText> ChapterText { get; set; }
         public DbSet<BookPage> BookPages { get; set; }
+        public DbSet<RecentBook> RecentBooks { get; set; }
+        public DbSet<FavoriteBook> FavoriteBooks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -143,8 +145,17 @@ namespace Inshapardaz.Ports.Database
                 entity.ToTable("BookPage", "Library");
             });
 
-            modelBuilder.Entity<BookCategory>()
-                        .HasKey(t => new { t.BookId, t.CategoryId });
+            modelBuilder.Entity<RecentBook>(entity =>
+                entity.ToTable("RecentBooks", "Library")
+            );
+
+            modelBuilder.Entity<FavoriteBook>(entity =>
+                                                entity.ToTable("FavoriteBooks", "Library")
+            );
+
+            modelBuilder.Entity<BookCategory>(entity =>
+                                                  entity.ToTable("BookCategory", "Library")
+                                                        .HasKey(t => new {t.BookId, t.CategoryId}));
         }
     }
 }

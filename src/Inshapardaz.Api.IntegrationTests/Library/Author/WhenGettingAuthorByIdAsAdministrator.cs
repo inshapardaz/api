@@ -15,11 +15,13 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
         private AuthorView _view;
         private readonly Guid _userId = Guid.NewGuid();
         private Domain.Entities.Library.Author _author;
+        private Domain.Entities.Library.Book _book;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _author = AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "Author2323" });
+            _book = BookDataHelper.Create(new Domain.Entities.Library.Book {Title = "something", AuthorId = _author.Id});
 
             Response = await GetAdminClient(_userId).GetAsync($"/api/authors/{_author.Id}");
             _view = JsonConvert.DeserializeObject<AuthorView>(await Response.Content.ReadAsStringAsync());
@@ -28,6 +30,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
         [OneTimeTearDown]
         public void Cleanup()
         {
+            BookDataHelper.Delete(_book.Id);
             AuthorDataHelper.Delete(_author.Id);
         }
 
@@ -41,6 +44,12 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
         public void ShouldReturnAuthorWithCorrectId()
         {
             _view.Id.ShouldBe(_view.Id);
+        }
+
+        [Test]
+        public void ShouldReturnAuthorBookCount()
+        {
+            _view.BookCount.ShouldBe(1);
         }
 
         [Test]

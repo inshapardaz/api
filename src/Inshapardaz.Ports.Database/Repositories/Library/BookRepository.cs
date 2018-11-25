@@ -151,6 +151,14 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             };
         }
 
+        public async Task<IEnumerable<Book>> GtLatestBooks(CancellationToken cancellationToken)
+        {
+            return await _databaseContext.Book
+                                         .OrderBy(b => b.DateAdded)
+                                         .Take(10)
+                                         .Select(a => a.Map<Entities.Library.Book, Book>())
+                                         .ToListAsync(cancellationToken);
+        }
         public async Task<Page<Book>> GetBooksByCategory(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var book = _databaseContext.Book

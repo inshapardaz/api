@@ -10,17 +10,19 @@ namespace Inshapardaz.Api.Renderers.Library
     public interface IRenderBooks
     {
         PageView<BookView> Render(PageRendererArgs<Book> source);
+
+        IEnumerable<BookView> Render(IEnumerable<Book> source);
     }
 
     public class BooksRenderer : IRenderBooks
     {
-        private readonly IRenderBook _authorRenderer;
+        private readonly IRenderBook _bookRenderer;
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
 
-        public BooksRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderBook authorRenderer)
+        public BooksRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderBook bookRenderer)
         {
-            _authorRenderer = authorRenderer;
+            _bookRenderer = bookRenderer;
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
         }
@@ -29,7 +31,7 @@ namespace Inshapardaz.Api.Renderers.Library
         {
             var page = new PageView<BookView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
-                Data = source.Page.Data?.Select(x => _authorRenderer.Render(x))
+                Data = source.Page.Data?.Select(x => _bookRenderer.Render(x))
             };
 
             var links = new List<LinkView>
@@ -57,6 +59,11 @@ namespace Inshapardaz.Api.Renderers.Library
 
             page.Links = links;
             return page;
+        }
+
+        public IEnumerable<BookView> Render(IEnumerable<Book> source)
+        {
+            return source.Select(x => _bookRenderer.Render(x));
         }
 
         private object CreateRouteParameters(PageRendererArgs<Book> source, int pageNumber, int pageSize)

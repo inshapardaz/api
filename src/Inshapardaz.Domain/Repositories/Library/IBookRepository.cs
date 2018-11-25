@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
@@ -16,6 +17,8 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<Page<Book>> GetBooks(int pageNumber, int pageSize, CancellationToken cancellationToken);
 
+        Task<IEnumerable<Book>> GtLatestBooks(CancellationToken cancellationToken);
+        
         Task<Page<Book>> GetPublicBooks(int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<Page<Book>> SearchBooks(string searchText, int pageNumber, int pageSize, CancellationToken cancellationToken);

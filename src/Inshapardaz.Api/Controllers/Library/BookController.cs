@@ -35,6 +35,36 @@ namespace Inshapardaz.Api.Controllers.Library
             _fileRenderer = fileRenderer;
         }
 
+        [HttpGet("/api/books/latest", Name="LatestBooks")]
+        [Produces(typeof(IEnumerable<BookView>))]
+        public async Task<IEnumerable<BookView>> GetLatestBooks(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var request = new GetLatestBooksRequest();
+            await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
+
+            return _booksRenderer.Render(request.Result);
+        }
+
+        [HttpGet("/api/books/recent", Name="RecentBooks")]
+        [Produces(typeof(IEnumerable<BookView>))]
+        public async Task<IEnumerable<BookView>> GetLastReadBooks(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var request = new GetRecentBooksRequest(_userHelper.GetUserId());
+            await _commandProcessor.SendAsync(request,cancellationToken: cancellationToken);
+            
+            return _booksRenderer.Render(request.Result);
+        }
+        
+        [HttpGet("/api/books/favorite", Name="FavoriteBooks")]
+        [Produces(typeof(IEnumerable<BookView>))]
+        public async Task<IEnumerable<BookView>> GetFavoriteBooks(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var request = new GetFavoriteBooksRequest(_userHelper.GetUserId());
+            await _commandProcessor.SendAsync(request,cancellationToken: cancellationToken);
+            
+            return _booksRenderer.Render(request.Result);
+        }
+
         [HttpGet("/api/books", Name = "GetBooks")]
         [Produces(typeof(IEnumerable<BookView>))]
         public async Task<IActionResult> GetBooks(string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))

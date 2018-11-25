@@ -111,6 +111,8 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.IsPublic, o => o.MapFrom(s => s.IsPublic))
                 .ForMember(d => d.Language, o => o.MapFrom(s => (int)s.Language))
                 .ForMember(d => d.Links, o => o.Ignore())
+                .ForMember(d => d.DateAdded, o => o.MapFrom(s => s.DateAdded))
+                .ForMember(d => d.DateUpdated, o => o.MapFrom(s => s.DateUpdated))
                 .ReverseMap()
                 .ForMember(d => d.Language, o => o.MapFrom(s => (Languages)s.Language))
                 .ForMember(d => d.ImageId, o => o.Ignore());

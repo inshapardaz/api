@@ -23,3 +23,16 @@ Checkout code and
 `dotnet build`
 
 `dotnet run`
+
+
+### Running migrations
+
+All ef commands should be executed inside the Inshapardaz.Ports.Domain folder
+
+#### Add migration 
+
+`dotnet ef migrations add  <MIGRATION_NAME_HERE> --startup-project ..\Inshapardaz.Api\Inshapardaz.Api.csproj`
+
+#### Updating database manyally
+
+`dotnet ef database update --startup-project ..\Inshapardaz.Api\Inshapardaz.Api.csproj`

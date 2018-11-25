@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Api.View.Library
@@ -23,5 +24,9 @@ namespace Inshapardaz.Api.View.Library
         public int AuthorId { get; set; }
 
         public string AuthorName { get; set; }
+
+        public DateTime DateAdded {get; set;}
+
+        public DateTime DateUpdated { get; set;}
     }
 }

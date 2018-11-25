@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Inshapardaz.Domain.Entities.Library
 {
@@ -10,7 +11,7 @@ namespace Inshapardaz.Domain.Entities.Library
 
         public string Description { get; set; }
 
-        public IEnumerable<Category> Categories { get; set; }
+        public IEnumerable<Category> Categories { get; set; } = new List<Category>();
 
         public Languages Language { get; set; }
 
@@ -21,5 +22,9 @@ namespace Inshapardaz.Domain.Entities.Library
         public string AuthorName { get; set; }
 
         public int ImageId { get; set; }
+
+        public DateTime DateAdded {get; set;}
+        
+        public DateTime DateUpdated {get; set;}
     }
 }

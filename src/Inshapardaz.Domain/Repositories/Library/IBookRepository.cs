@@ -34,5 +34,14 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task<Page<Book>> GetPublicBooksByCategory(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<Book> GetBookById(int bookId, CancellationToken cancellationToken);
+
+
+        Task AddRecentBook(Guid userId, int bookId, CancellationToken cancellationToken);
+        Task DeleteBookFromRecent(Guid userId, int bookId, CancellationToken cancellationToken);
+
+        Task<IEnumerable<Book>> GetRecentBooksByUser(Guid userId, int count, CancellationToken cancellationToken);
+
+        Task<Page<Book>> GetFavoriteBooksByUser(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+        
     }
 }

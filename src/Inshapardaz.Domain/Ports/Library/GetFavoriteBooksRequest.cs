@@ -11,13 +11,20 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetFavoriteBooksRequest : RequestBase
     {
-        public GetFavoriteBooksRequest(Guid userId)
+        public GetFavoriteBooksRequest(Guid userId, int pageNumber, int pageSize)
         {
+            UserId = userId;
+            PageNumber = pageNumber;
+            PageSize = pageSize;
         }
 
         public Guid UserId { get; private set;}
-        
-        public IEnumerable<Book> Result { get; set; }
+
+        public int PageNumber { get; private set; }
+
+        public int PageSize { get; private set; }
+
+        public Page<Book> Result { get; set; }
     }
 
     public class GetFavoriteBooksRequestHandler : RequestHandlerAsync<GetFavoriteBooksRequest>
@@ -31,8 +38,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<GetFavoriteBooksRequest> HandleAsync(GetFavoriteBooksRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            throw new NotImplementedException();
-            var books = await _bookRepository.GtLatestBooks(cancellationToken);
+            var books = await _bookRepository.GetFavoriteBooksByUser(command.UserId, command.PageNumber, command.PageSize, cancellationToken);
             command.Result = books;
             return await base.HandleAsync(command, cancellationToken);
         }

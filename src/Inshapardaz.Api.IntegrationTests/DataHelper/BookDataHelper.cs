@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
 
@@ -26,6 +27,17 @@ namespace Inshapardaz.Api.IntegrationTests.DataHelper
         public void Delete(int bookId)
         {
             _bookRepository.DeleteBook(bookId, CancellationToken.None).Wait();
+        }
+
+        public Book AddRecent(Guid userId, Book book)
+        {
+            _bookRepository.AddRecentBook(userId, book.Id, CancellationToken.None);
+            return book;
+        }
+
+        public void RemoveFromRecent(Guid userId, Book book)
+        {
+            _bookRepository.DeleteBookFromRecent(userId, book.Id, CancellationToken.None);
         }
     }
 }

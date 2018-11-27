@@ -33,6 +33,7 @@ namespace Inshapardaz.Api.View
         /// </param>
         public PageView(long count, int pageSize, int currentPageIndex)
         {
+            TotalCount = count;
             PageSize = pageSize;
             // ReSharper disable once PossibleLossOfFraction
             PageCount = Convert.ToInt32(Math.Ceiling((double)count / PageSize));
@@ -58,6 +59,8 @@ namespace Inshapardaz.Api.View
         /// Gets or sets the current page index.
         /// </summary>
         public int CurrentPageIndex { get; set; }
+
+        public long TotalCount { get; set; }
 
         public IEnumerable<LinkView> Links { get; set; }
 

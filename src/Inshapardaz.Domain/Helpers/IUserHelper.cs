@@ -13,6 +13,8 @@ namespace Inshapardaz.Domain.Helpers
 
         bool IsReader { get; }
 
+        bool IsLoggedIn { get; }
+
         Guid GetUserId();
     }
 }

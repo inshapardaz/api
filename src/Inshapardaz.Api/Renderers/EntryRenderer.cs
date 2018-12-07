@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Helpers;
 
 namespace Inshapardaz.Api.Renderers
 {
@@ -11,10 +12,12 @@ namespace Inshapardaz.Api.Renderers
     public class EntryRenderer : IRenderEntry
     {
         private readonly IRenderLink _linkRenderer;
+        private readonly IUserHelper _userHelper;
 
-        public EntryRenderer(IRenderLink linkRenderer)
+        public EntryRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
         {
             _linkRenderer = linkRenderer;
+            _userHelper = userHelper;
         }
 
         public EntryView Render()
@@ -29,8 +32,14 @@ namespace Inshapardaz.Api.Renderers
                                 _linkRenderer.Render("GetLanguages", RelTypes.Languages),
                                 _linkRenderer.Render("GetAttributes", RelTypes.Attributes),
                                 _linkRenderer.Render("GetRelationTypes", RelTypes.RelationshipTypes),
-                                _linkRenderer.Render("GetWordAlternatives", RelTypes.Thesaurus, new { word = "word" })
-                            };
+                                _linkRenderer.Render("GetWordAlternatives", RelTypes.Thesaurus, new { word = "word" }),
+                                _linkRenderer.Render("GetLatestBooks", RelTypes.Latest)
+        };
+            if (_userHelper.IsLoggedIn)
+            {
+                links.Add(_linkRenderer.Render("GetRecentBooks", RelTypes.Recents));
+                links.Add(_linkRenderer.Render("GetFavoriteBooks", RelTypes.Favorites));
+            }
             return new EntryView { Links = links };
         }
     }

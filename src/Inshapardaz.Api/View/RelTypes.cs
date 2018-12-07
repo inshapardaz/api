@@ -41,5 +41,9 @@
         public const string CreateChapter = "create-chapter";
         public const string AddContents = "add-contents";
         public const string Chapter = "chapter";
+
+        public const string Latest = "latest";
+        public const string Recents = "recents";
+        public const string Favorites = "favorites";
     }
 }

@@ -77,6 +77,11 @@ namespace Inshapardaz.Api.UnitTests.Fakes.Helpers
             }
         }
 
+        public bool IsLoggedIn
+        {
+            get { return _reader || _contributor || _authenticated || _admin; }
+        }
+
         public Guid GetUserId()
         {
             return _userId;

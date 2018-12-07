@@ -22,7 +22,9 @@ namespace Inshapardaz.Api.Helpers
         public bool IsContributor => IsAdmin;  //|| (IsAuthenticated && IsUserInRole("Contributor"));
 
         public bool IsReader => IsAdmin;// || (IsAuthenticated && IsUserInRole("Reader"));
-        
+
+        public bool IsLoggedIn => GetUserId() != Guid.Empty;
+
         public Guid GetUserId()
         {
             var nameIdentifier = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;

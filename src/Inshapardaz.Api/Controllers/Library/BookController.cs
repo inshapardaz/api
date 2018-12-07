@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Controllers.Library
             _fileRenderer = fileRenderer;
         }
 
-        [HttpGet("/api/books/latest", Name="LatestBooks")]
+        [HttpGet("/api/books/latest", Name= "GetLatestBooks")]
         [Produces(typeof(IEnumerable<BookView>))]
         public async Task<IActionResult> GetLatestBooks(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -45,8 +45,9 @@ namespace Inshapardaz.Api.Controllers.Library
             return Ok(_booksRenderer.Render(request.Result));
         }
 
-        [HttpGet("/api/books/recent", Name="RecentBooks")]
+        [HttpGet("/api/books/recent", Name="GetRecentBooks")]
         [Produces(typeof(IEnumerable<BookView>))]
+        [Authorize]
         public async Task<IActionResult> GetLastReadBooks(int count = 10,CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new GetRecentBooksRequest(_userHelper.GetUserId(), count);
@@ -55,8 +56,9 @@ namespace Inshapardaz.Api.Controllers.Library
             return Ok(_booksRenderer.Render(request.Result));
         }
         
-        [HttpGet("/api/books/favorite", Name="FavoriteBooks")]
+        [HttpGet("/api/books/favorite", Name="GetFavoriteBooks")]
         [Produces(typeof(IEnumerable<BookView>))]
+        [Authorize]
         public async Task<IActionResult> GetFavoriteBooks(int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new GetFavoriteBooksRequest(_userHelper.GetUserId(), pageNumber, pageSize);
@@ -71,7 +73,7 @@ namespace Inshapardaz.Api.Controllers.Library
 
             return Ok(_booksRenderer.Render(args));
         }
-
+        
         [HttpGet("/api/books", Name = "GetBooks")]
         [Produces(typeof(IEnumerable<BookView>))]
         public async Task<IActionResult> GetBooks(string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))

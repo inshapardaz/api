@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Inshapardaz.Domain.Entities;
 
 namespace Inshapardaz.Api.View.Library
 {

@@ -1,7 +1,9 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
+using Lucene.Net.Support;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library

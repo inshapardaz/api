@@ -92,6 +92,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             return await _databaseContext.ChapterText
                                          .Include(c => c.Chapter)
+                                         .ThenInclude(c => c.Book)
                                          .Where(c => c.ChapterId == chapterId)
                                          .Select(t => t.Map<ChapterText, ChapterContent>())
                                          .SingleOrDefaultAsync(cancellationToken);

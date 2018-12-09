@@ -80,7 +80,6 @@ namespace Inshapardaz.Api.Controllers.Library
         {
             var request = new GetBooksRequest(pageNumber, pageSize)
             {
-                UserId = _userHelper.GetUserId(),
                 Query = query
             };
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);

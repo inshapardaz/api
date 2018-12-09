@@ -6,10 +6,10 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="appsettings.json" />
+    <None Remove="testsettings.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appsettings.json">
+    <Content Include="testsettings.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

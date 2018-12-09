@@ -50,9 +50,9 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Book
         }
 
         [Test]
-        public void ShouldContainAllPublicBooks()
+        public void ShouldContainAllBooks()
         {
-            _view.Data.Count().ShouldBe(_books.Count - 1);
+            _view.Data.Count().ShouldBe(_books.Count);
         }
 
         [Test]

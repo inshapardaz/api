@@ -20,8 +20,6 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public int PageSize { get; private set; }
 
-        public Guid UserId { get; set; }
-
         public Page<Book> Result { get; set; }
 
         public string Query { get; set; }
@@ -40,16 +38,12 @@ namespace Inshapardaz.Domain.Ports.Library
         {
             if (string.IsNullOrWhiteSpace(command.Query))
             {
-                var books = command.UserId == Guid.Empty
-                    ? await _bookRepository.GetPublicBooks(command.PageNumber, command.PageSize, cancellationToken)
-                    : await _bookRepository.GetBooks(command.PageNumber, command.PageSize, cancellationToken);
+                var books = await _bookRepository.GetBooks(command.PageNumber, command.PageSize, cancellationToken);
                 command.Result = books;
             }
             else
             {
-                var books = command.UserId == Guid.Empty
-                    ? await _bookRepository.SearchPublicBooks(command.Query, command.PageNumber, command.PageSize, cancellationToken)
-                    : await _bookRepository.SearchBooks(command.Query, command.PageNumber, command.PageSize, cancellationToken);
+                var books = await _bookRepository.SearchBooks(command.Query, command.PageNumber, command.PageSize, cancellationToken);
                 command.Result = books;
             }
 

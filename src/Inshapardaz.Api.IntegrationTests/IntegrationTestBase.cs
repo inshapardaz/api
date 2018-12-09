@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.IntegrationTests
         {
             var configuration = new ConfigurationBuilder()
                                 .SetBasePath(Directory.GetCurrentDirectory())
-                                .AddJsonFile("appsettings.json", optional: false)
+                                .AddJsonFile("testsettings.json", optional: false)
                                 .Build();
             TestServer = new TestServer(new WebHostBuilder()
                                         .UseConfiguration(configuration)

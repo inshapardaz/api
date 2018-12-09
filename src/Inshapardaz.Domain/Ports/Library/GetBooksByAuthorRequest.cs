@@ -39,9 +39,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<GetBooksByAuthorRequest> HandleAsync(GetBooksByAuthorRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var books = command.UserId == Guid.Empty
-                ? await _bookRepository.GetPublicBooksByAuthor(command.AuthorId, command.PageNumber, command.PageSize, cancellationToken)
-                : await _bookRepository.GetBooksByAuthor(command.AuthorId, command.PageNumber, command.PageSize, cancellationToken);
+            var books = await _bookRepository.GetBooksByAuthor(command.AuthorId, command.PageNumber, command.PageSize, cancellationToken);
             command.Result = books;
             return await base.HandleAsync(command, cancellationToken);
         }

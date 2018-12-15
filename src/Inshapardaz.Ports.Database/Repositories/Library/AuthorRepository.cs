@@ -41,7 +41,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
 
             existingEntity.Name = author.Name;
-            existingEntity.ImageId = author.ImageId;
+            if (author.ImageId != 0)
+            {
+                existingEntity.ImageId = author.ImageId;
+            }
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }

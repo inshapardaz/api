@@ -51,6 +51,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
             if (author.ImageId != 0)
             {
+                command.Image.Id = author.ImageId;
                 await _fileRepository.UpdateFile(command.Image, cancellationToken);
                 command.Result.File = command.Image;
                 command.Result.File.Id = author.ImageId;

@@ -124,7 +124,7 @@ namespace Inshapardaz.Api.Controllers.Library
                 return Created(response.Links.Self(), response);
             }
 
-            return BadRequest();
+            return Ok();
         }
 
         [Authorize]

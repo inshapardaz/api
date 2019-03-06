@@ -9,11 +9,9 @@ namespace Inshapardaz.Domain.Helpers
 
         bool IsAdmin { get;  }
 
-        bool IsContributor { get; }
+        bool IsWriter { get; }
 
         bool IsReader { get; }
-
-        bool IsLoggedIn { get; }
 
         Guid GetUserId();
     }

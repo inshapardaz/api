@@ -1,8 +1,6 @@
-﻿using System.Threading.Tasks;
-using Hangfire;
-using Hangfire.Storage;
+﻿using System;
+using System.Threading.Tasks;
 using Inshapardaz.Api.Renderers;
-using Inshapardaz.Api.View;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inshapardaz.Api.Controllers
@@ -18,22 +16,9 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("/api/job/status", Name = "JobStatus")]
-        public async Task<IActionResult> DownloadStatus(string id)
+        public Task<IActionResult> DownloadStatus(string id)
         {
-            IStorageConnection connection = JobStorage.Current.GetConnection();
-            var jobData = connection.GetJobData(id);
-
-            if (jobData == null)
-            {
-                return NotFound();
-            }
-
-            var result = _jobsStatusRenderer.Render(new JobStatus
-            {
-                State = jobData.State,
-                JobId = id
-            });
-            return Ok(result);
+            throw new NotImplementedException();
         }
     }
 }

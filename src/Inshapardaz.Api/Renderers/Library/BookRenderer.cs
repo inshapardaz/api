@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Renderers.Library
                 links.Add(_linkRenderer.Render("GetFileById", RelTypes.Image, new {id = source.ImageId}));
             }
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("UpdateBook", RelTypes.Update, new { id = source.Id }));
                 links.Add(_linkRenderer.Render("DeleteBook", RelTypes.Delete, new { id = source.Id }));

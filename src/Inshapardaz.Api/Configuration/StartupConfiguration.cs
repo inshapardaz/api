@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using AutoMapper;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
@@ -15,6 +16,8 @@ using Inshapardaz.Ports.Database;
 using Inshapardaz.Ports.Database.Repositories;
 using Inshapardaz.Ports.Database.Repositories.Dictionary;
 using Inshapardaz.Ports.Database.Repositories.Library;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +28,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.IdentityModel.Tokens;
 using Paramore.Brighter.AspNetCore;
 using Paramore.Darker.AspNetCore;
 using Swashbuckle.AspNetCore.Swagger;
@@ -109,40 +113,33 @@ namespace Inshapardaz.Api.Configuration
             return services;
         }
 
-        public static IServiceCollection AddHangfire(this IServiceCollection services)
-        {
-            //app.UseHangfireServer();
-            //app.UseHangfireDashboard();
-            return services;
-        }
-
         public static IServiceCollection AddApiAuthentication(this IServiceCollection services, Settings settings)
         {
-            services.AddAuthentication("Bearer")
-                    .AddIdentityServerAuthentication(options =>
-                    {
-                        options.Authority = settings.Authority;
-                        options.ApiName = settings.Audience;
-                        options.RequireHttpsMetadata = false;
-                    });
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = settings.Authority; 
+                options.Audience = settings.Audience;
+                options.IncludeErrorDetails = true;
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("read:messages", policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", settings.Authority)));
+            });
+
+            // register the scope authorization handler
+            services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 
             return services;
         }
-
+        
         public static IServiceCollection AddDatabase(this IServiceCollection services, IHostingEnvironment hostingEnvironment, IConfiguration configuration)
         {
-            /*if (hostingEnvironment.IsEnvironment("Test"))
-            {
-                services.AddDbContext<DatabaseContext>(options =>
-                {
-                    var connection = new SqliteConnection("DataSource='file::memory:?cache=shared'");
-                    connection.Open();
-                    options.UseSqlite(connection);
-                });
-
-                services.AddSingleton<IDatabaseContext, DatabaseContext>();
-            }
-            else*/
             {
                 var connectionString = configuration.GetConnectionString("DefaultDatabase");
                 services.AddEntityFrameworkSqlServer()

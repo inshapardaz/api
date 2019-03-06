@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Renderers.Library
                 _linkRenderer.Render("GetChapterById", RelTypes.Chapter, new { bookId = source.BookId, chapterId = source.ChapterId  }),
             };
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("UpdateChapterContents", RelTypes.Update, new { bookId = source.BookId, chapterId = source.ChapterId }));
                 //links.Add(_linkRenderer.Render("DeleteChapter", RelTypes.Delete, new { bookId = source.BookId, chapterId = source.Id }));

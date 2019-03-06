@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Renderers
                 _linkRenderer.Render("GetFileById", RelTypes.Self, file.MimeType, file.Id)
             };
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("DeleteFile", RelTypes.Delete, new { id = file.Id }));
             }

@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
                                    _linkRenderer.Render("GetWordById", RelTypes.RelatedWord, new { id = dictionaryId, wordId = source.RelatedWordId })
                                };
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("UpdateRelation", RelTypes.Update, new { id = dictionaryId, wordId = source.SourceWordId, relationId = source.Id }));
                 links.Add(_linkRenderer.Render("DeleteRelation", RelTypes.Delete, new { id = dictionaryId, wordId = source.SourceWordId, relationId = source.Id }));

@@ -38,7 +38,7 @@ namespace Inshapardaz.Api.Renderers.Library
                                      CreateRouteParameters(source, page.CurrentPageIndex, page.PageSize))
             };
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("CreateAuthor", RelTypes.Create));
             }

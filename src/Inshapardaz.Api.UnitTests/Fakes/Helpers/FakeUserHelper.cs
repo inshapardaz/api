@@ -61,7 +61,7 @@ namespace Inshapardaz.Api.UnitTests.Fakes.Helpers
             }
         }
 
-        public bool IsContributor
+        public bool IsWriter
         {
             get
             {

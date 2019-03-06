@@ -36,7 +36,6 @@ namespace Inshapardaz.Api
                     .AddFramework()
                     .AddLucene()
                     .AddSwagger()
-                    .AddHangfire()
                     .AddCors()
                     .AddApiAuthentication(Settings)
                     .AddDatabase(CurrentEnvironment, Configuration)

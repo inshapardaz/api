@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Renderers
                                 _linkRenderer.Render("GetWordAlternatives", RelTypes.Thesaurus, new { word = "word" }),
                                 _linkRenderer.Render("GetLatestBooks", RelTypes.Latest)
         };
-            if (_userHelper.IsLoggedIn)
+            if (_userHelper.IsAuthenticated)
             {
                 links.Add(_linkRenderer.Render("GetRecentBooks", RelTypes.Recents));
                 links.Add(_linkRenderer.Render("GetFavoriteBooks", RelTypes.Favorites));

@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
             };
             
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("UpdateMeaning", RelTypes.Update, new { id = dictionaryId, wordId = source.WordId, meaningId = source.Id }));
                 links.Add(_linkRenderer.Render("DeleteMeaning", RelTypes.Delete,  new { id = dictionaryId, wordId = source.WordId, meaningId = source.Id }));

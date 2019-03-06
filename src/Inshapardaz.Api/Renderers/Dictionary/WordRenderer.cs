@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
                                    _linkRenderer.Render("GetDictionaryById", RelTypes.Dictionary, new {id = source.DictionaryId})
                                };
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("UpdateWord", RelTypes.Update, new { id = dictionaryId, wordId = result.Id }));
                 links.Add(_linkRenderer.Render("DeleteWord", RelTypes.Delete, new { id = dictionaryId, wordId = result.Id }));

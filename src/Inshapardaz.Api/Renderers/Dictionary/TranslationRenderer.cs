@@ -38,7 +38,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
                 _linkRenderer.Render("GetWordById", RelTypes.Word, new { id= dictionaryId, wordId = source.WordId })
             };
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("UpdateTranslation", RelTypes.Update, new { id = dictionaryId, wordId = source.WordId, translationId = source.Id }));
                 links.Add(_linkRenderer.Render("DeleteTranslation", RelTypes.Delete, new { id = dictionaryId, wordId = source.WordId, translationId = source.Id }));

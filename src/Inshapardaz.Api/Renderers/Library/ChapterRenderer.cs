@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Renderers.Library
                 links.Add(_linkRenderer.Render("GetChapterContents", RelTypes.Contents, new {bookId = source.BookId, chapterId = source.Id}));
             };
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("UpdateChapter", RelTypes.Update, new { bookId = source.BookId, chapterId = source.Id }));
                 links.Add(_linkRenderer.Render("DeleteChapter", RelTypes.Delete, new { bookId = source.BookId, chapterId = source.Id }));

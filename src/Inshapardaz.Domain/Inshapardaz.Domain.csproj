@@ -17,8 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.2.1" />
-    <PackageReference Include="Hangfire.Core" Version="1.6.17" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.6.17" />
     <PackageReference Include="Lucene.Net" Version="4.8.0-beta00005" />
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00005" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
@@ -39,9 +37,6 @@
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Razor.Language">
       <HintPath>..\..\..\..\..\Users\muhammad.farooq\.nuget\packages\microsoft.aspnetcore.razor.language\2.0.0\lib\netstandard2.0\Microsoft.AspNetCore.Razor.Language.dll</HintPath>
-    </Reference>
-    <Reference Include="Nest">
-      <HintPath>..\..\..\..\..\Users\muhammad.farooq\.nuget\packages\nest\6.0.0\lib\netstandard1.3\Nest.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

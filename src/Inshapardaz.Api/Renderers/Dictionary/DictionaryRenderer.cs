@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
                 _linkRenderer.Render("SearchDictionary", RelTypes.Search, new {id = source.Id})
             };
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("UpdateDictionary", RelTypes.Update, new {id = source.Id}));
                 links.Add(_linkRenderer.Render("DeleteDictionary", RelTypes.Delete, new {id = source.Id}));
@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
                 links.Add(_linkRenderer.Render("CreateWord", RelTypes.CreateWord, new {id = source.Id}));
             }
 
-            if (source.Downloads != null && (source.IsPublic || _userHelper.IsContributor))
+            if (source.Downloads != null && (source.IsPublic || _userHelper.IsWriter))
             {
                 foreach (var download in source.Downloads)
                 {

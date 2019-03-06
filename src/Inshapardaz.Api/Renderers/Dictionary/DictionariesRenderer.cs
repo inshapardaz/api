@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Renderers.Dictionary
                                 _linkRenderer.Render("GetDictionaries", RelTypes.Self, null)
                             };
 
-            if (_userHelper.IsContributor)
+            if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("CreateDictionary", RelTypes.Create, null));
             }

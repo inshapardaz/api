@@ -13,6 +13,7 @@ namespace Inshapardaz.Ports.Database.Entities.Library
         public string Name { get; set; }
 
         public virtual ICollection<Book> Books { get; set; }
+        public virtual ICollection<Article> Articles { get; set; }
 
         public int? ImageId { get; set; }
     }

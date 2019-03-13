@@ -31,6 +31,7 @@ namespace Inshapardaz.Ports.Database
 
         DbSet<Magazine> Magazine { get; set; }
         DbSet<MagazineCategory> MagazineCategory { get; set; }
+        DbSet<Issue> Issue { get; set; }
 
         DatabaseFacade Database { get; }
         int SaveChanges();

@@ -33,6 +33,8 @@ namespace Inshapardaz.Ports.Database
 
         public DbSet<Magazine> Magazine { get; set; }
         public DbSet<MagazineCategory> MagazineCategory { get; set; }
+        public DbSet<Issue> Issue { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -171,11 +173,15 @@ namespace Inshapardaz.Ports.Database
             );
 
             modelBuilder.Entity<Magazine>(entity =>
-                                                  entity.ToTable("Magazine", "Library")
+                entity.ToTable("Magazine", "Library")
             );
 
             modelBuilder.Entity<MagazineCategory>(entity =>
-                                              entity.ToTable("MagazineCategory", "Library")
+                entity.ToTable("MagazineCategory", "Library")
+            );
+
+            modelBuilder.Entity<Issue>(entity =>
+                entity.ToTable("Issue", "Library")
             );
         }
     }

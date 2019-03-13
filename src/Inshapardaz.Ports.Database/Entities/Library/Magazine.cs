@@ -19,6 +19,8 @@ namespace Inshapardaz.Ports.Database.Entities.Library
         public int? Category { get; set; }
 
         public virtual MagazineCategory MagazineCategory { get; set; }
+
+        public virtual ICollection<Issue> Issues { get; set; }
     }
 
     public class MagazineCategory

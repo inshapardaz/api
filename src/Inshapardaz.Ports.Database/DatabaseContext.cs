@@ -31,6 +31,9 @@ namespace Inshapardaz.Ports.Database
 
         public DbSet<Series> Series { get; set; }
 
+        public DbSet<Magazine> Magazine { get; set; }
+        public DbSet<MagazineCategory> MagazineCategory { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("Inshapardaz");
@@ -165,6 +168,14 @@ namespace Inshapardaz.Ports.Database
 
             modelBuilder.Entity<FavoriteBook>(entity =>
                 entity.ToTable("FavoriteBooks", "Library")
+            );
+
+            modelBuilder.Entity<Magazine>(entity =>
+                                                  entity.ToTable("Magazine", "Library")
+            );
+
+            modelBuilder.Entity<MagazineCategory>(entity =>
+                                              entity.ToTable("MagazineCategory", "Library")
             );
         }
     }

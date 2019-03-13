@@ -29,6 +29,9 @@ namespace Inshapardaz.Ports.Database
         DbSet <BookPage> BookPages { get; set; }
         DbSet<ChapterText> ChapterText { get; set; }
 
+        DbSet<Magazine> Magazine { get; set; }
+        DbSet<MagazineCategory> MagazineCategory { get; set; }
+
         DatabaseFacade Database { get; }
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);

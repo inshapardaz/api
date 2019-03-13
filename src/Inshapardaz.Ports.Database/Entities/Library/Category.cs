@@ -12,5 +12,6 @@ namespace Inshapardaz.Ports.Database.Entities.Library
         public string Name { get; set; }
 
         public ICollection<BookCategory> BookCategories { get; set; } = new List<BookCategory>();
+        public ICollection<SeriesCategory> SeriesCategories { get; set; } = new List<SeriesCategory>();
     }
 }

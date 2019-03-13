@@ -81,6 +81,7 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
                 .ForMember(d => d.BookCategories, o => o.Ignore())
+                .ForMember(d => d.SeriesCategories, o => o.Ignore())
                 .ReverseMap();
 
 

@@ -109,6 +109,9 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.Pages, o => o.Ignore())
                 .ForMember(d => d.DateAdded, o => o.MapFrom(s => s.DateAdded))
                 .ForMember(d => d.DateUpdated, o => o.MapFrom(s => s.DateUpdated))
+                .ForMember(d => d.Series, o => o.Ignore())
+                .ForMember(d => d.SeriesId, o => o.Ignore())
+                .ForMember(d => d.SeriesIndex, o => o.Ignore())
                 .ReverseMap()
                     .ForMember(d => d.AuthorName, o => o.MapFrom(s => s.Author.Name))
                     .ForMember(d => d.Categories, o => o.MapFrom(s => s.BookCategory));

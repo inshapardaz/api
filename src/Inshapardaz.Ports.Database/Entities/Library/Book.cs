@@ -31,7 +31,13 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public virtual Author Author { get; set; }
 
-        public int? ImageId { get; set; }    
+        public int? ImageId { get; set; }
+
+        public int? SeriesId { get; set; }
+
+        public virtual Series Series { get; set; }
+
+        public int? SeriesIndex { get; set; }
 
         [Required]
         public Languages Language { get; set; }

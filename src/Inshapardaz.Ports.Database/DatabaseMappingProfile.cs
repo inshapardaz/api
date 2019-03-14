@@ -84,6 +84,14 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.SeriesCategories, o => o.Ignore())
                 .ReverseMap();
 
+            CreateMap<Series, Entities.Library.Series>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
+                .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
+                .ForMember(d => d.SeriesCategory, o => o.Ignore())
+                .ReverseMap();
+
 
             CreateMap<Entities.Library.BookCategory, Category>()
                 .ConvertUsing(bc => bc.Category.Map<Entities.Library.Category, Category>());
@@ -112,11 +120,12 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.DateAdded, o => o.MapFrom(s => s.DateAdded))
                 .ForMember(d => d.DateUpdated, o => o.MapFrom(s => s.DateUpdated))
                 .ForMember(d => d.Series, o => o.Ignore())
-                .ForMember(d => d.SeriesId, o => o.Ignore())
-                .ForMember(d => d.SeriesIndex, o => o.Ignore())
+                .ForMember(d => d.SeriesId, o => o.MapFrom(s => s.SeriesId))
+                .ForMember(d => d.SeriesIndex, o => o.MapFrom(s => s.SeriesIndex))
                 .ReverseMap()
                     .ForMember(d => d.AuthorName, o => o.MapFrom(s => s.Author.Name))
-                    .ForMember(d => d.Categories, o => o.MapFrom(s => s.BookCategory));
+                    .ForMember(d => d.Categories, o => o.MapFrom(s => s.BookCategory))
+                    .ForMember(d => d.SeriesName, o => o.MapFrom(s => s.Series.Name));
             
             CreateMap<Chapter, Entities.Library.Chapter>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))

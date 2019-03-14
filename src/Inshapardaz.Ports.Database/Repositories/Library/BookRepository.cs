@@ -207,6 +207,30 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             };
         }
 
+        public async Task<Page<Book>> GetBooksBySeries(int seriesId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var book = _databaseContext
+                       .Book
+                       .Include(b => b.Author)
+                       .Include(b => b.BookCategory)
+                       .ThenInclude(c => c.Category)
+                       .Where(b => b.SeriesId == seriesId);
+
+            var count = book.Count();
+            var data = await book
+                             .Paginate(pageNumber, pageSize)
+                             .Select(a => a.Map<Entities.Library.Book, Book>())
+                             .ToListAsync(cancellationToken);
+
+            return new Page<Book>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = count,
+                Data = data
+            };
+        }
+
         public async Task<Book> GetBookById(int bookId, CancellationToken cancellationToken)
         {
             var book = await _databaseContext.Book

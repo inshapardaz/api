@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Text;
 using AutoMapper;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Middlewares;
@@ -84,6 +83,8 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRenderChapters, ChaptersRenderer>();
             services.AddTransient<IRenderChapter, ChapterRenderer>();
             services.AddTransient<IRenderChapterContent, ChapterContentRenderer>();
+            services.AddTransient<IRenderSeries, SeriesRenderer>();
+            services.AddTransient<IRenderSeriesList, SeriesListRenderer>();
 
             return services;
         }
@@ -164,6 +165,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IBookRepository, BookRepository>();
             services.AddTransient<IChapterRepository, ChapterRepository>();
+            services.AddTransient<ISeriesRepository, SeriesRepository>();
 
             return services;
         }

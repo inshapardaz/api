@@ -104,6 +104,13 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ReverseMap();
 
+            CreateMap<Series, SeriesView>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
+                .ForMember(d => d.Links, o => o.Ignore())
+                .ReverseMap();
+
             CreateMap<Book, BookView>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
@@ -112,6 +119,9 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
                 .ForMember(d => d.IsPublic, o => o.MapFrom(s => s.IsPublic))
                 .ForMember(d => d.Language, o => o.MapFrom(s => (int)s.Language))
+                .ForMember(d => d.SeriesId, o => o.MapFrom(s => (s.SeriesId)))
+                .ForMember(d => d.SeriesName, o => o.MapFrom(s => s.SeriesName))
+                .ForMember(d => d.SeriesIndex, o => o.MapFrom(s => s.SeriesIndex))
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ForMember(d => d.DateAdded, o => o.MapFrom(s => s.DateAdded))
                 .ForMember(d => d.DateUpdated, o => o.MapFrom(s => s.DateUpdated))

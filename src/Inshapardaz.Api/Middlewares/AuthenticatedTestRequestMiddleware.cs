@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace Inshapardaz.Api.Middlewares
 {
@@ -33,17 +34,33 @@ namespace Inshapardaz.Api.Middlewares
                     var claimsIdentity = new ClaimsIdentity(new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, name),
-                        new Claim("sub", id),
+                        new Claim(NameIdentifierClaimName, id),
 
                     }, TestingCookieAuthentication);
 
-                    if (context.Request.Headers.ContainsKey("contributor"))
-                        claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "contributor"));
+                    if (context.Request.Headers.ContainsKey("reader"))
+                        claimsIdentity.AddClaim(new Claim(AuthDataClaimName, AuthHeaderForRole("reader")));
+                    if (context.Request.Headers.ContainsKey("admin"))
+                        claimsIdentity.AddClaim(new Claim(AuthDataClaimName, AuthHeaderForRole("admin")));
+                    if (context.Request.Headers.ContainsKey("writer"))
+                        claimsIdentity.AddClaim(new Claim(AuthDataClaimName, AuthHeaderForRole("writer")));
                     ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                     context.User = claimsPrincipal;
                 }
             }
             await _next(context);
+        }
+
+        private const string AuthDataClaimName = "https://api.inshapardaz.org/user_authorization";
+        private const string NameIdentifierClaimName = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+
+        private string AuthHeaderForRole(string role) => JsonConvert.SerializeObject(new UserAuthenticationData { Roles = new[] { role } });
+
+        private class UserAuthenticationData
+        {
+            public IEnumerable<string> Groups { get; set; }
+            public IEnumerable<string> Roles { get; set; }
+            public IEnumerable<string> Permissions { get; set; }
         }
     }
 }

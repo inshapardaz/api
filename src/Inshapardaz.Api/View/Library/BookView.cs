@@ -24,6 +24,12 @@ namespace Inshapardaz.Api.View.Library
 
         public string AuthorName { get; set; }
 
+        public int SeriesId { get; set; }
+
+        public string SeriesName { get; set; }
+
+        public int? SeriesIndex { get; set; }
+
         public DateTime DateAdded {get; set;}
 
         public DateTime DateUpdated { get; set;}

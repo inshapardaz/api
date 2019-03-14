@@ -45,5 +45,7 @@
         public const string Latest = "latest";
         public const string Recents = "recents";
         public const string Favorites = "favorites";
+
+        public static string Series = "series";
     }
 }

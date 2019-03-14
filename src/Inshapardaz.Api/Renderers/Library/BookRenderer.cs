@@ -15,14 +15,12 @@ namespace Inshapardaz.Api.Renderers.Library
     {
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
-        private readonly IRenderEnum _enumRenderer;
         private readonly IRenderCategory _categoryRenderer;
 
-        public BookRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderEnum enumRenderer, IRenderCategory categoryRenderer)
+        public BookRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderCategory categoryRenderer)
         {
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
-            _enumRenderer = enumRenderer;
             _categoryRenderer = categoryRenderer;
         }
 
@@ -35,6 +33,11 @@ namespace Inshapardaz.Api.Renderers.Library
                 _linkRenderer.Render("GetAuthorById", RelTypes.Author, new { id = source.AuthorId }),
                 _linkRenderer.Render("GetChaptersForBook", RelTypes.Chapters, new { bookId = source.Id })
             };
+
+            if (source.SeriesId.HasValue)
+            {
+                _linkRenderer.Render("GetSeriesById", RelTypes.Series, new {bookId = source.Id});
+            }
 
             if (source.ImageId > 0)
             {

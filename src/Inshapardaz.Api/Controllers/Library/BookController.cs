@@ -128,6 +128,23 @@ namespace Inshapardaz.Api.Controllers.Library
             return Ok(_booksRenderer.Render(args));
         }
 
+        [HttpGet("/api/series/{id}/books", Name = "GetBooksBySeries")]
+        [Produces(typeof(IEnumerable<BookView>))]
+        public async Task<IActionResult> GetBooksBySeries(int id, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var request = new GetBooksBySeriesRequest(id, pageNumber, pageSize) { UserId = _userHelper.GetUserId() };
+            await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
+
+            var args = new PageRendererArgs<Book>
+            {
+                Page = request.Result,
+                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
+                RouteName = "GetBooksBySeries"
+            };
+
+            return Ok(_booksRenderer.Render(args));
+        }
+
         [HttpGet("/api/books/{id}", Name = "GetBookById")]
         [Produces(typeof(BookView))]
         public async Task<IActionResult> GetBooksById(int id, CancellationToken cancellationToken)

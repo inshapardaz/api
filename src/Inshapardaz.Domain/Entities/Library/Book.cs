@@ -26,5 +26,11 @@ namespace Inshapardaz.Domain.Entities.Library
         public DateTime DateAdded {get; set;}
         
         public DateTime DateUpdated {get; set;}
+
+        public int? SeriesId { get; set; }
+
+        public string SeriesName { get; set; }
+
+        public int? SeriesIndex { get; set; }
     }
 }

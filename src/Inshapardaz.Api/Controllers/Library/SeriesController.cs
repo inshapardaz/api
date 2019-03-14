@@ -14,76 +14,76 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Api.Controllers.Library
 {
-    public class CategoryController : Controller
+    public class SeriesController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
-        private readonly IRenderCategories _renderCategories;
-        private readonly IRenderCategory _renderCategory;
+        private readonly IRenderSeriesList _seriesListRenderer;
+        private readonly IRenderSeries _seriesRenderer;
 
-        public CategoryController(IAmACommandProcessor commandProcessor, IRenderCategories renderCategories, IRenderCategory renderCategory)
+        public SeriesController(IAmACommandProcessor commandProcessor, IRenderSeries seriesRenderer, IRenderSeriesList seriesListRenderer)
         {
             _commandProcessor = commandProcessor;
-            _renderCategories = renderCategories;
-            _renderCategory = renderCategory;
+            _seriesRenderer = seriesRenderer;
+            _seriesListRenderer = seriesListRenderer;
         }
 
-        [HttpGet("/api/categories", Name = "GetCategories")]
-        [Produces(typeof(IEnumerable<CategoryView>))]
+        [HttpGet("/api/series", Name = "GetSeries")]
+        [Produces(typeof(IEnumerable<SeriesView>))]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
-            var request = new GetCategoriesRequest();
+            var request = new GetSeriesRequest();
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
-            return Ok(_renderCategories.RenderResult(request.Result));
+            return Ok(_seriesListRenderer.RenderResult(request.Result));
         }
 
-        [HttpGet("/api/categories/{id}", Name = "GetCategoryById")]
-        [Produces(typeof(CategoryView))]
+        [HttpGet("/api/series/{id}", Name = "GetSeriesById")]
+        [Produces(typeof(SeriesView))]
         public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
         {
-            var request = new GetCategoryByIdRequest(id);
+            var request = new GetSeriesByIdRequest(id);
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
             if (request.Result != null)
-                return Ok(_renderCategory.RenderResult(request.Result));
+                return Ok(_seriesRenderer.RenderResult(request.Result));
             return NotFound();
         }
 
-        [Authorize]
-        [HttpPost("/api/categories", Name = "CreateCategory")]
-        [Produces(typeof(CategoryView))]
+        [Authorize(Roles = "admin,writer")]
+        [HttpPost("/api/series", Name = "CreateSeries")]
+        [Produces(typeof(SeriesView))]
         [ValidateModel]
-        public async Task<IActionResult> Post([FromBody]CategoryView value, CancellationToken cancellationToken)
+        public async Task<IActionResult> Post([FromBody]SeriesView value, CancellationToken cancellationToken)
         {
-            var request = new AddCategoryRequest(value.Map<CategoryView, Category>());
+            var request = new AddSeriesRequest(value.Map<SeriesView, Series>());
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
-            var renderResult = _renderCategory.RenderResult(request.Result);
+            var renderResult = _seriesRenderer.RenderResult(request.Result);
             return Created(renderResult.Links.Self(), renderResult);
         }
 
-        [Authorize]
-        [HttpPut("/api/categories/{id}", Name = "UpdateCategory")]
+        [Authorize(Roles = "admin,writer")]
+        [HttpPut("/api/series/{id}", Name = "UpdateSeries")]
         [ValidateModel]
-        public async Task<IActionResult> Put(int id, [FromBody] CategoryView value, CancellationToken cancellationToken)
+        public async Task<IActionResult> Put(int id, [FromBody] SeriesView value, CancellationToken cancellationToken)
         {
-            var request = new UpdateCategoryRequest(value.Map<CategoryView, Category>());
+            var request = new UpdateSeriesRequest(value.Map<SeriesView, Series>());
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
             if (request.Result.HasAddedNew)
             {
-                var renderResult = _renderCategory.RenderResult(request.Result.Category);
+                var renderResult = _seriesRenderer.RenderResult(request.Result.Series);
                 return Created(renderResult.Links.Self(), renderResult);
             }
 
             return NoContent();
         }
 
-        [Authorize]
-        [HttpDelete("/api/categories/{id}", Name = "DeleteCategory")]
+        [Authorize(Roles = "admin,writer")]
+        [HttpDelete("/api/series/{id}", Name = "DeleteSeries")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var request = new DeleteCategoryRequest(id);
+            var request = new DeleteSeriesRequest(id);
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
             return NoContent();
         }

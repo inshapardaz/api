@@ -48,6 +48,8 @@ namespace Inshapardaz.Api.IntegrationTests
 
         protected CategoryDataHelper CategoryDataHelper => new CategoryDataHelper(TestServer.Host.Services.GetService<ICategoryRepository>());
 
+        protected SeriesDataHelper SeriesDataHelper => new SeriesDataHelper(TestServer.Host.Services.GetService<ISeriesRepository>());
+
         protected AuthorDataHelper AuthorDataHelper => new AuthorDataHelper(TestServer.Host.Services.GetService<IAuthorRepository>());
 
         protected BookDataHelper BookDataHelper => new BookDataHelper(TestServer.Host.Services.GetService<IBookRepository>());
@@ -65,10 +67,10 @@ namespace Inshapardaz.Api.IntegrationTests
         {
             _authenticatedClient?.Dispose();
             _authenticatedClient = TestServer.CreateClient();
-            _authenticatedClient.DefaultRequestHeaders.Add(AuthenticatedTestRequestMiddleware.TestingHeader, AuthenticatedTestRequestMiddleware.TestingHeaderValue);
+            _authenticatedClient.DefaultRequestHeaders.Add(TestAuthentication.TestingHeader, TestAuthentication.TestingHeaderValue);
             _authenticatedClient.DefaultRequestHeaders.Add("my-name", userName);
             _authenticatedClient.DefaultRequestHeaders.Add("my-id", (userGuid ?? Guid.NewGuid()).ToString());
-            _authenticatedClient.DefaultRequestHeaders.Add("administrator", bool.TrueString);
+            _authenticatedClient.DefaultRequestHeaders.Add("admin", bool.TrueString);
             return _authenticatedClient;
         }
 
@@ -76,10 +78,10 @@ namespace Inshapardaz.Api.IntegrationTests
         {
             _authenticatedClient?.Dispose();
             _authenticatedClient = TestServer.CreateClient();
-            _authenticatedClient.DefaultRequestHeaders.Add(AuthenticatedTestRequestMiddleware.TestingHeader, AuthenticatedTestRequestMiddleware.TestingHeaderValue);
+            _authenticatedClient.DefaultRequestHeaders.Add(TestAuthentication.TestingHeader, TestAuthentication.TestingHeaderValue);
             _authenticatedClient.DefaultRequestHeaders.Add("my-name", userName);
             _authenticatedClient.DefaultRequestHeaders.Add("my-id", (userGuid ?? Guid.NewGuid()).ToString());
-            _authenticatedClient.DefaultRequestHeaders.Add("contributor", bool.TrueString);
+            _authenticatedClient.DefaultRequestHeaders.Add("writer", bool.TrueString);
             return _authenticatedClient;
         }
 
@@ -87,9 +89,10 @@ namespace Inshapardaz.Api.IntegrationTests
         {
             _authenticatedClient?.Dispose();
             _authenticatedClient = TestServer.CreateClient();
-            _authenticatedClient.DefaultRequestHeaders.Add(AuthenticatedTestRequestMiddleware.TestingHeader, AuthenticatedTestRequestMiddleware.TestingHeaderValue);
+            _authenticatedClient.DefaultRequestHeaders.Add(TestAuthentication.TestingHeader, TestAuthentication.TestingHeaderValue);
             _authenticatedClient.DefaultRequestHeaders.Add("my-name", userName);
             _authenticatedClient.DefaultRequestHeaders.Add("my-id", (userGuid ?? Guid.NewGuid()).ToString());
+            _authenticatedClient.DefaultRequestHeaders.Add("reader", bool.TrueString);
             return _authenticatedClient;
         }
 

@@ -42,5 +42,6 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<Page<Book>> GetFavoriteBooksByUser(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<int> GetBookCountByAuthor(int authorId, CancellationToken cancellationToken);
+        Task<Page<Book>> GetBooksBySeries(int seriesId, int pageNumber, int pageSize, CancellationToken cancellationToken);
     }
 }

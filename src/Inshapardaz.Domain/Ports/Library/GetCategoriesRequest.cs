@@ -7,12 +7,12 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetCategoryRequest : RequestBase
+    public class GetCategoriesRequest : RequestBase
     {
         public IEnumerable<Category> Result { get; set; }
     }
 
-    public class GetCategoryRequestHandler : RequestHandlerAsync<GetCategoryRequest>
+    public class GetCategoryRequestHandler : RequestHandlerAsync<GetCategoriesRequest>
     {
         private readonly ICategoryRepository _categoryRepository;
 
@@ -21,7 +21,7 @@ namespace Inshapardaz.Domain.Ports.Library
             _categoryRepository = categoryRepository;
         }
 
-        public override async Task<GetCategoryRequest> HandleAsync(GetCategoryRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<GetCategoriesRequest> HandleAsync(GetCategoriesRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             command.Result = await _categoryRepository.GetCategory(cancellationToken);
             return await base.HandleAsync(command, cancellationToken);

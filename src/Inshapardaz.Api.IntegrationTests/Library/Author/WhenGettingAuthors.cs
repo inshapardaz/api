@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
             _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 3" }));
             _authors.Add(AuthorDataHelper.Create(new Domain.Entities.Library.Author { Name = "author 4" }));
 
-             Response = await GetAdminClient(Guid.NewGuid()).GetAsync($"/api/authors");
+             Response = await GetAdminClient(Guid.NewGuid()).GetAsync("/api/authors");
             _view = JsonConvert.DeserializeObject<PageView<AuthorView>>(await Response.Content.ReadAsStringAsync());
         }
 
@@ -48,7 +48,11 @@ namespace Inshapardaz.Api.IntegrationTests.Library.Author
         [Test]
         public void ShouldContainAllAuthor()
         {
-            _view.Data.Count().ShouldBe(_authors.Count);
+            _view.Data.Count().ShouldBeGreaterThanOrEqualTo(_authors.Count);
+            foreach (var author in _authors)
+            {
+                _view.Data.ShouldContain(a => a.Id == author.Id);
+            }
         }
 
         [Test]

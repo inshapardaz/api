@@ -5,6 +5,7 @@
   "Application": {
     "RunDBMigrations": true,
     "DefaultDictionaryId": "1",
-    "elasticsearchUrl": "http://localhost:9200"
+    "Authority": "https://inshapardaz.eu.auth0.com/",
+    "Audience": "http://api.inshapardaz.org"
   }
 }

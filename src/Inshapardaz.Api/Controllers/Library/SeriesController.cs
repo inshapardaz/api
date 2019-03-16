@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Controllers.Library
             return NotFound();
         }
 
-        [Authorize(Roles = "admin,writer")]
+        [Authorize]
         [HttpPost("/api/series", Name = "CreateSeries")]
         [Produces(typeof(SeriesView))]
         [ValidateModel]
@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.Controllers.Library
             return Created(renderResult.Links.Self(), renderResult);
         }
 
-        [Authorize(Roles = "admin,writer")]
+        [Authorize]
         [HttpPut("/api/series/{id}", Name = "UpdateSeries")]
         [ValidateModel]
         public async Task<IActionResult> Put(int id, [FromBody] SeriesView value, CancellationToken cancellationToken)
@@ -79,7 +79,7 @@ namespace Inshapardaz.Api.Controllers.Library
             return NoContent();
         }
 
-        [Authorize(Roles = "admin,writer")]
+        [Authorize]
         [HttpDelete("/api/series/{id}", Name = "DeleteSeries")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {

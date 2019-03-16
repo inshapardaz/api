@@ -32,8 +32,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 throw new NotFoundException();
             }
 
+            var series = await _databaseContext.Series.SingleOrDefaultAsync(s => s.Id == book.SeriesId, cancellationToken);
+
             var item = book.Map<Book, Entities.Library.Book>();
             item.BookCategory.Clear();
+            item.Series = series;
             item.Author = author;
 
             _databaseContext.Book.Add(item);
@@ -52,6 +55,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             var newBook = await _databaseContext.Book
                                                 .Include(b => b.Author)
+                                                .Include(b => b.Series)
                                                 .Include(b => b.BookCategory)
                                                 .ThenInclude(c => c.Category)
                                                 .SingleOrDefaultAsync(t => t.Id == item.Id,
@@ -75,6 +79,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             existingEntity.AuthorId = book.AuthorId;
             existingEntity.IsPublic = book.IsPublic;
             existingEntity.Language = book.Language;
+            existingEntity.SeriesId = book.SeriesId;
+            existingEntity.SeriesIndex = book.SeriesIndex;
             if (book.ImageId > 0)
             {
                 existingEntity.ImageId = book.ImageId;
@@ -111,6 +117,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             var book = _databaseContext.Book
                         .Include(b => b.Author)
+                        .Include(b => b.Series)
                         .Include(b => b.BookCategory)
                         .ThenInclude(c => c.Category);
 
@@ -133,6 +140,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             var query = _databaseContext.Book
                             .Include(b => b.Author)
+                            .Include(b => b.Series)
                             .Include(b => b.BookCategory)
                             .ThenInclude(c => c.Category)
                             .Where(b => b.Title.Contains(searchText));
@@ -164,6 +172,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             var book = _databaseContext.Book
                         .Include(b => b.Author)
+                        .Include(b => b.Series)
                         .Include(b => b.BookCategory)
                         .ThenInclude(c => c.Category)
                         .Where(b => b.BookCategory.Any(g => g.CategoryId == categoryId));
@@ -188,6 +197,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var book = _databaseContext
                         .Book
                         .Include(b => b.Author)
+                        .Include(b => b.Series)
                         .Include(b => b.BookCategory)
                         .ThenInclude(c => c.Category)
                         .Where(b => b.AuthorId == authorId);
@@ -212,6 +222,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var book = _databaseContext
                        .Book
                        .Include(b => b.Author)
+                       .Include(b => b.Series)
                        .Include(b => b.BookCategory)
                        .ThenInclude(c => c.Category)
                        .Where(b => b.SeriesId == seriesId);
@@ -235,6 +246,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             var book = await _databaseContext.Book
                                              .Include(b => b.Author)
+                                             .Include(b => b.Series)
                                              .Include(b => b.BookCategory)
                                              .ThenInclude(c => c.Category)
                                              .SingleOrDefaultAsync(t => t.Id == bookId,
@@ -358,6 +370,16 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         public async Task<int> GetBookCountByAuthor(int authorId, CancellationToken cancellationToken)
         {
             return await _databaseContext.Book.CountAsync(b => b.AuthorId == authorId, cancellationToken);
+        }
+
+        public async Task<int> GetBookCountBySeries(int seriesId, CancellationToken cancellationToken)
+        {
+            return await _databaseContext.Book.CountAsync(b => b.SeriesId == seriesId, cancellationToken);
+        }
+
+        public async Task<int> GetBookCountByCategory(int categoryId, CancellationToken cancellationToken)
+        {
+            return await _databaseContext.Book.CountAsync(b => b.BookCategory.Any(g => g.CategoryId == categoryId), cancellationToken);
         }
     }
 }

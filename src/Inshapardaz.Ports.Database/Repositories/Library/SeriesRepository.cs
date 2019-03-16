@@ -42,6 +42,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
 
             existingEntity.Name = series.Name;
+            existingEntity.Description = series.Description;
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }

@@ -36,7 +36,7 @@ namespace Inshapardaz.Api.Renderers.Library
 
             if (source.SeriesId.HasValue)
             {
-                _linkRenderer.Render("GetSeriesById", RelTypes.Series, new {bookId = source.Id});
+                _linkRenderer.Render("GetSeriesById", RelTypes.Series, new {id = source.Id});
             }
 
             if (source.ImageId > 0)

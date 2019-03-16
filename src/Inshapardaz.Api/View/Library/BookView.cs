@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.View.Library
 
         public string AuthorName { get; set; }
 
-        public int SeriesId { get; set; }
+        public int? SeriesId { get; set; }
 
         public string SeriesName { get; set; }
 

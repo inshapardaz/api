@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
@@ -41,7 +42,7 @@ namespace Inshapardaz.Api.Renderers.Library
 
             if (source.ImageId > 0)
             {
-                links.Add(_linkRenderer.Render("GetFileById", RelTypes.Image, new {id = source.ImageId}));
+                links.Add(_linkRenderer.Render("GetFileById", RelTypes.Image, new {id = source.ImageId, ext = string.Empty}));
             }
 
             if (_userHelper.IsWriter)

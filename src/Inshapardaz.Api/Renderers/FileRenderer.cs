@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Inshapardaz.Api.View;
-using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Helpers;
+using File = Inshapardaz.Domain.Entities.File;
 
 namespace Inshapardaz.Api.Renderers
 {
@@ -29,7 +30,7 @@ namespace Inshapardaz.Api.Renderers
             var result = file.Map<File, FileView>();
             var links = new List<LinkView>
             {
-                _linkRenderer.Render("GetFileById", RelTypes.Self, file.MimeType, file.Id)
+                _linkRenderer.Render("GetFileById", RelTypes.Self, file.MimeType, new {id = file.Id, ext = GetFileName(file)})
             };
 
             if (_userHelper.IsWriter)
@@ -40,6 +41,11 @@ namespace Inshapardaz.Api.Renderers
             result.Links = links;
 
             return result;
+        }
+
+        string GetFileName(File file)
+        {
+            return Path.GetExtension(file.FileName).Trim('.');
         }
     }
 }

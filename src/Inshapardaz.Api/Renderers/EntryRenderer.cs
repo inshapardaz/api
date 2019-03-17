@@ -41,6 +41,11 @@ namespace Inshapardaz.Api.Renderers
                 links.Add(_linkRenderer.Render("GetRecentBooks", RelTypes.Recents));
                 links.Add(_linkRenderer.Render("GetFavoriteBooks", RelTypes.Favorites));
             }
+
+            if (_userHelper.IsWriter)
+            {
+                links.Add(_linkRenderer.Render("CreateFie", RelTypes.ImageUpload));
+            }
             return new EntryView { Links = links };
         }
     }

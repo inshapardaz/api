@@ -81,6 +81,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             existingEntity.Language = book.Language;
             existingEntity.SeriesId = book.SeriesId;
             existingEntity.SeriesIndex = book.SeriesIndex;
+            existingEntity.Status = book.Status;
+            existingEntity.Copyrights = book.Copyrights;
+            existingEntity.YearPublished = book.YearPublished;
+
             if (book.ImageId > 0)
             {
                 existingEntity.ImageId = book.ImageId;

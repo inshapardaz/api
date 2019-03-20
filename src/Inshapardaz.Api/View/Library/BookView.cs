@@ -33,5 +33,12 @@ namespace Inshapardaz.Api.View.Library
         public DateTime DateAdded {get; set;}
 
         public DateTime DateUpdated { get; set;}
+
+        public int YearPublished { get; set; }
+
+        public int Copyrights { get; set; }
+
+        public int Status { get; set; }
+
     }
 }

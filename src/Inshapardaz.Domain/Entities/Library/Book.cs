@@ -32,5 +32,12 @@ namespace Inshapardaz.Domain.Entities.Library
         public string SeriesName { get; set; }
 
         public int? SeriesIndex { get; set; }
+
+        public BookStatuses Status { get; set; }
+
+
+        public int YearPublished { get; set; }
+
+        public CopyrightStatuses Copyrights { get; set; }
     }
 }

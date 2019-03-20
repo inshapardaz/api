@@ -125,8 +125,13 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ForMember(d => d.DateAdded, o => o.MapFrom(s => s.DateAdded))
                 .ForMember(d => d.DateUpdated, o => o.MapFrom(s => s.DateUpdated))
+                .ForMember(d => d.Status, o => o.MapFrom(s => s.Status))
+                .ForMember(d => d.Copyrights, o => o.MapFrom(s => s.Copyrights))
+                .ForMember(d => d.YearPublished, o => o.MapFrom(s => s.YearPublished))
                 .ReverseMap()
                 .ForMember(d => d.Language, o => o.MapFrom(s => (Languages)s.Language))
+                .ForMember(d => d.Status, o => o.MapFrom(s => (BookStatuses)s.Status))
+                .ForMember(d => d.Copyrights, o => o.MapFrom(s => (CopyrightStatuses)s.Copyrights))
                 .ForMember(d => d.ImageId, o => o.Ignore());
 
             CreateMap<Chapter, ChapterView>()

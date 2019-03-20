@@ -38,6 +38,10 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public int? SeriesIndex { get; set; }
 
+        public int YearPublished { get; set; }
+
+        public CopyrightStatuses Copyrights { get; set; }
+
         [Required]
         public Languages Language { get; set; }
 

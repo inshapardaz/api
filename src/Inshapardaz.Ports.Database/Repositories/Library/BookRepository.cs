@@ -229,7 +229,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                        .Include(b => b.Series)
                        .Include(b => b.BookCategory)
                        .ThenInclude(c => c.Category)
-                       .Where(b => b.SeriesId == seriesId);
+                       .Where(b => b.SeriesId == seriesId)
+                       .OrderBy(b => b.SeriesIndex);
 
             var count = book.Count();
             var data = await book

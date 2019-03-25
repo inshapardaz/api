@@ -28,16 +28,24 @@ namespace Inshapardaz.Domain.Ports
     public class GetFileRequestHandler : RequestHandlerAsync<GetFileRequest>
     {
         private readonly IFileRepository _fileRepository;
+        private readonly IFileStorage _fileStorage;
 
-        public GetFileRequestHandler(IFileRepository fileRepository)
+        public GetFileRequestHandler(IFileRepository fileRepository, IFileStorage fileStorage)
         {
             _fileRepository = fileRepository;
+            _fileStorage = fileStorage;
         }
 
         public override async Task<GetFileRequest> HandleAsync(GetFileRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             command.Response = await _fileRepository.GetFileById(command.ImageId, cancellationToken);
-            using (var stream = new MemoryStream(command.Response.Contents))
+
+            var contents = command.Response.Contents;
+            if (!string.IsNullOrWhiteSpace(command.Response.FilePath))
+            {
+                contents = await _fileStorage.GetFile(command.Response.FilePath, cancellationToken);
+            }
+            using (var stream = new MemoryStream(contents))
             using (var output = new MemoryStream())
             {
                 using (Image<Rgba32> image = Image.Load(stream))

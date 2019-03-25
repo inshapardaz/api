@@ -15,5 +15,7 @@ namespace Inshapardaz.Domain.Entities
         public DateTime LiveUntil { get; set; }
 
         public byte[] Contents { get; set; }
+
+        public string FilePath { get; set; }
     }
 }

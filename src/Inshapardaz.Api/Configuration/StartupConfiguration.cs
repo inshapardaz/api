@@ -15,6 +15,7 @@ using Inshapardaz.Ports.Database;
 using Inshapardaz.Ports.Database.Repositories;
 using Inshapardaz.Ports.Database.Repositories.Dictionary;
 using Inshapardaz.Ports.Database.Repositories.Library;
+using Inshapardaz.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -27,7 +28,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using Microsoft.IdentityModel.Tokens;
 using Paramore.Brighter.AspNetCore;
 using Paramore.Darker.AspNetCore;
 using Swashbuckle.AspNetCore.Swagger;
@@ -95,6 +95,8 @@ namespace Inshapardaz.Api.Configuration
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             services.AddScoped<IUserHelper, UserHelper>();
+
+            services.AddTransient<IFileStorage, FileStorage>();
 
             return services;
         }

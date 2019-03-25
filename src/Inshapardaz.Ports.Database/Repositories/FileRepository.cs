@@ -23,16 +23,19 @@ namespace Inshapardaz.Ports.Database.Repositories
             return file.Map<Entities.File, File>();
         }
 
-        public async Task<File> AddFile(File file, CancellationToken cancellationToken)
+        public async Task<File> AddFile(File file, string url, CancellationToken cancellationToken)
         {
             var entity = file.Map<File, Entities.File>();
+
+            entity.FilePath = url;
+
             _databaseContext.File.Add(entity);
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
             return entity.Map<Entities.File, File>();
         }
 
-        public async Task<File> UpdateFile(File file, CancellationToken cancellationToken)
+        public async Task<File> UpdateFile(File file, string url, CancellationToken cancellationToken)
         {
             var entity = await _databaseContext.File.SingleOrDefaultAsync(f => f.Id == file.Id, cancellationToken);
             if (entity == null)
@@ -40,10 +43,11 @@ namespace Inshapardaz.Ports.Database.Repositories
                 throw new NotFoundException();
             }
 
-            entity.Contents = file.Contents;
+            entity.FilePath = url;
             entity.FileName = file.FileName;
             entity.MimeType = file.MimeType;
             entity.LiveUntil = file.LiveUntil;
+            entity.FilePath = url;
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 

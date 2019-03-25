@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Helpers;
@@ -144,6 +145,15 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.Chapter, o => o.Ignore())
                 .ReverseMap()
                 .ForMember(d => d.BookId, o => o.MapFrom(s => s.Chapter!= null ? s.Chapter.BookId : 0));
+
+            CreateMap<File, Entities.File>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.MimeType, o => o.MapFrom(s => s.MimeType))
+                .ForMember(d => d.FileName, o => o.MapFrom(s => s.FileName))
+                .ForMember(d => d.DateCreated, o => o.MapFrom(s => s.DateCreated))
+                .ForMember(d => d.FilePath, o => o.MapFrom(s => s.FilePath))
+                .ForMember(d => d.LiveUntil, o => o.MapFrom(s => s.LiveUntil))
+                .ReverseMap();
         }
     }
 }

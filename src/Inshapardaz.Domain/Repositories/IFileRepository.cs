@@ -8,9 +8,9 @@ namespace Inshapardaz.Domain.Repositories
     {
         Task<File> GetFileById(int id, CancellationToken cancellationToken);
 
-        Task<File> AddFile(File file, CancellationToken cancellationToken);
+        Task<File> AddFile(File file, string url, CancellationToken cancellationToken);
 
-        Task<File> UpdateFile(File file, CancellationToken cancellationToken);
+        Task<File> UpdateFile(File file, string url, CancellationToken cancellationToken);
 
         Task DeleteFile(int id, CancellationToken cancellationToken);
     }

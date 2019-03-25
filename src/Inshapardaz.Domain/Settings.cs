@@ -9,6 +9,9 @@
         public string ElasticsearchUrl { get; set; }
 
         public string Audience { get; set; }
+
         public string Authority { get; set; }
+
+        public string FileStorageConnectionString { get; set; }
     }
 }

@@ -37,32 +37,32 @@ namespace Inshapardaz.Api.Controllers
             return File(request.Response.Contents, request.Response.MimeType, request.Response.FileName);
         }
 
-        [HttpPost("/api/file", Name = "CreateFie")]
-        public async Task<IActionResult> CreateFile(IFormFile file, CancellationToken cancellationToken = new CancellationToken())
-        {
-            var content = new byte[file.Length];
-            using (var stream = new MemoryStream(content))
-            {
-                await file.CopyToAsync(stream, cancellationToken);
-            }
+        //[HttpPost("/api/file", Name = "CreateFie")]
+        //public async Task<IActionResult> CreateFile(IFormFile file, CancellationToken cancellationToken = new CancellationToken())
+        //{
+        //    var content = new byte[file.Length];
+        //    using (var stream = new MemoryStream(content))
+        //    {
+        //        await file.CopyToAsync(stream, cancellationToken);
+        //    }
 
-            var request = new AddFileRequest(new Domain.Entities.File
-            {
-                FileName = file.FileName ?? Guid.NewGuid().ToString("N"),
-                MimeType = file.ContentType,
-                Contents = content
-            });
-            await _commandProcessor.SendAsync(request, false, cancellationToken);
+        //    var request = new AddFileRequest(new Domain.Entities.File
+        //    {
+        //        FileName = file.FileName ?? Guid.NewGuid().ToString("N"),
+        //        MimeType = file.ContentType,
+        //        Contents = content
+        //    });
+        //    await _commandProcessor.SendAsync(request, false, cancellationToken);
 
-            if (request.Response == null)
-            {
-                return NotFound();
-            }
+        //    if (request.Response == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var response = _renderFile.Render(request.Response);
+        //    var response = _renderFile.Render(request.Response);
 
-            return Created(response.Links.Self(), response);
-        }
+        //    return Created(response.Links.Self(), response);
+        //}
 
         [Authorize]
         [HttpDelete("/api/file/{id}", Name = "DeleteFile")]

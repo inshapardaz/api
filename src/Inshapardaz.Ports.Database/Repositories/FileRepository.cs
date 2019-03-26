@@ -46,7 +46,6 @@ namespace Inshapardaz.Ports.Database.Repositories
             entity.FilePath = url;
             entity.FileName = file.FileName;
             entity.MimeType = file.MimeType;
-            entity.LiveUntil = file.LiveUntil;
             entity.FilePath = url;
 
             await _databaseContext.SaveChangesAsync(cancellationToken);

@@ -152,7 +152,6 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.FileName, o => o.MapFrom(s => s.FileName))
                 .ForMember(d => d.DateCreated, o => o.MapFrom(s => s.DateCreated))
                 .ForMember(d => d.FilePath, o => o.MapFrom(s => s.FilePath))
-                .ForMember(d => d.LiveUntil, o => o.MapFrom(s => s.LiveUntil))
                 .ReverseMap();
         }
     }

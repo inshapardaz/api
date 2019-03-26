@@ -16,7 +16,6 @@ namespace Inshapardaz.Api
                 .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
                 .ForMember(s => s.DateCreated, o => o.MapFrom(d => d.DateCreated))
                 .ForMember(s => s.FileName, o => o.MapFrom(d => d.FileName))
-                .ForMember(s => s.LiveUntil, o => o.MapFrom(d => d.LiveUntil))
                 .ForMember(s => s.MimeType, o => o.MapFrom(d => d.MimeType))
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ReverseMap();

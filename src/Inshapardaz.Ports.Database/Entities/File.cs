@@ -12,10 +12,6 @@ namespace Inshapardaz.Ports.Database.Entities
 
         public DateTime DateCreated { get; set; }
 
-        public DateTime LiveUntil { get; set; }
-
         public string FilePath { get; set; }
-
-        public byte[] Contents { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 using SixLabors.ImageSharp;
@@ -40,11 +41,12 @@ namespace Inshapardaz.Domain.Ports
         {
             command.Response = await _fileRepository.GetFileById(command.ImageId, cancellationToken);
 
-            var contents = command.Response.Contents;
-            if (!string.IsNullOrWhiteSpace(command.Response.FilePath))
+            if (string.IsNullOrWhiteSpace(command.Response.FilePath))
             {
-                contents = await _fileStorage.GetFile(command.Response.FilePath, cancellationToken);
+                throw new NotFoundException();
             }
+
+            var contents = await _fileStorage.GetFile(command.Response.FilePath, cancellationToken);
             using (var stream = new MemoryStream(contents))
             using (var output = new MemoryStream())
             {

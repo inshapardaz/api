@@ -15,8 +15,6 @@ namespace Inshapardaz.Api.View
 
         public DateTime DateCreated { get; set; }
 
-        public DateTime LiveUntil { get; set; }
-
         public IEnumerable<LinkView> Links { get; set; }
     }
 }

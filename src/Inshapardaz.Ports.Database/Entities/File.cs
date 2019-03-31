@@ -13,5 +13,7 @@ namespace Inshapardaz.Ports.Database.Entities
         public DateTime DateCreated { get; set; }
 
         public string FilePath { get; set; }
+
+        public bool IsPublic { get; set; }
     }
 }

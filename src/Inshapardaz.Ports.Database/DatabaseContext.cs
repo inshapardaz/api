@@ -126,7 +126,10 @@ namespace Inshapardaz.Ports.Database
 
             modelBuilder.Entity<Book>(entity =>
             {
-                entity.ToTable("Book", "Library");
+                entity.ToTable("Book", "Library")
+                      .HasOne(b => b.Series)
+                      .WithMany(a => a.Books)
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<BookCategory>(entity =>

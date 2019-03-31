@@ -13,9 +13,10 @@ using System;
 namespace Inshapardaz.Ports.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20190328215750_AddedPublicFileFlag")]
+    partial class AddedPublicFileFlag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -559,9 +560,8 @@ namespace Inshapardaz.Ports.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Inshapardaz.Ports.Database.Entities.Library.Series", "Series")
-                        .WithMany("Books")
-                        .HasForeignKey("SeriesId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .WithMany()
+                        .HasForeignKey("SeriesId");
                 });
 
             modelBuilder.Entity("Inshapardaz.Ports.Database.Entities.Library.BookCategory", b =>

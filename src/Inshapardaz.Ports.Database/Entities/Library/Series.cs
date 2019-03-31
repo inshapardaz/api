@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Inshapardaz.Ports.Database.Entities.Library
 {
@@ -15,6 +14,8 @@ namespace Inshapardaz.Ports.Database.Entities.Library
         public string Description { get; set; }
 
         public ICollection<SeriesCategory> SeriesCategory { get; set; } = new List<SeriesCategory>();
+
+        public ICollection<Book> Books { get; set; } = new List<Book>();
 
         public int? ImageId { get; set; }
     }

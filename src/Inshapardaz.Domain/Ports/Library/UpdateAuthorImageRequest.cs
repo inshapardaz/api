@@ -58,14 +58,14 @@ namespace Inshapardaz.Domain.Ports.Library
             {
                 command.Image.Id = author.ImageId;
 
-                var existingImage = await _fileRepository.GetFileById(author.ImageId, cancellationToken);
+                var existingImage = await _fileRepository.GetFileById(author.ImageId, true, cancellationToken);
                 if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
                 {
                     await _fileStorage.TryDeleteFile(existingImage.FilePath, cancellationToken);
                 }
 
                 var url = await AddImageToFileStore(author.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
-                await _fileRepository.UpdateFile(command.Image, url, cancellationToken);
+                await _fileRepository.UpdateFile(command.Image, url, true, cancellationToken);
                 command.Result.File = command.Image;
                 command.Result.File.Id = author.ImageId;
             }
@@ -73,7 +73,7 @@ namespace Inshapardaz.Domain.Ports.Library
             {
                 command.Image.Id = default(int);
                 var url = await AddImageToFileStore(author.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
-                command.Result.File = await _fileRepository.AddFile(command.Image, url, cancellationToken); 
+                command.Result.File = await _fileRepository.AddFile(command.Image, url, true, cancellationToken); 
                 command.Result.HasAddedNew = true;
 
                 author.ImageId = command.Result.File.Id;

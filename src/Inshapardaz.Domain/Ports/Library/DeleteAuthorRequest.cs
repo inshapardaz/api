@@ -34,7 +34,7 @@ namespace Inshapardaz.Domain.Ports.Library
             var author = await _authorRepository.GetAuthorById(command.AuthorId, cancellationToken);
             if (author != null && author.ImageId > 0)
             {
-                var image = await _fileRepository.GetFileById(author.ImageId, cancellationToken);
+                var image = await _fileRepository.GetFileById(author.ImageId, true, cancellationToken);
                 if (string.IsNullOrWhiteSpace(image.FilePath))
                 {
                     await _fileStore.TryDeleteFile(image.FilePath, cancellationToken);

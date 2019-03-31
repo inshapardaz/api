@@ -17,17 +17,18 @@ namespace Inshapardaz.Ports.Database.Repositories
             _databaseContext = databaseContext;
         }
 
-        public async Task<File> GetFileById(int id, CancellationToken cancellationToken)
+        public async Task<File> GetFileById(int id, bool isPublic, CancellationToken cancellationToken)
         {
-            var file = await _databaseContext.File.SingleOrDefaultAsync(i => i.Id == id, cancellationToken);
+            var file = await _databaseContext.File.SingleOrDefaultAsync(i => i.Id == id && i.IsPublic == isPublic, cancellationToken);
             return file.Map<Entities.File, File>();
         }
 
-        public async Task<File> AddFile(File file, string url, CancellationToken cancellationToken)
+        public async Task<File> AddFile(File file, string url, bool isPublic, CancellationToken cancellationToken)
         {
             var entity = file.Map<File, Entities.File>();
 
             entity.FilePath = url;
+            entity.IsPublic = isPublic;
 
             _databaseContext.File.Add(entity);
             await _databaseContext.SaveChangesAsync(cancellationToken);
@@ -35,7 +36,7 @@ namespace Inshapardaz.Ports.Database.Repositories
             return entity.Map<Entities.File, File>();
         }
 
-        public async Task<File> UpdateFile(File file, string url, CancellationToken cancellationToken)
+        public async Task<File> UpdateFile(File file, string url, bool isPublic, CancellationToken cancellationToken)
         {
             var entity = await _databaseContext.File.SingleOrDefaultAsync(f => f.Id == file.Id, cancellationToken);
             if (entity == null)
@@ -47,6 +48,7 @@ namespace Inshapardaz.Ports.Database.Repositories
             entity.FileName = file.FileName;
             entity.MimeType = file.MimeType;
             entity.FilePath = url;
+            entity.IsPublic = isPublic;
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 

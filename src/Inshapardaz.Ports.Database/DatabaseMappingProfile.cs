@@ -91,6 +91,7 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
                 .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
                 .ForMember(d => d.SeriesCategory, o => o.Ignore())
+                .ForMember(d => d.Books, o => o.Ignore())
                 .ReverseMap();
 
 
@@ -152,6 +153,7 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.FileName, o => o.MapFrom(s => s.FileName))
                 .ForMember(d => d.DateCreated, o => o.MapFrom(s => s.DateCreated))
                 .ForMember(d => d.FilePath, o => o.MapFrom(s => s.FilePath))
+                .ForMember(d => d.IsPublic, o => o.Ignore())
                 .ReverseMap();
         }
     }

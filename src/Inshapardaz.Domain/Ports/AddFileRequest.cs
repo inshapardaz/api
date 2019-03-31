@@ -32,7 +32,7 @@ namespace Inshapardaz.Domain.Ports
         public override async Task<AddFileRequest> HandleAsync(AddFileRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var url = await AddImageToFileStore(command.File.FileName, command.File.Contents, cancellationToken);
-            command.Response = await _fileRepository.AddFile(command.File, url, cancellationToken);
+            command.Response = await _fileRepository.AddFile(command.File, url, true, cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
 

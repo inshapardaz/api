@@ -23,6 +23,8 @@ namespace Inshapardaz.Domain.Ports
         public int Height { get; private set; }
         public int Width { get; private set; }
 
+        public bool IsPublic { get; set; }
+
         public File Response { get; set; }
     }
 
@@ -39,7 +41,7 @@ namespace Inshapardaz.Domain.Ports
 
         public override async Task<GetFileRequest> HandleAsync(GetFileRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            command.Response = await _fileRepository.GetFileById(command.ImageId, cancellationToken);
+            command.Response = await _fileRepository.GetFileById(command.ImageId, command.IsPublic, cancellationToken);
 
             if (string.IsNullOrWhiteSpace(command.Response.FilePath))
             {

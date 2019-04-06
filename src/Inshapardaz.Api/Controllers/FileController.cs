@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> GetFile(int id, string ext, int height = 200, int width = 200, CancellationToken cancellationToken = new CancellationToken())
         {
             var request = new GetFileRequest(id, height, width);
-            await _commandProcessor.SendAsync(request, false,  cancellationToken);
+            await _commandProcessor.SendAsync(request, true,  cancellationToken);
 
             if (request.Response == null)
             {

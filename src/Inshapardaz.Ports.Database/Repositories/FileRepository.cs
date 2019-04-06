@@ -19,7 +19,7 @@ namespace Inshapardaz.Ports.Database.Repositories
 
         public async Task<File> GetFileById(int id, bool isPublic, CancellationToken cancellationToken)
         {
-            var file = await _databaseContext.File.SingleOrDefaultAsync(i => i.Id == id && i.IsPublic == isPublic, cancellationToken);
+            var file = await _databaseContext.File.SingleOrDefaultAsync(i => i.Id == id && (!isPublic || i.IsPublic == isPublic), cancellationToken);
             return file.Map<Entities.File, File>();
         }
 

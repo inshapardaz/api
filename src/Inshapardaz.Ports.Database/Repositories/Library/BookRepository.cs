@@ -166,10 +166,14 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         public async Task<IEnumerable<Book>> GtLatestBooks(CancellationToken cancellationToken)
         {
             return await _databaseContext.Book
-                                         .OrderByDescending(b => b.DateAdded)
-                                         .Take(10)
-                                         .Select(a => a.Map<Entities.Library.Book, Book>())
-                                         .ToListAsync(cancellationToken);
+                                        .Include(b => b.Author)
+                                        .Include(b => b.Series)
+                                        .Include(b => b.BookCategory)
+                                        .ThenInclude(c => c.Category)
+                                        .OrderByDescending(b => b.DateAdded)
+                                        .Take(10)
+                                        .Select(a => a.Map<Entities.Library.Book, Book>())
+                                        .ToListAsync(cancellationToken);
         }
 
         public async Task<Page<Book>> GetBooksByCategory(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken)

@@ -15,15 +15,23 @@ namespace Inshapardaz.Domain.Ports.Library
     public class GetCategoryRequestHandler : RequestHandlerAsync<GetCategoriesRequest>
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IBookRepository _bookRepository;
 
-        public GetCategoryRequestHandler(ICategoryRepository categoryRepository)
+        public GetCategoryRequestHandler(ICategoryRepository categoryRepository, IBookRepository bookRepository)
         {
             _categoryRepository = categoryRepository;
+            _bookRepository = bookRepository;
         }
 
         public override async Task<GetCategoriesRequest> HandleAsync(GetCategoriesRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             command.Result = await _categoryRepository.GetCategory(cancellationToken);
+
+            foreach (var category in command.Result)
+            {
+                category.BookCount = await _bookRepository.GetBookCountByCategory(category.Id, cancellationToken);
+            }
+
             return await base.HandleAsync(command, cancellationToken);
         }
     }

@@ -101,7 +101,9 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
                 .ForMember(d => d.Links, o => o.Ignore())
-                .ReverseMap();
+                .ForMember(d => d.BookCount, o => o.MapFrom(s => s.BookCount))
+                .ReverseMap()
+                    .ForMember(d => d.BookCount, o => o.MapFrom(s => s.BookCount));
 
             CreateMap<Series, SeriesView>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))

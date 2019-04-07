@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Renderers.Library
 
             if (source.ImageId > 0)
             {
-                links.Add(_linkRenderer.Render("GetFileById", RelTypes.Image, new {id = source.ImageId, ext = string.Empty}));
+                links.Add(_linkRenderer.Render("GetFileById", RelTypes.Image, new {id = source.ImageId, ext = string.Empty, height = 257, width = 182 }));
             }
 
             if (_userHelper.IsWriter)

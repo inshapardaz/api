@@ -68,7 +68,7 @@ namespace Inshapardaz.Api.Controllers.Library
             {
                 Page = request.Result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-                RouteName = "FavoriteBooks"
+                RouteName = "GetFavoriteBooks"
             };
 
             return Ok(_booksRenderer.Render(args));

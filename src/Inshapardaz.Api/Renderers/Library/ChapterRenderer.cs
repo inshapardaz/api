@@ -45,6 +45,10 @@ namespace Inshapardaz.Api.Renderers.Library
                 {
                     links.Add(_linkRenderer.Render("AddChapterContents", RelTypes.AddContents, new { bookId = source.BookId, chapterId = source.Id }));
                 }
+                else
+                {
+                    links.Add(_linkRenderer.Render("UpdateChapterContents", RelTypes.UpdateContents, new { bookId = source.BookId, chapterId = source.Id }));
+                }
             }
 
             result.Links = links;

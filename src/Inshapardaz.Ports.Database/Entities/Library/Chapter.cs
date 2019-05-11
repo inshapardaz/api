@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Inshapardaz.Ports.Database.Entities.Library
@@ -18,5 +19,7 @@ namespace Inshapardaz.Ports.Database.Entities.Library
         public virtual Book Book { get; set; }
 
         public ChapterText Content { get; set; }
+
+        public virtual ICollection<ChapterContent> Contents { get; set; }
     }
 }

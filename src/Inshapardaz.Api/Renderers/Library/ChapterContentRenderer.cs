@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Renderers.Library
             var result = source.Map<ChapterContent, ChapterContentView>();
             var links = new List<LinkView>
             {
-                _linkRenderer.Render("GetChapterContents", RelTypes.Self, new { bookId = source.BookId, chapterId = source.ChapterId }),
+                _linkRenderer.Render("GetChapterContents", RelTypes.Self, source.MimeType, new { bookId = source.BookId, chapterId = source.ChapterId }),
                 _linkRenderer.Render("GetBookById", RelTypes.Book, new { id = source.BookId }),
                 _linkRenderer.Render("GetChapterById", RelTypes.Chapter, new { bookId = source.BookId, chapterId = source.ChapterId  }),
             };
@@ -35,7 +35,6 @@ namespace Inshapardaz.Api.Renderers.Library
             if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("UpdateChapterContents", RelTypes.Update, new { bookId = source.BookId, chapterId = source.ChapterId }));
-                //links.Add(_linkRenderer.Render("DeleteChapter", RelTypes.Delete, new { bookId = source.BookId, chapterId = source.Id }));
             }
 
             result.Links = links;

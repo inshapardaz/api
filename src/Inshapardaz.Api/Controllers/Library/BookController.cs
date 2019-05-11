@@ -190,12 +190,12 @@ namespace Inshapardaz.Api.Controllers.Library
         [Authorize]
         [HttpPost("/api/books/{id}/image", Name = "UpdateBookImage")]
         [ValidateModel]
-        public async Task<IActionResult> PutImage(int id, IFormFile file)
+        public async Task<IActionResult> PutImage(int id, IFormFile file, CancellationToken cancellationToken)
         {
             var content = new byte[file.Length];
             using (var stream = new MemoryStream(content))
             {
-                await file.CopyToAsync(stream);
+                await file.CopyToAsync(stream, cancellationToken);
             }
 
             var request = new UpdateBookImageRequest(id)

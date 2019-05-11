@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
@@ -9,11 +10,14 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetChapterContentRequest : BookRequest
     {
-        public GetChapterContentRequest(int bookId, int chapterId)
+        public GetChapterContentRequest(int bookId, int chapterId, string mimeType)
             : base(bookId)
         {
             ChapterId = chapterId;
+            MimeType = mimeType;
         }
+
+        public string MimeType { get; set; }
 
         public int ChapterId { get; }
 
@@ -35,10 +39,15 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<GetChapterContentRequest> HandleAsync(GetChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var chapters = await _chapterRepository.GetChapterContents(command.BookId, command.ChapterId, cancellationToken);
+            var chapterContent = await _chapterRepository.GetChapterContent(command.BookId, command.ChapterId, command.MimeType, cancellationToken);
+            if (chapterContent == null)
+            {
+                throw new NotFoundException();
+            }
+
             await _bookRepository.AddRecentBook(command.UserId, command.BookId, cancellationToken);
-            command.Result = chapters;
-            
+            command.Result = chapterContent;
+
             return await base.HandleAsync(command, cancellationToken);
         }
     }

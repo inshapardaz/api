@@ -137,12 +137,14 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.BookId, o => o.MapFrom(s => s.BookId))
                 .ForMember(d => d.Content, o => o.Ignore())
                 .ForMember(d => d.Book, o => o.Ignore())
+                .ForMember(d => d.Contents, o => o.Ignore())
                 .ReverseMap();
 
-            CreateMap<ChapterContent, Entities.Library.ChapterText>()
+            CreateMap<ChapterContent, Entities.Library.ChapterContent>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.ChapterId, o => o.MapFrom(s => s.ChapterId))
-                .ForMember(d => d.Content, o => o.MapFrom(s => s.Content))
+                .ForMember(d => d.ContentUrl, o => o.Ignore())
+                .ForMember(d => d.MimeType, o => o.MapFrom(s => s.MimeType))
                 .ForMember(d => d.Chapter, o => o.Ignore())
                 .ReverseMap()
                 .ForMember(d => d.BookId, o => o.MapFrom(s => s.Chapter!= null ? s.Chapter.BookId : 0));

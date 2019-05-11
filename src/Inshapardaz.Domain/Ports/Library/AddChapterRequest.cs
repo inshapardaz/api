@@ -31,12 +31,6 @@ namespace Inshapardaz.Domain.Ports.Library
         [BookRequestValidation(1, HandlerTiming.Before)]
         public override async Task<AddChapterRequest> HandleAsync(AddChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (command.Chapter.ChapterNumber == 0)
-            {
-                var chapterCount = await _chapterRepository.GetChapterCountByBook(command.BookId, cancellationToken);
-                command.Chapter.ChapterNumber = chapterCount + 1;
-            }
-
             command.Result= await _chapterRepository.AddChapter(command.BookId, command.Chapter, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);

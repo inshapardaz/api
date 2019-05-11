@@ -1,4 +1,6 @@
-﻿namespace Inshapardaz.Domain.Entities.Library
+﻿using System.Collections.Generic;
+
+namespace Inshapardaz.Domain.Entities.Library
 {
     public class Chapter
     {
@@ -9,7 +11,7 @@
         public string Title { get; set; }
 
         public int BookId { get; set; }
-
-        public bool HasContents { get; set; }
+        
+        public IEnumerable<ChapterContent> Contents { get; set; }
     }
 }

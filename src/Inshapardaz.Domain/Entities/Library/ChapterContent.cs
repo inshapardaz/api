@@ -9,5 +9,7 @@
         public int ChapterId { get; set; }
 
         public string Content { get; set; }
+
+        public string MimeType { get; set; }
     }
 }

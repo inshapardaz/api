@@ -52,6 +52,15 @@ namespace Inshapardaz.Storage
             }
         }
 
+        public async Task<string> GetTextFile(string filePath, CancellationToken cancellationToken)
+        {
+            var container = GetContainer();
+            string name = new CloudBlockBlob(new Uri(filePath)).Name;
+            var blockBlob = container.GetBlockBlobReference(name);
+
+            return await blockBlob.DownloadTextAsync(cancellationToken);
+        }
+
         public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
         {
             var container = GetContainer();
@@ -60,6 +69,15 @@ namespace Inshapardaz.Storage
             {
                 await blockBlob.UploadFromStreamAsync(stream, cancellationToken);
             }
+
+            return blockBlob.Uri.AbsoluteUri;
+        }
+
+        public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
+        {
+            var container = GetContainer();
+            var blockBlob = container.GetBlockBlobReference(name);
+            await blockBlob.UploadTextAsync(content, cancellationToken);
 
             return blockBlob.Uri.AbsoluteUri;
         }

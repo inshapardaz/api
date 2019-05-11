@@ -35,7 +35,8 @@ namespace Inshapardaz.Domain.Ports.Library
 
             foreach (var chapter in chapters)
             {
-                chapter.HasContents = await _chapterRepository.HasChapterContents(chapter.BookId, chapter.Id, cancellationToken);
+                var contents = await _chapterRepository.GetChapterContents(command.BookId, chapter.Id, cancellationToken);
+                chapter.Contents = contents;
             }
 
             command.Result = chapters;

@@ -7,7 +7,11 @@ namespace Inshapardaz.Domain.Repositories
     {
         Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken);
 
+        Task<string> GetTextFile(string filePath, CancellationToken cancellationToken);
+
         Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken);
+
+        Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken);
 
         Task DeleteFile(string filePath, CancellationToken cancellationToken);
 

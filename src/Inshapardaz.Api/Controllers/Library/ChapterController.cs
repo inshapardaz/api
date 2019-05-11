@@ -8,6 +8,7 @@ using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Ports.Library;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 
@@ -48,7 +49,7 @@ namespace Inshapardaz.Api.Controllers.Library
 
         [HttpGet("/api/books/{bookId}/chapters/{chapterId}", Name = "GetChapterById")]
         [Produces(typeof(ChapterView))]
-        public async Task<IActionResult> GetBooksById(int bookId, int chapterId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetChapterById(int bookId, int chapterId, CancellationToken cancellationToken)
         {
             var request = new GetChapterByIdRequest(bookId, chapterId);
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
@@ -92,10 +93,11 @@ namespace Inshapardaz.Api.Controllers.Library
         }
 
         [HttpGet("/api/books/{bookId}/chapters/{chapterId}/contents", Name = "GetChapterContents")]
+        [Produces(typeof(ChapterContentView))]
         [ValidateModel]
-        public async Task<IActionResult> GetChapterContents(int bookId, int chapterId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetChapterContents(int bookId, int chapterId, [FromHeader(Name = "Accept")] string mimetype = "text/markdown", CancellationToken cancellationToken = default(CancellationToken))
         {
-            var request = new GetChapterContentRequest(bookId, chapterId);
+            var request = new GetChapterContentRequest(bookId, chapterId, "text/markdown");
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
             if (request.Result == null)
@@ -106,14 +108,9 @@ namespace Inshapardaz.Api.Controllers.Library
         [Authorize]
         [HttpPost("/api/books/{bookId}/chapters/{chapterId}/contents", Name = "AddChapterContents")]
         [ValidateModel]
-        public async Task<IActionResult> PostContents(int bookId, int chapterId, [FromBody] string content, CancellationToken cancellationToken)
+        public async Task<IActionResult> PostContents(int bookId, int chapterId, [FromBody] string content, [FromHeader(Name = "Content-Type")] string mimetype = "text/markdown", CancellationToken cancellationToken = default(CancellationToken))
         {
-            var request = new AddChapterContentRequest(new ChapterContent
-            {
-                BookId = bookId,
-                ChapterId = chapterId,
-                Content = content
-            });
+            var request = new UpdateChapterContentRequest(bookId, chapterId, content, "text/markdown");
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
             return NoContent();
@@ -122,14 +119,9 @@ namespace Inshapardaz.Api.Controllers.Library
         [Authorize]
         [HttpPut("/api/books/{bookId}/chapters/{chapterId}/contents", Name = "UpdateChapterContents")]
         [ValidateModel]
-        public async Task<IActionResult> Put(int bookId, int chapterId, [FromBody] string content, CancellationToken cancellationToken)
+        public async Task<IActionResult> Put(int bookId, int chapterId, [FromBody] string content, [FromHeader(Name = "Content-Type")] string mimetype = "text/markdown", CancellationToken cancellationToken = default(CancellationToken))
         {
-                var request = new UpdateChapterContentRequest(new ChapterContent
-            {
-                BookId = bookId,
-                ChapterId = chapterId,
-                Content = content
-            });
+            var request = new UpdateChapterContentRequest(bookId, chapterId, content, "text/markdown");
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
             if (request.Result.HasAddedNew)

@@ -1,22 +1,27 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
-using Lucene.Net.Support;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
     public class UpdateChapterContentRequest : BookRequest
     {
-        public UpdateChapterContentRequest(ChapterContent chapter)
-            : base(chapter.BookId)
+        public UpdateChapterContentRequest(int bookId, int chapterId, string contents, string mimetype)
+            : base(bookId)
         {
-            Chapter = chapter;
+            ChapterId = chapterId;
+            Contents = contents;
+            MimeType = mimetype;
         }
 
-        public ChapterContent Chapter { get; }
+        public string MimeType { get; set; }
+
+        public string Contents { get; set; }
+
+        public int ChapterId { get; set; }
+
 
         public RequestResult Result { get; set; } = new RequestResult();
 
@@ -39,19 +44,25 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<UpdateChapterContentRequest> HandleAsync(UpdateChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _chapterRepository.GetChapterContents(command.BookId, command.Chapter.ChapterId, cancellationToken);
+            var chapterContent = await _chapterRepository.GetChapterContent(command.BookId, command.ChapterId, command.MimeType, cancellationToken);
 
-            if (result == null)
+            if (chapterContent == null)
             {
-                var chapter = command.Chapter;
-                chapter.Id = default(int);
-                command.Result.ChapterContent =  await  _chapterRepository.AddChapterContent(chapter, cancellationToken);
+                command.Result.ChapterContent =  await  _chapterRepository.AddChapterContent(command.BookId, 
+                                                                                             command.ChapterId,
+                                                                                             command.MimeType, 
+                                                                                             command.Contents,
+                                                                                             cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                await _chapterRepository.UpdateChapterContent(command.Chapter, cancellationToken);
-                command.Result.ChapterContent = command.Chapter;
+                await _chapterRepository.UpdateChapterContent(command.BookId, 
+                                                              command.ChapterId,
+                                                              command.MimeType, 
+                                                              command.Contents,
+                                                              cancellationToken);
+                command.Result.ChapterContent = chapterContent;
             }
 
             return await base.HandleAsync(command, cancellationToken);

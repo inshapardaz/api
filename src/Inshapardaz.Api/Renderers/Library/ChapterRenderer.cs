@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Inshapardaz.Api.View;
 using Inshapardaz.Api.View.Library;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Helpers;
-using Inshapardaz.Domain.Ports.Library;
 
 namespace Inshapardaz.Api.Renderers.Library
 {
@@ -32,22 +32,25 @@ namespace Inshapardaz.Api.Renderers.Library
                 _linkRenderer.Render("GetBookById", RelTypes.Book, new {id = source.BookId}),
             };
 
-            if (source.HasContents)
+            foreach (var content in source.Contents)
             {
-                links.Add(_linkRenderer.Render("GetChapterContents", RelTypes.Contents, new {bookId = source.BookId, chapterId = source.Id}));
-            };
-
+                links.Add(_linkRenderer.Render("GetChapterContents", RelTypes.Contents, content.MimeType,  new {bookId = source.BookId, chapterId = source.Id}));
+            }
+            
             if (_userHelper.IsWriter)
             {
                 links.Add(_linkRenderer.Render("UpdateChapter", RelTypes.Update, new { bookId = source.BookId, chapterId = source.Id }));
                 links.Add(_linkRenderer.Render("DeleteChapter", RelTypes.Delete, new { bookId = source.BookId, chapterId = source.Id }));
-                if (!source.HasContents)
+                if (!source.Contents.Any())
                 {
                     links.Add(_linkRenderer.Render("AddChapterContents", RelTypes.AddContents, new { bookId = source.BookId, chapterId = source.Id }));
                 }
                 else
                 {
-                    links.Add(_linkRenderer.Render("UpdateChapterContents", RelTypes.UpdateContents, new { bookId = source.BookId, chapterId = source.Id }));
+                    foreach (var content in source.Contents)
+                    {
+                        links.Add(_linkRenderer.Render("UpdateChapterContents", RelTypes.UpdateContents, content.MimeType, new { bookId = source.BookId, chapterId = source.Id }));
+                    }                    
                 }
             }
 

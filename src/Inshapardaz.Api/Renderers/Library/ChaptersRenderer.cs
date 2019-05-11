@@ -17,14 +17,12 @@ namespace Inshapardaz.Api.Renderers.Library
         private readonly IRenderChapter _chapterRenderer;
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
-        private readonly IRenderEnum _enumRenderer;
 
-        public ChaptersRenderer(IRenderChapter chapterRenderer, IRenderLink linkRenderer, IUserHelper userHelper, IRenderEnum enumRenderer)
+        public ChaptersRenderer(IRenderChapter chapterRenderer, IRenderLink linkRenderer, IUserHelper userHelper)
         {
             _chapterRenderer = chapterRenderer;
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
-            _enumRenderer = enumRenderer;
         }
 
         public ListView<ChapterView> Render(int bookId, IEnumerable<Chapter> source)

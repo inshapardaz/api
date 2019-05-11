@@ -7,5 +7,9 @@
         public const string Csv = "text/csv";
 
         public static string Json = "application/json";
+
+        public static string Markdown = "text/markdown";
+
+        public static string Pdf = "text/pdf";
     }
 }

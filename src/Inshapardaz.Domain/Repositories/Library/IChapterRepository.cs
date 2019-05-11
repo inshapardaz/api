@@ -20,12 +20,15 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<int> GetChapterCountByBook(int bookId, CancellationToken cancellationToken);
 
-        Task<ChapterContent> GetChapterContents(int bookId, int chapterId, CancellationToken cancellationToken);
+        Task<IEnumerable<ChapterContent>> GetChapterContents(int bookId, int chapterId, CancellationToken cancellationToken);
 
-        Task<ChapterContent> AddChapterContent(ChapterContent content, CancellationToken cancellationToken);
+        Task<ChapterContent> GetChapterContent(int bookId, int chapterId, string mimeType, CancellationToken cancellationToken);
 
-        Task UpdateChapterContent(ChapterContent contents, CancellationToken cancellationToken);
+        Task<ChapterContent> AddChapterContent(int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken);
+
+        Task UpdateChapterContent(int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken);
 
         Task<bool> HasChapterContents(int bookId, int chapterId, CancellationToken cancellationToken);
+        
     }
 }

@@ -155,7 +155,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             if (content == null)
             {
-                var entity = new Entities.Library.ChapterContent
+                var entity = new Entities.Library.ChapterContent()
                 {
                     ChapterId = chapterId,
                     MimeType = mimeType,
@@ -184,33 +184,6 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                                .SingleOrDefaultAsync(t => t.Id == chapterId,
                                                                      cancellationToken);
             return chapter.Map<Entities.Library.Chapter, Chapter>();
-        }
-
-        public async Task MigrateContents(CancellationToken cancellationToken)
-        {
-            var contents = await _databaseContext.ChapterContent.ToArrayAsync(cancellationToken);
-            _databaseContext.ChapterContent.RemoveRange(contents);
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-
-            var texts = await _databaseContext.ChapterText.Include(t => t.Chapter).ToListAsync(cancellationToken);
-
-            foreach (var text in texts)
-            {
-                string name = GenerateChapterContentUrl(text.Chapter.BookId, text.ChapterId, "text/markdown");
-                var actualUrl = await _fileStorage.StoreTextFile(name, text.Content, cancellationToken);
-                var entity = new Entities.Library.ChapterContent
-                {
-                    ChapterId = text.ChapterId,
-                    MimeType = "text/markdown",
-                    ContentUrl = actualUrl
-                };
-
-                await _databaseContext.ChapterContent.AddAsync(entity, cancellationToken);
-                await _databaseContext.SaveChangesAsync(cancellationToken);
-            }
-
-            _databaseContext.ChapterText.RemoveRange(texts);
-            await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
         private string GenerateChapterContentUrl(int bookId, int chapterId, string mimeType)

@@ -29,6 +29,7 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task UpdateChapterContent(int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken);
 
         Task<bool> HasChapterContents(int bookId, int chapterId, CancellationToken cancellationToken);
-        
+
+        Task MigrateContents(CancellationToken cancellationToken);
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Adapters;
 using Inshapardaz.Api.View;
+using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -12,10 +14,12 @@ namespace Inshapardaz.Api.Controllers
     public class HomeController : Controller
     {
         private readonly IAmACommandProcessor _commandProcessor;
+        private readonly IChapterRepository _chapterRepository;
 
-        public HomeController(IAmACommandProcessor commandProcessor, IActionContextAccessor actionContextAccessor)
+        public HomeController(IAmACommandProcessor commandProcessor, IActionContextAccessor actionContextAccessor, IChapterRepository chapterRepository)
         {
             _commandProcessor = commandProcessor;
+            _chapterRepository = chapterRepository;
         }
 
         [HttpGet("/")]
@@ -33,10 +37,11 @@ namespace Inshapardaz.Api.Controllers
             return Ok(command.Result);
         }
 
-        [HttpGet("auth")]
-        [Authorize]
-        public IActionResult Auth(){
-            return new JsonResult(User.Claims.Select(c => new { c.Type, c.Value }));
+        [HttpGet("doit")]
+        public async Task<IActionResult> DoIt(CancellationToken cancellationToken)
+        {
+            await _chapterRepository.MigrateContents(cancellationToken);
+            return Ok();
         }
     }
 }

@@ -30,8 +30,6 @@ namespace Inshapardaz.Ports.Database
         DbSet<RecentBook> RecentBooks { get; set; }
         DbSet<FavoriteBook> FavoriteBooks { get; set; }
         DbSet <BookPage> BookPages { get; set; }
-        DbSet<ChapterText> ChapterText { get; set; }
-
         DbSet<Magazine> Magazine { get; set; }
         DbSet<MagazineCategory> MagazineCategory { get; set; }
         DbSet<Issue> Issue { get; set; }

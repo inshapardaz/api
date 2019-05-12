@@ -189,13 +189,13 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         public async Task MigrateContents(CancellationToken cancellationToken)
         {
             var contents = await _databaseContext.ChapterContent.ToArrayAsync(cancellationToken);
-            
+            _databaseContext.ChapterContent.RemoveRange(contents);
+            await _databaseContext.SaveChangesAsync(cancellationToken);
+
             var texts = await _databaseContext.ChapterText.Include(t => t.Chapter).ToListAsync(cancellationToken);
 
             foreach (var text in texts)
             {
-                if (contents.Any(c => c.ChapterId == text.ChapterId && !string.IsNullOrWhiteSpace(c.ContentUrl)))
-                        continue;
                 string name = GenerateChapterContentUrl(text.Chapter.BookId, text.ChapterId, "text/markdown");
                 var actualUrl = await _fileStorage.StoreTextFile(name, text.Content, cancellationToken);
                 var entity = new Entities.Library.ChapterContent

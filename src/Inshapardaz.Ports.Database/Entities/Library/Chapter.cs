@@ -18,8 +18,6 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public virtual Book Book { get; set; }
 
-        public ChapterText Content { get; set; }
-
         public virtual ICollection<ChapterContent> Contents { get; set; }
     }
 }

@@ -171,16 +171,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             }
         }
-
-        public async Task<bool> HasChapterContents(int bookId, int chapterId, CancellationToken cancellationToken)
-        {
-            return await _databaseContext.ChapterText.AnyAsync(c => c.ChapterId == chapterId, cancellationToken);
-        }
-
+        
         public async Task<Chapter> GetChapterById(int chapterId, CancellationToken cancellationToken)
         {
             var chapter = await _databaseContext.Chapter
-                                                .Include(c => c.Content)
+                                                .Include(c => c.Contents)
                                                .SingleOrDefaultAsync(t => t.Id == chapterId,
                                                                      cancellationToken);
             return chapter.Map<Entities.Library.Chapter, Chapter>();

@@ -39,5 +39,7 @@ namespace Inshapardaz.Domain.Entities.Library
         public int YearPublished { get; set; }
 
         public CopyrightStatuses Copyrights { get; set; }
+
+        public bool IsPublished { get; set; }
     }
 }

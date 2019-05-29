@@ -26,6 +26,7 @@ namespace Inshapardaz.Ports.Database
         public DbSet<Chapter> Chapter { get; set; }
         public DbSet<ChapterContent> ChapterContent { get; set; }
         public DbSet<BookPage> BookPages { get; set; }
+        public DbSet<BookFile> BookFiles { get; set; }
         public DbSet<RecentBook> RecentBooks { get; set; }
         public DbSet<FavoriteBook> FavoriteBooks { get; set; }
 
@@ -168,6 +169,11 @@ namespace Inshapardaz.Ports.Database
             modelBuilder.Entity<BookPage>(entity =>
             {
                 entity.ToTable("BookPage", "Library");
+            });
+
+            modelBuilder.Entity<BookFile>(entity =>
+            {
+                entity.ToTable("BookFile", "Library");
             });
 
             modelBuilder.Entity<RecentBook>(entity =>

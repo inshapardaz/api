@@ -24,6 +24,8 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public virtual ICollection<BookPage> Pages { get; set; }
 
+        public virtual ICollection<BookFile> Files { get; set; }
+
 
         [Required]
         public int AuthorId { get; set; }
@@ -39,6 +41,8 @@ namespace Inshapardaz.Ports.Database.Entities.Library
         public int? SeriesIndex { get; set; }
 
         public int YearPublished { get; set; }
+
+        public bool IsPublished { get; set; }
 
         public CopyrightStatuses Copyrights { get; set; }
 

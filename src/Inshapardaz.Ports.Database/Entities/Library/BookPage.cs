@@ -15,6 +15,6 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public string Text { get; set; }
 
-        public byte[] Contents { get; set; }
+        public string PageUrl { get; set; }
     }
 }

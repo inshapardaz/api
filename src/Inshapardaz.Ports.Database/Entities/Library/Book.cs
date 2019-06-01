@@ -40,7 +40,7 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public int? SeriesIndex { get; set; }
 
-        public int YearPublished { get; set; }
+        public int? YearPublished { get; set; }
 
         public bool IsPublished { get; set; }
 

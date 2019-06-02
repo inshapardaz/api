@@ -163,14 +163,14 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             };
         }
 
-        public async Task<IEnumerable<Book>> GtLatestBooks(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Book>> GetLatestBooks(CancellationToken cancellationToken)
         {
             return await _databaseContext.Book
                                         .Include(b => b.Author)
                                         .Include(b => b.Series)
                                         .Include(b => b.BookCategory)
                                         .ThenInclude(c => c.Category)
-                                        .OrderByDescending(b => b.DateAdded)
+                                        .OrderByDescending(b => b.DateUpdated)
                                         .Take(10)
                                         .Select(a => a.Map<Entities.Library.Book, Book>())
                                         .ToListAsync(cancellationToken);
@@ -389,6 +389,41 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         public async Task<int> GetBookCountByCategory(int categoryId, CancellationToken cancellationToken)
         {
             return await _databaseContext.Book.CountAsync(b => b.BookCategory.Any(g => g.CategoryId == categoryId), cancellationToken);
+        }
+
+        public async Task DeleteBookFile(int bookId, int fileId, CancellationToken cancellationToken)
+        {
+            var bookFile = await _databaseContext.BookFiles.SingleOrDefaultAsync(bf => bf.Id == fileId, cancellationToken: cancellationToken);
+
+            if (bookFile != null)
+            {
+                _databaseContext.BookFiles.Remove(bookFile);
+                await _databaseContext.SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        public async Task<File> GetBookFileById(int bookId, int fileId, CancellationToken cancellationToken)
+        {
+            var bookFile = await _databaseContext.BookFiles
+                                                 .Include(b=> b.File)
+                                                 .SingleOrDefaultAsync(bf => bf.Id == fileId, cancellationToken: cancellationToken);
+
+            return bookFile?.File.Map<Entities.File, File>();
+        }
+
+        public async Task<IEnumerable<File>> GetFilesByBook(int bookId, CancellationToken cancellationToken)
+        {
+            var files = await _databaseContext.BookFiles
+                                              .Include(bf => bf.File)
+                                              .Where(f => f.BookId == bookId)
+                                              .ToListAsync(cancellationToken);
+            return files.Select(bf => bf.File.Map<Entities.File, File>());
+        }
+
+        public async Task AddBookFile(int bookId, int fileId, CancellationToken cancellationToken)
+        {
+            _databaseContext.BookFiles.Add(new BookFile {BookId = bookId, FileId = fileId });
+            await _databaseContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

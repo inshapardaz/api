@@ -48,5 +48,10 @@
         public const string Favorites = "favorites";
 
         public static string Series = "series";
+
+        public static string Add = "add";
+
+        public static string Files = "files";
+        internal static string AddFile = "add-file";
     }
 }

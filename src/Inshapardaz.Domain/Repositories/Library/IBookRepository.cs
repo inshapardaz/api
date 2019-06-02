@@ -17,7 +17,7 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<Page<Book>> GetBooks(int pageNumber, int pageSize, CancellationToken cancellationToken);
 
-        Task<IEnumerable<Book>> GtLatestBooks(CancellationToken cancellationToken);
+        Task<IEnumerable<Book>> GetLatestBooks(CancellationToken cancellationToken);
         
         Task<Page<Book>> SearchBooks(string searchText, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
@@ -41,9 +41,15 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task DeleteBookFromFavorites(Guid userId, int bookId, CancellationToken cancellationToken);
 
         Task<Page<Book>> GetFavoriteBooksByUser(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+        Task AddBookFile(int bookId, int id, CancellationToken cancellationToken);
         Task<int> GetBookCountByAuthor(int authorId, CancellationToken cancellationToken);
         Task<Page<Book>> GetBooksBySeries(int seriesId, int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<int> GetBookCountBySeries(int seriesId, CancellationToken cancellationToken);
         Task<int> GetBookCountByCategory(int categoryId, CancellationToken cancellationToken);
+        Task DeleteBookFile(int bookId, int fileId, CancellationToken cancellationToken);
+
+        Task<IEnumerable<File>> GetFilesByBook(int bookId, CancellationToken cancellationToken);
+
+        Task<File> GetBookFileById(int bookId, int fileId, CancellationToken cancellationToken);
     }
 }

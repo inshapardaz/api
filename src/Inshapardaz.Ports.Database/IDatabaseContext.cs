@@ -21,6 +21,9 @@ namespace Inshapardaz.Ports.Database
         DbSet<Category> Category { get; set; }
         DbSet<Author> Author { get; set; }
         DbSet<Book> Book { get; set; }
+
+        DbSet<BookFile> BookFiles { get; set; }
+
         DbSet<Chapter> Chapter { get; set; }
 
         DbSet<ChapterContent> ChapterContent { get; set; }

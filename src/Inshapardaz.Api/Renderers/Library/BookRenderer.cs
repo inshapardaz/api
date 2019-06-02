@@ -32,7 +32,8 @@ namespace Inshapardaz.Api.Renderers.Library
             {
                 _linkRenderer.Render("GetBookById", RelTypes.Self, new { id = source.Id }),
                 _linkRenderer.Render("GetAuthorById", RelTypes.Author, new { id = source.AuthorId }),
-                _linkRenderer.Render("GetChaptersForBook", RelTypes.Chapters, new { bookId = source.Id })
+                _linkRenderer.Render("GetChaptersForBook", RelTypes.Chapters, new { bookId = source.Id }),
+                _linkRenderer.Render("GetBookFiles", RelTypes.Files, new { id = source.Id })
             };
 
             if (source.SeriesId.HasValue)
@@ -51,6 +52,7 @@ namespace Inshapardaz.Api.Renderers.Library
                 links.Add(_linkRenderer.Render("DeleteBook", RelTypes.Delete, new { id = source.Id }));
                 links.Add(_linkRenderer.Render("UpdateBookImage", RelTypes.ImageUpload, new { id = source.Id }));
                 links.Add(_linkRenderer.Render("CreateChapter", RelTypes.CreateChapter, new { bookId = source.Id }));
+                links.Add(_linkRenderer.Render("AddBookFile", RelTypes.AddFile, new { id = source.Id }));
             }
 
             result.Links = links;

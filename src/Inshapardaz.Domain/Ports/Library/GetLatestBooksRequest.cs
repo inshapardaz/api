@@ -29,7 +29,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<GetLatestBooksRequest> HandleAsync(GetLatestBooksRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var books = await _bookRepository.GtLatestBooks(cancellationToken);
+            var books = await _bookRepository.GetLatestBooks(cancellationToken);
             command.Result = books;
             return await base.HandleAsync(command, cancellationToken);
         }

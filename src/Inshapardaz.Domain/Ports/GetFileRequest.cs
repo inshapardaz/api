@@ -52,15 +52,37 @@ namespace Inshapardaz.Domain.Ports
             using (var stream = new MemoryStream(contents))
             using (var output = new MemoryStream())
             {
-                using (Image<Rgba32> image = Image.Load(stream))
+                if (IsImageFile(command.Response.MimeType))
                 {
-                    image.Mutate(x => x.Resize(command.Width, command.Height));
-                    image.Save(output, ImageFormats.Jpeg);
-                    command.Response.Contents = output.GetBuffer();
+                    using (Image<Rgba32> image = Image.Load(stream))
+                    {
+                        image.Mutate(x => x.Resize(command.Width, command.Height));
+                        image.Save(output, ImageFormats.Jpeg);
+                        command.Response.Contents = output.GetBuffer();
+                    }
+                }
+                else
+                {
+                    command.Response.Contents = stream.ToArray();
                 }
             }
 
             return await base.HandleAsync(command, cancellationToken);
+        }
+
+        private bool IsImageFile(string mimeType)
+        {
+            switch (mimeType.ToLower())
+            {
+                case "image/bmp":
+                case "image/jpg":
+                case "image/jpeg":
+                case "image/png":
+                case "image/gif":
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

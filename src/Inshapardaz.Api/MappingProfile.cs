@@ -160,6 +160,17 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ReverseMap()
                     .ForMember(d => d.CategoryId, o => o.Ignore());
+
+            CreateMap<Issue, IssueView>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.IssueDate, o => o.MapFrom(s => s.IssueDate))
+                .ForMember(d => d.IssueNumber, o => o.MapFrom(s => s.IssueNumber))
+                .ForMember(d => d.VolumeNumber, o => o.MapFrom(s => s.VolumeNumber))
+                .ForMember(d => d.Links, o => o.Ignore())
+                .ReverseMap()
+                    .ForMember(d => d.ImageId, o => o.Ignore())
+                    .ForMember(d => d.PeriodicalId, o => o.Ignore())
+                    .ForMember(d => d.Periodical, o => o.Ignore());
         }
     }
 }

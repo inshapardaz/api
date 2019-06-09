@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Inshapardaz.Ports.Database.Entities.Library
+namespace Inshapardaz.Domain.Entities.Library
 {
     public class Issue
     {
@@ -20,6 +20,5 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public virtual Periodical Periodical { get; set; }
 
-        public virtual ICollection<Article> Articles { get; set; }
     }
 }

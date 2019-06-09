@@ -168,6 +168,17 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.Category, o => o.Ignore())
                 .ForMember(d => d.Issues, o => o.Ignore())
                 .ReverseMap();
+
+            CreateMap<Issue, Entities.Library.Issue>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.IssueDate, o => o.MapFrom(s => s.IssueDate))
+                .ForMember(d => d.IssueNumber, o => o.MapFrom(s => s.IssueNumber))
+                .ForMember(d => d.VolumeNumber, o => o.MapFrom(s => s.VolumeNumber))
+                .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
+                .ForMember(d => d.PeriodicalId, o => o.MapFrom(s => s.PeriodicalId))
+                .ForMember(d => d.Articles, o => o.Ignore())
+                .ForMember(d => d.Periodical, o => o.Ignore())
+                .ReverseMap();
         }
     }
 }

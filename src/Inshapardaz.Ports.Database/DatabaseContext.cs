@@ -185,11 +185,11 @@ namespace Inshapardaz.Ports.Database
             );
 
             modelBuilder.Entity<Periodical>(entity =>
-                entity.ToTable("Magazine", "Library")
+                entity.ToTable("Periodical", "Library")
             );
 
             modelBuilder.Entity<PeriodicalCategory>(entity =>
-                entity.ToTable("MagazineCategory", "Library")
+                entity.ToTable("PeriodicalCategory", "Library")
             );
 
             modelBuilder.Entity<Issue>(entity =>

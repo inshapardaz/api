@@ -89,6 +89,8 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IRenderBookFile, BookFileRenderer>();
             services.AddTransient<IRenderPeriodical, PeriodicalRenderer>();
             services.AddTransient<IRenderPeriodicals, PeriodicalsRenderer>();
+            services.AddTransient<IRenderIssues, IssuesRenderer>();
+            services.AddTransient<IRenderIssue, IssueRenderer>();
 
             return services;
         }
@@ -174,7 +176,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<ISeriesRepository, SeriesRepository>();
 
             services.AddTransient<IPeriodicalRepository, PeriodicalRepository>();
-
+            services.AddTransient<IIssueRepository, IssueRepository>();
             return services;
         }
 

@@ -53,5 +53,7 @@
 
         public static string Files = "files";
         internal static string AddFile = "add-file";
+
+        public static string Periodicals = "periodicals";
     }
 }

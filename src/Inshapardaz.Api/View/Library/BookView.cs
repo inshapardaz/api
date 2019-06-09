@@ -3,14 +3,11 @@ using System.Collections.Generic;
 
 namespace Inshapardaz.Api.View.Library
 {
-    public class BookView
+    public class BookView : LinkBasedView
     {
         public int Id { get; set; }
 
         public string Title { get; set; }
-
-        public IEnumerable<LinkView> Links { get; set; }
-
 
         public string Description { get; set; }
 

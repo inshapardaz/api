@@ -152,6 +152,14 @@ namespace Inshapardaz.Api
                 .ForMember(d => d.ChapterId, o => o.MapFrom(s => s.ChapterId))
                 .ForMember(d => d.Links, o => o.Ignore())
                 .ReverseMap();
+
+            CreateMap<Periodical, PeriodicalView>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
+                .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
+                .ForMember(d => d.Links, o => o.Ignore())
+                .ReverseMap()
+                    .ForMember(d => d.CategoryId, o => o.Ignore());
         }
     }
 }

@@ -32,8 +32,8 @@ namespace Inshapardaz.Ports.Database
 
         public DbSet<Series> Series { get; set; }
 
-        public DbSet<Magazine> Magazine { get; set; }
-        public DbSet<MagazineCategory> MagazineCategory { get; set; }
+        public DbSet<Periodical> Periodical { get; set; }
+        public DbSet<PeriodicalCategory> PeriodicalCategory { get; set; }
         public DbSet<Issue> Issue { get; set; }
         public DbSet<Article> Article { get; set; }
         public DbSet<ArticleText> ArticleText { get; set; }
@@ -184,11 +184,11 @@ namespace Inshapardaz.Ports.Database
                 entity.ToTable("FavoriteBooks", "Library")
             );
 
-            modelBuilder.Entity<Magazine>(entity =>
+            modelBuilder.Entity<Periodical>(entity =>
                 entity.ToTable("Magazine", "Library")
             );
 
-            modelBuilder.Entity<MagazineCategory>(entity =>
+            modelBuilder.Entity<PeriodicalCategory>(entity =>
                 entity.ToTable("MagazineCategory", "Library")
             );
 

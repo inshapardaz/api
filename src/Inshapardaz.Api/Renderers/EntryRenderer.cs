@@ -30,6 +30,7 @@ namespace Inshapardaz.Api.Renderers
                                 _linkRenderer.Render("GetCategories", RelTypes.Categories),
                                 _linkRenderer.Render("GetSeries", RelTypes.Series),
                                 _linkRenderer.Render("GetBooks", RelTypes.Books),
+                                _linkRenderer.Render("GetPeriodicals", RelTypes.Periodicals),
                                 _linkRenderer.Render("GetLanguages", RelTypes.Languages),
                                 _linkRenderer.Render("GetAttributes", RelTypes.Attributes),
                                 _linkRenderer.Render("GetRelationTypes", RelTypes.RelationshipTypes),

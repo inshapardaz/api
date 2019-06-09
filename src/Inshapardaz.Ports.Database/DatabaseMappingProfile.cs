@@ -158,6 +158,16 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.FilePath, o => o.MapFrom(s => s.FilePath))
                 .ForMember(d => d.IsPublic, o => o.Ignore())
                 .ReverseMap();
+
+            CreateMap<Periodical, Entities.Library.Periodical>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
+                .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
+                .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
+                .ForMember(d => d.CategoryId, o => o.MapFrom(s => s.CategoryId))
+                .ForMember(d => d.Category, o => o.Ignore())
+                .ForMember(d => d.Issues, o => o.Ignore())
+                .ReverseMap();
         }
     }
 }

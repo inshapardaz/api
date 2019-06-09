@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Inshapardaz.Ports.Database.Entities.Library
 {
-    public class Magazine
+    public class Periodical
     {
         public int Id { get; set; }
 
@@ -16,14 +16,14 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public int? ImageId { get; set; }
 
-        public int? Category { get; set; }
+        public int? CategoryId { get; set; }
 
-        public virtual MagazineCategory MagazineCategory { get; set; }
+        public virtual PeriodicalCategory Category { get; set; }
 
         public virtual ICollection<Issue> Issues { get; set; }
     }
 
-    public class MagazineCategory
+    public class PeriodicalCategory
     {
         [Key]
         public int Id { get; set; }
@@ -31,6 +31,6 @@ namespace Inshapardaz.Ports.Database.Entities.Library
         [Required]
         public string Name { get; set; }
 
-        public ICollection<Magazine> Magazines { get; set; } = new List<Magazine>();
+        public ICollection<Periodical> Periodicals { get; set; } = new List<Periodical>();
     }
 }

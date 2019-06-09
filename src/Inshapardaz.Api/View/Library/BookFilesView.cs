@@ -3,10 +3,9 @@ using System.Collections.Generic;
 
 namespace Inshapardaz.Api.View.Library
 {
-    public class BookFilesView
+    public class BookFilesView : LinkBasedView
     {
         public int BookId { get; set; }
-        public IEnumerable<LinkView> Links { get; set; }
 
         public IEnumerable<BookFileView> Files { get; set; }
     }

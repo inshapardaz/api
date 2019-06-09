@@ -18,7 +18,7 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public int MagazineId { get; set; }
 
-        public virtual Magazine Magazine { get; set; }
+        public virtual Periodical Magazine { get; set; }
 
         public virtual ICollection<Article> Articles { get; set; }
     }

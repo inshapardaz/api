@@ -4,6 +4,6 @@ namespace Inshapardaz.Api.View
 {
     public abstract class LinkBasedView
     {
-        public List<LinkView> Links { get; } = new List<LinkView>();
+        public List<LinkView> Links { get; set; }
     }
 }

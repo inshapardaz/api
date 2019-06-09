@@ -125,7 +125,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                         .Include(b => b.BookCategory)
                         .ThenInclude(c => c.Category);
 
-            var count = book.Count();
+            var count = await book.CountAsync(cancellationToken);
             var data = await book
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())
@@ -148,7 +148,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                             .Include(b => b.BookCategory)
                             .ThenInclude(c => c.Category)
                             .Where(b => b.Title.Contains(searchText));
-            var count = query.Count();
+            var count = await query.CountAsync(cancellationToken);
             var data = await query
                              .Paginate(pageNumber, pageSize)
                              .Select(a => a.Map<Entities.Library.Book, Book>())

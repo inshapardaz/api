@@ -6,29 +6,28 @@ using System.Collections.Generic;
 
 namespace Inshapardaz.Api.Renderers.Library
 {
-    public interface IRenderPeriodical
+    public interface IRenderIssue
     {
-        PeriodicalView Render(Periodical source);
+        IssueView Render(Issue source);
     }
 
-    public class PeriodicalRenderer : IRenderPeriodical
+    public class IssueRenderer : IRenderIssue
     {
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
 
-        public PeriodicalRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
+        public IssueRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
         {
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
         }
 
-        public PeriodicalView Render(Periodical source)
+        public IssueView Render(Issue source)
         {
-            var result = source.Map<Periodical, PeriodicalView>();
+            var result = source.Map<Issue, IssueView>();
             var links = new List<LinkView>
             {
-                _linkRenderer.Render("GetPeriodicalById", RelTypes.Self, new { id = source.Id }),
-                _linkRenderer.Render("GetIssues", RelTypes.Issues, new { id = source.Id }),
+                _linkRenderer.Render("GetPeriodicalById", RelTypes.Self, new { id = source.PeriodicalId }),
             };
 
 
@@ -39,10 +38,9 @@ namespace Inshapardaz.Api.Renderers.Library
 
             if (_userHelper.IsWriter)
             {
-                links.Add(_linkRenderer.Render("UpdatePeriodical", RelTypes.Update, new { id = source.Id }));
-                links.Add(_linkRenderer.Render("DeletePeriodical", RelTypes.Delete, new { id = source.Id }));
-                links.Add(_linkRenderer.Render("UpdatePeriodicalImage", RelTypes.ImageUpload, new { id = source.Id }));
-                links.Add(_linkRenderer.Render("CreateIssue", RelTypes.AddIssue, new { id = source.Id }));
+                links.Add(_linkRenderer.Render("UpdateIssue", RelTypes.Update, new { id = source.PeriodicalId, issueId = source.Id }));
+                links.Add(_linkRenderer.Render("DeleteIssue", RelTypes.Delete, new { id = source.PeriodicalId, issueId = source.Id }));
+                links.Add(_linkRenderer.Render("UpdateIssueImage", RelTypes.ImageUpload, new { id = source.PeriodicalId, issueId = source.Id }));
             }
 
             result.Links = links;

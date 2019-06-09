@@ -55,5 +55,7 @@
         internal static string AddFile = "add-file";
 
         public static string Periodicals = "periodicals";
+        internal static string Issues = "issues";
+        internal static string AddIssue = "add-issue";
     }
 }

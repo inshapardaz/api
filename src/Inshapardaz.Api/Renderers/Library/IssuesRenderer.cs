@@ -7,31 +7,29 @@ using Inshapardaz.Domain.Helpers;
 
 namespace Inshapardaz.Api.Renderers.Library
 {
-    public interface IRenderPeriodicals
+    public interface IRenderIssues
     {
-        PageView<PeriodicalView> Render(PageRendererArgs<Periodical> source);
-
-        IEnumerable<PeriodicalView> Render(IEnumerable<Periodical> source);
+        PageView<IssueView> Render(PageRendererArgs<Issue> source);
     }
 
-    public class PeriodicalsRenderer : IRenderPeriodicals
+    public class IssuesRenderer : IRenderIssues
     {
-        private readonly IRenderPeriodical _periodicalRenderer;
+        private readonly IRenderIssue _issueRenderer;
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
 
-        public PeriodicalsRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderPeriodical periodicalRenderer)
+        public IssuesRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderIssue issueRenderer)
         {
-            _periodicalRenderer = periodicalRenderer;
+            _issueRenderer = issueRenderer;
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
         }
 
-        public PageView<PeriodicalView> Render(PageRendererArgs<Periodical> source)
+        public PageView<IssueView> Render(PageRendererArgs<Issue> source)
         {
-            var page = new PageView<PeriodicalView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
+            var page = new PageView<IssueView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
-                Data = source.Page.Data?.Select(x => _periodicalRenderer.Render(x))
+                Data = source.Page.Data?.Select(x => _issueRenderer.Render(x))
             };
 
             var links = new List<LinkView>
@@ -42,7 +40,7 @@ namespace Inshapardaz.Api.Renderers.Library
 
             if (_userHelper.IsWriter)
             {
-                links.Add(_linkRenderer.Render("CreatePeriodical", RelTypes.Create));
+                links.Add(_linkRenderer.Render("CreateIssue", RelTypes.Create));
             }
 
             if (page.CurrentPageIndex < page.PageCount)
@@ -61,12 +59,7 @@ namespace Inshapardaz.Api.Renderers.Library
             return page;
         }
 
-        public IEnumerable<PeriodicalView> Render(IEnumerable<Periodical> source)
-        {
-            return source.Select(x => _periodicalRenderer.Render(x));
-        }
-
-        private object CreateRouteParameters(PageRendererArgs<Periodical> source, int pageNumber, int pageSize)
+        private object CreateRouteParameters(PageRendererArgs<Issue> source, int pageNumber, int pageSize)
         {
             var args = source.RouteArguments ?? new PagedRouteArgs();
             args.PageNumber = pageNumber;

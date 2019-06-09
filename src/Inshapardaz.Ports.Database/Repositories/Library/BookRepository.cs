@@ -170,7 +170,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                         .Include(b => b.Series)
                                         .Include(b => b.BookCategory)
                                         .ThenInclude(c => c.Category)
-                                        .OrderByDescending(b => b.DateUpdated)
+                                        .OrderByDescending(b => b.DateAdded)
                                         .Take(10)
                                         .Select(a => a.Map<Entities.Library.Book, Book>())
                                         .ToListAsync(cancellationToken);

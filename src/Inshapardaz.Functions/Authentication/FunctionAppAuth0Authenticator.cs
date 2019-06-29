@@ -9,7 +9,7 @@ namespace Inshapardaz.Functions.Authentication
 {
     public static class FunctionAppAuth0Authenticator
     {
-        private static readonly Lazy<Auth0Authenticator> Authenticator = new Lazy<Auth0Authenticator>(() => new Auth0Authenticator(Constants.Auth0Domain, new [] { Constants.Audience }));
+        private static readonly Lazy<Auth0Authenticator> Authenticator = new Lazy<Auth0Authenticator>(() => new Auth0Authenticator(ConfigurationSettings.Auth0Domain, new [] { ConfigurationSettings.Audience }));
 
         public static async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> AuthenticateAsync(this HttpRequestMessage request, ILogger log)
         {

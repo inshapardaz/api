@@ -4,8 +4,10 @@
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="automapper" Version="8.1.1" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.5.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.28" />
     <PackageReference Include="Paramore.Brighter.AspNetCore" Version="1.0.13" />
@@ -21,5 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Inshapardaz.Domain\Inshapardaz.Domain.csproj" />
+    <ProjectReference Include="..\Inshapardaz.Ports.Database\Inshapardaz.Ports.Database.csproj" />
   </ItemGroup>
 </Project>

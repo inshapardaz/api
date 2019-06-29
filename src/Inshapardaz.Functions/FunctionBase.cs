@@ -5,11 +5,18 @@ using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Paramore.Brighter;
 
 namespace Inshapardaz.Functions
 {
     public abstract class FunctionBase
     {
+        protected readonly IAmACommandProcessor CommandProcessor;
+
+        public FunctionBase(IAmACommandProcessor commandProcessor)
+        {
+            CommandProcessor = commandProcessor;    
+        }
         protected async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> Authenticate(HttpRequestMessage req, ILogger log) 
         {
             return await req.AuthenticateAsync(log);

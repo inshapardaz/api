@@ -17,6 +17,7 @@ namespace Inshapardaz.Functions
         private readonly IAmACommandProcessor _commandProcessor;
 
         public GetEntry(IAmACommandProcessor commandProcessor)
+            : base(commandProcessor)
         {
             _commandProcessor = commandProcessor;    
         }

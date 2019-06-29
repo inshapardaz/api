@@ -1,12 +1,9 @@
-using System;
-using Inshapardaz.Domain;
 using Inshapardaz.Functions.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using Paramore.Brighter.AspNetCore;
 
 [assembly: FunctionsStartup(typeof(Inshapardaz.Functions.Startup))]
 namespace Inshapardaz.Functions
@@ -17,7 +14,9 @@ namespace Inshapardaz.Functions
         {
             builder.Services.AddHttpClient()
                             .AddRenderers()
-                            .AddBrighterCommand();
+                            .AddBrighterCommand()
+                            .AddDatabase()
+                            .AddMappings();
 
             builder.Services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>()
                             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()

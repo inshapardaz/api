@@ -1,4 +1,5 @@
 using Inshapardaz.Functions.Adapters;
+using Inshapardaz.Functions.Adapters.Library;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inshapardaz.Functions.Configuration
@@ -20,8 +21,8 @@ namespace Inshapardaz.Functions.Configuration
             // services.AddTransient<IRenderJobStatus, JobStatusRenderer>();
             // services.AddTransient<IRenderFile, FileRenderer>();
 
-            // services.AddTransient<IRenderCategory, CategoryRenderer>();
-            // services.AddTransient<IRenderCategories, CategoriesRenderer>();
+            services.AddTransient<IRenderCategory, CategoryRenderer>();
+            services.AddTransient<IRenderCategories, CategoriesRenderer>();
             // services.AddTransient<IRenderAuthors, AuthorsRenderer>();
             // services.AddTransient<IRenderAuthor, AuthorRenderer>();
             // services.AddTransient<IRenderBooks, BooksRenderer>();

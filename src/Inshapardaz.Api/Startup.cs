@@ -38,7 +38,7 @@ namespace Inshapardaz.Api
                     .AddSwagger()
                     .AddCors()
                     .AddApiAuthentication(Settings)
-                    .AddDatabase(CurrentEnvironment, Configuration)
+                    .AddDatabase(Configuration)
                     .AddMappings()
                     .AddMvc();
 

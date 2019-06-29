@@ -16,8 +16,8 @@
 **/node_modules
 **/Staging/*
 **.lock.json
-.vs
 .vscode
+
 .idea
 *.jfm
 *.ncrunchproject

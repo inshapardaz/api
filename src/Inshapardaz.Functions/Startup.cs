@@ -1,3 +1,4 @@
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -20,7 +21,8 @@ namespace Inshapardaz.Functions
 
             builder.Services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>()
                             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-                            .AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+                            .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
+                            .AddTransient<IAuthenticationHelper, AuthenticationHelper>();
         }
     }
 }

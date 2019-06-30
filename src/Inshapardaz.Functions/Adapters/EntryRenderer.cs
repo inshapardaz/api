@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Dictionary;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
@@ -16,6 +17,13 @@ namespace Inshapardaz.Functions.Adapters
 
     public class EntryRenderer : IRenderEntry
     {
+        private readonly IAuthenticationHelper _authenticationHelper;
+
+        public EntryRenderer(IAuthenticationHelper authenticationHelper)
+        {
+            _authenticationHelper = authenticationHelper;
+        }
+        
         public EntryView Render()
         {
             var links = new List<LinkView>

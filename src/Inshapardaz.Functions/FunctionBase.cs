@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace Inshapardaz.Functions
         protected static LinkView SelfLink(string href, string relType = RelTypes.Self) => new LinkView { 
             Method = "GET", 
             Rel = relType, 
-            Href = href
+            Href = href.StartsWith("http") ? href : new Uri(ConfigurationSettings.ApiRoot, $"api/{href}").ToString()
         };
     }
 }

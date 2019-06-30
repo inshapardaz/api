@@ -35,6 +35,6 @@ namespace Inshapardaz.Functions.Library.Categories
             return new OkObjectResult(_categoriesRenderer.Render(request.Result));
         }
 
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("/categories", relType);
+        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("categories", relType);
     }
 }

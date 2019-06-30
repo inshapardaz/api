@@ -25,6 +25,6 @@ namespace Inshapardaz.Functions.Library.Books
             return new OkObjectResult("GET:Latest Books");
         }
 
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("/books/latest", relType);
+        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("books/latest", relType);
     }
 }

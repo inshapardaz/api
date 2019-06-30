@@ -33,6 +33,6 @@ namespace Inshapardaz.Functions.Dictionary
             return new OkObjectResult(result);
         }
 
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("/attributes", relType);
+        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("attributes", relType);
     }
 }

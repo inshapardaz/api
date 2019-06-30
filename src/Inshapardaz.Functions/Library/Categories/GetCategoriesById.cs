@@ -24,6 +24,6 @@ namespace Inshapardaz.Functions.Library.Categories
             return new OkObjectResult($"Get:Category {categoryById}");
         }
 
-        public static LinkView Self(int categoryById, string relType = RelTypes.Self) => SelfLink($"/categories/{categoryById}", relType);
+        public static LinkView Self(int categoryById, string relType = RelTypes.Self) => SelfLink($"categories/{categoryById}", relType);
     }
 }

@@ -29,7 +29,7 @@ namespace Inshapardaz.Functions.Library.Books
             return new OkObjectResult($"GET:Books for Category {categoryId}");
         }
 
-        public static LinkView Self(int categoryById, string relType = RelTypes.Self) => SelfLink($"/categories/{categoryById}/books", relType);
+        public static LinkView Self(int categoryById, string relType = RelTypes.Self) => SelfLink($"categories/{categoryById}/books", relType);
 
     }
 }

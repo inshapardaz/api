@@ -32,6 +32,6 @@ namespace Inshapardaz.Functions
             return new OkObjectResult(result);
         }
 
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("languages", relType);
+        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("languages", relType);
     }
 }

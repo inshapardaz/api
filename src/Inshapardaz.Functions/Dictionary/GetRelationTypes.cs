@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Dictionary;
-using Inshapardaz.Functions.Library;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +32,6 @@ namespace Inshapardaz.Functions.Dictionary
             return new OkObjectResult(result);
         }
 
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("relationships", relType);
+        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("relationships", relType);
     }
 }

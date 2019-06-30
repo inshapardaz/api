@@ -24,6 +24,6 @@ namespace Inshapardaz.Functions.Library.Series
             return new OkObjectResult("GET:Series");
         }
 
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("series", relType);
+        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("series", relType);
     }
 }

@@ -25,6 +25,6 @@ namespace Inshapardaz.Functions.Library.Periodicals
             return new OkObjectResult("GET:Periodicals");
         }
 
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("periodicals", relType);
+        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("periodicals", relType);
     }
 }

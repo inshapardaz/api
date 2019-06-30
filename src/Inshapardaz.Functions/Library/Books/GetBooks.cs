@@ -28,6 +28,6 @@ namespace Inshapardaz.Functions.Library.Books
             // orderBy
             return new OkObjectResult("GET:Books");
         }
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("books", relType);
+        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books", relType);
     }
 }

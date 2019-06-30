@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Views;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -32,9 +31,9 @@ namespace Inshapardaz.Functions.Library.Categories
             var request = new GetCategoriesRequest();
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_categoriesRenderer.Render(request.Result));
+            return new OkObjectResult(_categoriesRenderer.Render(auth?.User, request.Result));
         }
 
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("categories", relType);
+        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("categories", relType);
     }
 }

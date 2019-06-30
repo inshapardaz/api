@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using Inshapardaz.Domain.Entities.Library;
-using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Categories;
 using Inshapardaz.Functions.View.Library;
 using Inshapardaz.Functions.Views;
@@ -10,7 +11,7 @@ namespace Inshapardaz.Functions.Adapters.Library
 {
     public interface IRenderCategories
     {
-        ListView<CategoryView> Render(IEnumerable<Category> categories);
+        ListView<CategoryView> Render(ClaimsPrincipal user, IEnumerable<Category> categories);
     }
 
     public class CategoriesRenderer : IRenderCategories
@@ -22,16 +23,16 @@ namespace Inshapardaz.Functions.Adapters.Library
             _categoryRenderer = categoryRenderer;
         }
 
-        public ListView<CategoryView> Render(IEnumerable<Category> categories)
+        public ListView<CategoryView> Render(ClaimsPrincipal user, IEnumerable<Category> categories)
         {
             var items = categories.Select(g => _categoryRenderer.RenderResult(g));
             var view = new ListView<CategoryView> { Items = items };
-            view.Links.Add(GetCategories.Self(RelTypes.Self));
+            view.Links.Add(GetCategories.Link(RelTypes.Self));
 
-            /*if (_userHelper.IsAdmin)
+            if (user.IsAdministrator())
             {
-                view.Links.Add(_linkRenderer.Render("CreateCategory", RelTypes.Create));
-            }*/
+                view.Links.Add(AddCategory.Link(RelTypes.Create));
+            }
 
             return view;
         }

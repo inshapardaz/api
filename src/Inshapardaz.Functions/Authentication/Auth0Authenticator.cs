@@ -30,8 +30,6 @@ namespace Inshapardaz.Functions.Authentication
 
         public async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> AuthenticateAsync(string token, CancellationToken cancellationToken = new CancellationToken())
         {
-            // Note: ConfigurationManager<T> has an automatic refresh interval of 1 day.
-            //   The config is cached in-between refreshes, so this "asynchronous" call actually completes synchronously unless it needs to refresh.
             var config = await _manager.GetConfigurationAsync(cancellationToken).ConfigureAwait(false);
             _parameters.IssuerSigningKeys = config.SigningKeys;
             var user = _handler.ValidateToken(token, _parameters, out var validatedToken);

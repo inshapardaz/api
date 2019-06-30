@@ -32,11 +32,11 @@ namespace Inshapardaz.Functions
                     log.LogInformation($"Claim `{claim.Type}` is `{claim.Value}`");
             }
 
-            var command = new GetEntryRequest();
+            var command = new GetEntryRequest(auth?.User);
             await _commandProcessor.SendAsync(command);
             return new OkObjectResult(command.Result);
         }
 
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("entry", relType);
+        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("entry", relType);
     }
 }

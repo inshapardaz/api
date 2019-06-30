@@ -24,6 +24,6 @@ namespace Inshapardaz.Functions.Library.Authors
             return new OkObjectResult("GET:Authors");
         }
 
-        public static LinkView Self(string relType = RelTypes.Self) => SelfLink("authors", relType);
+        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("authors", relType);
     }
 }

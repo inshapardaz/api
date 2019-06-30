@@ -8,7 +8,8 @@ namespace Inshapardaz.Functions.Authentication
 {
     public static class AuthenticationHelper
     {
-        public static bool IsAuthenticated(this ClaimsPrincipal principal) => principal.Identity.IsAuthenticated;
+        public static bool IsAuthenticated(this ClaimsPrincipal principal) 
+            => principal != null && principal.Identity != null && principal.Identity.IsAuthenticated;
 
         public static bool IsAdministrator(this ClaimsPrincipal principal) 
             => IsAuthenticated(principal) && GetRoles(principal).Contains("admin");
@@ -21,25 +22,30 @@ namespace Inshapardaz.Functions.Authentication
 
         public static Guid GetUserId(this ClaimsPrincipal principal)
         {
-            var nameIdentifier = principal.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-            if (nameIdentifier != null)
+            if (principal != null)
             {
-                return Guid.Parse(nameIdentifier.Replace("auth0|", "00000000"));
+                var nameIdentifier = principal.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+                if (nameIdentifier != null)
+                {
+                    return Guid.Parse(nameIdentifier.Replace("auth0|", "00000000"));
+                }
             }
             
             return Guid.Empty;
         }
 
         private static IEnumerable<string> GetRoles(ClaimsPrincipal principal)
-
         {
-            var rolesIdentifierValue = principal.Claims.FirstOrDefault(c => c.Type == "https://api.inshapardaz.org/user_authorization")?.Value;
-
-            if (!string.IsNullOrWhiteSpace(rolesIdentifierValue))
+            if (principal != null)
             {
-                var authData = JsonConvert.DeserializeObject<UserAuthenticationData>(rolesIdentifierValue);
+                var rolesIdentifierValue = principal.Claims.FirstOrDefault(c => c.Type == "https://api.inshapardaz.org/user_authorization")?.Value;
 
-                return authData.Roles;
+                if (!string.IsNullOrWhiteSpace(rolesIdentifierValue))
+                {
+                    var authData = JsonConvert.DeserializeObject<UserAuthenticationData>(rolesIdentifierValue);
+
+                    return authData.Roles;
+                }
             }
 
             return Enumerable.Empty<string>();

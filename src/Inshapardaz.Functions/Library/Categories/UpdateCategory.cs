@@ -7,6 +7,7 @@ using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Extentions;
 using Inshapardaz.Functions.View.Library;
+using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -36,7 +37,7 @@ namespace Inshapardaz.Functions.Library.Categories
             var request = new UpdateCategoryRequest(category.Map<CategoryView, Category>());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _categoryRenderer.RenderResult(request.Result.Category);
+            var renderResult = _categoryRenderer.RenderResult(auth.User, request.Result.Category);
 
             if (request.Result.HasAddedNew)
             {
@@ -47,5 +48,7 @@ namespace Inshapardaz.Functions.Library.Categories
                 return new OkObjectResult(renderResult);
             }
         }
+
+        public static LinkView Link(int categoryId, string relType = RelTypes.Self) => SelfLink($"categories/{categoryId}", relType, "PUT");
     }
 }

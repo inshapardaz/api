@@ -1,6 +1,9 @@
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Library;
+using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Views;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -11,17 +14,26 @@ namespace Inshapardaz.Functions.Library.Categories
 {
     public class GetCategoryById : FunctionBase
     {
-        public GetCategoryById(IAmACommandProcessor commandProcessor) 
+        private readonly IRenderCategory _categoryRenderer;
+
+        public GetCategoryById(IAmACommandProcessor commandProcessor, IRenderCategory categoryRenderer)
         : base(commandProcessor)
         {
+            _categoryRenderer = categoryRenderer;
         }
 
         [FunctionName("GetCategoryById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories/{categoryById}")] HttpRequest req,
-            ILogger log, int categoryById)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories/{categoryById}")] HttpRequestMessage req,
+            ILogger log, int categoryById, CancellationToken token)
         {
-            return new OkObjectResult($"Get:Category {categoryById}");
+
+            var auth = await TryAuthenticate(req, log);
+
+            var request = new GetCategoryByIdRequest(categoryById);
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+            return new OkObjectResult(_categoryRenderer.RenderResult(auth?.User, request.Result));
         }
 
         public static LinkView Self(int categoryById, string relType = RelTypes.Self) => SelfLink($"categories/{categoryById}", relType);

@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
+using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -28,5 +29,7 @@ namespace Inshapardaz.Functions.Library.Categories
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }
+
+        public static LinkView Link(int categoryId, string relType = RelTypes.Self) => SelfLink($"categories/{categoryId}", relType, "DELETE");
     }
 }

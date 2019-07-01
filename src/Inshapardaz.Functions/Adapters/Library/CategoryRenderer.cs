@@ -11,12 +11,12 @@ namespace Inshapardaz.Functions.Adapters.Library
 {
     public interface IRenderCategory
     {
-        CategoryView RenderResult(ClaimsPrincipal principal, Category category);
+        CategoryView Render(ClaimsPrincipal principal, Category category);
     }
 
     public class CategoryRenderer : IRenderCategory
     {
-        public CategoryView RenderResult(ClaimsPrincipal principal, Category category)
+        public CategoryView Render(ClaimsPrincipal principal, Category category)
         {
             var view = category.Map<Category, CategoryView>();
 

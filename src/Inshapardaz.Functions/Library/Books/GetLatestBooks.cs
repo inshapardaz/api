@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +12,8 @@ namespace Inshapardaz.Functions.Library.Books
 {
     public class GetLatestBooks : FunctionBase
     {
-        public GetLatestBooks(IAmACommandProcessor commandProcessor) 
-        : base(commandProcessor)
+        public GetLatestBooks(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
+        : base(commandProcessor, authenticator)
         {
         }
 

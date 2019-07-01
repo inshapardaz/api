@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +12,8 @@ namespace Inshapardaz.Functions.Library.Authors
 {
     public class GetAuthors : FunctionBase
     {
-        public GetAuthors(IAmACommandProcessor commandProcessor) 
-        : base(commandProcessor)
+        public GetAuthors(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
+        : base(commandProcessor, authenticator)
         {
         }
 

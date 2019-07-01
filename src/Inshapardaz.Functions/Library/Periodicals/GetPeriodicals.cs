@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extentions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -12,8 +13,8 @@ namespace Inshapardaz.Functions.Library.Periodicals
 {
     public class GetPeriodicals : FunctionBase
     {
-        public GetPeriodicals(IAmACommandProcessor commandProcessor) 
-        : base(commandProcessor)
+        public GetPeriodicals(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
+        : base(commandProcessor, authenticator)
         {
         }
 

@@ -7,23 +7,21 @@ using Paramore.Brighter;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Commands;
 using System.Net.Http;
+using Inshapardaz.Functions.Authentication;
 
 namespace Inshapardaz.Functions
 {
     public class GetEntry : FunctionBase
     {
-        private readonly IAmACommandProcessor _commandProcessor;
-
-        public GetEntry(IAmACommandProcessor commandProcessor)
-            : base(commandProcessor)
-        {
-            _commandProcessor = commandProcessor;    
+        public GetEntry(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator)
+            : base(commandProcessor, authenticator)
+        {   
         }
 
         [FunctionName("GetEntry")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "entry")] HttpRequestMessage req, ILogger log)
         {
-            var auth = await base.TryAuthenticate(req, log);
+            var auth = await TryAuthenticate(req, log);
             
             if (auth.HasValue)
             {
@@ -33,7 +31,7 @@ namespace Inshapardaz.Functions
             }
 
             var command = new GetEntryRequest(auth?.User);
-            await _commandProcessor.SendAsync(command);
+            await CommandProcessor.SendAsync(command);
             return new OkObjectResult(command.Result);
         }
 

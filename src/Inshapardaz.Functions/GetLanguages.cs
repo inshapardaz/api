@@ -10,13 +10,14 @@ using Inshapardaz.Domain.Entities;
 using System.Linq;
 using System.Collections.Generic;
 using Paramore.Brighter;
+using Inshapardaz.Functions.Authentication;
 
 namespace Inshapardaz.Functions
 {
     public class GetLanguages : FunctionBase
     {
-        public GetLanguages(IAmACommandProcessor commandProcessor)
-            : base(commandProcessor)
+        public GetLanguages(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator)
+            : base(commandProcessor, authenticator)
         {
         }
         

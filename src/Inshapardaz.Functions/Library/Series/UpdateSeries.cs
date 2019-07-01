@@ -1,22 +1,54 @@
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Ports.Library;
+using Inshapardaz.Functions.Adapters.Library;
+using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extentions;
+using Inshapardaz.Functions.View.Library;
+using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Series
 {
-    public static class UpdateSeries
+    public class UpdateSeries : FunctionBase
     {
-        [FunctionName("UpdateSeries")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{id}")] HttpRequest req,
-            ILogger log, int id)
+        private readonly IRenderSeries _seriesRenderer;
+        public UpdateSeries(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderSeries seriesRenderer)
+        : base(commandProcessor, authenticator)
         {
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //var input = JsonConvert.DeserializeObject<TodoCreateModel>(requestBody);
-            return new OkObjectResult($"PUT:Series {id}");
+            _seriesRenderer = seriesRenderer;
         }
+
+        [FunctionName("UpdateSeries")]
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{seriesId}")] HttpRequestMessage req,
+            ILogger log, int seriesId, CancellationToken token)
+        {
+            var auth = await AuthenticateAsWriter(req, log);
+            var series = await ReadBody<SeriesView>(req);
+            series.Id = seriesId;
+            var request = new UpdateSeriesRequest(series.Map<SeriesView, Domain.Entities.Library.Series>());
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+            var renderResult = _seriesRenderer.Render(auth.User, request.Result.Series);
+
+            if (request.Result.HasAddedNew)
+            {
+                return new CreatedResult(renderResult.Links.Self(), renderResult);
+            }
+            else
+            {
+                return new OkObjectResult(renderResult);
+            }
+        }
+
+        public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}", relType, "PUT");
     }
 }

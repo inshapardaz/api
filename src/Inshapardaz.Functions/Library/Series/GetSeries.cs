@@ -1,6 +1,10 @@
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Library;
+using Inshapardaz.Functions.Adapters.Library;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -11,17 +15,24 @@ namespace Inshapardaz.Functions.Library.Series
 {
     public class GetSeries : FunctionBase
     {
-        public GetSeries(IAmACommandProcessor commandProcessor) 
-        : base(commandProcessor)
+        private readonly IRenderSeriesList _seriesListRenderer;
+        public GetSeries(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderSeriesList seriesListRenderer)
+        : base(commandProcessor, authenticator)
         {
+            _seriesListRenderer = seriesListRenderer;
         }
 
         [FunctionName("GetSeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series")] HttpRequest req,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series")] HttpRequestMessage req,
+            ILogger log, CancellationToken token)
         {
-            return new OkObjectResult("GET:Series");
+            var auth = await TryAuthenticate(req, log);
+
+            var request = new GetSeriesRequest();
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+            return new OkObjectResult(_seriesListRenderer.Render(auth?.User, request.Result));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("series", relType);

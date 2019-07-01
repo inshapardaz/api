@@ -85,14 +85,14 @@ namespace Inshapardaz.Ports.Database
                 .ForMember(d => d.SeriesCategories, o => o.Ignore())
                 .ReverseMap();
 
-            // CreateMap<Series, Entities.Library.Series>()
-            //     .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
-            //     .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
-            //     .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
-            //     .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
-            //     .ForMember(d => d.SeriesCategory, o => o.Ignore())
-            //     .ForMember(d => d.Books, o => o.Ignore())
-            //     .ReverseMap();
+            CreateMap<Series, Entities.Library.Series>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
+                .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
+                .ForMember(d => d.SeriesCategory, o => o.Ignore())
+                .ForMember(d => d.Books, o => o.Ignore())
+                .ReverseMap();
 
 
             // CreateMap<Entities.Library.BookCategory, Category>()

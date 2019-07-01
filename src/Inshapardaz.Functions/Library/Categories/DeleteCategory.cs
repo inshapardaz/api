@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -13,8 +14,8 @@ namespace Inshapardaz.Functions.Library.Categories
 {
     public class DeleteCategory : FunctionBase
     {
-        public DeleteCategory(IAmACommandProcessor commandProcessor) 
-        : base(commandProcessor)
+        public DeleteCategory(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
+        : base(commandProcessor, authenticator)
         {
         }
 

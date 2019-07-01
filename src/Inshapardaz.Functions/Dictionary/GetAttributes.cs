@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Dictionary;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -16,8 +17,8 @@ namespace Inshapardaz.Functions.Dictionary
 {
     public class GetAttributes : FunctionBase
     {
-        public GetAttributes(IAmACommandProcessor commandProcessor) 
-        : base(commandProcessor)
+        public GetAttributes(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
+        : base(commandProcessor, authenticator)
         {
         }
 

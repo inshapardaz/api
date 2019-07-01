@@ -30,8 +30,8 @@ namespace Inshapardaz.Functions.Configuration
             // services.AddTransient<IRenderChapters, ChaptersRenderer>();
             // services.AddTransient<IRenderChapter, ChapterRenderer>();
             // services.AddTransient<IRenderChapterContent, ChapterContentRenderer>();
-            // services.AddTransient<IRenderSeries, SeriesRenderer>();
-            // services.AddTransient<IRenderSeriesList, SeriesListRenderer>();
+            services.AddTransient<IRenderSeries, SeriesRenderer>();
+            services.AddTransient<IRenderSeriesList, SeriesListRenderer>();
             // services.AddTransient<IRenderBookFiles, BookFilesRenderer>();
             // services.AddTransient<IRenderBookFile, BookFileRenderer>();
             // services.AddTransient<IRenderPeriodical, PeriodicalRenderer>();

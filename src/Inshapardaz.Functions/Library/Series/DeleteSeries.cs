@@ -1,20 +1,36 @@
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Inshapardaz.Domain.Ports.Library;
+using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Series
 {
-    public static class DeleteSeries
+    public class DeleteSeries : FunctionBase
     {
-        [FunctionName("DeleteSeries")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "series/{id}")] HttpRequest req,
-            ILogger log, int id)
+        public DeleteSeries(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
+        : base(commandProcessor, authenticator)
         {
-            return new OkObjectResult($"DELETE:Series {id}");
         }
+
+        [FunctionName("DeleteSeries")]
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "series/{seriesId}")] HttpRequestMessage req,
+            ILogger log, int seriesId, CancellationToken token)
+        {
+            var auth = await AuthenticateAsWriter(req, log);
+
+             var request = new DeleteSeriesRequest(seriesId);
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            return new NoContentResult();
+        }
+
+        public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}", relType, "DELETE");
     }
 }

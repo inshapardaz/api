@@ -16,18 +16,21 @@ namespace Inshapardaz.Functions
     {
         protected readonly IAmACommandProcessor CommandProcessor;
 
-        public FunctionBase(IAmACommandProcessor commandProcessor)
+        protected readonly IFunctionAppAuthenticator Authenticator;
+
+        public FunctionBase(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator)
         {
-            CommandProcessor = commandProcessor;    
+            CommandProcessor = commandProcessor;
+            Authenticator = authenticator;
         }
         protected async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> Authenticate(HttpRequestMessage req, ILogger log) 
         {
-            return await req.AuthenticateAsync(log);
+            return await Authenticator.AuthenticateAsync(req, log);
         }
 
         protected async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> AuthenticateAsWriter(HttpRequestMessage req, ILogger log) 
         {
-            var result =  await req.AuthenticateAsync(log);
+            var result =  await Authenticator.AuthenticateAsync(req, log);
             result.User.IsWriter();
             return result;
         }
@@ -36,7 +39,7 @@ namespace Inshapardaz.Functions
         {
             try
             {
-                return await req.AuthenticateAsync(log);
+                return await Authenticator.AuthenticateAsync(req, log);
             }
             catch(AuthenticationExpectedException)
             {

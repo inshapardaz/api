@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Adapters.Library;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -16,8 +17,8 @@ namespace Inshapardaz.Functions.Library.Categories
     {
         private readonly IRenderCategory _categoryRenderer;
 
-        public GetCategoryById(IAmACommandProcessor commandProcessor, IRenderCategory categoryRenderer)
-        : base(commandProcessor)
+        public GetCategoryById(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderCategory categoryRenderer)
+        : base(commandProcessor, authenticator)
         {
             _categoryRenderer = categoryRenderer;
         }
@@ -33,7 +34,7 @@ namespace Inshapardaz.Functions.Library.Categories
             var request = new GetCategoryByIdRequest(categoryById);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_categoryRenderer.RenderResult(auth?.User, request.Result));
+            return new OkObjectResult(_categoryRenderer.Render(auth?.User, request.Result));
         }
 
         public static LinkView Self(int categoryById, string relType = RelTypes.Self) => SelfLink($"categories/{categoryById}", relType);

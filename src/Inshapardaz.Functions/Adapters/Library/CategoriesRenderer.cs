@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Adapters.Library
 
         public ListView<CategoryView> Render(ClaimsPrincipal user, IEnumerable<Category> categories)
         {
-            var items = categories.Select(g => _categoryRenderer.RenderResult(user, g));
+            var items = categories.Select(g => _categoryRenderer.Render(user, g));
             var view = new ListView<CategoryView> { Items = items };
             view.Links.Add(GetCategories.Link(RelTypes.Self));
 

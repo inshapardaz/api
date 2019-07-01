@@ -5,6 +5,7 @@ using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Adapters.Library;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extentions;
 using Inshapardaz.Functions.View.Library;
 using Inshapardaz.Functions.Views;
@@ -20,8 +21,8 @@ namespace Inshapardaz.Functions.Library.Categories
     {
         private readonly IRenderCategory _renderCategory;
 
-        public AddCategory(IAmACommandProcessor commandProcessor, IRenderCategory renderCategory)
-        : base(commandProcessor)
+        public AddCategory(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderCategory renderCategory)
+        : base(commandProcessor, authenticator)
         {
             _renderCategory = renderCategory;
         }
@@ -37,7 +38,7 @@ namespace Inshapardaz.Functions.Library.Categories
             var request = new AddCategoryRequest(category.Map<CategoryView, Category>());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _renderCategory.RenderResult(auth.User, request.Result);
+            var renderResult = _renderCategory.Render(auth.User, request.Result);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 

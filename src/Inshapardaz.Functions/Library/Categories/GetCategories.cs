@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Adapters.Library;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -15,8 +16,8 @@ namespace Inshapardaz.Functions.Library.Categories
     public class GetCategories : FunctionBase
     {
         private readonly IRenderCategories _categoriesRenderer;
-        public GetCategories(IAmACommandProcessor commandProcessor, IRenderCategories categoriesRenderer)
-        : base(commandProcessor)
+        public GetCategories(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderCategories categoriesRenderer)
+        : base(commandProcessor, authenticator)
         {
             _categoriesRenderer = categoriesRenderer;
         }

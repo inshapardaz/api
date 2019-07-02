@@ -8,6 +8,7 @@ namespace Inshapardaz.Functions
         public static string Audience => GetEnvironmentVariable("Authentication.Audience");
         public static string DatabaseConnectionString => GetEnvironmentVariable("DefaultDatabase");
 
+        public static string FileStorageConnectionString => GetEnvironmentVariable("FileStorageConnectionString");
         public static Uri ApiRoot => new Uri(GetEnvironmentVariable("API.Root"));
 
         private static string GetEnvironmentVariable(string name)

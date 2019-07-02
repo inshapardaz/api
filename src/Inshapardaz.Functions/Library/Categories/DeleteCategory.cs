@@ -1,9 +1,9 @@
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -21,7 +21,7 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("DeleteCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "categories/{id}")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "categories/{id}")] HttpRequest req,
             ILogger log, int id, CancellationToken token)
         {
             var auth = await AuthenticateAsWriter(req, log);

@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Functions.Extentions;
+﻿using Inshapardaz.Functions.Extensions;
 
 namespace Inshapardaz.Functions.Adapters
 {
@@ -6,17 +6,17 @@ namespace Inshapardaz.Functions.Adapters
     {
         public string Render<T>(string source)
         {
-            return EnumExtentions.GetEnumDescription<T>(source);
+            return EnumExtensions.GetEnumDescription<T>(source);
         }
 
         public string Render<T>(T source)
         {
-            return EnumExtentions.GetEnumDescription<T>(source);
+            return EnumExtensions.GetEnumDescription<T>(source);
         }
 
         public string RenderFlags<T>(T source)
         {
-            return EnumExtentions.GetFlagDescription<T>(source);
+            return EnumExtensions.GetFlagDescription<T>(source);
         }
     }
 }

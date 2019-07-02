@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Commands;
-using System.Net.Http;
 using Inshapardaz.Functions.Authentication;
+using Microsoft.AspNetCore.Http;
 
 namespace Inshapardaz.Functions
 {
@@ -19,7 +19,7 @@ namespace Inshapardaz.Functions
         }
 
         [FunctionName("GetEntry")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "entry")] HttpRequestMessage req, ILogger log)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "entry")] HttpRequest req, ILogger log)
         {
             var auth = await TryAuthenticate(req, log);
             

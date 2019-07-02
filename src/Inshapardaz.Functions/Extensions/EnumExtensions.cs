@@ -3,9 +3,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
-namespace Inshapardaz.Functions.Extentions
+namespace Inshapardaz.Functions.Extensions
 {
-    public static class EnumExtentions
+    public static class EnumExtensions
     {
 
         public static string GetEnumDescription<T>(string value)
@@ -46,16 +46,15 @@ namespace Inshapardaz.Functions.Extentions
 
         public static string GetFlagDescription<T>(T value)
         {
-            var vals = value.ToString().Split(',');
+            var values = value.ToString().Split(',');
             var retval = string.Empty;
-            foreach (var item in vals)
+            foreach (var item in values)
             {
                 var gtype = (T)Enum.Parse(typeof(T), item);
-                retval += EnumExtentions.GetEnumDescription<T>(gtype.ToString()) + ",";
+                retval += EnumExtensions.GetEnumDescription<T>(gtype.ToString()) + ",";
             }
 
-            retval.Trim(',', ' ');
-            return retval;
+            return retval.Trim(',', ' ');
         }
 
         public static string ToDescription<T>(this T value)

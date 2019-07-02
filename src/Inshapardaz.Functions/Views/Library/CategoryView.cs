@@ -1,6 +1,4 @@
-﻿using Inshapardaz.Functions.Views;
-
-namespace Inshapardaz.Functions.View.Library
+﻿namespace Inshapardaz.Functions.Views.Library
 {
     public class CategoryView : ViewWithLinks
     {

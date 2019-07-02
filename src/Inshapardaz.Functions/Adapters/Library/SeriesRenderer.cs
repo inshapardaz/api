@@ -4,8 +4,8 @@ using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Series;
-using Inshapardaz.Functions.View.Library;
 using Inshapardaz.Functions.Views;
+using Inshapardaz.Functions.Views.Library;
 
 namespace Inshapardaz.Functions.Adapters.Library
 {

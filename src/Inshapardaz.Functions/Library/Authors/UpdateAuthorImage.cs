@@ -1,16 +1,24 @@
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Authors
 {
-    public static class UpdateAuthorImage
+    public class UpdateAuthorImage : FunctionBase
     {
+        public UpdateAuthorImage(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
+        : base(commandProcessor, authenticator)
+        {
+        }
+
         [FunctionName("UpdateAuthorImage")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{id}/image")] HttpRequest req,
             ILogger log, int id)
         {
@@ -18,5 +26,7 @@ namespace Inshapardaz.Functions.Library.Authors
             //var input = JsonConvert.DeserializeObject<TodoCreateModel>(requestBody);
             return new OkObjectResult($"PUT:Author {id} Image");
         }
+
+        public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}/image", relType, "PUT");
     }
 }

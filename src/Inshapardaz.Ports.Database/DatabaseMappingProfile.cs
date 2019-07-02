@@ -98,13 +98,13 @@ namespace Inshapardaz.Ports.Database
             // CreateMap<Entities.Library.BookCategory, Category>()
             //      .ConvertUsing(bc => bc.Category.Map<Entities.Library.Category, Category>());
 
-            // CreateMap<Author, Entities.Library.Author>()
-            //     .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
-            //     .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
-            //     .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
-            //     .ForMember(d => d.Books, o => o.Ignore())
-            //     .ForMember(d => d.Articles, o => o.Ignore())
-            //     .ReverseMap();
+            CreateMap<Author, Entities.Library.Author>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+                .ForMember(d => d.ImageId, o => o.MapFrom(s => s.ImageId))
+                .ForMember(d => d.Books, o => o.Ignore())
+                .ForMember(d => d.Articles, o => o.Ignore())
+                .ReverseMap();
 
             // CreateMap<Book, Entities.Library.Book>()
             //     .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))

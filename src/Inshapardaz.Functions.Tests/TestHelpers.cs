@@ -5,16 +5,18 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Inshapardaz.Functions.Tests
 {
     public class TestHelpers
     {
-        public static HttpRequestMessage CreateGetRequest(string hostName = null, Dictionary<string, string> queryString = null)
+        public static HttpRequest CreateGetRequest(string hostName = null, Dictionary<string, string> queryString = null)
         {
-            var requestPath = string.IsNullOrWhiteSpace(hostName) ? "https://localhost" : hostName;
+            return null;
+            /*var requestPath = string.IsNullOrWhiteSpace(hostName) ? "https://localhost" : hostName;
             requestPath += queryString == null ? string.Empty : $"?{string.Join("&", queryString.Select(kvp => $"{kvp.Key}={kvp.Value}"))}";
-            var request = new HttpRequestMessage
+            var request = new HttpRequest
             {
                 Method = HttpMethod.Get,
                 RequestUri = new Uri(requestPath)
@@ -22,7 +24,7 @@ namespace Inshapardaz.Functions.Tests
 
             //request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
 
-            return request;
+            return request;*/
         }
 
         public static HttpRequestMessage CreatePostRequest<T>(T obj, string hostName = null)

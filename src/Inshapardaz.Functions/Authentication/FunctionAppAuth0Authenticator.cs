@@ -1,7 +1,8 @@
 using System;
-using System.Net.Http;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
@@ -9,14 +10,14 @@ namespace Inshapardaz.Functions.Authentication
 {
     public interface IFunctionAppAuthenticator
     {
-        Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> AuthenticateAsync(HttpRequestMessage request, ILogger log);
+        Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> AuthenticateAsync(HttpRequest request, ILogger log);
     }
 
     public class FunctionAppAuth0Authenticator : IFunctionAppAuthenticator
     {
         private static readonly Lazy<Auth0Authenticator> Authenticator = new Lazy<Auth0Authenticator>(() => new Auth0Authenticator(ConfigurationSettings.Auth0Domain, new [] { ConfigurationSettings.Audience }));
 
-        public async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> AuthenticateAsync(HttpRequestMessage request, ILogger log)
+        public async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> AuthenticateAsync(HttpRequest request, ILogger log)
         {
             var authenticator = Authenticator.Value;
             try

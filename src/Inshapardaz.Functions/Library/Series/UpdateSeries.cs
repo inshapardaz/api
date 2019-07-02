@@ -1,13 +1,12 @@
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
-using Inshapardaz.Functions.Extentions;
-using Inshapardaz.Functions.View.Library;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
+using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -28,7 +27,7 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("UpdateSeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{seriesId}")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{seriesId}")] HttpRequest req,
             ILogger log, int seriesId, CancellationToken token)
         {
             var auth = await AuthenticateAsWriter(req, log);

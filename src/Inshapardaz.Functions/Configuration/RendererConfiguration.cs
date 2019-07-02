@@ -23,8 +23,8 @@ namespace Inshapardaz.Functions.Configuration
 
             services.AddTransient<IRenderCategory, CategoryRenderer>();
             services.AddTransient<IRenderCategories, CategoriesRenderer>();
-            // services.AddTransient<IRenderAuthors, AuthorsRenderer>();
-            // services.AddTransient<IRenderAuthor, AuthorRenderer>();
+            services.AddTransient<IRenderAuthors, AuthorsRenderer>();
+            services.AddTransient<IRenderAuthor, AuthorRenderer>();
             // services.AddTransient<IRenderBooks, BooksRenderer>();
             // services.AddTransient<IRenderBook, BookRenderer>();
             // services.AddTransient<IRenderChapters, ChaptersRenderer>();

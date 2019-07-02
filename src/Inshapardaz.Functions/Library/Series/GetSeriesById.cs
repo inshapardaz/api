@@ -1,10 +1,10 @@
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("GetSeriesById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series/{id}")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series/{id}")] HttpRequest req,
             ILogger log, int id, CancellationToken token)
         {
             var auth = await TryAuthenticate(req, log);

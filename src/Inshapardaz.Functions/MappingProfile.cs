@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions
                 DateCreated = source.DateCreated,
             };
 
-        public static File Map(this FileView source) 
+        public static Fie Map(this FileView source) 
             =>  new File
             {
                 Id = source.Id,

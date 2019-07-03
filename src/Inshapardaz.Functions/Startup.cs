@@ -1,6 +1,7 @@
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Configuration;
+using Inshapardaz.Functions.Library.Categories;
 using Inshapardaz.Storage;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
@@ -21,8 +22,12 @@ namespace Inshapardaz.Functions
             builder.Services.AddTransient<IFunctionAppAuthenticator, FunctionAppAuth0Authenticator>()
                    .AddTransient<IFileStorage>(sp => new FileStorage(ConfigurationSettings.FileStorageConnectionString));
 
-            builder.Services.AddTransient<GetEntry>();
-
+            builder.Services.AddTransient<GetEntry>()
+                   .AddTransient<GetCategories>()
+                   .AddTransient<AddCategory>()
+                   .AddTransient<GetCategoryById>()
+                   .AddTransient<UpdateCategory>()
+                   .AddTransient<DeleteCategory>();
         }
     }
 }

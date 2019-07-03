@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,12 +20,12 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
         public async Task<Category> AddCategory(Category category, CancellationToken cancellationToken)
         {
-            var item = category.Map<Category, Entities.Library.Category>();
+            var item = category.Map();
             _databaseContext.Category.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
-            return item.Map<Entities.Library.Category, Category>();
+            return item.Map();
         }
 
         public async Task UpdateCategory(Category category, CancellationToken cancellationToken)
@@ -62,7 +60,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         public async Task<IEnumerable<Category>> GetCategory(CancellationToken cancellationToken)
         {
             return await _databaseContext.Category
-                                         .Select(t => t.Map<Entities.Library.Category, Category>())
+                                         .Select(t => t.Map())
                                          .ToListAsync(cancellationToken);
         }
 
@@ -71,7 +69,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var category = await _databaseContext.Category
                                                     .SingleOrDefaultAsync(t => t.Id == categoryId,
                                                                           cancellationToken);
-            return category.Map<Entities.Library.Category, Category>();
+            return category.Map();
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Inshapardaz.Functions.Adapters.Library
             
             var links = new List<LinkView>
             {
-                source.NavigationLinkGenerator(page.CurrentPageIndex, page.PageSize, RelTypes.Self)
+                source.LinkFunc(page.CurrentPageIndex, page.PageSize, RelTypes.Self)
             };
 
             if (principal.IsWriter())
@@ -43,24 +43,16 @@ namespace Inshapardaz.Functions.Adapters.Library
 
             if (page.CurrentPageIndex < page.PageCount)
             {
-                links.Add(source.NavigationLinkGenerator(page.CurrentPageIndex + 1, page.PageSize, RelTypes.Next));
+                links.Add(source.LinkFunc(page.CurrentPageIndex + 1, page.PageSize, RelTypes.Next));
             }
 
             if (page.PageCount > 1 && page.CurrentPageIndex > 1)
             {
-                links.Add(source.NavigationLinkGenerator(page.CurrentPageIndex - 1, page.PageSize, RelTypes.Previous));
+                links.Add(source.LinkFunc(page.CurrentPageIndex - 1, page.PageSize, RelTypes.Previous));
             }
 
             page.Links = links;
             return page;
-        }
-
-        private PagedRouteArgs CreateRouteParameters(PageRendererArgs<Author> source, int pageNumber, int pageSize)
-        {
-            var args = source.RouteArguments ?? new PagedRouteArgs();
-            args.PageNumber = pageNumber;
-            args.PageSize = pageSize;
-            return args;
         }
     }
 }

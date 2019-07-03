@@ -32,8 +32,7 @@ namespace Inshapardaz.Functions.Adapters
                                 GetLanguages.Link(RelTypes.Languages),
                                 GetAttributes.Link(RelTypes.Attributes),
                                 GetRelationTypes.Link(RelTypes.RelationshipTypes),
-                                //_linkRenderer.Render("GetDictionaries", RelTypes.Dictionaries),
-                                //_linkRenderer.Render("GetWordAlternatives", RelTypes.Thesaurus, new { word = "word" }),
+                                GetDictionaries.Link(RelTypes.Dictionaries),
                                 GetLatestBooks.Link(RelTypes.Latest)
         };
             if (user.IsAuthenticated())

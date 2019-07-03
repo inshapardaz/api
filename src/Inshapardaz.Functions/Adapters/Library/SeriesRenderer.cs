@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Adapters.Library
     {
         public SeriesView Render(ClaimsPrincipal principal, Series series)
         {
-            var view = series.Map<Series, SeriesView>();
+            var view = series.Map();
 
             view.Links.Add(GetSeriesById.Link(series.Id, RelTypes.Self));
             view.Links.Add(GetBooksBySeries.Link(series.Id, RelTypes.Books));

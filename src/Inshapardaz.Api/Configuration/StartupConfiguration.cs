@@ -185,7 +185,6 @@ namespace Inshapardaz.Api.Configuration
             Mapper.Initialize(c =>
                 {
                     c.AddProfile(new MappingProfile());
-                    c.AddProfile(new DatabaseMappingProfile());
                 }
             );
             Mapper.AssertConfigurationIsValid();

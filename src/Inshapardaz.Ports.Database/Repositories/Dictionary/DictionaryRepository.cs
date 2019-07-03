@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Dictionary;
-using Inshapardaz.Ports.Database.Entities.Dictionary;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Ports.Database.Repositories.Dictionary
@@ -22,11 +20,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
 
         public async Task<Domain.Entities.Dictionary.Dictionary> AddDictionary(Domain.Entities.Dictionary.Dictionary dictionary, CancellationToken cancellationToken)
         {
-            var entity = dictionary.Map<Domain.Entities.Dictionary.Dictionary, Entities.Dictionary.Dictionary>();
+            var entity = dictionary.Map();
             await _database.Dictionary.AddAsync(entity, cancellationToken);
             await _database.SaveChangesAsync(cancellationToken);
 
-            return entity.Map<Entities.Dictionary.Dictionary, Domain.Entities.Dictionary.Dictionary>();
+            return entity.Map();
         }
 
         public async Task UpdateDictionary(int dictionaryId, Domain.Entities.Dictionary.Dictionary dictionary, CancellationToken cancellationToken)
@@ -57,7 +55,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
         {
             return await _database.Dictionary
                                   .Include(d => d.Downloads)
-                                  .Select(d => d.Map<Entities.Dictionary.Dictionary, Domain.Entities.Dictionary.Dictionary>())
+                                  .Select(d => d.Map())
                                   .ToListAsync(cancellationToken);
         }
 
@@ -66,7 +64,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
             return await _database.Dictionary
                                   .Include(d => d.Downloads)
                                   .Where(d => d.IsPublic)
-                                  .Select(d => d.Map<Entities.Dictionary.Dictionary, Domain.Entities.Dictionary.Dictionary>())
+                                  .Select(d => d.Map())
                                   .ToListAsync(cancellationToken);
         }
 
@@ -75,7 +73,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
             return await _database.Dictionary
                                   .Include(d => d.Downloads)
                                   .Where(d =>  d.UserId == userId || d.IsPublic)
-                                  .Select(d => d.Map<Entities.Dictionary.Dictionary, Domain.Entities.Dictionary.Dictionary>())
+                                  .Select(d => d.Map())
                                   .ToListAsync(cancellationToken);
         }
 
@@ -83,14 +81,14 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
         {
             return (await _database.Dictionary
                                    .Include(d => d.Downloads)
-                                   .SingleOrDefaultAsync(d => d.Id == dictionaryId, cancellationToken)).Map<Entities.Dictionary.Dictionary, Domain.Entities.Dictionary.Dictionary>();
+                                   .SingleOrDefaultAsync(d => d.Id == dictionaryId, cancellationToken)).Map();
         }
 
         public async Task<IEnumerable<Domain.Entities.Dictionary.DictionaryDownload>> GetDictionaryDownloads(int dictionaryId, CancellationToken cancellationToken)
         {
             return await _database.DictionaryDownload
                                    .Where(d => d.DictionaryId == dictionaryId)
-                                   .Select(d => d.Map<DictionaryDownload, Domain.Entities.Dictionary.DictionaryDownload>())
+                                   .Select(d => d.Map())
                                    .ToListAsync(cancellationToken);
         }
 
@@ -100,7 +98,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                                   .Include(d => d.File)
                                   .Where(d => d.DictionaryId == dictionaryId && d.MimeType == mimeType)
                                   .SingleOrDefaultAsync(cancellationToken))
-                                  .Map<DictionaryDownload, Domain.Entities.Dictionary.DictionaryDownload>();
+                                  .Map();
         }
 
         public Task<Domain.Entities.Dictionary.DictionaryDownload> AddDictionaryDownload(int dictionaryId, string mimeType, CancellationToken cancellationToken)

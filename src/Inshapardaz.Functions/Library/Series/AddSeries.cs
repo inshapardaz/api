@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Library.Series
             var auth = await AuthenticateAsWriter(req, log);
             var category = await ReadBody<SeriesView>(req);
 
-            var request = new AddSeriesRequest(category.Map<SeriesView, Domain.Entities.Library.Series>());
+            var request = new AddSeriesRequest(category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _seriesRenderer.Render(auth.User, request.Result);

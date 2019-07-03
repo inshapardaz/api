@@ -2,9 +2,6 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Configuration;
 using Inshapardaz.Storage;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +16,7 @@ namespace Inshapardaz.Functions
             builder.Services.AddHttpClient()
                             .AddRenderers()
                             .AddBrighterCommand()
-                            .AddDatabase()
-                            .AddMappings();
+                            .AddDatabase();
 
             builder.Services.AddTransient<IFunctionAppAuthenticator, FunctionAppAuth0Authenticator>()
                    .AddTransient<IFileStorage>(sp => new FileStorage(ConfigurationSettings.FileStorageConnectionString));

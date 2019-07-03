@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
@@ -33,14 +32,14 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 throw new NotFoundException();
             }
 
-            var item = chapter.Map<Chapter, Entities.Library.Chapter>();
+            var item = chapter.Map();
 
             item.Book = book;
             _databaseContext.Chapter.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
-            return item.Map<Entities.Library.Chapter, Chapter>();
+            return item.Map();
         }
 
         public async Task UpdateChapter(Chapter chapter, CancellationToken cancellationToken)
@@ -88,7 +87,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             return await _databaseContext.Chapter
                                          .Where(c => c.BookId == bookId)
                                          .OrderBy(c => c.ChapterNumber)
-                                         .Select(t => t.Map<Entities.Library.Chapter, Chapter>())
+                                         .Select(t => t.Map())
                                          .ToListAsync(cancellationToken);
         }
 
@@ -104,7 +103,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                          .Include(c => c.Chapter)
                                          .ThenInclude(c => c.Book)
                                          .Where(c => c.ChapterId == chapterId)
-                                         .Select(t => t.Map<Entities.Library.ChapterContent, ChapterContent>())
+                                         .Select(t => t.Map())
                                          .ToArrayAsync(cancellationToken);
         }
 
@@ -118,7 +117,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             if (chapterContent != null && !string.IsNullOrWhiteSpace(chapterContent.ContentUrl))
             {
-                var result = chapterContent.Map<Entities.Library.ChapterContent, ChapterContent>();
+                var result = chapterContent.Map();
                 var content = await _fileStorage.GetTextFile(chapterContent.ContentUrl, cancellationToken);
                 result.Content = content;
                 return result;
@@ -141,7 +140,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                             .Add(chapterContent);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
-            var result = chapterContent.Map<Entities.Library.ChapterContent, ChapterContent>();
+            var result = chapterContent.Map();
             result.Content = contents;
             return result;
         }
@@ -178,7 +177,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                                 .Include(c => c.Contents)
                                                .SingleOrDefaultAsync(t => t.Id == chapterId,
                                                                      cancellationToken);
-            return chapter.Map<Entities.Library.Chapter, Chapter>();
+            return chapter.Map();
         }
 
         private string GenerateChapterContentUrl(int bookId, int chapterId, string mimeType)

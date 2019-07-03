@@ -21,12 +21,12 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
         public async Task<Author> AddAuthor(Author author, CancellationToken cancellationToken)
         {
-            var item = author.Map<Author, Entities.Library.Author>();
+            var item = author.Map();
             _databaseContext.Author.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
-            return item.Map<Entities.Library.Author, Author>();
+            return item.Map();
         }
 
         public async Task UpdateAuthor(Author author, CancellationToken cancellationToken)
@@ -69,7 +69,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var count = author.Count();
             var data = await author
                              .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map<Entities.Library.Author, Author>())
+                             .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Author>
@@ -86,7 +86,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var author = await _databaseContext.Author
                                                .SingleOrDefaultAsync(t => t.Id == authorId,
                                                                      cancellationToken);
-            return author.Map<Entities.Library.Author, Author>();
+            return author.Map();
         }
 
         public async Task<Page<Author>> FindAuthors(string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
@@ -97,7 +97,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var data = await author
                              .Where(a => a.Name.Contains(query))
                              .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map<Entities.Library.Author, Author>())
+                             .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Author>

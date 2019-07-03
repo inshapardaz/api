@@ -1,4 +1,10 @@
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Ports.Library;
+using Inshapardaz.Functions.Adapters;
+using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -12,20 +18,42 @@ namespace Inshapardaz.Functions.Library.Books
 {
     public class GetFavoriteBooks : FunctionBase
     {
-        public GetFavoriteBooks(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
+        private readonly IRenderBooks _booksRenderer;
+        public GetFavoriteBooks(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderBooks booksRenderer)
         : base(commandProcessor, authenticator)
         {
+            _booksRenderer = booksRenderer;
         }
 
         [FunctionName("GetFavoriteBooks")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/favorite")] HttpRequest req,
-            ILogger log)
+            ILogger log, CancellationToken token)
         {
-            // pageSize
-            return new OkObjectResult("GET:Favorite Books");
+            var pageNumber = GetQueryParameter(req, "pageNumber", 1);
+            var pageSize = GetQueryParameter(req, "pageSize", 10);
+            var auth = await Authenticate(req, log);
+
+            var request = new GetFavoriteBooksRequest(auth.User.GetUserId(), pageNumber, pageSize );
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+            var args = new PageRendererArgs<Book>
+            {
+                Page = request.Result,
+                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
+                LinkFunc = Link
+            };
+
+            return new OkObjectResult(_booksRenderer.Render(auth.User, args));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/favorite", relType);
+
+        public static LinkView Link(int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self) 
+            => SelfLink($"books/favorite", relType, queryString: new Dictionary<string, string>
+            {
+                { "pageNumber", pageNumber.ToString()},
+                { "pageSize", pageSize.ToString()}
+            });
     }
 }

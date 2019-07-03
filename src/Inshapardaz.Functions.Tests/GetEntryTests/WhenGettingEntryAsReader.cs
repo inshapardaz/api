@@ -7,12 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Views;
-using Inshapardaz.Functions.Extensions;
 
 namespace Tests
 {
     [TestFixture]
-    public class WhenGettingEntry : FunctionTest
+    public class WhenGettingEntryAsReader : FunctionTest
     {
         OkObjectResult _response;
         EntryView _view;
@@ -21,6 +20,7 @@ namespace Tests
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
+            AuthenticateAsReader();
             var handler = Container.GetService<GetEntry>();
             _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance);
 
@@ -28,14 +28,14 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldHaveOkResult()
+        public void ShouldReturnOkResult()
         {
             Assert.That(_response, Is.Not.Null);
             Assert.That(_response.StatusCode, Is.EqualTo(200));
         }
 
         [Test]
-        public void ShouldHaveSelfLink()
+        public void ShouldReturnSelfLink()
         {
             _view.Links.AssertLink("self")
                        .ShouldBeGet()
@@ -43,7 +43,7 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldHaveBooksLink()
+        public void ShouldReturnBooksLink()
         {
             _view.Links.AssertLink("books")
                        .ShouldBeGet()
@@ -51,7 +51,7 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldHaveLatestBooksLink()
+        public void ShouldReturnLatestBooksLink()
         {
             _view.Links.AssertLink("latest")
                        .ShouldBeGet()
@@ -59,7 +59,7 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldHaveAuthorsLink()
+        public void ShouldReturnAuthorsLink()
         {
             _view.Links.AssertLink("authors")
                        .ShouldBeGet()
@@ -67,7 +67,7 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldHaveCategoriesLink()
+        public void ShouldReturnCategoriesLink()
         {
             _view.Links.AssertLink("categories")
                        .ShouldBeGet()
@@ -75,7 +75,7 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldHaveSeriesLink()
+        public void ShouldReturnSeriesLink()
         {
             _view.Links.AssertLink("series")
                        .ShouldBeGet()
@@ -83,7 +83,7 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldHavePeriodicalLink()
+        public void ShouldReturnPeriodicalLink()
         {
             _view.Links.AssertLink("periodicals")
                        .ShouldBeGet()
@@ -91,15 +91,16 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldHaveDictionariesLink()
+        public void ShouldReturnDictionariesLink()
         {
             _view.Links.AssertLink("dictionaries")
                        .ShouldBeGet()
                        .ShouldHaveSomeHref();
         }
+        
 
         [Test]
-        public void ShouldHaveLanguagesLink()
+        public void ShouldReturnLanguagesLink()
         {
             _view.Links.AssertLink("languages")
                        .ShouldBeGet()
@@ -107,7 +108,7 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldHaveRelationshipTypesLink()
+        public void ShouldReturnRelationshipTypesLink()
         {
             _view.Links.AssertLink("relationshiptypes")
                        .ShouldBeGet()
@@ -115,7 +116,7 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldHaveAttributesLink()
+        public void ShouldReturnAttributesLink()
         {
             _view.Links.AssertLink("attributes")
                        .ShouldBeGet()
@@ -123,10 +124,14 @@ namespace Tests
         }
 
         [Test]
-        public void ShouldNotHavePersonalLinks()
+        public void ShouldHavePersonalLinks()
         {
-            _view.Links.AssertLinkNotPresent("recent");
-            _view.Links.AssertLinkNotPresent("favorites");
+            _view.Links.AssertLink("recents")
+                       .ShouldBeGet()
+                       .ShouldHaveSomeHref();
+            _view.Links.AssertLink("favorites")
+                       .ShouldBeGet()
+                       .ShouldHaveSomeHref();
         }
 
         [Test]

@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Adapters.Library
     {
         public AuthorView Render(ClaimsPrincipal principal, Author source)
         {
-            var result = source.Map<Author, AuthorView>();
+            var result = source.Map();
 
             var links = new List<LinkView>
             {

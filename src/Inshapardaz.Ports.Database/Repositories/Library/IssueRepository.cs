@@ -4,7 +4,6 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var count = await query.CountAsync(cancellationToken);
             var data = await query
                              .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map<Entities.Library.Issue, Issue>())
+                             .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Issue>
@@ -42,7 +41,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             var periodical = await _databaseContext.Issue
                                              .SingleOrDefaultAsync(t => t.Id == issueId, cancellationToken);
-            return periodical.Map<Entities.Library.Issue, Issue>();
+            return periodical.Map();
         }
 
         public async Task<Issue> AddIssue(int periodicalId, Issue issue, CancellationToken cancellationToken)
@@ -55,12 +54,12 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 throw new NotFoundException();
             }
 
-            var item = issue.Map<Issue, Entities.Library.Issue>();
+            var item = issue.Map();
             item.Periodical = periodical;
             _databaseContext.Issue.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
-            return item.Map<Entities.Library.Issue, Issue>();
+            return item.Map();
         }
 
         public async Task UpdateIssue(int periodicalId, Issue issue, CancellationToken cancellationToken)

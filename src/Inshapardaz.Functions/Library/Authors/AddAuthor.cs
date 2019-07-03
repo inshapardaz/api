@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
@@ -33,7 +32,7 @@ namespace Inshapardaz.Functions.Library.Authors
             var auth = await AuthenticateAsWriter(req, log);
             var category = await ReadBody<AuthorView>(req);
 
-            var request = new AddAuthorRequest(category.Map<AuthorView, Domain.Entities.Library.Author>());
+            var request = new AddAuthorRequest(category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _authorRenderer.Render(auth.User, request.Result);

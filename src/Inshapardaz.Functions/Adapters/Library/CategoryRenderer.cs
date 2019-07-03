@@ -18,9 +18,9 @@ namespace Inshapardaz.Functions.Adapters.Library
     {
         public CategoryView Render(ClaimsPrincipal principal, Category category)
         {
-            var view = category.Map<Category, CategoryView>();
+            var view = category.Map();
 
-            view.Links.Add(GetCategoryById.Self(category.Id, RelTypes.Self));
+            view.Links.Add(GetCategoryById.Link(category.Id, RelTypes.Self));
             view.Links.Add(GetBooksByCategory.Self(category.Id, RelTypes.Books));
 
             if (principal.IsWriter())

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Inshapardaz.Domain.Entities.Library
+namespace Inshapardaz.Functions.Views.Library
 {
-    public class Book
+    public class BookView : ViewWithLinks
     {
         public int Id { get; set; }
 
@@ -11,21 +11,15 @@ namespace Inshapardaz.Domain.Entities.Library
 
         public string Description { get; set; }
 
-        public IEnumerable<Category> Categories { get; set; } = new List<Category>();
+        public IEnumerable<CategoryView> Categories { get; set; }
 
-        public Languages Language { get; set; }
+        public int Language { get; set; }
 
         public bool IsPublic { get; set; }
 
         public int AuthorId { get; set; }
-        
+
         public string AuthorName { get; set; }
-
-        public int ImageId { get; set; }
-
-        public DateTime DateAdded {get; set;}
-        
-        public DateTime DateUpdated {get; set;}
 
         public int? SeriesId { get; set; }
 
@@ -33,13 +27,17 @@ namespace Inshapardaz.Domain.Entities.Library
 
         public int? SeriesIndex { get; set; }
 
-        public BookStatuses Status { get; set; }
+        public DateTime DateAdded {get; set;}
 
+        public DateTime DateUpdated { get; set;}
 
         public int? YearPublished { get; set; }
 
-        public CopyrightStatuses Copyrights { get; set; }
+        public int Copyrights { get; set; }
 
+        public int Status { get; set; }
+        
         public bool IsPublished { get; set; }
+
     }
 }

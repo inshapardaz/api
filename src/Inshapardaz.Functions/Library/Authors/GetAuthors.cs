@@ -45,7 +45,7 @@ namespace Inshapardaz.Functions.Library.Authors
             {
                 Page = request.Result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-                NavigationLinkGenerator = Link
+                LinkFunc = Link
             };
             
             return new OkObjectResult(_authorsRenderer.Render(auth?.User, args));

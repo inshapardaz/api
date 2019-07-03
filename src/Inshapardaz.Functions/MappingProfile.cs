@@ -1,13 +1,131 @@
-﻿using AutoMapper;
+﻿using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 
 namespace Inshapardaz.Functions
 {
-    public class MappingProfile : Profile
+    public static class MappingProfile
     {
-        public MappingProfile()
-        {
+        #region File
+        public static FileView Map(this File source) 
+            =>  new FileView
+            {
+                Id = source.Id,
+                MimeType = source.MimeType,
+                FileName = source.FileName,
+                DateCreated = source.DateCreated,
+            };
+
+        public static File Map(this FileView source) 
+            =>  new File
+            {
+                Id = source.Id,
+                MimeType = source.MimeType,
+                FileName = source.FileName,
+                DateCreated = source.DateCreated
+            };
+        #endregion
+        
+        #region Category
+        public static CategoryView Map(this Category source)
+            => new CategoryView
+            {
+                Id = source.Id,
+                Name = source.Name,
+                BookCount =  source.BookCount
+            };
+
+        public static Category Map(this CategoryView source)
+            => new Category
+            {
+                Id = source.Id,
+                Name = source.Name
+            };
+        #endregion
+        
+        #region  Series
+        public static SeriesView Map(this Series source)
+            => new SeriesView
+            {
+                Id = source.Id,
+                Name = source.Name,
+                Description = source.Description,
+                BookCount = source.BookCount
+            };
+
+        public static Series Map(this SeriesView source)
+            => new Series
+            {
+                Id = source.Id,
+                Name = source.Name,
+                Description = source.Description
+            };
+
+        
+        #endregion
+        
+        #region Author
+        public static AuthorView Map(this Author source)
+            => new AuthorView
+            {
+                Id = source.Id,
+                Name = source.Name,
+                BookCount = source.BookCount
+            };
+
+        public static Author Map(this AuthorView source)
+            => new Author
+            {
+                Id = source.Id,
+                Name = source.Name
+            };
+        #endregion
+        
+        #region  Book
+        public static BookView Map(this Book source)
+            => new BookView
+            {
+                Id = source.Id,
+                Title = source.Title,
+                Description = source.Description,
+                AuthorId = source.AuthorId,
+                AuthorName = source.AuthorName, 
+                IsPublic = source.IsPublic,
+                Language = (int)source.Language,
+                DateAdded = source.DateAdded,
+                DateUpdated = source.DateUpdated,
+                SeriesId = source.SeriesId,
+                SeriesName = source.SeriesName,
+                SeriesIndex = source.SeriesIndex,
+                Copyrights = (int)source.Copyrights,
+                Status = (int)source.Status,
+                YearPublished = source.YearPublished,
+                IsPublished = source.IsPublished
+            };
+
+        public static Book Map(this BookView source)
+            => new Book
+            {
+                Id = source.Id,
+                Title = source.Title,
+                Description = source.Description,
+                AuthorId = source.AuthorId,
+                IsPublic = source.IsPublic,
+                Language = (Languages) source.Language,
+                DateAdded = source.DateAdded,
+                DateUpdated = source.DateUpdated,
+                SeriesId = source.SeriesId,
+                SeriesIndex = source.SeriesIndex,
+                Copyrights = (CopyrightStatuses) source.Copyrights,
+                Status = (BookStatuses) source.Status,
+                YearPublished = source.YearPublished,
+                IsPublished = source.IsPublished
+            };
+        #endregion
+        
+        //public MappingProfile()
+        //{
             // CreateMap<File, FileView>()
             //     .ForMember(s => s.Id, o => o.MapFrom(d => d.Id))
             //     .ForMember(s => s.DateCreated, o => o.MapFrom(d => d.DateCreated))
@@ -82,56 +200,7 @@ namespace Inshapardaz.Functions
             //     .ForMember(s => s.Links, o => o.Ignore())
             //     .ReverseMap()
             //     .ForMember(s => s.RelationType, o => o.MapFrom(d => (RelationType)d.RelationTypeId));
-
-
-            CreateMap<Author, AuthorView>()
-                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
-                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
-                .ForMember(d => d.BookCount, o => o.MapFrom(s => s.BookCount))
-                .ForMember(d => d.Links, o => o.Ignore())
-                .ReverseMap()
-                .ForMember(d => d.ImageId, o => o.Ignore())
-                .ForMember(d => d.BookCount, o => o.Ignore());
-
-            CreateMap<Category, CategoryView>()
-                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
-                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
-                .ForMember(d => d.Links, o => o.Ignore())
-                .ForMember(d => d.BookCount, o => o.MapFrom(s => s.BookCount))
-                .ReverseMap()
-                    .ForMember(d => d.BookCount, o => o.MapFrom(s => s.BookCount));
-
-            CreateMap<Series, SeriesView>()
-                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
-                .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
-                .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
-                .ForMember(d => d.BookCount, o => o.MapFrom(s => s.BookCount))
-                .ForMember(d => d.Links, o => o.Ignore())
-                .ReverseMap();
-
-            // CreateMap<Book, BookView>()
-            //     .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
-            //     .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
-            //     .ForMember(d => d.AuthorId, o => o.MapFrom(s => s.AuthorId))
-            //     .ForMember(d => d.AuthorName, o => o.MapFrom(s => s.AuthorName))
-            //     .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
-            //     .ForMember(d => d.IsPublic, o => o.MapFrom(s => s.IsPublic))
-            //     .ForMember(d => d.Language, o => o.MapFrom(s => (int)s.Language))
-            //     .ForMember(d => d.SeriesId, o => o.MapFrom(s => (s.SeriesId)))
-            //     .ForMember(d => d.SeriesName, o => o.MapFrom(s => s.SeriesName))
-            //     .ForMember(d => d.SeriesIndex, o => o.MapFrom(s => s.SeriesIndex))
-            //     .ForMember(d => d.Links, o => o.Ignore())
-            //     .ForMember(d => d.DateAdded, o => o.MapFrom(s => s.DateAdded))
-            //     .ForMember(d => d.DateUpdated, o => o.MapFrom(s => s.DateUpdated))
-            //     .ForMember(d => d.Status, o => o.MapFrom(s => s.Status))
-            //     .ForMember(d => d.Copyrights, o => o.MapFrom(s => s.Copyrights))
-            //     .ForMember(d => d.YearPublished, o => o.MapFrom(s => s.YearPublished))
-            //     .ReverseMap()
-            //     .ForMember(d => d.Language, o => o.MapFrom(s => (Languages)s.Language))
-            //     .ForMember(d => d.Status, o => o.MapFrom(s => (BookStatuses)s.Status))
-            //     .ForMember(d => d.Copyrights, o => o.MapFrom(s => (CopyrightStatuses)s.Copyrights))
-            //     .ForMember(d => d.ImageId, o => o.Ignore());
-
+            
             // CreateMap<Chapter, ChapterView>()
             //     .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
             //     .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
@@ -167,6 +236,6 @@ namespace Inshapardaz.Functions
             //         .ForMember(d => d.ImageId, o => o.Ignore())
             //         .ForMember(d => d.PeriodicalId, o => o.Ignore())
             //         .ForMember(d => d.Periodical, o => o.Ignore());
-        }
+        //}
     }
 }

@@ -35,7 +35,7 @@ namespace Inshapardaz.Functions.Library.Categories
             var auth = await AuthenticateAsWriter(req, log);
             var category = await ReadBody<CategoryView>(req);
 
-            var request = new UpdateCategoryRequest(category.Map<CategoryView, Category>());
+            var request = new UpdateCategoryRequest(category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _categoryRenderer.Render(auth.User, request.Result.Category);

@@ -23,6 +23,7 @@ namespace Inshapardaz.Functions
                    .AddTransient<IFileStorage>(sp => new FileStorage(ConfigurationSettings.FileStorageConnectionString));
 
             builder.Services.AddTransient<GetEntry>()
+                   .AddTransient<GetLanguages>()
                    .AddTransient<GetCategories>()
                    .AddTransient<AddCategory>()
                    .AddTransient<GetCategoryById>()

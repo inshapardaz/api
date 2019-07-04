@@ -39,7 +39,11 @@ namespace Inshapardaz.Functions.Adapters
             {
                  links.Add(GetRecentReadBooks.Link(RelTypes.Recents));
                  links.Add(GetFavoriteBooks.Link(RelTypes.Favorites));
-                 links.Add(AddFile.Link(RelTypes.ImageUpload));
+            }
+
+            if (user.IsWriter())
+            {
+                links.Add(AddFile.Link(RelTypes.ImageUpload));
             }
 
             return new EntryView { Links = links };

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
-namespace Tests
+namespace Inshapardaz.Functions.Tests.Helpers
 {
     public static class AuthenticationBuilder
     {

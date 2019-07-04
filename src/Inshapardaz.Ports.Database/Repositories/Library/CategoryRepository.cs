@@ -57,7 +57,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Category>> GetCategory(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Category>> GetCategories(CancellationToken cancellationToken)
         {
             return await _databaseContext.Category
                                          .Select(t => t.Map())

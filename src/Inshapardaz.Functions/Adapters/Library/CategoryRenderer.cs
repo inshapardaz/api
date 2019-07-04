@@ -20,10 +20,10 @@ namespace Inshapardaz.Functions.Adapters.Library
         {
             var view = category.Map();
 
-            view.Links.Add(GetCategoryById.Link(category.Id, RelTypes.Self));
+            view.Links.Add(GetCategoryById.Link(category.Id));
             view.Links.Add(GetBooksByCategory.Self(category.Id, RelTypes.Books));
 
-            if (principal.IsWriter())
+            if (principal.IsAdministrator())
             {
                 view.Links.Add(UpdateCategory.Link(category.Id, RelTypes.Update));
                 view.Links.Add(DeleteCategory.Link(category.Id, RelTypes.Delete));

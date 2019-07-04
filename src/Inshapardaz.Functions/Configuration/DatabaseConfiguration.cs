@@ -1,3 +1,4 @@
+using System.Linq;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Dictionary;
 using Inshapardaz.Domain.Repositories.Library;
@@ -16,8 +17,10 @@ namespace Inshapardaz.Functions.Configuration
     {
         public static IServiceCollection AddDatabase(this IServiceCollection services)
         {
+            if (!services.Any(x => x.ServiceType == typeof(IDatabaseContext)))
             {
                 var connectionString = ConfigurationSettings.DatabaseConnectionString;
+
                 services.AddEntityFrameworkSqlServer()
                         .AddDbContext<DatabaseContext>(
                             options =>

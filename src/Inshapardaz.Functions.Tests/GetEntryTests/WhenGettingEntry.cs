@@ -1,15 +1,12 @@
-﻿using System;
-using Inshapardaz.Functions;
-using Inshapardaz.Functions.Tests;
+﻿using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Helpers;
+using Inshapardaz.Functions.Views;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
-using System.Threading.Tasks;
-using Inshapardaz.Functions.Views;
-using Inshapardaz.Functions.Extensions;
 
-namespace Tests
+namespace Inshapardaz.Functions.Tests.GetEntryTests
 {
     [TestFixture]
     public class WhenGettingEntry : FunctionTest
@@ -17,7 +14,7 @@ namespace Tests
         OkObjectResult _response;
         EntryView _view;
         
-        [SetUp]
+        [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();

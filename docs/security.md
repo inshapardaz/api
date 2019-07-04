@@ -2,7 +2,7 @@
 
 We aim to support as many popular authentication providers to make it easy for users to user the service and remove need to remember another password.
 
-We aim to provide authentication using following:
+We aim to provide authentication using following in future:
 
 - Google
 - Facebook

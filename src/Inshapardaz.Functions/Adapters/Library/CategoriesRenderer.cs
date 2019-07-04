@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Adapters.Library
         {
             var items = categories.Select(g => _categoryRenderer.Render(user, g));
             var view = new ListView<CategoryView> { Items = items };
-            view.Links.Add(GetCategories.Link(RelTypes.Self));
+            view.Links.Add(GetCategories.Link());
 
             if (user.IsAdministrator())
             {

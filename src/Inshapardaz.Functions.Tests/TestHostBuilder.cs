@@ -11,7 +11,8 @@ namespace Inshapardaz.Functions.Tests
 
         public TestHostBuilder()
         {
-            SetupConfiguration();
+            SetupEnvironment();
+            
             _services = new ServiceCollection();
         }
 
@@ -30,7 +31,7 @@ namespace Inshapardaz.Functions.Tests
             }
         }
 
-        private void SetupConfiguration()
+        private void SetupEnvironment()
         {
             Environment.SetEnvironmentVariable("Authentication.Audience", "http://api.inshapardaz.org");
             Environment.SetEnvironmentVariable("Authentication.Authority", "inshapardaz.eu.auth0.com");

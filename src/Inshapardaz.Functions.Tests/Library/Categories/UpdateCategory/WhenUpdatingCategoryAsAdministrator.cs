@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
 
             _selectedCategory = _categories.First();
 
-            _expectedCategory = new CategoryView {Id = _selectedCategory.Id, Name = new Faker().Random.String()};
+            _expectedCategory = new CategoryView { Name = new Faker().Random.String()};
             _response = (OkObjectResult) await handler.Run(_expectedCategory, NullLogger.Instance, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 

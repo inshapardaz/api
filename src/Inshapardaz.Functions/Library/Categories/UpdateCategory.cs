@@ -27,8 +27,8 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("UpdateCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "categories/{id}")] CategoryView category,
-            ILogger log, int id,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "categories/{categoryId}")] CategoryView category,
+            ILogger log, int categoryId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
@@ -42,6 +42,7 @@ namespace Inshapardaz.Functions.Library.Categories
                 return new ForbidResult("Bearer");
             }
 
+            category.Id = categoryId;
             var request = new UpdateCategoryRequest(category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -16,8 +17,8 @@ namespace Inshapardaz.Functions.Library.Books
     public class GetLatestBooks : FunctionBase
     {
         private readonly IRenderBooks _booksRenderer;
-        public GetLatestBooks(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderBooks booksRenderer)
-        : base(commandProcessor, authenticator)
+        public GetLatestBooks(IAmACommandProcessor commandProcessor, IRenderBooks booksRenderer)
+        : base(commandProcessor)
         {
             _booksRenderer = booksRenderer;
         }
@@ -25,15 +26,14 @@ namespace Inshapardaz.Functions.Library.Books
         [FunctionName("GetLatestBooks")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/latest")] HttpRequest req,
-            ILogger log, CancellationToken token)
+            ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
             var pageSize = GetQueryParameter(req, "pageSize", 10);
-            var auth = await TryAuthenticate(req, log);
 
             var request = new GetLatestBooksRequest();
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_booksRenderer.Render(auth?.User, request.Result));
+            return new OkObjectResult(_booksRenderer.Render(principal, request.Result));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/latest", relType);

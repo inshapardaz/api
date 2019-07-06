@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +11,8 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 {
     public class GetChaptersByBook : FunctionBase
     {
-        public GetChaptersByBook(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public GetChaptersByBook(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 

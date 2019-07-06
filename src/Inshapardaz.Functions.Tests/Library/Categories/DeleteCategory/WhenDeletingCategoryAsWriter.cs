@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
     [TestFixture]
     public class WhenDeletingCategoryAsWriter : FunctionTest
     {
-        NoContentResult _response;
+        ForbidResult _response;
 
         private IEnumerable<Category> _categories;
         private Category _selectedCategory;
@@ -24,13 +25,12 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            AuthenticateAsWriter();
             _categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
             _categories = _categoriesBuilder.WithCategories(4).Build();
             _selectedCategory = _categories.First();
             
             var handler = Container.GetService<Functions.Library.Categories.DeleteCategory>();
-            _response = (NoContentResult) await handler.Run(request, NullLogger.Instance, _selectedCategory.Id , CancellationToken.None);
+            _response = (ForbidResult) await handler.Run(request, NullLogger.Instance, _selectedCategory.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -40,18 +40,9 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
         }
 
         [Test]
-        public void ShouldHaveOkResult()
+        public void ShouldHaveForbiddenResult()
         {
             Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(204));
-        }
-
-        [Test]
-        public void ShouldHaveDeletedCategory()
-        {
-            var cat = _categoriesBuilder.GetById(_selectedCategory.Id);
-            Assert.That(cat, Is.Null, "Category should be deleted.");
-
         }
     }
 }

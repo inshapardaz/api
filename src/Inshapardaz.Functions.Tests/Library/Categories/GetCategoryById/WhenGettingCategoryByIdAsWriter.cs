@@ -25,13 +25,12 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            AuthenticateAsWriter();
             var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
             _categories = categoriesBuilder.WithCategories(4).Build();
             _selectedCategory = _categories.First();
             
             var handler = Container.GetService<Functions.Library.Categories.GetCategoryById>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _selectedCategory.Id , CancellationToken.None);
+            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _selectedCategory.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = _response.Value as CategoryView;
         }

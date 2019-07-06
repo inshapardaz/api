@@ -1,7 +1,5 @@
 ﻿using System;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Ports.Database;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +13,7 @@ namespace Inshapardaz.Functions.Tests
         private readonly Startup _startup;
         private SqliteConnection _connection;
 
-        public FunctionTest()
+        protected FunctionTest()
         {
             _builder = new TestHostBuilder();
             _startup = new Startup();
@@ -31,23 +29,6 @@ namespace Inshapardaz.Functions.Tests
 
         protected IDatabaseContext DatabaseContext { get; private set; }
 
-        protected void AuthenticateAsAdmin()
-        {
-            var authenticator = new TestAuthenticator(TestAuthenticator.AdminRole);
-            _builder.Services.AddTransient<IFunctionAppAuthenticator>(s => authenticator);
-        }
-
-        protected void  AuthenticateAsWriter()
-        {
-            var authenticator = new TestAuthenticator(TestAuthenticator.WriteRole);
-            _builder.Services.AddTransient<IFunctionAppAuthenticator>(s => authenticator);
-        }
-
-        protected void  AuthenticateAsReader()
-        {
-            var authenticator = new TestAuthenticator(TestAuthenticator.ReaderRole);
-            _builder.Services.AddTransient<IFunctionAppAuthenticator>(s => authenticator);
-        }
         
         private IDatabaseContext CreateDbContext()
         {

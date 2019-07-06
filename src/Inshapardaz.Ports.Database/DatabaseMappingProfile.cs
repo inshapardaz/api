@@ -9,7 +9,7 @@ namespace Inshapardaz.Ports.Database
     {
         #region Dictionary
         public static Entities.Dictionary.Dictionary Map(this Dictionary source)
-        => new Entities.Dictionary.Dictionary
+        => source == null ? null : new Entities.Dictionary.Dictionary
         {
             Id = source.Id,
             Name = source.Name,
@@ -19,7 +19,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Dictionary Map(this Entities.Dictionary.Dictionary source)
-        => new Dictionary
+        => source == null ? null : new Dictionary
         {
             Id = source.Id,
             Name = source.Name,
@@ -32,7 +32,7 @@ namespace Inshapardaz.Ports.Database
 
         #region DictionaryDownload
         public static Entities.Dictionary.DictionaryDownload Map(this DictionaryDownload source) 
-        => new Entities.Dictionary.DictionaryDownload
+        => source == null ? null : new Entities.Dictionary.DictionaryDownload
         {
             Id = source.Id,
             DictionaryId = source.DictionaryId,
@@ -40,7 +40,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static DictionaryDownload Map(this Entities.Dictionary.DictionaryDownload source)
-        => new DictionaryDownload
+        => source == null ? null : new DictionaryDownload
         {
             Id = source.Id,
             DictionaryId = source.DictionaryId,
@@ -51,7 +51,7 @@ namespace Inshapardaz.Ports.Database
 
         #region File
         public static Entities.File Map(this File source) 
-        =>  new Entities.File
+        => source == null ? null : new Entities.File
         {
             Id = source.Id,
             MimeType = source.MimeType,
@@ -61,7 +61,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static File Map(this Entities.File source) 
-        =>  new File
+        => source == null ? null : new File
         {
             Id = source.Id,
             MimeType = source.MimeType,
@@ -75,7 +75,7 @@ namespace Inshapardaz.Ports.Database
         #region Word
 
         public static Entities.Dictionary.Word Map(this Word source)
-        => new Entities.Dictionary.Word
+        => source == null ? null : new Entities.Dictionary.Word
         {
             Id = source.Id,
             Title = source.Title,
@@ -92,7 +92,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Word Map(this Entities.Dictionary.Word source)
-        => new Word
+        => source == null ? null : new Word
         {
             Id = source.Id,
             Title = source.Title,
@@ -113,7 +113,7 @@ namespace Inshapardaz.Ports.Database
         #region Meaning
 
         public static Entities.Dictionary.Meaning Map(this Meaning source)
-        => new Entities.Dictionary.Meaning
+        => source == null ? null : new Entities.Dictionary.Meaning
         {
             Id = source.Id,
             Context = source.Context,
@@ -123,7 +123,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Meaning Map(this Entities.Dictionary.Meaning source)
-        => new Meaning
+        => source == null ? null : new Meaning
         {
             Id = source.Id,
             Context = source.Context,
@@ -136,7 +136,7 @@ namespace Inshapardaz.Ports.Database
 
         #region Translation
         public static Entities.Dictionary.Translation Map(this Translation source)
-        => new Entities.Dictionary.Translation
+        => source == null ? null : new Entities.Dictionary.Translation
         {
             Id = source.Id,
             IsTrasnpiling = source.IsTrasnpiling,
@@ -146,7 +146,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Translation Map(this Entities.Dictionary.Translation source)
-        => new Translation
+        => source == null ? null : new Translation
         {
             Id = source.Id,
             IsTrasnpiling = source.IsTrasnpiling,
@@ -160,7 +160,7 @@ namespace Inshapardaz.Ports.Database
         #region WordRelation
 
         public static Entities.Dictionary.WordRelation Map(this WordRelation source)
-        => new Entities.Dictionary.WordRelation
+        => source == null ? null : new Entities.Dictionary.WordRelation
         {
             Id = source.Id,
             RelatedWordId = source.RelatedWordId,
@@ -169,7 +169,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static WordRelation Map(this Entities.Dictionary.WordRelation source)
-        => new WordRelation
+        => source == null ? null : new WordRelation
         {
             Id = source.Id,
             RelatedWordId = source.RelatedWordId,
@@ -182,19 +182,21 @@ namespace Inshapardaz.Ports.Database
         
         #region Category
         public static Entities.Library.Category Map(this Category source)
-        => new Entities.Library.Category
+        => source == null ? null : new Entities.Library.Category
         {
             Id = source.Id,
             Name = source.Name
         };
 
         public static Category Map(this Entities.Library.Category source)
-        => new Category
+        => source == null ? null : new Category
         {
             Id = source.Id,
             Name = source.Name
-        };public static Category MapFromBookCategory(this Entities.Library.BookCategory source)
-        => new Category
+        };
+
+        public static Category MapFromBookCategory(this Entities.Library.BookCategory source)
+        => source == null ? null : new Category
         {
             Id = source.CategoryId,
             Name = source.Category?.Name
@@ -203,7 +205,7 @@ namespace Inshapardaz.Ports.Database
         
         #region  Series
         public static Entities.Library.Series Map(this Series source)
-        => new Entities.Library.Series
+        => source == null ? null : new Entities.Library.Series
         {
             Id = source.Id,
             Name = source.Name,
@@ -212,7 +214,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Series Map(this Entities.Library.Series source)
-        => new Series
+        => source == null ? null : new Series
         {
             Id = source.Id,
             Name = source.Name,
@@ -224,7 +226,7 @@ namespace Inshapardaz.Ports.Database
 
         #region Author
         public static Entities.Library.Author Map(this Author source)
-        => new Entities.Library.Author
+        => source == null ? null : new Entities.Library.Author
         {
             Id = source.Id,
             Name = source.Name,
@@ -232,7 +234,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Author Map(this Entities.Library.Author source)
-        => new Author
+        => source == null ? null : new Author
         {
             Id = source.Id,
             Name = source.Name,
@@ -242,7 +244,7 @@ namespace Inshapardaz.Ports.Database
 
         #region  Book
         public static Entities.Library.Book Map(this Book source)
-        => new Entities.Library.Book
+        => source == null ? null : new Entities.Library.Book
         {
                 Id = source.Id,
                 Title = source.Title,
@@ -262,7 +264,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Book Map(this Entities.Library.Book source)
-        => new Book
+        => source == null ? null : new Book
         {
                 Id = source.Id,
                 Title = source.Title,
@@ -287,7 +289,7 @@ namespace Inshapardaz.Ports.Database
 
         #region Chapter
         public static Entities.Library.Chapter Map(this Chapter source)
-        => new Entities.Library.Chapter
+        => source == null ? null : new Entities.Library.Chapter
         {
             Id = source.Id,
             Title = source.Title,
@@ -296,7 +298,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Chapter Map(this Entities.Library.Chapter source)
-        => new Chapter
+        => source == null ? null : new Chapter
         {
             Id = source.Id,
             Title = source.Title,
@@ -307,7 +309,7 @@ namespace Inshapardaz.Ports.Database
 
         #region ChaterContent
         public static Entities.Library.ChapterContent Map(this ChapterContent source)
-        => new Entities.Library.ChapterContent
+        => source == null ? null : new Entities.Library.ChapterContent
         {
             Id = source.Id,
             ChapterId = source.ChapterId,
@@ -315,7 +317,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static ChapterContent Map(this Entities.Library.ChapterContent source)
-        => new ChapterContent
+        => source == null ? null : new ChapterContent
         {
             Id = source.Id,
             ChapterId = source.ChapterId,
@@ -327,7 +329,7 @@ namespace Inshapardaz.Ports.Database
 
         #region Periodical
         public static Entities.Library.Periodical Map(this Periodical source)
-        => new Entities.Library.Periodical
+        => source == null ? null : new Entities.Library.Periodical
         {
             Id = source.Id,
             Title = source.Title,
@@ -337,7 +339,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Periodical Map(this Entities.Library.Periodical source)
-        => new Periodical
+        => source == null ? null : new Periodical
         {
             Id = source.Id,
             Title = source.Title,
@@ -350,7 +352,7 @@ namespace Inshapardaz.Ports.Database
 
         #region  Issue
         public static Entities.Library.Issue Map(this Issue source)
-        => new Entities.Library.Issue
+        => source == null ? null : new Entities.Library.Issue
         {
             Id = source.Id,
             IssueDate = source.IssueDate,
@@ -361,7 +363,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Issue Map(this Entities.Library.Issue source)
-        => new Issue
+        => source == null ? null : new Issue
         {
             Id = source.Id,
             IssueDate = source.IssueDate,
@@ -374,7 +376,7 @@ namespace Inshapardaz.Ports.Database
 
         #region Article
         public static Entities.Library.Article Map(this Article source)
-        => new Entities.Library.Article
+        => source == null ? null : new Entities.Library.Article
         {
             Id = source.Id,
             SequenceNumber = source.SequenceNumber,
@@ -385,7 +387,7 @@ namespace Inshapardaz.Ports.Database
         };
 
         public static Article Map(this Entities.Library.Article source)
-        => new Article
+        => source == null ? null : new Article
         {
             Id = source.Id,
             SequenceNumber = source.SequenceNumber,

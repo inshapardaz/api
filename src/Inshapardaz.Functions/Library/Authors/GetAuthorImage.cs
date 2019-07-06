@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -11,15 +13,17 @@ namespace Inshapardaz.Functions.Library.Authors
 {
     public class GetAuthorImage : FunctionBase
     {
-        public GetAuthorImage(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public GetAuthorImage(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 
         [FunctionName("GetAuthorImage")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{id}/image")] HttpRequest req,
-            ILogger log, int id)
+            ILogger log, int id,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
             return new OkObjectResult($"Get:Author {id} Image");
         }

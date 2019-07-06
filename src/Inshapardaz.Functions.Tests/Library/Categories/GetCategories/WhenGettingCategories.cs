@@ -24,10 +24,10 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
             var request = TestHelpers.CreateGetRequest();
 
             var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
-            categoriesBuilder.WithCategories(4).Build();
+            categoriesBuilder.WithCategories(4, 3).Build();
             
             var handler = Container.GetService<Functions.Library.Categories.GetCategories>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, CancellationToken.None);
+            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as ListView<CategoryView>;
         }

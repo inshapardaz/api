@@ -19,7 +19,7 @@ namespace Inshapardaz.Functions.Tests.GetEntryTests
         {
             var request = TestHelpers.CreateGetRequest();
             var handler = Container.GetService<GetEntry>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance);
+            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized);
 
             _view = _response.Value as EntryView;
         }

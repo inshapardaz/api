@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
@@ -19,8 +20,8 @@ namespace Inshapardaz.Functions.Library.Books
     public class GetBooksByAuthor : FunctionBase
     {
         private readonly IRenderBooks _booksRenderer;
-        public GetBooksByAuthor(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderBooks booksRenderer)
-        : base(commandProcessor, authenticator)
+        public GetBooksByAuthor(IAmACommandProcessor commandProcessor, IRenderBooks booksRenderer)
+        : base(commandProcessor)
         {
             _booksRenderer = booksRenderer;
         }
@@ -28,12 +29,10 @@ namespace Inshapardaz.Functions.Library.Books
         [FunctionName("GetBooksByAuthor")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{authorId}/books")] HttpRequest req,
-            ILogger log, int authorId, CancellationToken token)
+            ILogger log, int authorId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
-
-            var auth = await TryAuthenticate(req, log);
 
             var request = new GetBooksByAuthorRequest(authorId, pageNumber, pageSize);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
@@ -45,7 +44,7 @@ namespace Inshapardaz.Functions.Library.Books
                 LinkFuncWithParameter = Link
             };
 
-            return new OkObjectResult(_booksRenderer.Render(authorId, auth?.User, args));
+            return new OkObjectResult(_booksRenderer.Render(authorId, principal, args));
         }
 
         public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}/books", relType, "GET");

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -16,8 +17,8 @@ namespace Inshapardaz.Functions.Library.Authors
     public class GetAuthorById : FunctionBase
     {
         private readonly IRenderAuthor _authorRenderer;
-        public GetAuthorById(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderAuthor authorRenderer)
-        : base(commandProcessor, authenticator)
+        public GetAuthorById(IAmACommandProcessor commandProcessor, IRenderAuthor authorRenderer)
+        : base(commandProcessor)
         {
             _authorRenderer = authorRenderer;
         }
@@ -25,14 +26,15 @@ namespace Inshapardaz.Functions.Library.Authors
         [FunctionName("GetAuthorById")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{authorId}")] HttpRequest req,
-            ILogger log, int authorId, CancellationToken token)
+            ILogger log, int authorId,
+            [AccessToken] ClaimsPrincipal principal, 
+            CancellationToken token)
         {
-            var auth = await TryAuthenticate(req, log);
 
             var request = new GetAuthorByIdRequest(authorId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_authorRenderer.Render(auth?.User, request.Result));
+            return new OkObjectResult(_authorRenderer.Render(principal, request.Result));
         }
 
         public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}", relType, "GET");

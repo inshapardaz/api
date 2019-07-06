@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -14,19 +15,28 @@ namespace Inshapardaz.Functions.Library.Categories
 {
     public class DeleteCategory : FunctionBase
     {
-        public DeleteCategory(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public DeleteCategory(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 
         [FunctionName("DeleteCategory")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "categories/{id}")] HttpRequest req,
-            ILogger log, int id, CancellationToken token)
+            ILogger log, int id, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var auth = await AuthenticateAsWriter(req, log);
 
-             var request = new DeleteCategoryRequest(id);
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsAdministrator())
+            {
+                return new ForbidResult("Bearer");
+            }
+
+            var request = new DeleteCategoryRequest(id);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

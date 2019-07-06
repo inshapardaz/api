@@ -6,6 +6,7 @@
         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
         "Authentication.Audience": "http://api.inshapardaz.org",
         "Authentication.Authority": "inshapardaz.eu.auth0.com",
+        "Authentication.IssuerToken": "http://api.inshapardaz.org",
         "DefaultDatabase": "data source=.;initial catalog=Inshapardaz;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework",
         "API.Root" : "http://localhost:7071/api"
     }

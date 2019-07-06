@@ -12,8 +12,8 @@ namespace Inshapardaz.Functions.Library.Periodicals
 {
     public class GetPeriodicals : FunctionBase
     {
-        public GetPeriodicals(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public GetPeriodicals(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -16,8 +17,8 @@ namespace Inshapardaz.Functions.Library.Books
     public class GetRecentReadBooks : FunctionBase
     {
         private readonly IRenderBooks _booksRenderer;
-        public GetRecentReadBooks(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderBooks booksRenderer)
-        : base(commandProcessor, authenticator)
+        public GetRecentReadBooks(IAmACommandProcessor commandProcessor, IRenderBooks booksRenderer)
+        : base(commandProcessor)
         {
             _booksRenderer = booksRenderer;
         }
@@ -25,15 +26,14 @@ namespace Inshapardaz.Functions.Library.Books
         [FunctionName("GetRecentReadBooks")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/recent")] HttpRequest req,
-            ILogger log, CancellationToken token)
+            ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
             var pageSize = GetQueryParameter(req, "pageSize", 10);
-            var auth = await Authenticate(req, log);
 
-            var request = new GetRecentBooksRequest(auth.User.GetUserId(), pageSize);
+            var request = new GetRecentBooksRequest(principal.GetUserId(), pageSize);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_booksRenderer.Render(auth.User, request.Result));
+            return new OkObjectResult(_booksRenderer.Render(principal, request.Result));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/recent", relType);

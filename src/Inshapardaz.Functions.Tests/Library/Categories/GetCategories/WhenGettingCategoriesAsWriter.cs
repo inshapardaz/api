@@ -21,12 +21,11 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            AuthenticateAsWriter();
             var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
             categoriesBuilder.WithCategories(4).Build();
             
             var handler = Container.GetService<Functions.Library.Categories.GetCategories>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, CancellationToken.None);
+            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<CategoryView>;
         }

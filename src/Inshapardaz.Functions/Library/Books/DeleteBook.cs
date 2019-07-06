@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -14,17 +15,18 @@ namespace Inshapardaz.Functions.Library.Books
 {
     public class DeleteBook : FunctionBase
     {
-        public DeleteBook(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public DeleteBook(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 
         [FunctionName("DeleteBook")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId}")] HttpRequest req,
-            ILogger log, int bookId, CancellationToken token)
+            ILogger log, int bookId,
+            [AccessToken] ClaimsPrincipal principal, 
+            CancellationToken token)
         {
-            var auth = await AuthenticateAsWriter(req, log);
 
              var request = new DeleteBookRequest(bookId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -18,8 +19,8 @@ namespace Inshapardaz.Functions.Library.Authors
     public class UpdateAuthor : FunctionBase
     {
         private readonly IRenderAuthor _authorRenderer;
-        public UpdateAuthor(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderAuthor authorRenderer)
-        : base(commandProcessor, authenticator)
+        public UpdateAuthor(IAmACommandProcessor commandProcessor, IRenderAuthor authorRenderer)
+        : base(commandProcessor)
         {
             _authorRenderer = authorRenderer;
         }
@@ -27,25 +28,24 @@ namespace Inshapardaz.Functions.Library.Authors
         [FunctionName("UpdateAuthor")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{authorId}")] HttpRequest req,
-            ILogger log, int authorId, CancellationToken token)
+            ILogger log, int authorId,
+            [AccessToken] ClaimsPrincipal principal, 
+            CancellationToken token)
         {
-            var auth = await AuthenticateAsWriter(req, log);
             var author = await ReadBody<AuthorView>(req);
             author.Id = authorId;
             
             var request = new UpdateAuthorRequest(author.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _authorRenderer.Render(auth.User, request.Result.Author);
+            var renderResult = _authorRenderer.Render(principal, request.Result.Author);
 
             if (request.Result.HasAddedNew)
             {
                 return new CreatedResult(renderResult.Links.Self(), renderResult);
             }
-            else
-            {
-                return new OkObjectResult(renderResult);
-            }
+
+            return new OkObjectResult(renderResult);
         }
 
         public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}", relType, "PUT");

@@ -11,51 +11,37 @@ namespace Inshapardaz.Functions.Tests.Helpers
 {
     public static class AuthenticationBuilder
     {
-        public static IFunctionAppAuthenticator  AsAdmin()
+        private const string AdminRole = "admin";
+        private const string WriteRole = "writer";
+        private const string ReaderRole = "reader";
+
+        public static ClaimsPrincipal AdminClaim => CreateClaimsPrincipalWithRole(AdminRole);
+
+        public static ClaimsPrincipal WriterClaim => CreateClaimsPrincipalWithRole(WriteRole);
+
+        public static ClaimsPrincipal ReaderClaim => CreateClaimsPrincipalWithRole(ReaderRole);
+
+        public static ClaimsPrincipal Unauthorized => CreateUnauthorizedPrincipal();
+
+        private static ClaimsPrincipal CreateUnauthorizedPrincipal()
         {
-            return new TestAuthenticator(TestAuthenticator.AdminRole);
+            return null;
         }
 
-        public static IFunctionAppAuthenticator  AsWriter()
+        private static ClaimsPrincipal CreateClaimsPrincipalWithRole(string role)
         {
-            return new TestAuthenticator(TestAuthenticator.AdminRole);
-        }
-
-        public static IFunctionAppAuthenticator  AsReader()
-        {
-            return new TestAuthenticator(TestAuthenticator.AdminRole);
-        }
-    }
-
-    public class TestAuthenticator : IFunctionAppAuthenticator
-    {
-        public const string AdminRole = "admin";
-        public const string WriteRole = "writer";
-        public const string ReaderRole = "reader";
-        private string _role = "";
-    
-        public TestAuthenticator(string role)
-        {
-            _role = role;    
-        }
-
-        public async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> AuthenticateAsync(HttpRequest request, ILogger log)
-        {
-            var authenticationData = new UserAuthenticationData{
-                    Groups = new string[0],
-                    Roles = new string[1] { _role },
-                    Permissions = new string[0],
-                };
-            var claims = new List<Claim>{
-                new Claim("https://api.inshapardaz.org/user_authorization",  JsonConvert.SerializeObject(authenticationData))
+            var authenticationData = new UserAuthenticationData
+            {
+                Groups = new string[0],
+                Roles = new string[1] {role},
+                Permissions = new string[0],
+            };
+            var claims = new List<Claim>
+            {
+                new Claim("https://api.inshapardaz.org/user_authorization", JsonConvert.SerializeObject(authenticationData))
             };
             var identity = new ClaimsIdentity(new ClaimsIdentity(claims, "Basic"));
-            var principal = new ClaimsPrincipal(identity);
-            
-            return await Task.FromResult((
-                principal,
-                (SecurityToken) null
-            ));
+            return new ClaimsPrincipal(identity);
         }
     }
 

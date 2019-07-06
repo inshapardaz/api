@@ -12,8 +12,8 @@ namespace Inshapardaz.Functions.Library.Files
 {
     public class GetFileById : FunctionBase
     {
-        public GetFileById(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public GetFileById(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 

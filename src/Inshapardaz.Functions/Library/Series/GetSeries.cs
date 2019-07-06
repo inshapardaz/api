@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -16,8 +17,8 @@ namespace Inshapardaz.Functions.Library.Series
     public class GetSeries : FunctionBase
     {
         private readonly IRenderSeriesList _seriesListRenderer;
-        public GetSeries(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderSeriesList seriesListRenderer)
-        : base(commandProcessor, authenticator)
+        public GetSeries(IAmACommandProcessor commandProcessor, IRenderSeriesList seriesListRenderer)
+        : base(commandProcessor)
         {
             _seriesListRenderer = seriesListRenderer;
         }
@@ -25,14 +26,12 @@ namespace Inshapardaz.Functions.Library.Series
         [FunctionName("GetSeries")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series")] HttpRequest req,
-            ILogger log, CancellationToken token)
+            ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var auth = await TryAuthenticate(req, log);
-
             var request = new GetSeriesRequest();
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_seriesListRenderer.Render(auth?.User, request.Result));
+            return new OkObjectResult(_seriesListRenderer.Render(principal, request.Result));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("series", relType);

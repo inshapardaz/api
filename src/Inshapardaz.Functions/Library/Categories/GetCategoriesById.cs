@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -17,8 +18,8 @@ namespace Inshapardaz.Functions.Library.Categories
     {
         private readonly IRenderCategory _categoryRenderer;
 
-        public GetCategoryById(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderCategory categoryRenderer)
-        : base(commandProcessor, authenticator)
+        public GetCategoryById(IAmACommandProcessor commandProcessor, IRenderCategory categoryRenderer)
+        : base(commandProcessor)
         {
             _categoryRenderer = categoryRenderer;
         }
@@ -26,14 +27,12 @@ namespace Inshapardaz.Functions.Library.Categories
         [FunctionName("GetCategoryById")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories/{categoryById}")] HttpRequest req,
-            ILogger log, int categoryById, CancellationToken token)
+            ILogger log, int categoryById, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var auth = await TryAuthenticate(req, log);
-
             var request = new GetCategoryByIdRequest(categoryById);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_categoryRenderer.Render(auth?.User, request.Result));
+            return new OkObjectResult(_categoryRenderer.Render(principal, request.Result));
         }
 
         public static LinkView Link(int categoryById, string relType = RelTypes.Self) => SelfLink($"categories/{categoryById}", relType);

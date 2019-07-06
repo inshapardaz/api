@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,13 +25,12 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            AuthenticateAsAdmin();
             _categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
             _categories = _categoriesBuilder.WithCategories(4).Build();
             _selectedCategory = _categories.First();
             
             var handler = Container.GetService<Functions.Library.Categories.DeleteCategory>();
-            _response = (NoContentResult) await handler.Run(request, NullLogger.Instance, _selectedCategory.Id , CancellationToken.None);
+            _response = (NoContentResult) await handler.Run(request, NullLogger.Instance, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

@@ -8,29 +8,34 @@ using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Commands;
 using Inshapardaz.Functions.Authentication;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Inshapardaz.Functions
 {
     public class GetEntry : FunctionBase
     {
-        public GetEntry(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator)
-            : base(commandProcessor, authenticator)
+        public GetEntry(IAmACommandProcessor commandProcessor)
+            : base(commandProcessor)
         {   
         }
 
         [FunctionName("GetEntry")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "entry")] HttpRequest req, ILogger log)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "entry")] HttpRequest req, 
+                                             ILogger log,
+                                              [AccessToken] ClaimsPrincipal principal)
         {
-            var auth = await TryAuthenticate(req, log);
-            
-            if (auth.HasValue)
+            if (principal != null && principal.IsAuthenticated())
             {
                 log.LogInformation("User authenticated");
-                foreach (var claim in auth.Value.User.Claims)
+                foreach (var claim in principal.Claims)
                     log.LogInformation($"Claim `{claim.Type}` is `{claim.Value}`");
             }
+            else
+            {
+                log.LogWarning("User is not authenticated");
+            }
 
-            var command = new GetEntryRequest(auth?.User);
+            var command = new GetEntryRequest(principal);
             await CommandProcessor.SendAsync(command);
             return new OkObjectResult(command.Result);
         }

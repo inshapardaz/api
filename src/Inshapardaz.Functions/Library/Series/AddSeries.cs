@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Helpers;
@@ -20,8 +21,8 @@ namespace Inshapardaz.Functions.Library.Series
     {
         private readonly IRenderSeries _seriesRenderer;
 
-        public AddSeries(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderSeries seriesRenderer)
-        : base(commandProcessor, authenticator)
+        public AddSeries(IAmACommandProcessor commandProcessor, IRenderSeries seriesRenderer)
+        : base(commandProcessor)
         {
             _seriesRenderer = seriesRenderer;
         }
@@ -29,15 +30,14 @@ namespace Inshapardaz.Functions.Library.Series
         [FunctionName("AddSeries")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "series")] HttpRequest req,
-            ILogger log, CancellationToken token)
+            ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var auth = await AuthenticateAsWriter(req, log);
             var category = await ReadBody<SeriesView>(req);
 
             var request = new AddSeriesRequest(category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _seriesRenderer.Render(auth.User, request.Result);
+            var renderResult = _seriesRenderer.Render(principal, request.Result);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 

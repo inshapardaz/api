@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
@@ -12,15 +14,17 @@ namespace Inshapardaz.Functions.Library.Authors
 {
     public class UpdateAuthorImage : FunctionBase
     {
-        public UpdateAuthorImage(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public UpdateAuthorImage(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 
         [FunctionName("UpdateAuthorImage")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{id}/image")] HttpRequest req,
-            ILogger log, int id)
+            ILogger log, int id,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
             //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             //var input = JsonConvert.DeserializeObject<TodoCreateModel>(requestBody);

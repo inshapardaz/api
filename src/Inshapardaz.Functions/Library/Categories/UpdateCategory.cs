@@ -1,14 +1,12 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities.Library;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -21,24 +19,33 @@ namespace Inshapardaz.Functions.Library.Categories
     {
         private readonly IRenderCategory _categoryRenderer;
 
-        public UpdateCategory(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderCategory categoryRenderer)
-        : base(commandProcessor, authenticator)
+        public UpdateCategory(IAmACommandProcessor commandProcessor, IRenderCategory categoryRenderer)
+        : base(commandProcessor)
         {
             _categoryRenderer = categoryRenderer;
         }
 
         [FunctionName("UpdateCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "categories/{id}")] HttpRequest req,
-            ILogger log, int id, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "categories/{id}")] CategoryView category,
+            ILogger log, int id,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
-            var auth = await AuthenticateAsWriter(req, log);
-            var category = await ReadBody<CategoryView>(req);
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsAdministrator())
+            {
+                return new ForbidResult("Bearer");
+            }
 
             var request = new UpdateCategoryRequest(category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _categoryRenderer.Render(auth.User, request.Result.Category);
+            var renderResult = _categoryRenderer.Render(principal, request.Result.Category);
 
             if (request.Result.HasAddedNew)
             {

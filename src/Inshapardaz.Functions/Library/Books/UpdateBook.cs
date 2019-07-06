@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -19,8 +20,8 @@ namespace Inshapardaz.Functions.Library.Books
     {
         private readonly IRenderBook _bookRenderer;
 
-        public UpdateBook(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderBook bookRenderer)
-        : base(commandProcessor, authenticator)
+        public UpdateBook(IAmACommandProcessor commandProcessor, IRenderBook bookRenderer)
+        : base(commandProcessor)
         {
             _bookRenderer = bookRenderer;
         }
@@ -28,16 +29,15 @@ namespace Inshapardaz.Functions.Library.Books
         [FunctionName("UpdateBook")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId}")] HttpRequest req,
-            ILogger log, int bookId, CancellationToken token)
+            ILogger log, int bookId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var auth = await AuthenticateAsWriter(req, log);
             var book = await ReadBody<BookView>(req);
             book.Id = bookId;
 
             var request = new UpdateBookRequest(book.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _bookRenderer.Render(auth.User, request.Result.Book);
+            var renderResult = _bookRenderer.Render(principal, request.Result.Book);
 
             if (request.Result.HasAddedNew)
             {

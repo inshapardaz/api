@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +11,8 @@ namespace Inshapardaz.Functions.Library.Books.Files
 {
     public class AddBookFile : FunctionBase
     {
-        public AddBookFile(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public AddBookFile(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 

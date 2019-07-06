@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Helpers;
@@ -19,8 +20,8 @@ namespace Inshapardaz.Functions.Library.Series
     public class UpdateSeries : FunctionBase
     {
         private readonly IRenderSeries _seriesRenderer;
-        public UpdateSeries(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderSeries seriesRenderer)
-        : base(commandProcessor, authenticator)
+        public UpdateSeries(IAmACommandProcessor commandProcessor, IRenderSeries seriesRenderer)
+        : base(commandProcessor)
         {
             _seriesRenderer = seriesRenderer;
         }
@@ -28,15 +29,14 @@ namespace Inshapardaz.Functions.Library.Series
         [FunctionName("UpdateSeries")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{seriesId}")] HttpRequest req,
-            ILogger log, int seriesId, CancellationToken token)
+            ILogger log, int seriesId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var auth = await AuthenticateAsWriter(req, log);
             var series = await ReadBody<SeriesView>(req);
             series.Id = seriesId;
             var request = new UpdateSeriesRequest(series.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _seriesRenderer.Render(auth.User, request.Result.Series);
+            var renderResult = _seriesRenderer.Render(principal, request.Result.Series);
 
             if (request.Result.HasAddedNew)
             {

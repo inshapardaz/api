@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +11,8 @@ namespace Inshapardaz.Functions.Library.Files
 {
     public class AddFile : FunctionBase
     {
-        public AddFile(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public AddFile(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 

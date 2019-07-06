@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -14,19 +15,17 @@ namespace Inshapardaz.Functions.Library.Series
 {
     public class DeleteSeries : FunctionBase
     {
-        public DeleteSeries(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public DeleteSeries(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 
         [FunctionName("DeleteSeries")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "series/{seriesId}")] HttpRequest req,
-            ILogger log, int seriesId, CancellationToken token)
+            ILogger log, int seriesId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var auth = await AuthenticateAsWriter(req, log);
-
-             var request = new DeleteSeriesRequest(seriesId);
+            var request = new DeleteSeriesRequest(seriesId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

@@ -9,7 +9,7 @@ namespace Inshapardaz.Functions.Authentication
     public static class AuthenticationHelper
     {
         public static bool IsAuthenticated(this ClaimsPrincipal principal) 
-            => principal != null && principal.Identity != null && principal.Identity.IsAuthenticated;
+            => principal?.Identity != null && principal.Identity.IsAuthenticated;
 
         public static bool IsAdministrator(this ClaimsPrincipal principal) 
             => IsAuthenticated(principal) && GetRoles(principal).Contains("admin");

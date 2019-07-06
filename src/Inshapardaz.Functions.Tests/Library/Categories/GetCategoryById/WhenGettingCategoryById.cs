@@ -27,11 +27,11 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
             var request = TestHelpers.CreateGetRequest();
 
             var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
-            _categories = categoriesBuilder.WithCategories(4).Build();
+            _categories = categoriesBuilder.WithCategories(4, 3).Build();
             _selectedCategory = _categories.First();
             
             var handler = Container.GetService<Functions.Library.Categories.GetCategoryById>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _selectedCategory.Id , CancellationToken.None);
+            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _selectedCategory.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as CategoryView;
         }

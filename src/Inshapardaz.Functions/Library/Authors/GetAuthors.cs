@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Net.Http;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
@@ -21,8 +21,8 @@ namespace Inshapardaz.Functions.Library.Authors
     {
         private readonly IRenderAuthors _authorsRenderer;
 
-        public GetAuthors(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderAuthors authorsRenderer) 
-        : base(commandProcessor, authenticator)
+        public GetAuthors(IAmACommandProcessor commandProcessor, IRenderAuthors authorsRenderer) 
+        : base(commandProcessor)
         {
             _authorsRenderer = authorsRenderer;
         }
@@ -30,13 +30,13 @@ namespace Inshapardaz.Functions.Library.Authors
         [FunctionName("GetAuthors")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors")] HttpRequest req,
-            ILogger log, CancellationToken token)
+            ILogger log,
+            [AccessToken] ClaimsPrincipal principal, 
+            CancellationToken token)
         {
             
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
-            
-            var auth = await TryAuthenticate(req, log);
 
             var request = new GetAuthorsRequest(pageNumber, pageSize);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
@@ -48,7 +48,7 @@ namespace Inshapardaz.Functions.Library.Authors
                 LinkFunc = Link
             };
             
-            return new OkObjectResult(_authorsRenderer.Render(auth?.User, args));
+            return new OkObjectResult(_authorsRenderer.Render(principal, args));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("authors", relType);

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -14,17 +15,18 @@ namespace Inshapardaz.Functions.Library.Authors
 {
     public class DeleteAuthor : FunctionBase
     {
-        public DeleteAuthor(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator) 
-        : base(commandProcessor, authenticator)
+        public DeleteAuthor(IAmACommandProcessor commandProcessor) 
+        : base(commandProcessor)
         {
         }
 
         [FunctionName("DeleteAuthor")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "authors/{authorId}")] HttpRequest req,
-            ILogger log, int authorId, CancellationToken token)
+            ILogger log, int authorId,
+            [AccessToken] ClaimsPrincipal principal, 
+            CancellationToken token)
         {
-            var auth = await AuthenticateAsWriter(req, log);
 
              var request = new DeleteAuthorRequest(authorId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);

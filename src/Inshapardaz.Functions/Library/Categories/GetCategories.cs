@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
@@ -16,8 +17,8 @@ namespace Inshapardaz.Functions.Library.Categories
     public class GetCategories : FunctionBase
     {
         private readonly IRenderCategories _categoriesRenderer;
-        public GetCategories(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator, IRenderCategories categoriesRenderer)
-        : base(commandProcessor, authenticator)
+        public GetCategories(IAmACommandProcessor commandProcessor, IRenderCategories categoriesRenderer)
+        : base(commandProcessor)
         {
             _categoriesRenderer = categoriesRenderer;
         }
@@ -25,14 +26,13 @@ namespace Inshapardaz.Functions.Library.Categories
         [FunctionName("GetCategories")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories")] HttpRequest req,
-            ILogger log, CancellationToken token)
+            ILogger log, [AccessToken] ClaimsPrincipal principal, 
+            CancellationToken token)
         {
-            var auth = await TryAuthenticate(req, log);
-
             var request = new GetCategoriesRequest();
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_categoriesRenderer.Render(auth?.User, request.Result));
+            return new OkObjectResult(_categoriesRenderer.Render(principal, request.Result));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("categories", relType);

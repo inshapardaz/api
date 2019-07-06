@@ -18,9 +18,8 @@ namespace Inshapardaz.Functions.Tests.GetEntryTests
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            AuthenticateAsReader();
             var handler = Container.GetService<GetEntry>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance);
+            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.ReaderClaim);
 
             _view = _response.Value as EntryView;
         }

@@ -2,16 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Paramore.Brighter;
 
@@ -20,36 +16,10 @@ namespace Inshapardaz.Functions
     public abstract class FunctionBase
     {
         protected readonly IAmACommandProcessor CommandProcessor;
-
-        protected readonly IFunctionAppAuthenticator Authenticator;
-
-        public FunctionBase(IAmACommandProcessor commandProcessor, IFunctionAppAuthenticator authenticator)
+        
+        protected FunctionBase(IAmACommandProcessor commandProcessor)
         {
             CommandProcessor = commandProcessor;
-            Authenticator = authenticator;
-        }
-        protected async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> Authenticate(HttpRequest req, ILogger log) 
-        {
-            return await Authenticator.AuthenticateAsync(req, log);
-        }
-
-        protected async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)> AuthenticateAsWriter(HttpRequest req, ILogger log) 
-        {
-            var result =  await Authenticator.AuthenticateAsync(req, log);
-            result.User.IsWriter();
-            return result;
-        }
-
-        protected async Task<(ClaimsPrincipal User, SecurityToken ValidatedToken)?> TryAuthenticate(HttpRequest req, ILogger log) 
-        {
-            try
-            {
-                return await Authenticator.AuthenticateAsync(req, log);
-            }
-            catch(AuthenticationExpectedException)
-            {
-                return null;
-            }
         }
 
         protected async Task<T> ReadBody<T>(HttpRequest request)

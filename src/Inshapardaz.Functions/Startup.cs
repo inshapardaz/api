@@ -2,6 +2,7 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Configuration;
 using Inshapardaz.Functions.Library.Categories;
+using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Azure.WebJobs;
@@ -27,7 +28,12 @@ namespace Inshapardaz.Functions
                    .AddTransient<AddCategory>()
                    .AddTransient<GetCategoryById>()
                    .AddTransient<UpdateCategory>()
-                   .AddTransient<DeleteCategory>();
+                   .AddTransient<DeleteCategory>()
+                   .AddTransient<GetSeries>()
+                   .AddTransient<AddSeries>()
+                   .AddTransient<GetSeriesById>()
+                   .AddTransient<UpdateSeries>()
+                   .AddTransient<DeleteSeries>();
         }
     }
 }

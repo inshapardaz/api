@@ -32,7 +32,11 @@ namespace Inshapardaz.Domain.Ports.Library
         {
             var category = await _categoryRepository.GetCategoryById(command.CategoryId, cancellationToken);
 
-            category.BookCount = await _bookRepository.GetBookCountByCategory(command.CategoryId, cancellationToken);
+            if (category != null)
+            {
+                category.BookCount = await _bookRepository.GetBookCountByCategory(command.CategoryId, cancellationToken);
+            }
+
             command.Result = category;
 
             return await base.HandleAsync(command, cancellationToken);

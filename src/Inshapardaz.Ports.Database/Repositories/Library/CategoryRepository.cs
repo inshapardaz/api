@@ -48,12 +48,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             var category = await _databaseContext.Category.SingleOrDefaultAsync(g => g.Id == categoryId, cancellationToken);
 
-            if (category == null)
+            if (category != null)
             {
-                throw new NotFoundException();
+                _databaseContext.Category.Remove(category);
             }
 
-            _databaseContext.Category.Remove(category);
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 

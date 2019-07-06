@@ -49,12 +49,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             var series = await _databaseContext.Series.SingleOrDefaultAsync(g => g.Id == seriesId, cancellationToken);
 
-            if (series == null)
+            if (series != null)
             {
-                throw new NotFoundException();
+                _databaseContext.Series.Remove(series);
             }
 
-            _databaseContext.Series.Remove(series);
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 

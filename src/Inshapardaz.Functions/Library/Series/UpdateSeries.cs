@@ -1,14 +1,12 @@
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -28,10 +26,20 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("UpdateSeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{seriesId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{seriesId}")] SeriesView series,
             ILogger log, int seriesId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var series = await ReadBody<SeriesView>(req);
+
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
             series.Id = seriesId;
             var request = new UpdateSeriesRequest(series.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);

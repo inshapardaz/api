@@ -31,6 +31,11 @@ namespace Inshapardaz.Functions.Library.Series
             var request = new GetSeriesByIdRequest(id);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
+            if (request.Result == null)
+            {
+                return new NotFoundResult();
+            }
+
             return new OkObjectResult(_seriesRenderer.Render(principal, request.Result));
         }
 

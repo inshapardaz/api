@@ -21,7 +21,9 @@ namespace Inshapardaz.Functions.Tests
             DatabaseContext = CreateDbContext();
             
             _builder.Services.AddSingleton<IDatabaseContext>(sp => DatabaseContext);
-            _builder.Services.AddSingleton<CategoriesDataBuilder>();
+            _builder.Services.AddTransient<CategoriesDataBuilder>()
+                             .AddTransient<SeriesDataBuilder>();
+
             _startup.Configure(_builder);
         }
 

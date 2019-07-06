@@ -25,6 +25,8 @@ namespace Inshapardaz.Functions.Adapters.Library
 
             if (principal.IsWriter())
             {
+                // TODO: Add image upload for series
+                //view.Links.Add(UpdateSeriesImage.Link(series.Id, RelTypes.ImageUpload));
                 view.Links.Add(UpdateSeries.Link(series.Id, RelTypes.Update));
                 view.Links.Add(DeleteSeries.Link(series.Id, RelTypes.Delete));
             }

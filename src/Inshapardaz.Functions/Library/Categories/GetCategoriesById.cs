@@ -32,6 +32,11 @@ namespace Inshapardaz.Functions.Library.Categories
             var request = new GetCategoryByIdRequest(categoryById);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
+            if (request.Result == null)
+            {
+                return new NotFoundResult();
+            }
+
             return new OkObjectResult(_categoryRenderer.Render(principal, request.Result));
         }
 

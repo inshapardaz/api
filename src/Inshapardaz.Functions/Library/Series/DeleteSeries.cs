@@ -25,6 +25,16 @@ namespace Inshapardaz.Functions.Library.Series
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "series/{seriesId}")] HttpRequest req,
             ILogger log, int seriesId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
             var request = new DeleteSeriesRequest(seriesId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();

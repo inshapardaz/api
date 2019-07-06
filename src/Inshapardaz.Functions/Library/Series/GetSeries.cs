@@ -14,6 +14,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Series
 {
+    // TODO : Add paging to series
     public class GetSeries : FunctionBase
     {
         private readonly IRenderSeriesList _seriesListRenderer;

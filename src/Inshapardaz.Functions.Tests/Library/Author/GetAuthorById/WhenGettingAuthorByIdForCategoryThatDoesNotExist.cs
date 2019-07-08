@@ -8,10 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
+namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
 {
     [TestFixture]
-    public class WhenGettingCategoryByIdForCategoryThatDoesNotExist : FunctionTest
+    public class WhenGettingAuthorByIdForCategoryThatDoesNotExist : FunctionTest
     {
         NotFoundResult _response;
 
@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
         {
             var request = TestHelpers.CreateGetRequest();
             
-            var handler = Container.GetService<Functions.Library.Categories.GetCategoryById>();
+            var handler = Container.GetService<Functions.Library.Authors.GetAuthorById>();
             _response = (NotFoundResult) await handler.Run(request, NullLogger.Instance, new Faker().Random.Int(), AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 

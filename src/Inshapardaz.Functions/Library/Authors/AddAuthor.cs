@@ -7,7 +7,6 @@ using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -27,14 +26,22 @@ namespace Inshapardaz.Functions.Library.Authors
 
         [FunctionName("AddAuthor")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "authors")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "authors")] AuthorView author,
             ILogger log,
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)
         {
-            var category = await ReadBody<AuthorView>(req);
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
 
-            var request = new AddAuthorRequest(category.Map());
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
+            var request = new AddAuthorRequest(author.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _authorRenderer.Render(principal, request.Result);

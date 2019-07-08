@@ -31,7 +31,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
         }
 
         [Test]
-        public void ShouldHaveOkResult()
+        public void ShouldHaveNotFoundResult()
         {
             Assert.That(_response, Is.Not.Null);
             Assert.That(_response.StatusCode, Is.EqualTo((int) HttpStatusCode.NotFound));

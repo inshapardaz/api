@@ -37,6 +37,7 @@ namespace Inshapardaz.Functions.Tests
             Environment.SetEnvironmentVariable("Authentication.IssuerToken", "http://api.inshapardaz.org");
             Environment.SetEnvironmentVariable("DefaultDatabase", "data source=.;initial catalog=Inshapardaz;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework");
             Environment.SetEnvironmentVariable("API.Root", "http://localhost:7071/api");
+            Environment.SetEnvironmentVariable("FileStorageConnectionString", "UseDevelopmentStorage=true");
         }
     }
 }

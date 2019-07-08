@@ -7,6 +7,7 @@ using Inshapardaz.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
+using Inshapardaz.Functions.Library.Authors;
 
 [assembly: WebJobsStartup(typeof(Inshapardaz.Functions.Startup))]
 namespace Inshapardaz.Functions
@@ -33,7 +34,12 @@ namespace Inshapardaz.Functions
                    .AddTransient<AddSeries>()
                    .AddTransient<GetSeriesById>()
                    .AddTransient<UpdateSeries>()
-                   .AddTransient<DeleteSeries>();
+                   .AddTransient<DeleteSeries>()
+                   .AddTransient<GetAuthors>()
+                   .AddTransient<GetAuthorById>()
+                   .AddTransient<AddAuthor>()
+                   .AddTransient<UpdateAuthor>()
+                   .AddTransient<DeleteAuthor>();
         }
     }
 }

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bogus;
 using Inshapardaz.Ports.Database;
-using Inshapardaz.Ports.Database.Entities;
 using Inshapardaz.Ports.Database.Entities.Library;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders

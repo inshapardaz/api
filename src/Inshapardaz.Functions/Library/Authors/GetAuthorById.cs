@@ -34,7 +34,12 @@ namespace Inshapardaz.Functions.Library.Authors
             var request = new GetAuthorByIdRequest(authorId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_authorRenderer.Render(principal, request.Result));
+            if (request.Result != null)
+            {
+                return new OkObjectResult(_authorRenderer.Render(principal, request.Result));
+            }
+
+            return new NotFoundResult();
         }
 
         public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}", relType, "GET");

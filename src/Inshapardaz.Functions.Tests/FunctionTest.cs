@@ -1,5 +1,7 @@
 ﻿using System;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Ports.Database;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +24,9 @@ namespace Inshapardaz.Functions.Tests
             
             _builder.Services.AddSingleton<IDatabaseContext>(sp => DatabaseContext);
             _builder.Services.AddTransient<CategoriesDataBuilder>()
-                             .AddTransient<SeriesDataBuilder>();
+                             .AddTransient<SeriesDataBuilder>()
+                             .AddTransient<AuthorsDataBuilder>()
+                             .AddSingleton<IFileStorage, FakeFileStorage>();
 
             _startup.Configure(_builder);
         }

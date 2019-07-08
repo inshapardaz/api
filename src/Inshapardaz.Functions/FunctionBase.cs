@@ -65,13 +65,16 @@ namespace Inshapardaz.Functions
 
         protected int GetQueryParameter(HttpRequest request, string fieldName, int defaultValue = 0)
         {
-            var queryParams = request.GetQueryParameterDictionary();
-
-            if (queryParams.TryGetValue(fieldName, out var value))
+            if (request != null)
             {
-                if (int.TryParse(value, out var intValue))
+                var queryParams = request.GetQueryParameterDictionary();
+
+                if (queryParams.TryGetValue(fieldName, out var value))
                 {
-                    return intValue;
+                    if (int.TryParse(value, out var intValue))
+                    {
+                        return intValue;
+                    }
                 }
             }
 

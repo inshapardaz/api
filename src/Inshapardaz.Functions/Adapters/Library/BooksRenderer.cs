@@ -49,7 +49,7 @@ namespace Inshapardaz.Functions.Adapters.Library
                 links.Add(source.LinkFunc(page.CurrentPageIndex + 1, page.PageSize, RelTypes.Next));
             }
 
-            if (page.PageCount > 1 && page.CurrentPageIndex > 1)
+            if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
             {
                 links.Add(source.LinkFunc(page.CurrentPageIndex - 1, page.PageSize, RelTypes.Previous));
             }

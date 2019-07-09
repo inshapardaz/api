@@ -26,6 +26,7 @@ namespace Inshapardaz.Functions.Tests
             _builder.Services.AddTransient<CategoriesDataBuilder>()
                              .AddTransient<SeriesDataBuilder>()
                              .AddTransient<AuthorsDataBuilder>()
+                             .AddTransient<BooksDataBuilder>()
                              .AddSingleton<IFileStorage, FakeFileStorage>();
 
             _startup.Configure(_builder);

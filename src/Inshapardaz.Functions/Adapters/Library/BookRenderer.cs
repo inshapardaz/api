@@ -42,7 +42,7 @@ namespace Inshapardaz.Functions.Adapters.Library
 
             if (source.SeriesId.HasValue)
             {
-                GetSeriesById.Link(source.SeriesId.Value, RelTypes.Series);
+                links.Add(GetSeriesById.Link(source.SeriesId.Value, RelTypes.Series));
             }
 
             if (source.ImageId > 0)

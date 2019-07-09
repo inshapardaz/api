@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
                 .Build();
 
             var builder = Container.GetService<AuthorsDataBuilder>();
-            builder.WithAuthors(5, 3).Build();
+            builder.WithAuthors(20, 3).Build();
             
             var handler = Container.GetService<Functions.Library.Authors.GetAuthors>();
             _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
@@ -69,7 +69,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         }
 
         [Test]
-        public void ShouldHaveSomeCategories()
+        public void ShouldNotReturnAuthor()
         {
             Assert.IsEmpty(_view.Data, "Should return no data.");
         }

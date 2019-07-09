@@ -71,19 +71,22 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         }
 
         [Test]
-        public void ShouldHaveSomeCategories()
+        public void ShouldHaveSomeAuthors()
         {
             Assert.IsNotEmpty(_view.Data, "Should return some authors.");
             Assert.That(_view.Data.Count(), Is.EqualTo(10), "Should return all authors on page");
         }
 
         [Test]
-        public void ShouldHaveCorrectCategoryData()
+        public void ShouldHaveCorrectAuthorData()
         {
             var actual = _view.Data.FirstOrDefault();
             Assert.That(actual, Is.Not.Null, "Should contain at-least one author");
             Assert.That(actual.Name, Is.Not.Empty, "Author name should have a value");
             Assert.That(actual.BookCount, Is.GreaterThan(0), "Author should have some books.");
+
+            actual.Links.AssertLinkNotPresent("update");
+            actual.Links.AssertLinkNotPresent("delete");
         }
     }
 }

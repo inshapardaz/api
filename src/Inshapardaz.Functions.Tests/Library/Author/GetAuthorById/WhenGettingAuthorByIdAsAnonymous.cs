@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
 {
     [TestFixture]
-    public class WhenGettingAuthorById : FunctionTest
+    public class WhenGettingAuthorByIdAsAnonymous : FunctionTest
     {
         OkObjectResult _response;
         AuthorView _view;
@@ -22,9 +22,8 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-
             var dataBuilder = Container.GetService<AuthorsDataBuilder>();
-            var authors = dataBuilder.WithAuthors(4, 3).Build();
+            var authors = dataBuilder.WithAuthors(4).Build();
             _expected = authors.First();
             
             var handler = Container.GetService<Functions.Library.Authors.GetAuthorById>();
@@ -53,7 +52,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
                  .ShouldBeGet()
                  .ShouldHaveSomeHref();
         }
-
         [Test]
         public void ShouldHaveBooksLink()
         {
@@ -63,9 +61,28 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
         }
 
         [Test]
+        public void ShouldNotHaveUpdateLink()
+        {
+            _view.Links.AssertLinkNotPresent("update");
+        }
+        
+        [Test]
+        public void ShouldNotHaveDeleteLink()
+        {
+            _view.Links.AssertLinkNotPresent("delete");
+        }
+
+        [Test]
+        public void ShouldNotHaveImageUploadLink()
+        {
+            _view.Links.AssertLinkNotPresent("image-upload");
+        }
+
+
+        [Test]
         public void ShouldReturnCorrectAuthorData()
         {
-            Assert.That(_view, Is.Not.Null, "Should return author");
+            Assert.That(_view, Is.Not.Null, "Should contain at-least one author");
             Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Author id does not match");
             Assert.That(_view.Name, Is.EqualTo(_expected.Name), "Author name does not match");
             Assert.That(_view.BookCount, Is.EqualTo(_expected.Books.Count), "Author book count does not match");

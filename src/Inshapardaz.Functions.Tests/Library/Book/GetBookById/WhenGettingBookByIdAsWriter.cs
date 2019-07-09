@@ -9,27 +9,27 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
+namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
 {
     [TestFixture]
-    public class WhenGettingAuthorByIdAsAdministrator : FunctionTest
+    public class WhenGettingBookByIdAsWriter : FunctionTest
     {
         OkObjectResult _response;
-        AuthorView _view;
-        private Ports.Database.Entities.Library.Author _expected;
+        BookView _view;
+        private Ports.Database.Entities.Library.Book _expected;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            var dataBuilder = Container.GetService<AuthorsDataBuilder>();
-            var authors = dataBuilder.WithAuthors(4).Build();
-            _expected = authors.First();
+            var builder = Container.GetService<BooksDataBuilder>();
+            var books = builder.WithBooks(4).Build();
+            _expected = books.First();
             
-            var handler = Container.GetService<Functions.Library.Authors.GetAuthorById>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            var handler = Container.GetService<Functions.Library.Books.GetBookById>();
+            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
-            _view = _response.Value as AuthorView;
+            _view = _response.Value as BookView;
         }
 
         [OneTimeTearDown]
@@ -53,9 +53,9 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
                  .ShouldHaveSomeHref();
         }
         [Test]
-        public void ShouldHaveBooksLink()
+        public void ShouldHaveAuthorLink()
         {
-            _view.Links.AssertLink("books")
+            _view.Links.AssertLink("author")
                  .ShouldBeGet()
                  .ShouldHaveSomeHref();
         }
@@ -84,14 +84,29 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
                  .ShouldHaveSomeHref();
         }
 
+        [Test]
+        public void ShouldHaveCreateChapterLink()
+        {
+            _view.Links.AssertLink("create-chapter")
+                 .ShouldBePost()
+                 .ShouldHaveSomeHref();
+        }
 
         [Test]
-        public void ShouldReturnCorrectAuthorData()
+        public void ShouldHaveAddFileLink()
         {
-            Assert.That(_view, Is.Not.Null, "Should contain at-least one author");
-            Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Author id does not match");
-            Assert.That(_view.Name, Is.EqualTo(_expected.Name), "Author name does not match");
-            Assert.That(_view.BookCount, Is.EqualTo(_expected.Books.Count), "Author book count does not match");
+            _view.Links.AssertLink("add-file")
+                 .ShouldBePost()
+                 .ShouldHaveSomeHref();
+        }
+
+        [Test]
+        public void ShouldReturnCorrectBookData()
+        {
+            Assert.That(_view, Is.Not.Null, "Should return a book");
+            Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Book id does not match");
+            Assert.That(_view.Title, Is.EqualTo(_expected.Title), "Book title does not match");
+            Assert.That(_view.Description, Is.EqualTo(_expected.Description), "Book description count does not match");
         }
     }
 }

@@ -33,7 +33,12 @@ namespace Inshapardaz.Functions.Library.Books
             var request = new GetBookByIdRequest(bookId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_bookRenderer.Render(principal, request.Result));
+            if (request.Result != null)
+            {
+                return new OkObjectResult(_bookRenderer.Render(principal, request.Result));
+            }
+
+            return new NotFoundResult();
         }
 
         public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/{bookId}", relType);

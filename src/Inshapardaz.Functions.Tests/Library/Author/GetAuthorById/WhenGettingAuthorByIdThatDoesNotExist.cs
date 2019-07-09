@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
 {
     [TestFixture]
-    public class WhenGettingAuthorByIdForCategoryThatDoesNotExist : FunctionTest
+    public class WhenGettingAuthorByIdThatDoesNotExist : FunctionTest
     {
         NotFoundResult _response;
 

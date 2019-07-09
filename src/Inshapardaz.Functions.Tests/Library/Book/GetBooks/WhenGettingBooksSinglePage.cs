@@ -10,29 +10,26 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
+namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
 {
     [TestFixture]
-    public class WhenGettingAuthorsPageInMiddle : FunctionTest
+    public class WhenGettingBooksSinglePage : FunctionTest
     {
         OkObjectResult _response;
-        PageView<AuthorView> _view;
+        PageView<BookView> _view;
         
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var request = new RequestBuilder()
-                .WithQueryParameter("pageNumber", 3)
-                .WithQueryParameter("pageSize", 10)
-                .Build();
+            var request = TestHelpers.CreateGetRequest();
 
-            var builder = Container.GetService<AuthorsDataBuilder>();
-            builder.WithAuthors(50, 3).Build();
+            var builder = Container.GetService<BooksDataBuilder>();
+            builder.WithBooks(4).Build();
             
-            var handler = Container.GetService<Functions.Library.Authors.GetAuthors>();
+            var handler = Container.GetService<Functions.Library.Books.GetBooks>();
             _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
-            _view = _response.Value as PageView<AuthorView>;
+            _view = _response.Value as PageView<BookView>;
         }
 
         [OneTimeTearDown]
@@ -57,35 +54,37 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         }
 
         [Test]
-        public void ShouldHaveNextLink()
+        public void ShouldNotHaveNextLink()
         {
-            _view.Links.AssertLink("next")
-                .ShouldBeGet()
-                .ShouldHaveSomeHref();
+            _view.Links.AssertLinkNotPresent("next");
         }
 
         [Test]
-        public void ShouldHavePreviousLink()
+        public void ShouldNotHavePreviousLink()
         {
-            _view.Links.AssertLink("previous")
-                .ShouldBeGet()
-                .ShouldHaveSomeHref();
+            _view.Links.AssertLinkNotPresent("previous");
         }
 
         [Test]
-        public void ShouldHaveSomeAuthors()
+        public void ShouldNotHaveCreateLink()
         {
-            Assert.IsNotEmpty(_view.Data, "Should return some authors.");
-            Assert.That(_view.Data.Count(), Is.EqualTo(10), "Should return all authors on page");
+            _view.Links.AssertLinkNotPresent("create");
         }
 
         [Test]
-        public void ShouldHaveCorrectAuthorData()
+        public void ShouldHaveSomeBooks()
+        {
+            Assert.IsNotEmpty(_view.Data, "Should return some books.");
+            Assert.That(_view.Data.Count(), Is.EqualTo(4), "Should return all books on page");
+        }
+
+        [Test]
+        public void ShouldHaveCorrectBookData()
         {
             var actual = _view.Data.FirstOrDefault();
-            Assert.That(actual, Is.Not.Null, "Should contain at-least one author");
-            Assert.That(actual.Name, Is.Not.Empty, "Author name should have a value");
-            Assert.That(actual.BookCount, Is.GreaterThan(0), "Author should have some books.");
+            Assert.That(actual, Is.Not.Null, "Should contain at-least one book");
+            Assert.That(actual.Title, Is.Not.Empty, "Book name should have a value");
+            Assert.That(actual.Description, Is.Not.Empty, "Book should have some description.");
 
             actual.Links.AssertLinkNotPresent("update");
             actual.Links.AssertLinkNotPresent("delete");

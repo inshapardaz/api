@@ -22,9 +22,9 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            var categoriesBuilder = Container.GetService<AuthorsDataBuilder>();
-            var categories = categoriesBuilder.WithAuthors(4).Build();
-            _expected = categories.First();
+            var dataBuilder = Container.GetService<AuthorsDataBuilder>();
+            var authors = dataBuilder.WithAuthors(4).Build();
+            _expected = authors.First();
             
             var handler = Container.GetService<Functions.Library.Authors.GetAuthorById>();
             _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
@@ -88,7 +88,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
         [Test]
         public void ShouldReturnCorrectAuthorData()
         {
-            Assert.That(_view, Is.Not.Null, "Should contain at-least one category");
+            Assert.That(_view, Is.Not.Null, "Should contain at-least one author");
             Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Author id does not match");
             Assert.That(_view.Name, Is.EqualTo(_expected.Name), "Author name does not match");
             Assert.That(_view.BookCount, Is.EqualTo(_expected.Books.Count), "Author book count does not match");

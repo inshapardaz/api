@@ -14,15 +14,14 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private readonly IDatabaseContext _context;
         private readonly List<Book> _books = new List<Book>();
         private readonly List<File> _files = new List<File>();
+        private List<Category> _categories;
 
         public BooksDataBuilder(IDatabaseContext context)
         {
             _context = context;
         }
 
-        public BooksDataBuilder WithBooks(int count, bool havingSeries = false)
-        {
-            var books = new Faker<Book>()
+        public Faker<Book> BookFaker => new Faker<Book>()
                         .RuleFor(c => c.Id, 0)
                         .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
                         .RuleFor(c => c.Description, f => f.Random.Words(10))
@@ -34,13 +33,19 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                         .RuleFor(c => c.IsPublic, f=> f.Random.Bool())
                         .RuleFor(c => c.IsPublished, f=> f.Random.Bool())
                         .RuleFor(c => c.YearPublished, f => f.Random.Int(1900, 2000))
-                        .RuleFor(c => c.Status, f => f.PickRandom<BookStatuses>())
-                        .Generate(count);
+                        .RuleFor(c => c.Status, f => f.PickRandom<BookStatuses>());
+        public BooksDataBuilder WithBooks(int count, bool havingSeries = false, int categoryCount = 0)
+        {
+            var books = BookFaker.Generate(count);
 
             var series = new Faker<Series>()
                 .RuleFor(s => s.Id, 0)
                 .RuleFor(s => s.Name, f => f.Random.String())
                 .Generate();
+
+            _categories = new Faker<Category>()
+                          .RuleFor(c => c.Name, f => f.Random.String())
+                          .Generate(categoryCount);
 
             int seriesIndex = 1;
             foreach (var book in books)
@@ -59,11 +64,15 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                     book.SeriesIndex = seriesIndex++;
                 }
 
+                foreach (var category in _categories)
+                {
+                    book.BookCategory.Add(new BookCategory { Category = category });
+                }
+
 
                 if (book.ImageId.HasValue)
                 {
                     _files.Add(new File {Id = book.ImageId.Value, IsPublic = true, FilePath = "http://localhost/test.jpg"});
-
                 }
             }
 
@@ -73,6 +82,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         
         public IEnumerable<Book> Build()
         {
+            _context.Category.AddRange(_categories);
             _context.Book.AddRange(_books);
             _context.File.AddRange(_files);
             _context.SaveChanges();

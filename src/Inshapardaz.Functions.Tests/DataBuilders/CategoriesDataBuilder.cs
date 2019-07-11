@@ -3,6 +3,7 @@ using System.Linq;
 using Bogus;
 using Inshapardaz.Ports.Database;
 using Inshapardaz.Ports.Database.Entities.Library;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
 {
@@ -58,6 +59,15 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public Category GetById(int id)
         {
             return _context.Category.SingleOrDefault(x => x.Id == id);
+        }
+
+        public IEnumerable<BookCategory> GetByBookId(int bookId)
+        {
+            return _context.Book
+                           .Include(b => b.BookCategory)
+                           .Where(b => b.Id == bookId)
+                           .SelectMany(x => x.BookCategory);
+
         }
     }
 }

@@ -52,6 +52,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
                  .ShouldBeGet()
                  .ShouldHaveSomeHref();
         }
+
         [Test]
         public void ShouldHaveAuthorLink()
         {

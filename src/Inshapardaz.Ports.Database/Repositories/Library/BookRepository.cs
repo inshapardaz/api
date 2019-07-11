@@ -84,6 +84,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             existingEntity.Status = book.Status;
             existingEntity.Copyrights = book.Copyrights;
             existingEntity.YearPublished = book.YearPublished;
+            existingEntity.IsPublished = book.IsPublished;
 
             if (book.ImageId > 0)
             {
@@ -108,12 +109,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             var book = await _databaseContext.Book.SingleOrDefaultAsync(g => g.Id == bookId, cancellationToken);
 
-            if (book == null)
+            if (book != null)
             {
-                throw new NotFoundException();
+                _databaseContext.Book.Remove(book);
             }
 
-            _databaseContext.Book.Remove(book);
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 

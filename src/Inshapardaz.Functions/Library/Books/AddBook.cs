@@ -27,14 +27,22 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("AddBook")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books")] BookView book,
             ILogger log,
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)
         {
-            var category = await ReadBody<BookView>(req);
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
 
-            var request = new AddBookRequest(category.Map());
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
+            var request = new AddBookRequest(book.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _bookRenderer.Render(principal, request.Result);

@@ -27,8 +27,17 @@ namespace Inshapardaz.Functions.Library.Books
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)
         {
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
 
-             var request = new DeleteBookRequest(bookId);
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
+            var request = new DeleteBookRequest(bookId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

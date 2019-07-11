@@ -28,10 +28,19 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("UpdateBook")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId}")] BookView book,
             ILogger log, int bookId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var book = await ReadBody<BookView>(req);
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
             book.Id = bookId;
 
             var request = new UpdateBookRequest(book.Map());

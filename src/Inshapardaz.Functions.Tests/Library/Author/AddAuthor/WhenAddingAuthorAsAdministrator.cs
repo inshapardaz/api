@@ -48,13 +48,13 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         }
 
         [Test]
-        public void ShouldHaveCreatedTheSeries()
+        public void ShouldHaveCreatedTheAuthor()
         {
-            var series = _response.Value as AuthorView;
-            Assert.That(series, Is.Not.Null);
+            var actual = _response.Value as AuthorView;
+            Assert.That(actual, Is.Not.Null);
 
-            var cat = _builder.GetById(series.Id);
-            Assert.That(cat, Is.Not.Null, "Series should be created.");
+            var cat = _builder.GetById(actual.Id);
+            Assert.That(cat, Is.Not.Null, "Author should be created.");
         }
     }
 }

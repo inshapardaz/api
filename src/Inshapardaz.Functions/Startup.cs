@@ -42,7 +42,10 @@ namespace Inshapardaz.Functions
                    .AddTransient<UpdateAuthor>()
                    .AddTransient<DeleteAuthor>()
                    .AddTransient<GetBooks>()
-                   .AddTransient<GetBookById>();
+                   .AddTransient<GetBookById>()
+                   .AddTransient<AddBook>()
+                   .AddTransient<UpdateBook>()
+                   .AddTransient<DeleteBook>();
         }
     }
 }

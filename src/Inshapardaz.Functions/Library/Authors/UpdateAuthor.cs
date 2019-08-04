@@ -2,8 +2,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -17,11 +17,9 @@ namespace Inshapardaz.Functions.Library.Authors
 {
     public class UpdateAuthor : FunctionBase
     {
-        private readonly IRenderAuthor _authorRenderer;
-        public UpdateAuthor(IAmACommandProcessor commandProcessor, IRenderAuthor authorRenderer)
+        public UpdateAuthor(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
-            _authorRenderer = authorRenderer;
         }
 
         [FunctionName("UpdateAuthor")]
@@ -46,7 +44,7 @@ namespace Inshapardaz.Functions.Library.Authors
             var request = new UpdateAuthorRequest(author.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _authorRenderer.Render(principal, request.Result.Author);
+            var renderResult = request.Result.Author.Render(principal);
 
             if (request.Result.HasAddedNew)
             {

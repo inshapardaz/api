@@ -2,8 +2,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -17,12 +17,9 @@ namespace Inshapardaz.Functions.Library.Categories
 {
     public class UpdateCategory : FunctionBase
     {
-        private readonly IRenderCategory _categoryRenderer;
-
-        public UpdateCategory(IAmACommandProcessor commandProcessor, IRenderCategory categoryRenderer)
+        public UpdateCategory(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
-            _categoryRenderer = categoryRenderer;
         }
 
         [FunctionName("UpdateCategory")]
@@ -46,7 +43,7 @@ namespace Inshapardaz.Functions.Library.Categories
             var request = new UpdateCategoryRequest(category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _categoryRenderer.Render(principal, request.Result.Category);
+            var renderResult = request.Result.Category.Render(principal);
 
             if (request.Result.HasAddedNew)
             {

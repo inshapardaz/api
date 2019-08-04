@@ -1,4 +1,7 @@
-﻿namespace Inshapardaz.Domain.Ports.Dictionary
+﻿using System;
+using System.Security.Claims;
+
+namespace Inshapardaz.Domain.Ports.Dictionary
 {
     public class DictionaryRequest : RequestBase
     {
@@ -8,5 +11,7 @@
         }
 
         public int DictionaryId { get; }
+
+        public Guid UserId { get; set;  }
     }
 }

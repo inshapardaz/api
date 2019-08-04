@@ -5,8 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -26,36 +27,52 @@ namespace Inshapardaz.Functions.Library.Authors
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{id}/image")] HttpRequestMessage req,
             ILogger log, int id,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var provider = new MultipartMemoryStreamProvider();
-            await req.Content.ReadAsMultipartAsync(provider, token);
-            var file = provider.Contents.First();
-            var fileInfo = file.Headers.ContentDisposition;
-            var fileData = await file.ReadAsByteArrayAsync();
+            var multipart = await req.Content.ReadAsMultipartAsync(token);
+            var content = await req.Content.ReadAsByteArrayAsync();
+
+            var fileName = $"{id}";
+            var mimeType = "application/binary";
+            var fileContent = multipart.Contents.FirstOrDefault();
+            if (fileContent != null)
+            {
+                fileName = $"{id}{GetFileExtension(fileContent.Headers?.ContentDisposition?.FileName)}";
+                mimeType = fileContent.Headers?.ContentType.MediaType;
+            }
 
             var request = new UpdateAuthorImageRequest(id)
             {
                 Image = new Domain.Entities.File
                 {
-                    FileName = fileInfo.FileName,
-                    MimeType = file.Headers.ContentType.MediaType,
-                    Contents = fileData
+                    FileName = fileName,
+                    MimeType = mimeType,
+                    Contents = content
                 }
             };
 
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            //if (request.Result.HasAddedNew)
-            //{
-            //    var response = _fileRenderer.Render(request.Result.File);
-            //    return new CreatedResult(request.re.Links.Self(), response);
-            //}
+            if (request.Result.HasAddedNew)
+            {
+                var response = request.Result.File.Render(claims);
+                return new CreatedResult(response.Links.Self(), response);
+            }
 
-            return new OkObjectResult($"PUT:Author {id} Image");
+            return new OkResult();
         }
 
         public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}/image", relType, "PUT");
+
+        private string GetFileExtension(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return System.IO.Path.GetExtension(fileName);
+            }
+
+            return "";
+        }
     }
 }

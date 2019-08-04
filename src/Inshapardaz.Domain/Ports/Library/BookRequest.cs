@@ -1,7 +1,6 @@
 ﻿using System;
-using Paramore.Brighter;
 
-namespace Inshapardaz.Domain.Ports
+namespace Inshapardaz.Domain.Ports.Library
 {
     public abstract class BookRequest : RequestBase
     {
@@ -9,6 +8,9 @@ namespace Inshapardaz.Domain.Ports
         {
             BookId = bookId;
         }
+
+        public Guid UserId { get; set; }
+
 
         public int BookId { get; set; }
     }

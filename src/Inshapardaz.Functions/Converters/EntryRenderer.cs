@@ -10,16 +10,11 @@ using Inshapardaz.Functions.Library.Periodicals;
 using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Views;
 
-namespace Inshapardaz.Functions.Adapters
-{
-    public interface IRenderEntry
-    {
-        EntryView Render(ClaimsPrincipal user);
-    }
-
-    public class EntryRenderer : IRenderEntry
+namespace Inshapardaz.Functions.Converters
+{ 
+    public static class EntryRenderer
     {        
-        public EntryView Render(ClaimsPrincipal user)
+        public static EntryView Render(ClaimsPrincipal user)
         {
             var links = new List<LinkView>
                             {

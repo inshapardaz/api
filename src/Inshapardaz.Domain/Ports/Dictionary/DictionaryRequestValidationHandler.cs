@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Dictionary;
 using Paramore.Brighter;
 
@@ -13,12 +12,9 @@ namespace Inshapardaz.Domain.Ports.Dictionary
     {
         private readonly IDictionaryRepository _dictionaryRepository;
 
-        private readonly IUserHelper _userHelper;
-
-        public DictionaryRequestValidationHandler(IDictionaryRepository dictionaryRepository, IUserHelper userHelper)
+        public DictionaryRequestValidationHandler(IDictionaryRepository dictionaryRepository)
         {
             _dictionaryRepository = dictionaryRepository;
-            _userHelper = userHelper;
         }
 
         public override async Task<T> HandleAsync(T command, CancellationToken cancellationToken = new CancellationToken())
@@ -30,8 +26,7 @@ namespace Inshapardaz.Domain.Ports.Dictionary
                 throw new NotFoundException();
             }
 
-            var userId = _userHelper.GetUserId();
-            if (!dictionary.IsPublic && dictionary.UserId != userId)
+            if (!dictionary.IsPublic && dictionary.UserId != command.UserId)
             {
                 throw new UnauthorizedException();
             }

@@ -38,7 +38,7 @@ namespace Inshapardaz.Functions
             }
         }
 
-        protected static LinkView SelfLink(string href, string relType = RelTypes.Self, string method = "GET", Dictionary<string, string> queryString = null)
+        protected static LinkView SelfLink(string href, string relType = RelTypes.Self, string method = "GET", Dictionary<string, string> queryString = null, string type = null)
         {
             var urlBuilder = new UriBuilder(ConfigurationSettings.ApiRoot)
             {
@@ -59,7 +59,8 @@ namespace Inshapardaz.Functions
             {
                 Method = method.ToUpper(),
                 Rel = relType,
-                Href = href.StartsWith("http") ? href : urlBuilder.Uri.ToString()
+                Href = href.StartsWith("http") ? href : urlBuilder.Uri.ToString(),
+                Type = type
             };
         }
 
@@ -80,5 +81,6 @@ namespace Inshapardaz.Functions
 
             return defaultValue;
         }
+
     }
 }

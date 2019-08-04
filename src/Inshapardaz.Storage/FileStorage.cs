@@ -1,6 +1,6 @@
 ﻿using Inshapardaz.Domain.Repositories;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 using System;
 using System.IO;
 using System.Threading;

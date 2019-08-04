@@ -4,30 +4,20 @@ using System.Security.Claims;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Authors;
+using Inshapardaz.Functions.Library.Books;
+using Inshapardaz.Functions.Library.Files;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 
-namespace Inshapardaz.Functions.Adapters.Library
+namespace Inshapardaz.Functions.Converters
 {
-    public interface IRenderAuthors
+    public static class AuthorsRenderer 
     {
-        PageView<AuthorView> Render(ClaimsPrincipal principal, PageRendererArgs<Author> source);
-    }
-
-    public class AuthorsRenderer : IRenderAuthors
-    {
-        private readonly IRenderAuthor _authorRenderer;
-
-        public AuthorsRenderer(IRenderAuthor authorRenderer)
-        {
-            _authorRenderer = authorRenderer;
-        }
-
-        public PageView<AuthorView> Render(ClaimsPrincipal principal, PageRendererArgs<Author> source)
+        public static PageView<AuthorView> Render(this PageRendererArgs<Author> source, ClaimsPrincipal principal)
         {
             var page = new PageView<AuthorView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
-                Data = source.Page.Data?.Select(x => _authorRenderer.Render(principal, x))
+                Data = source.Page.Data?.Select(x => x.Render(principal))
             };
 
             
@@ -53,6 +43,32 @@ namespace Inshapardaz.Functions.Adapters.Library
 
             page.Links = links;
             return page;
+        }
+
+        public static AuthorView Render(this Author source, ClaimsPrincipal principal)
+        {
+            var result = source.Map();
+
+            var links = new List<LinkView>
+            {
+                GetAuthorById.Link(source.Id, RelTypes.Self),
+                GetBooksByAuthor.Link(source.Id, RelTypes.Books)
+            };
+
+            if (source.ImageId > 0)
+            {
+                links.Add(GetFileById.Link(source.ImageId, RelTypes.Image));
+            }
+
+            if (principal.IsWriter())
+            {
+                links.Add(UpdateAuthor.Link(source.Id, RelTypes.Update));
+                links.Add(DeleteAuthor.Link(source.Id, RelTypes.Delete));
+                links.Add(UpdateAuthorImage.Link(source.Id, RelTypes.ImageUpload));
+            }
+
+            result.Links = links;
+            return result;
         }
     }
 }

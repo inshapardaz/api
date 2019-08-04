@@ -2,8 +2,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +16,9 @@ namespace Inshapardaz.Functions.Library.Series
 {
     public class GetSeriesById : FunctionBase
     {
-        private readonly IRenderSeries _seriesRenderer;
-        public GetSeriesById(IAmACommandProcessor commandProcessor, IRenderSeries seriesRenderer)
+        public GetSeriesById(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
-            _seriesRenderer = seriesRenderer;
         }
 
         [FunctionName("GetSeriesById")]
@@ -36,7 +34,7 @@ namespace Inshapardaz.Functions.Library.Series
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(_seriesRenderer.Render(principal, request.Result));
+            return new OkObjectResult(request.Result.Render(principal));
         }
 
         public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}", relType);

@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
 {
     [TestFixture]
-    public class WhenAddingAuthorAsUnauthorized : FunctionTest
+    public class WhenAddingAuthorAsAnonymousUser : FunctionTest
     {
         UnauthorizedResult _response;
 
@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         }
 
         [Test]
-        public void ShouldHaveForbiddenResult()
+        public void ShouldHaveUnauthorizedResult()
         {
             Assert.That(_response, Is.Not.Null);
         }

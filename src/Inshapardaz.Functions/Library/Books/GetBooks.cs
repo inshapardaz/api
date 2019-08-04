@@ -4,9 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,11 +18,9 @@ namespace Inshapardaz.Functions.Library.Books
 {
     public class GetBooks : FunctionBase
     {
-        private readonly IRenderBooks _booksRenderer;
-        public GetBooks(IAmACommandProcessor commandProcessor, IRenderBooks booksRenderer)
+        public GetBooks(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
-            _booksRenderer = booksRenderer;
         }
 
         [FunctionName("GetBooks")]
@@ -39,14 +36,14 @@ namespace Inshapardaz.Functions.Library.Books
             var request = new GetBooksRequest(pageNumber, pageSize);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var args = new PageRendererArgs<Book>
+            var args = new Converters.PageRendererArgs<Book>
             {
                 Page = request.Result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
                 LinkFunc = Link
             };
             
-            return new OkObjectResult(_booksRenderer.Render(principal, args));
+            return new OkObjectResult(args.Render(principal));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books", relType);

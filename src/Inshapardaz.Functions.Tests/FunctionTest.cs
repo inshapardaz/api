@@ -1,5 +1,10 @@
 ﻿using System;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Functions.Library.Authors;
+using Inshapardaz.Functions.Library.Books;
+using Inshapardaz.Functions.Library.Books.Chapters;
+using Inshapardaz.Functions.Library.Categories;
+using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Ports.Database;
@@ -27,8 +32,10 @@ namespace Inshapardaz.Functions.Tests
                              .AddTransient<SeriesDataBuilder>()
                              .AddTransient<AuthorsDataBuilder>()
                              .AddTransient<BooksDataBuilder>()
+                             .AddTransient<ChapterDataBuilder>()
                              .AddSingleton<IFileStorage, FakeFileStorage>();
 
+            RegisterHandlers(_builder);
             _startup.Configure(_builder);
         }
 
@@ -61,6 +68,34 @@ namespace Inshapardaz.Functions.Tests
         {
             _connection?.Close();
             _connection?.Dispose();
+        }
+
+        private void RegisterHandlers(TestHostBuilder builder)
+        {
+            builder.Services.AddTransient<GetEntry>()
+                   .AddTransient<GetLanguages>()
+                   .AddTransient<GetCategories>()
+                   .AddTransient<AddCategory>()
+                   .AddTransient<GetCategoryById>()
+                   .AddTransient<UpdateCategory>()
+                   .AddTransient<DeleteCategory>()
+                   .AddTransient<GetSeries>()
+                   .AddTransient<AddSeries>()
+                   .AddTransient<GetSeriesById>()
+                   .AddTransient<UpdateSeries>()
+                   .AddTransient<DeleteSeries>()
+                   .AddTransient<GetAuthors>()
+                   .AddTransient<GetAuthorById>()
+                   .AddTransient<AddAuthor>()
+                   .AddTransient<UpdateAuthor>()
+                   .AddTransient<DeleteAuthor>()
+                   .AddTransient<GetBooks>()
+                   .AddTransient<GetBookById>()
+                   .AddTransient<AddBook>()
+                   .AddTransient<UpdateBook>()
+                   .AddTransient<DeleteBook>()
+                   .AddTransient<GetChapterById>()
+                   .AddTransient<AddChapter>();
         }
     }
 }

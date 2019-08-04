@@ -2,9 +2,8 @@ using System;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Functions.Adapters;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
-using Microsoft.IdentityModel.Tokens;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Commands
@@ -26,16 +25,9 @@ namespace Inshapardaz.Functions.Commands
 
     public class GetEntryRequestHandler : RequestHandlerAsync<GetEntryRequest>
     {
-        private readonly IRenderEntry _entryRenderer;
-
-        public GetEntryRequestHandler(IRenderEntry entryRenderer)
-        {
-            _entryRenderer = entryRenderer;
-        }
-
         public override async Task<GetEntryRequest> HandleAsync(GetEntryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            command.Result = _entryRenderer.Render(command.User);
+            command.Result = EntryRenderer.Render(command.User);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

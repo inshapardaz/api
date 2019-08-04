@@ -2,8 +2,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -17,12 +17,9 @@ namespace Inshapardaz.Functions.Library.Series
 {
     public class AddSeries : FunctionBase
     {
-        private readonly IRenderSeries _seriesRenderer;
-
-        public AddSeries(IAmACommandProcessor commandProcessor, IRenderSeries seriesRenderer)
+        public AddSeries(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
-            _seriesRenderer = seriesRenderer;
         }
 
         [FunctionName("AddSeries")]
@@ -43,7 +40,7 @@ namespace Inshapardaz.Functions.Library.Series
             var request = new AddSeriesRequest(series.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _seriesRenderer.Render(principal, request.Result);
+            var renderResult = request.Result.Render(principal);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 

@@ -2,8 +2,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +16,9 @@ namespace Inshapardaz.Functions.Library.Books
 {
     public class GetBookById : FunctionBase
     {
-        private readonly IRenderBook _bookRenderer;
-        public GetBookById(IAmACommandProcessor commandProcessor, IRenderBook bookRenderer)
+        public GetBookById(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
-            _bookRenderer = bookRenderer;
         }
 
         [FunctionName("GetBookById")]
@@ -35,7 +33,7 @@ namespace Inshapardaz.Functions.Library.Books
 
             if (request.Result != null)
             {
-                return new OkObjectResult(_bookRenderer.Render(principal, request.Result));
+                return new OkObjectResult(request.Result.Render(principal));
             }
 
             return new NotFoundResult();

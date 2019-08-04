@@ -41,6 +41,7 @@ namespace Inshapardaz.Functions.Views
         public const string CreateChapter = "create-chapter";
         public const string AddContents = "add-contents";
         public const string UpdateContents = "update-contents";
+        public const string DeleteContents = "delete-contents";
         public const string Chapter = "chapter";
 
         public const string Latest = "latest";

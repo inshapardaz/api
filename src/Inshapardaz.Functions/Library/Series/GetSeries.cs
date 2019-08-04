@@ -2,8 +2,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +17,9 @@ namespace Inshapardaz.Functions.Library.Series
     // TODO : Add paging to series
     public class GetSeries : FunctionBase
     {
-        private readonly IRenderSeriesList _seriesListRenderer;
-        public GetSeries(IAmACommandProcessor commandProcessor, IRenderSeriesList seriesListRenderer)
+        public GetSeries(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
-            _seriesListRenderer = seriesListRenderer;
         }
 
         [FunctionName("GetSeries")]
@@ -32,7 +30,7 @@ namespace Inshapardaz.Functions.Library.Series
             var request = new GetSeriesRequest();
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_seriesListRenderer.Render(principal, request.Result));
+            return new OkObjectResult(request.Result.Render(principal));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("series", relType);

@@ -2,8 +2,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +16,9 @@ namespace Inshapardaz.Functions.Library.Authors
 {
     public class GetAuthorById : FunctionBase
     {
-        private readonly IRenderAuthor _authorRenderer;
-        public GetAuthorById(IAmACommandProcessor commandProcessor, IRenderAuthor authorRenderer)
+        public GetAuthorById(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
-            _authorRenderer = authorRenderer;
         }
 
         [FunctionName("GetAuthorById")]
@@ -36,7 +34,7 @@ namespace Inshapardaz.Functions.Library.Authors
 
             if (request.Result != null)
             {
-                return new OkObjectResult(_authorRenderer.Render(principal, request.Result));
+                return new OkObjectResult(request.Result.Render(principal));
             }
 
             return new NotFoundResult();

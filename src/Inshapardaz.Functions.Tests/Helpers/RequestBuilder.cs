@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 using System.Text;
 
 namespace Inshapardaz.Functions.Tests.Helpers
@@ -25,6 +27,21 @@ namespace Inshapardaz.Functions.Tests.Helpers
             {
                 request.Query = new QueryCollection(parameters);
             }
+
+            return request;
+        }
+
+        public DefaultHttpRequest BuildImageUpload()
+        {
+            var request = new DefaultHttpRequest(new DefaultHttpContext());
+
+            if (parameters.Count > 0)
+            {
+                request.Query = new QueryCollection(parameters);
+            }
+
+            request.Body = new MemoryStream(new byte[10]);
+
 
             return request;
         }

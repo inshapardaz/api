@@ -1,20 +1,20 @@
 ﻿using Inshapardaz.Functions.Extensions;
 
-namespace Inshapardaz.Functions.Adapters
+namespace Inshapardaz.Functions.Converters
 {
-    public class EnumRenderer : IRenderEnum
+    public static class EnumRenderer
     {
-        public string Render<T>(string source)
+        public static string Render<T>(this string source)
         {
             return EnumExtensions.GetEnumDescription<T>(source);
         }
 
-        public string Render<T>(T source)
+        public static string Render<T>(this T source)
         {
             return EnumExtensions.GetEnumDescription<T>(source);
         }
 
-        public string RenderFlags<T>(T source)
+        public static string RenderFlags<T>(this T source)
         {
             return EnumExtensions.GetFlagDescription<T>(source);
         }

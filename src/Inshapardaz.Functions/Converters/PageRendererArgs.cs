@@ -2,7 +2,7 @@
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Functions.Views;
 
-namespace Inshapardaz.Functions.Adapters
+namespace Inshapardaz.Functions.Converters
 {
     public class PageRendererArgs<T>
     {

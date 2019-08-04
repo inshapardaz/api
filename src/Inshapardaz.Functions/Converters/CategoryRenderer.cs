@@ -1,22 +1,32 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using Inshapardaz.Domain.Entities.Library;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Categories;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 
-namespace Inshapardaz.Functions.Adapters.Library
+namespace Inshapardaz.Functions.Converters
 {
-    public interface IRenderCategory
+    public static class CategoryRenderer
     {
-        CategoryView Render(ClaimsPrincipal principal, Category category);
-    }
+        public static ListView<CategoryView> Render(this IEnumerable<Category> categories, ClaimsPrincipal user)
+        {
+            var items = categories.Select(g => g.Render(user));
+            var view = new ListView<CategoryView> { Items = items };
+            view.Links.Add(GetCategories.Link());
 
-    public class CategoryRenderer : IRenderCategory
-    {
-        public CategoryView Render(ClaimsPrincipal principal, Category category)
+            if (user.IsAdministrator())
+            {
+                view.Links.Add(AddCategory.Link(RelTypes.Create));
+            }
+
+            return view;
+        }
+
+        public static CategoryView Render(this Category category, ClaimsPrincipal principal)
         {
             var view = category.Map();
 

@@ -4,9 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +18,9 @@ namespace Inshapardaz.Functions.Library.Authors
 {
     public class GetAuthors : FunctionBase
     {
-        private readonly IRenderAuthors _authorsRenderer;
-
-        public GetAuthors(IAmACommandProcessor commandProcessor, IRenderAuthors authorsRenderer) 
+        public GetAuthors(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)
         {
-            _authorsRenderer = authorsRenderer;
         }
 
         [FunctionName("GetAuthors")]
@@ -48,7 +44,7 @@ namespace Inshapardaz.Functions.Library.Authors
                 LinkFunc = Link
             };
             
-            return new OkObjectResult(_authorsRenderer.Render(principal, args));
+            return new OkObjectResult(args.Render(principal));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("authors", relType);

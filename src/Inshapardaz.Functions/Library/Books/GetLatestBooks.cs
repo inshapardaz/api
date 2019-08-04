@@ -2,8 +2,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +16,9 @@ namespace Inshapardaz.Functions.Library.Books
 {
     public class GetLatestBooks : FunctionBase
     {
-        private readonly IRenderBooks _booksRenderer;
-        public GetLatestBooks(IAmACommandProcessor commandProcessor, IRenderBooks booksRenderer)
+        public GetLatestBooks(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
-            _booksRenderer = booksRenderer;
         }
 
         [FunctionName("GetLatestBooks")]
@@ -33,7 +31,7 @@ namespace Inshapardaz.Functions.Library.Books
             var request = new GetLatestBooksRequest();
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(_booksRenderer.Render(principal, request.Result));
+            return new OkObjectResult(request.Result.Render(principal));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/latest", relType);

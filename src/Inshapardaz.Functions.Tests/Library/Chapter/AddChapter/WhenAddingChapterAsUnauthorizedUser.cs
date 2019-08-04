@@ -1,0 +1,45 @@
+﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Bogus;
+using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Helpers;
+using Inshapardaz.Functions.Views.Library;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
+using NUnit.Framework;
+
+namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
+{
+    [TestFixture]
+    public class WhenAddingChapterAsUnauthorizedUser : FunctionTest
+    {
+        UnauthorizedResult _response;
+        private BooksDataBuilder _builder;
+
+        [OneTimeSetUp]
+        public async Task Setup()
+        {
+            _builder = Container.GetService<BooksDataBuilder>();
+
+            var book = _builder.WithBooks(1).Build().First();
+
+            var handler = Container.GetService<Functions.Library.Books.Chapters.AddChapter>();
+            var request = new ChapterView { Title = new Faker().Random.String(), ChapterNumber = 1 };
+            _response = (UnauthorizedResult)await handler.Run(request, NullLogger.Instance, book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+        }
+
+        [OneTimeTearDown]
+        public void Teardown()
+        {
+            Cleanup();
+        }
+
+        [Test]
+        public void ShouldHaveUnauthorisedResult()
+        {
+            Assert.That(_response, Is.Not.Null);
+        }
+    }
+}

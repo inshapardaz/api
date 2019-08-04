@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
@@ -12,12 +11,10 @@ namespace Inshapardaz.Domain.Ports.Library
         : RequestHandlerAsync<T> where T : BookRequest
     {
         private readonly IBookRepository _bookRepository;
-        private readonly IUserHelper _userHelper;
 
-        public BookWriteRequestValidationHandler(IBookRepository bookRepository, IUserHelper userHelper)
+        public BookWriteRequestValidationHandler(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
-            _userHelper = userHelper;
         }
 
         public override async Task<T> HandleAsync(T command, CancellationToken cancellationToken = new CancellationToken())

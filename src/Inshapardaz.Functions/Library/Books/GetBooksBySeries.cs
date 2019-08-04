@@ -4,9 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Ports.Library;
-using Inshapardaz.Functions.Adapters;
-using Inshapardaz.Functions.Adapters.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,11 +18,9 @@ namespace Inshapardaz.Functions.Library.Books
 {
     public class GetBooksBySeries : FunctionBase
     {
-        private readonly IRenderBooks _booksRenderer;
-        public GetBooksBySeries(IAmACommandProcessor commandProcessor, IRenderBooks booksRenderer)
+        public GetBooksBySeries(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
-            _booksRenderer = booksRenderer;
         }
 
         [FunctionName("GetBooksBySeries")]
@@ -44,7 +41,7 @@ namespace Inshapardaz.Functions.Library.Books
                 LinkFuncWithParameter = Link
             };
 
-            return new OkObjectResult(_booksRenderer.Render(principal, args));
+            return new OkObjectResult(args.Render(principal));
         }
 
         public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}/books", relType);

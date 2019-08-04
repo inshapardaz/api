@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
@@ -34,6 +35,8 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                         .RuleFor(c => c.IsPublished, f=> f.Random.Bool())
                         .RuleFor(c => c.YearPublished, f => f.Random.Int(1900, 2000))
                         .RuleFor(c => c.Status, f => f.PickRandom<BookStatuses>());
+
+        
         public BooksDataBuilder WithBooks(int count, bool havingSeries = false, int categoryCount = 0)
         {
             var books = BookFaker.Generate(count);

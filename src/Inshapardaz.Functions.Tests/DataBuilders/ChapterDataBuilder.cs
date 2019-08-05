@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Ports.Database;
 using Inshapardaz.Ports.Database.Entities;
 using Inshapardaz.Ports.Database.Entities.Library;
@@ -71,7 +73,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             _chapters.AddRange(chapters);
             return this;
         }
-        
+
         public IEnumerable<Chapter> Build()
         {
             _context.Chapter.AddRange(_chapters);
@@ -84,6 +86,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public Chapter GetById(int id)
         {
             return _context.Chapter.SingleOrDefault(x => x.Id == id);
+        }
+
+        internal ChapterContent GetContentById(int id)
+        {
+            var content = _context.ChapterContent.SingleOrDefault(x => x.Id == id);
+            return content;
         }
     }
 }

@@ -22,15 +22,28 @@ namespace Inshapardaz.Functions
             CommandProcessor = commandProcessor;
         }
 
-        protected async Task<T> ReadBody<T>(HttpRequest request)
+
+        protected async Task<string> ReadBody(HttpRequest request)
         {
             try
             {
                 using (var reader = new StreamReader(request.Body, Encoding.UTF8))
                 {
-                    var body = await reader.ReadToEndAsync();
-                    return JsonConvert.DeserializeObject<T>(body);
+                    return await reader.ReadToEndAsync();
                 }
+            }
+            catch
+            {
+                throw new ExpectedException(System.Net.HttpStatusCode.BadRequest);
+            }
+        }
+
+        protected async Task<T> ReadBody<T>(HttpRequest request)
+        {
+            try
+            {
+                var body = await ReadBody(request);
+                return JsonConvert.DeserializeObject<T>(body);
             }
             catch
             {

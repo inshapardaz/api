@@ -13,9 +13,17 @@ namespace Inshapardaz.Functions.Tests.Helpers
     {
         private Dictionary<string, StringValues> parameters = new Dictionary<string, StringValues>();
 
+        private string _contents;
+
         public RequestBuilder WithQueryParameter(string name, object value)
         {
             parameters.Add(name, value.ToString());
+            return this;
+        }
+            
+        public RequestBuilder WithBody(string contents)
+        {
+            _contents = contents;
             return this;
         }
 
@@ -28,6 +36,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
                 request.Query = new QueryCollection(parameters);
             }
 
+            request.Body = new MemoryStream(Encoding.UTF8.GetBytes(_contents ?? ""));
             return request;
         }
 

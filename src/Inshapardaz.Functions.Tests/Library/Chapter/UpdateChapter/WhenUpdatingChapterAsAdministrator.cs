@@ -8,7 +8,6 @@ using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
@@ -31,7 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
             var chapter = chapters.First();
 
             _expected = new ChapterView { Title = new Faker().Random.String() };
-            _response = (OkObjectResult) await handler.Run(_expected, NullLogger.Instance, chapter.BookId, chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult) await handler.Run(_expected, chapter.BookId, chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

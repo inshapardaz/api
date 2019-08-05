@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Converters
     {
         public static ListView<ChapterView> Render(this IEnumerable<Chapter> source, int bookId, ClaimsPrincipal principal)
         {
-            var items = source.Select(c => c.Map());
+            var items = source.Select(c => c.Render(principal));
             var view = new ListView<ChapterView> { Items = items };
             view.Links.Add(GetChaptersByBook.Link(bookId, RelTypes.Self));
 
@@ -40,7 +40,7 @@ namespace Inshapardaz.Functions.Converters
             {
                 foreach (var content in source.Contents)
                 {
-                    links.Add(GetChapterContents.Link(source.BookId, source.Id, RelTypes.Contents, content.MimeType));
+                    links.Add(GetChapterContents.Link(source.BookId, source.Id, content.MimeType, RelTypes.Contents));
                 }
             }
 

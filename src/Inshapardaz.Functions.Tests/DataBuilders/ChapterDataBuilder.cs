@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                         .RuleFor(c => c.IsPublic, f => isPublic ?? f.Random.Bool())
                         .Generate();
 
-            var chapterIndex = 0;
+            var chapterIndex = 1;
             var chapters = new Faker<Chapter>()
                            .RuleFor(c => c.Id, 0)
                            .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))

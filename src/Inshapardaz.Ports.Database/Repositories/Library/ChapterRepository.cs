@@ -119,8 +119,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             {
                 var result = chapterContent.Map();
                 var content = await _fileStorage.GetTextFile(chapterContent.ContentUrl, cancellationToken);
-                result.Content = content;
-                return result;
+                if (content != null)
+                {
+                    result.Content = content;
+                    return result;
+                }
             }
             
             return null;

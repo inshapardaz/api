@@ -14,11 +14,18 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private readonly List<Chapter> _chapters = new List<Chapter>();
         private readonly List<File> _files = new List<File>();
 
+        private string _contentLink = string.Empty;
+
         public ChapterDataBuilder(IDatabaseContext context)
         {
             _context = context;
         }
 
+        public ChapterDataBuilder WithContentLink(string contentLink)
+        {
+            _contentLink = contentLink;
+            return this;
+        }
         public ChapterDataBuilder WithChapters(int count, bool? isPublic = null, bool hasContent = false)
         {
             var author = new Faker<Author>()
@@ -43,7 +50,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
             var chapterContent = new Faker<ChapterContent>()
                 .RuleFor(c => c.MimeType, "text/markdown")
-                .RuleFor(c => c.ContentUrl, f => f.Internet.Url());
+                .RuleFor(c => c.ContentUrl, f => _contentLink ?? f.Internet.Url());
 
             if (hasContent)
             {
@@ -68,7 +75,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public IEnumerable<Chapter> Build()
         {
             _context.Chapter.AddRange(_chapters);
-            //_context.File.AddRange(_files);
+
             _context.SaveChanges();
 
             return _chapters;

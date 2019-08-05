@@ -3,6 +3,7 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Books.Chapters;
+using Inshapardaz.Functions.Library.Books.Chapters.Contents;
 using Inshapardaz.Functions.Library.Categories;
 using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -33,7 +34,7 @@ namespace Inshapardaz.Functions.Tests
                              .AddTransient<AuthorsDataBuilder>()
                              .AddTransient<BooksDataBuilder>()
                              .AddTransient<ChapterDataBuilder>()
-                             .AddSingleton<IFileStorage, FakeFileStorage>();
+                             .AddSingleton<IFileStorage>(new FakeFileStorage());
 
             RegisterHandlers(_builder);
             _startup.Configure(_builder);
@@ -98,7 +99,8 @@ namespace Inshapardaz.Functions.Tests
                    .AddTransient<AddChapter>()
                    .AddTransient<UpdateChapter>()
                    .AddTransient<DeleteChapter>()
-                   .AddTransient<GetChaptersByBook>();
+                   .AddTransient<GetChaptersByBook>()
+                   .AddTransient<GetChapterContents>();
         }
     }
 }

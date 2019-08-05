@@ -124,7 +124,7 @@ namespace Inshapardaz.Functions
             };
         #endregion
 
-        #region Chatpter  
+        #region Chapter  
         public static ChapterView Map(this Chapter source)
             => new ChapterView
             {
@@ -140,6 +140,23 @@ namespace Inshapardaz.Functions
                 Title = source.Title,
                 ChapterNumber = source.ChapterNumber
             };
+
+        public static ChapterContentView Map(this ChapterContent source)
+            => new ChapterContentView
+            {
+                Id = source.Id,
+                Contents = source.Content,
+                ChapterId = source.ChapterId
+            };
+
+        public static ChapterContent Map(this ChapterContentView source)
+            => new ChapterContent
+            {
+                Id = source.Id,
+                Content = source.Contents,
+                ChapterId = source.ChapterId
+            };
+
         #endregion
 
         //public MappingProfile()
@@ -219,22 +236,7 @@ namespace Inshapardaz.Functions
         //     .ReverseMap()
         //     .ForMember(s => s.RelationType, o => o.MapFrom(d => (RelationType)d.RelationTypeId));
 
-        // CreateMap<Chapter, ChapterView>()
-        //     .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
-        //     .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
-        //     .ForMember(d => d.ChapterNumber, o => o.MapFrom(s => s.ChapterNumber))
-        //     .ForMember(d => d.BookId, o => o.MapFrom(s => s.BookId))
-        //     .ForMember(d => d.Links, o => o.Ignore())
-        //     .ReverseMap()
-        //         .ForMember(d => d.Contents, o => o.Ignore());
-
-
-        // CreateMap<ChapterContent, ChapterContentView>()
-        //     .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
-        //     .ForMember(d => d.Contents, o => o.MapFrom(s => s.Content))
-        //     .ForMember(d => d.ChapterId, o => o.MapFrom(s => s.ChapterId))
-        //     .ForMember(d => d.Links, o => o.Ignore())
-        //     .ReverseMap();
+       
 
         // CreateMap<Periodical, PeriodicalView>()
         //     .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))

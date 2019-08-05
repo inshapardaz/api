@@ -65,5 +65,27 @@ namespace Inshapardaz.Functions.Converters
             result.Links = links;
             return result;
         }
+
+        public static ChapterContentView Render (this ChapterContent source, ClaimsPrincipal principal)
+        {
+            var result = source.Map();
+
+            var links = new List<LinkView>
+            {
+                GetChapterContents.Link(source.BookId, source.ChapterId, source.MimeType, RelTypes.Self),
+                GetBookById.Link(source.BookId, RelTypes.Book),
+                GetChapterById.Link(source.BookId, source.ChapterId, RelTypes.Chapter)
+            };
+
+            if (principal.IsWriter())
+            {
+                links.Add(UpdateChapterContents.Link(source.BookId, source.ChapterId, source.MimeType, RelTypes.Update));
+                links.Add(DeleteChapterContents.Link(source.BookId, source.ChapterId, source.MimeType, RelTypes.Delete));
+            }
+
+            result.Links = links;
+            return result;
+
+        }
     }
 }

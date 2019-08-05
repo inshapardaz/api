@@ -82,5 +82,14 @@ namespace Inshapardaz.Functions
             return defaultValue;
         }
 
+        protected string GetHeader(HttpRequest request, string headerName, string defaultValue)
+        {
+            if (request != null && request.Headers.ContainsKey(headerName))
+            {
+                return request.Headers["headerName"];
+            }
+
+            return defaultValue;
+        }
     }
 }

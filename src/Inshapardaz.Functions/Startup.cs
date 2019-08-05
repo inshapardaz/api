@@ -10,6 +10,7 @@ using Microsoft.Azure.WebJobs.Hosting;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Books.Chapters;
+using System.Linq;
 
 [assembly: WebJobsStartup(typeof(Inshapardaz.Functions.Startup))]
 namespace Inshapardaz.Functions
@@ -21,8 +22,12 @@ namespace Inshapardaz.Functions
             builder.AddAccessTokenBinding();
             builder.Services.AddHttpClient()
                    .AddBrighterCommand()
-                   .AddDatabase()
-                   .AddTransient<IFileStorage>(sp => new FileStorage(ConfigurationSettings.FileStorageConnectionString));
+                   .AddDatabase();
+                
+            if (!builder.Services.Any(x => x.ServiceType == typeof(IFileStorage)))
+            {
+                builder.Services.AddTransient<IFileStorage>(sp => new FileStorage(ConfigurationSettings.FileStorageConnectionString));
+            }
         }
     }
 }

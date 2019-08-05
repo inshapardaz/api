@@ -25,7 +25,6 @@ namespace Inshapardaz.Domain.Ports.Library
             _chapterRepository = chapterRepository;
         }
 
-        [BookWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteChapterRequest> HandleAsync(DeleteChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             await _chapterRepository.DeleteChapter(command.ChapterId, cancellationToken);

@@ -8,10 +8,12 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class UpdateChapterRequest : BookRequest
     {
-        public UpdateChapterRequest(int bookId, Chapter chapter)
+        public UpdateChapterRequest(int bookId, int chapterId, Chapter chapter)
             : base(bookId)
         {
             Chapter = chapter;
+            Chapter.BookId = bookId;
+            Chapter.Id = chapterId;
         }
 
         public Chapter Chapter { get; }

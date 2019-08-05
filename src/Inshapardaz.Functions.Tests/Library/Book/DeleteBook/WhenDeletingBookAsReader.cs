@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
         }
 
         [Test]
-        public void ShouldHaveOkResult()
+        public void ShouldHaveForbiddenResult()
         {
             Assert.That(_response, Is.Not.Null);
         }

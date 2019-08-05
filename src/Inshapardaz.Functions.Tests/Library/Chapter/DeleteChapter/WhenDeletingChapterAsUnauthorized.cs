@@ -8,23 +8,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
+namespace Inshapardaz.Functions.Tests.Library.Chapter.DeleteChapter
 {
     [TestFixture]
-    public class WhenDeletingSeriesAsReader : FunctionTest
+    public class WhenDeletingChapterAsUnauthorized : FunctionTest
     {
-        ForbidResult _response;
+        UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            var builder = Container.GetService<SeriesDataBuilder>();
-            var series = builder.WithSeries(4).Build();
-            var expected = series.First();
+            var builder = Container.GetService<ChapterDataBuilder>();
+            var chapters = builder.WithChapters(4).Build();
+            var expected = chapters.First();
             
-            var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();
-            _response = (ForbidResult) await handler.Run(request, NullLogger.Instance, expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            var handler = Container.GetService<Functions.Library.Books.Chapters.DeleteChapter>();
+            _response = (UnauthorizedResult) await handler.Run(request, expected.BookId, expected.Id, AuthenticationBuilder.Unauthorized, NullLogger.Instance, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         }
 
         [Test]
-        public void ShouldHaveForbiddenResult()
+        public void ShouldHaveUnauthorizedResult()
         {
             Assert.That(_response, Is.Not.Null);
         }

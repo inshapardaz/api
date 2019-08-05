@@ -1,5 +1,9 @@
 using System;
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Library;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +24,24 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
         [FunctionName("DeleteChapter")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId}/chapters/{chapterId}")] HttpRequest req,
-            ILogger log, int bookId, int chapterId)
+            int bookId, int chapterId,
+            [AccessToken] ClaimsPrincipal principal,
+            ILogger log,
+            CancellationToken token)
         {
-            return new OkObjectResult($"DELETE:Chapter {chapterId} for Book {bookId}");
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
+            var request = new DeleteChapterRequest(bookId, chapterId);
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            return new NoContentResult();
         }
 
         public static LinkView Link(int bookId, int chapterId, string relType = RelTypes.Self) => SelfLink($"book/{bookId}/chapters/{chapterId}", relType, "DELETE");

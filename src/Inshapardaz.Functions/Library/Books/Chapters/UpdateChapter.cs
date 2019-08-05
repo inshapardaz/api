@@ -1,5 +1,12 @@
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Library;
+using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
+using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -18,12 +25,32 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("UpdateChapter")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId}/chapter/{chapterId}")] HttpRequest req,
-            ILogger log, int bookId, int chapterId)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId}/chapter/{chapterId}")] ChapterView chapter,
+            ILogger log, int bookId, int chapterId,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //var input = JsonConvert.DeserializeObject<TodoCreateModel>(requestBody);
-            return new OkObjectResult($"PUT:Chapter {chapterId} for Book {bookId}");
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
+            var request = new UpdateChapterRequest(bookId, chapterId, chapter.Map());
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+            var renderResult = request.Result.Chapter.Render(principal);
+
+            if (request.Result.HasAddedNew)
+            {
+                return new CreatedResult(renderResult.Links.Self(), renderResult);
+            }
+
+            return new OkObjectResult(renderResult);
         }
 
         public static LinkView Link(int bookId, int chapterId, string relType = RelTypes.Self) => SelfLink($"book/{bookId}/chapters/{chapterId}", relType, "PUT");

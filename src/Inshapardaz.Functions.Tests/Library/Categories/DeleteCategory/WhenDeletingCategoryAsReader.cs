@@ -40,7 +40,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
         }
 
         [Test]
-        public void ShouldHaveNoContentResult()
+        public void ShouldHaveForbiddenResult()
         {
             Assert.That(_response, Is.Not.Null);
         }

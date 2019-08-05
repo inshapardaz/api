@@ -29,9 +29,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                         .RuleFor(c => c.Copyrights, f => f.PickRandom<CopyrightStatuses>())
                         .RuleFor(c => c.DateAdded, f => f.Date.Past())
                         .RuleFor(c => c.DateUpdated, f => f.Date.Past())
+                        .RuleFor(c => c.IsPublic, f=> f.Random.Bool())
                         .RuleFor(c => c.ImageId, f => f.Random.Int(1))
                         .RuleFor(c => c.Language, f => f.PickRandom<Languages>())
-                        .RuleFor(c => c.IsPublic, f=> f.Random.Bool())
                         .RuleFor(c => c.IsPublished, f=> f.Random.Bool())
                         .RuleFor(c => c.YearPublished, f => f.Random.Int(1900, 2000))
                         .RuleFor(c => c.Status, f => f.PickRandom<BookStatuses>());

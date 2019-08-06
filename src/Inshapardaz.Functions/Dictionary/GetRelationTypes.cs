@@ -21,7 +21,7 @@ namespace Inshapardaz.Functions.Dictionary
         }
 
         [FunctionName("GetRelationTypes")]
-        public async Task<IActionResult> Run(
+        public IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "relationships")] HttpRequest req,
             ILogger log)
         {

@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
         private AuthorsDataBuilder _builder;
 
         [OneTimeSetUp]
-        public async Task Setup()
+        public void Setup()
         {
             _builder = Container.GetService<AuthorsDataBuilder>();
             

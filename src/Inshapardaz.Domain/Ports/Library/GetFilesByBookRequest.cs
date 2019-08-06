@@ -17,8 +17,6 @@ namespace Inshapardaz.Domain.Ports.Library
         }
 
         public IEnumerable<File> Result { get; set; }
-
-        public Guid UserId { get; set; }
     }
 
     public class GetFilesByBookRequestHandler : RequestHandlerAsync<GetFilesByBookRequest>

@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Library.Books
         }
 
         [FunctionName("UpdateBookImage")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId}/image")] HttpRequest req,
             ILogger log, int bookId)
         {

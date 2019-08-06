@@ -51,6 +51,6 @@ namespace Inshapardaz.Functions.Configuration
         }
 
         public static readonly LoggerFactory MyLoggerFactory
-            = new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => true, true) });
+            = new LoggerFactory(new[] { new  ConsoleLoggerProvider((_, __) => true, true) });
     }
 }

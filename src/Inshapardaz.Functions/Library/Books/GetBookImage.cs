@@ -10,7 +10,7 @@ namespace Inshapardaz.Functions.Library.Books
     public static class GetBookImage
     {
         [FunctionName("GetBookImage")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/{id}/image")] HttpRequest req,
             ILogger log, int id)
         {

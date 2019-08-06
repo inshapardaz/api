@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
         }
 
         [FunctionName("DeleteChapterContents")]
-        public async Task<IActionResult> Run(
+        public IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId}/chapter/{chapterId}/contents")] HttpRequest req,
             ILogger log, int bookId, int chapterId)
         {

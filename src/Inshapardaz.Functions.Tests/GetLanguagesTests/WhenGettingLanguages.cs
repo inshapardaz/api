@@ -14,11 +14,11 @@ namespace Inshapardaz.Functions.Tests.GetLanguagesTests
         List<KeyValuePair<string, int>> _view;
         
         [OneTimeSetUp]
-        public async Task Setup()
+        public void Setup()
         {
             var request = TestHelpers.CreateGetRequest();
             var handler = Container.GetService<GetLanguages>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance);
+            _response = (OkObjectResult) handler.Run(request, NullLogger.Instance);
 
             _view = _response.Value as List<KeyValuePair<string, int>>;
         }

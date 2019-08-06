@@ -10,7 +10,7 @@ namespace Inshapardaz.Functions.Library.Periodicals
     public static class UpdatePeriodical
     {
         [FunctionName("UpdatePeriodical")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "periodicals/{periodicalId}")] HttpRequest req,
             ILogger log, int periodicalId)
         {

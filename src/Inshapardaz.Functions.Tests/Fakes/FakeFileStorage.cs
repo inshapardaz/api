@@ -10,6 +10,8 @@ namespace Inshapardaz.Functions.Tests.Fakes
 {
     public class FakeFileStorage : IFileStorage
     {
+        object _lock = new object();
+
         Dictionary<string, byte[]> _contents = new Dictionary<string, byte[]>();
 
         public FakeFileStorage()
@@ -24,9 +26,12 @@ namespace Inshapardaz.Functions.Tests.Fakes
 
         public void SetupFileContents(string filePath, byte[] content)
         {
-            if (!_contents.TryAdd(filePath, content))
+            lock(_lock)
             {
-                _contents[filePath] = content;
+                if (!_contents.TryAdd(filePath, content))
+                {
+                    _contents[filePath] = content;
+                }
             }
         }
 
@@ -56,14 +61,14 @@ namespace Inshapardaz.Functions.Tests.Fakes
         {
             var url = $"http://temp.file/{name}";
             SetupFileContents(url, content);
-            return url;
+            return await Task.FromResult(url);
         }
 
         public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
         {
             var url = $"http://temp.file/{name}";
             SetupFileContents(url, content);
-            return url;
+            return await Task.FromResult(url);
         }
 
         public async Task DeleteFile(string filePath, CancellationToken cancellationToken)

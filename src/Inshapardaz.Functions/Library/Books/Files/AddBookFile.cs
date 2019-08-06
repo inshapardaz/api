@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Library.Books.Files
         }
 
         [FunctionName("AddBookFile")]
-        public async Task<IActionResult> Run(
+        public IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/{bookId}/files")] HttpRequest req,
             ILogger log, int bookId)
         {

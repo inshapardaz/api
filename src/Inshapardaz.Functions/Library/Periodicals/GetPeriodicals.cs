@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Library.Periodicals
         }
 
         [FunctionName("GetPeriodicals")]
-        public async Task<IActionResult> Run(
+        public IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "periodicals")] HttpRequest req,
             ILogger log)
         {

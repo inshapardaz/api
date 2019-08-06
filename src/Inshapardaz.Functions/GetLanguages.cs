@@ -21,7 +21,7 @@ namespace Inshapardaz.Functions
         }
         
         [FunctionName("GetLanguages")]
-        public async Task<IActionResult> Run(
+        public IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "languages")] HttpRequest req,
             ILogger log)
         {

@@ -26,7 +26,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
             var chapters = dataBuilder.WithChapters(4, true).Build();
 
             var handler = Container.GetService<Functions.Library.Books.Chapters.GetChaptersByBook>();
-            _response = (NotFoundResult) await handler.Run(null, Random.Number, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (NotFoundResult) await handler.Run(null, -Random.Number, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

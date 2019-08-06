@@ -10,7 +10,7 @@ namespace Inshapardaz.Functions.Library.Periodicals.Issues
     public static class GetIssueImage
     {
         [FunctionName("GetIssueImage")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "periodicals/{periodicalId}/issues/{issueId}/image")] HttpRequest req,
             ILogger log, int periodicalId, int issueId)
         {

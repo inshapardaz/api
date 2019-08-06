@@ -21,7 +21,7 @@ namespace Inshapardaz.Functions.Dictionary
         }
 
         [FunctionName("GetAttributes")]
-        public async Task<IActionResult> Run(
+        public IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "attributes")] HttpRequest req,
             ILogger log)
         {

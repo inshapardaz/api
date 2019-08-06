@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Pipeline
                 var pageNumber = pageNumberValues[0];
                 if (int.TryParse(pageNumber, out int value))
                 {
-                    return value;
+                    return await Task.FromResult(value);
                 }
             }
 

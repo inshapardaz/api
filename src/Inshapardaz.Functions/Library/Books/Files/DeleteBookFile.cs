@@ -10,7 +10,7 @@ namespace Inshapardaz.Functions.Library.Books.Files
     public static class DeleteBookFile
     {
         [FunctionName("DeleteBookFile")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "book/{bookId}/files/{fileId}")] HttpRequest req,
             ILogger log, int bookId, int fileId)
         {

@@ -10,7 +10,7 @@ namespace Inshapardaz.Functions.Library.Books.Files
     public static class UpdateBookFile
     {
         [FunctionName("UpdateBookFile")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId}/files/{fileId}")] HttpRequest req,
             ILogger log, int bookId, int fileId)
         {

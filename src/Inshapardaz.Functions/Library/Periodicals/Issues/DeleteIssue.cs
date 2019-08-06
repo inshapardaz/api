@@ -10,7 +10,7 @@ namespace Inshapardaz.Functions.Library.Periodicals.Issues
     public static class DeleteIssue
     {
         [FunctionName("DeleteIssue")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "periodicals/{periodicalId}/issues/{issueId}")] HttpRequest req,
             ILogger log, int periodicalId, int issueId)
         {

@@ -10,7 +10,7 @@ namespace Inshapardaz.Functions.Library.Periodicals.Issues.Article
     public static class AddArticle
     {
         [FunctionName("AddArticle")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "periodicals/{periodicalId}/issue/{issueId}/articles")] HttpRequest req,
             ILogger log, int periodicalId, int issueId)
         {

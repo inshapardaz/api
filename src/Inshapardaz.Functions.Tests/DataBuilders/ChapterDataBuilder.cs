@@ -90,8 +90,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         internal ChapterContent GetContentById(int id)
         {
-            var content = _context.ChapterContent.SingleOrDefault(x => x.Id == id);
-            return content;
+            return _context.ChapterContent.SingleOrDefault(x => x.Id == id);
+        }
+
+        internal ChapterContent GetContentByChapterIdId(int chapterId)
+        {
+            return _context.ChapterContent.SingleOrDefault(x => x.ChapterId == chapterId);
         }
     }
 }

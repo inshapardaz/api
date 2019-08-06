@@ -101,7 +101,9 @@ namespace Inshapardaz.Functions.Tests
                    .AddTransient<DeleteChapter>()
                    .AddTransient<GetChaptersByBook>()
                    .AddTransient<GetChapterContents>()
-                   .AddTransient<AddChapterContents>();
+                   .AddTransient<AddChapterContents>()
+                   .AddTransient<UpdateChapterContents>()
+                   .AddTransient<DeleteChapterContents>();
         }
     }
 }

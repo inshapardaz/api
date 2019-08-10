@@ -90,6 +90,7 @@ namespace Inshapardaz.Functions.Tests
                    .AddTransient<AddAuthor>()
                    .AddTransient<UpdateAuthor>()
                    .AddTransient<DeleteAuthor>()
+                   .AddTransient<UpdateAuthorImage>()
                    .AddTransient<GetBooks>()
                    .AddTransient<GetBookById>()
                    .AddTransient<AddBook>()

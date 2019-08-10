@@ -37,7 +37,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                         .RuleFor(c => c.Status, f => f.PickRandom<BookStatuses>());
 
         
-        public BooksDataBuilder WithBooks(int count, bool havingSeries = false, int categoryCount = 0)
+        public BooksDataBuilder WithBooks(int count, bool havingSeries = false, int categoryCount = 0, int chapterCount = 0)
         {
             var books = BookFaker.Generate(count);
 
@@ -76,6 +76,16 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 if (book.ImageId.HasValue)
                 {
                     _files.Add(new File {Id = book.ImageId.Value, IsPublic = true, FilePath = "http://localhost/test.jpg"});
+                }
+
+                if (chapterCount > 0)
+                {
+                    var chapterIndex = 1;
+                    book.Chapters = new Faker<Chapter>()
+                                                   .RuleFor(c => c.Id, 0)
+                                                   .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
+                                                   .RuleFor(c => c.ChapterNumber, chapterIndex++)
+                                                   .Generate(chapterCount);
                 }
             }
 

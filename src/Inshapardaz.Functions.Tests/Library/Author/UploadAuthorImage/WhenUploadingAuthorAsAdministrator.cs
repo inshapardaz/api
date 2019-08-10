@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
 {
     [TestFixture]
-    public class WhenUploadingAuthorAsWriter : FunctionTest
+    public class WhenUploadingAuthorAsAdministrator : FunctionTest
     {
         OkResult _response;
         private AuthorsDataBuilder _builder;
@@ -32,7 +32,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthorImage>();
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
-            _response = (OkResult) await handler.Run(request, _authorId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkResult) await handler.Run(request, _authorId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

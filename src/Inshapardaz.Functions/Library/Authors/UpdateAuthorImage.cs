@@ -11,7 +11,6 @@ using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Authors
@@ -25,11 +24,22 @@ namespace Inshapardaz.Functions.Library.Authors
 
         [FunctionName("UpdateAuthorImage")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{id}/image")] HttpRequestMessage req,
-            ILogger log, int id,
-            [AccessToken] ClaimsPrincipal claims,
-            CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{id}/image")]
+            HttpRequestMessage req,
+            int id,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token = default)
         {
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
             var multipart = await req.Content.ReadAsMultipartAsync(token);
             var content = await req.Content.ReadAsByteArrayAsync();
 
@@ -39,7 +49,7 @@ namespace Inshapardaz.Functions.Library.Authors
             if (fileContent != null)
             {
                 fileName = $"{id}{GetFileExtension(fileContent.Headers?.ContentDisposition?.FileName)}";
-                mimeType = fileContent.Headers?.ContentType.MediaType;
+                mimeType = fileContent.Headers?.ContentType?.MediaType;
             }
 
             var request = new UpdateAuthorImageRequest(id)
@@ -56,7 +66,7 @@ namespace Inshapardaz.Functions.Library.Authors
 
             if (request.Result.HasAddedNew)
             {
-                var response = request.Result.File.Render(claims);
+                var response = request.Result.File.Render(principal);
                 return new CreatedResult(response.Links.Self(), response);
             }
 

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Repositories;
@@ -13,9 +12,9 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
 {
     [TestFixture]
-    public class WhenUploadingAuthorAsWriter : FunctionTest
+    public class WhenUploadingAuthorAsUnauthorized : FunctionTest
     {
-        OkResult _response;
+        UnauthorizedResult _response;
         private AuthorsDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _authorId;
@@ -32,7 +31,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthorImage>();
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
-            _response = (OkResult) await handler.Run(request, _authorId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (UnauthorizedResult) await handler.Run(request, _authorId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -42,10 +41,9 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
         }
 
         [Test]
-        public void ShouldHaveOkResult()
+        public void ShouldHaveForbidResult()
         {
             Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
 
@@ -53,10 +51,10 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
         public async Task ShouldHaveUpdatedAuthorImage()
         {
             var imageUrl = _builder.GetAuthorImageUrl(_authorId);
-            Assert.That(imageUrl, Is.Not.Null, "Author should have an image url`.");
+            Assert.That(imageUrl, Is.Not.Null, "Author should have an image url.");
             var image = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
             Assert.That(image, Is.Not.Null, "Author should have an image.");
-            Assert.That(image, Is.Not.EqualTo(_oldImage), "Author image should have updated.");
+            Assert.That(image, Is.EqualTo(_oldImage), "Author image should not be updated.");
         }
     }
 }

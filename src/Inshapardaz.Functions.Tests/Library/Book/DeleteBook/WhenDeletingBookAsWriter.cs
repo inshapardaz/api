@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
         {
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<BooksDataBuilder>();
-            var books = _dataBuilder.WithBooks(1, true, 1).Build();
+            var books = _dataBuilder.WithBooks(1, true, 1, 4).Build();
             _expected = books.First();
             
             var handler = Container.GetService<Functions.Library.Books.DeleteBook>();
@@ -57,6 +57,13 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
             var db = Container.GetService<IDatabaseContext>();
             var file = db.File.SingleOrDefault(i => i.Id == _expected.ImageId);
             Assert.That(file, Is.Null, "Book Image should be deleted");
+        }
+
+        [Test]
+        public void ShouldHaveDeletedTheBookChapters()
+        {
+            var db = Container.GetService<IDatabaseContext>();
+            Assert.That(db.Chapter.Any(i => i.BookId == _expected.Id), Is.False, "Book chapters should be deleted");
         }
 
         [Test]

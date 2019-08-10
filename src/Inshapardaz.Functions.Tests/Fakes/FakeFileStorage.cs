@@ -1,27 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Repositories;
-using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Fakes
 {
     public class FakeFileStorage : IFileStorage
     {
-        object _lock = new object();
+        readonly object _lock = new object();
 
-        Dictionary<string, byte[]> _contents = new Dictionary<string, byte[]>();
+        readonly Dictionary<string, byte[]> _contents = new Dictionary<string, byte[]>();
 
         public FakeFileStorage()
         {
             Console.Write("");
         }
-        
+
         public void SetupFileContents(string filePath, string content)
         {
-            SetupFileContents(filePath, System.Text.UnicodeEncoding.UTF8.GetBytes(content));
+            SetupFileContents(filePath, System.Text.Encoding.UTF8.GetBytes(content));
         }
 
         public void SetupFileContents(string filePath, byte[] content)
@@ -34,8 +32,6 @@ namespace Inshapardaz.Functions.Tests.Fakes
                 }
             }
         }
-
-        readonly List<string> _deletedFileList = new List<string>();
 
         public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
         {
@@ -51,11 +47,15 @@ namespace Inshapardaz.Functions.Tests.Fakes
         {
             if (_contents.ContainsKey(filePath))
             {
-                return await Task.FromResult(System.Text.UnicodeEncoding.UTF8.GetString(_contents[filePath]));
+                return await Task.FromResult(System.Text.Encoding.UTF8.GetString(_contents[filePath]));
             }
 
             throw new Exception();
         }
+
+        public bool DoesFileExists(string filePath) => _contents.ContainsKey(filePath);
+
+
 
         public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
         {
@@ -73,17 +73,18 @@ namespace Inshapardaz.Functions.Tests.Fakes
 
         public async Task DeleteFile(string filePath, CancellationToken cancellationToken)
         {
-            await Task.Run(() => _deletedFileList.Add(filePath));
+            if (_contents.ContainsKey(filePath))
+            {
+                _contents.Remove(filePath);
+            }
         }
 
         public async Task TryDeleteFile(string filePath, CancellationToken cancellationToken)
         {
-            await Task.Run(() => _deletedFileList.Add(filePath));
-        }
-
-        public void AssertFileDeleted(string filePath)
-        {
-            Assert.That(_deletedFileList.Any(f => f == filePath), Is.True);
+            if (_contents.ContainsKey(filePath))
+            {
+                _contents.Remove(filePath);
+            }
         }
     }
 }

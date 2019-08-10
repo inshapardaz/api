@@ -57,7 +57,7 @@ namespace Inshapardaz.Functions.Converters
                     foreach (var content in source.Contents)
                     {
                         links.Add(UpdateChapterContents.Link(source.BookId, source.Id, content.MimeType, RelTypes.UpdateContents));
-                        links.Add(DeleteChapterContents.Link(source.BookId, source.Id, content.MimeType, RelTypes.DeleteContents));
+                        links.Add(DeleteChapterContents.Link(source.BookId, source.Id, content.Id, content.MimeType, RelTypes.DeleteContents));
                     }
                 }
             }
@@ -80,7 +80,7 @@ namespace Inshapardaz.Functions.Converters
             if (principal.IsWriter())
             {
                 links.Add(UpdateChapterContents.Link(source.BookId, source.ChapterId, source.MimeType, RelTypes.Update));
-                links.Add(DeleteChapterContents.Link(source.BookId, source.ChapterId, source.MimeType, RelTypes.Delete));
+                links.Add(DeleteChapterContents.Link(source.BookId, source.ChapterId, source.Id, source.MimeType, RelTypes.Delete));
             }
 
             result.Links = links;

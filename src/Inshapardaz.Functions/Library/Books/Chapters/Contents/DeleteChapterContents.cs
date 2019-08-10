@@ -1,10 +1,12 @@
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Library;
+using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
@@ -17,15 +19,28 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
         }
 
         [FunctionName("DeleteChapterContents")]
-        public IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId}/chapter/{chapterId}/contents")] HttpRequest req,
-            ILogger log, int bookId, int chapterId)
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId}/chapter/{chapterId}/contents/{contentId}")] int bookId, 
+            int chapterId,
+            int contentId,
+        [AccessToken] ClaimsPrincipal principal = null,
+            CancellationToken token = default(CancellationToken))
         {
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //var input = JsonConvert.DeserializeObject<TodoCreateModel>(requestBody);
-            return new OkObjectResult($"PUT:Contents for Chapter {chapterId} for Book {bookId}");
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
+            var request = new DeleteChapterContentRequest(bookId, chapterId, contentId);
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            return new NoContentResult();
         }
 
-        public static LinkView Link(int bookId, int chapterId, string mimetype, string relType = RelTypes.Self) => SelfLink($"book/{bookId}/chapters/{chapterId}/contents", relType, "DELETE", type: mimetype);
+        public static LinkView Link(int bookId, int chapterId, int contentId, string mimetype, string relType = RelTypes.Self) => SelfLink($"book/{bookId}/chapters/{chapterId}/contents/{contentId}", relType, "DELETE", type: mimetype);
     }
 }

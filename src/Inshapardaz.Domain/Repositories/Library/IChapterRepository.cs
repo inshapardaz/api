@@ -22,11 +22,14 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<IEnumerable<ChapterContent>> GetChapterContents(int bookId, int chapterId, CancellationToken cancellationToken);
 
+        Task<ChapterContent> GetChapterContentById(int bookId, int chapterId, int id, CancellationToken cancellationToken);
+        
         Task<ChapterContent> GetChapterContent(int bookId, int chapterId, string mimeType, CancellationToken cancellationToken);
 
         Task<ChapterContent> AddChapterContent(int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken);
 
         Task UpdateChapterContent(int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken);
-       
+
+        Task DeleteChapterContentById(int bookId, int chapterId, int contentId, CancellationToken cancellationToken);
     }
 }

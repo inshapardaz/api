@@ -63,7 +63,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
         [Test]
         public async Task ShouldReturnCorrectChapterData()
         {
-            var expected = _dataBuilder.GetContentByChapterIdId(chapterId);
+            var expected = _dataBuilder.GetContentByChapterId(chapterId);
             var savedContent = await fileStore.GetTextFile(expected.ContentUrl, CancellationToken.None);
             Assert.That(_chapterContent, Is.Not.Null, "Should return chapter");
             Assert.That(_chapterContent.Id, Is.EqualTo(expected.Id), "Content id does not match");

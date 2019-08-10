@@ -107,6 +107,28 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                          .ToArrayAsync(cancellationToken);
         }
 
+        public async Task<ChapterContent> GetChapterContentById(int bookId, int chapterId, int id, CancellationToken cancellationToken)
+        {
+            var chapterContent = await _databaseContext.ChapterContent
+                                                       .Include(c => c.Chapter)
+                                                       .ThenInclude(c => c.Book)
+                                                       .Where(c => c.Id == id)
+                                                       .SingleOrDefaultAsync(cancellationToken);
+
+            if (chapterContent != null && !string.IsNullOrWhiteSpace(chapterContent.ContentUrl))
+            {
+                var result = chapterContent.Map();
+                var content = await _fileStorage.GetTextFile(chapterContent.ContentUrl, cancellationToken);
+                if (content != null)
+                {
+                    result.Content = content;
+                    return result;
+                }
+            }
+            
+            return null;
+        }
+
         public async Task<ChapterContent> GetChapterContent(int bookId, int chapterId, string mimeType, CancellationToken cancellationToken)
         {
             var chapterContent = await _databaseContext.ChapterContent
@@ -173,7 +195,18 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             }
         }
-        
+
+        public async Task DeleteChapterContentById(int bookId, int chapterId, int contentId, CancellationToken cancellationToken)
+        {
+            var content = await _databaseContext.ChapterContent.SingleOrDefaultAsync(c => c.Id == contentId, cancellationToken);
+            if (content != null)
+            {
+                await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
+                _databaseContext.ChapterContent.Remove(content);
+                await _databaseContext.SaveChangesAsync(cancellationToken);
+            }
+        }
+
         public async Task<Chapter> GetChapterById(int chapterId, CancellationToken cancellationToken)
         {
             var chapter = await _databaseContext.Chapter

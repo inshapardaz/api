@@ -93,7 +93,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             return _context.ChapterContent.SingleOrDefault(x => x.Id == id);
         }
 
-        internal ChapterContent GetContentByChapterIdId(int chapterId)
+        internal ChapterContent GetContentByChapterId(int chapterId)
         {
             return _context.ChapterContent.SingleOrDefault(x => x.ChapterId == chapterId);
         }

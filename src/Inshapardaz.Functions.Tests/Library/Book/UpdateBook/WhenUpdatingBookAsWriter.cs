@@ -22,6 +22,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
         OkObjectResult _response;
         private BooksDataBuilder _dataBuilder;
         private BookView _expected;
+        private BookView _actual;
         private Ports.Database.Entities.Library.Author _otherAuthor;
         private IEnumerable<Category> _categories;
         private CategoriesDataBuilder _categoriesBuilder;
@@ -55,6 +56,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
                 Categories = _categories.Select(c => new CategoryView { Id = c.Id} )
             };
             _response = (OkObjectResult) await handler.Run(_expected, NullLogger.Instance, selectedBook.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _actual = _response.Value as BookView;
         }
 
         [OneTimeTearDown]
@@ -73,10 +75,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
         [Test]
         public void ShouldHaveUpdatedTheBook()
         {
-            var returned = _response.Value as BookView;
-            Assert.That(returned, Is.Not.Null);
+            Assert.That(_actual, Is.Not.Null);
 
-            var actual = _dataBuilder.GetById(returned.Id);
+            var actual = _dataBuilder.GetById(_actual.Id);
             Assert.That(actual.Title, Is.EqualTo(_expected.Title), "Book should have expected title.");
             Assert.That(actual.Description, Is.EqualTo(_expected.Description), "Book should have expected description.");
             Assert.That(actual.AuthorId, Is.EqualTo(_otherAuthor.Id), "Author should be updated");
@@ -87,17 +88,22 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
             Assert.That(actual.IsPublished, Is.EqualTo(_expected.IsPublished), "Book should have expected year is published.");
         }
 
-        [Test, Ignore("Fix The category assertion")]
+
+        [Test]
+        public void ShouldReturnCorrectCategories()
+        {
+
+            Assert.That(_actual.Categories.Count(), Is.EqualTo(_expected.Categories.Count()), "Number of categories doesn't match");
+            Assert.That(_actual.Categories.Select(c => c.Id), Is.EquivalentTo(_expected.Categories.Select(x => x.Id)));
+        }
+
+        [Test]
         public void ShouldHaveUpdatedCategories()
         {
-            var returned = _response.Value as BookView;
-            var categories = _categoriesBuilder.GetByBookId(returned.Id);
-            Assert.That(categories.Count(), Is.EqualTo(_categories.Count()), "Number of categories doesn't match");
+            var categories = _categoriesBuilder.GetByBookId(_actual.Id);
+            Assert.That(categories.Count(), Is.EqualTo(_expected.Categories.Count()), "Number of categories doesn't match");
 
-            foreach (var category in _categories)
-            {
-                Assert.That(categories.SingleOrDefault(c => c.CategoryId == category.Id), Is.Not.Null, "Expected category not found in database");
-            }
+            Assert.That(categories.Select(c => c.CategoryId), Is.EquivalentTo(_expected.Categories.Select(x => x.Id)));
         }
     }
 }

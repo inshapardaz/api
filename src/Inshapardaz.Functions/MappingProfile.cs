@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Entities;
+﻿using System.Linq;
+using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -101,7 +102,8 @@ namespace Inshapardaz.Functions
                 Copyrights = (int)source.Copyrights,
                 Status = (int)source.Status,
                 YearPublished = source.YearPublished,
-                IsPublished = source.IsPublished
+                IsPublished = source.IsPublished,
+                Categories = source.Categories?.Select(c => c.Map())
             };
 
         public static Book Map(this BookView source)
@@ -120,7 +122,8 @@ namespace Inshapardaz.Functions
                 Copyrights = (CopyrightStatuses) source.Copyrights,
                 Status = (BookStatuses) source.Status,
                 YearPublished = source.YearPublished,
-                IsPublished = source.IsPublished
+                IsPublished = source.IsPublished,
+                Categories = source.Categories?.Select(c => c.Map())
             };
         #endregion
 

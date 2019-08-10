@@ -44,11 +44,15 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
             item.BookCategory = new List<BookCategory>();
-            foreach (var category in book.Categories)
+
+            if (book.Categories != null)
             {
-                var gen = await _databaseContext.Category.SingleOrDefaultAsync(g => g.Id == category.Id, cancellationToken);
-                if (gen != null)
-                    item.BookCategory.Add(new BookCategory { BookId = item.Id, Book = item, CategoryId = gen.Id, Category = gen});
+                foreach (var category in book.Categories)
+                {
+                    var gen = await _databaseContext.Category.SingleOrDefaultAsync(g => g.Id == category.Id, cancellationToken);
+                    if (gen != null)
+                        item.BookCategory.Add(new BookCategory {BookId = item.Id, Book = item, CategoryId = gen.Id, Category = gen});
+                }
             }
             
             await _databaseContext.SaveChangesAsync(cancellationToken);

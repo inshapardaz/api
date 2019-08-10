@@ -10,29 +10,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
+namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
 {
     [TestFixture]
-    public class WhenUploadingAuthorAsWriter : FunctionTest
+    public class WhenUploadingBookImageAsAdministrator : FunctionTest
     {
         OkResult _response;
-        private AuthorsDataBuilder _builder;
+        private BooksDataBuilder _builder;
         private FakeFileStorage _fileStorage;
-        private int _authorId;
+        private int _bookId;
         private byte[] _oldImage;
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<AuthorsDataBuilder>();
+            _builder = Container.GetService<BooksDataBuilder>();
             _fileStorage = Container.GetService<IFileStorage>() as FakeFileStorage;
             
-            var author = _builder.WithAuthors(1).Build().Single();
-            _authorId = author.Id;
-            var imageUrl = _builder.GetAuthorImageUrl(_authorId);
+            var book = _builder.WithBooks(1).Build().Single();
+            _bookId = book.Id;
+            var imageUrl = _builder.GetBookImageUrl(_bookId);
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
-            var handler = Container.GetService<Functions.Library.Authors.UpdateAuthorImage>();
+            var handler = Container.GetService<Functions.Library.Books.UpdateBookImage>();
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
-            _response = (OkResult) await handler.Run(request, _authorId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkResult) await handler.Run(request, _bookId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -50,13 +50,13 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
 
 
         [Test]
-        public async Task ShouldHaveUpdatedAuthorImage()
+        public async Task ShouldHaveUpdatedBookImage()
         {
-            var imageUrl = _builder.GetAuthorImageUrl(_authorId);
-            Assert.That(imageUrl, Is.Not.Null, "Author should have an image url`.");
+            var imageUrl = _builder.GetBookImageUrl(_bookId);
+            Assert.That(imageUrl, Is.Not.Null, "Book should have an image url`.");
             var image = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
-            Assert.That(image, Is.Not.Null, "Author should have an image.");
-            Assert.That(image, Is.Not.EqualTo(_oldImage), "Author image should have updated.");
+            Assert.That(image, Is.Not.Null, "Book should have an image.");
+            Assert.That(image, Is.Not.EqualTo(_oldImage), "Book image should have updated.");
         }
     }
 }

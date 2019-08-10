@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
 {
     [TestFixture]
-    public class WhenUploadingAuthorAsAdministrator : FunctionTest
+    public class WhenUploadingAuthorImageAsAdministrator : FunctionTest
     {
         OkResult _response;
         private AuthorsDataBuilder _builder;

@@ -96,6 +96,7 @@ namespace Inshapardaz.Functions.Tests
                    .AddTransient<AddBook>()
                    .AddTransient<UpdateBook>()
                    .AddTransient<DeleteBook>()
+                   .AddTransient<UpdateBookImage>()
                    .AddTransient<GetChapterById>()
                    .AddTransient<AddChapter>()
                    .AddTransient<UpdateChapter>()

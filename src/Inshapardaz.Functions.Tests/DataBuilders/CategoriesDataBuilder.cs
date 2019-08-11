@@ -11,23 +11,31 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
     {
 
         private readonly IDatabaseContext _context;
-        private readonly List<Category> _categories = new List<Category>();
-
+        private int _bookCount;
+        
         public CategoriesDataBuilder(IDatabaseContext context)
         {
             _context = context;
         }
 
-        public CategoriesDataBuilder WithCategories(int count, int bookCount = 0)
-        { 
+        public CategoriesDataBuilder WithBooks(int bookCount)
+        {
+            _bookCount = bookCount;
+            return this;
+        }
+
+        public Category Build() => Build(1).Single();
+        
+        public IEnumerable<Category> Build(int count)
+        {
             var authorGenerator = new Faker<Author>()
-                .RuleFor(c => c.Id, 0)
-                .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10));
+                                  .RuleFor(c => c.Id, 0)
+                                  .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10));
 
             var cats = new Faker<Category>()
-                .RuleFor(c => c.Id, 0)
-                .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
-                .Generate(count);
+                       .RuleFor(c => c.Id, 0)
+                       .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
+                       .Generate(count);
 
             foreach (var cat in cats)
             {
@@ -35,25 +43,19 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                     .RuleFor(c => c.Id, 0)
                     .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
                     .RuleFor(c => c.Author, f => authorGenerator.Generate())
-                    .Generate(bookCount)
+                    .Generate(_bookCount)
                     .ForEach(b => cat.BookCategories.Add(new BookCategory
-                {
-                    Book = b,
-                    Category = cat
-                }));
+                    {
+                        Book = b,
+                        Category = cat
+                    }));
             }
             
-            _categories.AddRange(cats);
-            return this;
-        }
-        
-        public IEnumerable<Category> Build()
-        {
-            _context.Category.AddRange(_categories);
+            _context.Category.AddRange(cats);
             
             _context.SaveChanges();
 
-            return _categories;
+            return cats;
         }
 
         public Category GetById(int id)

@@ -36,9 +36,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
 
             var handler = Container.GetService<Functions.Library.Books.UpdateBook>();
 
-            _otherAuthor = authorBuilder.WithAuthors(1, 0).Build().Single();
-            _categories = _categoriesBuilder.WithCategories(3).Build();
-            var books = _dataBuilder.WithBooks(4, categoryCount: 1).Build();
+            _otherAuthor = authorBuilder.Build();
+            _categories = _categoriesBuilder.Build(3);
+            var books = _dataBuilder.WithCategories(1).Build(4);
 
             var selectedBook = books.First();
 

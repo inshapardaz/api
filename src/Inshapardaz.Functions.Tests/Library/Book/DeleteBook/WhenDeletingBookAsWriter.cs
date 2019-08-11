@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
         {
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<BooksDataBuilder>();
-            var books = _dataBuilder.WithBooks(1, true, 1, 4).Build();
+            var books = _dataBuilder.HavingSeries().WithCategories(4).Build(1);
             _expected = books.First();
             
             var handler = Container.GetService<Functions.Library.Books.DeleteBook>();

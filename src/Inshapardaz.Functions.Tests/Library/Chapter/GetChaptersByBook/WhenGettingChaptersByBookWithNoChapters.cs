@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
             var request = TestHelpers.CreateGetRequest();
 
             var dataBuilder = Container.GetService<BooksDataBuilder>();
-            var book = dataBuilder.WithBooks(1).Build().First();
+            var book = dataBuilder.Build();
 
             var handler = Container.GetService<Functions.Library.Books.Chapters.GetChaptersByBook>();
             _response = (OkObjectResult) await handler.Run(null, book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);

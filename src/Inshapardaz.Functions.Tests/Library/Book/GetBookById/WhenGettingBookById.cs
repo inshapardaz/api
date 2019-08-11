@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
             var request = TestHelpers.CreateGetRequest();
 
             var dataBuilder = Container.GetService<BooksDataBuilder>();
-            var categories = dataBuilder.WithBooks(4, true).Build();
+            var categories = dataBuilder.HavingSeries().Build(4);
             _expected = categories.First();
             
             var handler = Container.GetService<Functions.Library.Books.GetBookById>();

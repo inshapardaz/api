@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
             _dataBuilder = Container.GetService<AuthorsDataBuilder>();
 
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthor>();
-            var authors = _dataBuilder.WithAuthors(4, 3).Build();
+            var authors = _dataBuilder.WithBooks(3).Build(4);
 
             var author = authors.First();
 

@@ -28,7 +28,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
 
             var handler = Container.GetService<Functions.Library.Series.UpdateSeries>();
-            _series = _dataBuilder.WithSeries(4, 3).Build();
+            _series = _dataBuilder.WithBooks(3).Build(4);
 
             var selectedSeries = _series.First();
 

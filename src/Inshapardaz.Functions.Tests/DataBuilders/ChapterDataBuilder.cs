@@ -15,7 +15,8 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private readonly IDatabaseContext _context;
         private readonly List<Chapter> _chapters = new List<Chapter>();
         private readonly List<File> _files = new List<File>();
-
+        private bool _hasContent = false;
+        private bool? _isPublic = false;
         private string _contentLink = string.Empty;
 
         public ChapterDataBuilder(IDatabaseContext context)
@@ -28,7 +29,34 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             _contentLink = contentLink;
             return this;
         }
-        public ChapterDataBuilder WithChapters(int count, bool? isPublic = null, bool hasContent = false)
+
+        public ChapterDataBuilder WithContents()
+        {
+            _hasContent = true;
+            return this;
+        }
+
+        public ChapterDataBuilder AsPrivate()
+        {
+            _isPublic = false;
+            return this;
+        }
+        
+        public ChapterDataBuilder AsPublic()
+        {
+            _isPublic = true;
+            return this;
+        }
+        
+        public ChapterDataBuilder WithChapters(string a, int count, bool? isPublic = null, bool hasContent = false)
+        {
+            
+            return this;
+        }
+
+        public Chapter Build() => Build(1).Single();
+        
+        public IEnumerable<Chapter> Build(int count)
         {
             var author = new Faker<Author>()
                          .RuleFor(c => c.Id, 0)
@@ -37,11 +65,11 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                          .Generate();
 
             var book = new Faker<Book>()
-                        .RuleFor(c => c.Id, 0)
-                        .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
-                        .RuleFor(c => c.Author, author)
-                        .RuleFor(c => c.IsPublic, f => isPublic ?? f.Random.Bool())
-                        .Generate();
+                       .RuleFor(c => c.Id, 0)
+                       .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
+                       .RuleFor(c => c.Author, author)
+                       .RuleFor(c => c.IsPublic, f => _isPublic ?? f.Random.Bool())
+                       .Generate();
 
             var chapterIndex = 1;
             var chapters = new Faker<Chapter>()
@@ -51,10 +79,10 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                            .Generate(count);
 
             var chapterContent = new Faker<ChapterContent>()
-                .RuleFor(c => c.MimeType, "text/markdown")
-                .RuleFor(c => c.ContentUrl, f => _contentLink ?? f.Internet.Url());
+                                 .RuleFor(c => c.MimeType, "text/markdown")
+                                 .RuleFor(c => c.ContentUrl, f => _contentLink ?? f.Internet.Url());
 
-            if (hasContent)
+            if (_hasContent)
             {
                 foreach (var chapter in chapters)
                 {
@@ -71,11 +99,6 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             }
 
             _chapters.AddRange(chapters);
-            return this;
-        }
-
-        public IEnumerable<Chapter> Build()
-        {
             _context.Chapter.AddRange(_chapters);
 
             _context.SaveChanges();

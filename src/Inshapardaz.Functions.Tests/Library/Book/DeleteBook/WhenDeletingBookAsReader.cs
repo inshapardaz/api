@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
         {
             var request = TestHelpers.CreateGetRequest();
             var builder = Container.GetService<BooksDataBuilder>();
-            var books = builder.WithBooks(4).Build();
+            var books = builder.Build(4);
             var expected = books.First();
             
             var handler = Container.GetService<Functions.Library.Books.DeleteBook>();

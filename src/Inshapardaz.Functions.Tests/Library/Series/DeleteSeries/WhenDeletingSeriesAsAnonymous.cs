@@ -21,11 +21,10 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         {
             var request = TestHelpers.CreateGetRequest();
             var builder = Container.GetService<SeriesDataBuilder>();
-            var series = builder.WithSeries(4).Build();
-            var expected = series.First();
+            var series = builder.Build();
             
             var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();
-            _response = (UnauthorizedResult) await handler.Run(request, NullLogger.Instance, expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult) await handler.Run(request, NullLogger.Instance, series.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

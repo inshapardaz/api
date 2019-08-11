@@ -16,9 +16,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         private readonly IDatabaseContext _context;
         private readonly IFileStorage _fileStorage;
-        private readonly List<Book> _books = new List<Book>();
-        private readonly List<File> _files = new List<File>();
-        private List<Category> _categories;
+
+        private bool _hasSeries = false, _hasImage = true;
+        private int _chapterCount, _categoriesCount = 0;
 
         public BooksDataBuilder(IDatabaseContext context, IFileStorage fileStorage)
         {
@@ -26,8 +26,36 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             _fileStorage = fileStorage;
         }
 
-       
-        public BooksDataBuilder WithBooks(int count, bool havingSeries = false, int categoryCount = 0, int chapterCount = 0, bool withImage = true)
+        public BooksDataBuilder HavingSeries()
+        {
+            _hasSeries = true;
+            return this;
+        }
+
+        public BooksDataBuilder WithCategories(int categoriesCount)
+        {
+            _categoriesCount = categoriesCount;
+            return this;
+        }
+
+        public BooksDataBuilder WithChapters(int chapterCount)
+        {
+            _chapterCount = chapterCount;
+            return this;
+        }
+
+        public BooksDataBuilder WithNoImage()
+        {
+            _hasImage = false;
+            return this;
+        }
+        
+        public Book Build()
+        {
+            return Build(1).Single();
+        }
+
+        public IEnumerable<Book> Build(int numberOfBooks)
         {
             var books = new Faker<Book>()
                         .RuleFor(c => c.Id, 0)
@@ -37,22 +65,23 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                         .RuleFor(c => c.DateAdded, f => f.Date.Past())
                         .RuleFor(c => c.DateUpdated, f => f.Date.Past())
                         .RuleFor(c => c.IsPublic, f => f.Random.Bool())
-                        .RuleFor(c => c.ImageId, f => withImage ? f.Random.Int(1) : new int?())
+                        .RuleFor(c => c.ImageId, f => _hasImage ? f.Random.Int(1) : new int?())
                         .RuleFor(c => c.Language, f => f.PickRandom<Languages>())
                         .RuleFor(c => c.IsPublished, f => f.Random.Bool())
                         .RuleFor(c => c.YearPublished, f => f.Random.Int(1900, 2000))
                         .RuleFor(c => c.Status, f => f.PickRandom<BookStatuses>())
-                        .Generate(count);
+                        .Generate(numberOfBooks);
 
             var series = new Faker<Series>()
                 .RuleFor(s => s.Id, 0)
                 .RuleFor(s => s.Name, f => f.Random.String())
                 .Generate();
 
-            _categories = new Faker<Category>()
+            var categories = new Faker<Category>()
                           .RuleFor(c => c.Name, f => f.Random.String())
-                          .Generate(categoryCount);
+                          .Generate(_categoriesCount);
 
+            var files = new List<File>();
             int seriesIndex = 1;
             foreach (var book in books)
             {
@@ -64,7 +93,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                               .Generate();
 
                 book.Author = author;
-                if (havingSeries)
+                if (_hasSeries)
                 {
                     book.Series = series;
                     book.SeriesIndex = seriesIndex++;
@@ -73,37 +102,28 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 if (book.ImageId.HasValue)
                 {
                     var url = _fileStorage.StoreFile($"{book.Id}", new Faker().Image.Random.Bytes(10), CancellationToken.None).Result;
-                    _files.Add(new File { Id = book.ImageId.Value, IsPublic = true, FilePath = url });
+                    files.Add(new File { Id = book.ImageId.Value, IsPublic = true, FilePath = url });
                 }
 
-                foreach (var category in _categories)
+                foreach (var category in categories)
                 {
                     book.BookCategory.Add(new BookCategory { Category = category });
                 }
                 
-                if (chapterCount > 0)
-                {
-                    var chapterIndex = 1;
-                    book.Chapters = new Faker<Chapter>()
-                                                   .RuleFor(c => c.Id, 0)
-                                                   .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
-                                                   .RuleFor(c => c.ChapterNumber, chapterIndex++)
-                                                   .Generate(chapterCount);
-                }
+                var chapterIndex = 1;
+                book.Chapters = new Faker<Chapter>()
+                                                .RuleFor(c => c.Id, 0)
+                                                .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
+                                                .RuleFor(c => c.ChapterNumber, chapterIndex++)
+                                                .Generate(_chapterCount);
             }
 
-            _books.AddRange(books);
-                return this;
-        }
-        
-        public IEnumerable<Book> Build()
-        {
-            _context.Category.AddRange(_categories);
-            _context.Book.AddRange(_books);
-            _context.File.AddRange(_files);
+            _context.Category.AddRange(categories);
+            _context.Book.AddRange(books);
+            _context.File.AddRange(files);
             _context.SaveChanges();
 
-            return _books;
+            return books;
         }
 
         public Book GetById(int id)

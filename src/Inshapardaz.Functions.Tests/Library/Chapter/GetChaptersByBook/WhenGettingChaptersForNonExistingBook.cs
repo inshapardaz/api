@@ -15,7 +15,6 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
     public class WhenGettingChaptersForNonExistingBook : FunctionTest
     {
         NotFoundResult _response;
-        IEnumerable<ChapterView> _view;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -23,7 +22,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
             var request = TestHelpers.CreateGetRequest();
 
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
-            var chapters = dataBuilder.WithChapters(4, true).Build();
+            var chapters = dataBuilder.AsPublic().Build(4);
 
             var handler = Container.GetService<Functions.Library.Books.Chapters.GetChaptersByBook>();
             _response = (NotFoundResult) await handler.Run(null, -Random.Number, AuthenticationBuilder.Unauthorized, CancellationToken.None);

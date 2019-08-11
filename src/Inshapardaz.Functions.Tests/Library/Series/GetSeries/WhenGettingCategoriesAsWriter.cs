@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
             var request = TestHelpers.CreateGetRequest();
 
             var seriesBuilder = Container.GetService<SeriesDataBuilder>();
-            seriesBuilder.WithSeries(4, 3).Build();
+            seriesBuilder.WithBooks(3).Build(4);
 
             var handler = Container.GetService<Functions.Library.Series.GetSeries>();
             _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.WriterClaim, CancellationToken.None);

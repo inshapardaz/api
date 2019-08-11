@@ -18,34 +18,33 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
         NoContentResult _response;
         Inshapardaz.Ports.Database.Entities.Library.ChapterContent _chapterContent;
         string _contents;
-        int chapterId;
+        int _chapterId;
         string _newContents;
         ChapterDataBuilder _dataBuilder;
 
-        FakeFileStorage fileStore;
+        FakeFileStorage _fileStore;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _dataBuilder = Container.GetService<ChapterDataBuilder>();
 
-            fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
+            _fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
 
             var faker = new Faker();
             var contentUrl = faker.Internet.Url();
             _contents = faker.Random.Words(10);
             _newContents = faker.Random.Words(12);
 
-            fileStore.SetupFileContents(contentUrl, _contents);
+            _fileStore.SetupFileContents(contentUrl, _contents);
 
-            var chapters = _dataBuilder.WithContentLink(contentUrl).WithChapters(1, true, true).Build();
-            var _chapter = chapters.First();
+            var chapter = _dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
             _contents = new Faker().Random.Words(60);
-            _chapterContent = _chapter.Contents.FirstOrDefault();
-            chapterId = _chapter.Id;
+            _chapterContent = chapter.Contents.FirstOrDefault();
+            _chapterId = chapter.Id;
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.UpdateChapterContents>();
             var request = new RequestBuilder().WithBody(_newContents).Build();
-            _response = (NoContentResult) await handler.Run(request, _chapter.BookId, chapterId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (NoContentResult) await handler.Run(request, chapter.BookId, _chapterId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -63,8 +62,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
         [Test]
         public async Task ShouldReturnCorrectChapterData()
         {
-            var expected = _dataBuilder.GetContentByChapterId(chapterId);
-            var savedContent = await fileStore.GetTextFile(expected.ContentUrl, CancellationToken.None);
+            var expected = _dataBuilder.GetContentByChapterId(_chapterId);
+            var savedContent = await _fileStore.GetTextFile(expected.ContentUrl, CancellationToken.None);
             Assert.That(_chapterContent, Is.Not.Null, "Should return chapter");
             Assert.That(_chapterContent.Id, Is.EqualTo(expected.Id), "Content id does not match");
             Assert.That(_chapterContent.ChapterId, Is.EqualTo(expected.ChapterId), "Chapter id does not match");

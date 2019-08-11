@@ -22,7 +22,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
         {
             _builder = Container.GetService<AuthorsDataBuilder>();
 
-            var author = _builder.WithAuthors(1, withImage: false).Build().Single();
+            var author = _builder.WithoutImage().Build();
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthorImage>();
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
             _response = (CreatedResult) await handler.Run(request, author.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);

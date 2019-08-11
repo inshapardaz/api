@@ -27,8 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         {
             _dataBuilder = Container.GetService<ChapterDataBuilder>();
 
-            var chapters = _dataBuilder.WithChapters(1, true).Build();
-            var chapter = chapters.First();
+            var chapter = _dataBuilder.AsPublic().Build();
             _contents = new Faker().Random.Words(60);
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.AddChapterContents>();
             var request = new RequestBuilder().WithBody(_contents).Build();
@@ -94,10 +93,10 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         [Test]
         public void ShouldReturnCorrectChapterData()
         {
-            var _expected = _dataBuilder.GetContentById(_view.Id);
+            var expected = _dataBuilder.GetContentById(_view.Id);
             Assert.That(_view, Is.Not.Null, "Should return chapter");
-            Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Content id does not match");
-            Assert.That(_view.ChapterId, Is.EqualTo(_expected.ChapterId), "Chapter id does not match");
+            Assert.That(_view.Id, Is.EqualTo(expected.Id), "Content id does not match");
+            Assert.That(_view.ChapterId, Is.EqualTo(expected.ChapterId), "Chapter id does not match");
             Assert.That(_view.Contents, Is.EqualTo(_contents), "contents should match");
         }
     }

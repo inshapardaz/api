@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
         public async Task Setup()
         {
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
-            var chapters = dataBuilder.WithChapters(4).Build();
+            var chapters = dataBuilder.WithContents().Build(4);
             var chapter = chapters.First();
 
             var handler = Container.GetService<Functions.Library.Books.Chapters.UpdateChapter>();

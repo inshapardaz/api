@@ -26,7 +26,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
             _builder = Container.GetService<BooksDataBuilder>();
             _fileStorage = Container.GetService<IFileStorage>() as FakeFileStorage;
             
-            var book = _builder.WithBooks(1, withImage: false).Build().Single();
+            var book = _builder.WithNoImage().Build();
             _bookId = book.Id;
             var handler = Container.GetService<Functions.Library.Books.UpdateBookImage>();
             var request = new RequestBuilder().WithImage().BuildRequestMessage();

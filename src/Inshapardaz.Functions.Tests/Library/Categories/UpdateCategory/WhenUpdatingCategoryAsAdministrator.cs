@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
             _categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
 
             var handler = Container.GetService<Functions.Library.Categories.UpdateCategory>();
-            _categories = _categoriesBuilder.WithCategories(4, 3).Build();
+            _categories = _categoriesBuilder.WithBooks(3).Build(4);
 
             _selectedCategory = _categories.First();
 

@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         {
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
-            _series = _dataBuilder.WithSeries(4).Build();
+            _series = _dataBuilder.Build(4);
             _expected = _series.First();
             
             var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();

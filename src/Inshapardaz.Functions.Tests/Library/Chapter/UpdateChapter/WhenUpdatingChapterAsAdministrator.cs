@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
             _dataBuilder = Container.GetService<ChapterDataBuilder>();
 
             var handler = Container.GetService<Functions.Library.Books.Chapters.UpdateChapter>();
-            var chapters = _dataBuilder.WithChapters(4).Build();
+            var chapters = _dataBuilder.WithContents().Build(4);
 
             var chapter = chapters.First();
 

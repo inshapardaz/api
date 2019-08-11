@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
         {
             _builder = Container.GetService<BooksDataBuilder>();
 
-            var book = _builder.WithBooks(1).Build().First();
+            var book = _builder.Build();
 
             var handler = Container.GetService<Functions.Library.Books.Chapters.AddChapter>();
             var request = new ChapterView { Title = new Faker().Random.String(), ChapterNumber = 1 };

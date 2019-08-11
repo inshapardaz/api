@@ -21,8 +21,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         {
             _dataBuilder = Container.GetService<ChapterDataBuilder>();
 
-            var chapters = _dataBuilder.WithChapters(1, true).Build();
-            var chapter = chapters.First();
+            var chapter = _dataBuilder.AsPublic().Build();
             var contents = new Faker().Random.Words(60);
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.AddChapterContents>();
             var request = new RequestBuilder().WithBody(contents).Build();

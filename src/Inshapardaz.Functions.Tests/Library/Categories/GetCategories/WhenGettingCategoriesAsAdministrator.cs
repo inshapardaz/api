@@ -22,7 +22,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         {
             var request = TestHelpers.CreateGetRequest();
             var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
-            categoriesBuilder.WithCategories(4).Build();
+            categoriesBuilder.Build(4);
             
             var handler = Container.GetService<Functions.Library.Categories.GetCategories>();
             _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.AdminClaim, CancellationToken.None);

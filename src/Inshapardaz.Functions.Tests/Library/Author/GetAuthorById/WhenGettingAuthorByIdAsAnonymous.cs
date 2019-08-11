@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
         {
             var request = TestHelpers.CreateGetRequest();
             var dataBuilder = Container.GetService<AuthorsDataBuilder>();
-            var authors = dataBuilder.WithAuthors(4).Build();
+            var authors = dataBuilder.Build(4);
             _expected = authors.First();
             
             var handler = Container.GetService<Functions.Library.Authors.GetAuthorById>();

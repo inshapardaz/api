@@ -26,11 +26,10 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
         {
             _builder = Container.GetService<BooksDataBuilder>();
 
-            var author = Container.GetService<AuthorsDataBuilder>().WithAuthors(1, 0).Build().Single();
-            var series = Container.GetService<SeriesDataBuilder>().WithSeries(1, 0).Build().Single();
+            var author = Container.GetService<AuthorsDataBuilder>().Build();
+            var series = Container.GetService<SeriesDataBuilder>().Build();
             var categories = Container.GetService<CategoriesDataBuilder>()
-                                      .WithCategories(3, 0)
-                                      .Build()
+                                      .Build(3)
                                       .Select(c => new CategoryView
                                       {
                                           Id = c.Id

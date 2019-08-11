@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.DeleteChapter
         {
             var request = TestHelpers.CreateGetRequest();
             var builder = Container.GetService<ChapterDataBuilder>();
-            var chapters = builder.WithChapters(4).Build();
+            var chapters = builder.Build(4);
             var expected = chapters.First();
             
             var handler = Container.GetService<Functions.Library.Books.Chapters.DeleteChapter>();

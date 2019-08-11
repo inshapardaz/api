@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
         {
             var request = TestHelpers.CreateGetRequest();
             var builder = Container.GetService<AuthorsDataBuilder>();
-            var authors = builder.WithAuthors(4).Build();
+            var authors = builder.Build(4);
             var expected = authors.First();
             
             var handler = Container.GetService<Functions.Library.Authors.DeleteAuthor>();

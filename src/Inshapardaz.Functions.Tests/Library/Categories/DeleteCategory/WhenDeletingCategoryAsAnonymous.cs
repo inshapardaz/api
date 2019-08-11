@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
         {
             var request = TestHelpers.CreateGetRequest();
             _categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
-            _categories = _categoriesBuilder.WithCategories(4).Build();
+            _categories = _categoriesBuilder.Build(4);
             _selectedCategory = _categories.First();
             
             var handler = Container.GetService<Functions.Library.Categories.DeleteCategory>();

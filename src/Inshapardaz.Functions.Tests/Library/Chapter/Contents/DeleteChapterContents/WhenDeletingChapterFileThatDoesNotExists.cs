@@ -33,8 +33,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
 
             var contentLink = faker.Internet.Url();
 
-            var chapters = _dataBuilder.WithContentLink(contentLink).WithChapters(1, true, true).Build();
-            var chapter = chapters.First();
+            var chapter = _dataBuilder.WithContentLink(contentLink).WithContents().AsPublic().Build();
             var chapterContent = chapter.Contents.First();
             _contentId = chapterContent.Id;
             _contentUrl = chapterContent.ContentUrl;

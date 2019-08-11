@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         {
             var request = TestHelpers.CreateGetRequest();
             var builder = Container.GetService<BooksDataBuilder>();
-            var books = builder.WithBooks(4).Build();
+            var books = builder.Build(4);
             _expected = books.First();
             
             var handler = Container.GetService<Functions.Library.Books.GetBookById>();

@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
             var request = TestHelpers.CreateGetRequest();
 
             var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
-            categoriesBuilder.WithCategories(4, 3).Build();
+            categoriesBuilder.WithBooks(3).Build(4);
             
             var handler = Container.GetService<Functions.Library.Categories.GetCategories>();
             _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);

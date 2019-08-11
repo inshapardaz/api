@@ -71,20 +71,24 @@ namespace Inshapardaz.Functions.Tests.Fakes
             return await Task.FromResult(url);
         }
 
-        public async Task DeleteFile(string filePath, CancellationToken cancellationToken)
+        public Task DeleteFile(string filePath, CancellationToken cancellationToken)
         {
             if (_contents.ContainsKey(filePath))
             {
                 _contents.Remove(filePath);
             }
+
+            return Task.CompletedTask;
         }
 
-        public async Task TryDeleteFile(string filePath, CancellationToken cancellationToken)
+        public Task TryDeleteFile(string filePath, CancellationToken cancellationToken)
         {
             if (_contents.ContainsKey(filePath))
             {
                 _contents.Remove(filePath);
             }
+            
+            return Task.CompletedTask;
         }
     }
 }

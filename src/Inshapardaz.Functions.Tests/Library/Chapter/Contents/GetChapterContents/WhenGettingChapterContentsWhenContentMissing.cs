@@ -18,8 +18,6 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
     {
         NotFoundResult _response;
 
-        private Ports.Database.Entities.Library.ChapterContent _expected;
-
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -30,8 +28,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
 
             var faker = new Faker();
             var contentUrl = faker.Internet.Url();
-            var chapters = dataBuilder.WithContentLink(contentUrl).WithChapters(1, true, true).Build();
-            var chapter = chapters.First();
+            var chapter = dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
             
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.GetChapterContents>();
             _response = (NotFoundResult) await handler.Run(null, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);

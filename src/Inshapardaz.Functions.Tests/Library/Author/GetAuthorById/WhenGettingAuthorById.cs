@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
             var request = TestHelpers.CreateGetRequest();
 
             var dataBuilder = Container.GetService<AuthorsDataBuilder>();
-            var authors = dataBuilder.WithAuthors(4, 3).Build();
+            var authors = dataBuilder.WithBooks(3).Build(4);
             _expected = authors.First();
             
             var handler = Container.GetService<Functions.Library.Authors.GetAuthorById>();

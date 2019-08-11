@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
             var request = TestHelpers.CreateGetRequest();
 
             var categoriesBuilder = Container.GetService<SeriesDataBuilder>();
-            var series = categoriesBuilder.WithSeries(4, 3).Build();
+            var series = categoriesBuilder.WithBooks(3).Build(4);
             _selectedSeries = series.First();
             
             var handler = Container.GetService<Functions.Library.Series.GetSeriesById>();

@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
             var request = TestHelpers.CreateGetRequest();
 
             var builder = Container.GetService<BooksDataBuilder>();
-            builder.WithBooks(4).Build();
+            builder.Build(4);
             
             var handler = Container.GetService<Functions.Library.Books.GetBooks>();
             _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.WriterClaim, CancellationToken.None);

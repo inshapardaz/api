@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
         {
             _builder = Container.GetService<ChapterDataBuilder>();
             var bookBuilder = Container.GetService<BooksDataBuilder>();
-            var book = bookBuilder.WithBooks(1).Build().First();
+            var book = bookBuilder.Build();
 
             var handler = Container.GetService<Functions.Library.Books.Chapters.UpdateChapter>();
             var faker = new Faker();

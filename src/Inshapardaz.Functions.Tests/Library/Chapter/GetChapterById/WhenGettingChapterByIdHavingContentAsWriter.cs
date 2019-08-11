@@ -22,8 +22,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         public async Task Setup()
         {
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
-            var chapters = dataBuilder.WithChapters(4, true, true).Build();
-            _expected = chapters.First();
+            _expected = dataBuilder.AsPublic().WithContents().Build(4).First();
             
             var handler = Container.GetService<Functions.Library.Books.Chapters.GetChapterById>();
             _response = (OkObjectResult) await handler.Run(_expected.BookId, _expected.Id, NullLogger.Instance, AuthenticationBuilder.WriterClaim, CancellationToken.None);

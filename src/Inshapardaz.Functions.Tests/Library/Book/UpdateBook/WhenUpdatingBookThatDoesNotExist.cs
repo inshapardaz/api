@@ -24,10 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
         public async Task Setup()
         {
             _builder = Container.GetService<BooksDataBuilder>();
-            var author = Container.GetService<AuthorsDataBuilder>()
-                                  .WithAuthors(1)
-                                  .Build()
-                                  .Single();
+            var author = Container.GetService<AuthorsDataBuilder>().Build();
 
             var handler = Container.GetService<Functions.Library.Books.UpdateBook>();
             var faker = new Faker();

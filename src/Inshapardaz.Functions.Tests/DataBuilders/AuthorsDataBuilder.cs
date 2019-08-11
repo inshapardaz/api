@@ -14,8 +14,8 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         private readonly IDatabaseContext _context;
         private readonly IFileStorage _fileStorage;
-        private readonly List<Author> _authors = new List<Author>();
-        private readonly List<File> _files = new List<File>();
+        private int _bookCount;
+        private bool _withImage = true;
 
         public AuthorsDataBuilder(IDatabaseContext context, IFileStorage fileStorage)
         {
@@ -23,13 +23,31 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             _fileStorage = fileStorage;
         }
 
-        public AuthorsDataBuilder WithAuthors(int count, int bookCount = 0, bool withImage = true)
-        { 
+        public AuthorsDataBuilder WithBooks(int bookCount)
+        {
+            _bookCount = bookCount;
+            return this;
+        }
+        
+        public AuthorsDataBuilder WithoutImage()
+        {
+            _withImage = false;
+            return this;
+        }
+
+        public Author Build()
+        {
+            return Build(1).Single();
+        }
+
+        public IEnumerable<Author> Build(int count)
+        {
             var authors = new Faker<Author>()
-                .RuleFor(c => c.Id, 0)
-                .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
-                .RuleFor(c => c.ImageId, f => withImage ? f.Random.Int(1) : new int?())
-                .Generate(count);
+                          .RuleFor(c => c.Id, 0)
+                          .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
+                          .RuleFor(c => c.ImageId, f => _withImage ? f.Random.Int(1) : new int?())
+                          .Generate(count);
+            var files = new List<File>();
 
             foreach (var author in authors)
             {
@@ -37,29 +55,23 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                             .RuleFor(c => c.Id, 0)
                             .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
                             .RuleFor(c => c.Author, author)
-                            .Generate(bookCount);
+                            .Generate(_bookCount);
 
                 author.Books = books;
 
                 if (author.ImageId.HasValue)
                 {
                     var url = _fileStorage.StoreFile($"{author.Id}", new Faker().Image.Random.Bytes(10), CancellationToken.None).Result;
-                    _files.Add(new File {Id = author.ImageId.Value, IsPublic = true, FilePath = url });
+                    files.Add(new File {Id = author.ImageId.Value, IsPublic = true, FilePath = url });
 
                 }
             }
 
-            _authors.AddRange(authors);
-                return this;
-        }
-        
-        public IEnumerable<Author> Build()
-        {
-            _context.Author.AddRange(_authors);
-            _context.File.AddRange(_files);
+            _context.Author.AddRange(authors);
+            _context.File.AddRange(files);
             _context.SaveChanges();
 
-            return _authors;
+            return authors;
         }
 
         public Author GetById(int id)

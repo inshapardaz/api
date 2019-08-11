@@ -19,7 +19,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
         UnauthorizedResult _response;
         FakeFileStorage _fileStore;
         ChapterContent _chapterContents;
-        int chapterId;
+        int _chapterId;
         string _contents;
         string _newContents;
 
@@ -38,10 +38,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
             _newContents = faker.Random.Words(12);
             _fileStore.SetupFileContents(contentUrl, _contents);
 
-            var chapters = _dataBuilder.WithContentLink(contentUrl).WithChapters(1, true, true).Build();
-            var chapter = chapters.First();
+            var chapter = _dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
             _chapterContents = chapter.Contents.FirstOrDefault();
-            chapterId = chapter.Id;
+            _chapterId = chapter.Id;
             _contents = new Faker().Random.Words(60);
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.UpdateChapterContents>();
             var request = new RequestBuilder().WithBody(_contents).Build();
@@ -63,11 +62,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
         [Test]
         public async Task ShouldReturnCorrectContentData()
         {
-            var _expected = _dataBuilder.GetContentById(chapterId);
-            var savedContents = await _fileStore.GetTextFile(_expected.ContentUrl, CancellationToken.None);
-            Assert.That(_expected, Is.Not.Null, "Should return chapter");
-            Assert.That(_chapterContents.Id, Is.EqualTo(_expected.Id), "Content id does not match");
-            Assert.That(_chapterContents.ChapterId, Is.EqualTo(_expected.ChapterId), "Chapter id does not match");
+            var expected = _dataBuilder.GetContentById(_chapterId);
+            var savedContents = await _fileStore.GetTextFile(expected.ContentUrl, CancellationToken.None);
+            Assert.That(expected, Is.Not.Null, "Should return chapter");
+            Assert.That(_chapterContents.Id, Is.EqualTo(expected.Id), "Content id does not match");
+            Assert.That(_chapterContents.ChapterId, Is.EqualTo(expected.ChapterId), "Chapter id does not match");
             //Assert.That(savedContents, Is.EqualTo(_contents), "contents should not be updated");
             Assert.That(savedContents, Is.Not.EqualTo(_newContents), "contents should be updated");
         }

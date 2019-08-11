@@ -34,8 +34,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
             var contentUrl = faker.Internet.Url();
             _contents = faker.Random.Words(10);
             fileStore.SetupFileContents(contentUrl, _contents);
-            var chapters = dataBuilder.WithContentLink(contentUrl).WithChapters(1, true, true).Build();
-            var chapter = chapters.First();
+            var chapter = dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
             _expected = chapter.Contents.First();
             
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.GetChapterContents>();

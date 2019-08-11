@@ -26,7 +26,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
             _builder = Container.GetService<AuthorsDataBuilder>();
             _fileStorage = Container.GetService<IFileStorage>() as FakeFileStorage;
             
-            var author = _builder.WithAuthors(1).Build().Single();
+            var author = _builder.Build();
             _authorId = author.Id;
             var imageUrl = _builder.GetAuthorImageUrl(_authorId);
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);

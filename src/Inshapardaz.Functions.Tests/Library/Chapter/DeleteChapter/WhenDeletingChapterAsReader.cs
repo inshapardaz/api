@@ -20,8 +20,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.DeleteChapter
         {
             var request = TestHelpers.CreateGetRequest();
             var builder = Container.GetService<ChapterDataBuilder>();
-            var chapters = builder.WithChapters(4).Build();
-            var expected = chapters.First();
+            var expected = builder.Build(4).First();
             
             var handler = Container.GetService<Functions.Library.Books.Chapters.DeleteChapter>();
             _response = (ForbidResult) await handler.Run(request, expected.BookId, expected.Id, AuthenticationBuilder.ReaderClaim, NullLogger.Instance, CancellationToken.None);

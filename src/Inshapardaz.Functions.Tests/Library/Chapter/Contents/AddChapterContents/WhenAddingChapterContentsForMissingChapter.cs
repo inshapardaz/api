@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         public async Task Setup()
         {
             var dataBuilder = Container.GetService<BooksDataBuilder>();
-            var book = dataBuilder.WithBooks(1).Build().Single();
+            var book = dataBuilder.Build();
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.AddChapterContents>();
             var request = new RequestBuilder().WithBody("test content").Build();
             _response = (BadRequestResult) await handler.Run(request, book.Id, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);

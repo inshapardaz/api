@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
             var request = TestHelpers.CreateGetRequest();
 
             var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
-            _categories = categoriesBuilder.WithCategories(4, 3).Build();
+            _categories = categoriesBuilder.WithBooks(3).Build(4);
             _selectedCategory = _categories.First();
             
             var handler = Container.GetService<Functions.Library.Categories.GetCategoryById>();

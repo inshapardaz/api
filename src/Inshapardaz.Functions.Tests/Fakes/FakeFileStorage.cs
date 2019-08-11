@@ -8,9 +8,9 @@ namespace Inshapardaz.Functions.Tests.Fakes
 {
     public class FakeFileStorage : IFileStorage
     {
-        readonly object _lock = new object();
+        private readonly object _lock = new object();
 
-        readonly Dictionary<string, byte[]> _contents = new Dictionary<string, byte[]>();
+        private readonly Dictionary<string, byte[]> _contents = new Dictionary<string, byte[]>();
 
         public FakeFileStorage()
         {

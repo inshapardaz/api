@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
     [TestFixture]
     public class WhenAddingAuthorAsAdministrator : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private AuthorsDataBuilder _builder;
 
         [OneTimeSetUp]

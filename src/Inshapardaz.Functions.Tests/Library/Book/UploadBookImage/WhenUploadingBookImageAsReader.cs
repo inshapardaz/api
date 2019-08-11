@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
     [TestFixture]
     public class WhenUploadingBookImageAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
         private BooksDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _bookId;

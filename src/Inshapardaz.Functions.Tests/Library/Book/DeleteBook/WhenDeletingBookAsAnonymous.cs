@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
     [TestFixture]
     public class WhenDeletingBookAsAnonymous : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

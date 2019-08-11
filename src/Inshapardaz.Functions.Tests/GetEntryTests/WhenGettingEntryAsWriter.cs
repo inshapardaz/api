@@ -11,8 +11,8 @@ namespace Inshapardaz.Functions.Tests.GetEntryTests
     [TestFixture]
     public class WhenGettingEntryAsWriter : FunctionTest
     {
-        OkObjectResult _response;
-        EntryView _view;
+        private OkObjectResult _response;
+        private EntryView _view;
         
         [OneTimeSetUp]
         public async Task Setup()

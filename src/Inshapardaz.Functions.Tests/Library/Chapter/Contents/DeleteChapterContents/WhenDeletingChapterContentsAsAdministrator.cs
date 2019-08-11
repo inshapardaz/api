@@ -15,13 +15,13 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
     [TestFixture]
     public class WhenDeletingChapterContentsAsAdministrator : FunctionTest
     {
-        NoContentResult _response;
-        Ports.Database.Entities.Library.ChapterContent _chapterContent;
-        int _contentId;
-        string _contentUrl;
-        ChapterDataBuilder _dataBuilder;
+        private NoContentResult _response;
+        private Ports.Database.Entities.Library.ChapterContent _chapterContent;
+        private int _contentId;
+        private string _contentUrl;
+        private ChapterDataBuilder _dataBuilder;
 
-        FakeFileStorage _fileStore;
+        private FakeFileStorage _fileStore;
 
         [OneTimeSetUp]
         public async Task Setup()

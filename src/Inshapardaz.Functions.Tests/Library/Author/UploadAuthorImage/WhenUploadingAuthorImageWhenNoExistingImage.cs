@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
     [TestFixture]
     public class WhenUploadingAuthorImageWhenNoExistingImage : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private AuthorsDataBuilder _builder;
 
         [OneTimeSetUp]

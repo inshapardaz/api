@@ -15,8 +15,8 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
     [TestFixture]
     public class WhenGettingCategories : FunctionTest
     {
-        OkObjectResult _response;
-        ListView<CategoryView> _view;
+        private OkObjectResult _response;
+        private ListView<CategoryView> _view;
         
         [OneTimeSetUp]
         public async Task Setup()

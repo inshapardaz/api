@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
     [TestFixture]
     public class WhenUploadingAuthorImageAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
         private AuthorsDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _authorId;

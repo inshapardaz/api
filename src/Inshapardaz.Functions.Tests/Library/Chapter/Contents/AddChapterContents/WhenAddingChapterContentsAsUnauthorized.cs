@@ -13,8 +13,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
     [TestFixture]
     public class WhenAddingChapterContentsAsUnauthorized : FunctionTest
     {
-        UnauthorizedResult _response;
-        ChapterDataBuilder _dataBuilder;
+        private UnauthorizedResult _response;
+        private ChapterDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()

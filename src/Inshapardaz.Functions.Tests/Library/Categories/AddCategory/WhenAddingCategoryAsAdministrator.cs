@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
     [TestFixture]
     public class WhenAddingCategoryAsAdministrator : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private CategoriesDataBuilder _categoriesBuilder;
 
         [OneTimeSetUp]

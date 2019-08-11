@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
     [TestFixture]
     public class WhenDeletingCategoryAsAdministrator : FunctionTest
     {
-        NoContentResult _response;
+        private NoContentResult _response;
 
         private IEnumerable<Category> _categories;
         private Category _selectedCategory;

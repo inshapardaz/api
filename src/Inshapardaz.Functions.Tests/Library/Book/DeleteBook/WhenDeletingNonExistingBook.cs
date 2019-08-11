@@ -11,7 +11,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
     [TestFixture]
     public class WhenDeletingNonExistingBook : FunctionTest
     {
-        NoContentResult _response;
+        private NoContentResult _response;
 
 
         [OneTimeSetUp]

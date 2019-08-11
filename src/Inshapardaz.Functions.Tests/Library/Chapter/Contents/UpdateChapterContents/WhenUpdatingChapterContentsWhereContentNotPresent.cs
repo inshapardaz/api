@@ -16,14 +16,14 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
     [TestFixture]
     public class WhenUpdatingChapterContentsWhereContentNotPresent : FunctionTest
     {
-        CreatedResult _response;
-        int _chapterId;
-        string _contents;
-        ChapterDataBuilder _dataBuilder;
+        private CreatedResult _response;
+        private int _chapterId;
+        private string _contents;
+        private ChapterDataBuilder _dataBuilder;
 
-        ChapterContentView _responseBody;
+        private ChapterContentView _responseBody;
 
-        FakeFileStorage _fileStore;
+        private FakeFileStorage _fileStore;
 
         [OneTimeSetUp]
         public async Task Setup()

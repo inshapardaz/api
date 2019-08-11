@@ -15,8 +15,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
     [TestFixture]
     public class WhenGettingBooksAsAdministrator: FunctionTest
     {
-        OkObjectResult _response;
-        PageView<BookView> _view;
+        private OkObjectResult _response;
+        private PageView<BookView> _view;
         
         [OneTimeSetUp]
         public async Task Setup()

@@ -12,7 +12,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
     [TestFixture]
     public class WhenDeletingNonExistingCategory : FunctionTest
     {
-        NoContentResult _response;
+        private NoContentResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

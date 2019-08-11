@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
     [TestFixture]
     public class WhenUploadingBookImageAsWriter : FunctionTest
     {
-        OkResult _response;
+        private OkResult _response;
         private BooksDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _bookId;

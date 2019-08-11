@@ -69,7 +69,7 @@ namespace Inshapardaz.Functions.Converters
                 links.Add(source.LinkFuncWithParameter(id, page.CurrentPageIndex + 1, page.PageSize, RelTypes.Next));
             }
 
-            if (page.PageCount > 1 && page.CurrentPageIndex > 1)
+            if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
             {
                 links.Add(source.LinkFuncWithParameter(id, page.CurrentPageIndex - 1, page.PageSize, RelTypes.Previous));
             }

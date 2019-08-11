@@ -10,7 +10,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
     [TestFixture]
     public class WhenAddingChapterContentsForMissingBook : FunctionTest
     {
-        BadRequestResult _response;
+        private BadRequestResult _response;
         
         [OneTimeSetUp]
         public async Task Setup()

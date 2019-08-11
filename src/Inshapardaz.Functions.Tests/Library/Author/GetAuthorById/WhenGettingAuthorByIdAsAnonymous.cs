@@ -14,8 +14,8 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
     [TestFixture]
     public class WhenGettingAuthorByIdAsAnonymous : FunctionTest
     {
-        OkObjectResult _response;
-        AuthorView _view;
+        private OkObjectResult _response;
+        private AuthorView _view;
         private Ports.Database.Entities.Library.Author _expected;
 
         [OneTimeSetUp]

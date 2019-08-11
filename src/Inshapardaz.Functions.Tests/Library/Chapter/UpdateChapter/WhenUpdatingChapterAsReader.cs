@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
     [TestFixture]
     public class WhenUpdatingChapterAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

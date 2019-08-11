@@ -15,8 +15,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
     [TestFixture]
     public class WhenGettingBooksLastPage : FunctionTest
     {
-        OkObjectResult _response;
-        PageView<BookView> _view;
+        private OkObjectResult _response;
+        private PageView<BookView> _view;
         
         [OneTimeSetUp]
         public async Task Setup()
@@ -77,6 +77,15 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
             Assert.That(_view.Data.Count(), Is.EqualTo(10), "Should return all books on page");
         }
 
+        [Test]
+        public void ShouldReturnCorrectPage()
+        {
+            Assert.That(_view.PageCount, Is.EqualTo(2));
+            Assert.That(_view.PageSize, Is.EqualTo(10));
+            Assert.That(_view.TotalCount, Is.EqualTo(20));
+            Assert.That(_view.CurrentPageIndex, Is.EqualTo(2));
+        }
+        
         [Test]
         public void ShouldHaveCorrectBookData()
         {

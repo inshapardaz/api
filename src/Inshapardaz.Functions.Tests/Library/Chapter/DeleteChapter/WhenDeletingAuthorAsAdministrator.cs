@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.DeleteChapter
     [TestFixture]
     public class WhenDeletingChapterAsAdministrator : FunctionTest
     {
-        NoContentResult _response;
+        private NoContentResult _response;
 
         private Ports.Database.Entities.Library.Chapter _expected;
         private ChapterDataBuilder _dataBuilder;

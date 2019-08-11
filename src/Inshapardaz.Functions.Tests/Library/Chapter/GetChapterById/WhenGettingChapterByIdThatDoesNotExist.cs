@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
     [TestFixture]
     public class WhenGettingChapterByIdThatDoesNotExist : FunctionTest
     {
-        NotFoundResult _response;
+        private NotFoundResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

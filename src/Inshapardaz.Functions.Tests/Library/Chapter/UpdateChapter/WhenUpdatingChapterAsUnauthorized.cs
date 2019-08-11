@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
     [TestFixture]
     public class WhenUpdatingChapterAsUnauthorized: FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

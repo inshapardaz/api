@@ -15,12 +15,12 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
     [TestFixture]
     public class WhenDeletingChapterFileThatDoesNotExists : FunctionTest
     {
-        NoContentResult _response;
-        int _contentId;
-        string _contentUrl;
-        ChapterDataBuilder _dataBuilder;
+        private NoContentResult _response;
+        private int _contentId;
+        private string _contentUrl;
+        private ChapterDataBuilder _dataBuilder;
 
-        FakeFileStorage _fileStore;
+        private FakeFileStorage _fileStore;
 
         [OneTimeSetUp]
         public async Task Setup()

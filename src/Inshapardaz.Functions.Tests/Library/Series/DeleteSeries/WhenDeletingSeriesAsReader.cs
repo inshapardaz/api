@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
     [TestFixture]
     public class WhenDeletingSeriesAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

@@ -15,8 +15,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
     [TestFixture]
     public class WhenDeletingChapterContentThatDoesNotExists : FunctionTest
     {
-        NoContentResult _response;
-        ChapterDataBuilder _dataBuilder;
+        private NoContentResult _response;
+        private ChapterDataBuilder _dataBuilder;
 
 
         [OneTimeSetUp]

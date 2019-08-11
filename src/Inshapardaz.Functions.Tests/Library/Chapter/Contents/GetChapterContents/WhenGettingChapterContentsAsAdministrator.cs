@@ -16,10 +16,10 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
     [TestFixture]
     public class WhenGettingChapterContentsAsAdministrator : FunctionTest
     {
-        OkObjectResult _response;
-        ChapterContentView _view;
+        private OkObjectResult _response;
+        private ChapterContentView _view;
 
-        string _contents;
+        private string _contents;
         private Ports.Database.Entities.Library.ChapterContent _expected;
 
         [OneTimeSetUp]

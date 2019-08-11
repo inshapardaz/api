@@ -14,8 +14,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
     [TestFixture]
     public class WhenGettingChapterByIdAsWriter : FunctionTest
     {
-        OkObjectResult _response;
-        ChapterView _view;
+        private OkObjectResult _response;
+        private ChapterView _view;
         private Ports.Database.Entities.Library.Chapter _expected;
 
         [OneTimeSetUp]

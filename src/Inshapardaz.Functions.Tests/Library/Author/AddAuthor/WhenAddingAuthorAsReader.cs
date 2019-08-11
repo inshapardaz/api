@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
     [TestFixture]
     public class WhenAddingAuthorAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

@@ -15,8 +15,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
     [TestFixture]
     public class WhenGettingBooksPageThatDoesNotExist : FunctionTest
     {
-        OkObjectResult _response;
-        PageView<BookView> _view;
+        private OkObjectResult _response;
+        private PageView<BookView> _view;
         
         [OneTimeSetUp]
         public async Task Setup()
@@ -72,6 +72,15 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
         public void ShouldNotHaveAnyBooks()
         {
             Assert.IsEmpty(_view.Data, "Should return no books.");
+        }
+        
+        [Test]
+        public void ShouldReturnCorrectPage()
+        {
+            Assert.That(_view.PageCount, Is.EqualTo(2));
+            Assert.That(_view.PageSize, Is.EqualTo(10));
+            Assert.That(_view.TotalCount, Is.EqualTo(20));
+            Assert.That(_view.CurrentPageIndex, Is.EqualTo(3));
         }
     }
 }

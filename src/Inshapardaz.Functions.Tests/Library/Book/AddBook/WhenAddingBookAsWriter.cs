@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
     [TestFixture]
     public class WhenAddingBookAsWriter : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private BooksDataBuilder _builder;
         private BookView _request;
 

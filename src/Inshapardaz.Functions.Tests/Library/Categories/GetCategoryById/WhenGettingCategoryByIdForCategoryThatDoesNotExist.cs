@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
     [TestFixture]
     public class WhenGettingCategoryByIdForCategoryThatDoesNotExist : FunctionTest
     {
-        NotFoundResult _response;
+        private NotFoundResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

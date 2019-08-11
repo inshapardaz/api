@@ -5,6 +5,7 @@ using System.Threading;
 using Bogus;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Ports.Database;
 using Inshapardaz.Ports.Database.Entities.Library;
 using File = Inshapardaz.Ports.Database.Entities.File;
@@ -19,6 +20,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         private bool _hasSeries = false, _hasImage = true;
         private int _chapterCount, _categoriesCount = 0;
+        private Author _author = null;
+        private readonly List<Category> _categories = new List<Category>();
+        private Series _series;
 
         public BooksDataBuilder(IDatabaseContext context, IFileStorage fileStorage)
         {
@@ -50,6 +54,24 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             return this;
         }
         
+        public BooksDataBuilder WithAuthor(Author author)
+        {
+            _author = author;
+            return this;
+        }
+        
+        public BooksDataBuilder WithCategory(Category category)
+        {
+            _categories.Add(category);
+            return this;
+        }
+        
+        public BooksDataBuilder WithSeries(Series series)
+        {
+            _series = series;    
+            return this;
+        }
+        
         public Book Build()
         {
             return Build(1).Single();
@@ -72,21 +94,23 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                         .RuleFor(c => c.Status, f => f.PickRandom<BookStatuses>())
                         .Generate(numberOfBooks);
 
-            var series = new Faker<Series>()
+            var series = _series ?? new Faker<Series>()
                 .RuleFor(s => s.Id, 0)
                 .RuleFor(s => s.Name, f => f.Random.String())
                 .Generate();
 
-            var categories = new Faker<Category>()
-                          .RuleFor(c => c.Name, f => f.Random.String())
-                          .Generate(_categoriesCount);
+            var categories = _categories.Any()
+                ? _categories
+                : new Faker<Category>()
+                  .RuleFor(c => c.Name, f => f.Random.String())
+                  .Generate(_categoriesCount);
 
             var files = new List<File>();
             int seriesIndex = 1;
             foreach (var book in books)
             {
 
-                var author = new Faker<Author>()
+                var author = _author ?? new Faker<Author>()
                               .RuleFor(c => c.Id, 0)
                               .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
                               .RuleFor(c => c.ImageId, f => f.Random.Int(1))
@@ -118,7 +142,11 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                                                 .Generate(_chapterCount);
             }
 
-            _context.Category.AddRange(categories);
+            if (!_categories.Any())
+            {
+                _context.Category.AddRange(categories);
+            }
+            
             _context.Book.AddRange(books);
             _context.File.AddRange(files);
             _context.SaveChanges();

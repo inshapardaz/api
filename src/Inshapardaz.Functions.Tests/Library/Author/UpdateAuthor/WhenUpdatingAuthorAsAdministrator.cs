@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
     [TestFixture]
     public class WhenUpdatingAuthorAsAdministrator : FunctionTest
     {
-        OkObjectResult _response;
+        private OkObjectResult _response;
         private AuthorsDataBuilder _dataBuilder;
         private AuthorView _expected;
 

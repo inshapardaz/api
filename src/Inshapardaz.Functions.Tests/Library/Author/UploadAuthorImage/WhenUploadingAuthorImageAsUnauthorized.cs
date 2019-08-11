@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
     [TestFixture]
     public class WhenUploadingAuthorImageAsUnauthorized : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
         private AuthorsDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _authorId;

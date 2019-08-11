@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
     [TestFixture]
     public class WhenAddingCategoryAsUnauthorized : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

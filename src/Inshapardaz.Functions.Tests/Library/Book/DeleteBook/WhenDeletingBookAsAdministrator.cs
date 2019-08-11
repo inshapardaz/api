@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
     [TestFixture]
     public class WhenDeletingBookAsAdministrator : FunctionTest
     {
-        NoContentResult _response;
+        private NoContentResult _response;
 
         private Ports.Database.Entities.Library.Book _expected;
         private BooksDataBuilder _dataBuilder;

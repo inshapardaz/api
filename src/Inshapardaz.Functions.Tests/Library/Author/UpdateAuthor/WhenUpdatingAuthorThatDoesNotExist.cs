@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
     [TestFixture]
     public class WhenUpdatingAuthorThatDoesNotExist : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private AuthorsDataBuilder _builder;
         private AuthorView _expected;
 

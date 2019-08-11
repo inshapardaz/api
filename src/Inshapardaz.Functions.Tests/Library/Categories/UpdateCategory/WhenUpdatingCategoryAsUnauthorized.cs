@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
     [TestFixture]
     public class WhenUpdatingCategoryAsUnauthorized : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

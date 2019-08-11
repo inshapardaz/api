@@ -15,8 +15,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
     [TestFixture]
     public class WhenGettingBooksAsReader : FunctionTest
     {
-        OkObjectResult _response;
-        PageView<BookView> _view;
+        private OkObjectResult _response;
+        private PageView<BookView> _view;
         
         [OneTimeSetUp]
         public async Task Setup()
@@ -57,6 +57,15 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
         public void ShouldNotHaveCreateLink()
         {
             _view.Links.AssertLinkNotPresent("create");
+        }
+        
+        [Test]
+        public void ShouldReturnCorrectPage()
+        {
+            Assert.That(_view.PageCount, Is.EqualTo(1));
+            Assert.That(_view.PageSize, Is.EqualTo(10));
+            Assert.That(_view.TotalCount, Is.EqualTo(4));
+            Assert.That(_view.CurrentPageIndex, Is.EqualTo(1));
         }
 
         [Test]

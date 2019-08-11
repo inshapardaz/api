@@ -19,7 +19,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
     [TestFixture]
     public class WhenUpdatingBookAsAdministrator : FunctionTest
     {
-        OkObjectResult _response;
+        private OkObjectResult _response;
         private BooksDataBuilder _dataBuilder;
         private BookView _expected;
         private BookView _actual;

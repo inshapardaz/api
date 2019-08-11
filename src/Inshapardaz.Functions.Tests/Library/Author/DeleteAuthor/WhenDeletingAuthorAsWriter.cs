@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
     [TestFixture]
     public class WhenDeletingAuthorAsWriter : FunctionTest
     {
-        NoContentResult _response;
+        private NoContentResult _response;
 
         private Ports.Database.Entities.Library.Author _expected;
         private AuthorsDataBuilder _dataBuilder;

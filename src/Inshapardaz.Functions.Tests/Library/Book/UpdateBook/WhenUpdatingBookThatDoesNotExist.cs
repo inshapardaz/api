@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
     [TestFixture]
     public class WhenUpdatingBookThatDoesNotExist : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private BooksDataBuilder _builder;
         private BookView _expected;
 

@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
     [TestFixture]
     public class WhenUpdatingCategoryAsAdministrator : FunctionTest
     {
-        OkObjectResult _response;
+        private OkObjectResult _response;
         private CategoriesDataBuilder _categoriesBuilder;
         private IEnumerable<Category> _categories;
         private Category _selectedCategory;

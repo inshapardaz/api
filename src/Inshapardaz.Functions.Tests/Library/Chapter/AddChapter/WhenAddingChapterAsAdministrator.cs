@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
     [TestFixture]
     public class WhenAddingChapterAsAdministrator : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private BooksDataBuilder _builder;
 
         [OneTimeSetUp]

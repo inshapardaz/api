@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
     [TestFixture]
     public class WhenUpdatingSeriesAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
     [TestFixture]
     public class WhenDeletingSeriesAsWriter : FunctionTest
     {
-        NoContentResult _response;
+        private NoContentResult _response;
 
         private IEnumerable<Ports.Database.Entities.Library.Series> _series;
         private Ports.Database.Entities.Library.Series _expected;

@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
     [TestFixture]
     public class WhenUploadingAuthorImageAsWriter : FunctionTest
     {
-        OkResult _response;
+        private OkResult _response;
         private AuthorsDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _authorId;

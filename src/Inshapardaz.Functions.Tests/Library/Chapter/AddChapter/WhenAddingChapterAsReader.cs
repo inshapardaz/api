@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
     [TestFixture]
     public class WhenAddingChapterAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
         private BooksDataBuilder _builder;
 
         [OneTimeSetUp]

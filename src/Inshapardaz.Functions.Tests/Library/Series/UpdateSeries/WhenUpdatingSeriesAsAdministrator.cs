@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
     [TestFixture]
     public class WhenUpdatingSeriesAsAdministrator : FunctionTest
     {
-        OkObjectResult _response;
+        private OkObjectResult _response;
         private SeriesDataBuilder _dataBuilder;
         private IEnumerable<Ports.Database.Entities.Library.Series> _series;
         private SeriesView _expected;

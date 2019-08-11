@@ -16,8 +16,8 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
     [TestFixture]
     public class WhenGettingCategoryByIdAsWriter : FunctionTest
     {
-        OkObjectResult _response;
-        CategoryView _view;
+        private OkObjectResult _response;
+        private CategoryView _view;
         private IEnumerable<Category> _categories;
         private Category _selectedCategory;
 

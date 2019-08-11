@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
     [TestFixture]
     public class WhenDeletingCategoryAsAnonymous : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
 
         private IEnumerable<Category> _categories;
         private Category _selectedCategory;

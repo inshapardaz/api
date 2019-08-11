@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
     [TestFixture]
     public class WhenAddingSeriesAsUnauthorized : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

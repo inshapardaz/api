@@ -26,7 +26,9 @@ namespace Inshapardaz.Functions.Library.Books
         [FunctionName("GetBooksBySeries")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series/{seriesId}/books")] HttpRequest req,
-            ILogger log, int seriesId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            int seriesId, 
+            [AccessToken] ClaimsPrincipal principal, 
+            CancellationToken token)
         {
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
@@ -41,7 +43,7 @@ namespace Inshapardaz.Functions.Library.Books
                 LinkFuncWithParameter = Link
             };
 
-            return new OkObjectResult(args.Render(principal));
+            return new OkObjectResult(args.Render(seriesId, principal));
         }
 
         public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}/books", relType);

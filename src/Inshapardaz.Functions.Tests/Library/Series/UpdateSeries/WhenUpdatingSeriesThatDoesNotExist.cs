@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
     [TestFixture]
     public class WhenUpdatingSeriesThatDoesNotExist : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private SeriesDataBuilder _builder;
         private SeriesView _expected;
 

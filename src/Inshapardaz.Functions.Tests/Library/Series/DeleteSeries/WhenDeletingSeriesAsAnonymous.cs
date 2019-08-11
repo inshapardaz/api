@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
     [TestFixture]
     public class WhenDeletingSeriesAsAnonymous : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

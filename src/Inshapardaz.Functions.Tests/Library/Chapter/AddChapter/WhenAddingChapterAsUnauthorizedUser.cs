@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
     [TestFixture]
     public class WhenAddingChapterAsUnauthorizedUser : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
         private BooksDataBuilder _builder;
 
         [OneTimeSetUp]

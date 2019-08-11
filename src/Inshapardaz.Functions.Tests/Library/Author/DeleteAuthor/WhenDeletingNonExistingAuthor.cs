@@ -11,7 +11,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
     [TestFixture]
     public class WhenDeletingNonExistingAuthor : FunctionTest
     {
-        NoContentResult _response;
+        private NoContentResult _response;
 
 
         [OneTimeSetUp]

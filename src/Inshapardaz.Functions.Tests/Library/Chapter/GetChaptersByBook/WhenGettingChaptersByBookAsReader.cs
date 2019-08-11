@@ -15,8 +15,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
     [TestFixture]
     public class WhenGettingChaptersByBookAsReader : FunctionTest
     {
-        OkObjectResult _response;
-        ListView<ChapterView> _view;
+        private OkObjectResult _response;
+        private ListView<ChapterView> _view;
 
         [OneTimeSetUp]
         public async Task Setup()

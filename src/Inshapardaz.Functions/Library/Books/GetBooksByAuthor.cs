@@ -25,8 +25,10 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetBooksByAuthor")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{authorId}/books")] HttpRequest req,
-            ILogger log, int authorId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{authorId}/books")] HttpRequest req, 
+            int authorId, 
+            [AccessToken] ClaimsPrincipal principal, 
+            CancellationToken token)
         {
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);

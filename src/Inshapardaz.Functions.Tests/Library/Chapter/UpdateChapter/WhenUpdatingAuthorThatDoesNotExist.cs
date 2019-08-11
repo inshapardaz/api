@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
     [TestFixture]
     public class WhenUpdatingChapterThatDoesNotExist : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private ChapterDataBuilder _builder;
         private ChapterView _expected;
 

@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
     [TestFixture]
     public class WhenAddingBookAsUnauthorized : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

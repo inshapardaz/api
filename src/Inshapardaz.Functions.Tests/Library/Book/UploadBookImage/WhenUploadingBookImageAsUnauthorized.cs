@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
     [TestFixture]
     public class WhenUploadingBookImageAsUnauthorized : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
         private BooksDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _bookId;

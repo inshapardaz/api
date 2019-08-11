@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
     [TestFixture]
     public class WhenAddingAuthorAsAnonymousUser : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

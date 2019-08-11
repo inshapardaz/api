@@ -11,7 +11,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
     [TestFixture]
     public class WhenDeletingNonExistingSeries : FunctionTest
     {
-        NoContentResult _response;
+        private NoContentResult _response;
 
 
         [OneTimeSetUp]

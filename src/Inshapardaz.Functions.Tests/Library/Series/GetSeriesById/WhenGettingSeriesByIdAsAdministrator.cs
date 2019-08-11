@@ -15,8 +15,8 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
     [TestFixture]
     public class WhenGettingSeriesByIdAsAdministrator : FunctionTest
     {
-        OkObjectResult _response;
-        SeriesView _view;
+        private OkObjectResult _response;
+        private SeriesView _view;
         private Ports.Database.Entities.Library.Series _selectedSeries;
 
         [OneTimeSetUp]

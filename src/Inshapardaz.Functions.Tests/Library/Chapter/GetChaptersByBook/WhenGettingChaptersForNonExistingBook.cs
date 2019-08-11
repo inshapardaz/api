@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
     [TestFixture]
     public class WhenGettingChaptersForNonExistingBook : FunctionTest
     {
-        NotFoundResult _response;
+        private NotFoundResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
     [TestFixture]
     public class WhenGettingBookByIdThatDoesNotExist : FunctionTest
     {
-        NotFoundResult _response;
+        private NotFoundResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

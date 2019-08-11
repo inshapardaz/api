@@ -15,14 +15,14 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
     [TestFixture]
     public class WhenUpdatingChapterContentsAsWriter : FunctionTest
     {
-        NoContentResult _response;
-        Inshapardaz.Ports.Database.Entities.Library.ChapterContent _chapterContent;
-        string _contents;
-        int _chapterId;
-        string _newContents;
-        ChapterDataBuilder _dataBuilder;
+        private NoContentResult _response;
+        private Inshapardaz.Ports.Database.Entities.Library.ChapterContent _chapterContent;
+        private string _contents;
+        private int _chapterId;
+        private string _newContents;
+        private ChapterDataBuilder _dataBuilder;
 
-        FakeFileStorage _fileStore;
+        private FakeFileStorage _fileStore;
 
         [OneTimeSetUp]
         public async Task Setup()

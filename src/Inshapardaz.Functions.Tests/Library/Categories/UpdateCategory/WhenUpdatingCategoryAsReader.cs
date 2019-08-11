@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
     [TestFixture]
     public class WhenUpdatingCategoryAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

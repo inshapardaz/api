@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
     [TestFixture]
     public class WhenUpdatingChapterAsWriter : FunctionTest
     {
-        OkObjectResult _response;
+        private OkObjectResult _response;
         private ChapterDataBuilder _dataBuilder;
         private ChapterView _expected;
 

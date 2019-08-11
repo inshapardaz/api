@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
     [TestFixture]
     public class WhenUpdatingCategoryThatDoesNotExist : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private CategoriesDataBuilder _categoriesBuilder;
         private CategoryView _expectedCategory;
 

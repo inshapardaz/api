@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
     [TestFixture]
     public class WhenAddingSeriesAsAdministrator : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private SeriesDataBuilder _builder;
 
         [OneTimeSetUp]

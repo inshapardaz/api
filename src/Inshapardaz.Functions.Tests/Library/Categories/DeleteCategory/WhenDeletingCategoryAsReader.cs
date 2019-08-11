@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
     [TestFixture]
     public class WhenDeletingCategoryAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
 
         private IEnumerable<Category> _categories;
         private Category _selectedCategory;

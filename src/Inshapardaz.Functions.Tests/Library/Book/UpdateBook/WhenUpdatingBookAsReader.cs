@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
     [TestFixture]
     public class WhenUpdatingBookAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

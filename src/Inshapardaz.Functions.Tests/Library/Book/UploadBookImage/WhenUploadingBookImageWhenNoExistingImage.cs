@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
     [TestFixture]
     public class WhenUploadingBookImageWhenNoExistingImage : FunctionTest
     {
-        CreatedResult _response;
+        private CreatedResult _response;
         private BooksDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _bookId;

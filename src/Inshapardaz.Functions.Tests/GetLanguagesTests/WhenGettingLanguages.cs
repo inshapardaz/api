@@ -10,8 +10,8 @@ namespace Inshapardaz.Functions.Tests.GetLanguagesTests
     [TestFixture]
     public class WhenGettingLanguages : FunctionTest
     {
-        OkObjectResult _response;
-        List<KeyValuePair<string, int>> _view;
+        private OkObjectResult _response;
+        private List<KeyValuePair<string, int>> _view;
         
         [OneTimeSetUp]
         public void Setup()

@@ -13,8 +13,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
     [TestFixture]
     public class WhenAddingChapterContentsAsReader : FunctionTest
     {
-        ForbidResult _response;
-        ChapterDataBuilder _dataBuilder;
+        private ForbidResult _response;
+        private ChapterDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()

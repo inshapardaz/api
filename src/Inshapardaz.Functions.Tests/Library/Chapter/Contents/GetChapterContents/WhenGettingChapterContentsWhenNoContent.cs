@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
     [TestFixture]
     public class WhenGettingChapterContentsWhenNoContent : FunctionTest
     {
-        NotFoundResult _response;
+        private NotFoundResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

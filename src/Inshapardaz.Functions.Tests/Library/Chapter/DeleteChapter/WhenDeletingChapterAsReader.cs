@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.DeleteChapter
     [TestFixture]
     public class WhenDeletingChapterAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

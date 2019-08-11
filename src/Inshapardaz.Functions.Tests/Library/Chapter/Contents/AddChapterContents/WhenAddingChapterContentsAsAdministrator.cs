@@ -16,11 +16,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
     [TestFixture]
     public class WhenAddingChapterContentsAsAdministrator : FunctionTest
     {
-        CreatedResult _response;
-        ChapterContentView _view;
-        string _contents;
+        private CreatedResult _response;
+        private ChapterContentView _view;
+        private string _contents;
 
-        ChapterDataBuilder _dataBuilder;
+        private ChapterDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()

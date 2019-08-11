@@ -14,8 +14,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
     [TestFixture]
     public class WhenGettingBookByIdAsReader : FunctionTest
     {
-        OkObjectResult _response;
-        BookView _view;
+        private OkObjectResult _response;
+        private BookView _view;
         private Ports.Database.Entities.Library.Book _expected;
 
         [OneTimeSetUp]

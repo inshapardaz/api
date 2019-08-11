@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.DeleteChapter
     [TestFixture]
     public class WhenDeletingChapterAsUnauthorized : FunctionTest
     {
-        UnauthorizedResult _response;
+        private UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

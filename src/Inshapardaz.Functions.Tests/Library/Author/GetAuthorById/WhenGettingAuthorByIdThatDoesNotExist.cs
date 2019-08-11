@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
     [TestFixture]
     public class WhenGettingAuthorByIdThatDoesNotExist : FunctionTest
     {
-        NotFoundResult _response;
+        private NotFoundResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

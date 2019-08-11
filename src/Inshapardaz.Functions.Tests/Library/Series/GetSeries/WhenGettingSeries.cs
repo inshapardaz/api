@@ -15,8 +15,8 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
     [TestFixture]
     public class WhenGettingSeriesAsAnonymous : FunctionTest
     {
-        OkObjectResult _response;
-        ListView<SeriesView> _view;
+        private OkObjectResult _response;
+        private ListView<SeriesView> _view;
         
         [OneTimeSetUp]
         public async Task Setup()

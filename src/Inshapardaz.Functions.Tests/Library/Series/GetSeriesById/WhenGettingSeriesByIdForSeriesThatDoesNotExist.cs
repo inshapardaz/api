@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
     [TestFixture]
     public class WhenGettingSeriesByIdForSeriesThatDoesNotExist : FunctionTest
     {
-        NotFoundResult _response;
+        private NotFoundResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

@@ -15,8 +15,8 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
     [TestFixture]
     public class WhenGettingAuthorsAsReader : FunctionTest
     {
-        OkObjectResult _response;
-        PageView<AuthorView> _view;
+        private OkObjectResult _response;
+        private PageView<AuthorView> _view;
         
         [OneTimeSetUp]
         public async Task Setup()

@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
     [TestFixture]
     public class WhenAddingChapterForNonExistingBook : FunctionTest
     {
-        BadRequestResult _response;
+        private BadRequestResult _response;
         private BooksDataBuilder _builder;
 
         [OneTimeSetUp]

@@ -16,14 +16,14 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
     [TestFixture]
     public class WhenUpdatingChapterContentsAsUnauthorised : FunctionTest
     {
-        UnauthorizedResult _response;
-        FakeFileStorage _fileStore;
-        ChapterContent _chapterContents;
-        int _chapterId;
-        string _contents;
-        string _newContents;
+        private UnauthorizedResult _response;
+        private FakeFileStorage _fileStore;
+        private ChapterContent _chapterContents;
+        private int _chapterId;
+        private string _contents;
+        private string _newContents;
 
-        ChapterDataBuilder _dataBuilder;
+        private ChapterDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()

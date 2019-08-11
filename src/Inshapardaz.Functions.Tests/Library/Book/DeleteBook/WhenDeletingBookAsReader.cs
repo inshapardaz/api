@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
     [TestFixture]
     public class WhenDeletingBookAsReader : FunctionTest
     {
-        ForbidResult _response;
+        private ForbidResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()

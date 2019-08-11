@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books
@@ -25,8 +24,11 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetBooksByCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories/{categoryId}/books")] HttpRequest req,
-            ILogger log, int categoryId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories/{categoryId}/books")] 
+            HttpRequest req,
+            int categoryId, 
+            [AccessToken] ClaimsPrincipal principal, 
+            CancellationToken token)
         {
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
@@ -41,7 +43,7 @@ namespace Inshapardaz.Functions.Library.Books
                 LinkFuncWithParameter = Link
             };
 
-            return new OkObjectResult(args.Render(principal));
+            return new OkObjectResult(args.Render(categoryId, principal));
         }
 
         public static LinkView Self(int categoryById, string relType = RelTypes.Self) => SelfLink($"categories/{categoryById}/books", relType);

@@ -22,7 +22,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
             
             var handler = Container.GetService<Functions.Library.Books.Chapters.GetChapterById>();
             var faker = new Faker();
-            _response = (NotFoundResult) await handler.Run(faker.Random.Int(), faker.Random.Int(), NullLogger.Instance, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NotFoundResult) await handler.Run(null, faker.Random.Int(), faker.Random.Int(), NullLogger.Instance, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

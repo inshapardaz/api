@@ -27,11 +27,15 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             int bookId, 
             int chapterId,
             [AccessToken] ClaimsPrincipal principal = null,
-            CancellationToken token = default(CancellationToken))
+            CancellationToken token = default)
         {
             var contentType = GetHeader(req, "Accept", "text/markdown");
 
-            var request = new GetChapterContentRequest(bookId, chapterId, contentType);
+            var request = new GetChapterContentRequest(bookId, chapterId, contentType, principal.GetUserId())
+            {
+                UserId = principal.GetUserId()
+            };
+            
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)

@@ -50,7 +50,7 @@ namespace Inshapardaz.Functions.Tests.Fakes
                 return await Task.FromResult(System.Text.Encoding.UTF8.GetString(_contents[filePath]));
             }
 
-            throw new Exception();
+            return null;
         }
 
         public bool DoesFileExists(string filePath) => _contents.ContainsKey(filePath);

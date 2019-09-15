@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Inshapardaz.Domain.Entities.Library;
@@ -78,9 +79,17 @@ namespace Inshapardaz.Functions.Converters
             return page;
         }
 
-        public static IEnumerable<BookView> Render(this IEnumerable<Book> source, ClaimsPrincipal principal)
+        public static ListView<BookView> Render(this IEnumerable<Book> source, ClaimsPrincipal principal, Func<string, LinkView> selfLinkMethod)
         {
-            return source.Select(x => x.Render(principal));
+            var result = new ListView<BookView>()
+            {
+                Items = source.Select(x => x.Render(principal))
+
+            };
+
+            result.Links.Add(selfLinkMethod(RelTypes.Self));
+
+            return result;
         }
 
         public static BookView Render(this Book source, ClaimsPrincipal principal)
@@ -111,6 +120,18 @@ namespace Inshapardaz.Functions.Converters
                 links.Add(UpdateBookImage.Link(source.Id, RelTypes.ImageUpload));
                 links.Add(AddChapter.Link(source.Id, RelTypes.CreateChapter));
                 links.Add(AddBookFile.Link(source.Id, RelTypes.AddFile));
+            }
+
+            if (principal.IsAuthenticated())
+            {
+                if (source.IsFavorite)
+                {
+                    links.Add(DeleteBookFromFavorite.Link(source.Id, RelTypes.RemoveFavorite));
+                }
+                else
+                {
+                    links.Add(AddBookToFavorite.Link(source.Id, RelTypes.AddFavorite));
+                }
             }
 
             result.Links = links;

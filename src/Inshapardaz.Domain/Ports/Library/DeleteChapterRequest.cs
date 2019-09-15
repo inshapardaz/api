@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -7,8 +8,8 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class DeleteChapterRequest : BookRequest
     {
-        public DeleteChapterRequest(int bookId, int chapterId)
-            : base(bookId)
+        public DeleteChapterRequest(int bookId, int chapterId, Guid userId)
+            : base(bookId, userId)
         {
             ChapterId = chapterId;
         }

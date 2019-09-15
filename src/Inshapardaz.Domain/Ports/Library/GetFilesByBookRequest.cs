@@ -11,8 +11,8 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetFilesByBookRequest : BookRequest
     {
-        public GetFilesByBookRequest(int bookId)
-            : base(bookId)
+        public GetFilesByBookRequest(int bookId, Guid userId)
+            : base(bookId, userId)
         {
         }
 

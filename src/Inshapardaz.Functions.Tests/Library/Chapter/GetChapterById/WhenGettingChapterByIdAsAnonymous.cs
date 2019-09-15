@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
             _expected = dataBuilder.AsPublic().Build(4).First();
             
             var handler = Container.GetService<Functions.Library.Books.Chapters.GetChapterById>();
-            _response = (OkObjectResult) await handler.Run(_expected.BookId, _expected.Id, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult) await handler.Run(null,_expected.BookId, _expected.Id, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as ChapterView;
         }

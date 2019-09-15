@@ -40,7 +40,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
                 return new ForbidResult("Bearer");
             }
 
-            var request = new UpdateChapterRequest(bookId, chapterId, chapter.Map());
+            var request = new UpdateChapterRequest(bookId, chapterId, chapter.Map(), principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = request.Result.Chapter.Render(principal);

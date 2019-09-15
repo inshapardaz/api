@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -26,7 +27,10 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
             _dataBuilder = Container.GetService<BooksDataBuilder>();
             var books = _dataBuilder.WithCategories(1).HavingSeries().Build(1);
             _expected = books.First();
-            
+
+            _dataBuilder.AddBookToFavorite(_expected, Guid.NewGuid());
+            _dataBuilder.AddBookToRecentReads(_expected, Guid.NewGuid());
+
             var handler = Container.GetService<Functions.Library.Books.DeleteBook>();
             _response = (NoContentResult) await handler.Run(request, NullLogger.Instance, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
@@ -81,6 +85,19 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
             var db = Container.GetService<IDatabaseContext>();
             var category = db.Category.SingleOrDefault(a => a.Id == _expected.BookCategory.First().CategoryId);
             Assert.That(category, Is.Not.Null, "Book category should not be deleted");
+        }
+
+        [Test]
+        public void ShouldBeDeletedFromTheFavoritesOfAllUsers()
+        {
+            Assert.That(_dataBuilder.DoesBookExistsInFavorites(_expected), Is.False);
+        }
+
+
+        [Test]
+        public void ShouldBeDeletedFromTheRecentReadBooks()
+        {
+            Assert.That(_dataBuilder.DoesBookExistsInRecent(_expected), Is.False);
         }
     }
 }

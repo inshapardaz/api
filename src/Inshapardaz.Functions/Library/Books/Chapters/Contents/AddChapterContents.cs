@@ -41,7 +41,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             var contents = await ReadBody(req);
             var contentType = GetHeader(req, "Accept", "text/markdown");
 
-            var request = new AddChapterContentRequest(bookId, chapterId, contents, contentType);
+            var request = new AddChapterContentRequest(bookId, chapterId, contents, contentType, principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)

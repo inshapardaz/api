@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -20,7 +21,8 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 
         [FunctionName("DeleteChapterContents")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId}/chapter/{chapterId}/contents/{contentId}")] int bookId, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId}/chapter/{chapterId}/contents/{contentId}")] HttpRequest req,
+            int bookId, 
             int chapterId,
             int contentId,
         [AccessToken] ClaimsPrincipal principal = null,
@@ -36,7 +38,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
                 return new ForbidResult("Bearer");
             }
 
-            var request = new DeleteChapterContentRequest(bookId, chapterId, contentId);
+            var request = new DeleteChapterContentRequest(bookId, chapterId, contentId, principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

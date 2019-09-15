@@ -21,8 +21,6 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var request = TestHelpers.CreateGetRequest();
-
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
             var fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
 
@@ -31,7 +29,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
             var chapter = dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
             
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.GetChapterContents>();
-            _response = (NotFoundResult) await handler.Run(null, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            var actionResult = await handler.Run(null, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (NotFoundResult) actionResult;
         }
 
         [OneTimeTearDown]

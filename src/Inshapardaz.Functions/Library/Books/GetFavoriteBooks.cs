@@ -28,6 +28,11 @@ namespace Inshapardaz.Functions.Library.Books
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/favorite")] HttpRequest req,
             ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 

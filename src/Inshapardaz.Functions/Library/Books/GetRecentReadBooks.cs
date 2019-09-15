@@ -26,12 +26,17 @@ namespace Inshapardaz.Functions.Library.Books
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/recent")] HttpRequest req,
             ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
+            if (principal == null || !principal.IsAuthenticated())
+            {
+                return new UnauthorizedResult();
+            }
+
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
             var request = new GetRecentBooksRequest(principal.GetUserId(), pageSize);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(request.Result.Render(principal));
+            return new OkObjectResult(request.Result.Render(principal, Link));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/recent", relType);

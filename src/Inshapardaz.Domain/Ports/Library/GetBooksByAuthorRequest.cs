@@ -31,17 +31,32 @@ namespace Inshapardaz.Domain.Ports.Library
     public class GetBooksByAuthorRequestHandler : RequestHandlerAsync<GetBooksByAuthorRequest>
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IFavoriteRepository _favoriteRepository;
 
-        public GetBooksByAuthorRequestHandler(IBookRepository bookRepository)
+        public GetBooksByAuthorRequestHandler(IBookRepository bookRepository, IFavoriteRepository favoriteRepository)
         {
             _bookRepository = bookRepository;
+            _favoriteRepository = favoriteRepository;
         }
 
         public override async Task<GetBooksByAuthorRequest> HandleAsync(GetBooksByAuthorRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var books = await _bookRepository.GetBooksByAuthor(command.AuthorId, command.PageNumber, command.PageSize, cancellationToken);
-            command.Result = books;
+            command.Result = await MarkFavorites(books, command.UserId, cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
+        }
+
+        private async Task<Page<Book>> MarkFavorites(Page<Book> books, Guid userId, CancellationToken cancellationToken)
+        {
+            if (userId != Guid.Empty)
+            {
+                foreach (var book in books.Data)
+                {
+                    book.IsFavorite = await _favoriteRepository.IsBookFavorite(userId, book.Id, cancellationToken);
+                }
+            }
+
+            return books;
         }
     }
 }

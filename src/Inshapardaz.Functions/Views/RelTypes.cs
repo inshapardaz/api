@@ -43,20 +43,17 @@ namespace Inshapardaz.Functions.Views
         public const string UpdateContents = "update-contents";
         public const string DeleteContents = "delete-contents";
         public const string Chapter = "chapter";
-
         public const string Latest = "latest";
         public const string Recents = "recents";
         public const string Favorites = "favorites";
-
         public static string Series = "series";
-
         public static string Add = "add";
-
         public static string Files = "files";
-        internal static string AddFile = "add-file";
-
+        public static string AddFile = "add-file";
         public static string Periodicals = "periodicals";
-        internal static string Issues = "issues";
-        internal static string AddIssue = "add-issue";
+        public static string Issues = "issues";
+        public static string AddIssue = "add-issue";
+        public static string AddFavorite = "add-favorite";
+        public static string RemoveFavorite = "remove-favorite";
     }
 }

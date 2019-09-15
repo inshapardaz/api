@@ -33,7 +33,7 @@ namespace Inshapardaz.Functions.Library.Books
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var request = new GetBooksBySeriesRequest(seriesId, pageNumber, pageSize);
+            var request = new GetBooksBySeriesRequest(seriesId, pageNumber, pageSize) { UserId = principal.GetUserId() };
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var args = new PageRendererArgs<Book>

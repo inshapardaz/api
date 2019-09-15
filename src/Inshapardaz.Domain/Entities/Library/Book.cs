@@ -41,5 +41,7 @@ namespace Inshapardaz.Domain.Entities.Library
         public CopyrightStatuses Copyrights { get; set; }
 
         public bool IsPublished { get; set; }
+
+        public bool IsFavorite { get; set; }
     }
 }

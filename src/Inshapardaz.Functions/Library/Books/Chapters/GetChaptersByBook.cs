@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
+using Inshapardaz.Functions.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -24,7 +25,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/{bookId}/chapters")] HttpRequest req,
             int bookId, ClaimsPrincipal principal, CancellationToken token)
         {
-            var request = new GetChaptersByBookRequest(bookId);
+            var request = new GetChaptersByBookRequest(bookId, principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)

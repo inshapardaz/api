@@ -10,8 +10,8 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetChaptersByBookRequest : BookRequest
     {
-        public GetChaptersByBookRequest(int bookId)
-            : base(bookId)
+        public GetChaptersByBookRequest(int bookId, Guid userId)
+            : base(bookId, userId)
         {
         }
 

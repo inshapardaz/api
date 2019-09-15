@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions
         }
 
         [FunctionName("GetEntry")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "entry")] HttpRequest req, 
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "entry")] HttpRequest req, 
                                              ILogger log,
                                               [AccessToken] ClaimsPrincipal principal)
         {

@@ -26,7 +26,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
 
             var chapter = _dataBuilder.AsPublic().Build();
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.DeleteChapterContents>();
-            _response = (NoContentResult) await handler.Run(chapter.BookId, chapter.Id, -Random.Number,  AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NoContentResult) await handler.Run(null, chapter.BookId, chapter.Id, -Random.Number,  AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

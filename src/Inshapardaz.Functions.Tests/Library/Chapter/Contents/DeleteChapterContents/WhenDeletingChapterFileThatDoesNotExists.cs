@@ -38,7 +38,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
             _contentId = chapterContent.Id;
             _contentUrl = chapterContent.ContentUrl;
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.DeleteChapterContents>();
-            _response = (NoContentResult) await handler.Run(chapter.BookId, chapterContent.ChapterId, chapterContent.Id,  AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NoContentResult) await handler.Run(null, chapter.BookId, chapterContent.ChapterId, chapterContent.Id,  AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

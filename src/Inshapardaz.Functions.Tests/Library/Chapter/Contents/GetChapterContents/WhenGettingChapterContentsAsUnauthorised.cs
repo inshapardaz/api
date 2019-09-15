@@ -21,12 +21,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
 
         private string _contents;
         private Ports.Database.Entities.Library.ChapterContent _expected;
+        private Ports.Database.Entities.Library.Chapter _chapter;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var request = TestHelpers.CreateGetRequest();
-
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
             var fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
 
@@ -34,11 +33,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
             var contentUrl = faker.Internet.Url();
             _contents = faker.Random.Words(10);
             fileStore.SetupFileContents(contentUrl, _contents);
-            var chapter = dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
-            _expected = chapter.Contents.First();
+            _chapter = dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
+            _expected = _chapter.Contents.First();
             
             var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.GetChapterContents>();
-            _response = (OkObjectResult) await handler.Run(null, chapter.BookId, chapter.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult) await handler.Run(null, _chapter.BookId, _chapter.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as ChapterContentView;
         }
@@ -87,6 +86,14 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
             Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Content id does not match");
             Assert.That(_view.ChapterId, Is.EqualTo(_expected.ChapterId), "Chapter id does not match");
             Assert.That(_view.Contents, Is.EqualTo(_contents), "contents should match");
+        }
+        
+        [Test]
+        public void ShouldNotAddBookToRecent()
+        {
+            var builder = Container.GetService<BooksDataBuilder>();
+            var recentBooks = builder.GetRecentBooks();
+            Assert.That(recentBooks.Any(b => b.Id == _chapter.BookId), Is.False, "Book should not be added to recent books");
         }
     }
 }

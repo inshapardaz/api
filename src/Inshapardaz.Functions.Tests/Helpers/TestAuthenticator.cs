@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Authentication;
@@ -14,6 +16,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
         private const string AdminRole = "admin";
         private const string WriteRole = "writer";
         private const string ReaderRole = "reader";
+        private const string IdentityClaimsName = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
 
         public static ClaimsPrincipal AdminClaim => CreateClaimsPrincipalWithRole(AdminRole);
 
@@ -38,11 +41,15 @@ namespace Inshapardaz.Functions.Tests.Helpers
             };
             var claims = new List<Claim>
             {
-                new Claim("https://api.inshapardaz.org/user_authorization", JsonConvert.SerializeObject(authenticationData))
+                new Claim("https://api.inshapardaz.org/user_authorization", JsonConvert.SerializeObject(authenticationData)),
+                new Claim(IdentityClaimsName, Guid.NewGuid().ToString("D"))
             };
             var identity = new ClaimsIdentity(new ClaimsIdentity(claims, "Basic"));
             return new ClaimsPrincipal(identity);
         }
+
+        public static Guid GetUserId(this ClaimsPrincipal principal) => 
+            Guid.Parse(principal.Claims.FirstOrDefault( c => c.Type == IdentityClaimsName)?.Value ?? Guid.Empty.ToString());
     }
 
     internal class UserAuthenticationData

@@ -28,7 +28,7 @@ namespace Inshapardaz.Functions.Library.Books
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)
         {
-            var request = new GetBookByIdRequest(bookId);
+            var request = new GetBookByIdRequest(bookId, principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)

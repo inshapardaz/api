@@ -5,7 +5,6 @@ using System.Threading;
 using Bogus;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Functions.Converters;
 using Inshapardaz.Ports.Database;
 using Inshapardaz.Ports.Database.Entities.Library;
 using File = Inshapardaz.Ports.Database.Entities.File;
@@ -18,9 +17,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private readonly IDatabaseContext _context;
         private readonly IFileStorage _fileStorage;
 
-        private bool _hasSeries = false, _hasImage = true;
-        private int _chapterCount, _categoriesCount = 0;
-        private Author _author = null;
+        private bool _hasSeries, _hasImage = true;
+        private int _chapterCount, _categoriesCount;
+        private Author _author;
         private readonly List<Category> _categories = new List<Category>();
         private Series _series;
 
@@ -154,6 +153,54 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             return books;
         }
 
+        public void AddSomeToFavorite(IEnumerable<Book> books, Guid userId, int numberOfBooksToAdd)
+        {
+            var favorites = new Faker().PickRandom<Book>(books, numberOfBooksToAdd);
+            
+            _context.FavoriteBooks.AddRange(favorites.Select(b => new FavoriteBook
+            {
+                BookId = b.Id,
+                DateAdded = DateTime.Today,
+                UserId = userId
+            }));
+            _context.SaveChanges();
+        }
+
+        public void AddBookToFavorite(Book book, Guid userId)
+        {
+            _context.FavoriteBooks.Add(new FavoriteBook
+            {
+                BookId = book.Id,
+                DateAdded = DateTime.Today,
+                UserId = userId
+            });
+            _context.SaveChanges();
+        }
+
+        public void AddSomeToRecentReads(IEnumerable<Book> books, Guid userId, int numberOfBooksToAdd)
+        {
+            var recent = new Faker().PickRandom<Book>(books, numberOfBooksToAdd);
+
+            _context.RecentBooks.AddRange(recent.Select(b => new RecentBook
+            {
+                BookId = b.Id,
+                DateRead= DateTime.Today,
+                UserId = userId
+            }));
+            _context.SaveChanges();
+        }
+
+        public void AddBookToRecentReads(Book book, Guid userId)
+        {
+            _context.RecentBooks.Add(new RecentBook
+            {
+                BookId = book.Id,
+                DateRead = DateTime.Today,
+                UserId = userId
+            });
+            _context.SaveChanges();
+        }
+
         public Book GetById(int id)
         {
             return _context.Book.SingleOrDefault(x => x.Id == id);
@@ -169,5 +216,16 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
             return null;
         }
+
+        public List<RecentBook> GetRecentBooks()
+        {
+            return _context.RecentBooks.ToList();
+        }
+
+        public bool DoesBookExistsInFavorites(Book book) =>
+            _context.FavoriteBooks.Any(x => x.BookId == book.Id);
+
+        public bool DoesBookExistsInRecent(Book book) =>
+            _context.RecentBooks.Any(x => x.BookId == book.Id);
     }
 }

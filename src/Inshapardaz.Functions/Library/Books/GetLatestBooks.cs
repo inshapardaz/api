@@ -28,10 +28,10 @@ namespace Inshapardaz.Functions.Library.Books
         {
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var request = new GetLatestBooksRequest();
+            var request = new GetLatestBooksRequest(principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(request.Result.Render(principal));
+            return new OkObjectResult(request.Result.Render(principal, Link));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/latest", relType);

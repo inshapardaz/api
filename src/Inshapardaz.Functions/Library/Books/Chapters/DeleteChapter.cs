@@ -39,7 +39,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
                 return new ForbidResult("Bearer");
             }
 
-            var request = new DeleteChapterRequest(bookId, chapterId);
+            var request = new DeleteChapterRequest(bookId, chapterId, principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

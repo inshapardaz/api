@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
@@ -8,8 +9,8 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetChapterByIdRequest : BookRequest
     {
-        public GetChapterByIdRequest(int bookId, int chapterId)
-            : base(bookId)
+        public GetChapterByIdRequest(int bookId, int chapterId, Guid userId)
+            : base(bookId, userId)
         {
             ChapterId = chapterId;
         }

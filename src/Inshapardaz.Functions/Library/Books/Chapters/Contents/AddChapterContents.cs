@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 
         [FunctionName("AddChapterContents")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/{bookId}/chapters/{chapterId}/contents")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/{bookId:int}/chapters/{chapterId:int}/contents")] HttpRequest req,
             int bookId, int chapterId,
             [AccessToken] ClaimsPrincipal principal = null,
             CancellationToken token = default(CancellationToken))

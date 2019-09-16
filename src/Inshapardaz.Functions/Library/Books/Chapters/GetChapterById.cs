@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("GetChapterById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "book/{bookId}/chapters/{chapterId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "book/{bookId:int}/chapters/{chapterId:int}")] HttpRequest req,
             int bookId, int chapterId,
             ILogger log, ClaimsPrincipal principal, CancellationToken token)
         {

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -21,7 +22,8 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("DeleteBookFromFavorite")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/favorite/{id}")] int id,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/favorite/{id:int}")] HttpRequest req,
+            int id,
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)
         {

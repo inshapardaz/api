@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("UpdateChapter")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId}/chapter/{chapterId}")] ChapterView chapter,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId:int}/chapter/{chapterId:int}")] ChapterView chapter,
             int bookId, int chapterId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)

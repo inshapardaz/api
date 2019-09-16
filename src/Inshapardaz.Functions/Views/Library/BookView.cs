@@ -38,6 +38,5 @@ namespace Inshapardaz.Functions.Views.Library
         public int Status { get; set; }
         
         public bool IsPublished { get; set; }
-
     }
 }

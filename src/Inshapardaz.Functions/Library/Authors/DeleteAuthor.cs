@@ -22,7 +22,7 @@ namespace Inshapardaz.Functions.Library.Authors
 
         [FunctionName("DeleteAuthor")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "authors/{authorId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "authors/{authorId:int}")] HttpRequest req,
             ILogger log, int authorId,
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)

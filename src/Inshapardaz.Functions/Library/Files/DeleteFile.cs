@@ -22,7 +22,7 @@ namespace Inshapardaz.Functions.Library.Files
 
         [FunctionName("DeleteFile")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "files/{id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "files/{id:int}")] HttpRequest req,
             ILogger log, 
             int id,
             [AccessToken] ClaimsPrincipal principal,

@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Library\Book\Files\AddBookFile\" />
     <Folder Include="Library\Book\Files\DeleteBookFile\" />
     <Folder Include="Library\Book\Files\GetBookFiles\" />
     <Folder Include="Library\Book\Files\UpdateBookFile\" />

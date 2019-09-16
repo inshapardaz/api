@@ -4,6 +4,7 @@ using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Books.Chapters;
 using Inshapardaz.Functions.Library.Books.Chapters.Contents;
+using Inshapardaz.Functions.Library.Books.Files;
 using Inshapardaz.Functions.Library.Categories;
 using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -103,6 +104,9 @@ namespace Inshapardaz.Functions.Tests
                    .AddTransient<UpdateBook>()
                    .AddTransient<DeleteBook>()
                    .AddTransient<UpdateBookImage>()
+                   .AddTransient<AddBookFile>()
+                   .AddTransient<UpdateBookFile>()
+                   .AddTransient<DeleteBookFile>()
                    .AddTransient<GetChapterById>()
                    .AddTransient<AddChapter>()
                    .AddTransient<UpdateChapter>()

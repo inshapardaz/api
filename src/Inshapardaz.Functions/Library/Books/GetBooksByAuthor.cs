@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetBooksByAuthor")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{authorId}/books")] HttpRequest req, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{authorId:int}/books")] HttpRequest req, 
             int authorId, 
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)

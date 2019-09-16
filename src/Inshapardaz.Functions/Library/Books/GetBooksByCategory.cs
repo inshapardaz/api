@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetBooksByCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories/{categoryId}/books")] 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories/{categoryId:int}/books")] 
             HttpRequest req,
             int categoryId, 
             [AccessToken] ClaimsPrincipal principal, 

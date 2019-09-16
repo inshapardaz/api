@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("AddChapter")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/{bookId}/chapters")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/{bookId:int}/chapters")]
             ChapterView chapter,
             ILogger log, int bookId,
             [AccessToken] ClaimsPrincipal principal,

@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("UpdateCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "categories/{categoryId}")] CategoryView category,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "categories/{categoryId:int}")] CategoryView category,
             ILogger log, int categoryId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)

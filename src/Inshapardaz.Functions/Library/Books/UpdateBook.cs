@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("UpdateBook")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId}")] BookView book,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId:int}")] BookView book,
             ILogger log, int bookId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
             if (principal == null)

@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Files
 
         [FunctionName("GetFileById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "files/{fileId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "files/{fileId:int}")] HttpRequest req,
             ILogger log, int fileId,
             [AccessToken] ClaimsPrincipal claims, 
             CancellationToken token)

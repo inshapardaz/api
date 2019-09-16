@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Authors
 
         [FunctionName("GetAuthorById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{authorId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{authorId:int}")] HttpRequest req,
             ILogger log, int authorId,
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)

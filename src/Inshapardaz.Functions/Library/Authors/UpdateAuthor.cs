@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Authors
 
         [FunctionName("UpdateAuthor")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{authorId}")] AuthorView author,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{authorId:int}")] AuthorView author,
             ILogger log, int authorId,
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)

@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Authors
 
         [FunctionName("UpdateAuthorImage")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{id}/image")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{id:int}/image")]
             HttpRequestMessage req,
             int id,
             [AccessToken] ClaimsPrincipal principal,

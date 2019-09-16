@@ -36,7 +36,7 @@ namespace Inshapardaz.Functions.Library.Books
             var request = new GetBooksRequest(pageNumber, pageSize, principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var args = new Converters.PageRendererArgs<Book>
+            var args = new PageRendererArgs<Book>
             {
                 Page = request.Result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },

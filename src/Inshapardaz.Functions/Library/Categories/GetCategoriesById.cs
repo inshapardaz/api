@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("GetCategoryById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories/{categoryById}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories/{categoryById:int}")] HttpRequest req,
             ILogger log, int categoryById, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
             var request = new GetCategoryByIdRequest(categoryById);

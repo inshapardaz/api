@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("GetSeriesById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series/{id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series/{id:int}")] HttpRequest req,
             ILogger log, int id, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
             var request = new GetSeriesByIdRequest(id);

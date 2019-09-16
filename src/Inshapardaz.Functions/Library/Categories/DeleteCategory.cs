@@ -22,7 +22,7 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("DeleteCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "categories/{id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "categories/{id:int}")] HttpRequest req,
             ILogger log, int id, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
 

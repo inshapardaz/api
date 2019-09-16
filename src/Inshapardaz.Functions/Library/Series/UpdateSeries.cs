@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("UpdateSeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{seriesId}")] SeriesView series,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{seriesId:int}")] SeriesView series,
             ILogger log, int seriesId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
 

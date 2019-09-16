@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("DeleteChapter")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId}/chapters/{chapterId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId:int}/chapters/{chapterId:int}")] HttpRequest req,
             int bookId, int chapterId,
             [AccessToken] ClaimsPrincipal principal,
             ILogger log,

@@ -22,7 +22,7 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("DeleteSeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "series/{seriesId}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "series/{seriesId:int}")] HttpRequest req,
             ILogger log, int seriesId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
             if (principal == null)

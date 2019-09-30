@@ -12,14 +12,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="coverlet.msbuild" Version="2.7.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.4" />
     <PackageReference Include="nunit" Version="3.11.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Inshapardaz.Functions\Inshapardaz.Functions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +33,10 @@
     <Folder Include="Library\Book\Files\DeleteBookFile\" />
     <Folder Include="Library\Book\Files\GetBookFiles\" />
     <Folder Include="Library\Book\Files\UpdateBookFile\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Inshapardaz.Functions\Inshapardaz.Functions.csproj" />
   </ItemGroup>
 
 </Project>

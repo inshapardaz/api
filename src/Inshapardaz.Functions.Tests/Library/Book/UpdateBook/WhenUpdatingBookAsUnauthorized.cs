@@ -20,8 +20,11 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
         {
             var handler = Container.GetService<Functions.Library.Books.UpdateBook>();
             var faker = new Faker();
-            var request = new BookView { Id = faker.Random.Number(), Title = faker.Random.String() };
-            _response = (UnauthorizedResult)await handler.Run(request, NullLogger.Instance, request.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            var book = new BookView { Id = faker.Random.Number(), Title = faker.Random.String() };
+            var request = new RequestBuilder()
+                                            .WithJsonBody(book)
+                                            .Build();
+            _response = (UnauthorizedResult)await handler.Run(request, book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

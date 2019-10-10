@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using Bogus;
+using Newtonsoft.Json;
 
 namespace Inshapardaz.Functions.Tests.Helpers
 {
@@ -22,6 +23,12 @@ namespace Inshapardaz.Functions.Tests.Helpers
         public RequestBuilder WithQueryParameter(string name, object value)
         {
             _parameters.Add(name, value.ToString());
+            return this;
+        }
+
+        public RequestBuilder WithJsonBody(object data)
+        {
+            _contents = JsonConvert.SerializeObject(data);
             return this;
         }
 

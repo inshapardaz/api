@@ -29,7 +29,10 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
             var handler = Container.GetService<Functions.Library.Categories.UpdateCategory>();
             var faker = new Faker();
             _expectedCategory = new CategoryView { Id = faker.Random.Number(), Name = faker.Random.String() };
-            _response = (CreatedResult) await handler.Run(_expectedCategory, NullLogger.Instance, _expectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            var request = new RequestBuilder()
+                                            .WithJsonBody(_expectedCategory)
+                                            .Build();
+            _response = (CreatedResult) await handler.Run(request, _expectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

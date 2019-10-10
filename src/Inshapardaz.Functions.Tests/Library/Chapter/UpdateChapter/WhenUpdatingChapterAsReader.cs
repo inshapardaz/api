@@ -25,7 +25,10 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
 
             var handler = Container.GetService<Functions.Library.Books.Chapters.UpdateChapter>();
             var faker = new Faker();
-            var request = new ChapterView { Title = faker.Random.String() };
+            var chapter2 = new ChapterView { Title = faker.Random.String() };
+            var request = new RequestBuilder()
+                                            .WithJsonBody(chapter2)
+                                            .Build();
             _response = (ForbidResult)await handler.Run(request, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 

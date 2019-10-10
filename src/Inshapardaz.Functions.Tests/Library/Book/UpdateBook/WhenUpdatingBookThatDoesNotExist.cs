@@ -34,7 +34,10 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
                 Description = faker.Random.String(),
                 AuthorId = author.Id
             };
-            _response = (CreatedResult) await handler.Run(_expected, NullLogger.Instance, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            var request = new RequestBuilder()
+                                            .WithJsonBody(_expected)
+                                            .Build(); 
+            _response = (CreatedResult) await handler.Run(request, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

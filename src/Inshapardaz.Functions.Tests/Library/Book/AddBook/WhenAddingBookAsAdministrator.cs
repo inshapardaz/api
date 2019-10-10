@@ -53,7 +53,12 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
                        .RuleFor(c => c.SeriesIndex, f => f.Random.Int(1, 10))
                        .RuleFor(c => c.Categories, f => f.PickRandom<CategoryView>(categories, 2))
                        .Generate();
-            _response = (CreatedResult) await handler.Run(_request, NullLogger.Instance, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+
+            var request = new RequestBuilder()
+                                            .WithJsonBody(_request)
+                                            .Build();
+
+            _response = (CreatedResult) await handler.Run(request, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

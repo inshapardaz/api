@@ -30,8 +30,11 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
 
             var selectedAuthor = authors.First();
 
-            _expected = new AuthorView { Name = new Faker().Random.String() };
-            _response = (OkObjectResult) await handler.Run(_expected, NullLogger.Instance, selectedAuthor.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _expected = new AuthorView { Name = new Faker().Name.FullName() };
+            var request = new RequestBuilder()
+                                            .WithJsonBody(_expected)
+                                            .Build();
+            _response = (OkObjectResult) await handler.Run(request, selectedAuthor.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

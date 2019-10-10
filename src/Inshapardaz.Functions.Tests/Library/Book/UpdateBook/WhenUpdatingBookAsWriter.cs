@@ -44,7 +44,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
 
             var fake = new Faker();
             _expected = new BookView { 
-                Title = fake.Random.String(),
+                Title = fake.Name.FullName(),
                 Description = fake.Random.Words(5),
                 Copyrights = fake.Random.Int(0, 3),
                 Language = fake.Random.Int(0, 28),
@@ -55,7 +55,11 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
                 IsPublished = fake.Random.Bool(),
                 Categories = _categories.Select(c => new CategoryView { Id = c.Id} )
             };
-            _response = (OkObjectResult) await handler.Run(_expected, NullLogger.Instance, selectedBook.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+
+            var request = new RequestBuilder()
+                                            .WithJsonBody(_expected)
+                                            .Build();
+            _response = (OkObjectResult) await handler.Run(request, selectedBook.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
             _actual = _response.Value as BookView;
         }
 

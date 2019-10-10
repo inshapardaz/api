@@ -20,8 +20,11 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
         {
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthor>();
             var faker = new Faker();
-            var request = new AuthorView { Id = faker.Random.Number(), Name = faker.Random.String() };
-            _response = (UnauthorizedResult)await handler.Run(request, NullLogger.Instance, request.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            var author = new AuthorView { Id = faker.Random.Number(), Name = faker.Random.String() };
+            var request = new RequestBuilder()
+                                            .WithJsonBody(author)
+                                            .Build();
+            _response = (UnauthorizedResult)await handler.Run(request, author.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

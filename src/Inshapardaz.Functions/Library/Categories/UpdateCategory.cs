@@ -1,3 +1,4 @@
+using System.IO;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,10 +8,12 @@ using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Categories
@@ -24,8 +27,8 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("UpdateCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "categories/{categoryId:int}")] CategoryView category,
-            ILogger log, int categoryId,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "categories/{categoryId:int}")] HttpRequest req,
+            int categoryId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
@@ -38,6 +41,9 @@ namespace Inshapardaz.Functions.Library.Categories
             {
                 return new ForbidResult("Bearer");
             }
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var category = JsonConvert.DeserializeObject<CategoryView>(requestBody);
 
             category.Id = categoryId;
             var request = new UpdateCategoryRequest(category.Map());

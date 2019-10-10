@@ -1,3 +1,4 @@
+using System.IO;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,10 +8,12 @@ using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Authors
@@ -24,8 +27,7 @@ namespace Inshapardaz.Functions.Library.Authors
 
         [FunctionName("AddAuthor")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "authors")] AuthorView author,
-            ILogger log,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "authors")] HttpRequest req,  
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)
         {
@@ -38,6 +40,9 @@ namespace Inshapardaz.Functions.Library.Authors
             {
                 return new ForbidResult("Bearer");
             }
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var author = JsonConvert.DeserializeObject<AuthorView>(requestBody);
 
             var request = new AddAuthorRequest(author.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);

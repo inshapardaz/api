@@ -20,8 +20,11 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
         public async Task Setup()
         {
             var handler = Container.GetService<Functions.Library.Categories.AddCategory>();
-            var request = new CategoryView {Name = new Faker().Random.String()};
-            _response = (UnauthorizedResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            var category = new CategoryView {Name = new Faker().Random.String()};
+            var request = new RequestBuilder()
+                                            .WithJsonBody(category)
+                                            .Build();
+            _response = (UnauthorizedResult) await handler.Run(request, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

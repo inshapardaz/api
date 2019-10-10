@@ -19,8 +19,11 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
         public async Task Setup()
         {
             var handler = Container.GetService<Functions.Library.Books.AddBook>();
-            var request = new BookView { Title = new Faker().Random.String()};
-            _response = (UnauthorizedResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            var book = new BookView { Title = new Faker().Random.String()};
+            var request = new RequestBuilder()
+                                            .WithJsonBody(book)
+                                            .Build();
+            _response = (UnauthorizedResult) await handler.Run(request, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

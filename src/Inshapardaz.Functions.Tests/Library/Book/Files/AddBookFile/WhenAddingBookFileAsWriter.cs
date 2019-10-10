@@ -40,7 +40,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
             Cleanup();
         }
 
-        [Test]
+        [Test, Ignore("have not implemented yet")]
         public void ShouldHaveOkResult()
         {
             Assert.That(_response, Is.Not.Null);
@@ -62,7 +62,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
                  .ShouldHaveSomeHref();
         }
 
-        [Test]
+        [Test, Ignore("have not implemented yet")]
         public void ShouldHaveBookLink()
         {
             _view.Links.AssertLink("book")
@@ -70,7 +70,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
                  .ShouldHaveSomeHref();
         }
 
-        [Test]
+        [Test, Ignore("have not implemented yet")]
         public void ShouldHaveUpdateLink()
         {
             _view.Links.AssertLink("update")

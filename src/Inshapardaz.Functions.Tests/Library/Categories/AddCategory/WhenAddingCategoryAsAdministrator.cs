@@ -24,8 +24,11 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
             _categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
             
             var handler = Container.GetService<Functions.Library.Categories.AddCategory>();
-            var request = new CategoryView {Name = new Faker().Random.String()};
-            _response = (CreatedResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            var category = new CategoryView {Name = new Faker().Random.String()};
+            var request = new RequestBuilder()
+                                            .WithJsonBody(category)
+                                            .Build();
+            _response = (CreatedResult) await handler.Run(request, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

@@ -29,8 +29,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
 
             var chapter = chapters.First();
 
-            _expected = new ChapterView { Title = new Faker().Random.String() };
-            _response = (OkObjectResult) await handler.Run(_expected, chapter.BookId, chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _expected = new ChapterView { Title = new Faker().Name.FirstName() };
+            var request = new RequestBuilder()
+                                            .WithJsonBody(_expected)
+                                            .Build();
+            _response = (OkObjectResult) await handler.Run(request, chapter.BookId, chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

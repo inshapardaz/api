@@ -1,3 +1,4 @@
+using System.IO;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,10 +8,12 @@ using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters
@@ -24,9 +27,8 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("AddChapter")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/{bookId:int}/chapters")]
-            ChapterView chapter,
-            ILogger log, int bookId,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/{bookId:int}/chapters")] HttpRequest req,
+            int bookId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
@@ -39,6 +41,9 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
             {
                 return new ForbidResult("Bearer");
             }
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var chapter = JsonConvert.DeserializeObject<ChapterView>(requestBody);
 
             var request = new AddChapterRequest(bookId, chapter.Map(), principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
@@ -29,7 +28,10 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
             var handler = Container.GetService<Functions.Library.Books.Chapters.UpdateChapter>();
             var faker = new Faker();
             _expected = new ChapterView { Title = new Faker().Random.String() };
-            _response = (CreatedResult) await handler.Run(_expected, book.Id, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            var request = new RequestBuilder()
+                                            .WithJsonBody(_expected)
+                                            .Build();
+            _response = (CreatedResult) await handler.Run(request, book.Id, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

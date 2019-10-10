@@ -27,7 +27,12 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthor>();
             var faker = new Faker();
             _expected = new AuthorView { Name = new Faker().Random.String() };
-            _response = (CreatedResult) await handler.Run(_expected, NullLogger.Instance, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+
+            var request = new RequestBuilder()
+                                            .WithJsonBody(_expected)
+                                            .Build();
+
+            _response = (CreatedResult) await handler.Run(request, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

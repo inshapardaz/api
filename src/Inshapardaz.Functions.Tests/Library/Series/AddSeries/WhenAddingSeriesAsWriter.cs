@@ -24,8 +24,11 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
             _builder = Container.GetService<SeriesDataBuilder>();
             
             var handler = Container.GetService<Functions.Library.Series.AddSeries>();
-            var request = new SeriesView { Name = new Faker().Random.String(), Description = new Faker().Random.Words(30) };
-            _response = (CreatedResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            var series = new SeriesView { Name = new Faker().Random.String(), Description = new Faker().Random.Words(30) };
+            var request = new RequestBuilder()
+                                            .WithJsonBody(series)
+                                            .Build();
+            _response = (CreatedResult) await handler.Run(request, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

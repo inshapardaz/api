@@ -19,8 +19,11 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
         public async Task Setup()
         {
             var handler = Container.GetService<Functions.Library.Series.AddSeries>();
-            var request = new SeriesView {Name = new Faker().Random.String()};
-            _response = (ForbidResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            var series = new SeriesView {Name = new Faker().Random.String()};
+            var request = new RequestBuilder()
+                                            .WithJsonBody(series)
+                                            .Build();
+            _response = (ForbidResult) await handler.Run(request, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

@@ -19,8 +19,12 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         public async Task Setup()
         {
             var handler = Container.GetService<Functions.Library.Authors.AddAuthor>();
-            var request = new AuthorView {Name = new Faker().Random.String()};
-            _response = (ForbidResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            var author = new AuthorView {Name = new Faker().Random.String()};
+
+            var request = new RequestBuilder()
+                                            .WithJsonBody(author)
+                                            .Build();
+            _response = (ForbidResult) await handler.Run(request, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

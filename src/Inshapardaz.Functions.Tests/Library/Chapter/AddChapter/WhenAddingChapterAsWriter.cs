@@ -27,8 +27,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
             var book = _builder.Build();
 
             var handler = Container.GetService<Functions.Library.Books.Chapters.AddChapter>();
-            var request = new ChapterView { Title = new Faker().Random.String(), ChapterNumber = 1 };
-            _response = (CreatedResult)await handler.Run(request, NullLogger.Instance, book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            var chapter = new ChapterView { Title = new Faker().Random.String(), ChapterNumber = 1 };
+            var request = new RequestBuilder()
+                                            .WithJsonBody(chapter)
+                                            .Build();
+            _response = (CreatedResult)await handler.Run(request, book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

@@ -20,8 +20,11 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
         {
             var handler = Container.GetService<Functions.Library.Series.UpdateSeries>();
             var faker = new Faker();
-            var request = new SeriesView { Id = faker.Random.Number(), Name = faker.Random.String()};
-            _response = (ForbidResult) await handler.Run(request, NullLogger.Instance, request.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            var series = new SeriesView { Id = faker.Random.Number(), Name = faker.Random.String()};
+            var request = new RequestBuilder()
+                                            .WithJsonBody(series)
+                                            .Build();
+            _response = (ForbidResult) await handler.Run(request, series.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

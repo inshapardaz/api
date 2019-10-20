@@ -34,7 +34,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
             var series = await _databaseContext.Series.SingleOrDefaultAsync(s => s.Id == book.SeriesId, cancellationToken);
 
-            var item = book.Map<Book, Entities.Library.Book>();
+            var item = book.Map();
             item.BookCategory.Clear();
             item.Series = series;
             item.Author = author;
@@ -44,11 +44,15 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
             item.BookCategory = new List<BookCategory>();
-            foreach (var category in book.Categories)
+
+            if (book.Categories != null)
             {
-                var gen = await _databaseContext.Category.SingleOrDefaultAsync(g => g.Id == category.Id, cancellationToken);
-                if (gen != null)
-                    item.BookCategory.Add(new BookCategory { BookId = item.Id, Book = item, CategoryId = gen.Id, Category = gen});
+                foreach (var category in book.Categories)
+                {
+                    var gen = await _databaseContext.Category.SingleOrDefaultAsync(g => g.Id == category.Id, cancellationToken);
+                    if (gen != null)
+                        item.BookCategory.Add(new BookCategory {BookId = item.Id, Book = item, CategoryId = gen.Id, Category = gen});
+                }
             }
             
             await _databaseContext.SaveChangesAsync(cancellationToken);
@@ -60,7 +64,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                                 .ThenInclude(c => c.Category)
                                                 .SingleOrDefaultAsync(t => t.Id == item.Id,
                                                                       cancellationToken);
-            return newBook.Map<Entities.Library.Book, Book>();
+            return newBook.Map();
         }
 
         public async Task UpdateBook(Book book, CancellationToken cancellationToken)
@@ -84,6 +88,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             existingEntity.Status = book.Status;
             existingEntity.Copyrights = book.Copyrights;
             existingEntity.YearPublished = book.YearPublished;
+            existingEntity.IsPublished = book.IsPublished;
 
             if (book.ImageId > 0)
             {
@@ -108,12 +113,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             var book = await _databaseContext.Book.SingleOrDefaultAsync(g => g.Id == bookId, cancellationToken);
 
-            if (book == null)
+            if (book != null)
             {
-                throw new NotFoundException();
+                _databaseContext.Book.Remove(book);
             }
 
-            _databaseContext.Book.Remove(book);
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
@@ -128,7 +132,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var count = await book.CountAsync(cancellationToken);
             var data = await book
                              .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map<Entities.Library.Book, Book>())
+                             .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Book>
@@ -151,7 +155,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var count = await query.CountAsync(cancellationToken);
             var data = await query
                              .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map<Entities.Library.Book, Book>())
+                             .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Book>
@@ -172,7 +176,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                         .ThenInclude(c => c.Category)
                                         .OrderByDescending(b => b.DateAdded)
                                         .Take(10)
-                                        .Select(a => a.Map<Entities.Library.Book, Book>())
+                                        .Select(a => a.Map())
                                         .ToListAsync(cancellationToken);
         }
 
@@ -188,7 +192,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var count = book.Count();
             var data = await book
                              .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map<Entities.Library.Book, Book>())
+                             .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Book>
@@ -213,7 +217,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var count = book.Count();
             var data = await book
                              .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map<Entities.Library.Book, Book>())
+                             .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Book>
@@ -239,7 +243,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var count = book.Count();
             var data = await book
                              .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map<Entities.Library.Book, Book>())
+                             .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Book>
@@ -260,7 +264,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                              .ThenInclude(c => c.Category)
                                              .SingleOrDefaultAsync(t => t.Id == bookId,
                                                                      cancellationToken);
-            return book.Map<Entities.Library.Book, Book>();
+            return book.Map();
         }
 
         public async Task AddRecentBook(Guid userId, int bookId, CancellationToken cancellationToken)
@@ -313,68 +317,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                                 .Take(count)
                                                 .Select(r => r.Book)
                                                 .ToListAsync(cancellationToken);
-            return recents.Select(b => b.Map<Entities.Library.Book, Book>());
+            return recents.Select(b => b.Map());
         }
 
-        public async Task AddBookToFavorites(Guid userId, int bookId, CancellationToken cancellationToken)
-        {
-            var book = await _databaseContext.Book.SingleOrDefaultAsync(b => b.Id == bookId, cancellationToken);
-            if (book == null)
-            {
-                throw new NotFoundException();
-            }
-
-            var fav = await _databaseContext.FavoriteBooks.SingleOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId, cancellationToken);
-
-            if (fav == null)
-            {
-                fav = new FavoriteBook
-                {
-                    UserId = userId,
-                    BookId = bookId,
-                    DateAdded = DateTime.UtcNow,
-                    Book = book
-                };
-                await _databaseContext.FavoriteBooks.AddAsync(fav, cancellationToken);
-                await _databaseContext.SaveChangesAsync(cancellationToken);
-            }
-        }
-
-        public async Task DeleteBookFromFavorites(Guid userId, int bookId, CancellationToken cancellationToken)
-        {
-            var fav = await _databaseContext
-                                .FavoriteBooks
-                                .SingleOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId, cancellationToken);
-
-            if (fav == null)
-            {
-                throw new NotFoundException();
-            }
-
-            _databaseContext.FavoriteBooks.Remove(fav);
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task<Page<Book>> GetFavoriteBooksByUser(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken)
-        {
-            var query = _databaseContext.FavoriteBooks
-                                                .Include(r => r.Book)
-                                                .Where(r => r.UserId == userId)
-                                                .OrderBy(r => r.Book.Title);
-            var count = await query.CountAsync(cancellationToken);
-            var data = await query.Paginate(pageNumber, pageSize)
-                                                .Select(r => r.Book)
-                                                .Select(a => a.Map<Entities.Library.Book, Book>())
-                                                .ToListAsync(cancellationToken);
-
-            return new Page<Book>
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalCount = count,
-                Data = data
-            };
-        }
 
         public async Task<int> GetBookCountByAuthor(int authorId, CancellationToken cancellationToken)
         {
@@ -408,7 +353,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                                  .Include(b=> b.File)
                                                  .SingleOrDefaultAsync(bf => bf.Id == fileId, cancellationToken: cancellationToken);
 
-            return bookFile?.File.Map<Entities.File, File>();
+            return bookFile?.File.Map();
         }
 
         public async Task<IEnumerable<File>> GetFilesByBook(int bookId, CancellationToken cancellationToken)
@@ -417,7 +362,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                               .Include(bf => bf.File)
                                               .Where(f => f.BookId == bookId)
                                               .ToListAsync(cancellationToken);
-            return files.Select(bf => bf.File.Map<Entities.File, File>());
+            return files.Select(bf => bf.File.Map());
         }
 
         public async Task AddBookFile(int bookId, int fileId, CancellationToken cancellationToken)

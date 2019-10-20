@@ -36,10 +36,12 @@ namespace Inshapardaz.Domain.Entities.Library
         public BookStatuses Status { get; set; }
 
 
-        public int YearPublished { get; set; }
+        public int? YearPublished { get; set; }
 
         public CopyrightStatuses Copyrights { get; set; }
 
         public bool IsPublished { get; set; }
+
+        public bool IsFavorite { get; set; }
     }
 }

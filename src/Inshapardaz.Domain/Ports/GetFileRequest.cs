@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
-using SixLabors.ImageSharp;
+//using SixLabors.ImageSharp;
 using File = Inshapardaz.Domain.Entities.File;
 
 namespace Inshapardaz.Domain.Ports
@@ -50,7 +50,7 @@ namespace Inshapardaz.Domain.Ports
 
             var contents = await _fileStorage.GetFile(command.Response.FilePath, cancellationToken);
             using (var stream = new MemoryStream(contents))
-            using (var output = new MemoryStream())
+            /*using (var output = new MemoryStream())
             {
                 if (IsImageFile(command.Response.MimeType))
                 {
@@ -65,6 +65,9 @@ namespace Inshapardaz.Domain.Ports
                 {
                     command.Response.Contents = stream.ToArray();
                 }
+            }*/
+            {
+                command.Response.Contents = stream.ToArray();
             }
 
             return await base.HandleAsync(command, cancellationToken);

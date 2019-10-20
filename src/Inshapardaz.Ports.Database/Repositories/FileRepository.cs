@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,12 +19,12 @@ namespace Inshapardaz.Ports.Database.Repositories
         public async Task<File> GetFileById(int id, bool isPublic, CancellationToken cancellationToken)
         {
             var file = await _databaseContext.File.SingleOrDefaultAsync(i => i.Id == id && (!isPublic || i.IsPublic == isPublic), cancellationToken);
-            return file.Map<Entities.File, File>();
+            return file.Map();
         }
 
         public async Task<File> AddFile(File file, string url, bool isPublic, CancellationToken cancellationToken)
         {
-            var entity = file.Map<File, Entities.File>();
+            var entity = file.Map();
 
             entity.FilePath = url;
             entity.IsPublic = isPublic;
@@ -33,7 +32,7 @@ namespace Inshapardaz.Ports.Database.Repositories
             _databaseContext.File.Add(entity);
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
-            return entity.Map<Entities.File, File>();
+            return entity.Map();
         }
 
         public async Task<File> UpdateFile(File file, string url, bool isPublic, CancellationToken cancellationToken)
@@ -52,7 +51,7 @@ namespace Inshapardaz.Ports.Database.Repositories
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
-            return entity.Map<Entities.File, File>();
+            return entity.Map();
         }
 
         public async Task DeleteFile(int id, CancellationToken cancellationToken)

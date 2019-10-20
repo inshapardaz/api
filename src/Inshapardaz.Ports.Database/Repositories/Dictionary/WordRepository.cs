@@ -29,10 +29,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                 throw new NotFoundException();
             }
 
-            var item = word.Map<Word, Entities.Dictionary.Word>();
+            var item = word.Map();
             dictionary.Word.Add(item);
             await _databaseContext.SaveChangesAsync(cancellationToken);
-            return item.Map<Entities.Dictionary.Word, Word>();
+            return item.Map();
         }
 
         public async Task DeleteWord(int dictionaryId, long wordId, CancellationToken cancellationToken)
@@ -75,13 +75,13 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
         public async Task<Word> GetWordById(int dictionaryId, long wordId, CancellationToken cancellationToken)
         {
             var word = await _databaseContext.Word.SingleOrDefaultAsync(w => w.Id == wordId && w.DictionaryId == dictionaryId, cancellationToken);
-            return word.Map<Entities.Dictionary.Word, Word>();
+            return word.Map();
         }
 
         public async Task<Word> GetWordByTitle(int dictionaryId, string title, CancellationToken cancellationToken)
         {
             var word = await _databaseContext.Word.SingleOrDefaultAsync(w => w.Title == title && w.DictionaryId == dictionaryId, cancellationToken);
-            return word.Map<Entities.Dictionary.Word, Word>();
+            return word.Map();
         }
 
         public async Task<Page<Word>> GetWordsById(int dictionaryId, IEnumerable<long> wordIds, int pageNumber, int pageSize, CancellationToken cancellationToken)
@@ -94,7 +94,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
             var count = wordIndices.Count();
             var data = await wordIndices
                              .Paginate(pageNumber, pageSize)
-                             .Select(w => w.Map<Entities.Dictionary.Word, Word>())
+                             .Select(w => w.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Word>
@@ -111,7 +111,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
         {
             return await _databaseContext.Word
                                   .Where(x => x.DictionaryId == dictionaryId && titles.Contains(x.Title))
-                                  .Select(w => w.Map<Entities.Dictionary.Word, Word>())
+                                  .Select(w => w.Map())
                                   .ToListAsync(cancellationToken);
         }
 
@@ -125,7 +125,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
             var count = words.Count();
             var data = await words
                              .Paginate(pageNumber, pageSize)
-                             .Select(w => w.Map<Entities.Dictionary.Word, Word>())
+                             .Select(w => w.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Word>
@@ -144,7 +144,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
             var count = words.Count();
             var data = await words
                              .Paginate(pageNumber, pageSize)
-                             .Select(w => w.Map<Entities.Dictionary.Word, Word>())
+                             .Select(w => w.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Word>
@@ -169,7 +169,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
             var data = await words
                              .Where(w => w.Title.StartsWith(startingWith))
                              .Paginate(pageNumber, pageSize)
-                             .Select(w => w.Map<Entities.Dictionary.Word, Word>())
+                             .Select(w => w.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Word>

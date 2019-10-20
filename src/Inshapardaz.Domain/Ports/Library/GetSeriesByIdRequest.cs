@@ -31,7 +31,12 @@ namespace Inshapardaz.Domain.Ports.Library
         public override async Task<GetSeriesByIdRequest> HandleAsync(GetSeriesByIdRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var series = await _seriesRepository.GetSeriesById(command.SeriesId, cancellationToken);
-            series.BookCount = await _bookRepository.GetBookCountBySeries(command.SeriesId, cancellationToken);
+
+            if (series != null)
+            {
+                series.BookCount = await _bookRepository.GetBookCountBySeries(command.SeriesId, cancellationToken);
+            }
+
             command.Result = series;
             
             return await base.HandleAsync(command, cancellationToken);

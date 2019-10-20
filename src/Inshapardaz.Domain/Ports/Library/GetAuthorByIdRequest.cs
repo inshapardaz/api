@@ -34,12 +34,10 @@ namespace Inshapardaz.Domain.Ports.Library
         {
             var result = await _authorRepository.GetAuthorById(command.AuthorId, cancellationToken);
 
-            if (result == null)
+            if (result != null)
             {
-                throw new NotFoundException();
+                result.BookCount = await _bookRepository.GetBookCountByAuthor(command.AuthorId, cancellationToken);
             }
-
-            result.BookCount  = await _bookRepository.GetBookCountByAuthor(command.AuthorId, cancellationToken);
 
             command.Result = result;
             return await base.HandleAsync(command, cancellationToken);

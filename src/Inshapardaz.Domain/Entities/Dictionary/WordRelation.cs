@@ -2,7 +2,7 @@
 {
     public class WordRelation
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public long RelatedWordId { get; set; }
         public RelationType RelationType { get; set; }
 

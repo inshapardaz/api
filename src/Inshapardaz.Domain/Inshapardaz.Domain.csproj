@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>Inshapardaz.Domain</AssemblyName>
@@ -10,13 +10,6 @@
     <None Remove="Database\**" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="6.2.1" />
     <PackageReference Include="Lucene.Net" Version="4.8.0-beta00005" />
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00005" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
@@ -26,17 +19,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
-    <PackageReference Include="Paramore.Brighter" Version="7.1.5" />
-    <PackageReference Include="Paramore.Darker" Version="1.0.1" />
+    <PackageReference Include="Paramore.Brighter" Version="7.4.2" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0001" />
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Razor.Language">
-      <HintPath>..\..\..\..\..\Users\muhammad.farooq\.nuget\packages\microsoft.aspnetcore.razor.language\2.0.0\lib\netstandard2.0\Microsoft.AspNetCore.Razor.Language.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>

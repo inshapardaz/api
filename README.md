@@ -36,3 +36,8 @@ All ef commands should be executed inside the Inshapardaz.Ports.Domain folder
 #### Updating database manyally
 
 `dotnet ef database update --startup-project ..\Inshapardaz.Api\Inshapardaz.Api.csproj`
+
+
+## Install Fluent Migrator tool
+
+`dotnet tool install -g FluentMigrator.DotNet.Cli`

@@ -1,1 +1,0 @@
-docker run -p 5002:5002 inshapardaz/api

@@ -33,7 +33,7 @@ namespace Inshapardaz.Domain.Helpers
 
         public static string[] SplitIntoWords(this string input)
         {
-            return input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            return input.Split(' ');
         }
 
         public static string[] PreserveSpecialCharacters(this string[] input)

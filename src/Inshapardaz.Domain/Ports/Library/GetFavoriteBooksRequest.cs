@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
@@ -29,11 +30,11 @@ namespace Inshapardaz.Domain.Ports.Library
 
     public class GetFavoriteBooksRequestHandler : RequestHandlerAsync<GetFavoriteBooksRequest>
     {
-        private readonly IBookRepository _bookRepository;
+        private readonly IFavoriteRepository _favoriteRepository;
 
-        public GetFavoriteBooksRequestHandler(IBookRepository bookRepository)
+        public GetFavoriteBooksRequestHandler(IFavoriteRepository favoriteRepository)
         {
-            _bookRepository = bookRepository;
+            _favoriteRepository = favoriteRepository;
         }
 
         public override async Task<GetFavoriteBooksRequest> HandleAsync(GetFavoriteBooksRequest command, CancellationToken cancellationToken = new CancellationToken())
@@ -43,7 +44,8 @@ namespace Inshapardaz.Domain.Ports.Library
                 throw new NotFoundException();
             }
 
-            var books = await _bookRepository.GetFavoriteBooksByUser(command.UserId, command.PageNumber, command.PageSize, cancellationToken);
+            var books = await _favoriteRepository.GetFavoriteBooksByUser(command.UserId, command.PageNumber, command.PageSize, cancellationToken);
+            foreach (var book in books.Data) book.IsFavorite = true;
             command.Result = books;
             return await base.HandleAsync(command, cancellationToken);
         }

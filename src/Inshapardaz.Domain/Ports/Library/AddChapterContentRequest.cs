@@ -1,6 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
@@ -8,8 +9,8 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class AddChapterContentRequest : BookRequest
     {
-        public AddChapterContentRequest(int bookId, int chapterId, string contents, string mimeType)
-            : base(bookId)
+        public AddChapterContentRequest(int bookId, int chapterId, string contents, string mimeType, Guid userId)
+            : base(bookId, userId)
         {
             ChapterId = chapterId;
             Contents = contents;
@@ -21,6 +22,8 @@ namespace Inshapardaz.Domain.Ports.Library
         public string Contents { get; }
 
         public string MimeType { get; set; }
+
+        public ChapterContent Result { get; set; } 
     }
 
     public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterContentRequest>
@@ -36,12 +39,10 @@ namespace Inshapardaz.Domain.Ports.Library
         public override async Task<AddChapterContentRequest> HandleAsync(AddChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var chapter = await _chapterRepository.GetChapterById(command.ChapterId, cancellationToken);
-            if (chapter == null)
+            if (chapter != null)
             {
-                throw new BadRequestException();
+                command.Result = await _chapterRepository.AddChapterContent(command.BookId, command.ChapterId, command.MimeType, command.Contents, cancellationToken);
             }
-
-            await _chapterRepository.AddChapterContent(command.BookId, command.ChapterId, command.MimeType, command.Contents, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

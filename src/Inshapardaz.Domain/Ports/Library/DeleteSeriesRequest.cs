@@ -27,13 +27,6 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<DeleteSeriesRequest> HandleAsync(DeleteSeriesRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _seriesRepository.GetSeriesById(command.SeriesId, cancellationToken);
-
-            if (result == null)
-            {
-                throw new NotFoundException();
-            }
-
             await _seriesRepository.DeleteSeries(command.SeriesId, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);

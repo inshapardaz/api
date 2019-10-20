@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Dictionary;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,12 +30,12 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                 throw new NotFoundException();
             }
 
-            var item = translation.Map<Translation, Entities.Dictionary.Translation>();
+            var item = translation.Map();
             word.Translation.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
-            return item.Map<Entities.Dictionary.Translation, Translation>();
+            return item.Map();
         }
 
         public async Task DeleteTranslation(int dictionaryId, long wordId, long translationId, CancellationToken cancellationToken)
@@ -83,7 +82,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                                                                     t.WordId == wordId &&
                                                                     t.Id == translationId,
                                                                cancellationToken);
-            return translation.Map<Entities.Dictionary.Translation, Translation>();
+            return translation.Map();
         }
 
         public async Task<IEnumerable<Translation>> GetTranslationsByLanguage(int dictionaryId, long wordId, Languages language, CancellationToken cancellationToken)
@@ -92,7 +91,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                                          .Where(t => t.Word.DictionaryId == dictionaryId &&
                                                      t.WordId == wordId &&
                                                      t.Language == language)
-                                         .Select(t => t.Map<Entities.Dictionary.Translation, Translation>())
+                                         .Select(t => t.Map())
                                          .ToListAsync(cancellationToken);
         }
 
@@ -101,7 +100,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
             return await _databaseContext.Translation
                                          .Where(t => t.Word.DictionaryId == dictionaryId &&
                                                      t.WordId == wordId)
-                                         .Select(t => t.Map<Entities.Dictionary.Translation, Translation>())
+                                         .Select(t => t.Map())
                                          .ToListAsync(cancellationToken);
         }
     }

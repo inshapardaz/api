@@ -25,7 +25,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<GetCategoriesRequest> HandleAsync(GetCategoriesRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            command.Result = await _categoryRepository.GetCategory(cancellationToken);
+            command.Result = await _categoryRepository.GetCategories(cancellationToken);
 
             foreach (var category in command.Result)
             {

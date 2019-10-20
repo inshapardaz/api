@@ -147,7 +147,7 @@ namespace Inshapardaz.Api.Configuration
             return services;
         }
         
-        public static IServiceCollection AddDatabase(this IServiceCollection services, IHostingEnvironment hostingEnvironment, IConfiguration configuration)
+        public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
             {
                 var connectionString = configuration.GetConnectionString("DefaultDatabase");
@@ -185,7 +185,6 @@ namespace Inshapardaz.Api.Configuration
             Mapper.Initialize(c =>
                 {
                     c.AddProfile(new MappingProfile());
-                    c.AddProfile(new DatabaseMappingProfile());
                 }
             );
             Mapper.AssertConfigurationIsValid();

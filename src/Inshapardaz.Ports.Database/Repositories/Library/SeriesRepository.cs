@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,12 +20,12 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
         public async Task<Series> AddSeries(Series series, CancellationToken cancellationToken)
         {
-            var item = series.Map<Series, Entities.Library.Series>();
+            var item = series.Map();
             _databaseContext.Series.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
-            return item.Map<Entities.Library.Series, Series>();
+            return item.Map();
         }
 
         public async Task UpdateSeries(Series series, CancellationToken cancellationToken)
@@ -51,19 +49,18 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             var series = await _databaseContext.Series.SingleOrDefaultAsync(g => g.Id == seriesId, cancellationToken);
 
-            if (series == null)
+            if (series != null)
             {
-                throw new NotFoundException();
+                _databaseContext.Series.Remove(series);
             }
 
-            _databaseContext.Series.Remove(series);
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<Series>> GetSeries(CancellationToken cancellationToken)
         {
             return await _databaseContext.Series
-                                         .Select(t => t.Map<Entities.Library.Series, Series>())
+                                         .Select(t => t.Map())
                                          .ToListAsync(cancellationToken);
         }
 
@@ -72,7 +69,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var series = await _databaseContext.Series
                                                     .SingleOrDefaultAsync(t => t.Id == seriesId,
                                                                           cancellationToken);
-            return series.Map<Entities.Library.Series, Series>();
+            return series.Map();
         }
     }
 }

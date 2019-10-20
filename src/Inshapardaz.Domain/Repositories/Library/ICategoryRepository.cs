@@ -13,7 +13,7 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task DeleteCategory(int categoryId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<Category>> GetCategory(CancellationToken cancellationToken);
+        Task<IEnumerable<Category>> GetCategories(CancellationToken cancellationToken);
         
         Task<Category> GetCategoryById(int categoryId, CancellationToken cancellationToken);
     }

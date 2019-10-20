@@ -1,8 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
@@ -13,12 +11,9 @@ namespace Inshapardaz.Domain.Ports.Library
     {
         private readonly IBookRepository _bookRepository;
 
-        private readonly IUserHelper _userHelper;
-
-        public BookRequestValidationHandler(IBookRepository bookRepository, IUserHelper userHelper)
+        public BookRequestValidationHandler(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
-            _userHelper = userHelper;
         }
 
         public override async Task<T> HandleAsync(T command, CancellationToken cancellationToken = new CancellationToken())
@@ -27,15 +22,12 @@ namespace Inshapardaz.Domain.Ports.Library
 
             if (book == null)
             {
-                throw new NotFoundException();
+                //if (!book.IsPublic && command.UserId == Guid.Empty)
+                //{
+                    return await Task.FromResult<T>(null);
+                //}
             }
 
-            /*var userId = _userHelper.GetUserId();
-            if (!book.IsPublic && book.UserId != userId)
-            {
-                throw new UnauthorizedException();
-            }*/
-            
             return await base.HandleAsync(command, cancellationToken);
         }
     }

@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Dictionary;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Dictionary;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,11 +20,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
 
         public async Task<WordRelation> AddRelationship(int dictionaryId, WordRelation relation, CancellationToken cancellationToken)
         {
-            var wordRelation = relation.Map<WordRelation, Entities.Dictionary.WordRelation>();
+            var wordRelation = relation.Map();
             _databaseContext.WordRelation.Add(wordRelation);
             await _databaseContext.SaveChangesAsync(cancellationToken);
 
-            return wordRelation.Map<Entities.Dictionary.WordRelation, WordRelation>();
+            return wordRelation.Map();
         }
 
         public async Task DeleteRelationship(int dictionaryId, long relationshipId, CancellationToken cancellationToken)
@@ -68,7 +67,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                                   .Include(r => r.SourceWord)
                                   .Include(r => r.RelatedWord)
                                   .SingleOrDefaultAsync(t => t.Id == relationshipId, cancellationToken);
-            return relation.Map<Entities.Dictionary.WordRelation, WordRelation>();
+            return relation.Map();
         }
 
         public async Task<IEnumerable<WordRelation>> GetRelationshipFromWord(int dictionaryId, long sourceWordId, CancellationToken cancellationToken)
@@ -77,7 +76,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                                   .Include(r => r.RelatedWord)
                                   .Include(r => r.SourceWord)
                                   .Where(t => t.SourceWordId == sourceWordId)
-                                  .Select(r => r.Map<Entities.Dictionary.WordRelation, WordRelation>())
+                                  .Select(r => r.Map())
                                   .ToListAsync(cancellationToken);
         }
 
@@ -87,7 +86,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionary
                                         .Include(r => r.RelatedWord)
                                         .Include(r => r.SourceWord)
                                         .Where(t => t.RelatedWordId == relatedWordId)
-                                        .Select(r => r.Map<Entities.Dictionary.WordRelation, WordRelation>())
+                                        .Select(r => r.Map())
                                         .ToListAsync(cancellationToken);
         }
     }

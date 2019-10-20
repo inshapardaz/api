@@ -1,7 +1,6 @@
-﻿using Inshapardaz.Domain;
-using Inshapardaz.Domain.Repositories;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+﻿using Inshapardaz.Domain.Repositories;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 using System;
 using System.IO;
 using System.Threading;
@@ -11,11 +10,11 @@ namespace Inshapardaz.Storage
 {
     public class FileStorage : IFileStorage
     {
-        private readonly Settings _settings;
+        private readonly string _storageConnectionString;
 
-        public FileStorage(Settings settings)
+        public FileStorage(string storageConnectionString)
         {
-            _settings = settings;
+            _storageConnectionString = storageConnectionString;
         }
 
         public async Task DeleteFile(string filePath, CancellationToken cancellationToken)
@@ -84,7 +83,7 @@ namespace Inshapardaz.Storage
 
         private CloudBlobContainer GetContainer(string container = "library")
         {
-            var storageAccount = CloudStorageAccount.Parse(_settings.FileStorageConnectionString);
+            var storageAccount = CloudStorageAccount.Parse(_storageConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
             return blobClient.GetContainerReference(container);
         }

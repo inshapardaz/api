@@ -27,10 +27,12 @@ namespace Inshapardaz.Domain.Ports.Library
     public class GetRecentBooksRequestHandler : RequestHandlerAsync<GetRecentBooksRequest>
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IFavoriteRepository _favoriteRepository;
 
-        public GetRecentBooksRequestHandler(IBookRepository bookRepository)
+        public GetRecentBooksRequestHandler(IBookRepository bookRepository, IFavoriteRepository favoriteRepository)
         {
             _bookRepository = bookRepository;
+            _favoriteRepository = favoriteRepository;
         }
 
         public override async Task<GetRecentBooksRequest> HandleAsync(GetRecentBooksRequest command, CancellationToken cancellationToken = new CancellationToken())
@@ -41,8 +43,18 @@ namespace Inshapardaz.Domain.Ports.Library
             }
 
             var books = await _bookRepository.GetRecentBooksByUser(command.UserId, command.Count, cancellationToken);
-            command.Result = books;
+            command.Result = await MarkFavorites(books, command.UserId, cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
+        }
+
+        private async Task<IEnumerable<Book>> MarkFavorites(IEnumerable<Book> books, Guid userId, CancellationToken cancellationToken)
+        {
+            foreach (var book in books)
+            {
+                book.IsFavorite = await _favoriteRepository.IsBookFavorite(userId, book.Id, cancellationToken);
+            }
+
+            return books;
         }
     }
 }

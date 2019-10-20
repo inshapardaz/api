@@ -32,17 +32,20 @@ namespace Inshapardaz.Domain.Ports.Library
         public override async Task<DeleteAuthorRequest> HandleAsync(DeleteAuthorRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var author = await _authorRepository.GetAuthorById(command.AuthorId, cancellationToken);
-            if (author != null && author.ImageId > 0)
+            if (author != null)
             {
-                var image = await _fileRepository.GetFileById(author.ImageId, true, cancellationToken);
-                if (string.IsNullOrWhiteSpace(image.FilePath))
+                if (author.ImageId > 0)
                 {
-                    await _fileStore.TryDeleteFile(image.FilePath, cancellationToken);
-                    await _fileRepository.DeleteFile(image.Id, cancellationToken);
+                    var image = await _fileRepository.GetFileById(author.ImageId, true, cancellationToken);
+                    if (image != null && !string.IsNullOrWhiteSpace(image.FilePath))
+                    {
+                        await _fileStore.TryDeleteFile(image.FilePath, cancellationToken);
+                        await _fileRepository.DeleteFile(image.Id, cancellationToken);
+                    }
                 }
+                await _authorRepository.DeleteAuthor(command.AuthorId, cancellationToken);
             }
-            await _authorRepository.DeleteAuthor(command.AuthorId, cancellationToken);
-
+            
             return await base.HandleAsync(command, cancellationToken);
         }
     }

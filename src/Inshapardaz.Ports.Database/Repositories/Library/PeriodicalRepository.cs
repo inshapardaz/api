@@ -4,7 +4,6 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var count = await _databaseContext.Periodical.CountAsync(cancellationToken);
             var data = await _databaseContext.Periodical
                              .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map<Entities.Library.Periodical, Periodical>())
+                             .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Periodical>
@@ -43,7 +42,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var count = await periodicals.CountAsync(cancellationToken);
             var data = await periodicals
                              .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map<Entities.Library.Periodical, Periodical>())
+                             .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
             return new Page<Periodical>
@@ -60,17 +59,17 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             var periodical = await _databaseContext.Periodical
                                              .SingleOrDefaultAsync(t => t.Id == periodicalId,
                                                                      cancellationToken);
-            return periodical.Map<Entities.Library.Periodical, Periodical>();
+            return periodical.Map();
         }
 
         public async Task<Periodical> AddPeriodical(Periodical periodical, CancellationToken cancellationToken)
         {
-            var item = periodical.Map<Periodical, Entities.Library.Periodical>();
+            var item = periodical.Map();
 
             _databaseContext.Periodical.Add(item);
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
-            return item.Map<Entities.Library.Periodical, Periodical>();
+            return item.Map();
         }
 
         public async Task UpdatePeriodical(Periodical periodical, CancellationToken cancellationToken)

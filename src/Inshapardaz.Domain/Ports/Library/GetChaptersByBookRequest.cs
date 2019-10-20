@@ -10,14 +10,12 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetChaptersByBookRequest : BookRequest
     {
-        public GetChaptersByBookRequest(int bookId)
-            : base(bookId)
+        public GetChaptersByBookRequest(int bookId, Guid userId)
+            : base(bookId, userId)
         {
         }
 
         public IEnumerable<Chapter> Result { get; set; }
-
-        public Guid UserId { get; set; }
     }
 
     public class GetChaptersByBookRequestHandler : RequestHandlerAsync<GetChaptersByBookRequest>
@@ -29,6 +27,7 @@ namespace Inshapardaz.Domain.Ports.Library
             _chapterRepository = chapterRepository;
         }
 
+        [BookRequestValidation(1, HandlerTiming.Before)]
         public override async Task<GetChaptersByBookRequest> HandleAsync(GetChaptersByBookRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var chapters = await _chapterRepository.GetChaptersByBook(command.BookId, cancellationToken);

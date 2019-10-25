@@ -1,6 +1,6 @@
 {
   "Inshapardaz.Domain.dll": {
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DownloadDictionaryRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DownloadDictionaryRequest.cs": {
       "Inshapardaz.Api.Adapters.Dictionary.GetDownloadDictionaryRequest": {
         "System.String Inshapardaz.Api.Adapters.Dictionary.GetDownloadDictionaryRequest::get_MimeType()": {
           "Lines": {
@@ -128,7 +128,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Settings.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Settings.cs": {
       "Inshapardaz.Domain.Settings": {
         "System.Boolean Inshapardaz.Domain.Settings::get_RunDBMigrations()": {
           "Lines": {
@@ -168,7 +168,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\AddFileRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\AddFileRequest.cs": {
       "Inshapardaz.Domain.Ports.AddFileRequest": {
         "Inshapardaz.Domain.Entities.File Inshapardaz.Domain.Ports.AddFileRequest::get_File()": {
           "Lines": {
@@ -303,7 +303,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\DeleteFileRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\DeleteFileRequest.cs": {
       "Inshapardaz.Domain.Ports.DeleteFileRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.DeleteFileRequest::get_ImageId()": {
           "Lines": {
@@ -393,7 +393,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\GetFileRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\GetFileRequest.cs": {
       "Inshapardaz.Domain.Ports.GetFileRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.GetFileRequest::get_ImageId()": {
           "Lines": {
@@ -641,7 +641,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\RequestBase.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\RequestBase.cs": {
       "Inshapardaz.Domain.Ports.RequestBase": {
         "System.Guid Inshapardaz.Domain.Ports.RequestBase::get_Id()": {
           "Lines": {
@@ -651,7 +651,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddAuthorRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddAuthorRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.AddAuthorRequest": {
         "Inshapardaz.Domain.Entities.Library.Author Inshapardaz.Domain.Ports.Library.AddAuthorRequest::get_Author()": {
           "Lines": {
@@ -747,7 +747,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddBookFileRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddBookFileRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.AddBookFileRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.AddBookFileRequest::get_BookId()": {
           "Lines": {
@@ -907,7 +907,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddBookRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddBookRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.AddBookRequest": {
         "Inshapardaz.Domain.Entities.Library.Book Inshapardaz.Domain.Ports.Library.AddBookRequest::get_Book()": {
           "Lines": {
@@ -1003,7 +1003,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddBookToFavoriteRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddBookToFavoriteRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.AddBookToFavoriteRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.AddBookToFavoriteRequest::get_BookId()": {
           "Lines": {
@@ -1100,7 +1100,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddCategoryRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddCategoryRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.AddCategoryRequest": {
         "Inshapardaz.Domain.Entities.Library.Category Inshapardaz.Domain.Ports.Library.AddCategoryRequest::get_Category()": {
           "Lines": {
@@ -1196,7 +1196,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddChapterContentRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddChapterContentRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.AddChapterContentRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.AddChapterContentRequest::get_ChapterId()": {
           "Lines": {
@@ -1326,7 +1326,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddChapterRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddChapterRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.AddChapterRequest": {
         "Inshapardaz.Domain.Entities.Library.Chapter Inshapardaz.Domain.Ports.Library.AddChapterRequest::get_Chapter()": {
           "Lines": {
@@ -1422,7 +1422,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddIssueRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddIssueRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.AddIssueRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.AddIssueRequest::get_PeriodicalId()": {
           "Lines": {
@@ -1525,7 +1525,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddPeriodicalRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddPeriodicalRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.AddPeriodicalRequest": {
         "Inshapardaz.Domain.Entities.Library.Periodical Inshapardaz.Domain.Ports.Library.AddPeriodicalRequest::get_Periodical()": {
           "Lines": {
@@ -1621,7 +1621,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddSeriesRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\AddSeriesRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.AddSeriesRequest": {
         "Inshapardaz.Domain.Entities.Library.Series Inshapardaz.Domain.Ports.Library.AddSeriesRequest::get_Series()": {
           "Lines": {
@@ -1717,7 +1717,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\BookRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\BookRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.BookRequest": {
         "System.Guid Inshapardaz.Domain.Ports.Library.BookRequest::get_UserId()": {
           "Lines": {
@@ -1743,7 +1743,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\BookRequestValidationHandler.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\BookRequestValidationHandler.cs": {
       "Inshapardaz.Domain.Ports.Library.BookRequestValidationHandler`1": {
         "System.Void Inshapardaz.Domain.Ports.Library.BookRequestValidationHandler`1::.ctor(Inshapardaz.Domain.Repositories.Library.IBookRepository)": {
           "Lines": {
@@ -1860,7 +1860,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\BookWriteRequestValidationHandler.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\BookWriteRequestValidationHandler.cs": {
       "Inshapardaz.Domain.Ports.Library.BookWriteRequestValidationHandler`1": {
         "System.Void Inshapardaz.Domain.Ports.Library.BookWriteRequestValidationHandler`1::.ctor(Inshapardaz.Domain.Repositories.Library.IBookRepository)": {
           "Lines": {
@@ -1977,7 +1977,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteAuthorRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteAuthorRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.DeleteAuthorRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.DeleteAuthorRequest::get_AuthorId()": {
           "Lines": {
@@ -2194,7 +2194,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteBookFileRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteBookFileRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.DeleteBookFileRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.DeleteBookFileRequest::get_BookId()": {
           "Lines": {
@@ -2315,7 +2315,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteBookRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteBookRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.DeleteBookRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.DeleteBookRequest::get_BookId()": {
           "Lines": {
@@ -2532,7 +2532,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteBookToFavoriteRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteBookToFavoriteRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.DeleteBookToFavoriteRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.DeleteBookToFavoriteRequest::get_BookId()": {
           "Lines": {
@@ -2629,7 +2629,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteCategoryRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteCategoryRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.DeleteCategoryRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.DeleteCategoryRequest::get_CategoryId()": {
           "Lines": {
@@ -2719,7 +2719,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteChapterContentRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteChapterContentRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.DeleteChapterContentRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.DeleteChapterContentRequest::get_ChapterId()": {
           "Lines": {
@@ -2816,7 +2816,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteChapterRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteChapterRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.DeleteChapterRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.DeleteChapterRequest::get_ChapterId()": {
           "Lines": {
@@ -2906,7 +2906,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteIssueRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteIssueRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.DeleteIssueRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.DeleteIssueRequest::get_PeriodicalId()": {
           "Lines": {
@@ -3003,7 +3003,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeletePeriodicalRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeletePeriodicalRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.DeletePeriodicalRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.DeletePeriodicalRequest::get_PeriodicalId()": {
           "Lines": {
@@ -3093,7 +3093,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteSeriesRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\DeleteSeriesRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.DeleteSeriesRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.DeleteSeriesRequest::get_SeriesId()": {
           "Lines": {
@@ -3183,7 +3183,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetAuthorByIdRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetAuthorByIdRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetAuthorByIdRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.GetAuthorByIdRequest::get_AuthorId()": {
           "Lines": {
@@ -3301,7 +3301,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetAuthorsRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetAuthorsRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetAuthorsRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.GetAuthorsRequest::get_PageNumber()": {
           "Lines": {
@@ -3485,7 +3485,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetBookByIdRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetBookByIdRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetBookByIdRequest": {
         "Inshapardaz.Domain.Entities.Library.Book Inshapardaz.Domain.Ports.Library.GetBookByIdRequest::get_Result()": {
           "Lines": {
@@ -3612,7 +3612,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetBooksByAuthorRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetBooksByAuthorRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetBooksByAuthorRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.GetBooksByAuthorRequest::get_AuthorId()": {
           "Lines": {
@@ -3812,7 +3812,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetBooksByCategoryRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetBooksByCategoryRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetBooksByCategoryRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.GetBooksByCategoryRequest::get_CategoryId()": {
           "Lines": {
@@ -3993,7 +3993,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetBooksBySeriesRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetBooksBySeriesRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetBooksBySeriesRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.GetBooksBySeriesRequest::get_SeriesId()": {
           "Lines": {
@@ -4174,7 +4174,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetBooksRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetBooksRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetBooksRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.GetBooksRequest::get_PageNumber()": {
           "Lines": {
@@ -4411,7 +4411,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetCategoriesRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetCategoriesRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetCategoriesRequest": {
         "System.Collections.Generic.IEnumerable`1<Inshapardaz.Domain.Entities.Library.Category> Inshapardaz.Domain.Ports.Library.GetCategoriesRequest::get_Result()": {
           "Lines": {
@@ -4529,7 +4529,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetCategoryByIdRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetCategoryByIdRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetCategoryByIdRequest": {
         "Inshapardaz.Domain.Entities.Library.Category Inshapardaz.Domain.Ports.Library.GetCategoryByIdRequest::get_Result()": {
           "Lines": {
@@ -4647,7 +4647,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetChapterByIdRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetChapterByIdRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetChapterByIdRequest": {
         "Inshapardaz.Domain.Entities.Library.Chapter Inshapardaz.Domain.Ports.Library.GetChapterByIdRequest::get_Result()": {
           "Lines": {
@@ -4764,7 +4764,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetChapterContentRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetChapterContentRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetChapterContentRequest": {
         "System.String Inshapardaz.Domain.Ports.Library.GetChapterContentRequest::get_MimeType()": {
           "Lines": {
@@ -4908,7 +4908,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetChaptersByBookRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetChaptersByBookRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetChaptersByBookRequest": {
         "System.Collections.Generic.IEnumerable`1<Inshapardaz.Domain.Entities.Library.Chapter> Inshapardaz.Domain.Ports.Library.GetChaptersByBookRequest::get_Result()": {
           "Lines": {
@@ -5035,7 +5035,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetFavoriteBooksRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetFavoriteBooksRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetFavoriteBooksRequest": {
         "System.Guid Inshapardaz.Domain.Ports.Library.GetFavoriteBooksRequest::get_UserId()": {
           "Lines": {
@@ -5182,7 +5182,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetFilesByBookRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetFilesByBookRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetFilesByBookRequest": {
         "System.Collections.Generic.IEnumerable`1<Inshapardaz.Domain.Entities.File> Inshapardaz.Domain.Ports.Library.GetFilesByBookRequest::get_Result()": {
           "Lines": {
@@ -5288,7 +5288,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetIssueByIdRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetIssueByIdRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetIssueByIdRequest": {
         "Inshapardaz.Domain.Entities.Library.Issue Inshapardaz.Domain.Ports.Library.GetIssueByIdRequest::get_Result()": {
           "Lines": {
@@ -5391,7 +5391,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetIssuesRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetIssuesRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetIssuesRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.GetIssuesRequest::get_PeriodicalId()": {
           "Lines": {
@@ -5501,7 +5501,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetLatestBooksRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetLatestBooksRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetLatestBooksRequest": {
         "System.Guid Inshapardaz.Domain.Ports.Library.GetLatestBooksRequest::get_UserId()": {
           "Lines": {
@@ -5662,7 +5662,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetPeriodicalByIdRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetPeriodicalByIdRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetPeriodicalByIdRequest": {
         "Inshapardaz.Domain.Entities.Library.Periodical Inshapardaz.Domain.Ports.Library.GetPeriodicalByIdRequest::get_Result()": {
           "Lines": {
@@ -5758,7 +5758,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetPeriodicalsRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetPeriodicalsRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetPeriodicalsRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.GetPeriodicalsRequest::get_PageNumber()": {
           "Lines": {
@@ -5889,7 +5889,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetRecentBooksRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetRecentBooksRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetRecentBooksRequest": {
         "System.Guid Inshapardaz.Domain.Ports.Library.GetRecentBooksRequest::get_UserId()": {
           "Lines": {
@@ -6076,7 +6076,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetSeriesByIdRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetSeriesByIdRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetSeriesByIdRequest": {
         "Inshapardaz.Domain.Entities.Library.Series Inshapardaz.Domain.Ports.Library.GetSeriesByIdRequest::get_Result()": {
           "Lines": {
@@ -6194,7 +6194,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetSeriesRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\GetSeriesRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.GetSeriesRequest": {
         "System.Collections.Generic.IEnumerable`1<Inshapardaz.Domain.Entities.Library.Series> Inshapardaz.Domain.Ports.Library.GetSeriesRequest::get_Result()": {
           "Lines": {
@@ -6312,7 +6312,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateAuthorImageRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateAuthorImageRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateAuthorImageRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.UpdateAuthorImageRequest::get_AuthorId()": {
           "Lines": {
@@ -6651,7 +6651,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateAuthorRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateAuthorRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateAuthorRequest": {
         "Inshapardaz.Domain.Entities.Library.Author Inshapardaz.Domain.Ports.Library.UpdateAuthorRequest::get_Author()": {
           "Lines": {
@@ -6804,7 +6804,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateBookFileRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateBookFileRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateBookFileRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.UpdateBookFileRequest::get_BookId()": {
           "Lines": {
@@ -7075,7 +7075,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateBookImageRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateBookImageRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateBookImageRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.UpdateBookImageRequest::get_BookId()": {
           "Lines": {
@@ -7414,7 +7414,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateBookRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateBookRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateBookRequest": {
         "Inshapardaz.Domain.Entities.Library.Book Inshapardaz.Domain.Ports.Library.UpdateBookRequest::get_Book()": {
           "Lines": {
@@ -7567,7 +7567,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateCategoryRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateCategoryRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateCategoryRequest": {
         "Inshapardaz.Domain.Entities.Library.Category Inshapardaz.Domain.Ports.Library.UpdateCategoryRequest::get_Category()": {
           "Lines": {
@@ -7720,7 +7720,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateChapterContentRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateChapterContentRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateChapterContentRequest": {
         "System.String Inshapardaz.Domain.Ports.Library.UpdateChapterContentRequest::get_MimeType()": {
           "Lines": {
@@ -7893,7 +7893,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateChapterRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateChapterRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateChapterRequest": {
         "Inshapardaz.Domain.Entities.Library.Chapter Inshapardaz.Domain.Ports.Library.UpdateChapterRequest::get_Chapter()": {
           "Lines": {
@@ -8048,7 +8048,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateIssueImageRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateIssueImageRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateIssueImageRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.UpdateIssueImageRequest::get_PeriodicalId()": {
           "Lines": {
@@ -8394,7 +8394,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateIssueRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateIssueRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateIssueRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.UpdateIssueRequest::get_PeriodicalId()": {
           "Lines": {
@@ -8561,7 +8561,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdatePeriodicalImageRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdatePeriodicalImageRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdatePeriodicalImageRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Library.UpdatePeriodicalImageRequest::get_PeriodicalId()": {
           "Lines": {
@@ -8900,7 +8900,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdatePeriodicalRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdatePeriodicalRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdatePeriodicalRequest": {
         "Inshapardaz.Domain.Entities.Library.Periodical Inshapardaz.Domain.Ports.Library.UpdatePeriodicalRequest::get_Periodical()": {
           "Lines": {
@@ -9053,7 +9053,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateSeriesRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Library\\UpdateSeriesRequest.cs": {
       "Inshapardaz.Domain.Ports.Library.UpdateSeriesRequest": {
         "Inshapardaz.Domain.Entities.Library.Series Inshapardaz.Domain.Ports.Library.UpdateSeriesRequest::get_Series()": {
           "Lines": {
@@ -9206,7 +9206,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\AddDictionaryRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\AddDictionaryRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.AddDictionaryRequest": {
         "Inshapardaz.Domain.Entities.Dictionary.Dictionary Inshapardaz.Domain.Ports.Dictionary.AddDictionaryRequest::get_Dictionary()": {
           "Lines": {
@@ -9324,7 +9324,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\AddMeaningRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\AddMeaningRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.AddMeaningRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.AddMeaningRequest::get_WordId()": {
           "Lines": {
@@ -9448,7 +9448,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\AddRelationshipRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\AddRelationshipRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.AddRelationshipRequest": {
         "Inshapardaz.Domain.Entities.Dictionary.WordRelation Inshapardaz.Domain.Ports.Dictionary.AddRelationshipRequest::get_Relationship()": {
           "Lines": {
@@ -9630,7 +9630,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\AddTranslationRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\AddTranslationRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.AddTranslationRequest": {
         "Inshapardaz.Domain.Entities.Dictionary.Translation Inshapardaz.Domain.Ports.Dictionary.AddTranslationRequest::get_Translation()": {
           "Lines": {
@@ -9754,7 +9754,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\AddWordRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\AddWordRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.AddWordRequest": {
         "Inshapardaz.Domain.Entities.Dictionary.Word Inshapardaz.Domain.Ports.Dictionary.AddWordRequest::get_Word()": {
           "Lines": {
@@ -9850,7 +9850,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\CreateDictionaryIndexRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\CreateDictionaryIndexRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.CreateDictionaryIndexRequestHandler": {
         "System.Void Inshapardaz.Domain.Ports.Dictionary.CreateDictionaryIndexRequestHandler::.ctor(Inshapardaz.Domain.IndexingService.IWriteDictionaryIndex,Inshapardaz.Domain.Repositories.Dictionary.IDictionaryRepository,Inshapardaz.Domain.Repositories.Dictionary.IWordRepository)": {
           "Lines": {
@@ -9962,7 +9962,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DeleteDictionaryRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DeleteDictionaryRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.DeleteDictionaryRequest": {
         "System.Void Inshapardaz.Domain.Ports.Dictionary.DeleteDictionaryRequest::.ctor(System.Int32)": {
           "Lines": {
@@ -10065,7 +10065,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DeleteMeaningRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DeleteMeaningRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.DeleteMeaningRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.DeleteMeaningRequest::get_MeaningId()": {
           "Lines": {
@@ -10185,7 +10185,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DeleteRelationshipRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DeleteRelationshipRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.DeleteRelationshipRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.DeleteRelationshipRequest::get_WordId()": {
           "Lines": {
@@ -10302,7 +10302,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DeleteTranslationRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DeleteTranslationRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.DeleteTranslationRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.DeleteTranslationRequest::get_WordId()": {
           "Lines": {
@@ -10419,7 +10419,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DeleteWordRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DeleteWordRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.DeleteWordRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Dictionary.DeleteWordRequest::get_WordId()": {
           "Lines": {
@@ -10648,7 +10648,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DictionaryRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DictionaryRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.DictionaryRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Dictionary.DictionaryRequest::get_DictionaryId()": {
           "Lines": {
@@ -10673,7 +10673,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DictionaryRequestValidationHandler.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DictionaryRequestValidationHandler.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.DictionaryRequestValidationHandler`1": {
         "System.Void Inshapardaz.Domain.Ports.Dictionary.DictionaryRequestValidationHandler`1::.ctor(Inshapardaz.Domain.Repositories.Dictionary.IDictionaryRepository)": {
           "Lines": {
@@ -10825,7 +10825,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DictionaryWriteRequestValidationHandler.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\DictionaryWriteRequestValidationHandler.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.DictionaryWriteRequestValidationHandler`1": {
         "System.Void Inshapardaz.Domain.Ports.Dictionary.DictionaryWriteRequestValidationHandler`1::.ctor(Inshapardaz.Domain.Repositories.Dictionary.IDictionaryRepository)": {
           "Lines": {
@@ -10961,7 +10961,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetDictionariesRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetDictionariesRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetDictionariesRequest": {
         "System.Guid Inshapardaz.Domain.Ports.Dictionary.GetDictionariesRequest::get_UserId()": {
           "Lines": {
@@ -11172,7 +11172,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetDictionaryByIdRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetDictionaryByIdRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetDictionaryByIdRequest": {
         "Inshapardaz.Domain.Entities.Dictionary.Dictionary Inshapardaz.Domain.Ports.Dictionary.GetDictionaryByIdRequest::get_Result()": {
           "Lines": {
@@ -11300,7 +11300,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetMeaningByIdRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetMeaningByIdRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetMeaningByIdRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.GetMeaningByIdRequest::get_MeaningId()": {
           "Lines": {
@@ -11423,7 +11423,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetMeaningForContextRequet.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetMeaningForContextRequet.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetMeaningForContextRequest": {
         "System.String Inshapardaz.Domain.Ports.Dictionary.GetMeaningForContextRequest::get_Context()": {
           "Lines": {
@@ -11547,7 +11547,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetMeaningForWordRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetMeaningForWordRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetMeaningForWordRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.GetMeaningForWordRequest::get_WordId()": {
           "Lines": {
@@ -11643,7 +11643,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetRelationshipRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetRelationshipRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetRelationshipRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.GetRelationshipRequest::get_WordId()": {
           "Lines": {
@@ -11766,7 +11766,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetRelationshipsForWordRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetRelationshipsForWordRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetRelationshipsForWordRequest": {
         "System.Collections.Generic.IEnumerable`1<Inshapardaz.Domain.Entities.Dictionary.WordRelation> Inshapardaz.Domain.Ports.Dictionary.GetRelationshipsForWordRequest::get_Result()": {
           "Lines": {
@@ -11862,7 +11862,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetTranslationForWordLanguageRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetTranslationForWordLanguageRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetTranslationForWordLanguageRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.GetTranslationForWordLanguageRequest::get_WordId()": {
           "Lines": {
@@ -11965,7 +11965,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetTranslationForWordRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetTranslationForWordRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetTranslationForWordRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.GetTranslationForWordRequest::get_WordId()": {
           "Lines": {
@@ -12061,7 +12061,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetTranslationRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetTranslationRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetTranslationRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.GetTranslationRequest::get_WordId()": {
           "Lines": {
@@ -12164,7 +12164,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetWordByIdRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetWordByIdRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetWordByIdRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.GetWordByIdRequest::get_WordId()": {
           "Lines": {
@@ -12280,7 +12280,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetWordsForDictionaryRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetWordsForDictionaryRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetWordsForDictionaryRequest": {
         "System.Int32 Inshapardaz.Domain.Ports.Dictionary.GetWordsForDictionaryRequest::get_PageNumber()": {
           "Lines": {
@@ -12383,7 +12383,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetWordsStartingWithRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\GetWordsStartingWithRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.GetWordsStartingWithRequest": {
         "System.String Inshapardaz.Domain.Ports.Dictionary.GetWordsStartingWithRequest::get_StartingWith()": {
           "Lines": {
@@ -12515,7 +12515,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\PostDictionaryDownloadRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\PostDictionaryDownloadRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.PostDictionaryDownloadRequest": {
         "Inshapardaz.Domain.Entities.Dictionary.DictionaryDownload Inshapardaz.Domain.Ports.Dictionary.PostDictionaryDownloadRequest::get_Result()": {
           "Lines": {
@@ -12605,7 +12605,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\SearchWordRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\SearchWordRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.SearchWordRequest": {
         "System.String Inshapardaz.Domain.Ports.Dictionary.SearchWordRequest::get_Query()": {
           "Lines": {
@@ -12736,7 +12736,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\UpdateDictionaryRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\UpdateDictionaryRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.UpdateDictionaryRequest": {
         "Inshapardaz.Domain.Entities.Dictionary.Dictionary Inshapardaz.Domain.Ports.Dictionary.UpdateDictionaryRequest::get_Dictionary()": {
           "Lines": {
@@ -12889,7 +12889,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\UpdateMeaningRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\UpdateMeaningRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.UpdateMeaningRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.UpdateMeaningRequest::get_WordId()": {
           "Lines": {
@@ -13049,7 +13049,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\UpdateRelationshipRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\UpdateRelationshipRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.UpdateRelationshipRequest": {
         "System.Int64 Inshapardaz.Domain.Ports.Dictionary.UpdateRelationshipRequest::get_WordId()": {
           "Lines": {
@@ -13301,7 +13301,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\UpdateTranslationRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\UpdateTranslationRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.UpdateTranslationRequest": {
         "Inshapardaz.Domain.Entities.Dictionary.Translation Inshapardaz.Domain.Ports.Dictionary.UpdateTranslationRequest::get_Translation()": {
           "Lines": {
@@ -13461,7 +13461,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\UpdateWordRequest.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Ports\\Dictionary\\UpdateWordRequest.cs": {
       "Inshapardaz.Domain.Ports.Dictionary.UpdateWordRequest": {
         "Inshapardaz.Domain.Entities.Dictionary.Word Inshapardaz.Domain.Ports.Dictionary.UpdateWordRequest::get_Word()": {
           "Lines": {
@@ -13614,7 +13614,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Jobs\\CreateDictionaryIndexJob.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Jobs\\CreateDictionaryIndexJob.cs": {
       "Inshapardaz.Domain.Jobs.CreateDictionaryIndexJob": {
         "System.Void Inshapardaz.Domain.Jobs.CreateDictionaryIndexJob::CreateIndex(System.Int32)": {
           "Lines": {
@@ -13625,7 +13625,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\IndexingService\\DictionaryIndexWriter.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\IndexingService\\DictionaryIndexWriter.cs": {
       "Inshapardaz.Domain.IndexingService.DictionaryIndexWriter": {
         "System.Void Inshapardaz.Domain.IndexingService.DictionaryIndexWriter::AddWord(System.Int32,Inshapardaz.Domain.Entities.Dictionary.Word)": {
           "Lines": {
@@ -13819,7 +13819,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Helpers\\LinqHelpers.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Helpers\\LinqHelpers.cs": {
       "Inshapardaz.Domain.Helpers.LinqHelpers": {
         "System.Linq.IQueryable`1<T> Inshapardaz.Domain.Helpers.LinqHelpers::Paginate(System.Linq.IOrderedQueryable`1<T>,System.Int32,System.Int32)": {
           "Lines": {
@@ -13839,7 +13839,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Helpers\\StringExtentions.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Helpers\\StringExtentions.cs": {
       "Inshapardaz.Domain.Helpers.StringExtentions": {
         "System.String Inshapardaz.Domain.Helpers.StringExtentions::TrimSpecialCharacters(System.String)": {
           "Lines": {
@@ -14030,7 +14030,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\GrammarParser\\GrammarTypeIdentifier.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\GrammarParser\\GrammarTypeIdentifier.cs": {
       "Inshapardaz.Domain.GrammarParser.GrammarTypeIdentifier": {
         "System.Boolean Inshapardaz.Domain.GrammarParser.GrammarTypeIdentifier::IsIsmSift(Inshapardaz.Domain.Entities.Dictionary.Word)": {
           "Lines": {
@@ -14684,7 +14684,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\File.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\File.cs": {
       "Inshapardaz.Domain.Entities.File": {
         "System.Int32 Inshapardaz.Domain.Entities.File::get_Id()": {
           "Lines": {
@@ -14724,7 +14724,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\List.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\List.cs": {
       "Inshapardaz.Domain.Entities.List": {
         "System.Int32 Inshapardaz.Domain.Entities.List::get_Id()": {
           "Lines": {
@@ -14752,7 +14752,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\MimeTypes.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\MimeTypes.cs": {
       "Inshapardaz.Domain.Entities.MimeTypes": {
         "System.Void Inshapardaz.Domain.Entities.MimeTypes::.cctor()": {
           "Lines": {
@@ -14764,7 +14764,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Page.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Page.cs": {
       "Inshapardaz.Domain.Entities.Page`1": {
         "System.Int32 Inshapardaz.Domain.Entities.Page`1::get_PageNumber()": {
           "Lines": {
@@ -14792,7 +14792,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Article.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Article.cs": {
       "Inshapardaz.Domain.Entities.Library.Article": {
         "System.Int32 Inshapardaz.Domain.Entities.Library.Article::get_Id()": {
           "Lines": {
@@ -14838,7 +14838,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Author.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Author.cs": {
       "Inshapardaz.Domain.Entities.Library.Author": {
         "System.Int32 Inshapardaz.Domain.Entities.Library.Author::get_Id()": {
           "Lines": {
@@ -14866,7 +14866,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Book.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Book.cs": {
       "Inshapardaz.Domain.Entities.Library.Book": {
         "System.Int32 Inshapardaz.Domain.Entities.Library.Book::get_Id()": {
           "Lines": {
@@ -14984,7 +14984,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Category.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Category.cs": {
       "Inshapardaz.Domain.Entities.Library.Category": {
         "System.Int32 Inshapardaz.Domain.Entities.Library.Category::get_Id()": {
           "Lines": {
@@ -15006,7 +15006,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Chapter.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Chapter.cs": {
       "Inshapardaz.Domain.Entities.Library.Chapter": {
         "System.Int32 Inshapardaz.Domain.Entities.Library.Chapter::get_Id()": {
           "Lines": {
@@ -15040,7 +15040,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\ChapterContent.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\ChapterContent.cs": {
       "Inshapardaz.Domain.Entities.Library.ChapterContent": {
         "System.Int32 Inshapardaz.Domain.Entities.Library.ChapterContent::get_Id()": {
           "Lines": {
@@ -15074,7 +15074,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Issue.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Issue.cs": {
       "Inshapardaz.Domain.Entities.Library.Issue": {
         "System.Int32 Inshapardaz.Domain.Entities.Library.Issue::get_Id()": {
           "Lines": {
@@ -15120,7 +15120,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Periodical.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Periodical.cs": {
       "Inshapardaz.Domain.Entities.Library.Periodical": {
         "System.Int32 Inshapardaz.Domain.Entities.Library.Periodical::get_Id()": {
           "Lines": {
@@ -15154,7 +15154,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Series.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Library\\Series.cs": {
       "Inshapardaz.Domain.Entities.Library.Series": {
         "System.Int32 Inshapardaz.Domain.Entities.Library.Series::get_Id()": {
           "Lines": {
@@ -15188,7 +15188,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\Dictionary.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\Dictionary.cs": {
       "Inshapardaz.Domain.Entities.Dictionary.Dictionary": {
         "System.Int32 Inshapardaz.Domain.Entities.Dictionary.Dictionary::get_Id()": {
           "Lines": {
@@ -15234,7 +15234,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\DictionaryDownload.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\DictionaryDownload.cs": {
       "Inshapardaz.Domain.Entities.Dictionary.DictionaryDownload": {
         "System.Int32 Inshapardaz.Domain.Entities.Dictionary.DictionaryDownload::get_Id()": {
           "Lines": {
@@ -15262,7 +15262,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\Meaning.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\Meaning.cs": {
       "Inshapardaz.Domain.Entities.Dictionary.Meaning": {
         "System.Int64 Inshapardaz.Domain.Entities.Dictionary.Meaning::get_Id()": {
           "Lines": {
@@ -15302,7 +15302,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\Translation.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\Translation.cs": {
       "Inshapardaz.Domain.Entities.Dictionary.Translation": {
         "System.Int64 Inshapardaz.Domain.Entities.Dictionary.Translation::get_Id()": {
           "Lines": {
@@ -15342,7 +15342,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\Word.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\Word.cs": {
       "Inshapardaz.Domain.Entities.Dictionary.Word": {
         "System.Int64 Inshapardaz.Domain.Entities.Dictionary.Word::get_Id()": {
           "Lines": {
@@ -15430,7 +15430,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\WordRelation.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Domain\\Entities\\Dictionary\\WordRelation.cs": {
       "Inshapardaz.Domain.Entities.Dictionary.WordRelation": {
         "System.Int64 Inshapardaz.Domain.Entities.Dictionary.WordRelation::get_Id()": {
           "Lines": {
@@ -15472,7 +15472,7 @@
     }
   },
   "Inshapardaz.Functions.dll": {
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\ConfigurationSettings.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\ConfigurationSettings.cs": {
       "Inshapardaz.Functions.ConfigurationSettings": {
         "System.String Inshapardaz.Functions.ConfigurationSettings::get_Auth0Domain()": {
           "Lines": {
@@ -15534,7 +15534,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\FunctionBase.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\FunctionBase.cs": {
       "Inshapardaz.Functions.FunctionBase": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.FunctionBase::SelfLink(System.String,System.String,System.String,System.Collections.Generic.Dictionary`2<System.String,System.String>,System.String)": {
           "Lines": {
@@ -15879,7 +15879,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\GetEntry.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\GetEntry.cs": {
       "Inshapardaz.Functions.GetEntry": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.GetEntry::Link(System.String)": {
           "Lines": {
@@ -15983,7 +15983,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\GetLanguages.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\GetLanguages.cs": {
       "Inshapardaz.Functions.GetLanguages": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.GetLanguages::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger)": {
           "Lines": {
@@ -16030,7 +16030,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\MappingProfile.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\MappingProfile.cs": {
       "Inshapardaz.Functions.MappingProfile": {
         "Inshapardaz.Functions.Views.FileView Inshapardaz.Functions.MappingProfile::Map(Inshapardaz.Domain.Entities.File)": {
           "Lines": {
@@ -16281,7 +16281,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Startup.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Startup.cs": {
       "Inshapardaz.Functions.Startup": {
         "System.Void Inshapardaz.Functions.Startup::Configure(Microsoft.Azure.WebJobs.IWebJobsBuilder)": {
           "Lines": {
@@ -16349,7 +16349,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\ExpectedException .cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\ExpectedException .cs": {
       "Inshapardaz.Functions.Views.ExpectedException": {
         "System.Net.HttpStatusCode Inshapardaz.Functions.Views.ExpectedException::get_Code()": {
           "Lines": {
@@ -16384,7 +16384,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\FileView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\FileView.cs": {
       "Inshapardaz.Functions.Views.FileView": {
         "System.Int32 Inshapardaz.Functions.Views.FileView::get_Id()": {
           "Lines": {
@@ -16412,7 +16412,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\LinkView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\LinkView.cs": {
       "Inshapardaz.Functions.Views.LinkView": {
         "System.String Inshapardaz.Functions.Views.LinkView::get_Href()": {
           "Lines": {
@@ -16440,7 +16440,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\ListView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\ListView.cs": {
       "Inshapardaz.Functions.Views.ListView`1": {
         "System.Collections.Generic.IEnumerable`1<T> Inshapardaz.Functions.Views.ListView`1::get_Items()": {
           "Lines": {
@@ -16450,7 +16450,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\PageView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\PageView.cs": {
       "Inshapardaz.Functions.Views.PageView`1": {
         "System.Int32 Inshapardaz.Functions.Views.PageView`1::get_PageSize()": {
           "Lines": {
@@ -16523,7 +16523,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\RelTypes.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\RelTypes.cs": {
       "Inshapardaz.Functions.Views.RelTypes": {
         "System.Void Inshapardaz.Functions.Views.RelTypes::.cctor()": {
           "Lines": {
@@ -16541,7 +16541,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\ViewWithLinks.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\ViewWithLinks.cs": {
       "Inshapardaz.Functions.Views.ViewWithLinks": {
         "System.Collections.Generic.List`1<Inshapardaz.Functions.Views.LinkView> Inshapardaz.Functions.Views.ViewWithLinks::get_Links()": {
           "Lines": {
@@ -16551,7 +16551,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\AuthorView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\AuthorView.cs": {
       "Inshapardaz.Functions.Views.Library.AuthorView": {
         "System.Int32 Inshapardaz.Functions.Views.Library.AuthorView::get_Id()": {
           "Lines": {
@@ -16573,7 +16573,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\BookFileView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\BookFileView.cs": {
       "Inshapardaz.Functions.Views.Library.BookFileView": {
         "System.Int32 Inshapardaz.Functions.Views.Library.BookFileView::get_Id()": {
           "Lines": {
@@ -16595,7 +16595,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\BookView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\BookView.cs": {
       "Inshapardaz.Functions.Views.Library.BookView": {
         "System.Int32 Inshapardaz.Functions.Views.Library.BookView::get_Id()": {
           "Lines": {
@@ -16701,7 +16701,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\CategoryView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\CategoryView.cs": {
       "Inshapardaz.Functions.Views.Library.CategoryView": {
         "System.Int32 Inshapardaz.Functions.Views.Library.CategoryView::get_Id()": {
           "Lines": {
@@ -16723,7 +16723,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\ChapterContentView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\ChapterContentView.cs": {
       "Inshapardaz.Functions.Views.Library.ChapterContentView": {
         "System.Int32 Inshapardaz.Functions.Views.Library.ChapterContentView::get_Id()": {
           "Lines": {
@@ -16745,7 +16745,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\ChapterView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\ChapterView.cs": {
       "Inshapardaz.Functions.Views.Library.ChapterView": {
         "System.Int32 Inshapardaz.Functions.Views.Library.ChapterView::get_Id()": {
           "Lines": {
@@ -16773,7 +16773,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\SeriesView.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Views\\Library\\SeriesView.cs": {
       "Inshapardaz.Functions.Views.Library.SeriesView": {
         "System.Int32 Inshapardaz.Functions.Views.Library.SeriesView::get_Id()": {
           "Lines": {
@@ -16801,7 +16801,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringAttribute.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringAttribute.cs": {
       "Inshapardaz.Functions.Pipeline.QueryStringAttribute": {
         "System.String Inshapardaz.Functions.Pipeline.QueryStringAttribute::get_Name()": {
           "Lines": {
@@ -16827,7 +16827,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringBinding.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringBinding.cs": {
       "Inshapardaz.Functions.Pipeline.QueryStringBinding": {
         "System.Threading.Tasks.Task`1<Microsoft.Azure.WebJobs.Host.Bindings.IValueProvider> Inshapardaz.Functions.Pipeline.QueryStringBinding::BindAsync(Microsoft.Azure.WebJobs.Host.Bindings.BindingContext)": {
           "Lines": {
@@ -16858,7 +16858,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringBindingProvider.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringBindingProvider.cs": {
       "Inshapardaz.Functions.Pipeline.QueryStringBindingProvider": {
         "System.Threading.Tasks.Task`1<Microsoft.Azure.WebJobs.Host.Bindings.IBinding> Inshapardaz.Functions.Pipeline.QueryStringBindingProvider::TryCreateAsync(Microsoft.Azure.WebJobs.Host.Bindings.BindingProviderContext)": {
           "Lines": {
@@ -16871,7 +16871,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringExtension.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringExtension.cs": {
       "Inshapardaz.Functions.Pipeline.QueryStringExtension": {
         "Microsoft.Azure.WebJobs.IWebJobsBuilder Inshapardaz.Functions.Pipeline.QueryStringExtension::AddQueryStringBinding(Microsoft.Azure.WebJobs.IWebJobsBuilder)": {
           "Lines": {
@@ -16904,7 +16904,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringExtensionProvider.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringExtensionProvider.cs": {
       "Inshapardaz.Functions.Pipeline.QueryStringExtensionProvider": {
         "System.Void Inshapardaz.Functions.Pipeline.QueryStringExtensionProvider::Initialize(Microsoft.Azure.WebJobs.Host.Config.ExtensionConfigContext)": {
           "Lines": {
@@ -16917,7 +16917,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringValueProvider.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Pipeline\\QueryStringValueProvider.cs": {
       "Inshapardaz.Functions.Pipeline.QueryStringValueProvider": {
         "System.Type Inshapardaz.Functions.Pipeline.QueryStringValueProvider::get_Type()": {
           "Lines": {
@@ -17009,7 +17009,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Series\\AddSeries.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Series\\AddSeries.cs": {
       "Inshapardaz.Functions.Library.Series.AddSeries": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Series.AddSeries::Link(System.String)": {
           "Lines": {
@@ -17129,7 +17129,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Series\\DeleteSeries.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Series\\DeleteSeries.cs": {
       "Inshapardaz.Functions.Library.Series.DeleteSeries": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Series.DeleteSeries::Link(System.Int32,System.String)": {
           "Lines": {
@@ -17214,7 +17214,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Series\\GetSeries.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Series\\GetSeries.cs": {
       "Inshapardaz.Functions.Library.Series.GetSeries": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Series.GetSeries::Link(System.String)": {
           "Lines": {
@@ -17261,7 +17261,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Series\\GetSeriesById.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Series\\GetSeriesById.cs": {
       "Inshapardaz.Functions.Library.Series.GetSeriesById": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Series.GetSeriesById::Link(System.Int32,System.String)": {
           "Lines": {
@@ -17327,7 +17327,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Series\\UpdateSeries.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Series\\UpdateSeries.cs": {
       "Inshapardaz.Functions.Library.Series.UpdateSeries": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Series.UpdateSeries::Link(System.Int32,System.String)": {
           "Lines": {
@@ -17468,7 +17468,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\AddPeriodical.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\AddPeriodical.cs": {
       "Inshapardaz.Functions.Library.Periodicals.AddPeriodical": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.AddPeriodical::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger)": {
           "Lines": {
@@ -17480,7 +17480,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\DeletePeriodical.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\DeletePeriodical.cs": {
       "Inshapardaz.Functions.Library.Periodicals.DeletePeriodical": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.DeletePeriodical::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32)": {
           "Lines": {
@@ -17492,7 +17492,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\GetPeriodicalById.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\GetPeriodicalById.cs": {
       "Inshapardaz.Functions.Library.Periodicals.GetPeriodicalById": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.GetPeriodicalById::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32)": {
           "Lines": {
@@ -17504,7 +17504,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\GetPeriodicals.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\GetPeriodicals.cs": {
       "Inshapardaz.Functions.Library.Periodicals.GetPeriodicals": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.GetPeriodicals::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger)": {
           "Lines": {
@@ -17530,7 +17530,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\UpdatePeriodical.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\UpdatePeriodical.cs": {
       "Inshapardaz.Functions.Library.Periodicals.UpdatePeriodical": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.UpdatePeriodical::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32)": {
           "Lines": {
@@ -17542,7 +17542,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\UpdatePeriodicalImage.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\UpdatePeriodicalImage.cs": {
       "Inshapardaz.Functions.Library.Periodicals.UpdatePeriodicalImage": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.UpdatePeriodicalImage::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32)": {
           "Lines": {
@@ -17554,7 +17554,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\AddIssue.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\AddIssue.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.AddIssue": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.AddIssue::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32)": {
           "Lines": {
@@ -17566,7 +17566,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\DeleteIssue.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\DeleteIssue.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.DeleteIssue": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.DeleteIssue::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32)": {
           "Lines": {
@@ -17578,7 +17578,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\GetIssueById.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\GetIssueById.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.GetIssueById": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.GetIssueById::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32)": {
           "Lines": {
@@ -17590,7 +17590,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\GetIssueImage.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\GetIssueImage.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.GetIssueImage": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.GetIssueImage::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32)": {
           "Lines": {
@@ -17602,7 +17602,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\GetIssues.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\GetIssues.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.GetIssues": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.GetIssues::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32)": {
           "Lines": {
@@ -17614,7 +17614,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\UpdateIssue.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\UpdateIssue.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.UpdateIssue": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.UpdateIssue::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32)": {
           "Lines": {
@@ -17626,7 +17626,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\UpdateIssueImage.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\UpdateIssueImage.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.UpdateIssueImage": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.UpdateIssueImage::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32)": {
           "Lines": {
@@ -17638,7 +17638,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\AddArticle.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\AddArticle.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.Article.AddArticle": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.Article.AddArticle::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32)": {
           "Lines": {
@@ -17650,7 +17650,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\DeleteArticle.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\DeleteArticle.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.Article.DeleteArticle": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.Article.DeleteArticle::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32,System.Int32)": {
           "Lines": {
@@ -17662,7 +17662,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\GetArticleById.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\GetArticleById.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.Article.GetArticleById": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.Article.GetArticleById::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32,System.Int32)": {
           "Lines": {
@@ -17674,7 +17674,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\GetArticlesByIssue.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\GetArticlesByIssue.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.Article.GetArticlesByIssue": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.Article.GetArticlesByIssue::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32)": {
           "Lines": {
@@ -17686,7 +17686,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\UpdateArticle.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\UpdateArticle.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.Article.UpdateArticle": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.Article.UpdateArticle::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32,System.Int32)": {
           "Lines": {
@@ -17698,7 +17698,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\Contents\\AddArticleContents.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\Contents\\AddArticleContents.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.Article.Contents.AddArticleContents": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.Article.Contents.AddArticleContents::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32,System.Int32)": {
           "Lines": {
@@ -17710,7 +17710,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\Contents\\GetArticleContents.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\Contents\\GetArticleContents.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.Article.Contents.GetArticleContents": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.Article.Contents.GetArticleContents::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32,System.Int32)": {
           "Lines": {
@@ -17722,7 +17722,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\Contents\\UpdateArticleContents.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Periodicals\\Issues\\Article\\Contents\\UpdateArticleContents.cs": {
       "Inshapardaz.Functions.Library.Periodicals.Issues.Article.Contents.UpdateArticleContents": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Periodicals.Issues.Article.Contents.UpdateArticleContents::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger,System.Int32,System.Int32,System.Int32)": {
           "Lines": {
@@ -17734,7 +17734,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Files\\AddFile.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Files\\AddFile.cs": {
       "Inshapardaz.Functions.Library.Files.AddFile": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Files.AddFile::Link(System.String)": {
           "Lines": {
@@ -17966,7 +17966,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Files\\DeleteFile.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Files\\DeleteFile.cs": {
       "Inshapardaz.Functions.Library.Files.DeleteFile": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Files.DeleteFile::Link(System.Int32,System.String)": {
           "Lines": {
@@ -18051,7 +18051,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Files\\GetFileById.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Files\\GetFileById.cs": {
       "Inshapardaz.Functions.Library.Files.GetFileById": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Files.GetFileById::Link(System.Int32,System.String)": {
           "Lines": {
@@ -18117,7 +18117,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Categories\\AddCategory.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Categories\\AddCategory.cs": {
       "Inshapardaz.Functions.Library.Categories.AddCategory": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Categories.AddCategory::Link(System.String)": {
           "Lines": {
@@ -18237,7 +18237,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Categories\\DeleteCategory.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Categories\\DeleteCategory.cs": {
       "Inshapardaz.Functions.Library.Categories.DeleteCategory": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Categories.DeleteCategory::Link(System.Int32,System.String)": {
           "Lines": {
@@ -18322,7 +18322,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Categories\\GetCategories.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Categories\\GetCategories.cs": {
       "Inshapardaz.Functions.Library.Categories.GetCategories": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Categories.GetCategories::Link(System.String)": {
           "Lines": {
@@ -18369,7 +18369,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Categories\\GetCategoriesById.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Categories\\GetCategoriesById.cs": {
       "Inshapardaz.Functions.Library.Categories.GetCategoryById": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Categories.GetCategoryById::Link(System.Int32,System.String)": {
           "Lines": {
@@ -18435,7 +18435,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Categories\\UpdateCategory.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Categories\\UpdateCategory.cs": {
       "Inshapardaz.Functions.Library.Categories.UpdateCategory": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Categories.UpdateCategory::Link(System.Int32,System.String)": {
           "Lines": {
@@ -18576,7 +18576,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\AddBook.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\AddBook.cs": {
       "Inshapardaz.Functions.Library.Books.AddBook": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.AddBook::Link(System.String)": {
           "Lines": {
@@ -18696,7 +18696,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\AddBookToFavorite.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\AddBookToFavorite.cs": {
       "Inshapardaz.Functions.Library.Books.AddBookToFavorite": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.AddBookToFavorite::Link(System.Int32,System.String)": {
           "Lines": {
@@ -18781,7 +18781,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\DeleteBook.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\DeleteBook.cs": {
       "Inshapardaz.Functions.Library.Books.DeleteBook": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.DeleteBook::Link(System.Int32,System.String)": {
           "Lines": {
@@ -18866,7 +18866,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\DeleteBookFromFavorite.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\DeleteBookFromFavorite.cs": {
       "Inshapardaz.Functions.Library.Books.DeleteBookFromFavorite": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.DeleteBookFromFavorite::Link(System.Int32,System.String)": {
           "Lines": {
@@ -18951,7 +18951,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetBookById.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetBookById.cs": {
       "Inshapardaz.Functions.Library.Books.GetBookById": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.GetBookById::Link(System.Int32,System.String)": {
           "Lines": {
@@ -19017,7 +19017,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetBooks.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetBooks.cs": {
       "Inshapardaz.Functions.Library.Books.GetBooks": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.GetBooks::Link(System.String)": {
           "Lines": {
@@ -19082,7 +19082,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetBooksByAuthor.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetBooksByAuthor.cs": {
       "Inshapardaz.Functions.Library.Books.GetBooksByAuthor": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.GetBooksByAuthor::Link(System.Int32,System.String)": {
           "Lines": {
@@ -19147,7 +19147,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetBooksByCategory.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetBooksByCategory.cs": {
       "Inshapardaz.Functions.Library.Books.GetBooksByCategory": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.GetBooksByCategory::Self(System.Int32,System.String)": {
           "Lines": {
@@ -19212,7 +19212,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetBooksBySeries.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetBooksBySeries.cs": {
       "Inshapardaz.Functions.Library.Books.GetBooksBySeries": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.GetBooksBySeries::Link(System.Int32,System.String)": {
           "Lines": {
@@ -19277,7 +19277,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetFavoriteBooks.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetFavoriteBooks.cs": {
       "Inshapardaz.Functions.Library.Books.GetFavoriteBooks": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.GetFavoriteBooks::Link(System.String)": {
           "Lines": {
@@ -19361,7 +19361,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetLatestBooks.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetLatestBooks.cs": {
       "Inshapardaz.Functions.Library.Books.GetLatestBooks": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.GetLatestBooks::Link(System.String)": {
           "Lines": {
@@ -19409,7 +19409,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetRecentReadBooks.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\GetRecentReadBooks.cs": {
       "Inshapardaz.Functions.Library.Books.GetRecentReadBooks": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.GetRecentReadBooks::Link(System.String)": {
           "Lines": {
@@ -19492,7 +19492,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\UpdateBook.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\UpdateBook.cs": {
       "Inshapardaz.Functions.Library.Books.UpdateBook": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.UpdateBook::Link(System.Int32,System.String)": {
           "Lines": {
@@ -19633,7 +19633,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\UpdateBookImage.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\UpdateBookImage.cs": {
       "Inshapardaz.Functions.Library.Books.UpdateBookImage": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.UpdateBookImage::Link(System.Int32,System.String)": {
           "Lines": {
@@ -19896,7 +19896,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Files\\AddBookFile.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Files\\AddBookFile.cs": {
       "Inshapardaz.Functions.Library.Books.Files.AddBookFile": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.Files.AddBookFile::Link(System.Int32,System.String)": {
           "Lines": {
@@ -20141,7 +20141,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Files\\DeleteBookFile.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Files\\DeleteBookFile.cs": {
       "Inshapardaz.Functions.Library.Books.Files.DeleteBookFile": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Books.Files.DeleteBookFile::Run(Microsoft.AspNetCore.Http.HttpRequest,System.Int32,System.Int32,System.Security.Claims.ClaimsPrincipal,System.Threading.CancellationToken)": {
           "Lines": {
@@ -20161,7 +20161,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Files\\GetBookFiles.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Files\\GetBookFiles.cs": {
       "Inshapardaz.Functions.Library.Books.Files.GetBookFiles": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Books.Files.GetBookFiles::Run(Microsoft.AspNetCore.Http.HttpRequest,System.Int32,System.Security.Claims.ClaimsPrincipal,System.Threading.CancellationToken)": {
           "Lines": {
@@ -20187,7 +20187,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Files\\UpdateBookFile.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Files\\UpdateBookFile.cs": {
       "Inshapardaz.Functions.Library.Books.Files.UpdateBookFile": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Library.Books.Files.UpdateBookFile::Run(Microsoft.AspNetCore.Http.HttpRequest,System.Int32,System.Int32,System.Security.Claims.ClaimsPrincipal,System.Threading.CancellationToken)": {
           "Lines": {
@@ -20207,7 +20207,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\AddChapter.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\AddChapter.cs": {
       "Inshapardaz.Functions.Library.Books.Chapters.AddChapter": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.Chapters.AddChapter::Link(System.Int32,System.String)": {
           "Lines": {
@@ -20346,7 +20346,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\DeleteChapter.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\DeleteChapter.cs": {
       "Inshapardaz.Functions.Library.Books.Chapters.DeleteChapter": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.Chapters.DeleteChapter::Link(System.Int32,System.Int32,System.String)": {
           "Lines": {
@@ -20431,7 +20431,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\GetChapterById.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\GetChapterById.cs": {
       "Inshapardaz.Functions.Library.Books.Chapters.GetChapterById": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.Chapters.GetChapterById::Link(System.Int32,System.Int32,System.String)": {
           "Lines": {
@@ -20497,7 +20497,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\GetChaptersByBook.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\GetChaptersByBook.cs": {
       "Inshapardaz.Functions.Library.Books.Chapters.GetChaptersByBook": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.Chapters.GetChaptersByBook::Link(System.Int32,System.String)": {
           "Lines": {
@@ -20563,7 +20563,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\UpdateChapter.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\UpdateChapter.cs": {
       "Inshapardaz.Functions.Library.Books.Chapters.UpdateChapter": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.Chapters.UpdateChapter::Link(System.Int32,System.Int32,System.String)": {
           "Lines": {
@@ -20702,7 +20702,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\Contents\\AddChapterContents.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\Contents\\AddChapterContents.cs": {
       "Inshapardaz.Functions.Library.Books.Chapters.Contents.AddChapterContents": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.Chapters.Contents.AddChapterContents::Link(System.Int32,System.Int32,System.String)": {
           "Lines": {
@@ -20841,7 +20841,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\Contents\\DeleteChapterContents.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\Contents\\DeleteChapterContents.cs": {
       "Inshapardaz.Functions.Library.Books.Chapters.Contents.DeleteChapterContents": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.Chapters.Contents.DeleteChapterContents::Link(System.Int32,System.Int32,System.Int32,System.String,System.String)": {
           "Lines": {
@@ -20926,7 +20926,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\Contents\\GetChapterContents.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\Contents\\GetChapterContents.cs": {
       "Inshapardaz.Functions.Library.Books.Chapters.Contents.GetChapterContents": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.Chapters.Contents.GetChapterContents::Link(System.Int32,System.Int32,System.String,System.String)": {
           "Lines": {
@@ -20996,7 +20996,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\Contents\\UpdateChapterContents.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Books\\Chapters\\Contents\\UpdateChapterContents.cs": {
       "Inshapardaz.Functions.Library.Books.Chapters.Contents.UpdateChapterContents": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Books.Chapters.Contents.UpdateChapterContents::Link(System.Int32,System.Int32,System.String,System.String)": {
           "Lines": {
@@ -21154,7 +21154,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\AddAuthor.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\AddAuthor.cs": {
       "Inshapardaz.Functions.Library.Authors.AddAuthor": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Authors.AddAuthor::Link(System.String)": {
           "Lines": {
@@ -21274,7 +21274,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\DeleteAuthor.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\DeleteAuthor.cs": {
       "Inshapardaz.Functions.Library.Authors.DeleteAuthor": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Authors.DeleteAuthor::Link(System.Int32,System.String)": {
           "Lines": {
@@ -21359,7 +21359,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\GetAuthorById.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\GetAuthorById.cs": {
       "Inshapardaz.Functions.Library.Authors.GetAuthorById": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Authors.GetAuthorById::Link(System.Int32,System.String)": {
           "Lines": {
@@ -21425,7 +21425,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\GetAuthors.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\GetAuthors.cs": {
       "Inshapardaz.Functions.Library.Authors.GetAuthors": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Authors.GetAuthors::Link(System.String)": {
           "Lines": {
@@ -21490,7 +21490,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\UpdateAuthor.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\UpdateAuthor.cs": {
       "Inshapardaz.Functions.Library.Authors.UpdateAuthor": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Authors.UpdateAuthor::Link(System.Int32,System.String)": {
           "Lines": {
@@ -21630,7 +21630,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\UpdateAuthorImage.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Library\\Authors\\UpdateAuthorImage.cs": {
       "Inshapardaz.Functions.Library.Authors.UpdateAuthorImage": {
         "Inshapardaz.Functions.Views.LinkView Inshapardaz.Functions.Library.Authors.UpdateAuthorImage::Link(System.Int32,System.String)": {
           "Lines": {
@@ -21893,7 +21893,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Extensions\\EnumExtensions.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Extensions\\EnumExtensions.cs": {
       "Inshapardaz.Functions.Extensions.EnumExtensions": {
         "System.String Inshapardaz.Functions.Extensions.EnumExtensions::GetEnumDescription(System.String)": {
           "Lines": {
@@ -22053,7 +22053,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Extensions\\Extentions.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Extensions\\Extentions.cs": {
       "Inshapardaz.Functions.Extensions.Extentions": {
         "System.String Inshapardaz.Functions.Extensions.Extentions::Self(System.Collections.Generic.IEnumerable`1<Inshapardaz.Functions.Views.LinkView>)": {
           "Lines": {
@@ -22098,7 +22098,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Dictionary\\GetAttributes.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Dictionary\\GetAttributes.cs": {
       "Inshapardaz.Functions.Dictionary.GetAttributes": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Dictionary.GetAttributes::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger)": {
           "Lines": {
@@ -22145,7 +22145,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Dictionary\\GetDictionaries.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Dictionary\\GetDictionaries.cs": {
       "Inshapardaz.Functions.Dictionary.GetDictionaries": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Dictionary.GetDictionaries::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger)": {
           "Lines": {
@@ -22171,7 +22171,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Dictionary\\GetRelationTypes.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Dictionary\\GetRelationTypes.cs": {
       "Inshapardaz.Functions.Dictionary.GetRelationTypes": {
         "Microsoft.AspNetCore.Mvc.IActionResult Inshapardaz.Functions.Dictionary.GetRelationTypes::Run(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.Extensions.Logging.ILogger)": {
           "Lines": {
@@ -22218,7 +22218,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\AuthorsRenderer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\AuthorsRenderer.cs": {
       "Inshapardaz.Functions.Converters.AuthorsRenderer": {
         "Inshapardaz.Functions.Views.PageView`1<Inshapardaz.Functions.Views.Library.AuthorView> Inshapardaz.Functions.Converters.AuthorsRenderer::Render(Inshapardaz.Functions.Converters.PageRendererArgs`1<Inshapardaz.Domain.Entities.Library.Author>,System.Security.Claims.ClaimsPrincipal)": {
           "Lines": {
@@ -22406,7 +22406,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\BooksRenderer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\BooksRenderer.cs": {
       "Inshapardaz.Functions.Converters.BooksRenderer": {
         "Inshapardaz.Functions.Views.PageView`1<Inshapardaz.Functions.Views.Library.BookView> Inshapardaz.Functions.Converters.BooksRenderer::Render(Inshapardaz.Functions.Converters.PageRendererArgs`1<Inshapardaz.Domain.Entities.Library.Book>,System.Security.Claims.ClaimsPrincipal)": {
           "Lines": {
@@ -22841,7 +22841,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\CategoryRenderer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\CategoryRenderer.cs": {
       "Inshapardaz.Functions.Converters.CategoryRenderer": {
         "Inshapardaz.Functions.Views.ListView`1<Inshapardaz.Functions.Views.Library.CategoryView> Inshapardaz.Functions.Converters.CategoryRenderer::Render(System.Collections.Generic.IEnumerable`1<Inshapardaz.Domain.Entities.Library.Category>,System.Security.Claims.ClaimsPrincipal)": {
           "Lines": {
@@ -22910,7 +22910,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\ChapterConverter.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\ChapterConverter.cs": {
       "Inshapardaz.Functions.Converters.ChapterConverter": {
         "Inshapardaz.Functions.Views.ListView`1<Inshapardaz.Functions.Views.Library.ChapterView> Inshapardaz.Functions.Converters.ChapterConverter::Render(System.Collections.Generic.IEnumerable`1<Inshapardaz.Domain.Entities.Library.Chapter>,System.Int32,System.Security.Claims.ClaimsPrincipal)": {
           "Lines": {
@@ -23119,7 +23119,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\EntryRenderer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\EntryRenderer.cs": {
       "Inshapardaz.Functions.Converters.EntryRenderer": {
         "Inshapardaz.Functions.Views.EntryView Inshapardaz.Functions.Converters.EntryRenderer::Render(System.Security.Claims.ClaimsPrincipal)": {
           "Lines": {
@@ -23187,7 +23187,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\EnumRenderer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\EnumRenderer.cs": {
       "Inshapardaz.Functions.Converters.EnumRenderer": {
         "System.String Inshapardaz.Functions.Converters.EnumRenderer::Render(System.String)": {
           "Lines": {
@@ -23215,7 +23215,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\FileConverter.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\FileConverter.cs": {
       "Inshapardaz.Functions.Converters.FileConverter": {
         "Inshapardaz.Functions.Views.FileView Inshapardaz.Functions.Converters.FileConverter::Render(Inshapardaz.Domain.Entities.File,System.Security.Claims.ClaimsPrincipal)": {
           "Lines": {
@@ -23254,7 +23254,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\PageRendererArgs.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\PageRendererArgs.cs": {
       "Inshapardaz.Functions.Converters.PageRendererArgs`1": {
         "Inshapardaz.Domain.Entities.Page`1<T> Inshapardaz.Functions.Converters.PageRendererArgs`1::get_Page()": {
           "Lines": {
@@ -23326,7 +23326,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\SeriesRenderer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Converters\\SeriesRenderer.cs": {
       "Inshapardaz.Functions.Converters.SeriesRenderer": {
         "Inshapardaz.Functions.Views.ListView`1<Inshapardaz.Functions.Views.Library.SeriesView> Inshapardaz.Functions.Converters.SeriesRenderer::Render(System.Collections.Generic.IEnumerable`1<Inshapardaz.Domain.Entities.Library.Series>,System.Security.Claims.ClaimsPrincipal)": {
           "Lines": {
@@ -23395,7 +23395,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Configuration\\BrighterConfiguration.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Configuration\\BrighterConfiguration.cs": {
       "Inshapardaz.Functions.Configuration.BrighterConfiguration": {
         "Microsoft.Extensions.DependencyInjection.IServiceCollection Inshapardaz.Functions.Configuration.BrighterConfiguration::AddBrighterCommand(Microsoft.Extensions.DependencyInjection.IServiceCollection)": {
           "Lines": {
@@ -23410,7 +23410,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Configuration\\DatabaseConfiguration.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Configuration\\DatabaseConfiguration.cs": {
       "Inshapardaz.Functions.Configuration.DatabaseConfiguration": {
         "Microsoft.Extensions.DependencyInjection.IServiceCollection Inshapardaz.Functions.Configuration.DatabaseConfiguration::AddDatabase(Microsoft.Extensions.DependencyInjection.IServiceCollection)": {
           "Lines": {
@@ -23511,7 +23511,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Commands\\GetEntryCommand.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Commands\\GetEntryCommand.cs": {
       "Inshapardaz.Functions.Commands.GetEntryRequest": {
         "System.Guid Inshapardaz.Functions.Commands.GetEntryRequest::get_Id()": {
           "Lines": {
@@ -23570,7 +23570,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AccessTokenBinding.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AccessTokenBinding.cs": {
       "Inshapardaz.Functions.Authentication.AccessTokenBinding": {
         "System.Threading.Tasks.Task`1<Microsoft.Azure.WebJobs.Host.Bindings.IValueProvider> Inshapardaz.Functions.Authentication.AccessTokenBinding::BindAsync(Microsoft.Azure.WebJobs.Host.Bindings.BindingContext)": {
           "Lines": {
@@ -23603,7 +23603,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AccessTokenBindingProvider.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AccessTokenBindingProvider.cs": {
       "Inshapardaz.Functions.Authentication.AccessTokenBindingProvider": {
         "System.Threading.Tasks.Task`1<Microsoft.Azure.WebJobs.Host.Bindings.IBinding> Inshapardaz.Functions.Authentication.AccessTokenBindingProvider::TryCreateAsync(Microsoft.Azure.WebJobs.Host.Bindings.BindingProviderContext)": {
           "Lines": {
@@ -23616,7 +23616,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AccessTokenExtensionProvider.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AccessTokenExtensionProvider.cs": {
       "Inshapardaz.Functions.Authentication.AccessTokenExtensionProvider": {
         "System.Void Inshapardaz.Functions.Authentication.AccessTokenExtensionProvider::Initialize(Microsoft.Azure.WebJobs.Host.Config.ExtensionConfigContext)": {
           "Lines": {
@@ -23629,7 +23629,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AccessTokenExtensions.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AccessTokenExtensions.cs": {
       "Inshapardaz.Functions.Authentication.AccessTokenExtensions": {
         "Microsoft.Azure.WebJobs.IWebJobsBuilder Inshapardaz.Functions.Authentication.AccessTokenExtensions::AddAccessTokenBinding(Microsoft.Azure.WebJobs.IWebJobsBuilder)": {
           "Lines": {
@@ -23662,7 +23662,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AccessTokenValueProvider.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AccessTokenValueProvider.cs": {
       "Inshapardaz.Functions.Authentication.AccessTokenValueProvider": {
         "System.Type Inshapardaz.Functions.Authentication.AccessTokenValueProvider::get_Type()": {
           "Lines": {
@@ -23763,7 +23763,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AuthenticationExpectedException .cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AuthenticationExpectedException .cs": {
       "Inshapardaz.Functions.Authentication.AuthenticationExpectedException": {
         "System.Void Inshapardaz.Functions.Authentication.AuthenticationExpectedException::ApplyResponseDetails(System.Net.Http.HttpResponseMessage)": {
           "Lines": {
@@ -23784,7 +23784,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AuthenticationHelper.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Functions\\Authentication\\AuthenticationHelper.cs": {
       "Inshapardaz.Functions.Authentication.AuthenticationHelper": {
         "System.Boolean Inshapardaz.Functions.Authentication.AuthenticationHelper::IsAuthenticated(System.Security.Claims.ClaimsPrincipal)": {
           "Lines": {
@@ -24111,7 +24111,7 @@
     }
   },
   "Inshapardaz.Ports.Database.dll": {
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\DatabaseContext.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\DatabaseContext.cs": {
       "Inshapardaz.Ports.Database.DatabaseContext": {
         "Microsoft.EntityFrameworkCore.DbSet`1<Inshapardaz.Ports.Database.Entities.Dictionary.Dictionary> Inshapardaz.Ports.Database.DatabaseContext::get_Dictionary()": {
           "Lines": {
@@ -24783,7 +24783,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\DatabaseMappingProfile.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\DatabaseMappingProfile.cs": {
       "Inshapardaz.Ports.Database.DatabaseMappingProfile": {
         "Inshapardaz.Ports.Database.Entities.Dictionary.Dictionary Inshapardaz.Ports.Database.DatabaseMappingProfile::Map(Inshapardaz.Domain.Entities.Dictionary.Dictionary)": {
           "Lines": {
@@ -26258,7 +26258,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\DatabaseModule.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\DatabaseModule.cs": {
       "Inshapardaz.Ports.Database.DatabaseModule": {
         "System.Void Inshapardaz.Ports.Database.DatabaseModule::MigrateToDatabase(Microsoft.Extensions.Configuration.IConfiguration,Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -26292,7 +26292,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\FileRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\FileRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.FileRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.FileRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -26530,7 +26530,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\AuthorRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\AuthorRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Library.AuthorRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Library.AuthorRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -26864,7 +26864,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\BookRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\BookRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Library.BookRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Library.BookRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -28264,7 +28264,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\CategoryRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\CategoryRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Library.CategoryRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Library.CategoryRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -28528,7 +28528,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\ChapterRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\ChapterRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Library.ChapterRepository": {
         "System.String Inshapardaz.Ports.Database.Repositories.Library.ChapterRepository::GenerateChapterContentUrl(System.Int32,System.Int32,System.String)": {
           "Lines": {
@@ -29803,7 +29803,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\FavoriteRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\FavoriteRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Library.FavoriteRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Library.FavoriteRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -30122,7 +30122,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\IssueRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\IssueRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Library.IssueRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Library.IssueRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -30526,7 +30526,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\PeriodicalRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\PeriodicalRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Library.PeriodicalRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Library.PeriodicalRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -30924,7 +30924,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\SeriesRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Library\\SeriesRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Library.SeriesRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Library.SeriesRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -31189,7 +31189,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Dictionary\\DictionaryRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Dictionary\\DictionaryRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Dictionary.DictionaryRepository": {
         "System.Threading.Tasks.Task`1<Inshapardaz.Domain.Entities.Dictionary.DictionaryDownload> Inshapardaz.Ports.Database.Repositories.Dictionary.DictionaryRepository::AddDictionaryDownload(System.Int32,System.String,System.Threading.CancellationToken)": {
           "Lines": {
@@ -31596,7 +31596,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Dictionary\\MeaningRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Dictionary\\MeaningRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Dictionary.MeaningRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Dictionary.MeaningRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -31953,7 +31953,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Dictionary\\RelationshipRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Dictionary\\RelationshipRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Dictionary.RelationshipRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Dictionary.RelationshipRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -32258,7 +32258,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Dictionary\\TranslationRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Dictionary\\TranslationRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Dictionary.TranslationRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Dictionary.TranslationRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -32621,7 +32621,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Dictionary\\WordRepository.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Repositories\\Dictionary\\WordRepository.cs": {
       "Inshapardaz.Ports.Database.Repositories.Dictionary.WordRepository": {
         "System.Void Inshapardaz.Ports.Database.Repositories.Dictionary.WordRepository::.ctor(Inshapardaz.Ports.Database.IDatabaseContext)": {
           "Lines": {
@@ -33226,7 +33226,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180624174022_AddLibrary.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180624174022_AddLibrary.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddLibrary": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddLibrary::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -34108,7 +34108,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180624174022_AddLibrary.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180624174022_AddLibrary.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddLibrary": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddLibrary::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -34828,7 +34828,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180715061700_fixed-genreid-spelling.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180715061700_fixed-genreid-spelling.cs": {
       "Inshapardaz.Ports.Database.Migrations.fixedgenreidspelling": {
         "System.Void Inshapardaz.Ports.Database.Migrations.fixedgenreidspelling::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -34955,7 +34955,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180715061700_fixed-genreid-spelling.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180715061700_fixed-genreid-spelling.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.fixedgenreidspelling": {
         "System.Void Inshapardaz.Ports.Database.Migrations.fixedgenreidspelling::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -35675,7 +35675,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180718211407_AddedImages.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180718211407_AddedImages.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedImages": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedImages::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -35790,7 +35790,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180718211407_AddedImages.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180718211407_AddedImages.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedImages": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedImages::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -36479,7 +36479,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180724144957_AddedContent.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180724144957_AddedContent.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedContent": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedContent::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -36527,7 +36527,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180724144957_AddedContent.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180724144957_AddedContent.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedContent": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedContent::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -37216,7 +37216,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180724145132_AddedContent2.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180724145132_AddedContent2.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedContent2": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedContent2::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -37234,7 +37234,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180724145132_AddedContent2.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180724145132_AddedContent2.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedContent2": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedContent2::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -37923,7 +37923,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180812080533_RenamedGenre.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180812080533_RenamedGenre.cs": {
       "Inshapardaz.Ports.Database.Migrations.RenamedGenre": {
         "System.Void Inshapardaz.Ports.Database.Migrations.RenamedGenre::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -38171,7 +38171,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180812080533_RenamedGenre.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180812080533_RenamedGenre.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.RenamedGenre": {
         "System.Void Inshapardaz.Ports.Database.Migrations.RenamedGenre::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -38860,7 +38860,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180909154702_AddedPages.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180909154702_AddedPages.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedPages": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedPages::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -38952,7 +38952,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180909154702_AddedPages.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180909154702_AddedPages.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedPages": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedPages::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -39699,7 +39699,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180910094016_AddePageNumber.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180910094016_AddePageNumber.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddePageNumber": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddePageNumber::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -39727,7 +39727,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180910094016_AddePageNumber.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20180910094016_AddePageNumber.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddePageNumber": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddePageNumber::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -40476,7 +40476,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20181125161544_AddedBookDates.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20181125161544_AddedBookDates.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedBookDates": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedBookDates::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -40516,7 +40516,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20181125161544_AddedBookDates.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20181125161544_AddedBookDates.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedBookDates": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedBookDates::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -41269,7 +41269,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20181125170936_AddedRecentsAndFavs.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20181125170936_AddedRecentsAndFavs.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedRecentsAndFavs": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedRecentsAndFavs::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -41412,7 +41412,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20181125170936_AddedRecentsAndFavs.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20181125170936_AddedRecentsAndFavs.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedRecentsAndFavs": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedRecentsAndFavs::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -42277,7 +42277,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313170856_AddedSeries.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313170856_AddedSeries.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedSeries": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedSeries::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -42454,7 +42454,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313170856_AddedSeries.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313170856_AddedSeries.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedSeries": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedSeries::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -43417,7 +43417,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313171502_AddedMagazine.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313171502_AddedMagazine.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedMagazine": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedMagazine::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -43548,7 +43548,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313171502_AddedMagazine.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313171502_AddedMagazine.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedMagazine": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedMagazine::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -44599,7 +44599,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313172038_AddedMagazineIssue.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313172038_AddedMagazineIssue.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedMagazineIssue": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedMagazineIssue::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -44682,7 +44682,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313172038_AddedMagazineIssue.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313172038_AddedMagazineIssue.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedMagazineIssue": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedMagazineIssue::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -45793,7 +45793,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313172821_AddedArticle.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313172821_AddedArticle.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedArticle": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedArticle::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -45950,7 +45950,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313172821_AddedArticle.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190313172821_AddedArticle.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedArticle": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedArticle::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -47183,7 +47183,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190321230700_AddedBookPublicationDates.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190321230700_AddedBookPublicationDates.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedBookPublicationDates": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedBookPublicationDates::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -47223,7 +47223,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190321230700_AddedBookPublicationDates.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190321230700_AddedBookPublicationDates.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedBookPublicationDates": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedBookPublicationDates::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -48460,7 +48460,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190324231443_AddedFilePath.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190324231443_AddedFilePath.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedFilePath": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedFilePath::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -48488,7 +48488,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190324231443_AddedFilePath.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190324231443_AddedFilePath.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedFilePath": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedFilePath::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -49727,7 +49727,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190326190608_RemoveFileContents.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190326190608_RemoveFileContents.cs": {
       "Inshapardaz.Ports.Database.Migrations.RemoveFileContents": {
         "System.Void Inshapardaz.Ports.Database.Migrations.RemoveFileContents::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -49764,7 +49764,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190326190608_RemoveFileContents.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190326190608_RemoveFileContents.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.RemoveFileContents": {
         "System.Void Inshapardaz.Ports.Database.Migrations.RemoveFileContents::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -50999,7 +50999,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190328215750_AddedPublicFileFlag.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190328215750_AddedPublicFileFlag.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedPublicFileFlag": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedPublicFileFlag::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -51028,7 +51028,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190328215750_AddedPublicFileFlag.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190328215750_AddedPublicFileFlag.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedPublicFileFlag": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedPublicFileFlag::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -52265,7 +52265,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190331225840_DeleteSeriesRule.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190331225840_DeleteSeriesRule.cs": {
       "Inshapardaz.Ports.Database.Migrations.DeleteSeriesRule": {
         "System.Void Inshapardaz.Ports.Database.Migrations.DeleteSeriesRule::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -52309,7 +52309,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190331225840_DeleteSeriesRule.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190331225840_DeleteSeriesRule.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.DeleteSeriesRule": {
         "System.Void Inshapardaz.Ports.Database.Migrations.DeleteSeriesRule::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -53547,7 +53547,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190511125812_AddedChapterContents.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190511125812_AddedChapterContents.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedChapterContents": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedChapterContents::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -53628,7 +53628,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190511125812_AddedChapterContents.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190511125812_AddedChapterContents.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedChapterContents": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedChapterContents::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -54922,7 +54922,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190512043058_RemovedChapterText.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190512043058_RemovedChapterText.cs": {
       "Inshapardaz.Ports.Database.Migrations.RemovedChapterText": {
         "System.Void Inshapardaz.Ports.Database.Migrations.RemovedChapterText::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -55003,7 +55003,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190512043058_RemovedChapterText.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190512043058_RemovedChapterText.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.RemovedChapterText": {
         "System.Void Inshapardaz.Ports.Database.Migrations.RemovedChapterText::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -56242,7 +56242,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190529102609_added-book-files.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190529102609_added-book-files.cs": {
       "Inshapardaz.Ports.Database.Migrations.addedbookfiles": {
         "System.Void Inshapardaz.Ports.Database.Migrations.addedbookfiles::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -56364,7 +56364,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190529102609_added-book-files.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190529102609_added-book-files.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.addedbookfiles": {
         "System.Void Inshapardaz.Ports.Database.Migrations.addedbookfiles::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -57666,7 +57666,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190601195302_madeyearnullable.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190601195302_madeyearnullable.cs": {
       "Inshapardaz.Ports.Database.Migrations.madeyearnullable": {
         "System.Void Inshapardaz.Ports.Database.Migrations.madeyearnullable::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -57699,7 +57699,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190601195302_madeyearnullable.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190601195302_madeyearnullable.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.madeyearnullable": {
         "System.Void Inshapardaz.Ports.Database.Migrations.madeyearnullable::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -59001,7 +59001,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190609193054_AddedPeriodicals.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190609193054_AddedPeriodicals.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedPeriodicals": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedPeriodicals::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -59091,7 +59091,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190609193054_AddedPeriodicals.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190609193054_AddedPeriodicals.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedPeriodicals": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedPeriodicals::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -60391,7 +60391,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190609215626_AddedIssues.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190609215626_AddedIssues.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedIssues": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedIssues::Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)": {
           "Lines": {
@@ -60562,7 +60562,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190609215626_AddedIssues.Designer.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\20190609215626_AddedIssues.Designer.cs": {
       "Inshapardaz.Ports.Database.Migrations.AddedIssues": {
         "System.Void Inshapardaz.Ports.Database.Migrations.AddedIssues::BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -61862,7 +61862,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\DatabaseContextModelSnapshot.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Migrations\\DatabaseContextModelSnapshot.cs": {
       "Inshapardaz.Ports.Database.Migrations.DatabaseContextModelSnapshot": {
         "System.Void Inshapardaz.Ports.Database.Migrations.DatabaseContextModelSnapshot::BuildModel(Microsoft.EntityFrameworkCore.ModelBuilder)": {
           "Lines": {
@@ -63162,7 +63162,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\File.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\File.cs": {
       "Inshapardaz.Ports.Database.Entities.File": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.File::get_Id()": {
           "Lines": {
@@ -63202,7 +63202,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Article.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Article.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.Article": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.Article::get_Id()": {
           "Lines": {
@@ -63260,7 +63260,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\ArticleText.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\ArticleText.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.ArticleText": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.ArticleText::get_Id()": {
           "Lines": {
@@ -63288,7 +63288,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Author.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Author.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.Author": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.Author::get_Id()": {
           "Lines": {
@@ -63322,7 +63322,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Book.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Book.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.Book": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.Book::get_Id()": {
           "Lines": {
@@ -63452,7 +63452,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\BookCategory.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\BookCategory.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.BookCategory": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.BookCategory::get_BookId()": {
           "Lines": {
@@ -63480,7 +63480,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\BookFile.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\BookFile.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.BookFile": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.BookFile::get_Id()": {
           "Lines": {
@@ -63514,7 +63514,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\BookPage.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\BookPage.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.BookPage": {
         "System.Int64 Inshapardaz.Ports.Database.Entities.Library.BookPage::get_Id()": {
           "Lines": {
@@ -63554,7 +63554,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Category.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Category.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.Category": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.Category::get_Id()": {
           "Lines": {
@@ -63582,7 +63582,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Chapter.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Chapter.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.Chapter": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.Chapter::get_Id()": {
           "Lines": {
@@ -63622,7 +63622,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\ChapterContent.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\ChapterContent.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.ChapterContent": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.ChapterContent::get_Id()": {
           "Lines": {
@@ -63656,7 +63656,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\FavoriteBook.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\FavoriteBook.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.FavoriteBook": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.FavoriteBook::get_Id()": {
           "Lines": {
@@ -63690,7 +63690,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Issue.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Issue.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.Issue": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.Issue::get_Id()": {
           "Lines": {
@@ -63742,7 +63742,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Periodical.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Periodical.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.Periodical": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.Periodical::get_Id()": {
           "Lines": {
@@ -63808,7 +63808,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\RecentBook.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\RecentBook.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.RecentBook": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.RecentBook::get_Id()": {
           "Lines": {
@@ -63842,7 +63842,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Series.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\Series.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.Series": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.Series::get_Id()": {
           "Lines": {
@@ -63882,7 +63882,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\SeriesCategory.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Library\\SeriesCategory.cs": {
       "Inshapardaz.Ports.Database.Entities.Library.SeriesCategory": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Library.SeriesCategory::get_SeriesId()": {
           "Lines": {
@@ -63910,7 +63910,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\Dictionary.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\Dictionary.cs": {
       "Inshapardaz.Ports.Database.Entities.Dictionary.Dictionary": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Dictionary.Dictionary::get_Id()": {
           "Lines": {
@@ -63965,7 +63965,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\DictionaryDownload.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\DictionaryDownload.cs": {
       "Inshapardaz.Ports.Database.Entities.Dictionary.DictionaryDownload": {
         "System.Int32 Inshapardaz.Ports.Database.Entities.Dictionary.DictionaryDownload::get_Id()": {
           "Lines": {
@@ -64005,7 +64005,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\Meaning.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\Meaning.cs": {
       "Inshapardaz.Ports.Database.Entities.Dictionary.Meaning": {
         "System.Int64 Inshapardaz.Ports.Database.Entities.Dictionary.Meaning::get_Id()": {
           "Lines": {
@@ -64045,7 +64045,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\Translation.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\Translation.cs": {
       "Inshapardaz.Ports.Database.Entities.Dictionary.Translation": {
         "System.Int64 Inshapardaz.Ports.Database.Entities.Dictionary.Translation::get_Id()": {
           "Lines": {
@@ -64085,7 +64085,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\Word.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\Word.cs": {
       "Inshapardaz.Ports.Database.Entities.Dictionary.Word": {
         "System.Int64 Inshapardaz.Ports.Database.Entities.Dictionary.Word::get_Id()": {
           "Lines": {
@@ -64167,7 +64167,7 @@
         }
       }
     },
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\WordRelation.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Ports.Database\\Entities\\Dictionary\\WordRelation.cs": {
       "Inshapardaz.Ports.Database.Entities.Dictionary.WordRelation": {
         "System.Int64 Inshapardaz.Ports.Database.Entities.Dictionary.WordRelation::get_Id()": {
           "Lines": {
@@ -64209,7 +64209,7 @@
     }
   },
   "Inshapardaz.Storage.dll": {
-    "d:\\code\\inshapardaz\\api\\src\\Inshapardaz.Storage\\FileStorage.cs": {
+    "D:\\code\\inshapardaz\\api\\src\\Inshapardaz.Storage\\FileStorage.cs": {
       "Inshapardaz.Storage.FileStorage": {
         "Microsoft.Azure.Storage.Blob.CloudBlobContainer Inshapardaz.Storage.FileStorage::GetContainer(System.String)": {
           "Lines": {

@@ -133,7 +133,8 @@ namespace Inshapardaz.Functions
             {
                 Id = source.Id,
                 Title = source.Title,
-                ChapterNumber = source.ChapterNumber
+                ChapterNumber = source.ChapterNumber,
+                BookId = source.BookId
             };
 
         public static Chapter Map(this ChapterView source)
@@ -141,7 +142,8 @@ namespace Inshapardaz.Functions
             {
                 Id = source.Id,
                 Title = source.Title,
-                ChapterNumber = source.ChapterNumber
+                ChapterNumber = source.ChapterNumber,
+                BookId = source.BookId
             };
 
         public static ChapterContentView Map(this ChapterContent source)

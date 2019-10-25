@@ -75,6 +75,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
             Assert.That(actual, Is.Not.Null, "Should contain at-least one chapter");
             Assert.That(actual.Title, Is.Not.Empty, "Chapter name should have a value");
             Assert.That(actual.ChapterNumber, Is.GreaterThan(0), "Chapter should have some number.");
+            Assert.That(actual.BookId, Is.Not.EqualTo(0), "Book Id doesn't match");
 
             actual.Links.AssertLink("update")
                         .ShouldBePut()

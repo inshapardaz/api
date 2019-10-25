@@ -22,5 +22,5 @@ deploy:
   website: api-inshapardaz
   username: $api-inshapardaz
   password: 
-    secure: JtybVbpTxTWp21oT11L4dL7KzpGW6DAovgmyo4Gw9iX0wKUuZd2vzN7t6stoUucU7tyLCFHsCEQ3yiiiulR18A
+    secure: JtybVbpTxTWp21oT11L4dL7KzpGW6DAovgmyo4Gw9iX0wKUuZd2vzN7t6stoUucU7tyLCFHsCEQ3yiiiulR18A==
   artifact: Functions

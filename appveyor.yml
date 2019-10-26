@@ -1,10 +1,7 @@
 version: 1.0.{build}
 max_jobs: 1
 image: Visual Studio 2019
-branches:
-  # whitelist
-  only:
-    - master
+
 skip_tags: true
 skip_branch_with_pr: true
 
@@ -19,7 +16,7 @@ build_script:
 # Testing
 test_script:
 - cmd: cd src/Inshapardaz.Functions.Tests
-- cmd: dotnet test
+- cmd: dotnet test --test-adapter-path:. --logger:Appveyor
 
 # Create artifacts
 artifacts:

@@ -1,0 +1,21 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Language Services for Urdu",
+  "author": "Muhammad Umer Farooq",
+  "license": "ISC",
+  "homepage": "https://github.com/inshapardaz/api#readme",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start" : "dotnet run",
+    "test": "dotnet test",
+    "build": "dotnet build",
+    "test:cover": "dotnet test /p:CollectCoverage=true /p:CoverletOutput=Coverage  /p:CoverletOutputFormat=cobertura"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inshapardaz/api.git"
+  }
+}

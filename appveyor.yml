@@ -19,7 +19,7 @@ build_script:
 # Testing
 test_script:
 - cmd: cd src/Inshapardaz.Functions.Tests
-- cmd: dotnet test --no-build
+- cmd: dotnet test
 
 # Create artifacts
 artifacts:

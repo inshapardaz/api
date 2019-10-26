@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Functions", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Functions.Tests", "src\Inshapardaz.Functions.Tests\Inshapardaz.Functions.Tests.csproj", "{AC205F32-E900-45F4-A885-ED67D10436EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Database.Migrations", "src\Inshapardaz.Database.Migrations\Inshapardaz.Database.Migrations.csproj", "{A296871D-63CF-4859-873C-66AF9DC5CD47}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{17995680-3C9A-4E15-B619-569923E820FF}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
@@ -48,10 +46,6 @@ Global
 		{AC205F32-E900-45F4-A885-ED67D10436EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC205F32-E900-45F4-A885-ED67D10436EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC205F32-E900-45F4-A885-ED67D10436EA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A296871D-63CF-4859-873C-66AF9DC5CD47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A296871D-63CF-4859-873C-66AF9DC5CD47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A296871D-63CF-4859-873C-66AF9DC5CD47}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A296871D-63CF-4859-873C-66AF9DC5CD47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

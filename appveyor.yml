@@ -32,6 +32,8 @@ deploy:
   server: https://api-inshapardaz.scm.azurewebsites.net:443/msdeploy.axd?site=api-inshapardaz
   website: api-inshapardaz
   username: $api-inshapardaz
-  password: 
+  password:
     secure: JtybVbpTxTWp21oT11L4dL7KzpGW6DAovgmyo4Gw9iX0wKUuZd2vzN7t6stoUucU7tyLCFHsCEQ3yiiiulR18A==
-  artifact: Functions
+  artifact: Function
+  on:
+    branch: master

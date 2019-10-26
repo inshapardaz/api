@@ -1,21 +1,32 @@
 version: 1.0.{build}
 max_jobs: 1
-image: Visual Studio 2017 Preview
+image: Visual Studio 2019
+branches:
+  # whitelist
+  only:
+    - master
+skip_tags: true
+skip_branch_with_pr: true
+
+#Before the build starts
 before_build:
 - cmd: dotnet restore ./Inshapardaz.Api.sln
-build:
-  project: ./Inshapardaz.Api.sln
-  publish_wap_xcopy: true
-  verbosity: minimal
-after_build:
-- cmd: dotnet publish -c Release src/Inshapardaz.Functions/Inshapardaz.Functions.csproj
+
+# Building
+build_script:
+  - cmd: dotnet publish -c Release src/Inshapardaz.Functions/Inshapardaz.Functions.csproj
+
+# Testing
 test_script:
 - cmd: cd src/Inshapardaz.Functions.Tests
 - cmd: dotnet test --no-build
+
+# Create artifacts
 artifacts:
-- path: src\Inshapardaz.Functions
-  name: Functions
-  type: Auto
+- path: src/Inshapardaz.Functions
+  name: Function
+
+# Deployment
 deploy:
 - provider: WebDeploy
   server: https://api-inshapardaz.scm.azurewebsites.net:443/msdeploy.axd?site=api-inshapardaz

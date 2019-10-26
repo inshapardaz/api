@@ -17,6 +17,7 @@
 **/Staging/*
 **.lock.json
 .vscode
+**/coverage.json
 
 .idea
 *.jfm

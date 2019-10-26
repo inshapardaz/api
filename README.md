@@ -3,7 +3,9 @@ Language Services for Urdu
 
 # Build Status
 
-[![Build status](https://ci.appveyor.com/api/projects/status/hmtcrynhyxbtxdno?svg=true)](https://ci.appveyor.com/project/umerfaruk/api)
+Master 
+
+[![Build status](https://ci.appveyor.com/api/projects/status/xoq9t6wau07b6hmq/branch/master?svg=true)](https://ci.appveyor.com/project/umerfaruk/api/branch/master)
 
 # Components
 
@@ -18,26 +20,38 @@ Language Services for Urdu
 ### Rest Service and WebSite
 Checkout code and 
 
+- Restore packages
 `dotnet restore`
 
+- Build the app
 `dotnet build`
 
+- Start app locally
 `dotnet run`
+
+- Run tests
+`dotnet test`
+
+- Run with code coverage
+`dotnet test --results-directory:Coverage --collect:"Code Coverage"`
+
+#### Alternate npm commands
+
+- Start app locally
+`npm run`
+
+- Build the app
+`npm run build`
+
+- Run tests
+`npm run test`
+
+- Run with code coverage
+`npm run test:cover`
 
 
 ### Running migrations
 
-All ef commands should be executed inside the Inshapardaz.Ports.Domain folder
-
-#### Add migration 
-
-`dotnet ef migrations add  <MIGRATION_NAME_HERE> --startup-project ..\Inshapardaz.Api\Inshapardaz.Api.csproj`
-
-#### Updating database manyally
-
-`dotnet ef database update --startup-project ..\Inshapardaz.Api\Inshapardaz.Api.csproj`
-
-
-## Install Fluent Migrator tool
+Project now uses Fluent migrator tool to create database migrations. You need to install the tool manually on local machine to work with it.
 
 `dotnet tool install -g FluentMigrator.DotNet.Cli`

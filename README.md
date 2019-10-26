@@ -54,10 +54,3 @@ Checkout code and
 
 - Run with code coverage
 `npm run test:cover`
-
-
-### Running migrations
-
-Project now uses Fluent migrator tool to create database migrations. You need to install the tool manually on local machine to work with it.
-
-`dotnet tool install -g FluentMigrator.DotNet.Cli`

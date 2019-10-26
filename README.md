@@ -35,6 +35,12 @@ Checkout code and
 - Run with code coverage
 `dotnet test --results-directory:Coverage --collect:"Code Coverage"`
 
+- Run locally
+`func start`
+
+- Run locally with CORS
+`func start --cors "http://localhost:4200" --cors-credentials`
+
 #### Alternate npm commands
 
 - Start app locally

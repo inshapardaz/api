@@ -23,7 +23,7 @@ test_script:
 
 # Create artifacts
 artifacts:
-- path: src/Inshapardaz.Functions
+- path: src/Inshapardaz.Functions/bin/Release/netcoreapp2.1/publish/
   name: Function
 
 # Deployment

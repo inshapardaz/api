@@ -9,7 +9,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "start" : "dotnet run",
+    "start" : "run-local.cmd",
+    "run-host": "func start --cors \"http://localhost:4200\" --cors-credentials",
     "test": "dotnet test",
     "build": "dotnet build",
     "test:cover": "dotnet test /p:CollectCoverage=true /p:CoverletOutput=Coverage  /p:CoverletOutputFormat=cobertura"

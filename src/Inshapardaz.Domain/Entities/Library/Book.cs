@@ -21,7 +21,7 @@ namespace Inshapardaz.Domain.Entities.Library
         
         public string AuthorName { get; set; }
 
-        public int ImageId { get; set; }
+        public int? ImageId { get; set; }
 
         public DateTime DateAdded {get; set;}
         

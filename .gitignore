@@ -18,6 +18,7 @@
 **.lock.json
 .vscode
 **/coverage.json
+**/local.setting.json
 
 .idea
 *.jfm

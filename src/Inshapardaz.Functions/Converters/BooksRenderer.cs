@@ -108,9 +108,9 @@ namespace Inshapardaz.Functions.Converters
                 links.Add(GetSeriesById.Link(source.SeriesId.Value, RelTypes.Series));
             }
 
-            if (source.ImageId > 0)
+            if (source.ImageId.HasValue)
             {
-                links.Add(GetFileById.Link(source.ImageId, RelTypes.Image));
+                links.Add(GetFileById.Link(source.ImageId.Value, RelTypes.Image));
             }
 
             if (principal.IsWriter())

@@ -55,9 +55,9 @@ namespace Inshapardaz.Functions.Converters
                 GetBooksByAuthor.Link(source.Id, RelTypes.Books)
             };
 
-            if (source.ImageId > 0)
+            if (source.ImageId.HasValue)
             {
-                links.Add(GetFileById.Link(source.ImageId, RelTypes.Image));
+                links.Add(GetFileById.Link(source.ImageId.Value, RelTypes.Image));
             }
 
             if (principal.IsWriter())

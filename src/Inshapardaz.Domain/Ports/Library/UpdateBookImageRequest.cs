@@ -54,10 +54,10 @@ namespace Inshapardaz.Domain.Ports.Library
                 throw new NotFoundException();
             }
 
-            if (book.ImageId != 0)
+            if (book.ImageId.HasValue)
             {
-                command.Image.Id = book.ImageId;
-                var existingImage = await _fileRepository.GetFileById(book.ImageId, true, cancellationToken);
+                command.Image.Id = book.ImageId.Value;
+                var existingImage = await _fileRepository.GetFileById(book.ImageId.Value, true, cancellationToken);
                 if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
                 {
                     await _fileStorage.TryDeleteFile(existingImage.FilePath, cancellationToken);
@@ -67,7 +67,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
                 await _fileRepository.UpdateFile(command.Image, url, true, cancellationToken);
                 command.Result.File = command.Image;
-                command.Result.File.Id = book.ImageId;
+                command.Result.File.Id = book.ImageId.Value;
             }
             else
             {

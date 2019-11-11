@@ -238,7 +238,7 @@ namespace Inshapardaz.Ports.Database
         {
             Id = source.Id,
             Name = source.Name,
-            ImageId = source.ImageId??0
+            ImageId = source.ImageId
         };
         #endregion
 
@@ -273,7 +273,7 @@ namespace Inshapardaz.Ports.Database
                 IsPublic = source.IsPublic,
                 Language = source.Language,
                 Categories = source.BookCategory.Select(c => c.MapFromBookCategory()).ToArray(),
-                ImageId = source.ImageId??0,
+                ImageId = source.ImageId,
                 DateAdded = source.DateAdded,
                 DateUpdated = source.DateUpdated,
                 SeriesId = source.SeriesId,

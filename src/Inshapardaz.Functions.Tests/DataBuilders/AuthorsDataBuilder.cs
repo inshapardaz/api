@@ -45,7 +45,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             var authors = new Faker<Author>()
                           .RuleFor(c => c.Id, 0)
                           .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
-                          .RuleFor(c => c.ImageId, f => _withImage ? f.Random.Int(1) : new int?())
+                          .RuleFor(c => c.ImageId, f => _withImage ? f.Random.Int(1) : (int?)null)
                           .Generate(count);
             var files = new List<File>();
 

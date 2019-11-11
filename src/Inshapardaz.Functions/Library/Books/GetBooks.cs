@@ -30,10 +30,11 @@ namespace Inshapardaz.Functions.Library.Books
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)
         {
+            var query = GetQueryParameter<string>(req, "query", null);
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
             
-            var request = new GetBooksRequest(pageNumber, pageSize, principal.GetUserId());
+            var request = new GetBooksRequest(pageNumber, pageSize, principal.GetUserId()) { Query = query };
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var args = new PageRendererArgs<Book>

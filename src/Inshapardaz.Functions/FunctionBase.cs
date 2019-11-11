@@ -95,6 +95,21 @@ namespace Inshapardaz.Functions
             return defaultValue;
         }
 
+        protected T GetQueryParameter<T>(HttpRequest request, string fieldName, T defaultValue = default(T))
+        {
+            if (request != null)
+            {
+                var queryParams = request.GetQueryParameterDictionary();
+
+                if (queryParams.TryGetValue(fieldName, out var value))
+                {
+                    return (T)Convert.ChangeType(value, typeof(T));
+                }
+            }
+
+            return defaultValue;
+        }
+
         protected string GetHeader(HttpRequest request, string headerName, string defaultValue)
         {
             if (request != null && request.Headers.ContainsKey(headerName))

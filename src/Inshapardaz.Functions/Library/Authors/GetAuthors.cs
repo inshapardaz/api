@@ -30,11 +30,11 @@ namespace Inshapardaz.Functions.Library.Authors
             [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)
         {
-            
+            var query = GetQueryParameter<string>(req, "query", null);
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var request = new GetAuthorsRequest(pageNumber, pageSize);
+            var request = new GetAuthorsRequest(pageNumber, pageSize) { Query = query };
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var args = new PageRendererArgs<Author>

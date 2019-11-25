@@ -44,6 +44,12 @@ namespace Inshapardaz.Functions.Tests.Helpers
             return this;
         }
 
+        internal RequestBuilder WithBytes(byte[] binaryContent)
+        {
+            _file = binaryContent;
+            return this;
+        }
+
         public DefaultHttpRequest Build()
         {
             var request = new DefaultHttpRequest(new DefaultHttpContext());
@@ -57,7 +63,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
                                     new MemoryStream(_file) : 
                                     new MemoryStream(Encoding.UTF8.GetBytes(_contents ?? ""));
             return request;
-        }
+        }        
 
         public HttpRequestMessage BuildRequestMessage()
         {

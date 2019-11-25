@@ -47,7 +47,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.DeleteChapter
         public void ShouldHaveDeletedChapter()
         {
             var cat = _dataBuilder.GetById(_expected.Id);
-            Assert.That(cat, Is.Null, "Author should be deleted.");
+            Assert.That(cat, Is.Null, "Chapter should be deleted.");
         }
 
 

@@ -66,15 +66,20 @@ namespace Inshapardaz.Functions.Library.Books.Files
 
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var response = request.Result.Render(principal);
-            return new CreatedResult(response.Links.Self(), response);
+            if (request.Result != null)
+            {
+                var response = request.Result.Render(principal);
+                return new CreatedResult(response.Links.Self(), response);
+            }
+
+            return new BadRequestResult();
         }
 
         public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/{bookId}/files", relType, "POST");
 
         private string GetFileExtension(string fileName)
         {
-            if (string.IsNullOrWhiteSpace(fileName))
+            if (!string.IsNullOrWhiteSpace(fileName))
             {
                 return System.IO.Path.GetExtension(fileName);
             }

@@ -76,7 +76,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         private string GetFileExtension(string fileName)
         {
-            if (string.IsNullOrWhiteSpace(fileName))
+            if (!string.IsNullOrWhiteSpace(fileName))
             {
                 return System.IO.Path.GetExtension(fileName);
             }

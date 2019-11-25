@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using System.Threading;
+using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +19,26 @@ namespace Inshapardaz.Functions.Library.Books.Files
         }
 
         [FunctionName("DeleteBookFile")]
-        public IActionResult Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "book/{bookId}/files/{fileId}")] HttpRequest req,
             int bookId, 
             int fileId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-            return new OkObjectResult($"DELETE:File {fileId} for Book {bookId}");
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
+            var request = new DeleteBookFileRequest(bookId, fileId, principal.GetUserId());
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            return new NoContentResult();
         }
     }
 }

@@ -30,10 +30,13 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<GetFilesByBookRequest> HandleAsync(GetFilesByBookRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var files = await _bookRepository.GetFilesByBook(command.BookId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.BookId, cancellationToken);
+            if (book != null)
+            {
+                var files = await _bookRepository.GetFilesByBook(command.BookId, cancellationToken);
+                command.Result = files ?? Enumerable.Empty<File>();
+            }
 
-            command.Result = files ?? Enumerable.Empty<File>();
-            
             return await base.HandleAsync(command, cancellationToken);
         }
     }

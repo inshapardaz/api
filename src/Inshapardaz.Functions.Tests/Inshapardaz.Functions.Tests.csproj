@@ -29,12 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Library\Book\Files\DeleteBookFile\" />
-    <Folder Include="Library\Book\Files\GetBookFiles\" />
-    <Folder Include="Library\Book\Files\UpdateBookFile\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Inshapardaz.Functions\Inshapardaz.Functions.csproj" />
   </ItemGroup>
 

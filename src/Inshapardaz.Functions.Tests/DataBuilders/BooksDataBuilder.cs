@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private readonly IFileStorage _fileStorage;
 
         private bool _hasSeries, _hasImage = true;
-        private int _chapterCount, _categoriesCount;
+        private int _chapterCount, _categoriesCount, _fileCount;
         private Author _author;
         private readonly List<Category> _categories = new List<Category>();
         private Series _series;
@@ -64,13 +64,26 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             _categories.Add(category);
             return this;
         }
-        
+
         public BooksDataBuilder WithSeries(Series series)
         {
             _series = series;    
             return this;
         }
-        
+
+        public BooksDataBuilder WithFile()
+        {
+            _fileCount = 1;
+            return this;
+        }
+
+        public BooksDataBuilder WithFiles(int fileCount)
+        {
+            _fileCount = fileCount;
+            return this;
+        }
+
+
         public Book Build()
         {
             return Build(1).Single();
@@ -91,6 +104,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                         .RuleFor(c => c.IsPublished, f => f.Random.Bool())
                         .RuleFor(c => c.YearPublished, f => f.Random.Int(1900, 2000))
                         .RuleFor(c => c.Status, f => f.PickRandom<BookStatuses>())
+                        .RuleFor(c => c.Files, new List<BookFile>())
                         .Generate(numberOfBooks);
 
             var series = _series ?? new Faker<Series>()
@@ -131,6 +145,20 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 foreach (var category in categories)
                 {
                     book.BookCategory.Add(new BookCategory { Category = category });
+                }
+
+                for (int i = 0; i < _fileCount; i++)
+                {
+                    var url = _fileStorage.StoreFile($"{book.Id}", new Faker().Random.Bytes(10), CancellationToken.None).Result;
+                    var file = new Faker<File>()
+                        .RuleFor(f => f.FilePath, url)
+                        .RuleFor(f => f.IsPublic, false)
+                        .RuleFor(f => f.FileName, f => f.Name.Prefix())
+                        .RuleFor(f => f.DateCreated, f => f.Date.Recent(5))
+                        .RuleFor(f => f.MimeType, "application/pdf")
+                        .Generate();
+                    book.Files.Add(new BookFile { Book = book, File = file });
+                    files.Add(file);
                 }
                 
                 var chapterIndex = 1;
@@ -227,5 +255,15 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         public bool DoesBookExistsInRecent(Book book) =>
             _context.RecentBooks.Any(x => x.BookId == book.Id);
+
+        public List<BookFile> GetBookFiles(int bookId)
+        {
+            return _context.BookFiles.Where(bf => bf.BookId == bookId).ToList();
+        }
+
+        public File GetFileById(int fileId)
+        {
+            return _context.File.SingleOrDefault(f => f.Id == fileId);
+        }
     }
 }

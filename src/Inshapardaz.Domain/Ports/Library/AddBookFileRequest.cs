@@ -40,15 +40,21 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<AddBookFileRequest> HandleAsync(AddBookFileRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var url = await AddImageToFileStore(command.BookId, command.Content.FileName, command.Content.Contents, cancellationToken);
-            var file = await _fileRepository.AddFile(command.Content, url, true, cancellationToken);
-            await _bookRepository.AddBookFile(command.BookId, file.Id, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.BookId, cancellationToken);
 
-            command.Result = file;
+            if (book != null)
+            {
+                var url = await StoreFile(book.Id, command.Content.FileName, command.Content.Contents, cancellationToken);
+                var file = await _fileRepository.AddFile(command.Content, url, true, cancellationToken);
+                await _bookRepository.AddBookFile(book.Id, file.Id, cancellationToken);
+
+                command.Result = file;
+            }
+
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private async Task<string> AddImageToFileStore(int bookId, string fileName, byte[] contents, CancellationToken cancellationToken)
+        private async Task<string> StoreFile(int bookId, string fileName, byte[] contents, CancellationToken cancellationToken)
         {
             var filePath = GetUniqueFileName(bookId, fileName);
             return await _fileStorage.StoreFile(filePath, contents, cancellationToken);

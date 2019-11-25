@@ -31,12 +31,12 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<DeleteBookRequest> HandleAsync(DeleteBookRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var author = await _bookRepository.GetBookById(command.BookId, cancellationToken);
-            if (author != null)
+            var book = await _bookRepository.GetBookById(command.BookId, cancellationToken);
+            if (book != null)
             {
-                if (author.ImageId.HasValue)
+                if (book.ImageId.HasValue)
                 {
-                    var image = await _fileRepository.GetFileById(author.ImageId.Value, true, cancellationToken);
+                    var image = await _fileRepository.GetFileById(book.ImageId.Value, true, cancellationToken);
                     if (image != null && !string.IsNullOrWhiteSpace(image.FilePath))
                     {
                         await _fileStorage.TryDeleteFile(image.FilePath, cancellationToken);

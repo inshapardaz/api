@@ -5,7 +5,6 @@ using Bogus;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
-using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -13,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
 {
     [TestFixture]
-    public class WhenAddingBookFileAsWriter : FunctionTest
+    public class WhenAddingBookFileAsAdministrator : FunctionTest
     {
         private CreatedResult _response;
         private BooksDataBuilder _dataBuilder;
@@ -28,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
             var contents = new Faker().Random.Words(60);
             var handler = Container.GetService<Functions.Library.Books.Files.AddBookFile>();
             var request = new RequestBuilder().WithBody(contents).BuildRequestMessage();
-            _response = (CreatedResult) await handler.Run(request, book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (CreatedResult) await handler.Run(request, book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as FileView;
 
@@ -80,14 +79,12 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
                  .ShouldHaveSomeHref();
         }
 
-        [Test]
+        [Test, Ignore("Need attention")]
         public void ShouldReturnCorrectBookFile()
         {
-            //var _expected = _dataBuilder.GetContentById(_view.Id);
-            //Assert.That(_view, Is.Not.Null, "Should return chapter");
-            //Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Content id does not match");
-            //Assert.That(_view.ChapterId, Is.EqualTo(_expected.ChapterId), "Chapter id does not match");
-            //Assert.That(_view.Contents, Is.EqualTo(_contents), "contents should match");
+            var _expected = _dataBuilder.GetFileById(_view.Id);
+            Assert.That(_view, Is.Not.Null, "Should return chapter");
+            Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Content id does not match");
         }
     }
 }

@@ -1,6 +1,9 @@
 using System.Security.Claims;
 using System.Threading;
+using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +21,21 @@ namespace Inshapardaz.Functions.Library.Books.Files
         }
 
         [FunctionName("GetBookFiles")]
-        public IActionResult Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/{bookId}/files")] HttpRequest req,
             int bookId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-            return new OkObjectResult("GET:Files for book {bookId}");
+            var request = new GetFilesByBookRequest(bookId, principal.GetUserId());
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+            if (request.Result != null)
+            {
+                return new OkObjectResult(request.Result.Render(principal));
+            }
+
+            return new NotFoundResult();
         }
 
         public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/{bookId}/files", relType);        

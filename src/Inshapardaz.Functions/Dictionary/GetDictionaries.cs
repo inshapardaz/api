@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Dictionary
 
         [FunctionName("GetDictionaries")]
         public IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "dictionaries")] HttpRequest req,
             ILogger log)
         {
             return new OkObjectResult("GET:Dictionaries");            

@@ -83,8 +83,8 @@ namespace Inshapardaz.Functions.Converters
         {
             var result = new ListView<BookView>()
             {
-                Items = source.Select(x => x.Render(principal))
-
+                Items = source.Select(x => x.Render(principal)),
+                Links = new List<LinkView>()
             };
 
             result.Links.Add(selfLinkMethod(RelTypes.Self));

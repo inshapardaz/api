@@ -15,7 +15,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books
 {
-    public class GetBooksByCategory : FunctionBase
+    public class GetBooksByCategory : CommandBase
     {
         public GetBooksByCategory(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)

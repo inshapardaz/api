@@ -17,7 +17,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books.Files
 {
-    public class AddBookFile : FunctionBase
+    public class AddBookFile : CommandBase
     {
         public AddBookFile(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)

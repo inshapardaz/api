@@ -10,7 +10,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Periodicals
 {
-    public class GetPeriodicals : FunctionBase
+    public class GetPeriodicals : CommandBase
     {
         public GetPeriodicals(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)

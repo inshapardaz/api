@@ -12,7 +12,7 @@ using System.Security.Claims;
 
 namespace Inshapardaz.Functions
 {
-    public class GetEntry : FunctionBase
+    public class GetEntry : CommandBase
     {
         public GetEntry(IAmACommandProcessor commandProcessor)
             : base(commandProcessor)

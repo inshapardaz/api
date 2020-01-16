@@ -13,7 +13,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books
 {
-    public class AddBookToFavorite : FunctionBase
+    public class AddBookToFavorite : CommandBase
     {
         public AddBookToFavorite(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)

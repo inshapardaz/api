@@ -14,7 +14,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Files
 {
-    public class GetFileById : FunctionBase
+    public class GetFileById : CommandBase
     {
         public GetFileById(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)

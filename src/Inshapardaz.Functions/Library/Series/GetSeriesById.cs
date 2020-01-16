@@ -14,7 +14,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Series
 {
-    public class GetSeriesById : FunctionBase
+    public class GetSeriesById : CommandBase
     {
         public GetSeriesById(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)

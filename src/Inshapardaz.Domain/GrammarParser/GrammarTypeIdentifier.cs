@@ -1,5 +1,5 @@
 ﻿using System;
-using Inshapardaz.Domain.Entities.Dictionary;
+using Inshapardaz.Domain.Entities.Dictionaries;
 
 namespace Inshapardaz.Domain.GrammarParser
 {

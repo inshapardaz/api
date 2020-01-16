@@ -15,7 +15,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books
 {
-    public class UpdateBookImage : FunctionBase
+    public class UpdateBookImage : CommandBase
     {
         public UpdateBookImage(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)

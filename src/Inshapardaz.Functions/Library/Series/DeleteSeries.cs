@@ -13,7 +13,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Series
 {
-    public class DeleteSeries : FunctionBase
+    public class DeleteSeries : CommandBase
     {
         public DeleteSeries(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)

@@ -20,7 +20,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Files
 {
-    public class AddFile : FunctionBase
+    public class AddFile : CommandBase
     {
         public AddFile(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)

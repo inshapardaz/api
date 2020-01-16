@@ -14,7 +14,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Categories
 {
-    public class GetCategoryById : FunctionBase
+    public class GetCategoryById : CommandBase
     {
         public GetCategoryById(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)

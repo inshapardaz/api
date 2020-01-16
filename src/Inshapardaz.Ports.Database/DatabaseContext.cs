@@ -1,5 +1,5 @@
 using Inshapardaz.Ports.Database.Entities;
-using Inshapardaz.Ports.Database.Entities.Dictionary;
+using Inshapardaz.Ports.Database.Entities.Dictionaries;
 using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.EntityFrameworkCore;
 

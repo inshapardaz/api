@@ -13,7 +13,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Files
 {
-    public class DeleteFile : FunctionBase
+    public class DeleteFile : CommandBase
     {
         public DeleteFile(IAmACommandProcessor commandProcessor)
             : base(commandProcessor)

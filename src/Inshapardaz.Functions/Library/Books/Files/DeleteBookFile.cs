@@ -11,7 +11,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books.Files
 {
-    public class DeleteBookFile : FunctionBase
+    public class DeleteBookFile : CommandBase
     {
         public DeleteBookFile(IAmACommandProcessor commandProcessor)
             : base(commandProcessor)

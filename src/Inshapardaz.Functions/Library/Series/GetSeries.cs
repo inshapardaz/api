@@ -15,7 +15,7 @@ using Paramore.Brighter;
 namespace Inshapardaz.Functions.Library.Series
 {
     // TODO : Add paging to series
-    public class GetSeries : FunctionBase
+    public class GetSeries : CommandBase
     {
         public GetSeries(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)

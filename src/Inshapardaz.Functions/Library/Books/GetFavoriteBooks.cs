@@ -16,7 +16,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books
 {
-    public class GetFavoriteBooks : FunctionBase
+    public class GetFavoriteBooks : CommandBase
     {
         public GetFavoriteBooks(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)

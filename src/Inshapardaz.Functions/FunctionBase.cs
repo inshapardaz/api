@@ -10,19 +10,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Newtonsoft.Json;
 using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions
 {
     public abstract class FunctionBase
     {
-        protected readonly IAmACommandProcessor CommandProcessor;
-        
-        protected FunctionBase(IAmACommandProcessor commandProcessor)
-        {
-            CommandProcessor = commandProcessor;
-        }
-
-
         protected async Task<string> ReadBody(HttpRequest request)
         {
             try
@@ -118,6 +111,26 @@ namespace Inshapardaz.Functions
             }
 
             return defaultValue;
+        }
+    }
+
+    public abstract class CommandBase : FunctionBase
+    {
+        protected readonly IAmACommandProcessor CommandProcessor;
+        
+        protected CommandBase(IAmACommandProcessor commandProcessor)
+        {
+            CommandProcessor = commandProcessor;
+        }
+    }
+
+    public abstract class QueryBase : FunctionBase
+    {
+        protected readonly IQueryProcessor QueryProcessor;
+        
+        protected QueryBase(IQueryProcessor queryProcessor)
+        {
+            QueryProcessor = queryProcessor;
         }
     }
 }

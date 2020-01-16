@@ -13,7 +13,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Categories
 {
-    public class DeleteCategory : FunctionBase
+    public class DeleteCategory : CommandBase
     {
         public DeleteCategory(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)

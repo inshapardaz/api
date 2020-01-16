@@ -13,7 +13,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books
 {
-    public class DeleteBook : FunctionBase
+    public class DeleteBook : CommandBase
     {
         public DeleteBook(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)

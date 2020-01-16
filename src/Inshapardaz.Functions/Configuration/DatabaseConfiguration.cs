@@ -1,10 +1,10 @@
 using System.Linq;
 using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Domain.Repositories.Dictionary;
+using Inshapardaz.Domain.Repositories.Dictionaries;
 using Inshapardaz.Domain.Repositories.Library;
 using Inshapardaz.Ports.Database;
 using Inshapardaz.Ports.Database.Repositories;
-using Inshapardaz.Ports.Database.Repositories.Dictionary;
+using Inshapardaz.Ports.Database.Repositories.Dictionaries;
 using Inshapardaz.Ports.Database.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +52,6 @@ namespace Inshapardaz.Functions.Configuration
         }
 
         public static readonly LoggerFactory MyLoggerFactory
-            = new LoggerFactory(new[] { new  ConsoleLoggerProvider((_, __) => true, true) });
+            = new LoggerFactory();
     }
 }

@@ -18,7 +18,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Authors
 {
-    public class UpdateAuthor : FunctionBase
+    public class UpdateAuthor : CommandBase
     {
         public UpdateAuthor(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)

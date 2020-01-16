@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using Inshapardaz.Functions.Authentication;
-using Inshapardaz.Functions.Dictionary;
+using Inshapardaz.Functions.Dictionaries;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Categories;

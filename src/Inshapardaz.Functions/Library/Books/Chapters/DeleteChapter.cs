@@ -14,7 +14,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters
 {
-    public class DeleteChapter : FunctionBase
+    public class DeleteChapter : CommandBase
     {
         public DeleteChapter(IAmACommandProcessor commandProcessor)
             : base(commandProcessor)

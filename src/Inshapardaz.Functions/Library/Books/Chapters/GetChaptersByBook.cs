@@ -13,7 +13,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters
 {
-    public class GetChaptersByBook : FunctionBase
+    public class GetChaptersByBook : CommandBase
     {
         public GetChaptersByBook(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)

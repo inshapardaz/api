@@ -13,7 +13,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Authors
 {
-    public class DeleteAuthor : FunctionBase
+    public class DeleteAuthor : CommandBase
     {
         public DeleteAuthor(IAmACommandProcessor commandProcessor) 
         : base(commandProcessor)

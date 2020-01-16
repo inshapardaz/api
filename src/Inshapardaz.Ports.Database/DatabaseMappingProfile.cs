@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Inshapardaz.Domain.Entities;
-using Inshapardaz.Domain.Entities.Dictionary;
+using Inshapardaz.Domain.Entities.Dictionaries;
 using Inshapardaz.Domain.Entities.Library;
 
 namespace Inshapardaz.Ports.Database
@@ -8,8 +8,8 @@ namespace Inshapardaz.Ports.Database
     public static class DatabaseMappingProfile
     {
         #region Dictionary
-        public static Entities.Dictionary.Dictionary Map(this Dictionary source)
-        => source == null ? null : new Entities.Dictionary.Dictionary
+        public static Entities.Dictionaries.Dictionary Map(this Dictionary source)
+        => source == null ? null : new Entities.Dictionaries.Dictionary
         {
             Id = source.Id,
             Name = source.Name,
@@ -18,7 +18,7 @@ namespace Inshapardaz.Ports.Database
             UserId = source.UserId
         };
 
-        public static Dictionary Map(this Entities.Dictionary.Dictionary source)
+        public static Dictionary Map(this Entities.Dictionaries.Dictionary source)
         => source == null ? null : new Dictionary
         {
             Id = source.Id,
@@ -31,15 +31,15 @@ namespace Inshapardaz.Ports.Database
         #endregion
 
         #region DictionaryDownload
-        public static Entities.Dictionary.DictionaryDownload Map(this DictionaryDownload source) 
-        => source == null ? null : new Entities.Dictionary.DictionaryDownload
+        public static Entities.Dictionaries.DictionaryDownload Map(this DictionaryDownload source) 
+        => source == null ? null : new Entities.Dictionaries.DictionaryDownload
         {
             Id = source.Id,
             DictionaryId = source.DictionaryId,
             MimeType = source.MimeType
         };
 
-        public static DictionaryDownload Map(this Entities.Dictionary.DictionaryDownload source)
+        public static DictionaryDownload Map(this Entities.Dictionaries.DictionaryDownload source)
         => source == null ? null : new DictionaryDownload
         {
             Id = source.Id,
@@ -74,8 +74,8 @@ namespace Inshapardaz.Ports.Database
         
         #region Word
 
-        public static Entities.Dictionary.Word Map(this Word source)
-        => source == null ? null : new Entities.Dictionary.Word
+        public static Entities.Dictionaries.Word Map(this Word source)
+        => source == null ? null : new Entities.Dictionaries.Word
         {
             Id = source.Id,
             Title = source.Title,
@@ -91,7 +91,7 @@ namespace Inshapardaz.Ports.Database
             WordRelationSourceWord = source.WordRelationSourceWord?.Select(m => m.Map())?.ToArray()
         };
 
-        public static Word Map(this Entities.Dictionary.Word source)
+        public static Word Map(this Entities.Dictionaries.Word source)
         => source == null ? null : new Word
         {
             Id = source.Id,
@@ -112,8 +112,8 @@ namespace Inshapardaz.Ports.Database
 
         #region Meaning
 
-        public static Entities.Dictionary.Meaning Map(this Meaning source)
-        => source == null ? null : new Entities.Dictionary.Meaning
+        public static Entities.Dictionaries.Meaning Map(this Meaning source)
+        => source == null ? null : new Entities.Dictionaries.Meaning
         {
             Id = source.Id,
             Context = source.Context,
@@ -122,7 +122,7 @@ namespace Inshapardaz.Ports.Database
             WordId = source.WordId
         };
 
-        public static Meaning Map(this Entities.Dictionary.Meaning source)
+        public static Meaning Map(this Entities.Dictionaries.Meaning source)
         => source == null ? null : new Meaning
         {
             Id = source.Id,
@@ -135,8 +135,8 @@ namespace Inshapardaz.Ports.Database
         #endregion
 
         #region Translation
-        public static Entities.Dictionary.Translation Map(this Translation source)
-        => source == null ? null : new Entities.Dictionary.Translation
+        public static Entities.Dictionaries.Translation Map(this Translation source)
+        => source == null ? null : new Entities.Dictionaries.Translation
         {
             Id = source.Id,
             IsTrasnpiling = source.IsTrasnpiling,
@@ -145,7 +145,7 @@ namespace Inshapardaz.Ports.Database
             WordId = source.WordId
         };
 
-        public static Translation Map(this Entities.Dictionary.Translation source)
+        public static Translation Map(this Entities.Dictionaries.Translation source)
         => source == null ? null : new Translation
         {
             Id = source.Id,
@@ -159,8 +159,8 @@ namespace Inshapardaz.Ports.Database
 
         #region WordRelation
 
-        public static Entities.Dictionary.WordRelation Map(this WordRelation source)
-        => source == null ? null : new Entities.Dictionary.WordRelation
+        public static Entities.Dictionaries.WordRelation Map(this WordRelation source)
+        => source == null ? null : new Entities.Dictionaries.WordRelation
         {
             Id = source.Id,
             RelatedWordId = source.RelatedWordId,
@@ -168,7 +168,7 @@ namespace Inshapardaz.Ports.Database
             SourceWordId = source.SourceWordId
         };
 
-        public static WordRelation Map(this Entities.Dictionary.WordRelation source)
+        public static WordRelation Map(this Entities.Dictionaries.WordRelation source)
         => source == null ? null : new WordRelation
         {
             Id = source.Id,

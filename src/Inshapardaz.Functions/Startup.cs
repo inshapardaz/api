@@ -17,6 +17,7 @@ namespace Inshapardaz.Functions
             builder.AddAccessTokenBinding();
             builder.Services.AddHttpClient()
                    .AddBrighterCommand()
+                   .AddDarkerQuery()
                    .AddDatabase();
                 
             if (!builder.Services.Any(x => x.ServiceType == typeof(IFileStorage)))

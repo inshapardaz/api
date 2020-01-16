@@ -13,7 +13,7 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Functions
 {
-    public class GetLanguages : FunctionBase
+    public class GetLanguages : CommandBase
     {
         public GetLanguages(IAmACommandProcessor commandProcessor)
             : base(commandProcessor)

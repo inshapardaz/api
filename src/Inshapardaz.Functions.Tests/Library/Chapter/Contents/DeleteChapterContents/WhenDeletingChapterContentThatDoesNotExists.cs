@@ -1,10 +1,6 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
-using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;

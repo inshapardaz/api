@@ -10,14 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Categories
 {
-    public class GetCategories : CommandBase
+    public class GetCategories : QueryBase
     {
-        public GetCategories(IAmACommandProcessor commandProcessor)
-        : base(commandProcessor)
+        public GetCategories(IQueryProcessor queryProcessor)
+        : base(queryProcessor)
         {
         }
 
@@ -27,10 +27,10 @@ namespace Inshapardaz.Functions.Library.Categories
             ILogger log, [AccessToken] ClaimsPrincipal principal, 
             CancellationToken token)
         {
-            var request = new GetCategoriesRequest();
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            var query = new GetCategoriesQuery();
+            var categories = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-            return new OkObjectResult(request.Result.Render(principal));
+            return new OkObjectResult(categories.Render(principal));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("categories", relType);

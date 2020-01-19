@@ -10,14 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Books
 {
-    public class GetLatestBooks : CommandBase
+    public class GetLatestBooks : QueryBase
     {
-        public GetLatestBooks(IAmACommandProcessor commandProcessor)
-        : base(commandProcessor)
+        public GetLatestBooks(IQueryProcessor queryProcessor)
+        : base(queryProcessor)
         {
         }
 
@@ -28,10 +28,10 @@ namespace Inshapardaz.Functions.Library.Books
         {
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var request = new GetLatestBooksRequest(principal.GetUserId());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            var query = new GetLatestBooksQuery(principal.GetUserId());
+            var books = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-            return new OkObjectResult(request.Result.Render(principal, Link));
+            return new OkObjectResult(books.Render(principal, Link));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/latest", relType);

@@ -2,33 +2,32 @@
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetCategoryByIdRequest : RequestBase
+    public class GetCategoryByIdQuery : IQuery<Category>
     {
-        public GetCategoryByIdRequest(int categoryId)
+        public GetCategoryByIdQuery(int categoryId)
         {
             CategoryId = categoryId;
         }
-
-        public Category Result { get; set; }
+        
         public int CategoryId { get; }
     }
 
-    public class GetCategoryByIdRequestHandler : RequestHandlerAsync<GetCategoryByIdRequest>
+    public class GetCategoryByIdQueryHandler : QueryHandlerAsync<GetCategoryByIdQuery, Category>
     {
         private readonly ICategoryRepository _categoryRepository;
         public readonly IBookRepository _bookRepository;
 
-        public GetCategoryByIdRequestHandler(ICategoryRepository categoryRepository, IBookRepository bookRepository)
+        public GetCategoryByIdQueryHandler(ICategoryRepository categoryRepository, IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
             _categoryRepository = categoryRepository;
         }
 
-        public override async Task<GetCategoryByIdRequest> HandleAsync(GetCategoryByIdRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<Category> ExecuteAsync(GetCategoryByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             var category = await _categoryRepository.GetCategoryById(command.CategoryId, cancellationToken);
 
@@ -37,9 +36,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 category.BookCount = await _bookRepository.GetBookCountByCategory(command.CategoryId, cancellationToken);
             }
 
-            command.Result = category;
-
-            return await base.HandleAsync(command, cancellationToken);
+            return category;
         }
     }
 }

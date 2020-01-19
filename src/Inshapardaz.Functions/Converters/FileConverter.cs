@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Claims;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Functions.Authentication;
-using Inshapardaz.Functions.Library.Books.Files;
 using Inshapardaz.Functions.Library.Files;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;

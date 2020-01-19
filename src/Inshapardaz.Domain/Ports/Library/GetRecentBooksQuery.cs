@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetRecentBooksRequest : RequestBase
+    public class GetRecentBooksQuery : IQuery<IEnumerable<Book>>
     {
-        public GetRecentBooksRequest(Guid userId, int count)
+        public GetRecentBooksQuery(Guid userId, int count)
         {
             UserId = userId;
             Count = count;
@@ -20,22 +20,20 @@ namespace Inshapardaz.Domain.Ports.Library
         public Guid UserId {get; }
 
         public int Count { get; }
-
-        public IEnumerable<Book> Result { get; set; }
     }
 
-    public class GetRecentBooksRequestHandler : RequestHandlerAsync<GetRecentBooksRequest>
+    public class GetRecentBooksQueryHandler : QueryHandlerAsync<GetRecentBooksQuery, IEnumerable<Book>>
     {
         private readonly IBookRepository _bookRepository;
         private readonly IFavoriteRepository _favoriteRepository;
 
-        public GetRecentBooksRequestHandler(IBookRepository bookRepository, IFavoriteRepository favoriteRepository)
+        public GetRecentBooksQueryHandler(IBookRepository bookRepository, IFavoriteRepository favoriteRepository)
         {
             _bookRepository = bookRepository;
             _favoriteRepository = favoriteRepository;
         }
 
-        public override async Task<GetRecentBooksRequest> HandleAsync(GetRecentBooksRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<IEnumerable<Book>> ExecuteAsync(GetRecentBooksQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             if (command.UserId == Guid.Empty)
             {
@@ -43,8 +41,7 @@ namespace Inshapardaz.Domain.Ports.Library
             }
 
             var books = await _bookRepository.GetRecentBooksByUser(command.UserId, command.Count, cancellationToken);
-            command.Result = await MarkFavorites(books, command.UserId, cancellationToken);
-            return await base.HandleAsync(command, cancellationToken);
+            return await MarkFavorites(books, command.UserId, cancellationToken);
         }
 
         private async Task<IEnumerable<Book>> MarkFavorites(IEnumerable<Book> books, Guid userId, CancellationToken cancellationToken)

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Inshapardaz.Domain.Entities.Library
+﻿namespace Inshapardaz.Domain.Entities.Library
 {
     public class Periodical
     {

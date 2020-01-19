@@ -1,18 +1,16 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories;
-using Paramore.Brighter;
-//using SixLabors.ImageSharp;
+using Paramore.Darker;
 using File = Inshapardaz.Domain.Entities.File;
 
 namespace Inshapardaz.Domain.Ports
 {
-    public class GetFileRequest : RequestBase
+    public class GetFileQuery : IQuery<File>
     {
-        public GetFileRequest(int imageId, int height, int width)
+        public GetFileQuery(int imageId, int height, int width)
         {
             ImageId = imageId;
             Height = height;
@@ -22,13 +20,10 @@ namespace Inshapardaz.Domain.Ports
         public int ImageId { get; private set; }
         public int Height { get; private set; }
         public int Width { get; private set; }
-
         public bool IsPublic { get; set; }
-
-        public File Response { get; set; }
     }
 
-    public class GetFileRequestHandler : RequestHandlerAsync<GetFileRequest>
+    public class GetFileRequestHandler : QueryHandlerAsync<GetFileQuery, File>
     {
         private readonly IFileRepository _fileRepository;
         private readonly IFileStorage _fileStorage;
@@ -39,16 +34,16 @@ namespace Inshapardaz.Domain.Ports
             _fileStorage = fileStorage;
         }
 
-        public override async Task<GetFileRequest> HandleAsync(GetFileRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<File> ExecuteAsync(GetFileQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            command.Response = await _fileRepository.GetFileById(command.ImageId, command.IsPublic, cancellationToken);
+            var file = await _fileRepository.GetFileById(query.ImageId, query.IsPublic, cancellationToken);
 
-            if (string.IsNullOrWhiteSpace(command.Response.FilePath))
+            if (string.IsNullOrWhiteSpace(file.FilePath))
             {
                 throw new NotFoundException();
             }
 
-            var contents = await _fileStorage.GetFile(command.Response.FilePath, cancellationToken);
+            var contents = await _fileStorage.GetFile(file.FilePath, cancellationToken);
             using (var stream = new MemoryStream(contents))
             /*using (var output = new MemoryStream())
             {
@@ -67,10 +62,10 @@ namespace Inshapardaz.Domain.Ports
                 }
             }*/
             {
-                command.Response.Contents = stream.ToArray();
+                file.Contents = stream.ToArray();
             }
 
-            return await base.HandleAsync(command, cancellationToken);
+            return file;
         }
 
         private bool IsImageFile(string mimeType)

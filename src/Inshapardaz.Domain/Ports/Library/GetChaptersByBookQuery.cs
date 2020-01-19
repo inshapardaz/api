@@ -1,36 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetChaptersByBookRequest : BookRequest
+    public class GetChaptersByBookQuery : IQuery<IEnumerable<Chapter>>
     {
-        public GetChaptersByBookRequest(int bookId, Guid userId)
-            : base(bookId, userId)
+        public GetChaptersByBookQuery(int bookId, Guid userId)
         {
+            UserId = userId;
+            BookId = bookId;
         }
 
-        public IEnumerable<Chapter> Result { get; set; }
+        public int BookId { get; set; }
+
+
+        public Guid UserId { get; set; }
     }
 
-    public class GetChaptersByBookRequestHandler : RequestHandlerAsync<GetChaptersByBookRequest>
+    public class GetChaptersByBookQuerytHandler : QueryHandlerAsync<GetChaptersByBookQuery, IEnumerable<Chapter>>
     {
         private readonly IChapterRepository _chapterRepository;
 
-        public GetChaptersByBookRequestHandler(IChapterRepository chapterRepository)
+        public GetChaptersByBookQuerytHandler(IChapterRepository chapterRepository)
         {
             _chapterRepository = chapterRepository;
         }
 
         [BookRequestValidation(1, HandlerTiming.Before)]
-        public override async Task<GetChaptersByBookRequest> HandleAsync(GetChaptersByBookRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<IEnumerable<Chapter>> ExecuteAsync(GetChaptersByBookQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             var chapters = await _chapterRepository.GetChaptersByBook(command.BookId, cancellationToken);
+
+            if (!chapters.Any()) return null;
 
             foreach (var chapter in chapters)
             {
@@ -38,9 +46,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 chapter.Contents = contents;
             }
 
-            command.Result = chapters;
-            
-            return await base.HandleAsync(command, cancellationToken);
+            return chapters;
         }
     }
 }

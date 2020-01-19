@@ -11,7 +11,6 @@ using Inshapardaz.Functions.Views.Library;
 using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook

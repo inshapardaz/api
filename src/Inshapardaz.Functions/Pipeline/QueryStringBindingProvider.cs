@@ -1,7 +1,5 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs.Host.Bindings;
-using Newtonsoft.Json;
 
 namespace Inshapardaz.Functions.Pipeline
 {

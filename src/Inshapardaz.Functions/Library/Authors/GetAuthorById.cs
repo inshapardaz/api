@@ -10,14 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Authors
 {
-    public class GetAuthorById : CommandBase
+    public class GetAuthorById : QueryBase
     {
-        public GetAuthorById(IAmACommandProcessor commandProcessor)
-        : base(commandProcessor)
+        public GetAuthorById(IQueryProcessor queryProcessor)
+        : base(queryProcessor)
         {
         }
 
@@ -29,12 +29,12 @@ namespace Inshapardaz.Functions.Library.Authors
             CancellationToken token)
         {
 
-            var request = new GetAuthorByIdRequest(authorId);
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            var query = new GetAuthorByIdQuery(authorId);
+            var author = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-            if (request.Result != null)
+            if (author != null)
             {
-                return new OkObjectResult(request.Result.Render(principal));
+                return new OkObjectResult(author.Render(principal));
             }
 
             return new NotFoundResult();

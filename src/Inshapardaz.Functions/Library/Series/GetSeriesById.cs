@@ -10,14 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Series
 {
-    public class GetSeriesById : CommandBase
+    public class GetSeriesById : QueryBase
     {
-        public GetSeriesById(IAmACommandProcessor commandProcessor)
-        : base(commandProcessor)
+        public GetSeriesById(IQueryProcessor queryProcessor)
+        : base(queryProcessor)
         {
         }
 
@@ -26,15 +26,15 @@ namespace Inshapardaz.Functions.Library.Series
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series/{id:int}")] HttpRequest req,
             ILogger log, int id, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var request = new GetSeriesByIdRequest(id);
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            var query = new GetSeriesByIdQuery(id);
+            var series = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-            if (request.Result == null)
+            if (series == null)
             {
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(request.Result.Render(principal));
+            return new OkObjectResult(series.Render(principal));
         }
 
         public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}", relType);

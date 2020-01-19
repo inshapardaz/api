@@ -10,14 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters
 {
-    public class GetChapterById : CommandBase
+    public class GetChapterById : QueryBase
     {
-        public GetChapterById(IAmACommandProcessor commandProcessor)
-            : base(commandProcessor)
+        public GetChapterById(IQueryProcessor queryProcessor)
+            : base(queryProcessor)
         {
         }
 
@@ -27,12 +27,12 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
             int bookId, int chapterId,
             ILogger log, ClaimsPrincipal principal, CancellationToken token)
         {
-            var request = new GetChapterByIdRequest(bookId, chapterId, principal.GetUserId());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            var query = new GetChapterByIdQuery(bookId, chapterId, principal.GetUserId());
+            var chapter = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-            if (request.Result != null)
+            if (chapter != null)
             {
-                return new OkObjectResult(request.Result.Render(principal));
+                return new OkObjectResult(chapter.Render(principal));
             }
 
             return new NotFoundResult();

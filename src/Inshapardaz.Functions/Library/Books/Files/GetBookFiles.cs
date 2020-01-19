@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,14 +10,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Books.Files
 {
-    public class GetBookFiles : CommandBase
+    public class GetBookFiles : QueryBase
     {
-        public GetBookFiles(IAmACommandProcessor commandProcessor) 
-        : base(commandProcessor)
+        public GetBookFiles(IQueryProcessor queryProcessor) 
+        : base(queryProcessor)
         {
         }
 
@@ -27,12 +28,12 @@ namespace Inshapardaz.Functions.Library.Books.Files
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-            var request = new GetFilesByBookRequest(bookId, principal.GetUserId());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            var query = new GetFilesByBookQuery(bookId, principal.GetUserId());
+            var files = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-            if (request.Result != null)
+            if (files != null)
             {
-                return new OkObjectResult(request.Result.Render(principal));
+                return new OkObjectResult(files.Render(principal));
             }
 
             return new NotFoundResult();

@@ -11,15 +11,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Books
 {
-    public class GetBooksByAuthor : CommandBase
+    public class GetBooksByAuthor : QueryBase
     {
-        public GetBooksByAuthor(IAmACommandProcessor commandProcessor)
-        : base(commandProcessor)
+        public GetBooksByAuthor(IQueryProcessor queryProcessor)
+        : base(queryProcessor)
         {
         }
 
@@ -33,12 +32,12 @@ namespace Inshapardaz.Functions.Library.Books
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var request = new GetBooksByAuthorRequest(authorId, pageNumber, pageSize) { UserId = principal.GetUserId()};
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            var query = new GetBooksByAuthorQuery(authorId, pageNumber, pageSize) { UserId = principal.GetUserId()};
+            var books = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             var args = new PageRendererArgs<Book>
             {
-                Page = request.Result,
+                Page = books,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
                 LinkFuncWithParameter = Link
             };

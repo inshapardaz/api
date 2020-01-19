@@ -10,15 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Series
 {
-    // TODO : Add paging to series
-    public class GetSeries : CommandBase
+    public class GetSeries : QueryBase
     {
-        public GetSeries(IAmACommandProcessor commandProcessor)
-        : base(commandProcessor)
+        public GetSeries(IQueryProcessor queryProcessor)
+        : base(queryProcessor)
         {
         }
 
@@ -27,10 +26,10 @@ namespace Inshapardaz.Functions.Library.Series
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series")] HttpRequest req,
             ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var request = new GetSeriesRequest();
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            var query = new GetSeriesQuery();
+            var series = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-            return new OkObjectResult(request.Result.Render(principal));
+            return new OkObjectResult(series.Render(principal));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("series", relType);

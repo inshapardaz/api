@@ -10,14 +10,14 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Files
 {
-    public class GetFileById : CommandBase
+    public class GetFileById : QueryBase
     {
-        public GetFileById(IAmACommandProcessor commandProcessor) 
-        : base(commandProcessor)
+        public GetFileById(IQueryProcessor queryProcessor) 
+        : base(queryProcessor)
         {
         }
 
@@ -29,15 +29,15 @@ namespace Inshapardaz.Functions.Library.Files
             CancellationToken token)
         {
             // TODO : Secure private files
-            var request = new GetFileRequest(fileId, 200, 200);
-            await CommandProcessor.SendAsync(request, true, token);
+            var query = new GetFileQuery(fileId, 200, 200);
+            var file = await QueryProcessor.ExecuteAsync(query, token);
 
-            if (request.Response == null)
+            if (file == null)
             {
                 return new NotFoundResult();
             }
 
-            return new FileContentResult(request.Response.Contents, new MediaTypeHeaderValue(request.Response.MimeType));
+            return new FileContentResult(file.Contents, new MediaTypeHeaderValue(file.MimeType));
 }
 
         public static LinkView Link(int fileId, string relType = RelTypes.Self) => SelfLink($"files/{fileId}", relType, "GET");        

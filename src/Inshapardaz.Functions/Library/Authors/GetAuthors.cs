@@ -12,14 +12,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Authors
 {
-    public class GetAuthors : CommandBase
+    public class GetAuthors : QueryBase
     {
-        public GetAuthors(IAmACommandProcessor commandProcessor) 
-        : base(commandProcessor)
+        public GetAuthors(IQueryProcessor queryProcessor) 
+        : base(queryProcessor)
         {
         }
 
@@ -34,12 +34,12 @@ namespace Inshapardaz.Functions.Library.Authors
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var request = new GetAuthorsRequest(pageNumber, pageSize) { Query = query };
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            var authorsQuery = new GetAuthorsQuery(pageNumber, pageSize) { Query = query };
+            var result = await QueryProcessor.ExecuteAsync(authorsQuery, token);
 
             var args = new PageRendererArgs<Author>
             {
-                Page = request.Result,
+                Page = result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
                 LinkFunc = Link
             };

@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetIssuesRequest :  RequestBase
+    public class GetIssuesQuery :  IQuery<Page<Issue>>
     {
-        public GetIssuesRequest(int periodicalId, int pageNumber, int pageSize)
+        public GetIssuesQuery(int periodicalId, int pageNumber, int pageSize)
         {
             PeriodicalId = periodicalId;
             PageNumber = pageNumber;
@@ -23,11 +21,9 @@ namespace Inshapardaz.Domain.Ports.Library
         public int PageNumber { get; private set; }
 
         public int PageSize { get; private set; }
-
-        public Page<Issue> Result { get; set; }
     }
 
-    public class GetIssuesRequestHandler : RequestHandlerAsync<GetIssuesRequest>
+    public class GetIssuesRequestHandler : QueryHandlerAsync<GetIssuesQuery, Page<Issue>>
     {
         private readonly IIssueRepository _issueRepository;
 
@@ -36,11 +32,9 @@ namespace Inshapardaz.Domain.Ports.Library
             _issueRepository = issueRepository;
         }
 
-        public override async Task<GetIssuesRequest> HandleAsync(GetIssuesRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<Page<Issue>> ExecuteAsync(GetIssuesQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            command.Result = await _issueRepository.GetIssues(command.PeriodicalId, command.PageNumber, command.PageSize, cancellationToken);
-           
-            return await base.HandleAsync(command, cancellationToken);
+            return await _issueRepository.GetIssues(command.PeriodicalId, command.PageNumber, command.PageSize, cancellationToken);
         }
     }
 }

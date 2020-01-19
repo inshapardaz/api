@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

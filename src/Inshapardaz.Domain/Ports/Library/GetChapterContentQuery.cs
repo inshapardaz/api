@@ -3,38 +3,41 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetChapterContentRequest : BookRequest
+    public class GetChapterContentQuery : IQuery<ChapterContent>
     {
-        public GetChapterContentRequest(int bookId, int chapterId, string mimeType, Guid userId)
-            : base(bookId, userId)
+        public GetChapterContentQuery(int bookId, int chapterId, string mimeType, Guid userId)
         {
+            UserId = userId;
+            BookId = bookId;
             ChapterId = chapterId;
             MimeType = mimeType;
         }
 
-        public string MimeType { get; set; }
+        public int BookId { get; set; }
 
         public int ChapterId { get; }
+        
+        public Guid UserId { get; set; }
 
-        public ChapterContent Result { get; set; }
+        public string MimeType { get; set; }
     }
 
-    public class GetChapterContentRequestHandler : RequestHandlerAsync<GetChapterContentRequest>
+    public class GetChapterContentQueryHandler : QueryHandlerAsync<GetChapterContentQuery, ChapterContent>
     {
         private readonly IBookRepository _bookRepository;
         private readonly IChapterRepository _chapterRepository;
 
-        public GetChapterContentRequestHandler(IBookRepository bookRepository, IChapterRepository chapterRepository)
+        public GetChapterContentQueryHandler(IBookRepository bookRepository, IChapterRepository chapterRepository)
         {
             _bookRepository = bookRepository;
             _chapterRepository = chapterRepository;
         }
 
-        public override async Task<GetChapterContentRequest> HandleAsync(GetChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ChapterContent> ExecuteAsync(GetChapterContentQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             var chapterContent = await _chapterRepository.GetChapterContent(command.BookId, command.ChapterId, command.MimeType, cancellationToken);
             if (chapterContent != null)
@@ -43,11 +46,9 @@ namespace Inshapardaz.Domain.Ports.Library
                 {
                     await _bookRepository.AddRecentBook(command.UserId, command.BookId, cancellationToken);
                 }
-                
-                command.Result = chapterContent;
             }
 
-            return await base.HandleAsync(command, cancellationToken);
+            return chapterContent;
         }
     }
 }

@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
-using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetBooksByCategoryRequest : RequestBase
+    public class GetBooksByCategoryQuery : IQuery<Page<Book>>
     {
-        public GetBooksByCategoryRequest(int categoryId, int pageNumber, int pageSize)
+        public GetBooksByCategoryQuery(int categoryId, int pageNumber, int pageSize)
         {
             CategoryId = categoryId;
             PageNumber = pageNumber;
@@ -24,26 +24,23 @@ namespace Inshapardaz.Domain.Ports.Library
         public int PageSize { get; private set; }
 
         public Guid UserId { get; set; }
-
-        public Page<Book> Result { get; set; }
     }
 
-    public class GetBooksByCategoryRequestHandler : RequestHandlerAsync<GetBooksByCategoryRequest>
+    public class GetBooksByCategoryQueryHandler : QueryHandlerAsync<GetBooksByCategoryQuery, Page<Book>>
     {
         private readonly IBookRepository _bookRepository;
         private readonly IFavoriteRepository _favoriteRepository;
 
-        public GetBooksByCategoryRequestHandler(IBookRepository bookRepository, IFavoriteRepository favoriteRepository)
+        public GetBooksByCategoryQueryHandler(IBookRepository bookRepository, IFavoriteRepository favoriteRepository)
         {
             _bookRepository = bookRepository;
             _favoriteRepository = favoriteRepository;
         }
 
-        public override async Task<GetBooksByCategoryRequest> HandleAsync(GetBooksByCategoryRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<Page<Book>> ExecuteAsync(GetBooksByCategoryQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             var books = await _bookRepository.GetBooksByCategory(command.CategoryId, command.PageNumber, command.PageSize, cancellationToken);
-            command.Result = await MarkFavorites(books, command.UserId, cancellationToken);
-            return await base.HandleAsync(command, cancellationToken);
+            return await MarkFavorites(books, command.UserId, cancellationToken);
         }
 
         private async Task<Page<Book>> MarkFavorites(Page<Book> books, Guid userId, CancellationToken cancellationToken)

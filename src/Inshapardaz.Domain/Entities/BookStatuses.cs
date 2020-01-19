@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Inshapardaz.Domain.Entities
+﻿namespace Inshapardaz.Domain.Entities
 {
     public enum BookStatuses
     {

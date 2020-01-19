@@ -4,42 +4,46 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Entities.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetChapterByIdRequest : BookRequest
+    public class GetChapterByIdQuery : IQuery<Chapter>
     {
-        public GetChapterByIdRequest(int bookId, int chapterId, Guid userId)
-            : base(bookId, userId)
+        public GetChapterByIdQuery(int bookId, int chapterId, Guid userId)
         {
+            UserId = userId;
+            BookId = bookId;
             ChapterId = chapterId;
         }
 
-        public Chapter Result { get; set; }
+        public int BookId { get; set; }
+
         public int ChapterId { get; }
+
+        public Guid UserId { get; set; }
     }
 
-    public class GetChapterByIdRequestHandler : RequestHandlerAsync<GetChapterByIdRequest>
+    public class GetChapterByIdQueryHandler : QueryHandlerAsync<GetChapterByIdQuery, Chapter>
     {
         private readonly IChapterRepository _chapterRepository;
 
-        public GetChapterByIdRequestHandler(IChapterRepository chapterRepository)
+        public GetChapterByIdQueryHandler(IChapterRepository chapterRepository)
         {
             _chapterRepository = chapterRepository;
         }
 
         [BookRequestValidation(1, HandlerTiming.Before)]
-        public override async Task<GetChapterByIdRequest> HandleAsync(GetChapterByIdRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<Chapter> ExecuteAsync(GetChapterByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             var chapter = await _chapterRepository.GetChapterById(command.ChapterId, cancellationToken);
 
             if (chapter != null)
             {
                 chapter.Contents = await _chapterRepository.GetChapterContents(command.BookId, command.ChapterId, cancellationToken);
-                command.Result = chapter;
             }
 
-            return await base.HandleAsync(command, cancellationToken);
+            return chapter;
         }
     }
 }

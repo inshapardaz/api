@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
@@ -37,7 +37,7 @@ namespace Inshapardaz.Functions.Library.Authors
             var authorsQuery = new GetAuthorsQuery(pageNumber, pageSize) { Query = query };
             var result = await QueryProcessor.ExecuteAsync(authorsQuery, token);
 
-            var args = new PageRendererArgs<Author>
+            var args = new PageRendererArgs<AuthorModel>
             {
                 Page = result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },

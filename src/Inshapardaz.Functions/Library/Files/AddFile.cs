@@ -55,7 +55,7 @@ namespace Inshapardaz.Functions.Library.Files
                 mimeType = fileContent.Headers?.ContentType.MediaType;
             }
 
-            var request = new AddFileRequest(new Domain.Entities.File
+            var request = new AddFileRequest(new Domain.Models.FileModel
             {
                 FileName = fileName,
                 MimeType = mimeType,

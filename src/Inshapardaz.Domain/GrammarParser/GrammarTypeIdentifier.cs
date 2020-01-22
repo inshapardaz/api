@@ -1,16 +1,16 @@
 ﻿using System;
-using Inshapardaz.Domain.Entities.Dictionaries;
+using Inshapardaz.Domain.Models.Dictionaries;
 
 namespace Inshapardaz.Domain.GrammarParser
 {
     public static class GrammarTypeIdentifier
     {
-        public static bool IsIsmSift(this Word w)
+        public static bool IsIsmSift(this WordModel w)
         {
             return (w.Attributes & GrammaticalType.Sift ) == GrammaticalType.Sift;
         }
 
-        public static bool IsIsm(this Word w)
+        public static bool IsIsm(this WordModel w)
         {
             if ((w.Attributes & GrammaticalType.Ism) == GrammaticalType.Ism)
             {
@@ -24,12 +24,12 @@ namespace Inshapardaz.Domain.GrammarParser
             return false;
         }
 
-        public static bool IsIsmIshara(this Word w)
+        public static bool IsIsmIshara(this WordModel w)
         {
             return (w.Attributes & GrammaticalType.IsmIshara) == GrammaticalType.IsmIshara;
         }
 
-        public static bool IsHarf(this Word w)
+        public static bool IsHarf(this WordModel w)
         {
             if ((w.Attributes & GrammaticalType.Harf) == GrammaticalType.Harf)
             {
@@ -45,17 +45,17 @@ namespace Inshapardaz.Domain.GrammarParser
 
         #region Haroof
 
-        public static  bool IsHarfEJar(this Word w)
+        public static  bool IsHarfEJar(this WordModel w)
         {
             return (w.Attributes & GrammaticalType.HarfJaar) == GrammaticalType.HarfJaar;
         }
 
-        public static bool IsHarfENida(this Word w)
+        public static bool IsHarfENida(this WordModel w)
         {
             return (w.Attributes & GrammaticalType.HarfNida) == GrammaticalType.HarfNida;
         }
 
-        public static bool IsHarfETakeed(this Word w)
+        public static bool IsHarfETakeed(this WordModel w)
         {
             return (w.Attributes & GrammaticalType.HarfTakeed) == GrammaticalType.HarfTakeed;
         }
@@ -64,68 +64,68 @@ namespace Inshapardaz.Domain.GrammarParser
 
         #region Alamat
 
-        public static bool IsAlamatNafi(this Word w)
+        public static bool IsAlamatNafi(this WordModel w)
         {
             return (w.Attributes & GrammaticalType.HarfNafi) == GrammaticalType.HarfNafi;
         }
         
-        public static bool IsAlamatFail(this Word w)
+        public static bool IsAlamatFail(this WordModel w)
         {
             return w.Title == "نے";
         }
 
-        public static bool IsAlamatMafool(this Word w)
+        public static bool IsAlamatMafool(this WordModel w)
         {
             return w.Title == "کو";
         }
 
         #endregion
-        public static bool IsAmr(this Word w)
+        public static bool IsAmr(this WordModel w)
         {
             return w.Title == "آ";
         }
 
-        public static bool IsFealNaqis(this Word w)
+        public static bool IsFealNaqis(this WordModel w)
         {
             return (w.Attributes & GrammaticalType.FealNakis) == GrammaticalType.FealNakis;
         }
 
-        public static bool IsFealNaqisHall(this Word w)
+        public static bool IsFealNaqisHall(this WordModel w)
         {
             throw new NotImplementedException();
         }
 
-        public static bool IsFealNaqisMazi(this Word w)
+        public static bool IsFealNaqisMazi(this WordModel w)
         {
             throw new NotImplementedException();
         }
 
-        public static bool IsFealNaqisMustaqbil(this Word w)
+        public static bool IsFealNaqisMustaqbil(this WordModel w)
         {
             throw new NotImplementedException();
         }
 
-        public static bool IsFeal(this Word w)
+        public static bool IsFeal(this WordModel w)
         {
             return (w.Attributes & GrammaticalType.Feal) == GrammaticalType.Feal;
         }
 
-        public static bool IsFealHaal(this Word w)
+        public static bool IsFealHaal(this WordModel w)
         {
             throw new NotImplementedException();
         }
 
-        public static bool IsFealMuzaray(this Word w)
+        public static bool IsFealMuzaray(this WordModel w)
         {
             throw new NotImplementedException();
         }
 
-        public static bool IsFealMaziMutlaq(this Word w)
+        public static bool IsFealMaziMutlaq(this WordModel w)
         {
             throw new NotImplementedException();
         }
 
-        public static bool IsMight(this Word w)
+        public static bool IsMight(this WordModel w)
         {
             var word = w.Title;
             return word == "ہوگا" ||
@@ -136,14 +136,14 @@ namespace Inshapardaz.Domain.GrammarParser
                    word == "ہونگی";
         }
 
-        public static bool IsWill(this Word w)
+        public static bool IsWill(this WordModel w)
         {
             var word = w.Title;
             return word == "گا" ||
                    word == "گی" ||
                    word == "گے" ;
         }
-        public static bool IsUsedTo(this Word w)
+        public static bool IsUsedTo(this WordModel w)
         {
             var word = w.Title;
             return word == "کرتا" ||
@@ -151,7 +151,7 @@ namespace Inshapardaz.Domain.GrammarParser
                    word == "کربتے" ||
                    word == "کرتیں";
         }
-        public static bool IsWould(this Word w)
+        public static bool IsWould(this WordModel w)
         {
             var word = w.Title;
             return word == "ہوتا" ||
@@ -160,12 +160,12 @@ namespace Inshapardaz.Domain.GrammarParser
                    word == "ہوتیں";
         }   
 
-        public static bool IsHo(this Word w)
+        public static bool IsHo(this WordModel w)
         {
             var word = w.Title;
             return word == "ہو";
         }
-        public static bool IsDoing(this Word w)
+        public static bool IsDoing(this WordModel w)
         {
             var word = w.Title;
             return word == "رہا" ||
@@ -173,7 +173,7 @@ namespace Inshapardaz.Domain.GrammarParser
                    word == "رہے" ||
                    word == "رہیں";
         }
-        public static bool IsHad(this Word w)
+        public static bool IsHad(this WordModel w)
         {
             var word = w.Title;
             return word == "چکا" ||

@@ -6,8 +6,8 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
-using Chapter = Inshapardaz.Domain.Entities.Library.Chapter;
-using ChapterContent = Inshapardaz.Domain.Entities.Library.ChapterContent;
+using ChapterModel = Inshapardaz.Domain.Models.Library.ChapterModel;
+using ChapterContentModel = Inshapardaz.Domain.Models.Library.ChapterContentModel;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
@@ -22,7 +22,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             _fileStorage = fileStorage;
         }
 
-        public async Task<Chapter> AddChapter(int bookId, Chapter chapter, CancellationToken cancellationToken)
+        public async Task<ChapterModel> AddChapter(int bookId, ChapterModel chapter, CancellationToken cancellationToken)
         {
             var book = await _databaseContext.Book
                                                .SingleOrDefaultAsync(t => t.Id == bookId,
@@ -42,7 +42,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             return item.Map();
         }
 
-        public async Task UpdateChapter(Chapter chapter, CancellationToken cancellationToken)
+        public async Task UpdateChapter(ChapterModel chapter, CancellationToken cancellationToken)
         {
             var existingEntity = await _databaseContext.Chapter
                                                        .SingleOrDefaultAsync(g => g.Id == chapter.Id,
@@ -82,7 +82,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
         }
 
-        public async Task<IEnumerable<Chapter>> GetChaptersByBook(int bookId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ChapterModel>> GetChaptersByBook(int bookId, CancellationToken cancellationToken)
         {
             return await _databaseContext.Chapter
                                          .Where(c => c.BookId == bookId)
@@ -97,7 +97,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                          .CountAsync(c => c.BookId == bookId, cancellationToken);
         }
 
-        public async Task<IEnumerable<ChapterContent>> GetChapterContents(int bookId, int chapterId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ChapterContentModel>> GetChapterContents(int bookId, int chapterId, CancellationToken cancellationToken)
         {
             return await _databaseContext.ChapterContent
                                          .Include(c => c.Chapter)
@@ -107,7 +107,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                          .ToArrayAsync(cancellationToken);
         }
 
-        public async Task<ChapterContent> GetChapterContentById(int bookId, int chapterId, int id, CancellationToken cancellationToken)
+        public async Task<ChapterContentModel> GetChapterContentById(int bookId, int chapterId, int id, CancellationToken cancellationToken)
         {
             var chapterContent = await _databaseContext.ChapterContent
                                                        .Include(c => c.Chapter)
@@ -129,7 +129,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             return null;
         }
 
-        public async Task<ChapterContent> GetChapterContent(int bookId, int chapterId, string mimeType, CancellationToken cancellationToken)
+        public async Task<ChapterContentModel> GetChapterContent(int bookId, int chapterId, string mimeType, CancellationToken cancellationToken)
         {
             var chapterContent = await _databaseContext.ChapterContent
                                                        .Include(c => c.Chapter)
@@ -151,7 +151,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             return null;
         }
 
-        public async Task<ChapterContent> AddChapterContent(int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken)
+        public async Task<ChapterContentModel> AddChapterContent(int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken)
         {
             var name = GenerateChapterContentUrl(bookId, chapterId, mimeType);
             var actualUrl = await _fileStorage.StoreTextFile(name, contents, cancellationToken);
@@ -207,7 +207,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
         }
 
-        public async Task<Chapter> GetChapterById(int chapterId, CancellationToken cancellationToken)
+        public async Task<ChapterModel> GetChapterById(int chapterId, CancellationToken cancellationToken)
         {
             var chapter = await _databaseContext.Chapter
                                                 .Include(c => c.Contents)

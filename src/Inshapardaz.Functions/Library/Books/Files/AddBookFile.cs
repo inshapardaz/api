@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
@@ -55,7 +55,7 @@ namespace Inshapardaz.Functions.Library.Books.Files
 
             var request = new AddBookFileRequest(bookId)
             {
-                Content = new File
+                Content = new FileModel
                 {
                     Contents = content,
                     MimeType = mimeType,

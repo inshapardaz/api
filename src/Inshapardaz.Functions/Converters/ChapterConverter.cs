@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Books.Chapters;
 using Inshapardaz.Functions.Library.Books.Chapters.Contents;
+using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 
@@ -13,7 +14,7 @@ namespace Inshapardaz.Functions.Converters
 {
     public static class ChapterConverter 
     {
-        public static ListView<ChapterView> Render(this IEnumerable<Chapter> source, int bookId, ClaimsPrincipal principal)
+        public static ListView<ChapterView> Render(this IEnumerable<ChapterModel> source, int bookId, ClaimsPrincipal principal)
         {
             var items = source.Select(c => c.Render(principal));
             var view = new ListView<ChapterView> { Items = items };
@@ -27,7 +28,7 @@ namespace Inshapardaz.Functions.Converters
             return view;
         }
 
-        public static ChapterView Render(this Chapter source, ClaimsPrincipal principal)
+        public static ChapterView Render(this ChapterModel source, ClaimsPrincipal principal)
         {
             var result = source.Map();
             var links = new List<LinkView>
@@ -66,7 +67,7 @@ namespace Inshapardaz.Functions.Converters
             return result;
         }
 
-        public static ChapterContentView Render (this ChapterContent source, ClaimsPrincipal principal)
+        public static ChapterContentView Render (this ChapterContentModel source, ClaimsPrincipal principal)
         {
             var result = source.Map();
 

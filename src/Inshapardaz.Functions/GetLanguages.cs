@@ -3,12 +3,12 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Inshapardaz.Functions.Views;
 using System;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Models;
 using System.Linq;
 using System.Collections.Generic;
 using Paramore.Brighter;
+using Inshapardaz.Functions.Views;
 
 namespace Inshapardaz.Functions
 {

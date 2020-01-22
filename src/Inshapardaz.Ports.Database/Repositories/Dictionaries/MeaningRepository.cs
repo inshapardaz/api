@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities.Dictionaries;
+using Inshapardaz.Domain.Models.Dictionaries;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Dictionaries;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             _databaseContext = databaseContext;
         }
 
-        public async Task<Meaning> AddMeaning(int dictionaryId, long wordId, Meaning meaning, CancellationToken cancellationToken)
+        public async Task<MeaningModel> AddMeaning(int dictionaryId, long wordId, MeaningModel meaning, CancellationToken cancellationToken)
         {
             var word = await _databaseContext.Word.SingleOrDefaultAsync(
                 w => w.Id == wordId && w.DictionaryId == dictionaryId,
@@ -51,7 +51,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<Meaning> GetMeaningById(int dictionaryId, long wordId, long meaningId, CancellationToken cancellationToken)
+        public async Task<MeaningModel> GetMeaningById(int dictionaryId, long wordId, long meaningId, CancellationToken cancellationToken)
         {
             var meaning = await _databaseContext.Meaning
                                                 .SingleOrDefaultAsync(m => m.Id == meaningId && 
@@ -60,7 +60,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             return meaning.Map();
         }
 
-        public async Task UpdateMeaning(int dictionaryId, IFormattable wordId, Meaning meaning, CancellationToken cancellationToken)
+        public async Task UpdateMeaning(int dictionaryId, IFormattable wordId, MeaningModel meaning, CancellationToken cancellationToken)
         {
             var oldMeaning = await _databaseContext.Meaning.SingleOrDefaultAsync(
                 m => m.Id == meaning.Id && m.Word.DictionaryId == dictionaryId,
@@ -78,7 +78,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Meaning>> GetMeaningByContext(int dictionaryId, long wordId, string context, CancellationToken cancellationToken)
+        public async Task<IEnumerable<MeaningModel>> GetMeaningByContext(int dictionaryId, long wordId, string context, CancellationToken cancellationToken)
         {
             return await _databaseContext.Meaning
                                            .Where(m => m.Context == context &&
@@ -88,7 +88,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                                            .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Meaning>> GetMeaningByWordId(int dictionaryId, long wordId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<MeaningModel>> GetMeaningByWordId(int dictionaryId, long wordId, CancellationToken cancellationToken)
         {
             return await _databaseContext.Meaning
                                           .Where(m => m.WordId == wordId &&

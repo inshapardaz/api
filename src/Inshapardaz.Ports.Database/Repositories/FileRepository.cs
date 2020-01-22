@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -16,13 +16,13 @@ namespace Inshapardaz.Ports.Database.Repositories
             _databaseContext = databaseContext;
         }
 
-        public async Task<File> GetFileById(int id, bool isPublic, CancellationToken cancellationToken)
+        public async Task<FileModel> GetFileById(int id, bool isPublic, CancellationToken cancellationToken)
         {
             var file = await _databaseContext.File.SingleOrDefaultAsync(i => i.Id == id && (!isPublic || i.IsPublic == isPublic), cancellationToken);
             return file.Map();
         }
 
-        public async Task<File> AddFile(File file, string url, bool isPublic, CancellationToken cancellationToken)
+        public async Task<FileModel> AddFile(FileModel file, string url, bool isPublic, CancellationToken cancellationToken)
         {
             var entity = file.Map();
 
@@ -35,7 +35,7 @@ namespace Inshapardaz.Ports.Database.Repositories
             return entity.Map();
         }
 
-        public async Task<File> UpdateFile(File file, string url, bool isPublic, CancellationToken cancellationToken)
+        public async Task<FileModel> UpdateFile(FileModel file, string url, bool isPublic, CancellationToken cancellationToken)
         {
             var entity = await _databaseContext.File.SingleOrDefaultAsync(f => f.Id == file.Id, cancellationToken);
             if (entity == null)

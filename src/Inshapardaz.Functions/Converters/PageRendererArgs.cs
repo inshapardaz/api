@@ -1,5 +1,5 @@
 ﻿using System;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Functions.Views;
 
 namespace Inshapardaz.Functions.Converters

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Series;
+using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 
@@ -12,7 +13,7 @@ namespace Inshapardaz.Functions.Converters
 {
     public static class SeriesRenderer
     {
-        public static ListView<SeriesView> Render(this IEnumerable<Series> seriesList, ClaimsPrincipal principal)
+        public static ListView<SeriesView> Render(this IEnumerable<SeriesModel> seriesList, ClaimsPrincipal principal)
         {
             var items = seriesList.Select(g => g.Render(principal));
             var view = new ListView<SeriesView> { Items = items };
@@ -26,7 +27,7 @@ namespace Inshapardaz.Functions.Converters
             return view;
         }
 
-        public static SeriesView Render(this Series series, ClaimsPrincipal principal)
+        public static SeriesView Render(this SeriesModel series, ClaimsPrincipal principal)
         {
             var view = series.Map();
 

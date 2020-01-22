@@ -53,7 +53,7 @@ namespace Inshapardaz.Functions.Library.Books
 
             var request = new UpdateBookImageRequest(bookId)
             {
-                Image = new Domain.Entities.File
+                Image = new Domain.Models.FileModel
                 {
                     FileName = fileName,
                     MimeType = mimeType,

@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities;
-using Inshapardaz.Domain.Entities.Dictionaries;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Dictionaries;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Dictionaries;
@@ -20,7 +20,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             _databaseContext = databaseContext;
         }
 
-        public async Task<Word> AddWord(int dictionaryId, Word word, CancellationToken cancellationToken)
+        public async Task<WordModel> AddWord(int dictionaryId, WordModel word, CancellationToken cancellationToken)
         {
             var dictionary = await _databaseContext.Dictionary
                                                    .SingleOrDefaultAsync(d => d.Id == dictionaryId, cancellationToken);
@@ -51,7 +51,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task UpdateWord(int dictionaryId, Word word, CancellationToken cancellationToken)
+        public async Task UpdateWord(int dictionaryId, WordModel word, CancellationToken cancellationToken)
         {
             var oldWord = await _databaseContext.Word.SingleOrDefaultAsync(
                 w => w.Id == word.Id & w.DictionaryId == dictionaryId,
@@ -72,19 +72,19 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<Word> GetWordById(int dictionaryId, long wordId, CancellationToken cancellationToken)
+        public async Task<WordModel> GetWordById(int dictionaryId, long wordId, CancellationToken cancellationToken)
         {
             var word = await _databaseContext.Word.SingleOrDefaultAsync(w => w.Id == wordId && w.DictionaryId == dictionaryId, cancellationToken);
             return word.Map();
         }
 
-        public async Task<Word> GetWordByTitle(int dictionaryId, string title, CancellationToken cancellationToken)
+        public async Task<WordModel> GetWordByTitle(int dictionaryId, string title, CancellationToken cancellationToken)
         {
             var word = await _databaseContext.Word.SingleOrDefaultAsync(w => w.Title == title && w.DictionaryId == dictionaryId, cancellationToken);
             return word.Map();
         }
 
-        public async Task<Page<Word>> GetWordsById(int dictionaryId, IEnumerable<long> wordIds, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<WordModel>> GetWordsById(int dictionaryId, IEnumerable<long> wordIds, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var wordIndices = dictionaryId > 0
                 ? _databaseContext.Word.Where(
@@ -97,7 +97,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                              .Select(w => w.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Word>
+            return new Page<WordModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -107,7 +107,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
         }
 
 
-        public async Task<IEnumerable<Word>> GetWordsByTitles(int dictionaryId, IEnumerable<string> titles, CancellationToken cancellationToken)
+        public async Task<IEnumerable<WordModel>> GetWordsByTitles(int dictionaryId, IEnumerable<string> titles, CancellationToken cancellationToken)
         {
             return await _databaseContext.Word
                                   .Where(x => x.DictionaryId == dictionaryId && titles.Contains(x.Title))
@@ -115,7 +115,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                                   .ToListAsync(cancellationToken);
         }
 
-        public async Task<Page<Word>> GetWordsContaining(int dictionaryId, string searchTerm, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<WordModel>> GetWordsContaining(int dictionaryId, string searchTerm, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var words = dictionaryId > 0
                 ? _databaseContext.Word.Where(
@@ -128,7 +128,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                              .Select(w => w.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Word>
+            return new Page<WordModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -137,7 +137,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             };
         }
 
-        public async Task<Page<Word>> GetWords(int dictionaryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<WordModel>> GetWords(int dictionaryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var words = _databaseContext.Word.Where(x => x.DictionaryId == dictionaryId);
 
@@ -147,7 +147,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                              .Select(w => w.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Word>
+            return new Page<WordModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -161,7 +161,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             return  await _databaseContext.Word.CountAsync(d => d.DictionaryId == dictionaryId, cancellationToken);
         }
 
-        public async Task<Page<Word>> GetWordsStartingWith(int dictionaryId, string startingWith, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<WordModel>> GetWordsStartingWith(int dictionaryId, string startingWith, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var words = _databaseContext.Word.Where(x => x.DictionaryId == dictionaryId);
 
@@ -172,7 +172,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                              .Select(w => w.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Word>
+            return new Page<WordModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,

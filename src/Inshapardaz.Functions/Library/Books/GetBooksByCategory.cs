@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
@@ -35,7 +35,7 @@ namespace Inshapardaz.Functions.Library.Books
             var request = new GetBooksByCategoryQuery(categoryId, pageNumber, pageSize) { UserId = principal.GetUserId() };
             var books = await QueryProcessor.ExecuteAsync(request, cancellationToken: token);
 
-            var args = new PageRendererArgs<Book>
+            var args = new PageRendererArgs<BookModel>
             {
                 Page = books,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },

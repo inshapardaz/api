@@ -1,5 +1,5 @@
-﻿using Inshapardaz.Domain.Entities;
-using Inshapardaz.Domain.Entities.Library;
+﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;

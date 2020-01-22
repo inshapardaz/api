@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Ports.Database.Entities.Library
 {

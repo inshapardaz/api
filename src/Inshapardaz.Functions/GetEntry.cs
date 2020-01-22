@@ -4,11 +4,11 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
-using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Commands;
 using Inshapardaz.Functions.Authentication;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Inshapardaz.Functions.Views;
 
 namespace Inshapardaz.Functions
 {

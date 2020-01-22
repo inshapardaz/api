@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Ports.Database.Entities.Dictionaries
 {

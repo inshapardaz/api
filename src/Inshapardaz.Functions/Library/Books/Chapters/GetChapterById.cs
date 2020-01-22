@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Converters;
-using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +10,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Paramore.Darker;
+using Inshapardaz.Functions.Views;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters
 {

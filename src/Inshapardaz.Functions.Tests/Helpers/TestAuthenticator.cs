@@ -6,12 +6,38 @@ using Newtonsoft.Json;
 
 namespace Inshapardaz.Functions.Tests.Helpers
 {
+    public enum AuthenticationLevel
+    {
+        Unauthorized,
+        Reader,
+        Writer,
+        Administrator
+    }
+
     public static class AuthenticationBuilder
     {
         private const string AdminRole = "admin";
         private const string WriteRole = "writer";
         private const string ReaderRole = "reader";
         private const string IdentityClaimsName = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+
+        public static ClaimsPrincipal CreateClaim(AuthenticationLevel authenticationLevel)
+        {
+            switch (authenticationLevel)
+            {
+                case AuthenticationLevel.Reader:
+                    return ReaderClaim;
+
+                case AuthenticationLevel.Writer:
+                    return WriterClaim;
+
+                case AuthenticationLevel.Administrator:
+                    return AdminClaim;
+
+                default:
+                    return Unauthorized;
+            }
+        }
 
         public static ClaimsPrincipal AdminClaim => CreateClaimsPrincipalWithRole(AdminRole);
 
@@ -31,7 +57,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
             var authenticationData = new UserAuthenticationData
             {
                 Groups = new string[0],
-                Roles = new string[1] {role},
+                Roles = new string[1] { role },
                 Permissions = new string[0],
             };
             var claims = new List<Claim>
@@ -43,8 +69,12 @@ namespace Inshapardaz.Functions.Tests.Helpers
             return new ClaimsPrincipal(identity);
         }
 
-        public static Guid GetUserId(this ClaimsPrincipal principal) => 
-            Guid.Parse(principal.Claims.FirstOrDefault( c => c.Type == IdentityClaimsName)?.Value ?? Guid.Empty.ToString());
+        public static Guid GetUserId(this ClaimsPrincipal principal) =>
+            Guid.Parse(principal.Claims.FirstOrDefault(c => c.Type == IdentityClaimsName)?.Value ?? Guid.Empty.ToString());
+
+        public static bool CanEdit(this AuthenticationLevel authenticationLevel) =>
+            authenticationLevel == AuthenticationLevel.Administrator ||
+            authenticationLevel == AuthenticationLevel.Writer;
     }
 
     internal class UserAuthenticationData

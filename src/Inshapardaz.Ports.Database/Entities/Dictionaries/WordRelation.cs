@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Domain.Entities.Dictionaries;
+﻿using Inshapardaz.Domain.Models.Dictionaries;
 
 namespace Inshapardaz.Ports.Database.Entities.Dictionaries
 {

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
@@ -19,7 +19,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             _databaseContext = databaseContext;
         }
 
-        public async Task<Author> AddAuthor(Author author, CancellationToken cancellationToken)
+        public async Task<AuthorModel> AddAuthor(AuthorModel author, CancellationToken cancellationToken)
         {
             var item = author.Map();
             _databaseContext.Author.Add(item);
@@ -29,7 +29,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             return item.Map();
         }
 
-        public async Task UpdateAuthor(Author author, CancellationToken cancellationToken)
+        public async Task UpdateAuthor(AuthorModel author, CancellationToken cancellationToken)
         {
             var existingEntity = await _databaseContext.Author
                                                        .SingleOrDefaultAsync(g => g.Id == author.Id,
@@ -62,7 +62,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<Page<Author>> GetAuthors(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<AuthorModel>> GetAuthors(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var author = _databaseContext.Author;
 
@@ -72,7 +72,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                              .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Author>
+            return new Page<AuthorModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -81,7 +81,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             };
         }
 
-        public async Task<Author> GetAuthorById(int authorId, CancellationToken cancellationToken)
+        public async Task<AuthorModel> GetAuthorById(int authorId, CancellationToken cancellationToken)
         {
             var author = await _databaseContext.Author
                                                .SingleOrDefaultAsync(t => t.Id == authorId,
@@ -89,7 +89,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             return author.Map();
         }
 
-        public async Task<Page<Author>> FindAuthors(string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<AuthorModel>> FindAuthors(string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var author = _databaseContext.Author;
 
@@ -100,7 +100,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                              .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Author>
+            return new Page<AuthorModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,

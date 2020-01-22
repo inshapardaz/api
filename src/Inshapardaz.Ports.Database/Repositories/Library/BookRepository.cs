@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
 using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.EntityFrameworkCore;
-using Book = Inshapardaz.Domain.Entities.Library.Book;
+using BookModel = Inshapardaz.Domain.Models.Library.BookModel;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
@@ -22,7 +22,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             _databaseContext = databaseContext;
         }
 
-        public async Task<Book> AddBook(Book book, CancellationToken cancellationToken)
+        public async Task<BookModel> AddBook(BookModel book, CancellationToken cancellationToken)
         {
             var author = await _databaseContext.Author
                                              .SingleOrDefaultAsync(t => t.Id == book.AuthorId,
@@ -67,7 +67,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             return newBook.Map();
         }
 
-        public async Task UpdateBook(Book book, CancellationToken cancellationToken)
+        public async Task UpdateBook(BookModel book, CancellationToken cancellationToken)
         {
             var existingEntity = await _databaseContext.Book
                                                        .SingleOrDefaultAsync(g => g.Id == book.Id,
@@ -121,7 +121,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<Page<Book>> GetBooks(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetBooks(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var book = _databaseContext.Book
                         .Include(b => b.Author)
@@ -135,7 +135,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                              .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Book>
+            return new Page<BookModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -144,7 +144,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             };
         }
 
-        public async Task<Page<Book>> SearchBooks(string searchText, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> SearchBooks(string searchText, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var query = _databaseContext.Book
                             .Include(b => b.Author)
@@ -158,7 +158,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                              .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Book>
+            return new Page<BookModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -167,7 +167,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             };
         }
 
-        public async Task<IEnumerable<Book>> GetLatestBooks(CancellationToken cancellationToken)
+        public async Task<IEnumerable<BookModel>> GetLatestBooks(CancellationToken cancellationToken)
         {
             return await _databaseContext.Book
                                         .Include(b => b.Author)
@@ -180,7 +180,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                         .ToListAsync(cancellationToken);
         }
 
-        public async Task<Page<Book>> GetBooksByCategory(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetBooksByCategory(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var book = _databaseContext.Book
                         .Include(b => b.Author)
@@ -195,7 +195,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                              .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Book>
+            return new Page<BookModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -204,7 +204,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             };
         }
 
-        public async Task<Page<Book>> GetBooksByAuthor(int authorId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetBooksByAuthor(int authorId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var book = _databaseContext
                         .Book
@@ -220,7 +220,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                              .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Book>
+            return new Page<BookModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -229,7 +229,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             };
         }
 
-        public async Task<Page<Book>> GetBooksBySeries(int seriesId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetBooksBySeries(int seriesId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var book = _databaseContext
                        .Book
@@ -246,7 +246,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                              .Select(a => a.Map())
                              .ToListAsync(cancellationToken);
 
-            return new Page<Book>
+            return new Page<BookModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -255,7 +255,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             };
         }
 
-        public async Task<Book> GetBookById(int bookId, CancellationToken cancellationToken)
+        public async Task<BookModel> GetBookById(int bookId, CancellationToken cancellationToken)
         {
             var book = await _databaseContext.Book
                                              .Include(b => b.Author)
@@ -308,7 +308,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Book>> GetRecentBooksByUser(Guid userId, int count, CancellationToken cancellationToken)
+        public async Task<IEnumerable<BookModel>> GetRecentBooksByUser(Guid userId, int count, CancellationToken cancellationToken)
         {
             var recents = await _databaseContext.RecentBooks
                                                 .Include(r => r.Book)
@@ -347,7 +347,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
         }
 
-        public async Task<File> GetBookFileById(int bookId, int fileId, CancellationToken cancellationToken)
+        public async Task<FileModel> GetBookFileById(int bookId, int fileId, CancellationToken cancellationToken)
         {
             var bookFile = await _databaseContext.BookFiles
                                                  .Include(b=> b.File)
@@ -356,7 +356,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             return bookFile?.File.Map();
         }
 
-        public async Task<IEnumerable<File>> GetFilesByBook(int bookId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<FileModel>> GetFilesByBook(int bookId, CancellationToken cancellationToken)
         {
             var files = await _databaseContext.BookFiles
                                               .Include(bf => bf.File)

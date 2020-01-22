@@ -1,5 +1,6 @@
 ﻿using System;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Functions.Dictionaries;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Books.Chapters;
@@ -26,15 +27,16 @@ namespace Inshapardaz.Functions.Tests
         {
             _builder = new TestHostBuilder();
             _startup = new Startup();
-            
+
             DatabaseContext = CreateDbContext();
-            
+
             _builder.Services.AddSingleton<IDatabaseContext>(sp => DatabaseContext);
             _builder.Services.AddTransient<CategoriesDataBuilder>()
                              .AddTransient<SeriesDataBuilder>()
                              .AddTransient<AuthorsDataBuilder>()
                              .AddTransient<BooksDataBuilder>()
                              .AddTransient<ChapterDataBuilder>()
+                             .AddTransient<DictionaryDataBuilder>()
                              .AddSingleton<IFileStorage>(new FakeFileStorage());
 
             RegisterHandlers(_builder);
@@ -45,14 +47,13 @@ namespace Inshapardaz.Functions.Tests
 
         protected IDatabaseContext DatabaseContext { get; private set; }
 
-        
         private IDatabaseContext CreateDbContext()
         {
             if (_connection != null)
             {
                 throw new Exception("connection already created");
             }
-            
+
             _connection = new SqliteConnection("DataSource=:memory:");
             _connection.Open();
             var options = new DbContextOptionsBuilder<DatabaseContext>()
@@ -61,9 +62,9 @@ namespace Inshapardaz.Functions.Tests
                           .EnableDetailedErrors()
                           .Options;
 
-             var context = new DatabaseContext(options);
-             context.Database.EnsureCreated();
-             return context;
+            var context = new DatabaseContext(options);
+            context.Database.EnsureCreated();
+            return context;
         }
 
         protected void Cleanup()
@@ -116,7 +117,8 @@ namespace Inshapardaz.Functions.Tests
                    .AddTransient<GetChapterContents>()
                    .AddTransient<AddChapterContents>()
                    .AddTransient<UpdateChapterContents>()
-                   .AddTransient<DeleteChapterContents>();
+                   .AddTransient<DeleteChapterContents>()
+                   .AddTransient<GetDictionaries>();
         }
     }
 }

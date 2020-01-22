@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -11,6 +10,7 @@ using System.Security.Claims;
 using Inshapardaz.Domain.Ports.Dictionaries;
 using Paramore.Darker;
 using Inshapardaz.Functions.Converters;
+using Inshapardaz.Functions.Views;
 
 namespace Inshapardaz.Functions.Dictionaries
 {
@@ -24,15 +24,15 @@ namespace Inshapardaz.Functions.Dictionaries
         [FunctionName("GetDictionaries")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "dictionaries")] HttpRequest req,
-            ILogger log, 
-            [AccessToken] ClaimsPrincipal principal, 
+            ILogger log,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-            var query = new GetDictionariesQuery() { UserId = principal.GetUserId()};
+            var query = new GetDictionariesQuery() { UserId = principal.GetUserId() };
             var result = await QueryProcessor.ExecuteAsync(query);
-            return new OkObjectResult(result.Render());            
+            return new OkObjectResult(result.Render(principal));
         }
 
-        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("authors", relType);
+        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("dictionaries", relType);
     }
 }

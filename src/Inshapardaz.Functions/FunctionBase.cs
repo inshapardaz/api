@@ -44,13 +44,13 @@ namespace Inshapardaz.Functions
             }
         }
 
-        protected static LinkView SelfLink(string href, string relType = RelTypes.Self, string method = "GET", Dictionary<string, string> queryString = null, string type = null)
+        protected static LinkView SelfLink(string href, string relType = RelTypes.Self, string method = "GET", Dictionary<string, string> queryString = null, string type = null, string media = null)
         {
             var urlBuilder = new UriBuilder(ConfigurationSettings.ApiRoot)
             {
                 Path = $"api/{href}"
             };
-            
+
             if (queryString != null && queryString.Any())
             {
                 var collection = HttpUtility.ParseQueryString(string.Empty);
@@ -66,7 +66,8 @@ namespace Inshapardaz.Functions
                 Method = method.ToUpper(),
                 Rel = relType,
                 Href = href.StartsWith("http") ? href : urlBuilder.Uri.ToString(),
-                Type = type
+                Type = type,
+                Media = media
             };
         }
 
@@ -112,12 +113,18 @@ namespace Inshapardaz.Functions
 
             return defaultValue;
         }
+
+        protected async Task<T> GetBody<T>(HttpRequest request)
+        {
+            string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+            return JsonConvert.DeserializeObject<T>(requestBody);
+        }
     }
 
     public abstract class CommandBase : FunctionBase
     {
         protected readonly IAmACommandProcessor CommandProcessor;
-        
+
         protected CommandBase(IAmACommandProcessor commandProcessor)
         {
             CommandProcessor = commandProcessor;
@@ -127,7 +134,7 @@ namespace Inshapardaz.Functions
     public abstract class QueryBase : FunctionBase
     {
         protected readonly IQueryProcessor QueryProcessor;
-        
+
         protected QueryBase(IQueryProcessor queryProcessor)
         {
             QueryProcessor = queryProcessor;

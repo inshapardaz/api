@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 {
     [TestFixture]
-    public class WhenGettingAuthorsAsAdministrator : FunctionTest
+    public class WhenGettingDictionariesAsAdministrator : FunctionTest
     {
         private OkObjectResult _response;
         private PageView<AuthorView> _view;

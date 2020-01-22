@@ -6,6 +6,7 @@ using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
+using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Http;

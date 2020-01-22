@@ -1,0 +1,47 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Inshapardaz.Domain.Models.Library
+{
+    public class BookModel
+    {
+        public int Id { get; set; }
+
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        public IEnumerable<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
+
+        public Languages Language { get; set; }
+
+        public bool IsPublic { get; set; }
+
+        public int AuthorId { get; set; }
+        
+        public string AuthorName { get; set; }
+
+        public int? ImageId { get; set; }
+
+        public DateTime DateAdded {get; set;}
+        
+        public DateTime DateUpdated {get; set;}
+
+        public int? SeriesId { get; set; }
+
+        public string SeriesName { get; set; }
+
+        public int? SeriesIndex { get; set; }
+
+        public BookStatuses Status { get; set; }
+
+
+        public int? YearPublished { get; set; }
+
+        public CopyrightStatuses Copyrights { get; set; }
+
+        public bool IsPublished { get; set; }
+
+        public bool IsFavorite { get; set; }
+    }
+}

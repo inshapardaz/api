@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +18,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             _databaseContext = databaseContext;
         }
 
-        public async Task<Series> AddSeries(Series series, CancellationToken cancellationToken)
+        public async Task<SeriesModel> AddSeries(SeriesModel series, CancellationToken cancellationToken)
         {
             var item = series.Map();
             _databaseContext.Series.Add(item);
@@ -28,7 +28,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             return item.Map();
         }
 
-        public async Task UpdateSeries(Series series, CancellationToken cancellationToken)
+        public async Task UpdateSeries(SeriesModel series, CancellationToken cancellationToken)
         {
             var existingEntity = await _databaseContext.Series
                                                        .SingleOrDefaultAsync(g => g.Id == series.Id,
@@ -57,14 +57,14 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Series>> GetSeries(CancellationToken cancellationToken)
+        public async Task<IEnumerable<SeriesModel>> GetSeries(CancellationToken cancellationToken)
         {
             return await _databaseContext.Series
                                          .Select(t => t.Map())
                                          .ToListAsync(cancellationToken);
         }
 
-        public async Task<Series> GetSeriesById(int seriesId, CancellationToken cancellationToken)
+        public async Task<SeriesModel> GetSeriesById(int seriesId, CancellationToken cancellationToken)
         {
             var series = await _databaseContext.Series
                                                     .SingleOrDefaultAsync(t => t.Id == seriesId,

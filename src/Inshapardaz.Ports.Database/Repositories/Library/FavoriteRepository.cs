@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
 using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.EntityFrameworkCore;
-using Book = Inshapardaz.Domain.Entities.Library.Book;
+using BookModel = Inshapardaz.Domain.Models.Library.BookModel;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
@@ -60,7 +60,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<Page<Book>> GetFavoriteBooksByUser(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetFavoriteBooksByUser(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var query = _databaseContext.FavoriteBooks
                                         .Include(r => r.Book)
@@ -72,7 +72,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                                   .Select(a => a.Map())
                                   .ToListAsync(cancellationToken);
 
-            return new Page<Book>
+            return new Page<BookModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,

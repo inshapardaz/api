@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities;
-using Inshapardaz.Domain.Entities.Dictionaries;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Dictionaries;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Dictionaries;
 using Microsoft.EntityFrameworkCore;

@@ -54,7 +54,7 @@ namespace Inshapardaz.Functions.Library.Authors
 
             var request = new UpdateAuthorImageRequest(id)
             {
-                Image = new Domain.Entities.File
+                Image = new Domain.Models.FileModel
                 {
                     FileName = fileName,
                     MimeType = mimeType,

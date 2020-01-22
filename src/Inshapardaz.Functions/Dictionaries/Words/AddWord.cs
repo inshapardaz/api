@@ -4,6 +4,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
+using Inshapardaz.Functions.Views;
 
 namespace Inshapardaz.Functions.Dictionaries.Words
 {
@@ -20,7 +21,9 @@ namespace Inshapardaz.Functions.Dictionaries.Words
             int dictionaryId,
             ILogger log)
         {
-            return new OkObjectResult($"POST:AddWord({dictionaryId})");            
+            return new OkObjectResult($"POST:AddWord({dictionaryId})");
         }
+
+        public static LinkView Link(int dictionaryId, string relType = RelTypes.Self) => SelfLink($"dictionaries/{dictionaryId}/words", relType, "POST");
     }
 }

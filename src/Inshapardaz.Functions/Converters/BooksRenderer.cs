@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
@@ -10,6 +10,7 @@ using Inshapardaz.Functions.Library.Books.Chapters;
 using Inshapardaz.Functions.Library.Books.Files;
 using Inshapardaz.Functions.Library.Files;
 using Inshapardaz.Functions.Library.Series;
+using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 
@@ -17,7 +18,7 @@ namespace Inshapardaz.Functions.Converters
 {
     public static class BooksRenderer
     {
-        public static PageView<BookView> Render(this PageRendererArgs<Book> source, ClaimsPrincipal principal)
+        public static PageView<BookView> Render(this PageRendererArgs<BookModel> source, ClaimsPrincipal principal)
         {
             var page = new PageView<BookView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
@@ -48,7 +49,7 @@ namespace Inshapardaz.Functions.Converters
             return page;
         }
 
-        public static PageView<BookView> Render(this PageRendererArgs<Book> source, int id, ClaimsPrincipal principal)
+        public static PageView<BookView> Render(this PageRendererArgs<BookModel> source, int id, ClaimsPrincipal principal)
         {
             var page = new PageView<BookView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
@@ -79,7 +80,7 @@ namespace Inshapardaz.Functions.Converters
             return page;
         }
 
-        public static ListView<BookView> Render(this IEnumerable<Book> source, ClaimsPrincipal principal, Func<string, LinkView> selfLinkMethod)
+        public static ListView<BookView> Render(this IEnumerable<BookModel> source, ClaimsPrincipal principal, Func<string, LinkView> selfLinkMethod)
         {
             var result = new ListView<BookView>()
             {
@@ -92,7 +93,7 @@ namespace Inshapardaz.Functions.Converters
             return result;
         }
 
-        public static BookView Render(this Book source, ClaimsPrincipal principal)
+        public static BookView Render(this BookModel source, ClaimsPrincipal principal)
         {
             var result = source.Map();
             var links = new List<LinkView>

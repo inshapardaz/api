@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Inshapardaz.Domain.Entities.Dictionaries;
+using Inshapardaz.Domain.Models.Dictionaries;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
@@ -13,13 +13,13 @@ namespace Inshapardaz.Domain.IndexingService
 {
     public interface IWriteDictionaryIndex
     {
-        void AddWord(int dictionaryId, Word word);
+        void AddWord(int dictionaryId, WordModel word);
 
-        void UpdateWord(int dictionaryId, Word word);
+        void UpdateWord(int dictionaryId, WordModel word);
 
         void DeleteWord(int dictionaryId, long wordId);
 
-        void CreateIndex(int dictionaryId, IEnumerable<Word> words);
+        void CreateIndex(int dictionaryId, IEnumerable<WordModel> words);
     }
 
     public interface IReadDictionaryIndex
@@ -38,7 +38,7 @@ namespace Inshapardaz.Domain.IndexingService
             _logger = logger;
         }
 
-        public void AddWord(int dictionaryId, Word word)
+        public void AddWord(int dictionaryId, WordModel word)
         {
             var directory = FSDirectory.Open(_indexLocationProvider.GetDictionaryIndexFolder(dictionaryId));
             _logger.LogDebug("Writing index for dictionary {0} to path : {1}", dictionaryId, directory);
@@ -59,7 +59,7 @@ namespace Inshapardaz.Domain.IndexingService
             _logger.LogDebug("Finished writing index for dictionary {0} to path : {1}", dictionaryId, directory);
         }
 
-        public void UpdateWord(int dictionaryId, Word word)
+        public void UpdateWord(int dictionaryId, WordModel word)
         {
             var directory = FSDirectory.Open(_indexLocationProvider.GetDictionaryIndexFolder(dictionaryId));
             _logger.LogDebug("Updating document in index for dictionary {0} to path : {1}", dictionaryId, directory);
@@ -96,7 +96,7 @@ namespace Inshapardaz.Domain.IndexingService
             _logger.LogDebug("Removed document from index for dictionary {0} to path : {1}", dictionaryId, directory);
         }
 
-        public void CreateIndex(int dictionaryId, IEnumerable<Word> words)
+        public void CreateIndex(int dictionaryId, IEnumerable<WordModel> words)
         {
             var indexFolder = _indexLocationProvider.GetDictionaryIndexFolder(dictionaryId);
             var directory = FSDirectory.Open(indexFolder);

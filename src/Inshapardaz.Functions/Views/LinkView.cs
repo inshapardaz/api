@@ -13,5 +13,8 @@ namespace Inshapardaz.Functions.Views
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Method { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Media { get; set; }
     }
 }

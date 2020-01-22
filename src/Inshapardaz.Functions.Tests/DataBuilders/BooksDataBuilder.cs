@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Bogus;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Ports.Database;
 using Inshapardaz.Ports.Database.Entities.Library;

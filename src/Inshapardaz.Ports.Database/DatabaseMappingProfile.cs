@@ -1,14 +1,14 @@
 ﻿using System.Linq;
-using Inshapardaz.Domain.Entities;
-using Inshapardaz.Domain.Entities.Dictionaries;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Dictionaries;
+using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Ports.Database
 {
     public static class DatabaseMappingProfile
     {
         #region Dictionary
-        public static Entities.Dictionaries.Dictionary Map(this Dictionary source)
+        public static Entities.Dictionaries.Dictionary Map(this DictionaryModel source)
         => source == null ? null : new Entities.Dictionaries.Dictionary
         {
             Id = source.Id,
@@ -18,8 +18,8 @@ namespace Inshapardaz.Ports.Database
             UserId = source.UserId
         };
 
-        public static Dictionary Map(this Entities.Dictionaries.Dictionary source)
-        => source == null ? null : new Dictionary
+        public static DictionaryModel Map(this Entities.Dictionaries.Dictionary source)
+        => source == null ? null : new DictionaryModel
         {
             Id = source.Id,
             Name = source.Name,
@@ -50,7 +50,7 @@ namespace Inshapardaz.Ports.Database
         #endregion
 
         #region File
-        public static Entities.File Map(this File source) 
+        public static Entities.File Map(this FileModel source) 
         => source == null ? null : new Entities.File
         {
             Id = source.Id,
@@ -60,8 +60,8 @@ namespace Inshapardaz.Ports.Database
             FilePath = source.FilePath
         };
 
-        public static File Map(this Entities.File source) 
-        => source == null ? null : new File
+        public static FileModel Map(this Entities.File source) 
+        => source == null ? null : new FileModel
         {
             Id = source.Id,
             MimeType = source.MimeType,
@@ -74,7 +74,7 @@ namespace Inshapardaz.Ports.Database
         
         #region Word
 
-        public static Entities.Dictionaries.Word Map(this Word source)
+        public static Entities.Dictionaries.Word Map(this WordModel source)
         => source == null ? null : new Entities.Dictionaries.Word
         {
             Id = source.Id,
@@ -91,8 +91,8 @@ namespace Inshapardaz.Ports.Database
             WordRelationSourceWord = source.WordRelationSourceWord?.Select(m => m.Map())?.ToArray()
         };
 
-        public static Word Map(this Entities.Dictionaries.Word source)
-        => source == null ? null : new Word
+        public static WordModel Map(this Entities.Dictionaries.Word source)
+        => source == null ? null : new WordModel
         {
             Id = source.Id,
             Title = source.Title,
@@ -112,7 +112,7 @@ namespace Inshapardaz.Ports.Database
 
         #region Meaning
 
-        public static Entities.Dictionaries.Meaning Map(this Meaning source)
+        public static Entities.Dictionaries.Meaning Map(this MeaningModel source)
         => source == null ? null : new Entities.Dictionaries.Meaning
         {
             Id = source.Id,
@@ -122,8 +122,8 @@ namespace Inshapardaz.Ports.Database
             WordId = source.WordId
         };
 
-        public static Meaning Map(this Entities.Dictionaries.Meaning source)
-        => source == null ? null : new Meaning
+        public static MeaningModel Map(this Entities.Dictionaries.Meaning source)
+        => source == null ? null : new MeaningModel
         {
             Id = source.Id,
             Context = source.Context,
@@ -181,22 +181,22 @@ namespace Inshapardaz.Ports.Database
         #endregion
         
         #region Category
-        public static Entities.Library.Category Map(this Category source)
+        public static Entities.Library.Category Map(this CategoryModel source)
         => source == null ? null : new Entities.Library.Category
         {
             Id = source.Id,
             Name = source.Name
         };
 
-        public static Category Map(this Entities.Library.Category source)
-        => source == null ? null : new Category
+        public static CategoryModel Map(this Entities.Library.Category source)
+        => source == null ? null : new CategoryModel
         {
             Id = source.Id,
             Name = source.Name
         };
 
-        public static Category MapFromBookCategory(this Entities.Library.BookCategory source)
-        => source == null ? null : new Category
+        public static CategoryModel MapFromBookCategory(this Entities.Library.BookCategory source)
+        => source == null ? null : new CategoryModel
         {
             Id = source.CategoryId,
             Name = source.Category?.Name
@@ -204,7 +204,7 @@ namespace Inshapardaz.Ports.Database
         #endregion
         
         #region  Series
-        public static Entities.Library.Series Map(this Series source)
+        public static Entities.Library.Series Map(this SeriesModel source)
         => source == null ? null : new Entities.Library.Series
         {
             Id = source.Id,
@@ -213,8 +213,8 @@ namespace Inshapardaz.Ports.Database
             ImageId = source.ImageId
         };
 
-        public static Series Map(this Entities.Library.Series source)
-        => source == null ? null : new Series
+        public static SeriesModel Map(this Entities.Library.Series source)
+        => source == null ? null : new SeriesModel
         {
             Id = source.Id,
             Name = source.Name,
@@ -225,7 +225,7 @@ namespace Inshapardaz.Ports.Database
         #endregion
 
         #region Author
-        public static Entities.Library.Author Map(this Author source)
+        public static Entities.Library.Author Map(this AuthorModel source)
         => source == null ? null : new Entities.Library.Author
         {
             Id = source.Id,
@@ -233,8 +233,8 @@ namespace Inshapardaz.Ports.Database
             ImageId = source.ImageId
         };
 
-        public static Author Map(this Entities.Library.Author source)
-        => source == null ? null : new Author
+        public static AuthorModel Map(this Entities.Library.Author source)
+        => source == null ? null : new AuthorModel
         {
             Id = source.Id,
             Name = source.Name,
@@ -243,7 +243,7 @@ namespace Inshapardaz.Ports.Database
         #endregion
 
         #region  Book
-        public static Entities.Library.Book Map(this Book source)
+        public static Entities.Library.Book Map(this BookModel source)
         => source == null ? null : new Entities.Library.Book
         {
                 Id = source.Id,
@@ -263,8 +263,8 @@ namespace Inshapardaz.Ports.Database
                 IsPublished = source.IsPublished
         };
 
-        public static Book Map(this Entities.Library.Book source)
-        => source == null ? null : new Book
+        public static BookModel Map(this Entities.Library.Book source)
+        => source == null ? null : new BookModel
         {
                 Id = source.Id,
                 Title = source.Title,
@@ -288,7 +288,7 @@ namespace Inshapardaz.Ports.Database
         #endregion
 
         #region Chapter
-        public static Entities.Library.Chapter Map(this Chapter source)
+        public static Entities.Library.Chapter Map(this ChapterModel source)
         => source == null ? null : new Entities.Library.Chapter
         {
             Id = source.Id,
@@ -297,8 +297,8 @@ namespace Inshapardaz.Ports.Database
             ChapterNumber = source.ChapterNumber
         };
 
-        public static Chapter Map(this Entities.Library.Chapter source)
-        => source == null ? null : new Chapter
+        public static ChapterModel Map(this Entities.Library.Chapter source)
+        => source == null ? null : new ChapterModel
         {
             Id = source.Id,
             Title = source.Title,
@@ -308,7 +308,7 @@ namespace Inshapardaz.Ports.Database
         #endregion
 
         #region ChaterContent
-        public static Entities.Library.ChapterContent Map(this ChapterContent source)
+        public static Entities.Library.ChapterContent Map(this ChapterContentModel source)
         => source == null ? null : new Entities.Library.ChapterContent
         {
             Id = source.Id,
@@ -316,8 +316,8 @@ namespace Inshapardaz.Ports.Database
             MimeType = source.MimeType
         };
 
-        public static ChapterContent Map(this Entities.Library.ChapterContent source)
-        => source == null ? null : new ChapterContent
+        public static ChapterContentModel Map(this Entities.Library.ChapterContent source)
+        => source == null ? null : new ChapterContentModel
         {
             Id = source.Id,
             ChapterId = source.ChapterId,

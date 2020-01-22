@@ -11,7 +11,7 @@ using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Views;
 
 namespace Inshapardaz.Functions.Converters
-{ 
+{
     public static class EntryRenderer
     {        
         public static EntryView Render(ClaimsPrincipal user)

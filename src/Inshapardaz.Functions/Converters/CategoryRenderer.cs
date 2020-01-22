@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Categories;
+using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 
@@ -12,7 +13,7 @@ namespace Inshapardaz.Functions.Converters
 {
     public static class CategoryRenderer
     {
-        public static ListView<CategoryView> Render(this IEnumerable<Category> categories, ClaimsPrincipal user)
+        public static ListView<CategoryView> Render(this IEnumerable<CategoryModel> categories, ClaimsPrincipal user)
         {
             var items = categories.Select(g => g.Render(user));
             var view = new ListView<CategoryView> { Items = items };
@@ -26,7 +27,7 @@ namespace Inshapardaz.Functions.Converters
             return view;
         }
 
-        public static CategoryView Render(this Category category, ClaimsPrincipal principal)
+        public static CategoryView Render(this CategoryModel category, ClaimsPrincipal principal)
         {
             var view = category.Map();
 

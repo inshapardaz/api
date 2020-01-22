@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +18,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             _databaseContext = databaseContext;
         }
 
-        public async Task<Category> AddCategory(Category category, CancellationToken cancellationToken)
+        public async Task<CategoryModel> AddCategory(CategoryModel category, CancellationToken cancellationToken)
         {
             var item = category.Map();
             _databaseContext.Category.Add(item);
@@ -28,7 +28,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             return item.Map();
         }
 
-        public async Task UpdateCategory(Category category, CancellationToken cancellationToken)
+        public async Task UpdateCategory(CategoryModel category, CancellationToken cancellationToken)
         {
             var existingEntity = await _databaseContext.Category
                                                        .SingleOrDefaultAsync(g => g.Id == category.Id,
@@ -56,14 +56,14 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Category>> GetCategories(CancellationToken cancellationToken)
+        public async Task<IEnumerable<CategoryModel>> GetCategories(CancellationToken cancellationToken)
         {
             return await _databaseContext.Category
                                          .Select(t => t.Map())
                                          .ToListAsync(cancellationToken);
         }
 
-        public async Task<Category> GetCategoryById(int categoryId, CancellationToken cancellationToken)
+        public async Task<CategoryModel> GetCategoryById(int categoryId, CancellationToken cancellationToken)
         {
             var category = await _databaseContext.Category
                                                     .SingleOrDefaultAsync(t => t.Id == categoryId,

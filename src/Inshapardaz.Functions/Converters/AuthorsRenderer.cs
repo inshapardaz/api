@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Inshapardaz.Domain.Entities.Library;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Files;
+using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 
@@ -13,7 +14,7 @@ namespace Inshapardaz.Functions.Converters
 {
     public static class AuthorsRenderer 
     {
-        public static PageView<AuthorView> Render(this PageRendererArgs<Author> source, ClaimsPrincipal principal)
+        public static PageView<AuthorView> Render(this PageRendererArgs<AuthorModel> source, ClaimsPrincipal principal)
         {
             var page = new PageView<AuthorView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
@@ -45,7 +46,7 @@ namespace Inshapardaz.Functions.Converters
             return page;
         }
 
-        public static AuthorView Render(this Author source, ClaimsPrincipal principal)
+        public static AuthorView Render(this AuthorModel source, ClaimsPrincipal principal)
         {
             var result = source.Map();
 

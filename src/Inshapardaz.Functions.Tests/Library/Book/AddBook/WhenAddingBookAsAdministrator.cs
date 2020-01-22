@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
-using Inshapardaz.Domain.Entities;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;

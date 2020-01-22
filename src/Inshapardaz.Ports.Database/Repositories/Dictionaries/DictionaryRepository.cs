@@ -18,7 +18,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             _database = database;
         }
 
-        public async Task<Domain.Entities.Dictionaries.Dictionary> AddDictionary(Domain.Entities.Dictionaries.Dictionary dictionary, CancellationToken cancellationToken)
+        public async Task<Domain.Models.Dictionaries.DictionaryModel> AddDictionary(Domain.Models.Dictionaries.DictionaryModel dictionary, CancellationToken cancellationToken)
         {
             var entity = dictionary.Map();
             await _database.Dictionary.AddAsync(entity, cancellationToken);
@@ -27,7 +27,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             return entity.Map();
         }
 
-        public async Task UpdateDictionary(int dictionaryId, Domain.Entities.Dictionaries.Dictionary dictionary, CancellationToken cancellationToken)
+        public async Task UpdateDictionary(int dictionaryId, Domain.Models.Dictionaries.DictionaryModel dictionary, CancellationToken cancellationToken)
         {
             var existingDictionary = await _database.Dictionary.SingleOrDefaultAsync(d => d.Id == dictionary.Id, cancellationToken);
 
@@ -51,7 +51,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             await _database.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Domain.Entities.Dictionaries.Dictionary>> GetAllDictionaries(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Domain.Models.Dictionaries.DictionaryModel>> GetAllDictionaries(CancellationToken cancellationToken)
         {
             return await _database.Dictionary
                                   .Include(d => d.Downloads)
@@ -59,7 +59,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                                   .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Domain.Entities.Dictionaries.Dictionary>> GetPublicDictionaries(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Domain.Models.Dictionaries.DictionaryModel>> GetPublicDictionaries(CancellationToken cancellationToken)
         {
             return await _database.Dictionary
                                   .Include(d => d.Downloads)
@@ -68,7 +68,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                                   .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Domain.Entities.Dictionaries.Dictionary>> GetAllDictionariesForUser(Guid userId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Domain.Models.Dictionaries.DictionaryModel>> GetAllDictionariesForUser(Guid userId, CancellationToken cancellationToken)
         {
             return await _database.Dictionary
                                   .Include(d => d.Downloads)
@@ -77,14 +77,14 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                                   .ToListAsync(cancellationToken);
         }
 
-        public async Task<Domain.Entities.Dictionaries.Dictionary> GetDictionaryById(int dictionaryId, CancellationToken cancellationToken)
+        public async Task<Domain.Models.Dictionaries.DictionaryModel> GetDictionaryById(int dictionaryId, CancellationToken cancellationToken)
         {
             return (await _database.Dictionary
                                    .Include(d => d.Downloads)
                                    .SingleOrDefaultAsync(d => d.Id == dictionaryId, cancellationToken)).Map();
         }
 
-        public async Task<IEnumerable<Domain.Entities.Dictionaries.DictionaryDownload>> GetDictionaryDownloads(int dictionaryId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Domain.Models.Dictionaries.DictionaryDownload>> GetDictionaryDownloads(int dictionaryId, CancellationToken cancellationToken)
         {
             return await _database.DictionaryDownload
                                    .Where(d => d.DictionaryId == dictionaryId)
@@ -92,7 +92,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                                    .ToListAsync(cancellationToken);
         }
 
-        public async Task<Domain.Entities.Dictionaries.DictionaryDownload> GetDictionaryDownloadById(int dictionaryId, string mimeType, CancellationToken cancellationToken)
+        public async Task<Domain.Models.Dictionaries.DictionaryDownload> GetDictionaryDownloadById(int dictionaryId, string mimeType, CancellationToken cancellationToken)
         {
             return (await _database.DictionaryDownload
                                   .Include(d => d.File)
@@ -101,7 +101,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
                                   .Map();
         }
 
-        public Task<Domain.Entities.Dictionaries.DictionaryDownload> AddDictionaryDownload(int dictionaryId, string mimeType, CancellationToken cancellationToken)
+        public Task<Domain.Models.Dictionaries.DictionaryDownload> AddDictionaryDownload(int dictionaryId, string mimeType, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

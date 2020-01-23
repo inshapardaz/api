@@ -4,13 +4,17 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
+using Paramore.Darker;
+using Inshapardaz.Functions.Authentication;
+using System.Security.Claims;
+using System.Threading;
 
 namespace Inshapardaz.Functions.Dictionaries.Words
 {
-    public class GetWordById : CommandBase
+    public class GetWordById : QueryBase
     {
-        public GetWordById(IAmACommandProcessor commandProcessor)
-            : base(commandProcessor)
+        public GetWordById(IQueryProcessor queryProcessor)
+            : base(queryProcessor)
         {
         }
 
@@ -18,9 +22,11 @@ namespace Inshapardaz.Functions.Dictionaries.Words
         public IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "dictionaries/{dictionaryId:int}/words/{wordId:long}")] HttpRequest req,
             int dictionaryId, long wordId,
-            ILogger log)
+            ILogger log,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
-            return new OkObjectResult($"GET:GetWordById({dictionaryId}, {wordId})");            
+            return new OkObjectResult($"GET:GetWordById({dictionaryId}, {wordId})");
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
         }
 
         [Test]
-        public void ShouldHaveOkResult()
+        public void ShouldReturnOk()
         {
             Assert.That(_response, Is.Not.Null);
             Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));

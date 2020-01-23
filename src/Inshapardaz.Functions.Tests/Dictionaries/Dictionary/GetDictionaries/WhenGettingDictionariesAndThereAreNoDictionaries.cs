@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -36,10 +35,9 @@ namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.GetDictionaries
         }
 
         [Test]
-        public void ShouldHaveOkResult()
+        public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.StatusCode.Should().BeOk();
         }
 
         [Test]

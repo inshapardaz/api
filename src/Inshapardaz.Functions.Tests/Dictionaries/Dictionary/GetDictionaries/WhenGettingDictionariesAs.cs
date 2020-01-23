@@ -52,10 +52,9 @@ namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.GetDictionaries
         }
 
         [Test]
-        public void ShouldHaveOkResult()
+        public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.StatusCode.Should().BeOk();
         }
 
         [Test]
@@ -80,15 +79,16 @@ namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.GetDictionaries
         [Test]
         public void ShouldReturnCorrectDictionaries()
         {
-            Assert.That(_view.Items.Count(), Is.EqualTo(_saved.Count()));
+            _view.Items.Should().HaveSameCount(_saved);
+
             foreach (var expected in _saved)
             {
                 var actual = _view.Items.SingleOrDefault(d => d.Name == expected.Name);
 
-                Assert.That(actual, Is.Not.Null);
-                Assert.That(actual.IsPublic, Is.EqualTo(expected.IsPublic));
-                Assert.That(actual.Language, Is.EqualTo(expected.Language));
-                Assert.That(actual.WordCount, Is.EqualTo(expected.Word.Count()));
+                actual.Should().NotBeNull();
+                actual.IsPublic.Should().Be(expected.IsPublic);
+                actual.Language.Should().Be(expected.Language);
+                actual.WordCount.Should().Be(expected.Word.Count());
 
                 actual.SelfLink().ShouldGet($"/api/dictionaries/{actual.Id}");
 

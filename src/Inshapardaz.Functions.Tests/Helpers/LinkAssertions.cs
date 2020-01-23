@@ -116,5 +116,10 @@ namespace Inshapardaz.Functions.Tests.Helpers
         {
             return view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.Delete, StringComparison.CurrentCultureIgnoreCase));
         }
+
+        public static LinkView CreateWordLink(this ViewWithLinks view)
+        {
+            return view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.CreateWord, StringComparison.CurrentCultureIgnoreCase));
+        }
     }
 }

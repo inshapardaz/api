@@ -37,7 +37,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         }
 
         [Test]
-        public void ShouldHaveOkResult()
+        public void ShouldReturnOk()
         {
             Assert.That(_response, Is.Not.Null);
             Assert.That(_response.StatusCode, Is.EqualTo(200));

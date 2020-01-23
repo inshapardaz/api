@@ -12,6 +12,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
     {
         private readonly IDatabaseContext _context;
         private int _wordCount;
+        private bool _private;
+
+        private Guid _userId = Guid.Empty;
 
         public DictionaryDataBuilder(IDatabaseContext context)
         {
@@ -21,6 +24,18 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public DictionaryDataBuilder WithWords(int wordCount)
         {
             _wordCount = wordCount;
+            return this;
+        }
+
+        public DictionaryDataBuilder AsPrivate()
+        {
+            _private = true;
+            return this;
+        }
+
+        public DictionaryDataBuilder ForUser(Guid userId)
+        {
+            _userId = userId;
             return this;
         }
 
@@ -34,8 +49,8 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             var dictionaries = new Faker<Ports.Database.Entities.Dictionaries.Dictionary>()
                           .RuleFor(c => c.Id, 0)
                           .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
-                          .RuleFor(c => c.IsPublic, true)
-                          .RuleFor(c => c.UserId, Guid.Empty)
+                          .RuleFor(c => c.IsPublic, !_private)
+                          .RuleFor(c => c.UserId, _userId)
                           .Generate(count);
 
             foreach (var dictionary in dictionaries)

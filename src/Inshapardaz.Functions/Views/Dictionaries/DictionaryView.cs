@@ -11,4 +11,11 @@ namespace Inshapardaz.Functions.Views.Dictionaries
         public int LanguageId { get; set; }
         public int WordCount { get; set; }
     }
+
+    public class AddDictionaryView
+    {
+        public string Name { get; set; }
+        public bool IsPublic { get; set; }
+        public int LanguageId { get; set; }
+    }
 }

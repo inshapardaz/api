@@ -12,9 +12,9 @@ namespace Inshapardaz.Functions.Tests.Helpers
             assertion.Be((int)HttpStatusCode.OK);
         }
 
-        public static void BeCreated(this NullableNumericAssertions<int> assertion)
+        public static void BeCreated(this ObjectAssertions assertion)
         {
-            assertion.Be((int)HttpStatusCode.Created);
+            assertion.BeOfType<CreatedResult>();
         }
 
         public static void BeNoContent(this NumericAssertions<int> assertion)
@@ -37,9 +37,9 @@ namespace Inshapardaz.Functions.Tests.Helpers
             assertion.Be((int)HttpStatusCode.InternalServerError);
         }
 
-        public static void BeUnauthorized(this NumericAssertions<int> assertion)
+        public static void BeUnauthorized(this ObjectAssertions assertion)
         {
-            assertion.Be((int)HttpStatusCode.Unauthorized);
+            assertion.BeOfType<UnauthorizedResult>();
         }
 
         public static void BeForbidden(this ObjectAssertions assertion)

@@ -10,6 +10,7 @@ using Inshapardaz.Functions.Library.Categories;
 using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Fakes;
+using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Ports.Database;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,8 @@ namespace Inshapardaz.Functions.Tests
                              .AddTransient<BooksDataBuilder>()
                              .AddTransient<ChapterDataBuilder>()
                              .AddTransient<DictionaryDataBuilder>()
-                             .AddSingleton<IFileStorage>(new FakeFileStorage());
+                             .AddSingleton<IFileStorage>(new FakeFileStorage())
+                             .AddTransient<DictionaryDataHelper>();
 
             RegisterHandlers(_builder);
             _startup.Configure(_builder);
@@ -119,7 +121,8 @@ namespace Inshapardaz.Functions.Tests
                    .AddTransient<UpdateChapterContents>()
                    .AddTransient<DeleteChapterContents>()
                    .AddTransient<GetDictionaries>()
-                   .AddTransient<GetDictionaryById>();
+                   .AddTransient<GetDictionaryById>()
+                   .AddTransient<AddDictionary>();
         }
     }
 }

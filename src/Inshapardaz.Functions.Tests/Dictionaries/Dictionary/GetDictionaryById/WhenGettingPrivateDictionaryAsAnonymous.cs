@@ -44,7 +44,7 @@ namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.GetDictionaryById
         [Test]
         public void ShouldReturnUnauthorised()
         {
-            _response.StatusCode.Should().BeUnauthorized();
+            _response.Should().BeUnauthorized();
         }
     }
 }

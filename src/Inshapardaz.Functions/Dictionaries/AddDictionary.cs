@@ -39,7 +39,7 @@ namespace Inshapardaz.Functions.Dictionaries
                 return new ForbidResult("Bearer");
             }
 
-            var dictionary = await GetBody<DictionaryView>(req);
+            var dictionary = await GetBody<AddDictionaryView>(req);
 
             var request = new AddDictionaryRequest(principal.GetUserId(), dictionary.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);

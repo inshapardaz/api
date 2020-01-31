@@ -26,5 +26,13 @@ namespace Inshapardaz.Functions.Mappings
                 Language = (Languages)source.LanguageId,
                 WordCount = source.WordCount
             };
+
+        public static DictionaryModel Map(this AddDictionaryView source)
+            => new DictionaryModel
+            {
+                Name = source.Name,
+                IsPublic = source.IsPublic,
+                Language = (Languages)source.LanguageId,
+            };
     }
 }

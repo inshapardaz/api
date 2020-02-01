@@ -46,14 +46,14 @@ namespace Inshapardaz.Functions.Views
         public const string Latest = "latest";
         public const string Recents = "recents";
         public const string Favorites = "favorites";
-        public static string Series = "series";
-        public static string Add = "add";
-        public static string Files = "files";
-        public static string AddFile = "add-file";
-        public static string Periodicals = "periodicals";
-        public static string Issues = "issues";
-        public static string AddIssue = "add-issue";
-        public static string AddFavorite = "add-favorite";
-        public static string RemoveFavorite = "remove-favorite";
+        public const string Series = "series";
+        public const string Add = "add";
+        public const string Files = "files";
+        public const string AddFile = "add-file";
+        public const string Periodicals = "periodicals";
+        public const string Issues = "issues";
+        public const string AddIssue = "add-issue";
+        public const string AddFavorite = "add-favorite";
+        public const string RemoveFavorite = "remove-favorite";
     }
 }

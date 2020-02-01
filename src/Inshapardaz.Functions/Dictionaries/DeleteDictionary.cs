@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using Inshapardaz.Functions.Views;
+using Inshapardaz.Functions.Authentication;
+using System.Security.Claims;
+using System.Threading;
+using Inshapardaz.Domain.Ports.Dictionaries;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Dictionaries
 {
@@ -16,12 +21,26 @@ namespace Inshapardaz.Functions.Dictionaries
         }
 
         [FunctionName("DeleteDictionary")]
-        public IActionResult Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "dictionaries/{dictionaryId:int}")] HttpRequest req,
             int dictionaryId,
-            ILogger log)
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
-            return new OkObjectResult($"DELETE:DeleteDictionary({dictionaryId})");
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
+            var request = new DeleteDictionaryRequest(dictionaryId);
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+            return new OkResult();
         }
 
         public static LinkView Link(int dictionaryId, string relType = RelTypes.Self) => SelfLink($"dictionaries/{dictionaryId}", relType, "DELETE");

@@ -5,6 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using Inshapardaz.Functions.Views;
+using System.Threading;
+using Inshapardaz.Functions.Authentication;
+using System.Security.Claims;
+using Inshapardaz.Functions.Views.Dictionaries;
+using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Dictionaries;
+using Inshapardaz.Functions.Mappings;
+using Inshapardaz.Functions.Converters;
+using Inshapardaz.Functions.Extensions;
 
 namespace Inshapardaz.Functions.Dictionaries
 {
@@ -16,12 +25,35 @@ namespace Inshapardaz.Functions.Dictionaries
         }
 
         [FunctionName("UpdateDictionary")]
-        public IActionResult Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "dictionaries/{dictionaryId:int}")] HttpRequest req,
             int dictionaryId,
-            ILogger log)
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
-            return new OkObjectResult($"PUT:UpdateDictionary({dictionaryId})");
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!principal.IsWriter())
+            {
+                return new ForbidResult("Bearer");
+            }
+
+            var dictionary = await GetBody<DictionaryEditView>(req);
+
+            var request = new UpdateDictionaryRequest(dictionaryId, dictionary.Map());
+            await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+            var renderResult = request.Result.Dictionary.Render(principal);
+
+            if (request.Result.HasAddedNew)
+            {
+                return new CreatedResult(renderResult.Links.Self(), renderResult);
+            }
+
+            return new OkObjectResult(renderResult);
         }
 
         public static LinkView Link(int dictionaryId, string relType = RelTypes.Self) => SelfLink($"dictionaries/{dictionaryId}", relType, "PUT");

@@ -122,7 +122,9 @@ namespace Inshapardaz.Functions.Tests
                    .AddTransient<DeleteChapterContents>()
                    .AddTransient<GetDictionaries>()
                    .AddTransient<GetDictionaryById>()
-                   .AddTransient<AddDictionary>();
+                   .AddTransient<AddDictionary>()
+                   .AddTransient<UpdateDictionary>()
+                   .AddTransient<DeleteDictionary>();
         }
     }
 }

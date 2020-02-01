@@ -23,17 +23,14 @@ namespace Inshapardaz.Domain.Ports.Dictionaries
             _dictionaryRepository = dictionaryRepository;
         }
 
-        [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<DeleteDictionaryRequest> HandleAsync(DeleteDictionaryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await _dictionaryRepository.GetDictionaryById(command.DictionaryId, cancellationToken);
 
-            if (result == null)
+            if (result != null)
             {
-                throw new NotFoundException();
+                await _dictionaryRepository.DeleteDictionary(command.DictionaryId, cancellationToken);
             }
-
-            await _dictionaryRepository.DeleteDictionary(command.DictionaryId, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

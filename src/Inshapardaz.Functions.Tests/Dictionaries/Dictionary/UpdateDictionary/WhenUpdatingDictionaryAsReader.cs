@@ -2,37 +2,33 @@
 using System.Threading.Tasks;
 using Bogus;
 using FluentAssertions;
-using Inshapardaz.Domain.Models;
+using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views.Dictionaries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.AddDictionary
+namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.UpdateDictionary
 {
     [TestFixture]
-    public class WhenAddingDictionaryAsReader : FunctionTest
+    public class WhenUpdatingDictionaryAsReader : FunctionTest
     {
         private ForbidResult _response;
-        private DictionaryEditView _dictionary;
+        private DictionaryDataBuilder _builder;
+        private Ports.Database.Entities.Dictionaries.Dictionary _dictionary;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var handler = Container.GetService<Functions.Dictionaries.AddDictionary>();
-            _dictionary = new DictionaryEditView
-            {
-                Name = Random.Name,
-                IsPublic = Random.Bool,
-                LanguageId = (int)new Faker().PickRandom<Languages>()
-            };
+            _builder = Container.GetService<DictionaryDataBuilder>();
+            var handler = Container.GetService<Functions.Dictionaries.UpdateDictionary>();
+            _dictionary = _builder.Build();
 
             var request = new RequestBuilder()
                                             .WithJsonBody(_dictionary)
                                             .Build();
 
-            _response = (ForbidResult)await handler.Run(request, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, _dictionary.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

@@ -27,7 +27,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
             return entity.Map();
         }
 
-        public async Task UpdateDictionary(int dictionaryId, Domain.Models.Dictionaries.DictionaryModel dictionary, CancellationToken cancellationToken)
+        public async Task UpdateDictionary(Domain.Models.Dictionaries.DictionaryModel dictionary, CancellationToken cancellationToken)
         {
             var existingDictionary = await _database.Dictionary.SingleOrDefaultAsync(d => d.Id == dictionary.Id, cancellationToken);
 
@@ -72,7 +72,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Dictionaries
         {
             return await _database.Dictionary
                                   .Include(d => d.Downloads)
-                                  .Where(d =>  d.UserId == userId || d.IsPublic)
+                                  .Where(d => d.UserId == userId || d.IsPublic)
                                   .Select(d => d.Map())
                                   .ToListAsync(cancellationToken);
         }

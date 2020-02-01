@@ -1,38 +1,33 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
 using FluentAssertions;
-using Inshapardaz.Domain.Models;
+using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views.Dictionaries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.AddDictionary
+namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.UpdateDictionary
 {
     [TestFixture]
-    public class WhenAddingDictionaryAsUnauthorised : FunctionTest
+    public class WhenUpdatingDictionaryAsUnauthorised : FunctionTest
     {
         private UnauthorizedResult _response;
-        private DictionaryView _dictionary;
+        private DictionaryDataBuilder _builder;
+        private Ports.Database.Entities.Dictionaries.Dictionary _dictionary;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var handler = Container.GetService<Functions.Dictionaries.AddDictionary>();
-            _dictionary = new DictionaryView
-            {
-                Name = Random.Name,
-                IsPublic = Random.Bool,
-                LanguageId = (int)new Faker().PickRandom<Languages>()
-            };
+            _builder = Container.GetService<DictionaryDataBuilder>();
+            var handler = Container.GetService<Functions.Dictionaries.UpdateDictionary>();
+            _dictionary = _builder.Build();
 
             var request = new RequestBuilder()
                                             .WithJsonBody(_dictionary)
                                             .Build();
 
-            _response = (UnauthorizedResult)await handler.Run(request, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, _dictionary.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

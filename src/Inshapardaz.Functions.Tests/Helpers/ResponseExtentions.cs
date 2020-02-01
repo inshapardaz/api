@@ -12,6 +12,11 @@ namespace Inshapardaz.Functions.Tests.Helpers
             assertion.Be((int)HttpStatusCode.OK);
         }
 
+        public static void BeOk(this ObjectAssertions assertion)
+        {
+            assertion.BeOfType<OkResult>();
+        }
+
         public static void BeCreated(this ObjectAssertions assertion)
         {
             assertion.BeOfType<CreatedResult>();

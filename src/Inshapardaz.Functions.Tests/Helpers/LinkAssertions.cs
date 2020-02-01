@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using FluentAssertions;
 using Inshapardaz.Functions.Views;
 using NUnit.Framework;
 
@@ -30,6 +30,15 @@ namespace Inshapardaz.Functions.Tests.Helpers
             Assert.That(link.Method.ToLower(), Is.EqualTo("get"), $"Link with reltype '{link.Rel}' should have method 'GET' but found '{link.Method}'");
             Uri uri = new Uri(link.Href);
             Assert.That(uri.AbsolutePath.ToLower(), Is.EqualTo(url.ToLower()), $"Link with reltype '{link.Rel}' not matching.");
+
+            return link;
+        }
+
+        public static LinkView ShouldGetMatching(this LinkView link, string regEx)
+        {
+            Assert.That(link.Method.ToLower(), Is.EqualTo("get"), $"Link with reltype '{link.Rel}' should have method 'GET' but found '{link.Method}'");
+            Uri uri = new Uri(link.Href);
+            uri.AbsolutePath.Should().MatchRegex(regEx, $"Link with reltype '{link.Rel}' not matching pattern `{regEx}`.");
 
             return link;
         }
@@ -120,6 +129,11 @@ namespace Inshapardaz.Functions.Tests.Helpers
         public static LinkView CreateWordLink(this ViewWithLinks view)
         {
             return view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.CreateWord, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        public static LinkView Link(this ViewWithLinks view, string relType)
+        {
+            return view.Links.SingleOrDefault(l => l.Rel.Equals(relType, StringComparison.CurrentCultureIgnoreCase));
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Mappings
                 WordCount = source.WordCount
             };
 
-        public static DictionaryModel Map(this AddDictionaryView source)
+        public static DictionaryModel Map(this DictionaryEditView source)
             => new DictionaryModel
             {
                 Name = source.Name,

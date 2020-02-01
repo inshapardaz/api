@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Bogus;
 using FluentAssertions;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Dictionaries;
@@ -13,31 +12,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.AddDictionary
+namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.UpdateDictionary
 {
-    [TestFixture(AuthenticationLevel.Administrator)]
-    [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenAddingDictionaryWithPermissions : FunctionTest
+    public class WhenUpdatingDictionaryThatDoesNotExist : FunctionTest
     {
         private CreatedResult _response;
-        private DictionaryDataBuilder _builder;
-        private DictionaryView _dictionary;
         private DictionaryView _payload;
+        private DictionaryEditView _dictionary;
         private Ports.Database.Entities.Dictionaries.Dictionary _actual;
-        private readonly ClaimsPrincipal _claim;
-
-        public WhenAddingDictionaryWithPermissions(AuthenticationLevel authenticationLevel)
-        {
-            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<DictionaryDataBuilder>();
             var dataHelper = Container.GetService<DictionaryDataHelper>();
-            var handler = Container.GetService<Functions.Dictionaries.AddDictionary>();
-            _dictionary = new DictionaryView
+            var handler = Container.GetService<Functions.Dictionaries.UpdateDictionary>();
+            _dictionary = new DictionaryEditView
             {
                 Name = Random.Name,
                 IsPublic = Random.Bool,
@@ -48,7 +37,7 @@ namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.AddDictionary
                                             .WithJsonBody(_dictionary)
                                             .Build();
 
-            _response = (CreatedResult)await handler.Run(request, _claim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, Random.Number, AuthenticationBuilder.AdminClaim, CancellationToken.None);
             _payload = (DictionaryView)_response.Value;
             _actual = dataHelper.GetDictionaryByid(_payload.Id);
         }
@@ -68,7 +57,7 @@ namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.AddDictionary
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            _response.Location.Should().MatchRegex($"/api/dictionaries/{_payload.Id}");
+            _response.Location.Should().MatchRegex("/api/dictionaries/[0-9]+");
         }
 
         [Test]
@@ -77,7 +66,6 @@ namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.AddDictionary
             _actual.Name.Should().Be(_dictionary.Name);
             _actual.IsPublic.Should().Be(_dictionary.IsPublic);
             _actual.Language.Should().Be((Languages)_dictionary.LanguageId);
-            _actual.UserId.Should().Be(_claim.GetUserId());
         }
 
         [Test]

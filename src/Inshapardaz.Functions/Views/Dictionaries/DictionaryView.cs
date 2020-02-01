@@ -12,7 +12,7 @@ namespace Inshapardaz.Functions.Views.Dictionaries
         public int WordCount { get; set; }
     }
 
-    public class AddDictionaryView
+    public class DictionaryEditView
     {
         public string Name { get; set; }
         public bool IsPublic { get; set; }

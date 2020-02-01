@@ -13,7 +13,7 @@ namespace Inshapardaz.Domain.Ports.Dictionaries
             Dictionary = dictionary;
         }
 
-        public Models.Dictionaries.DictionaryModel Dictionary { get; } 
+        public Models.Dictionaries.DictionaryModel Dictionary { get; }
 
         public UpdateDictionaryResult Result { get; set; } = new UpdateDictionaryResult();
 
@@ -34,7 +34,6 @@ namespace Inshapardaz.Domain.Ports.Dictionaries
             _dictionaryRepository = dictionaryRepository;
         }
 
-        [DictionaryWriteRequestValidation(1, HandlerTiming.Before)]
         public override async Task<UpdateDictionaryRequest> HandleAsync(UpdateDictionaryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await _dictionaryRepository.GetDictionaryById(command.DictionaryId, cancellationToken);
@@ -48,10 +47,11 @@ namespace Inshapardaz.Domain.Ports.Dictionaries
             }
             else
             {
-                await _dictionaryRepository.UpdateDictionary(command.DictionaryId,  command.Dictionary, cancellationToken);
+                command.Dictionary.Id = command.DictionaryId;
+                await _dictionaryRepository.UpdateDictionary(command.Dictionary, cancellationToken);
                 command.Result.Dictionary = command.Dictionary;
             }
-            
+
             return await base.HandleAsync(command, cancellationToken);
         }
     }

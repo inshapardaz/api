@@ -39,7 +39,7 @@ namespace Inshapardaz.Storage
 
         public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
         {
-            var container = GetContainer();
+            var container = GetContainer(GetContainerName(filePath));
             string name = new CloudBlockBlob(new Uri(filePath)).Name;
             var blockBlob = container.GetBlockBlobReference(name);
 
@@ -88,5 +88,9 @@ namespace Inshapardaz.Storage
             return blobClient.GetContainerReference(container);
         }
 
+        private string GetContainerName(string url)
+        {
+            return new Uri(url).Segments[1].Trim('/');
+        }
     }
 }

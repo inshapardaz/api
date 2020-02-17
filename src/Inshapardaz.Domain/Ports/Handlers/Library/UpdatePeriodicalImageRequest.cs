@@ -21,7 +21,6 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public FileModel Image { get; set; }
 
-
         public RequestResult Result { get; set; } = new RequestResult();
 
         public class RequestResult
@@ -92,7 +91,7 @@ namespace Inshapardaz.Domain.Ports.Library
         private static string GetUniqueFileName(int PeriodicalId, string fileName)
         {
             var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"periodicals/{PeriodicalId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
+            return $"images/periodicals/{PeriodicalId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
         }
     }
 }

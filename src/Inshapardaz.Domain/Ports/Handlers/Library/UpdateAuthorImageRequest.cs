@@ -72,7 +72,7 @@ namespace Inshapardaz.Domain.Ports.Library
             {
                 command.Image.Id = default(int);
                 var url = await AddImageToFileStore(author.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
-                command.Result.File = await _fileRepository.AddFile(command.Image, url, true, cancellationToken); 
+                command.Result.File = await _fileRepository.AddFile(command.Image, url, true, cancellationToken);
                 command.Result.HasAddedNew = true;
 
                 author.ImageId = command.Result.File.Id;
@@ -91,7 +91,7 @@ namespace Inshapardaz.Domain.Ports.Library
         private static string GetUniqueFileName(int authorId, string fileName)
         {
             var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"authors/{authorId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
+            return $"images/authors/{authorId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
         }
     }
 }

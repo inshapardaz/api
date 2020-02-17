@@ -33,4 +33,8 @@
     <ProjectReference Include="..\Inshapardaz.Functions\Inshapardaz.Functions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Library\Periodicals\Get\" />
+  </ItemGroup>
+
 </Project>

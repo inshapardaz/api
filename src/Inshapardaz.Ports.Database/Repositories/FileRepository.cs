@@ -4,6 +4,7 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Inshapardaz.Ports.Database.Repositories
 {
@@ -28,6 +29,7 @@ namespace Inshapardaz.Ports.Database.Repositories
 
             entity.FilePath = url;
             entity.IsPublic = isPublic;
+            entity.DateCreated = DateTime.UtcNow;
 
             _databaseContext.File.Add(entity);
             await _databaseContext.SaveChangesAsync(cancellationToken);
@@ -48,6 +50,7 @@ namespace Inshapardaz.Ports.Database.Repositories
             entity.MimeType = file.MimeType;
             entity.FilePath = url;
             entity.IsPublic = isPublic;
+            entity.DateCreated = DateTime.UtcNow;
 
             await _databaseContext.SaveChangesAsync(cancellationToken);
 

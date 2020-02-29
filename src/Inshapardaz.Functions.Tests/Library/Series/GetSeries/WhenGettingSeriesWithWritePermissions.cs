@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -12,22 +12,30 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
 {
-    [TestFixture]
-    public class WhenGettingSeriesAsAnonymous : FunctionTest
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingSeriesWithWritePermissions : FunctionTest
     {
         private OkObjectResult _response;
         private ListView<SeriesView> _view;
-        
+        private readonly ClaimsPrincipal _claim;
+        private SeriesDataBuilder _dataBuilder;
+
+        public WhenGettingSeriesWithWritePermissions(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
+
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var seriesBuilder = Container.GetService<SeriesDataBuilder>();
-            seriesBuilder.WithBooks(3).Build(4);
-            
+            _dataBuilder = Container.GetService<SeriesDataBuilder>();
+            _dataBuilder.WithBooks(3).Build(4);
+
             var handler = Container.GetService<Functions.Library.Series.GetSeries>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, _claim, CancellationToken.None);
 
             _view = _response.Value as ListView<SeriesView>;
         }
@@ -35,7 +43,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]
@@ -52,22 +60,13 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
                  .ShouldBeGet()
                  .ShouldHaveSomeHref();
         }
-        
-        [Test]
-        public void ShouldHaveSomeSeries()
-        {
-            Assert.IsNotEmpty(_view.Items, "Should return some series.");
-            Assert.That(_view.Items.Count(), Is.EqualTo(4), "Should return all series");
-        }
 
         [Test]
-        public void ShouldHaveCorrectSeriesData()
+        public void ShouldHaveCreateLink()
         {
-            var firstSeries = _view.Items.FirstOrDefault();
-            Assert.That(firstSeries, Is.Not.Null, "Should contain at-least one series");
-            Assert.That(firstSeries.Name, Is.Not.Empty, "Series name should have a value");
-            Assert.That(firstSeries.Description, Is.Not.Empty, "Series description should have a value");
-            Assert.That(firstSeries.BookCount, Is.GreaterThan(0), "Series name should have a value");
+            _view.Links.AssertLink("create")
+                 .ShouldBePost()
+                 .ShouldHaveSomeHref();
         }
     }
 }

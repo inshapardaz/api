@@ -6,9 +6,9 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library
     {
         public LibraryBaseQuery(int libraryId)
         {
-            Libraryid = libraryId;
+            LibraryId = libraryId;
         }
 
-        public int Libraryid { get; private set; }
+        public int LibraryId { get; private set; }
     }
 }

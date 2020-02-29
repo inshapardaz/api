@@ -15,15 +15,19 @@ namespace Inshapardaz.Functions.Library.Series
 {
     public class DeleteSeries : CommandBase
     {
-        public DeleteSeries(IAmACommandProcessor commandProcessor) 
+        public DeleteSeries(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
         }
 
         [FunctionName("DeleteSeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "series/{seriesId:int}")] HttpRequest req,
-            ILogger log, int seriesId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/series/{seriesId:int}")] HttpRequest req,
+            ILogger log,
+            int libraryId,
+            int seriesId,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
             if (principal == null)
             {
@@ -35,7 +39,7 @@ namespace Inshapardaz.Functions.Library.Series
                 return new ForbidResult("Bearer");
             }
 
-            var request = new DeleteSeriesRequest(seriesId);
+            var request = new DeleteSeriesRequest(libraryId, seriesId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

@@ -31,7 +31,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<AuthorModel> ExecuteAsync(GetAuthorByIdQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _authorRepository.GetAuthorById(query.Libraryid, query.AuthorId, cancellationToken);
+            return await _authorRepository.GetAuthorById(query.LibraryId, query.AuthorId, cancellationToken);
         }
     }
 }

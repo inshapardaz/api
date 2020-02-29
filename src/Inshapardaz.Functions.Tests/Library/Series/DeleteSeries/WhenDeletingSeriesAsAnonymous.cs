@@ -14,22 +14,26 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
     public class WhenDeletingSeriesAsAnonymous : FunctionTest
     {
         private UnauthorizedResult _response;
+        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
+            _dataBuilder = Container.GetService<LibraryDataBuilder>();
+            _dataBuilder.Build();
+
             var request = TestHelpers.CreateGetRequest();
             var builder = Container.GetService<SeriesDataBuilder>();
             var series = builder.Build();
-            
+
             var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();
-            _response = (UnauthorizedResult) await handler.Run(request, NullLogger.Instance, series.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, series.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]

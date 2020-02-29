@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
+using AutoFixture;
+using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -13,23 +14,26 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
     public class WhenUpdatingSeriesAsReader : FunctionTest
     {
         private ForbidResult _response;
+        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
+            _dataBuilder = Container.GetService<LibraryDataBuilder>();
+            _dataBuilder.Build();
+
             var handler = Container.GetService<Functions.Library.Series.UpdateSeries>();
-            var faker = new Faker();
-            var series = new SeriesView { Id = faker.Random.Number(), Name = faker.Random.String()};
+            var series = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
             var request = new RequestBuilder()
                                             .WithJsonBody(series)
                                             .Build();
-            _response = (ForbidResult) await handler.Run(request, series.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, _dataBuilder.Library.Id, series.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]

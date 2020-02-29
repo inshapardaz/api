@@ -27,8 +27,9 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("AddSeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "series")] HttpRequest req,
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/series")] HttpRequest req,
+            int libraryId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             if (principal == null)
@@ -44,7 +45,7 @@ namespace Inshapardaz.Functions.Library.Series
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var series = JsonConvert.DeserializeObject<SeriesView>(requestBody);
 
-            var request = new AddSeriesRequest(series.Map());
+            var request = new AddSeriesRequest(libraryId, series.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = request.Result.Render(principal);

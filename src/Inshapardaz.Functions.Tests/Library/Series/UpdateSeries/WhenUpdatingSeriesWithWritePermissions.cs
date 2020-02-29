@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -13,13 +16,20 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
 {
-    [TestFixture]
-    public class WhenUpdatingSeriesAsAdministrator : FunctionTest
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenUpdatingSeriesWithWritePermissions : FunctionTest
     {
         private OkObjectResult _response;
         private SeriesDataBuilder _dataBuilder;
-        private IEnumerable<Ports.Database.Entities.Library.Series> _series;
+        private IEnumerable<SeriesDto> _series;
         private SeriesView _expected;
+        private readonly ClaimsPrincipal _claim;
+
+        public WhenUpdatingSeriesWithWritePermissions(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,20 +45,20 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)
                                             .Build();
-            _response = (OkObjectResult) await handler.Run(request, selectedSeries.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, _dataBuilder.Library.Id, selectedSeries.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]
         public void ShouldHaveCreatedResult()
         {
             Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int) HttpStatusCode.OK));
+            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
         [Test]
@@ -57,7 +67,8 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
             var returned = _response.Value as SeriesView;
             Assert.That(returned, Is.Not.Null);
 
-            var actual = _dataBuilder.GetById(returned.Id);
+            var actual = DatabaseConnection.GetSeriesById(returned.Id);
+
             Assert.That(actual.Name, Is.EqualTo(_expected.Name), "Series should have expected name.");
             Assert.That(actual.Description, Is.EqualTo(_expected.Description), "Series should have expected description.");
         }

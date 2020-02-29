@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
+using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,27 +14,31 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
     public class WhenGettingSeriesByIdForSeriesThatDoesNotExist : FunctionTest
     {
         private NotFoundResult _response;
+        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
+            _dataBuilder = Container.GetService<LibraryDataBuilder>();
+            _dataBuilder.Build();
+
             var request = TestHelpers.CreateGetRequest();
-            
+
             var handler = Container.GetService<Functions.Library.Series.GetSeriesById>();
-            _response = (NotFoundResult) await handler.Run(request, NullLogger.Instance, new Faker().Random.Int(), AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NotFoundResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]
         public void ShouldHaveNotFoundResult()
         {
             Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int) HttpStatusCode.NotFound));
+            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
         }
     }
 }

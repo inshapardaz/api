@@ -14,23 +14,25 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
     public class WhenDeletingSeriesAsReader : FunctionTest
     {
         private ForbidResult _response;
+        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var request = TestHelpers.CreateGetRequest();
+            _dataBuilder = Container.GetService<LibraryDataBuilder>();
+            _dataBuilder.Build(); var request = TestHelpers.CreateGetRequest();
             var builder = Container.GetService<SeriesDataBuilder>();
             var series = builder.Build(4);
             var expected = series.First();
-            
+
             var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();
-            _response = (ForbidResult) await handler.Run(request, NullLogger.Instance, expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]

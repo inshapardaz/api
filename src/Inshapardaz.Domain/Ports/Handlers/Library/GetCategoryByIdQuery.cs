@@ -31,7 +31,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<CategoryModel> ExecuteAsync(GetCategoryByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _categoryRepository.GetCategoryById(command.Libraryid, command.CategoryId, cancellationToken);
+            return await _categoryRepository.GetCategoryById(command.LibraryId, command.CategoryId, cancellationToken);
         }
     }
 }

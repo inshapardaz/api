@@ -23,10 +23,10 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("GetSeriesById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series/{id:int}")] HttpRequest req,
-            ILogger log, int id, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}series/{seriesId:int}")] HttpRequest req,
+            ILogger log, int libraryId, int seriesId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var query = new GetSeriesByIdQuery(id);
+            var query = new GetSeriesByIdQuery(libraryId, seriesId);
             var series = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             if (series == null)

@@ -18,23 +18,23 @@ namespace Inshapardaz.Functions.Library.Authors
 {
     public class GetAuthors : QueryBase
     {
-        public GetAuthors(IQueryProcessor queryProcessor) 
+        public GetAuthors(IQueryProcessor queryProcessor)
         : base(queryProcessor)
         {
         }
 
         [FunctionName("GetAuthors")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors")] HttpRequest req,
-            ILogger log,
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/authors")] HttpRequest req,
+            int libraryId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             var query = GetQueryParameter<string>(req, "query", null);
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var authorsQuery = new GetAuthorsQuery(pageNumber, pageSize) { Query = query };
+            var authorsQuery = new GetAuthorsQuery(libraryId, pageNumber, pageSize) { Query = query };
             var result = await QueryProcessor.ExecuteAsync(authorsQuery, token);
 
             var args = new PageRendererArgs<AuthorModel>
@@ -43,13 +43,13 @@ namespace Inshapardaz.Functions.Library.Authors
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
                 LinkFunc = Link
             };
-            
+
             return new OkObjectResult(args.Render(principal));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("authors", relType);
-        
-        public static LinkView Link(int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self) 
+
+        public static LinkView Link(int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self)
             => SelfLink("authors", relType, queryString: new Dictionary<string, string>
             {
                 { "pageNumber", pageNumber.ToString()},

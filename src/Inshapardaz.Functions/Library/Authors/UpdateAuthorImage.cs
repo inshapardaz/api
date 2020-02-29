@@ -17,16 +17,16 @@ namespace Inshapardaz.Functions.Library.Authors
 {
     public class UpdateAuthorImage : CommandBase
     {
-        public UpdateAuthorImage(IAmACommandProcessor commandProcessor) 
+        public UpdateAuthorImage(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
         }
 
         [FunctionName("UpdateAuthorImage")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{id:int}/image")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/authors/{id:int}/image")]
             HttpRequestMessage req,
-            int id,
+            int libraryId, int authorId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token = default)
         {
@@ -43,16 +43,16 @@ namespace Inshapardaz.Functions.Library.Authors
             var multipart = await req.Content.ReadAsMultipartAsync(token);
             var content = await req.Content.ReadAsByteArrayAsync();
 
-            var fileName = $"{id}";
+            var fileName = $"{authorId}";
             var mimeType = "application/binary";
             var fileContent = multipart.Contents.FirstOrDefault();
             if (fileContent != null)
             {
-                fileName = $"{id}{GetFileExtension(fileContent.Headers?.ContentDisposition?.FileName)}";
+                fileName = $"{authorId}{GetFileExtension(fileContent.Headers?.ContentDisposition?.FileName)}";
                 mimeType = fileContent.Headers?.ContentType?.MediaType;
             }
 
-            var request = new UpdateAuthorImageRequest(id)
+            var request = new UpdateAuthorImageRequest(libraryId, authorId)
             {
                 Image = new Domain.Models.FileModel
                 {

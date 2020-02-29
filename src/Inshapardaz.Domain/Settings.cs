@@ -6,7 +6,7 @@
 
         public int DefaultDictionaryId { get; set; }
 
-        public string ElasticsearchUrl { get; set; }
+        public string DatabaseConnectionString { get; set; }
 
         public string Audience { get; set; }
 

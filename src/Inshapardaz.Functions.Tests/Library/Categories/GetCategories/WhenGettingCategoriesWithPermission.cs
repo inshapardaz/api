@@ -6,26 +6,26 @@ using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
 {
     [TestFixture]
-    public class WhenGettingCategoriesAsWriter : FunctionTest
+    public class WhenGettingCategoriesWithPermission : FunctionTest
     {
         private OkObjectResult _response;
         private ListView<CategoryView> _view;
-        
+        private CategoriesDataBuilder _dataBuilder;
+
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
-            categoriesBuilder.Build(4);
-            
+            _dataBuilder = Container.GetService<CategoriesDataBuilder>();
+            _dataBuilder.Build(4);
+
             var handler = Container.GetService<Functions.Library.Categories.GetCategories>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, _dataBuilder.Library.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<CategoryView>;
         }
@@ -33,7 +33,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]
@@ -52,9 +52,11 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
+        public void ShouldHaveCreateLink()
         {
-            _view.Links.AssertLinkNotPresent("create");
+            _view.Links.AssertLink("create")
+                 .ShouldBePost()
+                 .ShouldHaveSomeHref();
         }
     }
 }

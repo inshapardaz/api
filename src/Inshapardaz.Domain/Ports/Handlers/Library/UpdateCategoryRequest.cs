@@ -1,14 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class UpdateCategoryRequest : RequestBase
+    public class UpdateCategoryRequest : LibraryBaseCommand
     {
-        public UpdateCategoryRequest(CategoryModel category)
+        public UpdateCategoryRequest(int libraryId, CategoryModel category)
+            : base(libraryId)
         {
             Category = category;
         }
@@ -36,18 +38,18 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<UpdateCategoryRequest> HandleAsync(UpdateCategoryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _categoryRepository.GetCategoryById(command.Category.Id, cancellationToken);
+            var result = await _categoryRepository.GetCategoryById(command.LibraryId, command.Category.Id, cancellationToken);
 
             if (result == null)
             {
                 command.Category.Id = default(int);
-                var newCategory = await _categoryRepository.AddCategory(command.Category, cancellationToken);
+                var newCategory = await _categoryRepository.AddCategory(command.LibraryId, command.Category, cancellationToken);
                 command.Result.HasAddedNew = true;
                 command.Result.Category = newCategory;
             }
             else
             {
-                await _categoryRepository.UpdateCategory(command.Category, cancellationToken);
+                await _categoryRepository.UpdateCategory(command.LibraryId, command.Category, cancellationToken);
                 command.Result.Category = command.Category;
             }
 

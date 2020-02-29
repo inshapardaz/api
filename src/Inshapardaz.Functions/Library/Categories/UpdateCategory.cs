@@ -27,8 +27,8 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("UpdateCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "categories/{categoryId:int}")] HttpRequest req,
-            int categoryId,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/categories/{categoryId:int}")] HttpRequest req,
+            int libraryId, int categoryId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
@@ -46,7 +46,7 @@ namespace Inshapardaz.Functions.Library.Categories
             var category = JsonConvert.DeserializeObject<CategoryView>(requestBody);
 
             category.Id = categoryId;
-            var request = new UpdateCategoryRequest(category.Map());
+            var request = new UpdateCategoryRequest(libraryId, category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = request.Result.Category.Render(principal);

@@ -25,8 +25,9 @@ namespace Inshapardaz.Functions.Library.Authors
 
         [FunctionName("AddAuthor")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "authors")] HttpRequest req,  
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/authors")] HttpRequest req,
+            int libraryId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             if (principal == null)
@@ -41,7 +42,7 @@ namespace Inshapardaz.Functions.Library.Authors
 
             var author = await GetBody<AuthorView>(req);
 
-            var request = new AddAuthorRequest(author.Map());
+            var request = new AddAuthorRequest(libraryId, author.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = request.Result.Render(principal);

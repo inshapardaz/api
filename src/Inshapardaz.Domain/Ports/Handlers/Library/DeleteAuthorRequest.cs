@@ -1,14 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class DeleteAuthorRequest : RequestBase
+    public class DeleteAuthorRequest : LibraryBaseCommand
     {
-        public DeleteAuthorRequest(int authorId)
+        public DeleteAuthorRequest(int libraryId, int authorId)
+            : base(libraryId)
         {
             AuthorId = authorId;
         }
@@ -31,7 +33,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<DeleteAuthorRequest> HandleAsync(DeleteAuthorRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var author = await _authorRepository.GetAuthorById(command.AuthorId, cancellationToken);
+            var author = await _authorRepository.GetAuthorById(command.LibraryId, command.AuthorId, cancellationToken);
             if (author != null)
             {
                 if (author.ImageId.HasValue)
@@ -39,13 +41,13 @@ namespace Inshapardaz.Domain.Ports.Library
                     var image = await _fileRepository.GetFileById(author.ImageId.Value, true, cancellationToken);
                     if (image != null && !string.IsNullOrWhiteSpace(image.FilePath))
                     {
-                        await _fileStore.TryDeleteFile(image.FilePath, cancellationToken);
+                        await _fileStore.TryDeleteImage(image.FilePath, cancellationToken);
                         await _fileRepository.DeleteFile(image.Id, cancellationToken);
                     }
                 }
-                await _authorRepository.DeleteAuthor(command.AuthorId, cancellationToken);
+                await _authorRepository.DeleteAuthor(command.LibraryId, command.AuthorId, cancellationToken);
             }
-            
+
             return await base.HandleAsync(command, cancellationToken);
         }
     }

@@ -7,7 +7,6 @@ using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
@@ -15,9 +14,10 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
     [TestFixture]
     public class WhenGettingAuthorsPageInMiddle : FunctionTest
     {
+        private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
         private PageView<AuthorView> _view;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -26,11 +26,11 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
                 .WithQueryParameter("pageSize", 10)
                 .Build();
 
-            var builder = Container.GetService<AuthorsDataBuilder>();
-            builder.WithBooks(3).Build(50);
-            
+            _builder = Container.GetService<AuthorsDataBuilder>();
+            _builder.WithBooks(3).Build(50);
+
             var handler = Container.GetService<Functions.Library.Authors.GetAuthors>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, _builder.Library.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as PageView<AuthorView>;
         }
@@ -38,7 +38,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]

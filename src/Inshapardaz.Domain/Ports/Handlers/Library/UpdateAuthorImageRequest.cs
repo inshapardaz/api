@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -10,9 +11,10 @@ using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class UpdateAuthorImageRequest : RequestBase
+    public class UpdateAuthorImageRequest : LibraryBaseCommand
     {
-        public UpdateAuthorImageRequest(int authorId)
+        public UpdateAuthorImageRequest(int libraryId, int authorId)
+            : base(libraryId)
         {
             AuthorId = authorId;
         }
@@ -46,7 +48,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<UpdateAuthorImageRequest> HandleAsync(UpdateAuthorImageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var author = await _authorRepository.GetAuthorById(command.AuthorId, cancellationToken);
+            var author = await _authorRepository.GetAuthorById(command.LibraryId, command.AuthorId, cancellationToken);
 
             if (author == null)
             {
@@ -60,7 +62,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 var existingImage = await _fileRepository.GetFileById(author.ImageId.Value, true, cancellationToken);
                 if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
                 {
-                    await _fileStorage.TryDeleteFile(existingImage.FilePath, cancellationToken);
+                    await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
                 }
 
                 var url = await AddImageToFileStore(author.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
@@ -75,8 +77,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 command.Result.File = await _fileRepository.AddFile(command.Image, url, true, cancellationToken);
                 command.Result.HasAddedNew = true;
 
-                author.ImageId = command.Result.File.Id;
-                await _authorRepository.UpdateAuthor(author, cancellationToken);
+                await _authorRepository.UpdateAuthorImage(command.LibraryId, command.AuthorId, command.Result.File.Id, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);
@@ -85,13 +86,13 @@ namespace Inshapardaz.Domain.Ports.Library
         private async Task<string> AddImageToFileStore(int authorId, string fileName, byte[] contents, CancellationToken cancellationToken)
         {
             var filePath = GetUniqueFileName(authorId, fileName);
-            return await _fileStorage.StoreFile(filePath, contents, cancellationToken);
+            return await _fileStorage.StoreImage(filePath, contents, cancellationToken);
         }
 
         private static string GetUniqueFileName(int authorId, string fileName)
         {
             var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"images/authors/{authorId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
+            return $"authors/{authorId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
         }
     }
 }

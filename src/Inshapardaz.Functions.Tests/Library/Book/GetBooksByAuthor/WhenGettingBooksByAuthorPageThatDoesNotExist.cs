@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByAuthor
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -26,13 +26,13 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByAuthor
 
             var builder = Container.GetService<BooksDataBuilder>();
             builder.Build(20);
-            
+
             var authorBuilder = Container.GetService<AuthorsDataBuilder>();
             var author = authorBuilder.Build();
-            builder.WithAuthor(author).Build(20);
-            
+            //builder.WithAuthor(author).Build(20);
+
             var handler = Container.GetService<Functions.Library.Books.GetBooksByAuthor>();
-            _response = (OkObjectResult) await handler.Run(request, author.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, author.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;
         }
@@ -75,7 +75,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByAuthor
         {
             Assert.IsEmpty(_view.Data, "Should return no books.");
         }
-        
+
         [Test]
         public void ShouldReturnCorrectPage()
         {

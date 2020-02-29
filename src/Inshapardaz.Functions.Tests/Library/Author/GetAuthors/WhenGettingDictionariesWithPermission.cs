@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -7,27 +8,34 @@ using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 {
-    [TestFixture]
-    public class WhenGettingAuthorsAsWriter : FunctionTest
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingDictionariesWithPermission : FunctionTest
     {
+        private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
         private PageView<AuthorView> _view;
-        
+        private readonly ClaimsPrincipal _claim;
+
+        public WhenGettingDictionariesWithPermission(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
+
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var builder = Container.GetService<AuthorsDataBuilder>();
-            builder.WithBooks(3).Build(4);
-            
+            _builder = Container.GetService<AuthorsDataBuilder>();
+            _builder.WithBooks(3).Build(4);
+
             var handler = Container.GetService<Functions.Library.Authors.GetAuthors>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, _builder.Library.Id, _claim, CancellationToken.None);
 
             _view = _response.Value as PageView<AuthorView>;
         }
@@ -35,7 +43,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]

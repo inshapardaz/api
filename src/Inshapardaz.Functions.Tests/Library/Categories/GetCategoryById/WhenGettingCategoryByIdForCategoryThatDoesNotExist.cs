@@ -5,7 +5,6 @@ using Bogus;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
@@ -19,9 +18,9 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            
+
             var handler = Container.GetService<Functions.Library.Categories.GetCategoryById>();
-            _response = (NotFoundResult) await handler.Run(request, NullLogger.Instance, new Faker().Random.Int(), AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NotFoundResult)await handler.Run(request, 0, new Faker().Random.Int(), AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -34,7 +33,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
         public void ShouldHaveNotFoundResult()
         {
             Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int) HttpStatusCode.NotFound));
+            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
         }
     }
 }

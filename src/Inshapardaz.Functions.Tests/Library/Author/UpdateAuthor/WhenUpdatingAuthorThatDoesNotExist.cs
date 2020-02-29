@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -15,29 +16,29 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
     public class WhenUpdatingAuthorThatDoesNotExist : FunctionTest
     {
         private CreatedResult _response;
-        private AuthorsDataBuilder _builder;
+        private LibraryDataBuilder _builder;
         private AuthorView _expected;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<AuthorsDataBuilder>();
+            _builder = Container.GetService<LibraryDataBuilder>();
+            _builder.Build();
 
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthor>();
-            var faker = new Faker();
             _expected = new AuthorView { Name = new Faker().Random.String() };
 
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)
                                             .Build();
 
-            _response = (CreatedResult) await handler.Run(request, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, _builder.Library.Id, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]
@@ -59,7 +60,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
             var returned = _response.Value as AuthorView;
             Assert.That(returned, Is.Not.Null);
 
-            var actual = _builder.GetById(returned.Id);
+            var actual = DatabaseConnection.GetAuthorById(returned.Id);
             Assert.That(actual, Is.Not.Null, "Author should be created.");
         }
     }

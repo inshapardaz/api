@@ -1,14 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class AddAuthorRequest : RequestBase
+    public class AddAuthorRequest : LibraryBaseCommand
     {
-        public AddAuthorRequest(AuthorModel author)
+        public AddAuthorRequest(int libraryId, AuthorModel author)
+            : base(libraryId)
         {
             Author = author;
         }
@@ -29,9 +31,9 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<AddAuthorRequest> HandleAsync(AddAuthorRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            command.Result= await _authorRepository.AddAuthor(command.Author, cancellationToken);
+            command.Result = await _authorRepository.AddAuthor(command.LibraryId, command.Author, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }
-    } 
+    }
 }

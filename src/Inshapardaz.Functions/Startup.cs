@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using System.Linq;
+using Inshapardaz.Domain.Adapters;
 
 [assembly: WebJobsStartup(typeof(Inshapardaz.Functions.Startup))]
 namespace Inshapardaz.Functions

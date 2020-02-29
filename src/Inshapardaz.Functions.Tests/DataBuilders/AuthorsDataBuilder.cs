@@ -1,25 +1,31 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Threading;
-using Bogus;
+using AutoFixture;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Ports.Database;
-using Inshapardaz.Ports.Database.Entities;
 using Inshapardaz.Ports.Database.Entities.Library;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
 {
     public class AuthorsDataBuilder
     {
-
+        private List<AuthorDto> _authors = new List<AuthorDto>();
+        private List<FileDto> _files = new List<FileDto>();
         private readonly IDatabaseContext _context;
+        private readonly IDbConnection _connection;
         private readonly IFileStorage _fileStorage;
         private int _bookCount;
         private bool _withImage = true;
 
-        public AuthorsDataBuilder(IDatabaseContext context, IFileStorage fileStorage)
+        public LibraryDto Library { get; private set; }
+
+        public AuthorsDataBuilder(IDatabaseContext context, IProvideConnection connectionProvider, IFileStorage fileStorage)
         {
             _context = context;
+            _connection = connectionProvider.GetConnection();
             _fileStorage = fileStorage;
         }
 
@@ -28,50 +34,68 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             _bookCount = bookCount;
             return this;
         }
-        
+
         public AuthorsDataBuilder WithoutImage()
         {
             _withImage = false;
             return this;
         }
 
-        public Author Build()
+        public AuthorDto Build()
         {
             return Build(1).Single();
         }
 
-        public IEnumerable<Author> Build(int count)
+        public IEnumerable<AuthorDto> Build(int count)
         {
-            var authors = new Faker<Author>()
-                          .RuleFor(c => c.Id, 0)
-                          .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
-                          .RuleFor(c => c.ImageId, f => _withImage ? f.Random.Int(1) : (int?)null)
-                          .Generate(count);
-            var files = new List<File>();
+            var authors = new List<AuthorDto>();
+            var fixture = new Fixture();
+            Library = fixture.Build<LibraryDto>()
+                                 .With(l => l.Language, "en")
+                                 .Create();
 
-            foreach (var author in authors)
+            _connection.AddLibrary(Library);
+
+            for (int i = 0; i < count; i++)
             {
-                var books = new Faker<Book>()
-                            .RuleFor(c => c.Id, 0)
-                            .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
-                            .RuleFor(c => c.Author, author)
-                            .Generate(_bookCount);
-
-                author.Books = books;
-
-                if (author.ImageId.HasValue)
+                FileDto authorImage = null;
+                if (_withImage)
                 {
-                    var url = _fileStorage.StoreFile($"{author.Id}", new Faker().Image.Random.Bytes(10), CancellationToken.None).Result;
-                    files.Add(new File {Id = author.ImageId.Value, IsPublic = true, FilePath = url });
+                    authorImage = fixture.Create<FileDto>();
+                    _connection.AddFile(authorImage);
 
+                    _files.Add(authorImage);
                 }
+
+                var author = fixture.Build<AuthorDto>()
+                                     .With(a => a.LibraryId, Library.Id)
+                                     .With(a => a.ImageId, authorImage.Id)
+                                     .Create();
+
+                _connection.AddAuthor(author);
+                _authors.Add(author);
+
+                var books = fixture.Build<BookDto>()
+                                   .With(b => b.AuthorId, author.Id)
+                                   .With(b => b.LibraryId, Library.Id)
+                                   .Without(b => b.ImageId)
+                                   .Without(b => b.SeriesId)
+                                   .CreateMany(_bookCount);
+                _connection.AddBooks(books);
+
+                authors.Add(author);
             }
 
-            _context.Author.AddRange(authors);
-            _context.File.AddRange(files);
-            _context.SaveChanges();
-
             return authors;
+        }
+
+        public void CleanUp()
+        {
+            if (Library != null)
+                _connection.DeleteLibrary(Library.Id);
+
+            _connection.DeleteAuthors(_authors);
+            _connection.DeleteFiles(_files);
         }
 
         public Author GetById(int id)

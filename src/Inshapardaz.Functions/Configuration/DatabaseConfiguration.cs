@@ -1,4 +1,5 @@
 using System.Linq;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Dictionaries;
 using Inshapardaz.Domain.Repositories.Library;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Inshapardaz.Functions.Configuration
 {
-    public static class DatabaseConfiguration 
+    public static class DatabaseConfiguration
     {
         public static IServiceCollection AddDatabase(this IServiceCollection services)
         {
@@ -31,6 +32,7 @@ namespace Inshapardaz.Functions.Configuration
                 services.AddTransient<IDatabaseContext, DatabaseContext>();
             }
 
+            services.AddTransient<IProvideConnection>(sp => new SqlServerConnectionProvider(ConfigurationSettings.DatabaseConnectionString));
             services.AddTransient<IFileRepository, FileRepository>();
             services.AddTransient<IDictionaryRepository, DictionaryRepository>();
             services.AddTransient<IWordRepository, WordRepository>();

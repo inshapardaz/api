@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,14 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
     public class WhenUpdatingAuthorAsReader : FunctionTest
     {
         private ForbidResult _response;
+        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
+            _dataBuilder = Container.GetService<LibraryDataBuilder>();
+            _dataBuilder.Build();
+
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthor>();
             var faker = new Faker();
             var author = new AuthorView { Id = faker.Random.Number(), Name = faker.Random.String() };
@@ -25,13 +30,13 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
                                             .WithJsonBody(author)
                                             .Build();
 
-            _response = (ForbidResult)await handler.Run(request, author.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, _dataBuilder.Library.Id, author.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]

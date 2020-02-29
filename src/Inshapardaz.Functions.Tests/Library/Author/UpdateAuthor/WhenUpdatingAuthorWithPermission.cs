@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +14,19 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
 {
-    [TestFixture]
-    public class WhenUpdatingAuthorAsAdministrator : FunctionTest
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenUpdatingAuthorWithPermission : FunctionTest
     {
         private OkObjectResult _response;
         private AuthorsDataBuilder _dataBuilder;
         private AuthorView _expected;
+        private readonly ClaimsPrincipal _claim;
+
+        public WhenUpdatingAuthorWithPermission(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,20 +43,20 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)
                                             .Build();
-            _response = (OkObjectResult) await handler.Run(request, author.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, _dataBuilder.Library.Id, author.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]
         public void ShouldHaveCreatedResult()
         {
             Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int) HttpStatusCode.OK));
+            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
         [Test]
@@ -56,7 +65,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
             var returned = _response.Value as AuthorView;
             Assert.That(returned, Is.Not.Null);
 
-            var actual = _dataBuilder.GetById(returned.Id);
+            var actual = DatabaseConnection.GetAuthorById(returned.Id);
             Assert.That(actual.Name, Is.EqualTo(_expected.Name), "Author should have expected name.");
         }
     }

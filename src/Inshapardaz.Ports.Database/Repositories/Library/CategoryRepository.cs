@@ -1,74 +1,81 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
+using Dapper;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
     public class CategoryRepository : ICategoryRepository
     {
-        private readonly IDatabaseContext _databaseContext;
+        private readonly IProvideConnection _connectionProvider;
 
-        public CategoryRepository(IDatabaseContext databaseContext)
+        public CategoryRepository(IProvideConnection connectionProvider)
         {
-            _databaseContext = databaseContext;
+            _connectionProvider = connectionProvider;
         }
 
-        public async Task<CategoryModel> AddCategory(CategoryModel category, CancellationToken cancellationToken)
+        public async Task<CategoryModel> AddCategory(int libraryId, CategoryModel category, CancellationToken cancellationToken)
         {
-            var item = category.Map();
-            _databaseContext.Category.Add(item);
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-
-            return item.Map();
-        }
-
-        public async Task UpdateCategory(CategoryModel category, CancellationToken cancellationToken)
-        {
-            var existingEntity = await _databaseContext.Category
-                                                       .SingleOrDefaultAsync(g => g.Id == category.Id,
-                                                                             cancellationToken);
-
-            if (existingEntity == null)
+            int id;
+            using (var connection = _connectionProvider.GetConnection())
             {
-                throw new NotFoundException();
+                var sql = "Insert Into Library.Category(Name, LibraryId) Output Inserted.Id Values(@Name, @LibraryId)";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Name = category.Name }, cancellationToken: cancellationToken);
+                id = await connection.ExecuteScalarAsync<int>(command);
             }
 
-            existingEntity.Name = category.Name;
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
+            return await GetCategoryById(libraryId, id, cancellationToken);
         }
 
-        public async Task DeleteCategory(int categoryId, CancellationToken cancellationToken)
+        public async Task UpdateCategory(int libraryId, CategoryModel category, CancellationToken cancellationToken)
         {
-            var category = await _databaseContext.Category.SingleOrDefaultAsync(g => g.Id == categoryId, cancellationToken);
-
-            if (category != null)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                _databaseContext.Category.Remove(category);
+                var sql = @"Update Library.Category Set Name = @Name Where Id = @Id AND LibraryId = @LibraryId";
+                var command = new CommandDefinition(sql, new { Id = category.Id, LibraryId = libraryId, Name = category.Name }, cancellationToken: cancellationToken);
+                await connection.ExecuteScalarAsync<int>(command);
             }
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<CategoryModel>> GetCategories(CancellationToken cancellationToken)
+        public async Task DeleteCategory(int libraryId, int categoryId, CancellationToken cancellationToken)
         {
-            return await _databaseContext.Category
-                                         .Select(t => t.Map())
-                                         .ToListAsync(cancellationToken);
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Delete From Library.Category Where LibraryId = @LibraryId AND Id = @Id";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
         }
 
-        public async Task<CategoryModel> GetCategoryById(int categoryId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<CategoryModel>> GetCategories(int libraryId, CancellationToken cancellationToken)
         {
-            var category = await _databaseContext.Category
-                                                    .SingleOrDefaultAsync(t => t.Id == categoryId,
-                                                                          cancellationToken);
-            return category.Map();
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select c.Id, c.Name,
+                            (Select Count(*) From Library.BookCategory b Where b.CategoryId = c.Id) AS BookCount
+                            FROM Library.Category AS c
+                            Where LibraryId = @LibraryId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId }, cancellationToken: cancellationToken);
+
+                return await connection.QueryAsync<CategoryModel>(command);
+            }
+        }
+
+        public async Task<CategoryModel> GetCategoryById(int libraryId, int categoryId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select c.Id, c.Name,
+                            (Select Count(*) From Library.BookCategory b Where b.CategoryId = c.Id) AS BookCount
+                            FROM Library.Category AS c
+                            Where LibraryId = @LibraryId And Id = @Id";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryId }, cancellationToken: cancellationToken);
+
+                return await connection.QuerySingleOrDefaultAsync<CategoryModel>(command);
+            }
         }
     }
 }

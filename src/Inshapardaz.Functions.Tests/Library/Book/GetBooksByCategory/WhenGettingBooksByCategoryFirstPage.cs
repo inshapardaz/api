@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -27,14 +27,14 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
 
             var builder = Container.GetService<BooksDataBuilder>();
             builder.WithCategories(2).Build(30);
-            
+
             var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
             var category = categoriesBuilder.Build();
-            builder.WithCategory(category).Build(20);
-            
+            // builder.WithCategory(category).Build(20);
+
             var handler = Container.GetService<Functions.Library.Books.GetBooksByCategory>();
-            
-            _response = (OkObjectResult) await handler.Run(request, category.Id,  AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+
+            _response = (OkObjectResult)await handler.Run(request, category.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
             _view = _response.Value as PageView<BookView>;
         }
 
@@ -79,7 +79,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
             Assert.IsNotEmpty(_view.Data, "Should return some books.");
             Assert.That(_view.Data.Count(), Is.EqualTo(10), "Should return all books on page");
         }
-        
+
         [Test]
         public void ShouldReturnCorrectPage()
         {

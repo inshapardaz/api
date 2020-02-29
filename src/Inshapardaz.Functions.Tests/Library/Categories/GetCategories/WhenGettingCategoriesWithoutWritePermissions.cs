@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -7,27 +8,34 @@ using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
 {
-    [TestFixture]
-    public class WhenGettingCategories : FunctionTest
+    [TestFixture(AuthenticationLevel.Reader)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingCategoriesWithoutWritePermissions : FunctionTest
     {
         private OkObjectResult _response;
         private ListView<CategoryView> _view;
-        
+        private CategoriesDataBuilder _dataBuilder;
+        private readonly ClaimsPrincipal _claim;
+
+        public WhenGettingCategoriesWithoutWritePermissions(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
+
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
-            categoriesBuilder.WithBooks(3).Build(4);
-            
+            _dataBuilder = Container.GetService<CategoriesDataBuilder>();
+            _dataBuilder.WithBooks(3).Build(4);
+
             var handler = Container.GetService<Functions.Library.Categories.GetCategories>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, _dataBuilder.Library.Id, _claim, CancellationToken.None);
 
             _view = _response.Value as ListView<CategoryView>;
         }
@@ -35,7 +43,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]
@@ -52,7 +60,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
                  .ShouldBeGet()
                  .ShouldHaveSomeHref();
         }
-        
+
         [Test]
         public void ShouldHaveSomeCategories()
         {
@@ -66,7 +74,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
             var firstCategory = _view.Items.FirstOrDefault();
             Assert.That(firstCategory, Is.Not.Null, "Should contain at-least one category");
             Assert.That(firstCategory.Name, Is.Not.Empty, "Category name should have a value");
-            Assert.That(firstCategory.BookCount, Is.GreaterThan(0), "Category name should have a value");
+            Assert.That(firstCategory.BookCount, Is.GreaterThan(0), "Category should have some books");
         }
     }
 }

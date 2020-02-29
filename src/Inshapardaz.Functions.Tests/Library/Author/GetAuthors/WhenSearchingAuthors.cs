@@ -2,36 +2,38 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 {
+    // TODO : Add tests for pagination
     [TestFixture]
-    public class WhenGettingAuthorsWithQyery : FunctionTest
+    public class WhenSearchingAuthors : FunctionTest
     {
+        private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
         private PageView<AuthorView> _view;
-        private Ports.Database.Entities.Library.Author _searchedAuthor;
+        private AuthorDto _searchedAuthor;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var builder = Container.GetService<AuthorsDataBuilder>();
-            var authors = builder.WithBooks(3).Build(20);
+            _builder = Container.GetService<AuthorsDataBuilder>();
+            var authors = _builder.WithBooks(3).Build(20);
 
-            _searchedAuthor = authors.Last();
+            _searchedAuthor = authors.PickRandom();
             var request = new RequestBuilder()
                .WithQueryParameter("query", _searchedAuthor.Name)
                .Build();
 
             var handler = Container.GetService<Functions.Library.Authors.GetAuthors>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, _builder.Library.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _view = _response.Value as PageView<AuthorView>;
         }
@@ -39,7 +41,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]

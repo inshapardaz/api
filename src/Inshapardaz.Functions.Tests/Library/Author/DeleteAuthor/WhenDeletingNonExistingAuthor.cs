@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
@@ -11,22 +11,25 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
     [TestFixture]
     public class WhenDeletingNonExistingAuthor : FunctionTest
     {
-        private NoContentResult _response;
+        private LibraryDataBuilder _builder;
 
+        private NoContentResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
+            _builder = Container.GetService<LibraryDataBuilder>();
+            _builder.Build();
             var request = TestHelpers.CreateGetRequest();
-            
+
             var handler = Container.GetService<Functions.Library.Authors.DeleteAuthor>();
-            _response = (NoContentResult) await handler.Run(request, NullLogger.Instance, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, _builder.Library.Id, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]

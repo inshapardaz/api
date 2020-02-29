@@ -1,39 +1,49 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Ports.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
 {
-    [TestFixture]
-    public class WhenDeletingAuthorAsWriter : FunctionTest
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenDeletingAuthorWithPermission : FunctionTest
     {
         private NoContentResult _response;
 
-        private Ports.Database.Entities.Library.Author _expected;
+        private AuthorDto _expected;
         private AuthorsDataBuilder _dataBuilder;
+        private readonly ClaimsPrincipal _claim;
+
+        public WhenDeletingAuthorWithPermission(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<AuthorsDataBuilder>();
-            _expected = _dataBuilder.Build();
-            
+            var authors = _dataBuilder.Build(4);
+            _expected = authors.First();
+
             var handler = Container.GetService<Functions.Library.Authors.DeleteAuthor>();
-            _response = (NoContentResult) await handler.Run(request, NullLogger.Instance, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, _dataBuilder.Library.Id, _expected.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]
@@ -54,16 +64,15 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
         public void ShouldHaveDeletedTheAuthorImage()
         {
             var db = Container.GetService<IDatabaseContext>();
-            var file = db.File.SingleOrDefault(i => i.Id == _expected.ImageId);
-            Assert.That(file, Is.Null, "Author Image should be deleted");
+            var file = db.File.Where(i => i.Id == _expected.ImageId);
+            Assert.That(file, Is.Empty, "Author Image should be deleted");
         }
 
         [Test]
         public void ShouldHaveDeletedTheAuthorBooks()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            var books = db.Book.Where(b => _expected.Books.Contains(b));
-            Assert.That(books, Is.Empty, "Author Books should be deleted");
+            var authorBooks = DatabaseConnection.GetBooksByAuthor(_expected.Id);
+            Assert.That(authorBooks, Is.Empty, "Author Books should be deleted");
         }
     }
 }

@@ -2,11 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
@@ -14,21 +15,22 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
     [TestFixture]
     public class WhenGettingAuthorById : FunctionTest
     {
+        private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
         private AuthorView _view;
-        private Ports.Database.Entities.Library.Author _expected;
+        private AuthorDto _expected;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var dataBuilder = Container.GetService<AuthorsDataBuilder>();
-            var authors = dataBuilder.WithBooks(3).Build(4);
+            _builder = Container.GetService<AuthorsDataBuilder>();
+            var authors = _builder.WithBooks(3).Build(4);
             _expected = authors.First();
-            
+
             var handler = Container.GetService<Functions.Library.Authors.GetAuthorById>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, _builder.Library.Id, _expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as AuthorView;
         }
@@ -36,7 +38,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]
@@ -68,7 +70,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
             Assert.That(_view, Is.Not.Null, "Should return author");
             Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Author id does not match");
             Assert.That(_view.Name, Is.EqualTo(_expected.Name), "Author name does not match");
-            Assert.That(_view.BookCount, Is.EqualTo(_expected.Books.Count), "Author book count does not match");
+            Assert.That(_view.BookCount, Is.EqualTo(DatabaseConnection.GetBookCountByAuthor(_expected.Id)), "Author book count does not match");
         }
     }
 }

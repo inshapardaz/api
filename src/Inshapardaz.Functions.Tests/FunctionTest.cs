@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using FluentMigrator.Runner;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Dictionaries;
 using Inshapardaz.Functions.Library.Authors;
@@ -23,6 +25,7 @@ namespace Inshapardaz.Functions.Tests
         private readonly TestHostBuilder _builder;
         private readonly Startup _startup;
         private SqliteConnection _connection;
+        private SqliteConnectionProvider _connectionProvider;
 
         protected FunctionTest()
         {
@@ -30,9 +33,13 @@ namespace Inshapardaz.Functions.Tests
             _startup = new Startup();
 
             DatabaseContext = CreateDbContext();
+            InitializeDatabaseMigration(_builder.Services);
+            _connectionProvider = new SqliteConnectionProvider();
 
+            _builder.Services.AddSingleton<IProvideConnection>(sp => _connectionProvider);
             _builder.Services.AddSingleton<IDatabaseContext>(sp => DatabaseContext);
-            _builder.Services.AddTransient<CategoriesDataBuilder>()
+            _builder.Services.AddTransient<LibraryDataBuilder>()
+                             .AddTransient<CategoriesDataBuilder>()
                              .AddTransient<SeriesDataBuilder>()
                              .AddTransient<AuthorsDataBuilder>()
                              .AddTransient<BooksDataBuilder>()
@@ -48,6 +55,22 @@ namespace Inshapardaz.Functions.Tests
         protected IServiceProvider Container => _builder.ServiceProvider;
 
         protected IDatabaseContext DatabaseContext { get; private set; }
+
+        protected IDbConnection DatabaseConnection => Container.GetService<IProvideConnection>().GetConnection();
+
+        protected void InitializeDatabaseMigration(IServiceCollection services)
+        {
+            var serviceProvider = services.AddFluentMigratorCore()
+                .ConfigureRunner(rb => rb
+                    .AddSQLite()
+                    .WithGlobalConnectionString("DataSource=:memory:")
+                    .ScanIn(typeof(Database.Migrations.Migration000001_CreateLibrarySchema).Assembly).For.Migrations())
+                .AddLogging(lb => lb.AddFluentMigratorConsole())
+                .BuildServiceProvider(false);
+
+            var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
+            runner.MigrateUp();
+        }
 
         private IDatabaseContext CreateDbContext()
         {

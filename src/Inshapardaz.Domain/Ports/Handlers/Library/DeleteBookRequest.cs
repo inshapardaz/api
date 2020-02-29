@@ -39,7 +39,7 @@ namespace Inshapardaz.Domain.Ports.Library
                     var image = await _fileRepository.GetFileById(book.ImageId.Value, true, cancellationToken);
                     if (image != null && !string.IsNullOrWhiteSpace(image.FilePath))
                     {
-                        await _fileStorage.TryDeleteFile(image.FilePath, cancellationToken);
+                        await _fileStorage.TryDeleteImage(image.FilePath, cancellationToken);
                         await _fileRepository.DeleteFile(image.Id, cancellationToken);
                     }
                 }

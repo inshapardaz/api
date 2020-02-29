@@ -1,18 +1,20 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetCategoryByIdQuery : IQuery<CategoryModel>
+    public class GetCategoryByIdQuery : LibraryBaseQuery<CategoryModel>
     {
-        public GetCategoryByIdQuery(int categoryId)
+        public GetCategoryByIdQuery(int libraryId, int categoryId)
+            : base(libraryId)
         {
             CategoryId = categoryId;
         }
-        
+
         public int CategoryId { get; }
     }
 
@@ -29,15 +31,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<CategoryModel> ExecuteAsync(GetCategoryByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var category = await _categoryRepository.GetCategoryById(command.CategoryId, cancellationToken);
-
-            if (category != null)
-            {
-                category.BookCount = await _bookRepository.GetBookCountByCategory(command.CategoryId, cancellationToken);
-            }
-
-            return category;
+            return await _categoryRepository.GetCategoryById(command.Libraryid, command.CategoryId, cancellationToken);
         }
     }
 }
-

@@ -1,14 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetAuthorByIdQuery : IQuery<AuthorModel>
+    public class GetAuthorByIdQuery : LibraryBaseQuery<AuthorModel>
     {
-        public GetAuthorByIdQuery(int authorId)
+        public GetAuthorByIdQuery(int libraryId, int authorId)
+            : base(libraryId)
         {
             AuthorId = authorId;
         }
@@ -29,14 +31,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<AuthorModel> ExecuteAsync(GetAuthorByIdQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            var author = await _authorRepository.GetAuthorById(query.AuthorId, cancellationToken);
-
-            if (author != null)
-            {
-                author.BookCount = await _bookRepository.GetBookCountByAuthor(query.AuthorId, cancellationToken);
-            }
-
-            return author;
+            return await _authorRepository.GetAuthorById(query.Libraryid, query.AuthorId, cancellationToken);
         }
     }
 }

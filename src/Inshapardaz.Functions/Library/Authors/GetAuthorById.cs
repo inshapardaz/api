@@ -23,13 +23,12 @@ namespace Inshapardaz.Functions.Library.Authors
 
         [FunctionName("GetAuthorById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{authorId:int}")] HttpRequest req,
-            ILogger log, int authorId,
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/authors/{authorId:int}")] HttpRequest req,
+            int libraryId, int authorId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-
-            var query = new GetAuthorByIdQuery(authorId);
+            var query = new GetAuthorByIdQuery(libraryId, authorId);
             var author = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             if (author != null)

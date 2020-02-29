@@ -23,10 +23,12 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("GetCategoryById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "categories/{categoryById:int}")] HttpRequest req,
-            ILogger log, int categoryById, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/categories/{categoryById:int}")] HttpRequest req,
+            int libraryId, int categoryById,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
-            var query = new GetCategoryByIdQuery(categoryById);
+            var query = new GetCategoryByIdQuery(libraryId, categoryById);
             var category = await QueryProcessor.ExecuteAsync(query, token);
 
             if (category == null)

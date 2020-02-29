@@ -6,7 +6,7 @@ namespace Inshapardaz.Functions.Mappings
     public static class AuthorMapper
     {
         public static AuthorView Map(this AuthorModel source)
-            => new AuthorView
+            => source == null ? null : new AuthorView
             {
                 Id = source.Id,
                 Name = source.Name,
@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Mappings
             };
 
         public static AuthorModel Map(this AuthorView source)
-            => new AuthorModel
+            => source == null ? null : new AuthorModel
             {
                 Id = source.Id,
                 Name = source.Name

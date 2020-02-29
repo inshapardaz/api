@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
@@ -13,18 +13,22 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
     public class WhenDeletingNonExistingCategory : FunctionTest
     {
         private NoContentResult _response;
+        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
+            _dataBuilder = Container.GetService<LibraryDataBuilder>();
+            _dataBuilder.Build();
+
             var handler = Container.GetService<Functions.Library.Categories.DeleteCategory>();
-            _response = (NoContentResult) await handler.Run(null, NullLogger.Instance, Random.Number, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(null, _dataBuilder.Library.Id, Random.Number, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]

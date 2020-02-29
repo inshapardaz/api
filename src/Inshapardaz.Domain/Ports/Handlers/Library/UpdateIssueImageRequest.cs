@@ -24,7 +24,6 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public FileModel Image { get; set; }
 
-
         public RequestResult Result { get; set; } = new RequestResult();
 
         public class RequestResult
@@ -63,7 +62,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 var existingImage = await _fileRepository.GetFileById(issue.ImageId.Value, true, cancellationToken);
                 if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
                 {
-                    await _fileStorage.TryDeleteFile(existingImage.FilePath, cancellationToken);
+                    await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
                 }
 
                 var url = await AddImageToFileStore(command.PeriodicalId, issue.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
@@ -89,7 +88,7 @@ namespace Inshapardaz.Domain.Ports.Library
         private async Task<string> AddImageToFileStore(int periodicalId, int issueId, string fileName, byte[] contents, CancellationToken cancellationToken)
         {
             var filePath = GetUniqueFileName(periodicalId, issueId, fileName);
-            return await _fileStorage.StoreFile(filePath, contents, cancellationToken);
+            return await _fileStorage.StoreImage(filePath, contents, cancellationToken);
         }
 
         private static string GetUniqueFileName(int periodicalId, int issueId, string fileName)

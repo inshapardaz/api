@@ -1,8 +1,10 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -11,17 +13,25 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
 {
-    [TestFixture]
-    public class WhenAddingAuthorAsWriter : FunctionTest
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenAddingAuthorWithPermissions : FunctionTest
     {
         private CreatedResult _response;
-        private AuthorsDataBuilder _builder;
+        private LibraryDataBuilder _builder;
+        private readonly ClaimsPrincipal _claim;
+
+        public WhenAddingAuthorWithPermissions(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<AuthorsDataBuilder>();
-            
+            _builder = Container.GetService<LibraryDataBuilder>();
+            _builder.Build();
+
             var handler = Container.GetService<Functions.Library.Authors.AddAuthor>();
             var author = new AuthorView { Name = new Faker().Random.String() };
 
@@ -29,13 +39,13 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
                                             .WithJsonBody(author)
                                             .Build();
 
-            _response = (CreatedResult) await handler.Run(request, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, _builder.Library.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]
@@ -57,8 +67,8 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
             var actual = _response.Value as AuthorView;
             Assert.That(actual, Is.Not.Null);
 
-            var cat = _builder.GetById(actual.Id);
-            Assert.That(cat, Is.Not.Null, "Author should be created.");
+            var dbAuthor = DatabaseConnection.GetAuthorById(actual.Id);
+            Assert.That(dbAuthor, Is.Not.Null, "Author should be created.");
         }
     }
 }

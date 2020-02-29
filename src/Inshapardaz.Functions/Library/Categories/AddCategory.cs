@@ -27,8 +27,9 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("AddCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "categories")] HttpRequest req,
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "/library/{libraryId}/categories")] HttpRequest req,
+            int libraryId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             if (principal == null)
@@ -44,7 +45,7 @@ namespace Inshapardaz.Functions.Library.Categories
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var category = JsonConvert.DeserializeObject<CategoryView>(requestBody);
 
-            var request = new AddCategoryRequest(category.Map());
+            var request = new AddCategoryRequest(libraryId, category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = request.Result.Render(principal);

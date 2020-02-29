@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Bogus;
 using Inshapardaz.Ports.Database;
-using Inshapardaz.Ports.Database.Entities;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
 {

@@ -1,14 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class UpdateAuthorRequest : RequestBase
+    public class UpdateAuthorRequest : LibraryBaseCommand
     {
-        public UpdateAuthorRequest(AuthorModel author)
+        public UpdateAuthorRequest(int libraryId, AuthorModel author)
+            : base(libraryId)
         {
             Author = author;
         }
@@ -36,18 +38,18 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<UpdateAuthorRequest> HandleAsync(UpdateAuthorRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _authorRepository.GetAuthorById(command.Author.Id, cancellationToken);
+            var result = await _authorRepository.GetAuthorById(command.LibraryId, command.Author.Id, cancellationToken);
 
             if (result == null)
             {
                 var author = command.Author;
                 author.Id = default(int);
-                command.Result.Author =  await  _authorRepository.AddAuthor(author, cancellationToken);
+                command.Result.Author = await _authorRepository.AddAuthor(command.LibraryId, author, cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                await _authorRepository.UpdateAuthor(command.Author, cancellationToken);
+                await _authorRepository.UpdateAuthor(command.LibraryId, command.Author, cancellationToken);
                 command.Result.Author = command.Author;
             }
 

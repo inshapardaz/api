@@ -18,14 +18,16 @@ namespace Inshapardaz.Domain.Models.Library
         public bool IsPublic { get; set; }
 
         public int AuthorId { get; set; }
-        
+
         public string AuthorName { get; set; }
 
         public int? ImageId { get; set; }
 
-        public DateTime DateAdded {get; set;}
-        
-        public DateTime DateUpdated {get; set;}
+        public string ImageUrl { get; set; }
+
+        public DateTime DateAdded { get; set; }
+
+        public DateTime DateUpdated { get; set; }
 
         public int? SeriesId { get; set; }
 
@@ -34,7 +36,6 @@ namespace Inshapardaz.Domain.Models.Library
         public int? SeriesIndex { get; set; }
 
         public BookStatuses Status { get; set; }
-
 
         public int? YearPublished { get; set; }
 

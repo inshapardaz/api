@@ -1,21 +1,28 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using AutoFixture;
 using Bogus;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Ports.Database;
 using Inshapardaz.Ports.Database.Entities.Library;
-using Microsoft.EntityFrameworkCore;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
 {
     public class CategoriesDataBuilder
     {
-
         private readonly IDatabaseContext _context;
+        private readonly IDbConnection _connection;
         private int _bookCount;
-        
-        public CategoriesDataBuilder(IDatabaseContext context)
+        private List<AuthorDto> _authors = new List<AuthorDto>();
+        private List<CategoryDto> _categories = new List<CategoryDto>();
+        public LibraryDto Library { get; private set; }
+
+        public CategoriesDataBuilder(IDatabaseContext context, IProvideConnection connectionProvider)
         {
             _context = context;
+            _connection = connectionProvider.GetConnection();
         }
 
         public CategoriesDataBuilder WithBooks(int bookCount)
@@ -24,52 +31,55 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             return this;
         }
 
-        public Category Build() => Build(1).Single();
-        
-        public IEnumerable<Category> Build(int count)
-        {
-            var authorGenerator = new Faker<Author>()
-                                  .RuleFor(c => c.Id, 0)
-                                  .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10));
+        public CategoryDto Build() => Build(1).Single();
 
-            var cats = new Faker<Category>()
-                       .RuleFor(c => c.Id, 0)
-                       .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
-                       .Generate(count);
+        public IEnumerable<CategoryDto> Build(int count)
+        {
+            var fixture = new Fixture();
+            Library = fixture.Build<LibraryDto>()
+                                 .With(l => l.Language, "en")
+                                 .Create();
+
+            _connection.AddLibrary(Library);
+
+            var cats = fixture.Build<CategoryDto>()
+                              .With(c => c.LibraryId, Library.Id)
+                               .CreateMany(count);
+
+            _connection.AddCategories(cats);
+            _categories.AddRange(cats);
 
             foreach (var cat in cats)
             {
-                new Faker<Book>()
-                    .RuleFor(c => c.Id, 0)
-                    .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
-                    .RuleFor(c => c.Author, f => authorGenerator.Generate())
-                    .Generate(_bookCount)
-                    .ForEach(b => cat.BookCategories.Add(new BookCategory
-                    {
-                        Book = b,
-                        Category = cat
-                    }));
+                var author = fixture.Build<AuthorDto>()
+                                     .With(a => a.LibraryId, Library.Id)
+                                     .Without(a => a.ImageId)
+                                     .Create();
+
+                _connection.AddAuthor(author);
+                _authors.Add(author);
+
+                var books = fixture.Build<BookDto>()
+                                   .With(b => b.AuthorId, author.Id)
+                                   .With(b => b.LibraryId, Library.Id)
+                                   .Without(b => b.ImageId)
+                                   .Without(b => b.SeriesId)
+                                   .CreateMany(_bookCount);
+                _connection.AddBooks(books);
+
+                _connection.AddBooksToCategory(books, cat);
             }
-            
-            _context.Category.AddRange(cats);
-            
-            _context.SaveChanges();
 
             return cats;
         }
 
-        public Category GetById(int id)
+        public void CleanUp()
         {
-            return _context.Category.SingleOrDefault(x => x.Id == id);
-        }
+            if (Library != null)
+                _connection.DeleteLibrary(Library.Id);
 
-        public IEnumerable<BookCategory> GetByBookId(int bookId)
-        {
-            return _context.Book
-                           .Include(b => b.BookCategory)
-                           .Where(b => b.Id == bookId)
-                           .SelectMany(x => x.BookCategory);
-
+            _connection.DeleteAuthors(_authors);
+            _connection.DeleteCategries(_categories);
         }
     }
 }

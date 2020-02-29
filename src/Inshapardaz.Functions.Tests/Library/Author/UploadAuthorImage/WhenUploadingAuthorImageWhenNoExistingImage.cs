@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
@@ -24,13 +25,13 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
             var author = _builder.WithoutImage().Build();
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthorImage>();
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
-            _response = (CreatedResult) await handler.Run(request, author.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, _builder.Library.Id, author.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]
@@ -52,7 +53,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
             var actual = _response.Value as FileView;
             Assert.That(actual, Is.Not.Null);
 
-            var cat = _builder.GetById(actual.Id);
+            var cat = DatabaseConnection.GetAuthorById(actual.Id);
             Assert.That(cat.ImageId, Is.Not.Null, "Author should have an image.");
         }
     }

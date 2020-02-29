@@ -2,14 +2,16 @@
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetAuthorsQuery : IQuery<Page<AuthorModel>>
+    public class GetAuthorsQuery : LibraryBaseQuery<Page<AuthorModel>>
     {
-        public GetAuthorsQuery(int pageNumber, int pageSize)
+        public GetAuthorsQuery(int libraryId, int pageNumber, int pageSize)
+            : base(libraryId)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
@@ -38,16 +40,15 @@ namespace Inshapardaz.Domain.Ports.Library
             Page<AuthorModel> result = null;
             if (string.IsNullOrWhiteSpace(query.Query))
             {
-                result = await _authorRepository.GetAuthors(query.PageNumber, query.PageSize, cancellationToken);
+                result = await _authorRepository.GetAuthors(query.Libraryid, query.PageNumber, query.PageSize, cancellationToken);
             }
             else
             {
-                result = await _authorRepository.FindAuthors(query.Query, query.PageNumber, query.PageSize, cancellationToken);
-            }
-
-            foreach (var author in result.Data)
-            {
-                author.BookCount = await _bookRepository.GetBookCountByAuthor(author.Id, cancellationToken);
+                result = await _authorRepository.FindAuthors(query.Libraryid, query.Query, query.PageNumber, query.PageSize, cancellationToken);
+                foreach (var author in result.Data)
+                {
+                    author.BookCount = await _bookRepository.GetBookCountByAuthor(author.Id, cancellationToken);
+                }
             }
 
             return result;

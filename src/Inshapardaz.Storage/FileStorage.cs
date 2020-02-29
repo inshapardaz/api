@@ -69,7 +69,7 @@ namespace Inshapardaz.Storage
                 await blockBlob.UploadFromStreamAsync(stream, cancellationToken);
             }
 
-            return blockBlob.Uri.AbsoluteUri;
+            return blockBlob.Uri.AbsolutePath;
         }
 
         public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
@@ -78,7 +78,7 @@ namespace Inshapardaz.Storage
             var blockBlob = container.GetBlockBlobReference(name);
             await blockBlob.UploadTextAsync(content, cancellationToken);
 
-            return blockBlob.Uri.AbsoluteUri;
+            return blockBlob.Uri.AbsolutePath;
         }
 
         private CloudBlobContainer GetContainer(string container = "library")
@@ -91,6 +91,38 @@ namespace Inshapardaz.Storage
         private string GetContainerName(string url)
         {
             return new Uri(url).Segments[1].Trim('/');
+        }
+
+        public async Task<string> StoreImage(string name, byte[] content, CancellationToken cancellationToken)
+        {
+            var container = GetContainer("images");
+            var blockBlob = container.GetBlockBlobReference(name);
+            using (Stream stream = new MemoryStream(content))
+            {
+                await blockBlob.UploadFromStreamAsync(stream, cancellationToken);
+            }
+
+            return blockBlob.Uri.AbsolutePath;
+        }
+
+        public async Task DeleteImage(string filePath, CancellationToken cancellationToken)
+        {
+            var container = GetContainer("images");
+            string name = new CloudBlockBlob(new Uri(filePath)).Name;
+            var blockBlob = container.GetBlockBlobReference(name);
+            await blockBlob.DeleteAsync(cancellationToken);
+        }
+
+        public async Task TryDeleteImage(string filePath, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await DeleteImage(filePath, cancellationToken);
+            }
+            catch (StorageException e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }

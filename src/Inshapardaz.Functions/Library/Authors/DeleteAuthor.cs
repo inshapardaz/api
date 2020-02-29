@@ -15,16 +15,16 @@ namespace Inshapardaz.Functions.Library.Authors
 {
     public class DeleteAuthor : CommandBase
     {
-        public DeleteAuthor(IAmACommandProcessor commandProcessor) 
+        public DeleteAuthor(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
         }
 
         [FunctionName("DeleteAuthor")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "authors/{authorId:int}")] HttpRequest req,
-            ILogger log, int authorId,
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/authors/{authorId:int}")] HttpRequest req,
+            int libraryId, int authorId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             if (principal == null)
@@ -37,7 +37,7 @@ namespace Inshapardaz.Functions.Library.Authors
                 return new ForbidResult("Bearer");
             }
 
-            var request = new DeleteAuthorRequest(authorId);
+            var request = new DeleteAuthorRequest(libraryId, authorId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

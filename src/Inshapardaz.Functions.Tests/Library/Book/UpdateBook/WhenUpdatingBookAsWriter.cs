@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Inshapardaz.Ports.Database.Entities.Library;
@@ -22,8 +24,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
         private BooksDataBuilder _dataBuilder;
         private BookView _expected;
         private BookView _actual;
-        private Ports.Database.Entities.Library.Author _otherAuthor;
-        private IEnumerable<Category> _categories;
+        private AuthorDto _otherAuthor;
+        private IEnumerable<CategoryDto> _categories;
         private CategoriesDataBuilder _categoriesBuilder;
 
         [OneTimeSetUp]
@@ -42,7 +44,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
             var selectedBook = books.First();
 
             var fake = new Faker();
-            _expected = new BookView { 
+            _expected = new BookView
+            {
                 Title = fake.Name.FullName(),
                 Description = fake.Random.Words(5),
                 Copyrights = fake.Random.Int(0, 3),
@@ -52,13 +55,13 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
                 IsPublic = fake.Random.Bool(),
                 AuthorId = _otherAuthor.Id,
                 IsPublished = fake.Random.Bool(),
-                Categories = _categories.Select(c => new CategoryView { Id = c.Id} )
+                Categories = _categories.Select(c => new CategoryView { Id = c.Id })
             };
 
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)
                                             .Build();
-            _response = (OkObjectResult) await handler.Run(request, selectedBook.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, selectedBook.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
             _actual = _response.Value as BookView;
         }
 
@@ -72,7 +75,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
         public void ShouldHaveCreatedResult()
         {
             Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int) HttpStatusCode.OK));
+            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
         [Test]
@@ -91,11 +94,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
             Assert.That(actual.IsPublished, Is.EqualTo(_expected.IsPublished), "Book should have expected year is published.");
         }
 
-
         [Test]
         public void ShouldReturnCorrectCategories()
         {
-
             Assert.That(_actual.Categories.Count(), Is.EqualTo(_expected.Categories.Count()), "Number of categories doesn't match");
             Assert.That(_actual.Categories.Select(c => c.Id), Is.EquivalentTo(_expected.Categories.Select(x => x.Id)));
         }
@@ -103,10 +104,10 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
         [Test]
         public void ShouldHaveUpdatedCategories()
         {
-            var categories = _categoriesBuilder.GetByBookId(_actual.Id);
+            var categories = DatabaseConnection.GetCategoriesByBook(_actual.Id);
             Assert.That(categories.Count(), Is.EqualTo(_expected.Categories.Count()), "Number of categories doesn't match");
 
-            Assert.That(categories.Select(c => c.CategoryId), Is.EquivalentTo(_expected.Categories.Select(x => x.Id)));
+            Assert.That(categories.Select(c => c.Id), Is.EquivalentTo(_expected.Categories.Select(x => x.Id)));
         }
     }
 }

@@ -27,9 +27,9 @@ namespace Inshapardaz.Functions.Library.Authors
 
         [FunctionName("UpdateAuthor")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "authors/{authorId:int}")] HttpRequest req,
-            int authorId,
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/authors/{authorId:int}")] HttpRequest req,
+            int libraryId, int authorId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             if (principal == null)
@@ -46,8 +46,8 @@ namespace Inshapardaz.Functions.Library.Authors
             var author = JsonConvert.DeserializeObject<AuthorView>(requestBody);
 
             author.Id = authorId;
-            
-            var request = new UpdateAuthorRequest(author.Map());
+
+            var request = new UpdateAuthorRequest(libraryId, author.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = request.Result.Author.Render(principal);

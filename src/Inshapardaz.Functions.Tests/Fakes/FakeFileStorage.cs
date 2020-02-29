@@ -11,6 +11,7 @@ namespace Inshapardaz.Functions.Tests.Fakes
         private readonly object _lock = new object();
 
         private readonly Dictionary<string, byte[]> _contents = new Dictionary<string, byte[]>();
+        private readonly Dictionary<string, byte[]> _images = new Dictionary<string, byte[]>();
 
         public FakeFileStorage()
         {
@@ -24,11 +25,22 @@ namespace Inshapardaz.Functions.Tests.Fakes
 
         public void SetupFileContents(string filePath, byte[] content)
         {
-            lock(_lock)
+            lock (_lock)
             {
                 if (!_contents.TryAdd(filePath, content))
                 {
                     _contents[filePath] = content;
+                }
+            }
+        }
+
+        public void SetupImageContents(string filePath, byte[] content)
+        {
+            lock (_lock)
+            {
+                if (!_images.TryAdd(filePath, content))
+                {
+                    _images[filePath] = content;
                 }
             }
         }
@@ -55,7 +67,7 @@ namespace Inshapardaz.Functions.Tests.Fakes
 
         public bool DoesFileExists(string filePath) => _contents.ContainsKey(filePath);
 
-
+        public bool DoesImageExists(string filePath) => _images.ContainsKey(filePath);
 
         public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
         {
@@ -87,7 +99,34 @@ namespace Inshapardaz.Functions.Tests.Fakes
             {
                 _contents.Remove(filePath);
             }
-            
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<string> StoreImage(string name, byte[] content, CancellationToken cancellationToken)
+        {
+            var url = $"http://temp.images/{name}";
+            SetupFileContents(url, content);
+            return await Task.FromResult(url);
+        }
+
+        public Task DeleteImage(string filePath, CancellationToken cancellationToken)
+        {
+            if (_images.ContainsKey(filePath))
+            {
+                _images.Remove(filePath);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task TryDeleteImage(string filePath, CancellationToken cancellationToken)
+        {
+            if (_images.ContainsKey(filePath))
+            {
+                _images.Remove(filePath);
+            }
+
             return Task.CompletedTask;
         }
     }

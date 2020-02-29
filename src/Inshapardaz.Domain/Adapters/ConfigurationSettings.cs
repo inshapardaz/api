@@ -1,13 +1,14 @@
 using System;
 
-namespace Inshapardaz.Functions
+namespace Inshapardaz.Domain.Adapters
 {
     public static class ConfigurationSettings
     {
         public static string Auth0Domain => GetEnvironmentVariable("Authentication.Authority");
         public static string Audience => GetEnvironmentVariable("Authentication.Audience");
         public static string DatabaseConnectionString => GetEnvironmentVariable("DefaultDatabase");
-
+        public static string CDNAddress = GetEnvironmentVariable("CDNAddress");
+        public static string BlobRoot = GetEnvironmentVariable("BlobRoot");
         public static string FileStorageConnectionString => GetEnvironmentVariable("FileStorageConnectionString");
         public static Uri ApiRoot => new Uri(GetEnvironmentVariable("API.Root"));
 

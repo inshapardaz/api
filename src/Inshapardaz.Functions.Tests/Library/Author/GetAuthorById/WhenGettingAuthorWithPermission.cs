@@ -1,33 +1,43 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
 {
-    [TestFixture]
-    public class WhenGettingAuthorByIdAsAdministrator : FunctionTest
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingAuthorWithPermission : FunctionTest
     {
+        private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
         private AuthorView _view;
-        private Ports.Database.Entities.Library.Author _expected;
+        private AuthorDto _expected;
+        private readonly ClaimsPrincipal _claim;
+
+        public WhenGettingAuthorWithPermission(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            var dataBuilder = Container.GetService<AuthorsDataBuilder>();
-            var authors = dataBuilder.Build(4);
+            _builder = Container.GetService<AuthorsDataBuilder>();
+            var authors = _builder.Build(4);
             _expected = authors.First();
-            
+
             var handler = Container.GetService<Functions.Library.Authors.GetAuthorById>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, _builder.Library.Id, _expected.Id, _claim, CancellationToken.None);
 
             _view = _response.Value as AuthorView;
         }
@@ -52,6 +62,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
                  .ShouldBeGet()
                  .ShouldHaveSomeHref();
         }
+
         [Test]
         public void ShouldHaveBooksLink()
         {
@@ -67,7 +78,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
                  .ShouldBePut()
                  .ShouldHaveSomeHref();
         }
-        
+
         [Test]
         public void ShouldHaveDeleteLink()
         {
@@ -84,14 +95,15 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
                  .ShouldHaveSomeHref();
         }
 
-
         [Test]
         public void ShouldReturnCorrectAuthorData()
         {
             Assert.That(_view, Is.Not.Null, "Should contain at-least one author");
             Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Author id does not match");
             Assert.That(_view.Name, Is.EqualTo(_expected.Name), "Author name does not match");
-            Assert.That(_view.BookCount, Is.EqualTo(_expected.Books.Count), "Author book count does not match");
+
+            var authorBookCount = DatabaseConnection.GetBookCountByAuthor(_expected.Id);
+            Assert.That(_view.BookCount, Is.EqualTo(authorBookCount), "Author book count does not match");
         }
     }
 }

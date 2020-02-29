@@ -59,7 +59,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 var existingImage = await _fileRepository.GetFileById(periodical.ImageId.Value, true, cancellationToken);
                 if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
                 {
-                    await _fileStorage.TryDeleteFile(existingImage.FilePath, cancellationToken);
+                    await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
                 }
 
                 var url = await AddImageToFileStore(periodical.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
@@ -85,13 +85,13 @@ namespace Inshapardaz.Domain.Ports.Library
         private async Task<string> AddImageToFileStore(int PeriodicalId, string fileName, byte[] contents, CancellationToken cancellationToken)
         {
             var filePath = GetUniqueFileName(PeriodicalId, fileName);
-            return await _fileStorage.StoreFile(filePath, contents, cancellationToken);
+            return await _fileStorage.StoreImage(filePath, contents, cancellationToken);
         }
 
         private static string GetUniqueFileName(int PeriodicalId, string fileName)
         {
             var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"images/periodicals/{PeriodicalId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
+            return $"periodicals/{PeriodicalId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
         }
     }
 }

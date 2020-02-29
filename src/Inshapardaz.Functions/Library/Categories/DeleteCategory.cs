@@ -15,17 +15,16 @@ namespace Inshapardaz.Functions.Library.Categories
 {
     public class DeleteCategory : CommandBase
     {
-        public DeleteCategory(IAmACommandProcessor commandProcessor) 
+        public DeleteCategory(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
         }
 
         [FunctionName("DeleteCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "categories/{id:int}")] HttpRequest req,
-            ILogger log, int id, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/categories/{categoryId:int}")] HttpRequest req,
+            int libraryId, int categoryId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-
             if (principal == null)
             {
                 return new UnauthorizedResult();
@@ -36,7 +35,7 @@ namespace Inshapardaz.Functions.Library.Categories
                 return new ForbidResult("Bearer");
             }
 
-            var request = new DeleteCategoryRequest(id);
+            var request = new DeleteCategoryRequest(libraryId, categoryId);
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

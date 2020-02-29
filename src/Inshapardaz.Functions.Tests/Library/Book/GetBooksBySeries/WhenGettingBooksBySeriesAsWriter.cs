@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksBySeries
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -24,13 +24,13 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksBySeries
 
             var builder = Container.GetService<BooksDataBuilder>();
             builder.HavingSeries().Build(3);
-            
+
             var seriesDataBuilder = Container.GetService<SeriesDataBuilder>();
             var series = seriesDataBuilder.Build();
-            builder.WithSeries(series).Build(4);
-            
+            //builder.WithSeries(series).Build(4);
+
             var handler = Container.GetService<Functions.Library.Books.GetBooksBySeries>();
-            _response = (OkObjectResult) await handler.Run(request, series.Id,  AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, series.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;
         }
@@ -84,9 +84,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksBySeries
             actual.Links.AssertLink("update")
                       .ShouldBePut()
                       .ShouldHaveSomeHref();
-                actual.Links.AssertLink("delete")
-                      .ShouldBeDelete()
-                      .ShouldHaveSomeHref();
+            actual.Links.AssertLink("delete")
+                  .ShouldBeDelete()
+                  .ShouldHaveSomeHref();
         }
     }
 }

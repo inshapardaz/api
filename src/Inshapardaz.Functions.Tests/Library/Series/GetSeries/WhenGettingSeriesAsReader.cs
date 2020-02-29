@@ -17,17 +17,18 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
     {
         private OkObjectResult _response;
         private ListView<SeriesView> _view;
-        
+        private SeriesDataBuilder _dataBuilder;
+
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var seriesBuilder = Container.GetService<SeriesDataBuilder>();
-            seriesBuilder.WithBooks(3).Build(4);
-            
+            _dataBuilder = Container.GetService<SeriesDataBuilder>();
+            _dataBuilder.WithBooks(3).Build(4);
+
             var handler = Container.GetService<Functions.Library.Series.GetSeries>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<SeriesView>;
         }
@@ -35,7 +36,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]
@@ -52,7 +53,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
                  .ShouldBeGet()
                  .ShouldHaveSomeHref();
         }
-        
+
         [Test]
         public void ShouldHaveSomeSeries()
         {

@@ -14,6 +14,7 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Series
 {
+    // TODO : Convert into paged endpoint
     public class GetSeries : QueryBase
     {
         public GetSeries(IQueryProcessor queryProcessor)
@@ -23,10 +24,10 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("GetSeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series")] HttpRequest req,
-            ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/series")] HttpRequest req,
+            ILogger log, int libraryId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
         {
-            var query = new GetSeriesQuery();
+            var query = new GetSeriesQuery(libraryId);
             var series = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             return new OkObjectResult(series.Render(principal));

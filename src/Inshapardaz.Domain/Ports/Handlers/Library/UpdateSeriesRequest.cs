@@ -1,14 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class UpdateSeriesRequest : RequestBase
+    public class UpdateSeriesRequest : LibraryBaseCommand
     {
-        public UpdateSeriesRequest(SeriesModel series)
+        public UpdateSeriesRequest(int libraryId, SeriesModel series)
+            : base(libraryId)
         {
             Series = series;
         }
@@ -36,18 +38,18 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<UpdateSeriesRequest> HandleAsync(UpdateSeriesRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _seriesRepository.GetSeriesById(command.Series.Id, cancellationToken);
+            var result = await _seriesRepository.GetSeriesById(command.LibraryId, command.Series.Id, cancellationToken);
 
             if (result == null)
             {
                 command.Series.Id = default(int);
-                var newSeries = await _seriesRepository.AddSeries(command.Series, cancellationToken);
+                var newSeries = await _seriesRepository.AddSeries(command.LibraryId, command.Series, cancellationToken);
                 command.Result.HasAddedNew = true;
                 command.Result.Series = newSeries;
             }
             else
             {
-                await _seriesRepository.UpdateSeries(command.Series, cancellationToken);
+                await _seriesRepository.UpdateSeries(command.LibraryId, command.Series, cancellationToken);
                 command.Result.Series = command.Series;
             }
 

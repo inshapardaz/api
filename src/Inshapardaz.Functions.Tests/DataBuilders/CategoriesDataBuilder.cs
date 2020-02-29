@@ -2,26 +2,22 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using AutoFixture;
-using Bogus;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Ports.Database;
-using Inshapardaz.Ports.Database.Entities.Library;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
 {
     public class CategoriesDataBuilder
     {
-        private readonly IDatabaseContext _context;
         private readonly IDbConnection _connection;
         private int _bookCount;
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<CategoryDto> _categories = new List<CategoryDto>();
         public LibraryDto Library { get; private set; }
 
-        public CategoriesDataBuilder(IDatabaseContext context, IProvideConnection connectionProvider)
+        public CategoriesDataBuilder(IProvideConnection connectionProvider)
         {
-            _context = context;
             _connection = connectionProvider.GetConnection();
         }
 

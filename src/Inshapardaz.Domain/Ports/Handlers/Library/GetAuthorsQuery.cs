@@ -40,11 +40,11 @@ namespace Inshapardaz.Domain.Ports.Library
             Page<AuthorModel> result = null;
             if (string.IsNullOrWhiteSpace(query.Query))
             {
-                result = await _authorRepository.GetAuthors(query.Libraryid, query.PageNumber, query.PageSize, cancellationToken);
+                result = await _authorRepository.GetAuthors(query.LibraryId, query.PageNumber, query.PageSize, cancellationToken);
             }
             else
             {
-                result = await _authorRepository.FindAuthors(query.Libraryid, query.Query, query.PageNumber, query.PageSize, cancellationToken);
+                result = await _authorRepository.FindAuthors(query.LibraryId, query.Query, query.PageNumber, query.PageSize, cancellationToken);
                 foreach (var author in result.Data)
                 {
                     author.BookCount = await _bookRepository.GetBookCountByAuthor(author.Id, cancellationToken);

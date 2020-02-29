@@ -1,7 +1,10 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -12,24 +15,32 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
 {
-    [TestFixture]
-    public class WhenGettingSeriesByIdAsAdministrator : FunctionTest
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingSeriesByIdWithWritePermissions : FunctionTest
     {
         private OkObjectResult _response;
         private SeriesView _view;
-        private Ports.Database.Entities.Library.Series _selectedSeries;
+        private SeriesDto _selectedSeries;
+        private SeriesDataBuilder _dataBuilder;
+        private readonly ClaimsPrincipal _claim;
+
+        public WhenGettingSeriesByIdWithWritePermissions(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var categoriesBuilder = Container.GetService<SeriesDataBuilder>();
-            var series = categoriesBuilder.WithBooks(3).Build(4);
-            _selectedSeries = series.First();
-            
+            _dataBuilder = Container.GetService<SeriesDataBuilder>();
+            var series = _dataBuilder.WithBooks(3).Build(4);
+            _selectedSeries = series.PickRandom();
+
             var handler = Container.GetService<Functions.Library.Series.GetSeriesById>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _selectedSeries.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, _selectedSeries.Id, _claim, CancellationToken.None);
 
             _view = _response.Value as SeriesView;
         }
@@ -37,7 +48,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _dataBuilder.CleanUp();
         }
 
         [Test]
@@ -54,7 +65,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
                  .ShouldBeGet()
                  .ShouldHaveSomeHref();
         }
-        
+
         [Test]
         public void ShouldReturnCorrectCategoryData()
         {
@@ -62,7 +73,8 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
             Assert.That(_view.Id, Is.EqualTo(_selectedSeries.Id), "Series id does not match");
             Assert.That(_view.Name, Is.EqualTo(_selectedSeries.Name), "Series name does not match");
             Assert.That(_view.Description, Is.EqualTo(_selectedSeries.Description), "Series description does not match");
-            Assert.That(_view.BookCount, Is.EqualTo(_selectedSeries.Books.Count), "Series book count does not match");
+            var books = DatabaseConnection.GetBooksBySeries(_selectedSeries.Id);
+            Assert.That(_view.BookCount, Is.EqualTo(books.Count()), "Series book count does not match");
 
             _view.Links.AssertLink(RelTypes.Self)
                  .ShouldBeGet()

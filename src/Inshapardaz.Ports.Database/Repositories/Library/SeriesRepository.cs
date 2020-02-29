@@ -1,75 +1,83 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.EntityFrameworkCore;
+using Dapper;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
     public class SeriesRepository : ISeriesRepository
     {
-        private readonly IDatabaseContext _databaseContext;
+        private readonly IProvideConnection _connectionProvider;
 
-        public SeriesRepository(IDatabaseContext databaseContext)
+        public SeriesRepository(IProvideConnection connectionProvider)
         {
-            _databaseContext = databaseContext;
+            _connectionProvider = connectionProvider;
         }
 
-        public async Task<SeriesModel> AddSeries(SeriesModel series, CancellationToken cancellationToken)
+        public async Task<SeriesModel> AddSeries(int libraryId, SeriesModel series, CancellationToken cancellationToken)
         {
-            var item = series.Map();
-            _databaseContext.Series.Add(item);
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-
-            return item.Map();
-        }
-
-        public async Task UpdateSeries(SeriesModel series, CancellationToken cancellationToken)
-        {
-            var existingEntity = await _databaseContext.Series
-                                                       .SingleOrDefaultAsync(g => g.Id == series.Id,
-                                                                             cancellationToken);
-
-            if (existingEntity == null)
+            int id;
+            using (var connection = _connectionProvider.GetConnection())
             {
-                throw new NotFoundException();
+                var sql = "Insert Into Library.Series (Name, [Description], ImageId, LibraryId) Output Inserted.Id VALUES (@Name, @Description, @ImageId, @LibraryId)";
+                var parameter = new { LibraryId = libraryId, Name = series.Name, Description = series.Description, ImageId = series.ImageId };
+                var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
+                id = await connection.ExecuteScalarAsync<int>(command);
             }
 
-            existingEntity.Name = series.Name;
-            existingEntity.Description = series.Description;
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
+            return await GetSeriesById(libraryId, id, cancellationToken);
         }
 
-        public async Task DeleteSeries(int seriesId, CancellationToken cancellationToken)
+        public async Task UpdateSeries(int libraryId, SeriesModel series, CancellationToken cancellationToken)
         {
-            var series = await _databaseContext.Series.SingleOrDefaultAsync(g => g.Id == seriesId, cancellationToken);
-
-            if (series != null)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                _databaseContext.Series.Remove(series);
+                var sql = @"Update Library.Series Set Name = @Name, [Description] = @Description, ImageId = @ImageId, LibraryId = @LibraryId Where Id = @Id And LibraryId = @LibraryId";
+                var parameter = new { LibraryId = libraryId, Name = series.Name, Description = series.Description, ImageId = series.ImageId, Id = series.Id };
+                var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
+                await connection.ExecuteScalarAsync<int>(command);
             }
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<SeriesModel>> GetSeries(CancellationToken cancellationToken)
+        public async Task DeleteSeries(int libraryId, int seriesId, CancellationToken cancellationToken)
         {
-            return await _databaseContext.Series
-                                         .Select(t => t.Map())
-                                         .ToListAsync(cancellationToken);
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Delete From Library.Series Where LibraryId = @LibraryId AND Id = @Id";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = seriesId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
         }
 
-        public async Task<SeriesModel> GetSeriesById(int seriesId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SeriesModel>> GetSeries(int libraryId, CancellationToken cancellationToken)
         {
-            var series = await _databaseContext.Series
-                                                    .SingleOrDefaultAsync(t => t.Id == seriesId,
-                                                                          cancellationToken);
-            return series.Map();
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select s.Id, s.Name, s.[Description], s.ImageId,
+                            (Select Count(*) From Library.Book b Where b.SeriesId = s.Id) AS BookCount
+                            FROM Library.Series AS s
+                            Where LibraryId = @LibraryId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId }, cancellationToken: cancellationToken);
+
+                return await connection.QueryAsync<SeriesModel>(command);
+            }
+        }
+
+        public async Task<SeriesModel> GetSeriesById(int libraryId, int seriesId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select s.Id, s.Name, s.[Description], s.ImageId,
+                            (Select Count(*) From Library.Book b Where b.SeriesId = s.Id) AS BookCount
+                            FROM Library.Series AS s
+                            Where s.LibraryId = @LibraryId AND s.Id = @id";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = seriesId }, cancellationToken: cancellationToken);
+
+                return await connection.QuerySingleOrDefaultAsync<SeriesModel>(command);
+            }
         }
     }
 }

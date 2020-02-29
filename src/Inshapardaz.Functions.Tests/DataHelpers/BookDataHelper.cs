@@ -40,5 +40,10 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
                 Inner Join Library.BookCategory bc ON b.Id = bc.BookId
                 Where bc.CategoryId = @CategoryId", new { CategoryId = categoryId });
         }
+
+        public static IEnumerable<BookDto> GetBooksBySeries(this IDbConnection connection, int seriesId)
+        {
+            return connection.Query<BookDto>(@"Select * From Library.Book Where SeriesId = @SeriesId ", new { SeriesId = seriesId });
+        }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
+using AutoFixture;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -15,27 +16,27 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
     public class WhenUpdatingSeriesThatDoesNotExist : FunctionTest
     {
         private CreatedResult _response;
-        private SeriesDataBuilder _builder;
+        private LibraryDataBuilder _builder;
         private SeriesView _expected;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<SeriesDataBuilder>();
+            _builder = Container.GetService<LibraryDataBuilder>();
+            _builder.Build();
 
             var handler = Container.GetService<Functions.Library.Series.UpdateSeries>();
-            var faker = new Faker();
-            _expected = new SeriesView { Name = new Faker().Random.String(), Description = new Faker().Random.Words(20) };
+            _expected = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)
                                             .Build();
-            _response = (CreatedResult) await handler.Run(request, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, _builder.Library.Id, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]
@@ -57,7 +58,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
             var returned = _response.Value as SeriesView;
             Assert.That(returned, Is.Not.Null);
 
-            var actual = _builder.GetById(returned.Id);
+            var actual = DatabaseConnection.GetSeriesById(returned.Id);
             Assert.That(actual, Is.Not.Null, "Series should be created.");
         }
     }

@@ -71,7 +71,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 var sql = @"Select c.Id, c.Name,
                             (Select Count(*) From Library.BookCategory b Where b.CategoryId = c.Id) AS BookCount
                             FROM Library.Category AS c
-                            Where LibraryId = @LibraryId And Id = @Id";
+                            Where c.LibraryId = @LibraryId And c.Id = @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryId }, cancellationToken: cancellationToken);
 
                 return await connection.QuerySingleOrDefaultAsync<CategoryModel>(command);

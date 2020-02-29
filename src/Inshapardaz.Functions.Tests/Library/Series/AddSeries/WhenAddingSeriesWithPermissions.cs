@@ -1,8 +1,10 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
+using AutoFixture;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -11,29 +13,37 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
 {
-    [TestFixture]
-    public class WhenAddingSeriesAsAdministrator : FunctionTest
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenAddingSeriesWithPermissions : FunctionTest
     {
         private CreatedResult _response;
-        private SeriesDataBuilder _builder;
+        private LibraryDataBuilder _builder;
+        private readonly ClaimsPrincipal _claim;
+
+        public WhenAddingSeriesWithPermissions(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<SeriesDataBuilder>();
-            
+            _builder = Container.GetService<LibraryDataBuilder>();
+            _builder.Build();
+
             var handler = Container.GetService<Functions.Library.Series.AddSeries>();
-            var series = new SeriesView { Name = new Faker().Random.String(), Description = new Faker().Random.Words(30) };
+            var series = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
             var request = new RequestBuilder()
                                             .WithJsonBody(series)
                                             .Build();
-            _response = (CreatedResult) await handler.Run(request, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, _builder.Library.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]
@@ -55,7 +65,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
             var series = _response.Value as SeriesView;
             Assert.That(series, Is.Not.Null);
 
-            var cat = _builder.GetById(series.Id);
+            var cat = DatabaseConnection.GetSeriesById(series.Id);
             Assert.That(cat, Is.Not.Null, "Series should be created.");
         }
     }

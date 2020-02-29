@@ -7,14 +7,14 @@ namespace Inshapardaz.Domain.Repositories.Library
 {
     public interface ISeriesRepository
     {
-        Task<SeriesModel> AddSeries(SeriesModel series, CancellationToken cancellationToken);
+        Task<SeriesModel> AddSeries(int libraryId, SeriesModel series, CancellationToken cancellationToken);
 
-        Task UpdateSeries(SeriesModel series, CancellationToken cancellationToken);
+        Task UpdateSeries(int libraryId, SeriesModel series, CancellationToken cancellationToken);
 
-        Task DeleteSeries(int seriesId, CancellationToken cancellationToken);
+        Task DeleteSeries(int libraryId, int seriesId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<SeriesModel>> GetSeries(CancellationToken cancellationToken);
+        Task<IEnumerable<SeriesModel>> GetSeries(int libraryId, CancellationToken cancellationToken);
 
-        Task<SeriesModel> GetSeriesById(int seriesId, CancellationToken cancellationToken);
+        Task<SeriesModel> GetSeriesById(int libraryId, int seriesId, CancellationToken cancellationToken);
     }
 }

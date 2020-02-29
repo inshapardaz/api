@@ -27,12 +27,11 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("UpdateSeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "series/{seriesId:int}")] HttpRequest req,
-            int seriesId, 
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/series/{seriesId:int}")] HttpRequest req,
+            int libraryId, int seriesId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-
             if (principal == null)
             {
                 return new UnauthorizedResult();
@@ -47,7 +46,7 @@ namespace Inshapardaz.Functions.Library.Series
             var series = JsonConvert.DeserializeObject<SeriesView>(requestBody);
 
             series.Id = seriesId;
-            var request = new UpdateSeriesRequest(series.Map());
+            var request = new UpdateSeriesRequest(libraryId, series.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = request.Result.Series.Render(principal);

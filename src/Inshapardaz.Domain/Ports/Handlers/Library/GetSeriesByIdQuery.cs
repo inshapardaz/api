@@ -1,14 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetSeriesByIdQuery : IQuery<SeriesModel>
+    public class GetSeriesByIdQuery : LibraryBaseQuery<SeriesModel>
     {
-        public GetSeriesByIdQuery(int seriesId)
+        public GetSeriesByIdQuery(int libraryId, int seriesId)
+            : base(libraryId)
         {
             SeriesId = seriesId;
         }
@@ -29,15 +31,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<SeriesModel> ExecuteAsync(GetSeriesByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var series = await _seriesRepository.GetSeriesById(command.SeriesId, cancellationToken);
-
-            if (series != null)
-            {
-                series.BookCount = await _bookRepository.GetBookCountBySeries(command.SeriesId, cancellationToken);
-            }
-
-            return series;
+            return await _seriesRepository.GetSeriesById(command.LibraryId, command.SeriesId, cancellationToken);
         }
     }
 }
-

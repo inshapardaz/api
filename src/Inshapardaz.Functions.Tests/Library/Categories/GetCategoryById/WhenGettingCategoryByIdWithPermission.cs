@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
 {
     [TestFixture]
-    public class WhenGettingCategoryByIdWithPermission : FunctionTest
+    public class WhenGettingCategoryByIdWithPermission : LibraryTest
     {
         private OkObjectResult _response;
         private CategoryView _view;
@@ -28,11 +28,11 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
         {
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<CategoriesDataBuilder>();
-            _categories = _dataBuilder.Build(4);
+            _categories = _dataBuilder.WithLibrary(LibraryId).Build(4);
             _selectedCategory = _categories.PickRandom();
 
             var handler = Container.GetService<Functions.Library.Categories.GetCategoryById>();
-            _response = (OkObjectResult)await handler.Run(request, _dataBuilder.Library.Id, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as CategoryView;
         }
@@ -41,6 +41,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
         public void Teardown()
         {
             _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

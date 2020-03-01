@@ -23,8 +23,10 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetLatestBooks")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/latest")] HttpRequest req,
-            ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/latest")] HttpRequest req,
+            int libraryId,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 

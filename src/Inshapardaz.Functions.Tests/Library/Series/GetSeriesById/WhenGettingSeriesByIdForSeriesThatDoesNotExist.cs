@@ -11,27 +11,23 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
 {
     [TestFixture]
-    public class WhenGettingSeriesByIdForSeriesThatDoesNotExist : FunctionTest
+    public class WhenGettingSeriesByIdForSeriesThatDoesNotExist : LibraryTest
     {
         private NotFoundResult _response;
-        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<LibraryDataBuilder>();
-            _dataBuilder.Build();
-
             var request = TestHelpers.CreateGetRequest();
 
             var handler = Container.GetService<Functions.Library.Series.GetSeriesById>();
-            _response = (NotFoundResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NotFoundResult)await handler.Run(request, NullLogger.Instance, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

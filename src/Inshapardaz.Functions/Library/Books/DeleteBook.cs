@@ -15,16 +15,17 @@ namespace Inshapardaz.Functions.Library.Books
 {
     public class DeleteBook : CommandBase
     {
-        public DeleteBook(IAmACommandProcessor commandProcessor) 
+        public DeleteBook(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
         }
 
         [FunctionName("DeleteBook")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId:int}")] HttpRequest req,
-            ILogger log, int bookId,
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/books/{bookId:int}")] HttpRequest req,
+            int libraryId,
+            int bookId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             if (principal == null)

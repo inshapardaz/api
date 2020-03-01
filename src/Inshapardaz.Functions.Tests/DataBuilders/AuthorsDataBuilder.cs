@@ -17,16 +17,21 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private readonly IDatabaseContext _context;
         private readonly IDbConnection _connection;
         private readonly IFileStorage _fileStorage;
+        private int _libraryId;
         private int _bookCount;
         private bool _withImage = true;
-
-        public LibraryDto Library { get; private set; }
 
         public AuthorsDataBuilder(IDatabaseContext context, IProvideConnection connectionProvider, IFileStorage fileStorage)
         {
             _context = context;
             _connection = connectionProvider.GetConnection();
             _fileStorage = fileStorage;
+        }
+
+        public AuthorsDataBuilder WithLibrary(int libraryId)
+        {
+            _libraryId = libraryId;
+            return this;
         }
 
         public AuthorsDataBuilder WithBooks(int bookCount)
@@ -50,11 +55,6 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         {
             var authors = new List<AuthorDto>();
             var fixture = new Fixture();
-            Library = fixture.Build<LibraryDto>()
-                                 .With(l => l.Language, "en")
-                                 .Create();
-
-            _connection.AddLibrary(Library);
 
             for (int i = 0; i < count; i++)
             {
@@ -68,7 +68,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 }
 
                 var author = fixture.Build<AuthorDto>()
-                                     .With(a => a.LibraryId, Library.Id)
+                                     .With(a => a.LibraryId, _libraryId)
                                      .With(a => a.ImageId, authorImage.Id)
                                      .Create();
 
@@ -77,7 +77,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
                 var books = fixture.Build<BookDto>()
                                    .With(b => b.AuthorId, author.Id)
-                                   .With(b => b.LibraryId, Library.Id)
+                                   .With(b => b.LibraryId, _libraryId)
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);
@@ -91,9 +91,6 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         public void CleanUp()
         {
-            if (Library != null)
-                _connection.DeleteLibrary(Library.Id);
-
             _connection.DeleteAuthors(_authors);
             _connection.DeleteFiles(_files);
         }

@@ -13,10 +13,9 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
 {
     [TestFixture(AuthenticationLevel.Reader)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenUpdatingCategoryWithoutPermission : FunctionTest
+    public class WhenUpdatingCategoryWithoutPermission : LibraryTest
     {
         private ForbidResult _response;
-        private LibraryDataBuilder _dataBuilder;
         private readonly ClaimsPrincipal _claim;
 
         public WhenUpdatingCategoryWithoutPermission(AuthenticationLevel authenticationLevel)
@@ -27,21 +26,19 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<LibraryDataBuilder>();
-            _dataBuilder.Build();
             var handler = Container.GetService<Functions.Library.Categories.UpdateCategory>();
             var faker = new Faker();
             var category = new CategoryView { Id = faker.Random.Number(), Name = faker.Random.String() };
             var request = new RequestBuilder()
                                             .WithJsonBody(category)
                                             .Build();
-            _response = (ForbidResult)await handler.Run(request, _dataBuilder.Library.Id, category.Id, _claim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, category.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

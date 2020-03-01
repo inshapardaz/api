@@ -11,29 +11,22 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
 {
     [TestFixture]
-    public class WhenUpdatingSeriesAsReader : FunctionTest
+    public class WhenUpdatingSeriesAsReader : LibraryTest
     {
         private ForbidResult _response;
-        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<LibraryDataBuilder>();
-            _dataBuilder.Build();
-
             var handler = Container.GetService<Functions.Library.Series.UpdateSeries>();
             var series = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
-            var request = new RequestBuilder()
-                                            .WithJsonBody(series)
-                                            .Build();
-            _response = (ForbidResult)await handler.Run(request, _dataBuilder.Library.Id, series.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(series.ToRequest(), LibraryId, series.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

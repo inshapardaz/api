@@ -11,30 +11,26 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
 {
     [TestFixture]
-    public class WhenAddingAuthorAsReader : FunctionTest
+    public class WhenAddingAuthorAsReader : LibraryTest
     {
         private ForbidResult _response;
-        private LibraryDataBuilder _builder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<LibraryDataBuilder>();
-            _builder.Build();
-
             var handler = Container.GetService<Functions.Library.Authors.AddAuthor>();
             var author = new AuthorView { Name = new Faker().Random.String() };
 
             var request = new RequestBuilder()
                                             .WithJsonBody(author)
                                             .Build();
-            _response = (ForbidResult)await handler.Run(request, _builder.Library.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _builder.CleanUp();
+            Cleanup();
         }
 
         [Test]

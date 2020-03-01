@@ -25,8 +25,10 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetFavoriteBooks")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/favorite")] HttpRequest req,
-            ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/favorite")] HttpRequest req,
+            int libraryId,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
             if (principal == null)
             {
@@ -36,7 +38,7 @@ namespace Inshapardaz.Functions.Library.Books
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var query = new GetFavoriteBooksQuery(principal.GetUserId(), pageNumber, pageSize );
+            var query = new GetFavoriteBooksQuery(principal.GetUserId(), pageNumber, pageSize);
             var books = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             var args = new PageRendererArgs<BookModel>
@@ -51,7 +53,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/favorite", relType);
 
-        public static LinkView Link(int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self) 
+        public static LinkView Link(int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self)
             => SelfLink("books/favorite", relType, queryString: new Dictionary<string, string>
             {
                 { "pageNumber", pageNumber.ToString()},

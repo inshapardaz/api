@@ -11,29 +11,25 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
 {
     [TestFixture]
-    public class WhenDeletingSeriesAsAnonymous : FunctionTest
+    public class WhenDeletingSeriesAsAnonymous : LibraryTest
     {
         private UnauthorizedResult _response;
-        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<LibraryDataBuilder>();
-            _dataBuilder.Build();
-
             var request = TestHelpers.CreateGetRequest();
             var builder = Container.GetService<SeriesDataBuilder>();
-            var series = builder.Build();
+            var series = builder.WithLibrary(LibraryId).Build();
 
             var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();
-            _response = (UnauthorizedResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, series.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, NullLogger.Instance, LibraryId, series.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

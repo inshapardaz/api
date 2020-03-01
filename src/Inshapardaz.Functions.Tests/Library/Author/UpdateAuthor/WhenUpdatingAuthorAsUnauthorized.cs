@@ -11,30 +11,26 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
 {
     [TestFixture]
-    public class WhenUpdatingAuthorAsUnauthorized : FunctionTest
+    public class WhenUpdatingAuthorAsUnauthorized : LibraryTest
     {
         private UnauthorizedResult _response;
-        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<LibraryDataBuilder>();
-            _dataBuilder.Build();
-
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthor>();
             var faker = new Faker();
             var author = new AuthorView { Id = faker.Random.Number(), Name = faker.Random.String() };
             var request = new RequestBuilder()
                                             .WithJsonBody(author)
                                             .Build();
-            _response = (UnauthorizedResult)await handler.Run(request, _dataBuilder.Library.Id, author.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, author.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

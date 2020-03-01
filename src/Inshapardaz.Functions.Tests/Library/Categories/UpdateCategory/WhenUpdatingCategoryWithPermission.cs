@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
 {
     [TestFixture]
-    public class WhenUpdatingCategoryWithPermission : FunctionTest
+    public class WhenUpdatingCategoryWithPermission : LibraryTest
     {
         private OkObjectResult _response;
         private CategoriesDataBuilder _categoriesBuilder;
@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
             _categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
 
             var handler = Container.GetService<Functions.Library.Categories.UpdateCategory>();
-            _categories = _categoriesBuilder.WithBooks(3).Build(4);
+            _categories = _categoriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             _selectedCategory = _categories.First();
 
@@ -38,13 +38,14 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
             var request = new RequestBuilder()
                                             .WithJsonBody(_expectedCategory)
                                             .Build();
-            _response = (OkObjectResult)await handler.Run(request, _categoriesBuilder.Library.Id, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
             _categoriesBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
 {
     [TestFixture]
-    public class WhenAddingBookAsReader : FunctionTest
+    public class WhenAddingBookAsReader : LibraryTest
     {
         private ForbidResult _response;
 
@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
             var request = new RequestBuilder()
                                             .WithJsonBody(book)
                                             .Build();
-            _response = (ForbidResult) await handler.Run(request, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

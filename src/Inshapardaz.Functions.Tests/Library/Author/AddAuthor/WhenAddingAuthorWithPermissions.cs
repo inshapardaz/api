@@ -15,10 +15,9 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenAddingAuthorWithPermissions : FunctionTest
+    public class WhenAddingAuthorWithPermissions : LibraryTest
     {
         private CreatedResult _response;
-        private LibraryDataBuilder _builder;
         private readonly ClaimsPrincipal _claim;
 
         public WhenAddingAuthorWithPermissions(AuthenticationLevel authenticationLevel)
@@ -29,9 +28,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<LibraryDataBuilder>();
-            _builder.Build();
-
             var handler = Container.GetService<Functions.Library.Authors.AddAuthor>();
             var author = new AuthorView { Name = new Faker().Random.String() };
 
@@ -39,13 +35,13 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
                                             .WithJsonBody(author)
                                             .Build();
 
-            _response = (CreatedResult)await handler.Run(request, _builder.Library.Id, _claim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _builder.CleanUp();
+            Cleanup();
         }
 
         [Test]

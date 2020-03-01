@@ -24,15 +24,16 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetBooksByAuthor")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authors/{authorId:int}/books")] HttpRequest req, 
-            int authorId, 
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/authors/{authorId:int}/books")] HttpRequest req,
+            int libraryId,
+            int authorId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var query = new GetBooksByAuthorQuery(authorId, pageNumber, pageSize) { UserId = principal.GetUserId()};
+            var query = new GetBooksByAuthorQuery(authorId, pageNumber, pageSize) { UserId = principal.GetUserId() };
             var books = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             var args = new PageRendererArgs<BookModel>
@@ -47,7 +48,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}/books", relType, "GET");
 
-        public static LinkView Link(int authorId, int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self) 
+        public static LinkView Link(int authorId, int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self)
             => SelfLink($"authors/{authorId}/books", relType, queryString: new Dictionary<string, string>
             {
                 { "pageNumber", pageNumber.ToString()},

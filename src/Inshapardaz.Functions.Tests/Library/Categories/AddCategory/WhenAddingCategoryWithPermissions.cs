@@ -14,29 +14,25 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
 {
     [TestFixture]
-    public class WhenAddingCategoryWithPermissions : FunctionTest
+    public class WhenAddingCategoryWithPermissions : LibraryTest
     {
         private CreatedResult _response;
-        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<LibraryDataBuilder>();
-            _dataBuilder.Build();
-
             var handler = Container.GetService<Functions.Library.Categories.AddCategory>();
             var category = new CategoryView { Name = new Faker().Random.String() };
             var request = new RequestBuilder()
                                             .WithJsonBody(category)
                                             .Build();
-            _response = (CreatedResult)await handler.Run(request, _dataBuilder.Library.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

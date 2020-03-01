@@ -12,26 +12,27 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
 {
     [TestFixture]
-    public class WhenUploadingBookImageAsAdministrator : FunctionTest
+    public class WhenUploadingBookImageAsAdministrator : LibraryTest
     {
         private OkResult _response;
         private BooksDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _bookId;
         private byte[] _oldImage;
+
         [OneTimeSetUp]
         public async Task Setup()
         {
             _builder = Container.GetService<BooksDataBuilder>();
             _fileStorage = Container.GetService<IFileStorage>() as FakeFileStorage;
-            
+
             var book = _builder.Build();
             _bookId = book.Id;
             var imageUrl = _builder.GetBookImageUrl(_bookId);
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
             var handler = Container.GetService<Functions.Library.Books.UpdateBookImage>();
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
-            _response = (OkResult) await handler.Run(request, _bookId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkResult)await handler.Run(request, LibraryId, _bookId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -46,7 +47,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
             Assert.That(_response, Is.Not.Null);
             Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
-
 
         [Test]
         public async Task ShouldHaveUpdatedBookImage()

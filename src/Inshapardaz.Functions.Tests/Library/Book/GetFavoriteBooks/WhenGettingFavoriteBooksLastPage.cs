@@ -13,11 +13,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
 {
     [TestFixture]
-    public class WhenGettingFavoriteBooksLastPage : FunctionTest
+    public class WhenGettingFavoriteBooksLastPage : LibraryTest
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -33,7 +33,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
             builder.AddSomeToFavorite(books, claim.GetUserId(), 20);
 
             var handler = Container.GetService<Functions.Library.Books.GetFavoriteBooks>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, claim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, claim, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;
         }
@@ -64,7 +64,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
         {
             _view.Links.AssertLinkNotPresent("create");
         }
-        
+
         [Test]
         public void ShouldReturnCorrectPage()
         {

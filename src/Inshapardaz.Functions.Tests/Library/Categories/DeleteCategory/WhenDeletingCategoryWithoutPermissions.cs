@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
 {
     [TestFixture(AuthenticationLevel.Reader)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenDeletingCategoryWithoutPermissions : FunctionTest
+    public class WhenDeletingCategoryWithoutPermissions : LibraryTest
     {
         private ForbidResult _response;
 
@@ -33,17 +33,18 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
         {
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<CategoriesDataBuilder>();
-            _categories = _dataBuilder.Build(4);
+            _categories = _dataBuilder.WithLibrary(LibraryId).Build(4);
             _selectedCategory = _categories.First();
 
             var handler = Container.GetService<Functions.Library.Categories.DeleteCategory>();
-            _response = (ForbidResult)await handler.Run(request, _dataBuilder.Library.Id, _selectedCategory.Id, _claim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, _selectedCategory.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
             _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

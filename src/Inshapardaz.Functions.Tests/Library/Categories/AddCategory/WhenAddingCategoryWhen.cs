@@ -13,10 +13,9 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
 {
     [TestFixture(AuthenticationLevel.Reader)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenAddingCategoryWhen : FunctionTest
+    public class WhenAddingCategoryWhen : LibraryTest
     {
         private ForbidResult _response;
-        private LibraryDataBuilder _dataBuilder;
         private readonly ClaimsPrincipal _claim;
 
         public WhenAddingCategoryWhen(AuthenticationLevel authenticationLevel)
@@ -27,21 +26,18 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<LibraryDataBuilder>();
-            _dataBuilder.Build();
-
             var handler = Container.GetService<Functions.Library.Categories.AddCategory>();
             var category = new CategoryView { Name = new Faker().Random.String() };
             var request = new RequestBuilder()
                                             .WithJsonBody(category)
                                             .Build();
-            _response = (ForbidResult)await handler.Run(request, _dataBuilder.Library.Id, _claim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
 {
     [TestFixture]
-    public class WhenGettingCategoriesAsUnauthorises : FunctionTest
+    public class WhenGettingCategoriesAsUnauthorises : LibraryTest
     {
         private OkObjectResult _response;
         private ListView<CategoryView> _view;
@@ -24,10 +24,10 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
             var request = TestHelpers.CreateGetRequest();
 
             _dataBuilder = Container.GetService<CategoriesDataBuilder>();
-            _dataBuilder.WithBooks(3).Build(4);
+            _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             var handler = Container.GetService<Functions.Library.Categories.GetCategories>();
-            _response = (OkObjectResult)await handler.Run(request, _dataBuilder.Library.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as ListView<CategoryView>;
         }
@@ -36,6 +36,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         public void Teardown()
         {
             _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

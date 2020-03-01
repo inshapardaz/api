@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
 {
     [TestFixture]
-    public class WhenGettingSeriesAsAnonymous : FunctionTest
+    public class WhenGettingSeriesAsAnonymous : LibraryTest
     {
         private OkObjectResult _response;
         private ListView<SeriesView> _view;
@@ -25,10 +25,10 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
             var request = TestHelpers.CreateGetRequest();
 
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
-            _dataBuilder.WithBooks(3).Build(4);
+            _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             var handler = Container.GetService<Functions.Library.Series.GetSeries>();
-            _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as ListView<SeriesView>;
         }
@@ -37,6 +37,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
         public void Teardown()
         {
             _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

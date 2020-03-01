@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
 {
     [TestFixture]
-    public class WhenAddingBookAsAdministrator : FunctionTest
+    public class WhenAddingBookAsAdministrator : LibraryTest
     {
         private CreatedResult _response;
         private BooksDataBuilder _builder;
@@ -57,7 +57,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
                                             .WithJsonBody(_request)
                                             .Build();
 
-            _response = (CreatedResult) await handler.Run(request, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

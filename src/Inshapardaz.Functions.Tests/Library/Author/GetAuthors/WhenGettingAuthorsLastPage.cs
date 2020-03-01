@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 {
     [TestFixture]
-    public class WhenGettingAuthorsLastPage : FunctionTest
+    public class WhenGettingAuthorsLastPage : LibraryTest
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
@@ -27,10 +27,10 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
                 .Build();
 
             _builder = Container.GetService<AuthorsDataBuilder>();
-            _builder.WithBooks(3).Build(50);
+            _builder.WithLibrary(LibraryId).WithBooks(3).Build(50);
 
             var handler = Container.GetService<Functions.Library.Authors.GetAuthors>();
-            _response = (OkObjectResult)await handler.Run(request, _builder.Library.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as PageView<AuthorView>;
         }
@@ -39,6 +39,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         public void Teardown()
         {
             _builder.CleanUp();
+            Cleanup();
         }
 
         [Test]

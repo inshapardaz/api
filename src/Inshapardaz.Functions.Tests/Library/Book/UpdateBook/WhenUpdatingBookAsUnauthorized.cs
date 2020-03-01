@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
 {
     [TestFixture]
-    public class WhenUpdatingBookAsUnauthorized : FunctionTest
+    public class WhenUpdatingBookAsUnauthorized : LibraryTest
     {
         private UnauthorizedResult _response;
 
@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
             var request = new RequestBuilder()
                                             .WithJsonBody(book)
                                             .Build();
-            _response = (UnauthorizedResult)await handler.Run(request, book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

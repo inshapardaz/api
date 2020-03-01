@@ -23,11 +23,7 @@ namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.UpdateDictionary
             var handler = Container.GetService<Functions.Dictionaries.UpdateDictionary>();
             _dictionary = _builder.Build();
 
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_dictionary)
-                                            .Build();
-
-            _response = (ForbidResult)await handler.Run(request, _dictionary.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(_dictionary.ToRequest(), _dictionary.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

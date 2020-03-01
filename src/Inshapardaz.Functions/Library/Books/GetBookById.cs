@@ -23,9 +23,10 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetBookById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/{bookId:int}")] HttpRequest req,
-            ILogger log, int bookId,
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/{bookId:int}")] HttpRequest req,
+            int libraryId,
+            int bookId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             var request = new GetBookByIdQuery(bookId, principal.GetUserId());

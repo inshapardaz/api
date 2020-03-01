@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenGettingDictionariesWithPermission : FunctionTest
+    public class WhenGettingDictionariesWithPermission : LibraryTest
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
@@ -32,10 +32,10 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
             var request = TestHelpers.CreateGetRequest();
 
             _builder = Container.GetService<AuthorsDataBuilder>();
-            _builder.WithBooks(3).Build(4);
+            _builder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             var handler = Container.GetService<Functions.Library.Authors.GetAuthors>();
-            _response = (OkObjectResult)await handler.Run(request, _builder.Library.Id, _claim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
 
             _view = _response.Value as PageView<AuthorView>;
         }
@@ -44,6 +44,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         public void Teardown()
         {
             _builder.CleanUp();
+            Cleanup();
         }
 
         [Test]

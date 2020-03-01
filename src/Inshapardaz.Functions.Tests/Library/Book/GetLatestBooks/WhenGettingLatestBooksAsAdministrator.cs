@@ -13,11 +13,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
 {
     [TestFixture]
-    public class WhenGettingLatestBooksAsAdministrator : FunctionTest
+    public class WhenGettingLatestBooksAsAdministrator : LibraryTest
     {
         private OkObjectResult _response;
         private ListView<BookView> _view;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
             builder.Build(40);
 
             var handler = Container.GetService<Functions.Library.Books.GetLatestBooks>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<BookView>;
         }
@@ -73,7 +73,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
             actual.Links.AssertLink("delete")
                   .ShouldBeDelete()
                   .ShouldHaveSomeHref();
-
         }
     }
 }

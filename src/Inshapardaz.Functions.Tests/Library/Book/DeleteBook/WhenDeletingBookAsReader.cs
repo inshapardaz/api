@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
 {
     [TestFixture]
-    public class WhenDeletingBookAsReader : FunctionTest
+    public class WhenDeletingBookAsReader : LibraryTest
     {
         private ForbidResult _response;
 
@@ -22,9 +22,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
             var builder = Container.GetService<BooksDataBuilder>();
             var books = builder.Build(4);
             var expected = books.First();
-            
+
             var handler = Container.GetService<Functions.Library.Books.DeleteBook>();
-            _response = (ForbidResult) await handler.Run(request, NullLogger.Instance, expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

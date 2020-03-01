@@ -13,11 +13,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
 {
     [TestFixture]
-    public class WhenGettingLatestBooksAsUnauthorised : FunctionTest
+    public class WhenGettingLatestBooksAsUnauthorised : LibraryTest
     {
         private OkObjectResult _response;
         private ListView<BookView> _view;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
             builder.Build(40);
 
             var handler = Container.GetService<Functions.Library.Books.GetLatestBooks>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as ListView<BookView>;
         }

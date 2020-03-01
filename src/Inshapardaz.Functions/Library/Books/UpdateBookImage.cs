@@ -17,14 +17,15 @@ namespace Inshapardaz.Functions.Library.Books
 {
     public class UpdateBookImage : CommandBase
     {
-        public UpdateBookImage(IAmACommandProcessor commandProcessor) 
+        public UpdateBookImage(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
         }
 
         [FunctionName("UpdateBookImage")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId:int}/image")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/books/{bookId:int}/image")] HttpRequestMessage req,
+            int libraryId,
             int bookId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token = default)

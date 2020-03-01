@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByAuthor
 {
     [TestFixture]
-    public class WhenGettingBooksByAuthorAsAdministrator : FunctionTest
+    public class WhenGettingBooksByAuthorAsAdministrator : LibraryTest
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByAuthor
             //var books = builder.WithAuthor(author).Build(4);
 
             var handler = Container.GetService<Functions.Library.Books.GetBooksByAuthor>();
-            _response = (OkObjectResult)await handler.Run(request, author.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, author.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;
         }

@@ -13,11 +13,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetRecentReadBooks
 {
     [TestFixture]
-    public class WhenGettingRecentBooksAsUser : FunctionTest
+    public class WhenGettingRecentBooksAsUser : LibraryTest
     {
         private OkObjectResult _response;
         private ListView<BookView> _view;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -30,8 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetRecentReadBooks
             var principal = AuthenticationBuilder.ReaderClaim;
             builder.AddSomeToRecentReads(books, principal.GetUserId(), 15);
 
-
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, principal, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, principal, CancellationToken.None);
 
             _view = _response.Value as ListView<BookView>;
         }

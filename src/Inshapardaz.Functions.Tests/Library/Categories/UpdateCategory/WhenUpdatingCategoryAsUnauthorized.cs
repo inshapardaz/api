@@ -11,29 +11,26 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
 {
     [TestFixture]
-    public class WhenUpdatingCategoryAsUnauthorized : FunctionTest
+    public class WhenUpdatingCategoryAsUnauthorized : LibraryTest
     {
         private UnauthorizedResult _response;
-        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<LibraryDataBuilder>();
-            _dataBuilder.Build();
             var handler = Container.GetService<Functions.Library.Categories.UpdateCategory>();
             var faker = new Faker();
             var category = new CategoryView { Id = faker.Random.Number(), Name = faker.Random.String() };
             var request = new RequestBuilder()
                                             .WithJsonBody(category)
                                             .Build();
-            _response = (UnauthorizedResult)await handler.Run(request, _dataBuilder.Library.Id, category.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, category.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

@@ -12,11 +12,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
 {
     [TestFixture]
-    public class WhenGettingFavoriteBooksPageThatDoesNotExist : FunctionTest
+    public class WhenGettingFavoriteBooksPageThatDoesNotExist : LibraryTest
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -31,9 +31,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
             var books = builder.Build(40);
             builder.AddSomeToFavorite(books, claim.GetUserId(), 11);
 
-
             var handler = Container.GetService<Functions.Library.Books.GetFavoriteBooks>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, claim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, claim, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;
         }
@@ -76,7 +75,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
         {
             Assert.IsEmpty(_view.Data, "Should return no books.");
         }
-        
+
         [Test]
         public void ShouldReturnCorrectPage()
         {

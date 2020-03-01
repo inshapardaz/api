@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
 {
     [TestFixture]
-    public class WhenUpdatingBookThatDoesNotExist : FunctionTest
+    public class WhenUpdatingBookThatDoesNotExist : LibraryTest
     {
         private CreatedResult _response;
         private BooksDataBuilder _builder;
@@ -34,8 +34,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
             };
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)
-                                            .Build(); 
-            _response = (CreatedResult) await handler.Run(request, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+                                            .Build();
+            _response = (CreatedResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

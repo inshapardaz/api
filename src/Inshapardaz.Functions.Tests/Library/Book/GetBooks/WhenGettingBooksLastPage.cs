@@ -13,11 +13,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
 {
     [TestFixture]
-    public class WhenGettingBooksLastPage : FunctionTest
+    public class WhenGettingBooksLastPage : LibraryTest
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -28,9 +28,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
 
             var builder = Container.GetService<BooksDataBuilder>();
             builder.Build(20);
-            
+
             var handler = Container.GetService<Functions.Library.Books.GetBooks>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;
         }
@@ -85,7 +85,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
             Assert.That(_view.TotalCount, Is.EqualTo(20));
             Assert.That(_view.CurrentPageIndex, Is.EqualTo(2));
         }
-        
+
         [Test]
         public void ShouldHaveCorrectBookData()
         {

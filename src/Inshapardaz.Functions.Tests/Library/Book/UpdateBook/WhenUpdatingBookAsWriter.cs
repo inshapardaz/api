@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
 {
     [TestFixture]
-    public class WhenUpdatingBookAsWriter : FunctionTest
+    public class WhenUpdatingBookAsWriter : LibraryTest
     {
         private OkObjectResult _response;
         private BooksDataBuilder _dataBuilder;
@@ -61,7 +61,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)
                                             .Build();
-            _response = (OkObjectResult)await handler.Run(request, selectedBook.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, selectedBook.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
             _actual = _response.Value as BookView;
         }
 

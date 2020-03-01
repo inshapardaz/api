@@ -22,9 +22,10 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("AddBookToFavorite")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/favorite/{id:int}")] HttpRequest req, 
-            int id,
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books/favorite/{bookId:int}")] HttpRequest req,
+            int libraryId,
+            int bookId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             if (principal == null)
@@ -37,7 +38,7 @@ namespace Inshapardaz.Functions.Library.Books
                 return new ForbidResult("Bearer");
             }
 
-            var request = new AddBookToFavoriteRequest(id, principal.GetUserId());
+            var request = new AddBookToFavoriteRequest(bookId, principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             return new CreatedResult(new Uri(GetFavoriteBooks.Link(RelTypes.Self).Href), null);

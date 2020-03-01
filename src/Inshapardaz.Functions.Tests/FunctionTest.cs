@@ -92,7 +92,7 @@ namespace Inshapardaz.Functions.Tests
             return context;
         }
 
-        protected void Cleanup()
+        protected virtual void Cleanup()
         {
             _connection?.Close();
             _connection?.Dispose();

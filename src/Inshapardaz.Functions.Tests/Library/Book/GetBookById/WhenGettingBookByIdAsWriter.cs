@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
 {
     [TestFixture]
-    public class WhenGettingBookByIdAsWriter : FunctionTest
+    public class WhenGettingBookByIdAsWriter : LibraryTest
     {
         private OkObjectResult _response;
         private BookView _view;
@@ -25,9 +25,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
             var builder = Container.GetService<BooksDataBuilder>();
             var books = builder.Build(4);
             _expected = books.First();
-            
+
             var handler = Container.GetService<Functions.Library.Books.GetBookById>();
-            _response = (OkObjectResult) await handler.Run(request, NullLogger.Instance, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = _response.Value as BookView;
         }
@@ -68,7 +68,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
                  .ShouldBePut()
                  .ShouldHaveSomeHref();
         }
-        
+
         [Test]
         public void ShouldHaveDeleteLink()
         {

@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
 {
     [TestFixture]
-    public class WhenUpdatingSeriesThatDoesNotExist : FunctionTest
+    public class WhenUpdatingSeriesThatDoesNotExist : LibraryTest
     {
         private CreatedResult _response;
         private LibraryDataBuilder _builder;
@@ -22,21 +22,18 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<LibraryDataBuilder>();
-            _builder.Build();
-
             var handler = Container.GetService<Functions.Library.Series.UpdateSeries>();
             _expected = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)
                                             .Build();
-            _response = (CreatedResult)await handler.Run(request, _builder.Library.Id, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _builder.CleanUp();
+            Cleanup();
         }
 
         [Test]

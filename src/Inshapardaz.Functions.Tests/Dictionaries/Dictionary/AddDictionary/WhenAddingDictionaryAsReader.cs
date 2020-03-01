@@ -28,11 +28,7 @@ namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.AddDictionary
                 LanguageId = (int)new Faker().PickRandom<Languages>()
             };
 
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_dictionary)
-                                            .Build();
-
-            _response = (ForbidResult)await handler.Run(request, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(_dictionary.ToRequest(), AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

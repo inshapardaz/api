@@ -13,18 +13,14 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
 {
     [TestFixture]
-    public class WhenUpdatingAuthorThatDoesNotExist : FunctionTest
+    public class WhenUpdatingAuthorThatDoesNotExist : LibraryTest
     {
         private CreatedResult _response;
-        private LibraryDataBuilder _builder;
         private AuthorView _expected;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<LibraryDataBuilder>();
-            _builder.Build();
-
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthor>();
             _expected = new AuthorView { Name = new Faker().Random.String() };
 
@@ -32,13 +28,13 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
                                             .WithJsonBody(_expected)
                                             .Build();
 
-            _response = (CreatedResult)await handler.Run(request, _builder.Library.Id, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _builder.CleanUp();
+            Cleanup();
         }
 
         [Test]

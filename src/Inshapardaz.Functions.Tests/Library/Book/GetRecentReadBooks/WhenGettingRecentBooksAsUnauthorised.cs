@@ -9,17 +9,17 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetRecentReadBooks
 {
     [TestFixture]
-    public class WhenGettingRecentBooksAsUnauthorised : FunctionTest
+    public class WhenGettingRecentBooksAsUnauthorised : LibraryTest
     {
         private UnauthorizedResult _response;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
 
             var handler = Container.GetService<Functions.Library.Books.GetRecentReadBooks>();
-            _response = (UnauthorizedResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [Test]

@@ -23,8 +23,10 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetRecentReadBooks")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/recent")] HttpRequest req,
-            ILogger log, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/recent")] HttpRequest req,
+            int libraryId,
+            [AccessToken] ClaimsPrincipal principal,
+            CancellationToken token)
         {
             if (principal == null || !principal.IsAuthenticated())
             {
@@ -40,6 +42,5 @@ namespace Inshapardaz.Functions.Library.Books
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/recent", relType);
-
     }
 }

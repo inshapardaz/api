@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
 {
     [TestFixture]
-    public class WhenGettingSeriesByIdAsUnauthorized : FunctionTest
+    public class WhenGettingSeriesByIdAsUnauthorized : LibraryTest
     {
         private OkObjectResult _response;
         private SeriesView _view;
@@ -28,11 +28,11 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
             var request = TestHelpers.CreateGetRequest();
 
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
-            var series = _dataBuilder.WithBooks(3).Build(4);
+            var series = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
             _selectedSeries = series.First();
 
             var handler = Container.GetService<Functions.Library.Series.GetSeriesById>();
-            _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, _selectedSeries.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, LibraryId, _selectedSeries.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as SeriesView;
         }
@@ -41,6 +41,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
         public void Teardown()
         {
             _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

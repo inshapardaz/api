@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
 {
     [TestFixture]
-    public class WhenGettingBookByIdThatDoesNotExist : FunctionTest
+    public class WhenGettingBookByIdThatDoesNotExist : LibraryTest
     {
         private NotFoundResult _response;
 
@@ -19,9 +19,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            
+
             var handler = Container.GetService<Functions.Library.Books.GetBookById>();
-            _response = (NotFoundResult) await handler.Run(request, NullLogger.Instance, new Faker().Random.Int(), AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NotFoundResult)await handler.Run(request, LibraryId, new Faker().Random.Int(), AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         public void ShouldHaveNotFoundResult()
         {
             Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int) HttpStatusCode.NotFound));
+            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 {
     // TODO : Add tests for pagination
     [TestFixture]
-    public class WhenSearchingAuthors : FunctionTest
+    public class WhenSearchingAuthors : LibraryTest
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         public async Task Setup()
         {
             _builder = Container.GetService<AuthorsDataBuilder>();
-            var authors = _builder.WithBooks(3).Build(20);
+            var authors = _builder.WithLibrary(LibraryId).WithBooks(3).Build(20);
 
             _searchedAuthor = authors.PickRandom();
             var request = new RequestBuilder()
@@ -33,7 +33,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
                .Build();
 
             var handler = Container.GetService<Functions.Library.Authors.GetAuthors>();
-            _response = (OkObjectResult)await handler.Run(request, _builder.Library.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _view = _response.Value as PageView<AuthorView>;
         }
@@ -42,6 +42,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         public void Teardown()
         {
             _builder.CleanUp();
+            Cleanup();
         }
 
         [Test]

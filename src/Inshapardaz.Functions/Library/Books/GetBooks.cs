@@ -25,15 +25,15 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetBooks")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books")] HttpRequest req,
-            ILogger log, 
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books")] HttpRequest req,
+            int libraryId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             var query = GetQueryParameter<string>(req, "query", null);
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
-            
+
             var request = new GetBooksQuery(pageNumber, pageSize, principal.GetUserId()) { Query = query };
             var books = await QueryProcessor.ExecuteAsync(request, cancellationToken: token);
 
@@ -43,13 +43,13 @@ namespace Inshapardaz.Functions.Library.Books
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
                 LinkFunc = Link
             };
-            
+
             return new OkObjectResult(args.Render(principal));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books", relType);
 
-        public static LinkView Link(int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self) 
+        public static LinkView Link(int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self)
             => SelfLink("books", relType, queryString: new Dictionary<string, string>
             {
                 { "pageNumber", pageNumber.ToString()},

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -15,8 +16,8 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private readonly IDbConnection _connection;
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<SeriesDto> _series = new List<SeriesDto>();
-        public LibraryDto Library { get; private set; }
         private int _bookCount;
+        private int _libraryId;
 
         public SeriesDataBuilder(IProvideConnection connectionProvider)
         {
@@ -29,22 +30,22 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             return this;
         }
 
+        internal SeriesDataBuilder WithLibrary(int libraryId)
+        {
+            _libraryId = libraryId;
+            return this;
+        }
+
         public SeriesDto Build() => Build(1).Single();
 
         public IEnumerable<SeriesDto> Build(int count)
         {
             var fixture = new Fixture();
-            Library = fixture.Build<LibraryDto>()
-                                 .With(l => l.Language, "en")
-                                 .Create();
-
-            _connection.AddLibrary(Library);
-
             var authorGenerator = new Faker<Author>()
                                   .RuleFor(c => c.Id, 0)
                                   .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10));
             var series = fixture.Build<SeriesDto>()
-                                .With(s => s.LibraryId, Library.Id)
+                                .With(s => s.LibraryId, _libraryId)
                                 .Without(s => s.ImageId)
                                 .CreateMany(count);
 
@@ -54,7 +55,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             foreach (var s in series)
             {
                 var author = fixture.Build<AuthorDto>()
-                                     .With(a => a.LibraryId, Library.Id)
+                                     .With(a => a.LibraryId, _libraryId)
                                      .Without(a => a.ImageId)
                                      .Create();
 
@@ -63,7 +64,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
                 var books = fixture.Build<BookDto>()
                                    .With(b => b.AuthorId, author.Id)
-                                   .With(b => b.LibraryId, Library.Id)
+                                   .With(b => b.LibraryId, _libraryId)
                                    .Without(b => b.ImageId)
                                    .With(b => b.SeriesId, s.Id)
                                    .CreateMany(_bookCount);
@@ -75,9 +76,6 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         public void CleanUp()
         {
-            if (Library != null)
-                _connection.DeleteLibrary(Library.Id);
-
             _connection.DeleteAuthors(_authors);
             _connection.DeleteSeries(_series);
         }

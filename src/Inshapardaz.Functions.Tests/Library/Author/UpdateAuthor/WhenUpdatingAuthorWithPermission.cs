@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenUpdatingAuthorWithPermission : FunctionTest
+    public class WhenUpdatingAuthorWithPermission : LibraryTest
     {
         private OkObjectResult _response;
         private AuthorsDataBuilder _dataBuilder;
@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
             _dataBuilder = Container.GetService<AuthorsDataBuilder>();
 
             var handler = Container.GetService<Functions.Library.Authors.UpdateAuthor>();
-            var authors = _dataBuilder.WithBooks(3).Build(4);
+            var authors = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             var author = authors.First();
 
@@ -43,13 +43,14 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)
                                             .Build();
-            _response = (OkObjectResult)await handler.Run(request, _dataBuilder.Library.Id, author.Id, _claim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, author.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
             _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

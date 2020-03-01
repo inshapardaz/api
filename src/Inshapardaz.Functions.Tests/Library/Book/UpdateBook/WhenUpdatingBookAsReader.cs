@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
 {
     [TestFixture]
-    public class WhenUpdatingBookAsReader : FunctionTest
+    public class WhenUpdatingBookAsReader : LibraryTest
     {
         private ForbidResult _response;
 
@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
                                             .WithJsonBody(book)
                                             .Build();
 
-            _response = (ForbidResult)await handler.Run(request, book.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, book.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

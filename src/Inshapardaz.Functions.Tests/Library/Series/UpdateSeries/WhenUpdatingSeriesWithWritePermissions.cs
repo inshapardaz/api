@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenUpdatingSeriesWithWritePermissions : FunctionTest
+    public class WhenUpdatingSeriesWithWritePermissions : LibraryTest
     {
         private OkObjectResult _response;
         private SeriesDataBuilder _dataBuilder;
@@ -37,7 +37,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
 
             var handler = Container.GetService<Functions.Library.Series.UpdateSeries>();
-            _series = _dataBuilder.WithBooks(3).Build(4);
+            _series = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             var selectedSeries = _series.First();
 
@@ -45,13 +45,14 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)
                                             .Build();
-            _response = (OkObjectResult)await handler.Run(request, _dataBuilder.Library.Id, selectedSeries.Id, _claim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, selectedSeries.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
             _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

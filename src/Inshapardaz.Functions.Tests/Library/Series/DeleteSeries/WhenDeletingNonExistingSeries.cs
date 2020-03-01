@@ -10,27 +10,23 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
 {
     [TestFixture]
-    public class WhenDeletingNonExistingSeries : FunctionTest
+    public class WhenDeletingNonExistingSeries : LibraryTest
     {
         private NoContentResult _response;
-        private LibraryDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<LibraryDataBuilder>();
-            _dataBuilder.Build();
-
             var request = TestHelpers.CreateGetRequest();
 
             var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();
-            _response = (NoContentResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, NullLogger.Instance, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

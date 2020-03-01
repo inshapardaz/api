@@ -43,11 +43,7 @@ namespace Inshapardaz.Functions.Tests.Dictionaries.Dictionary.AddDictionary
                 LanguageId = (int)new Faker().PickRandom<Languages>()
             };
 
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_dictionary)
-                                            .Build();
-
-            _response = (CreatedResult)await handler.Run(request, _claim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(_dictionary.ToRequest(), _claim, CancellationToken.None);
             _payload = (DictionaryView)_response.Value;
             _actual = dataHelper.GetDictionaryByid(_payload.Id);
         }

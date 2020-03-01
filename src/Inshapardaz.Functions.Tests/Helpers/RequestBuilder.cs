@@ -58,11 +58,11 @@ namespace Inshapardaz.Functions.Tests.Helpers
                 request.Query = new QueryCollection(_parameters);
             }
 
-            request.Body = _file != null ? 
-                                    new MemoryStream(_file) : 
+            request.Body = _file != null ?
+                                    new MemoryStream(_file) :
                                     new MemoryStream(Encoding.UTF8.GetBytes(_contents ?? ""));
             return request;
-        }        
+        }
 
         public HttpRequestMessage BuildRequestMessage()
         {
@@ -73,7 +73,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
             }
             else
             {
-                request.Content = CreateMultiPartStringData (_contents ?? "");
+                request.Content = CreateMultiPartStringData(_contents ?? "");
             };
 
             return request;
@@ -90,8 +90,14 @@ namespace Inshapardaz.Functions.Tests.Helpers
         {
             ByteArrayContent byteContent = new ByteArrayContent(data);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-            byteContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = new Faker().System.FileName("jpg")}; 
+            byteContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = new Faker().System.FileName("jpg") };
             return new MultipartFormDataContent { byteContent };
         }
+    }
+
+    public static class RequestExtentions
+    {
+        public static DefaultHttpRequest ToRequest(this object body) =>
+            new RequestBuilder().WithJsonBody(body).Build();
     }
 }

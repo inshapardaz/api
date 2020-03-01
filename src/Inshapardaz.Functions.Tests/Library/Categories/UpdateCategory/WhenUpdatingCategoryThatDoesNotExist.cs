@@ -13,31 +13,27 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
 {
     [TestFixture]
-    public class WhenUpdatingCategoryThatDoesNotExist : FunctionTest
+    public class WhenUpdatingCategoryThatDoesNotExist : LibraryTest
     {
         private CreatedResult _response;
-        private LibraryDataBuilder _dataBuilder;
         private CategoryView _expectedCategory;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<LibraryDataBuilder>();
-            _dataBuilder.Build();
-
             var handler = Container.GetService<Functions.Library.Categories.UpdateCategory>();
             var faker = new Faker();
             _expectedCategory = new CategoryView { Id = faker.Random.Number(), Name = faker.Random.String() };
             var request = new RequestBuilder()
                                             .WithJsonBody(_expectedCategory)
                                             .Build();
-            _response = (CreatedResult)await handler.Run(request, _dataBuilder.Library.Id, _expectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, _expectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

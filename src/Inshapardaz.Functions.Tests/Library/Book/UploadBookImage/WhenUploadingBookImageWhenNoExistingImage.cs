@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
 {
     [TestFixture]
-    public class WhenUploadingBookImageWhenNoExistingImage : FunctionTest
+    public class WhenUploadingBookImageWhenNoExistingImage : LibraryTest
     {
         private CreatedResult _response;
         private BooksDataBuilder _builder;
@@ -24,12 +24,12 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
         {
             _builder = Container.GetService<BooksDataBuilder>();
             _fileStorage = Container.GetService<IFileStorage>() as FakeFileStorage;
-            
+
             var book = _builder.WithNoImage().Build();
             _bookId = book.Id;
             var handler = Container.GetService<Functions.Library.Books.UpdateBookImage>();
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
-            _response = (CreatedResult) await handler.Run(request, _bookId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, _bookId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -44,7 +44,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
             Assert.That(_response, Is.Not.Null);
             Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
         }
-
 
         [Test]
         public async Task ShouldHaveUpdatedBookImage()

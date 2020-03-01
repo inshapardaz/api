@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
 {
     [TestFixture]
-    public class WhenDeletingBookAsWriter : FunctionTest
+    public class WhenDeletingBookAsWriter : LibraryTest
     {
         private NoContentResult _response;
 
@@ -32,7 +32,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
             _dataBuilder.AddBookToRecentReads(_expected, Guid.NewGuid());
 
             var handler = Container.GetService<Functions.Library.Books.DeleteBook>();
-            _response = (NoContentResult) await handler.Run(request, NullLogger.Instance, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -99,7 +99,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
         {
             Assert.That(_dataBuilder.DoesBookExistsInFavorites(_expected), Is.False);
         }
-        
 
         [Test]
         public void ShouldBeDeletedFromTheRecentReadBooks()

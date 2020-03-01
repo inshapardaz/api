@@ -9,18 +9,17 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
 {
     [TestFixture]
-    public class WhenDeletingNonExistingBook : FunctionTest
+    public class WhenDeletingNonExistingBook : LibraryTest
     {
         private NoContentResult _response;
-
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
-            
+
             var handler = Container.GetService<Functions.Library.Books.DeleteBook>();
-            _response = (NoContentResult) await handler.Run(request, NullLogger.Instance, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenDeletingSeriesWithPermissions : FunctionTest
+    public class WhenDeletingSeriesWithPermissions : LibraryTest
     {
         private NoContentResult _response;
 
@@ -35,17 +35,18 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         {
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
-            _series = _dataBuilder.Build(4);
+            _series = _dataBuilder.WithLibrary(LibraryId).Build(4);
             _expected = _series.First();
 
             var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();
-            _response = (NoContentResult)await handler.Run(request, NullLogger.Instance, _dataBuilder.Library.Id, _expected.Id, _claim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, NullLogger.Instance, LibraryId, _expected.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
             _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

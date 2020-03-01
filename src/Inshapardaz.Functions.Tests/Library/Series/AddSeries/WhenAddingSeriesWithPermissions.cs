@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenAddingSeriesWithPermissions : FunctionTest
+    public class WhenAddingSeriesWithPermissions : LibraryTest
     {
         private CreatedResult _response;
         private LibraryDataBuilder _builder;
@@ -29,21 +29,18 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<LibraryDataBuilder>();
-            _builder.Build();
-
             var handler = Container.GetService<Functions.Library.Series.AddSeries>();
             var series = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
             var request = new RequestBuilder()
                                             .WithJsonBody(series)
                                             .Build();
-            _response = (CreatedResult)await handler.Run(request, _builder.Library.Id, _claim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            _builder.CleanUp();
+            Cleanup();
         }
 
         [Test]

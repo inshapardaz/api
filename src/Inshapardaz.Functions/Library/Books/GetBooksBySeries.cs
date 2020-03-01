@@ -24,9 +24,10 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetBooksBySeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "series/{seriesId:int}/books")] HttpRequest req,
-            int seriesId, 
-            [AccessToken] ClaimsPrincipal principal, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/series/{seriesId:int}/books")] HttpRequest req,
+            int libraryId,
+            int seriesId,
+            [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
@@ -47,7 +48,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}/books", relType);
 
-        public static LinkView Link(int authorId, int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self) 
+        public static LinkView Link(int authorId, int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self)
             => SelfLink($"authors/{authorId}/books", relType, queryString: new Dictionary<string, string>
             {
                 { "pageNumber", pageNumber.ToString()},

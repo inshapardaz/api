@@ -9,17 +9,17 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
 {
     [TestFixture]
-    public class WhenGettingFavoritesBooksAsUnauthorised : FunctionTest
+    public class WhenGettingFavoritesBooksAsUnauthorised : LibraryTest
     {
         private UnauthorizedResult _response;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
 
             var handler = Container.GetService<Functions.Library.Books.GetFavoriteBooks>();
-            _response = (UnauthorizedResult) await handler.Run(request, NullLogger.Instance, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [Test]

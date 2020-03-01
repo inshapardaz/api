@@ -16,13 +16,13 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenGettingCategoryWithoutWritePermissions : FunctionTest
+    public class WhenGettingCategoryWithoutWritePermissions : LibraryTest
     {
         private OkObjectResult _response;
         private CategoryView _view;
+        private CategoriesDataBuilder _dataBuilder;
         private IEnumerable<CategoryDto> _categories;
         private CategoryDto _selectedCategory;
-        private CategoriesDataBuilder _dataBuilder;
         private readonly ClaimsPrincipal _claim;
 
         public WhenGettingCategoryWithoutWritePermissions(AuthenticationLevel authenticationLevel)
@@ -35,12 +35,12 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var _databuilder = Container.GetService<CategoriesDataBuilder>();
-            _categories = _databuilder.WithBooks(3).Build(4);
+            _dataBuilder = Container.GetService<CategoriesDataBuilder>();
+            _categories = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
             _selectedCategory = _categories.First();
 
             var handler = Container.GetService<Functions.Library.Categories.GetCategoryById>();
-            _response = (OkObjectResult)await handler.Run(request, _databuilder.Library.Id, _selectedCategory.Id, _claim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _selectedCategory.Id, _claim, CancellationToken.None);
 
             _view = _response.Value as CategoryView;
         }
@@ -49,6 +49,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
         public void Teardown()
         {
             _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

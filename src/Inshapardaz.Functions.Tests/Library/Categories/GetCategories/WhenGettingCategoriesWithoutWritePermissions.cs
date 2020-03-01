@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
 {
     [TestFixture(AuthenticationLevel.Reader)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenGettingCategoriesWithoutWritePermissions : FunctionTest
+    public class WhenGettingCategoriesWithoutWritePermissions : LibraryTest
     {
         private OkObjectResult _response;
         private ListView<CategoryView> _view;
@@ -32,10 +32,10 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
             var request = TestHelpers.CreateGetRequest();
 
             _dataBuilder = Container.GetService<CategoriesDataBuilder>();
-            _dataBuilder.WithBooks(3).Build(4);
+            _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             var handler = Container.GetService<Functions.Library.Categories.GetCategories>();
-            _response = (OkObjectResult)await handler.Run(request, _dataBuilder.Library.Id, _claim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
 
             _view = _response.Value as ListView<CategoryView>;
         }
@@ -44,6 +44,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         public void Teardown()
         {
             _dataBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]

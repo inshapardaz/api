@@ -22,9 +22,15 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
             }
         }
 
+        public static void DeleteAuthor(this IDbConnection connection, int authorId)
+        {
+            var sql = "Delete From Library.Author Where Id = @Id";
+            connection.Execute(sql, new { Id = authorId });
+        }
+
         public static void DeleteAuthors(this IDbConnection connection, IEnumerable<AuthorDto> authors)
         {
-            var sql = "Delete From Library.Auhtor Where Id IN @Ids";
+            var sql = "Delete From Library.Author Where Id IN @Ids";
             connection.Execute(sql, new { Ids = authors.Select(a => a.Id) });
         }
 

@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
 {
     [TestFixture]
-    public class WhenGettingBooksByCategoryPageThatDoesNotExist : LibraryTest
+    public class WhenGettingBooksByCategoryPageThatDoesNotExist : LibraryTest<Functions.Library.Books.GetBooksByCategory>
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
@@ -31,7 +31,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
             var category = categoriesBuilder.Build();
             // builder.WithCategory(category).Build(20);
 
-            var handler = Container.GetService<Functions.Library.Books.GetBooksByCategory>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, category.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;

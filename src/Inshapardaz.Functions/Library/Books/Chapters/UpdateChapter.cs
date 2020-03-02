@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("UpdateChapter")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId:int}/chapter/{chapterId:int}")] HttpRequest req, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId:int}/chapter/{chapterId:int}")] HttpRequest req,
             int bookId, int chapterId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
@@ -42,8 +42,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
                 return new ForbidResult("Bearer");
             }
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var chapter = JsonConvert.DeserializeObject<ChapterView>(requestBody);
+            var chapter = await GetBody<ChapterView>(req);
 
             var request = new UpdateChapterRequest(bookId, chapterId, chapter.Map(), principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);

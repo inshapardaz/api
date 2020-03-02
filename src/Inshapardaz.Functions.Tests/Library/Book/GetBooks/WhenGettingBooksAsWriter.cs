@@ -7,13 +7,12 @@ using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
 {
     [TestFixture]
-    public class WhenGettingBooksAsWriter : LibraryTest
+    public class WhenGettingBooksAsWriter : LibraryTest<Functions.Library.Books.GetBooks>
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
@@ -26,7 +25,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
             var builder = Container.GetService<BooksDataBuilder>();
             builder.Build(4);
 
-            var handler = Container.GetService<Functions.Library.Books.GetBooks>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;

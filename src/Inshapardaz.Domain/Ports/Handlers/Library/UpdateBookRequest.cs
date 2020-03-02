@@ -1,14 +1,17 @@
-﻿using System.Threading;
+﻿using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class UpdateBookRequest : RequestBase
+    public class UpdateBookRequest : LibraryAuthorisedCommand
     {
-        public UpdateBookRequest(BookModel book)
+        public UpdateBookRequest(ClaimsPrincipal claims, int libraryId, BookModel book)
+            : base(claims, libraryId)
         {
             Book = book;
         }
@@ -34,20 +37,21 @@ namespace Inshapardaz.Domain.Ports.Library
             _bookRepository = bookRepository;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateBookRequest> HandleAsync(UpdateBookRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _bookRepository.GetBookById(command.Book.Id, cancellationToken);
+            var result = await _bookRepository.GetBookById(command.LibraryId, command.Book.Id, command.UserId, cancellationToken);
 
             if (result == null)
             {
                 var author = command.Book;
                 author.Id = default(int);
-                command.Result.Book =  await  _bookRepository.AddBook(author, cancellationToken);
+                command.Result.Book = await _bookRepository.AddBook(command.LibraryId, author, command.UserId, cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                await _bookRepository.UpdateBook(command.Book, cancellationToken);
+                await _bookRepository.UpdateBook(command.LibraryId, command.Book, cancellationToken);
                 command.Result.Book = command.Book;
             }
 

@@ -42,8 +42,7 @@ namespace Inshapardaz.Functions.Library.Series
                 return new ForbidResult("Bearer");
             }
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var series = JsonConvert.DeserializeObject<SeriesView>(requestBody);
+            var series = await GetBody<SeriesView>(req);
 
             series.Id = seriesId;
             var request = new UpdateSeriesRequest(libraryId, series.Map());

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Inshapardaz.Domain.Models.Dictionaries;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Models.Dictionaries;
 
 namespace Inshapardaz.Domain.Repositories.Dictionaries
 {

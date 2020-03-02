@@ -7,13 +7,12 @@ using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetRecentReadBooks
 {
     [TestFixture]
-    public class WhenGettingRecentBooksAsUser : LibraryTest
+    public class WhenGettingRecentBooksAsUser : LibraryTest<Functions.Library.Books.GetRecentReadBooks>
     {
         private OkObjectResult _response;
         private ListView<BookView> _view;
@@ -26,7 +25,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetRecentReadBooks
             var builder = Container.GetService<BooksDataBuilder>();
             var books = builder.Build(40);
 
-            var handler = Container.GetService<Functions.Library.Books.GetRecentReadBooks>();
             var principal = AuthenticationBuilder.ReaderClaim;
             builder.AddSomeToRecentReads(books, principal.GetUserId(), 15);
 

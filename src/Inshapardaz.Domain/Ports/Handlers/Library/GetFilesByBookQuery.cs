@@ -4,22 +4,21 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetFilesByBookQuery : IQuery<IEnumerable<FileModel>>
+    public class GetFilesByBookQuery : LibraryAuthorisedQuery<IEnumerable<FileModel>>
     {
-        public GetFilesByBookQuery(int bookId, Guid userId)
+        public GetFilesByBookQuery(int libraryId, int bookId, Guid userId)
+            : base(libraryId, userId)
         {
-            UserId = userId;
             BookId = bookId;
         }
 
         public int BookId { get; set; }
-
-        public Guid UserId { get; }
     }
 
     public class GetFilesByBookQueryHandler : QueryHandlerAsync<GetFilesByBookQuery, IEnumerable<FileModel>>
@@ -33,7 +32,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<IEnumerable<FileModel>> ExecuteAsync(GetFilesByBookQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.BookId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
             if (book != null)
             {
                 var files = await _bookRepository.GetFilesByBook(command.BookId, cancellationToken);
@@ -45,4 +44,3 @@ namespace Inshapardaz.Domain.Ports.Library
         }
     }
 }
-

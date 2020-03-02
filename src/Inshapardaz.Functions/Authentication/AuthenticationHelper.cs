@@ -2,19 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Inshapardaz.Domain.Adapters;
 using Newtonsoft.Json;
 
 namespace Inshapardaz.Functions.Authentication
 {
+    public class ClaimsReader : IReadClaims
+    {
+        public bool IsWriter(ClaimsPrincipal claims)
+        {
+            return claims.IsWriter();
+        }
+    }
+
     public static class AuthenticationHelper
     {
-        public static bool IsAuthenticated(this ClaimsPrincipal principal) 
+        public static bool IsAuthenticated(this ClaimsPrincipal principal)
             => principal?.Identity != null && principal.Identity.IsAuthenticated;
 
-        public static bool IsAdministrator(this ClaimsPrincipal principal) 
+        public static bool IsAdministrator(this ClaimsPrincipal principal)
             => IsAuthenticated(principal) && GetRoles(principal).Contains("admin");
 
-        public static bool IsWriter(this ClaimsPrincipal principal) 
+        public static bool IsWriter(this ClaimsPrincipal principal)
             => IsAuthenticated(principal) && (IsAdministrator(principal) || GetRoles(principal).Contains("writer"));
 
         public static bool IsReader(this ClaimsPrincipal principal)
@@ -30,7 +39,7 @@ namespace Inshapardaz.Functions.Authentication
                     return Guid.Parse(nameIdentifier.Replace("auth0|", "00000000"));
                 }
             }
-            
+
             return Guid.Empty;
         }
 

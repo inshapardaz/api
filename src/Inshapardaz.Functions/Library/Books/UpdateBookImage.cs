@@ -27,19 +27,9 @@ namespace Inshapardaz.Functions.Library.Books
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/books/{bookId:int}/image")] HttpRequestMessage req,
             int libraryId,
             int bookId,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token = default)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
             var multipart = await req.Content.ReadAsMultipartAsync(token);
             var content = await req.Content.ReadAsByteArrayAsync();
 
@@ -52,7 +42,7 @@ namespace Inshapardaz.Functions.Library.Books
                 mimeType = fileContent.Headers?.ContentType?.MediaType;
             }
 
-            var request = new UpdateBookImageRequest(bookId)
+            var request = new UpdateBookImageRequest(claims, libraryId, bookId)
             {
                 Image = new Domain.Models.FileModel
                 {
@@ -66,7 +56,7 @@ namespace Inshapardaz.Functions.Library.Books
 
             if (request.Result.HasAddedNew)
             {
-                var response = request.Result.File.Render(principal);
+                var response = request.Result.File.Render(claims);
                 return new CreatedResult(response.Links.Self(), response);
             }
 

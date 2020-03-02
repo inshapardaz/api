@@ -33,7 +33,6 @@ namespace Inshapardaz.Domain.Ports.Library
             _chapterRepository = chapterRepository;
         }
 
-        [BookRequestValidation(1, HandlerTiming.Before)]
         public override async Task<ChapterModel> ExecuteAsync(GetChapterByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             var chapter = await _chapterRepository.GetChapterById(command.ChapterId, cancellationToken);
@@ -47,4 +46,3 @@ namespace Inshapardaz.Domain.Ports.Library
         }
     }
 }
-

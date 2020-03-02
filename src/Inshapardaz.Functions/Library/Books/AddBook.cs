@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Newtonsoft.Json;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Books
@@ -29,26 +28,15 @@ namespace Inshapardaz.Functions.Library.Books
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books")] HttpRequest req,
             int libraryId,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
+            var book = await GetBody<BookView>(req);
 
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var book = JsonConvert.DeserializeObject<BookView>(requestBody);
-
-            var request = new AddBookRequest(book.Map());
+            var request = new AddBookRequest(claims, libraryId, book.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = request.Result.Render(principal);
+            var renderResult = request.Result.Render(claims);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 

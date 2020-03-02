@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Dictionaries;
 using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
@@ -7,10 +9,10 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class DeleteAuthorRequest : LibraryBaseCommand
+    public class DeleteAuthorRequest : LibraryAuthorisedCommand
     {
-        public DeleteAuthorRequest(int libraryId, int authorId)
-            : base(libraryId)
+        public DeleteAuthorRequest(ClaimsPrincipal claims, int libraryId, int authorId)
+            : base(claims, libraryId)
         {
             AuthorId = authorId;
         }
@@ -31,6 +33,7 @@ namespace Inshapardaz.Domain.Ports.Library
             _fileStore = fileStore;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<DeleteAuthorRequest> HandleAsync(DeleteAuthorRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var author = await _authorRepository.GetAuthorById(command.LibraryId, command.AuthorId, cancellationToken);

@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
 {
     [TestFixture]
-    public class WhenUpdatingCategoryWithPermission : LibraryTest
+    public class WhenUpdatingCategoryWithPermission : LibraryTest<Functions.Library.Categories.UpdateCategory>
     {
         private OkObjectResult _response;
         private CategoriesDataBuilder _categoriesBuilder;
@@ -29,7 +29,6 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
         {
             _categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
 
-            var handler = Container.GetService<Functions.Library.Categories.UpdateCategory>();
             _categories = _categoriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             _selectedCategory = _categories.First();

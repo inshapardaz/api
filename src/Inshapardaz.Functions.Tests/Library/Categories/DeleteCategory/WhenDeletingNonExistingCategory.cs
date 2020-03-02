@@ -1,23 +1,20 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
 {
     [TestFixture]
-    public class WhenDeletingNonExistingCategory : LibraryTest
+    public class WhenDeletingNonExistingCategory : LibraryTest<Functions.Library.Categories.DeleteCategory>
     {
         private NoContentResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var handler = Container.GetService<Functions.Library.Categories.DeleteCategory>();
             _response = (NoContentResult)await handler.Run(null, LibraryId, Random.Number, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 

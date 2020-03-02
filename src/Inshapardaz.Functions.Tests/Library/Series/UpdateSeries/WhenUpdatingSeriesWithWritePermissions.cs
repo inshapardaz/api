@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenUpdatingSeriesWithWritePermissions : LibraryTest
+    public class WhenUpdatingSeriesWithWritePermissions : LibraryTest<Functions.Library.Series.UpdateSeries>
     {
         private OkObjectResult _response;
         private SeriesDataBuilder _dataBuilder;
@@ -36,7 +36,6 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
         {
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
 
-            var handler = Container.GetService<Functions.Library.Series.UpdateSeries>();
             _series = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             var selectedSeries = _series.First();

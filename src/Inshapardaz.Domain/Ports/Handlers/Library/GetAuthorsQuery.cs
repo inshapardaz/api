@@ -27,31 +27,17 @@ namespace Inshapardaz.Domain.Ports.Library
     public class GetAuthorsQueryHandler : QueryHandlerAsync<GetAuthorsQuery, Page<AuthorModel>>
     {
         private readonly IAuthorRepository _authorRepository;
-        private readonly IBookRepository _bookRepository;
 
-        public GetAuthorsQueryHandler(IAuthorRepository authorRepository, IBookRepository bookRepository)
+        public GetAuthorsQueryHandler(IAuthorRepository authorRepository)
         {
             _authorRepository = authorRepository;
-            _bookRepository = bookRepository;
         }
 
         public override async Task<Page<AuthorModel>> ExecuteAsync(GetAuthorsQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            Page<AuthorModel> result = null;
-            if (string.IsNullOrWhiteSpace(query.Query))
-            {
-                result = await _authorRepository.GetAuthors(query.LibraryId, query.PageNumber, query.PageSize, cancellationToken);
-            }
-            else
-            {
-                result = await _authorRepository.FindAuthors(query.LibraryId, query.Query, query.PageNumber, query.PageSize, cancellationToken);
-                foreach (var author in result.Data)
-                {
-                    author.BookCount = await _bookRepository.GetBookCountByAuthor(author.Id, cancellationToken);
-                }
-            }
-
-            return result;
+            return (string.IsNullOrWhiteSpace(query.Query))
+             ? await _authorRepository.GetAuthors(query.LibraryId, query.PageNumber, query.PageSize, cancellationToken)
+             : await _authorRepository.FindAuthors(query.LibraryId, query.Query, query.PageNumber, query.PageSize, cancellationToken);
         }
     }
 }

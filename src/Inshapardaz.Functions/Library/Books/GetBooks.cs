@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Books
@@ -34,7 +33,7 @@ namespace Inshapardaz.Functions.Library.Books
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var request = new GetBooksQuery(pageNumber, pageSize, principal.GetUserId()) { Query = query };
+            var request = new GetBooksQuery(libraryId, pageNumber, pageSize, principal.GetUserId()) { Query = query };
             var books = await QueryProcessor.ExecuteAsync(request, cancellationToken: token);
 
             var args = new PageRendererArgs<BookModel>

@@ -2,27 +2,23 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
-using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
 {
     [TestFixture]
-    public class WhenUpdatingSeriesThatDoesNotExist : LibraryTest
+    public class WhenUpdatingSeriesThatDoesNotExist : LibraryTest<Functions.Library.Series.UpdateSeries>
     {
         private CreatedResult _response;
-        private LibraryDataBuilder _builder;
         private SeriesView _expected;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var handler = Container.GetService<Functions.Library.Series.UpdateSeries>();
             _expected = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
             var request = new RequestBuilder()
                                             .WithJsonBody(_expected)

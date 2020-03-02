@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenUpdatingAuthorWithPermission : LibraryTest
+    public class WhenUpdatingAuthorWithPermission : LibraryTest<Functions.Library.Authors.UpdateAuthor>
     {
         private OkObjectResult _response;
         private AuthorsDataBuilder _dataBuilder;
@@ -33,7 +33,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
         {
             _dataBuilder = Container.GetService<AuthorsDataBuilder>();
 
-            var handler = Container.GetService<Functions.Library.Authors.UpdateAuthor>();
             var authors = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             var author = authors.First();

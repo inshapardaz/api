@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
 {
     [TestFixture]
-    public class WhenDeletingAuthorAsAnonymous : LibraryTest
+    public class WhenDeletingAuthorAsAnonymous : LibraryTest<Functions.Library.Authors.DeleteAuthor>
     {
         private AuthorsDataBuilder _builder;
         private UnauthorizedResult _response;
@@ -24,7 +24,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
             var authors = _builder.WithLibrary(LibraryId).Build(4);
             var expected = authors.First();
 
-            var handler = Container.GetService<Functions.Library.Authors.DeleteAuthor>();
             _response = (UnauthorizedResult)await handler.Run(request, LibraryId, expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 

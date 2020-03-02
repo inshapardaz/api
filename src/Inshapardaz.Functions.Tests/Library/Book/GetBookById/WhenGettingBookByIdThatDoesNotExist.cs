@@ -4,14 +4,12 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
 {
     [TestFixture]
-    public class WhenGettingBookByIdThatDoesNotExist : LibraryTest
+    public class WhenGettingBookByIdThatDoesNotExist : LibraryTest<Functions.Library.Books.GetBookById>
     {
         private NotFoundResult _response;
 
@@ -20,7 +18,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var handler = Container.GetService<Functions.Library.Books.GetBookById>();
             _response = (NotFoundResult)await handler.Run(request, LibraryId, new Faker().Random.Int(), AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 

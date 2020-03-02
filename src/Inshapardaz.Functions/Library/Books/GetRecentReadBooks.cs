@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Books
@@ -35,7 +34,7 @@ namespace Inshapardaz.Functions.Library.Books
 
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var query = new GetRecentBooksQuery(principal.GetUserId(), pageSize);
+            var query = new GetRecentBooksQuery(libraryId, principal.GetUserId(), pageSize);
             var books = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             return new OkObjectResult(books.Render(principal, Link));

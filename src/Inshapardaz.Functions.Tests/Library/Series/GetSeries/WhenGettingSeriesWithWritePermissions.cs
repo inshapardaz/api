@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenGettingSeriesWithWritePermissions : LibraryTest
+    public class WhenGettingSeriesWithWritePermissions : LibraryTest<Functions.Library.Series.GetSeries>
     {
         private OkObjectResult _response;
         private ListView<SeriesView> _view;
@@ -34,7 +34,6 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
             _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
-            var handler = Container.GetService<Functions.Library.Series.GetSeries>();
             _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, LibraryId, _claim, CancellationToken.None);
 
             _view = _response.Value as ListView<SeriesView>;

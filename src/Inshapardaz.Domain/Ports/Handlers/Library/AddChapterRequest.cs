@@ -29,12 +29,11 @@ namespace Inshapardaz.Domain.Ports.Library
             _chapterRepository = chapterRepository;
         }
 
-        [BookRequestValidation(1, HandlerTiming.Before)]
         public override async Task<AddChapterRequest> HandleAsync(AddChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            command.Result= await _chapterRepository.AddChapter(command.BookId, command.Chapter, cancellationToken);
+            command.Result = await _chapterRepository.AddChapter(command.BookId, command.Chapter, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }
-    } 
+    }
 }

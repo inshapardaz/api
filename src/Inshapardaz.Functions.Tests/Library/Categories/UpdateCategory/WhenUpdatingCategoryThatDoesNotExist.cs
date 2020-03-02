@@ -2,18 +2,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
-using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
 {
     [TestFixture]
-    public class WhenUpdatingCategoryThatDoesNotExist : LibraryTest
+    public class WhenUpdatingCategoryThatDoesNotExist : LibraryTest<Functions.Library.Categories.UpdateCategory>
     {
         private CreatedResult _response;
         private CategoryView _expectedCategory;
@@ -21,7 +19,6 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var handler = Container.GetService<Functions.Library.Categories.UpdateCategory>();
             var faker = new Faker();
             _expectedCategory = new CategoryView { Id = faker.Random.Number(), Name = faker.Random.String() };
             var request = new RequestBuilder()

@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenDeletingAuthorWithPermission : LibraryTest
+    public class WhenDeletingAuthorWithPermission : LibraryTest<Functions.Library.Authors.DeleteAuthor>
     {
         private NoContentResult _response;
 
@@ -36,7 +36,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
             var authors = _dataBuilder.WithLibrary(LibraryId).Build(4);
             _expected = authors.First();
 
-            var handler = Container.GetService<Functions.Library.Authors.DeleteAuthor>();
             _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.Id, _claim, CancellationToken.None);
         }
 

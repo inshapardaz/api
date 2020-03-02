@@ -3,12 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Authors
@@ -24,22 +24,15 @@ namespace Inshapardaz.Functions.Library.Authors
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/authors/{authorId:int}")] HttpRequest req,
             int libraryId, int authorId,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            if (principal == null)
+            return await Action.Execute(async () =>
             {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
-            var request = new DeleteAuthorRequest(libraryId, authorId);
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-            return new NoContentResult();
+                var request = new DeleteAuthorRequest(claims, libraryId, authorId);
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
+                return new NoContentResult();
+            });
         }
 
         public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}", relType, "DELETE");

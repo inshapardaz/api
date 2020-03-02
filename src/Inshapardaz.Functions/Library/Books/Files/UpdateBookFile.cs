@@ -25,22 +25,13 @@ namespace Inshapardaz.Functions.Library.Books.Files
 
         [FunctionName("UpdateBookFile")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId}/files/{fileId}")] HttpRequestMessage req,
-            int bookId, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/books/{bookId}/files/{fileId}")] HttpRequestMessage req,
+            int libraryId,
+            int bookId,
             int fileId,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
             var multipart = await req.Content.ReadAsMultipartAsync(token);
             var content = await req.Content.ReadAsByteArrayAsync();
 
@@ -53,7 +44,7 @@ namespace Inshapardaz.Functions.Library.Books.Files
                 mimeType = fileContent.Headers?.ContentType?.MediaType;
             }
 
-            var request = new UpdateBookFileRequest(bookId, fileId)
+            var request = new UpdateBookFileRequest(claims, libraryId, bookId, fileId)
             {
                 Content = new FileModel
                 {
@@ -68,7 +59,7 @@ namespace Inshapardaz.Functions.Library.Books.Files
 
             if (request.Result.Content != null)
             {
-                var renderResult = request.Result.Content.Render(principal);
+                var renderResult = request.Result.Content.Render(claims);
 
                 if (request.Result.HasAddedNew)
                 {

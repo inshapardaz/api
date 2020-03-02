@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
 {
     [TestFixture]
-    public class WhenAddingBookFileAsUnauthorized : FunctionTest
+    public class WhenAddingBookFileAsUnauthorized : LibraryTest<Functions.Library.Books.Files.AddBookFile>
     {
         private UnauthorizedResult _response;
         private BooksDataBuilder _dataBuilder;
@@ -22,9 +22,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
 
             var book = _dataBuilder.Build();
             var contents = new Faker().Random.Words(60);
-            var handler = Container.GetService<Functions.Library.Books.Files.AddBookFile>();
             var request = new RequestBuilder().WithBody(contents).BuildRequestMessage();
-            _response = (UnauthorizedResult) await handler.Run(request, book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

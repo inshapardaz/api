@@ -29,26 +29,15 @@ namespace Inshapardaz.Functions.Library.Categories
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "/library/{libraryId}/categories")] HttpRequest req,
             int libraryId,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
+            var category = await GetBody<CategoryView>(req);
 
-            if (!principal.IsAdministrator())
-            {
-                return new ForbidResult("Bearer");
-            }
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var category = JsonConvert.DeserializeObject<CategoryView>(requestBody);
-
-            var request = new AddCategoryRequest(libraryId, category.Map());
+            var request = new AddCategoryRequest(claims, libraryId, category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = request.Result.Render(principal);
+            var renderResult = request.Result.Render(claims);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 

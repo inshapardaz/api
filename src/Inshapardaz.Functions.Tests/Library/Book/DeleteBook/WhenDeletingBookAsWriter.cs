@@ -7,13 +7,12 @@ using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Ports.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
 {
     [TestFixture]
-    public class WhenDeletingBookAsWriter : LibraryTest
+    public class WhenDeletingBookAsWriter : LibraryTest<Functions.Library.Books.DeleteBook>
     {
         private NoContentResult _response;
 
@@ -31,7 +30,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
             _dataBuilder.AddBookToFavorite(_expected, Guid.NewGuid());
             _dataBuilder.AddBookToRecentReads(_expected, Guid.NewGuid());
 
-            var handler = Container.GetService<Functions.Library.Books.DeleteBook>();
             _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 

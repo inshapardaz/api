@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
 {
     [TestFixture]
-    public class WhenUpdatingBookThatDoesNotExist : LibraryTest
+    public class WhenUpdatingBookThatDoesNotExist : LibraryTest<Functions.Library.Books.UpdateBook>
     {
         private CreatedResult _response;
         private BooksDataBuilder _builder;
@@ -24,7 +24,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
             _builder = Container.GetService<BooksDataBuilder>();
             var author = Container.GetService<AuthorsDataBuilder>().Build();
 
-            var handler = Container.GetService<Functions.Library.Books.UpdateBook>();
             var faker = new Faker();
             _expected = new BookView
             {

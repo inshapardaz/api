@@ -22,19 +22,20 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 
         [FunctionName("GetChapterContents")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "book/{bookId:int}/chapters/{chapterId:int}/contents")] HttpRequest req,
-            int bookId, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/book/{bookId:int}/chapters/{chapterId:int}/contents")] HttpRequest req,
+            int libraryId,
+            int bookId,
             int chapterId,
             [AccessToken] ClaimsPrincipal principal = null,
             CancellationToken token = default)
         {
             var contentType = GetHeader(req, "Accept", "text/markdown");
 
-            var query = new GetChapterContentQuery(bookId, chapterId, contentType, principal.GetUserId())
+            var query = new GetChapterContentQuery(libraryId, bookId, chapterId, contentType, principal.GetUserId())
             {
                 UserId = principal.GetUserId()
             };
-            
+
             var chapterContents = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             if (chapterContents != null)
@@ -45,7 +46,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             return new NotFoundResult();
         }
 
-        public static LinkView Link(int bookId, int chapterId, string mimeType, string relType = RelTypes.Self) 
+        public static LinkView Link(int bookId, int chapterId, string mimeType, string relType = RelTypes.Self)
             => SelfLink($"book/{bookId}/chapters/{chapterId}/contents", relType, type: mimeType);
     }
 }

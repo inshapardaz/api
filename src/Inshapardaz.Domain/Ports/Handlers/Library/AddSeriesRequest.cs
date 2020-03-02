@@ -1,16 +1,18 @@
-﻿using System.Threading;
+﻿using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Dictionaries;
 using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class AddSeriesRequest : LibraryBaseCommand
+    public class AddSeriesRequest : LibraryAuthorisedCommand
     {
-        public AddSeriesRequest(int libraryId, SeriesModel series)
-            : base(libraryId)
+        public AddSeriesRequest(ClaimsPrincipal claims, int libraryId, SeriesModel series)
+            : base(claims, libraryId)
         {
             Series = series;
         }
@@ -28,6 +30,7 @@ namespace Inshapardaz.Domain.Ports.Library
             _seriesRepository = seriesRepository;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<AddSeriesRequest> HandleAsync(AddSeriesRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             command.Result = await _seriesRepository.AddSeries(command.LibraryId, command.Series, cancellationToken);

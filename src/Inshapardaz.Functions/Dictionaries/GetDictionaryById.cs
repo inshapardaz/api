@@ -3,7 +3,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Paramore.Brighter;
 using Inshapardaz.Functions.Views;
 using Paramore.Darker;
 using System.Security.Claims;
@@ -42,7 +41,7 @@ namespace Inshapardaz.Functions.Dictionaries
                 }
 
                 return new NotFoundResult();
-            }, principal);
+            });
         }
 
         public static LinkView Link(int dictionaryId, string relType = RelTypes.Self) => SelfLink($"dictionaries/{dictionaryId}", relType, "GET");

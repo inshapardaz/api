@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksBySeries
 {
     [TestFixture]
-    public class WhenGettingBooksBySeriesFirstPage : LibraryTest
+    public class WhenGettingBooksBySeriesFirstPage : LibraryTest<Functions.Library.Books.GetBooksBySeries>
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
@@ -31,7 +31,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksBySeries
             var series = seriesDataBuilder.Build();
             //builder.WithSeries(series).Build(20);
 
-            var handler = Container.GetService<Functions.Library.Books.GetBooksBySeries>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, series.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;

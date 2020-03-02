@@ -9,18 +9,16 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
 {
     [TestFixture]
-    public class WhenAddingBookFileForNonExistingBook : FunctionTest
+    public class WhenAddingBookFileForNonExistingBook : LibraryTest<Functions.Library.Books.Files.AddBookFile>
     {
         private BadRequestResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-
             var contents = new Faker().Random.Words(60);
-            var handler = Container.GetService<Functions.Library.Books.Files.AddBookFile>();
             var request = new RequestBuilder().WithBody(contents).BuildRequestMessage();
-            _response = (BadRequestResult) await handler.Run(request, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (BadRequestResult)await handler.Run(request, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

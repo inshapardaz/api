@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
 {
     [TestFixture]
-    public class WhenGettingCategoryByIdUnauthorised : LibraryTest
+    public class WhenGettingCategoryByIdUnauthorised : LibraryTest<Functions.Library.Categories.GetCategoryById>
     {
         private OkObjectResult _response;
         private CategoryView _view;
@@ -31,7 +31,6 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
             _categories = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
             _selectedCategory = _categories.First();
 
-            var handler = Container.GetService<Functions.Library.Categories.GetCategoryById>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, _selectedCategory.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as CategoryView;

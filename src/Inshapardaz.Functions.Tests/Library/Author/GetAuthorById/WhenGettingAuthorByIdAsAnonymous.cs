@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
 {
     [TestFixture]
-    public class WhenGettingAuthorByIdAsAnonymous : LibraryTest
+    public class WhenGettingAuthorByIdAsAnonymous : LibraryTest<Functions.Library.Authors.GetAuthorById>
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
@@ -28,7 +28,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
             var authors = _builder.WithLibrary(LibraryId).Build(4);
             _expected = authors.First();
 
-            var handler = Container.GetService<Functions.Library.Authors.GetAuthorById>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as AuthorView;

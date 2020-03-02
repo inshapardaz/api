@@ -33,22 +33,11 @@ namespace Inshapardaz.Functions.Library.Books
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var book = JsonConvert.DeserializeObject<BookView>(requestBody);
+            var book = await GetBody<BookView>(req);
 
             book.Id = bookId;
 
-            var request = new UpdateBookRequest(book.Map());
+            var request = new UpdateBookRequest(principal, libraryId, book.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = request.Result.Book.Render(principal);

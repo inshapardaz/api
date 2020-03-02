@@ -8,6 +8,7 @@ namespace Inshapardaz.Ports.Database
     public static class DatabaseMappingProfile
     {
         #region Dictionary
+
         public static Entities.Dictionaries.Dictionary Map(this DictionaryModel source)
         => source == null ? null : new Entities.Dictionaries.Dictionary
         {
@@ -28,10 +29,11 @@ namespace Inshapardaz.Ports.Database
             UserId = source.UserId
         };
 
-        #endregion
+        #endregion Dictionary
 
         #region DictionaryDownload
-        public static Entities.Dictionaries.DictionaryDownload Map(this DictionaryDownload source) 
+
+        public static Entities.Dictionaries.DictionaryDownload Map(this DictionaryDownload source)
         => source == null ? null : new Entities.Dictionaries.DictionaryDownload
         {
             Id = source.Id,
@@ -47,10 +49,12 @@ namespace Inshapardaz.Ports.Database
             MimeType = source.MimeType,
             File = source.File?.FileName
         };
-        #endregion
+
+        #endregion DictionaryDownload
 
         #region File
-        public static Entities.File Map(this FileModel source) 
+
+        public static Entities.File Map(this FileModel source)
         => source == null ? null : new Entities.File
         {
             Id = source.Id,
@@ -60,7 +64,7 @@ namespace Inshapardaz.Ports.Database
             FilePath = source.FilePath
         };
 
-        public static FileModel Map(this Entities.File source) 
+        public static FileModel Map(this Entities.File source)
         => source == null ? null : new FileModel
         {
             Id = source.Id,
@@ -70,8 +74,8 @@ namespace Inshapardaz.Ports.Database
             FilePath = source.FilePath
         };
 
-        #endregion
-        
+        #endregion File
+
         #region Word
 
         public static Entities.Dictionaries.Word Map(this WordModel source)
@@ -107,8 +111,8 @@ namespace Inshapardaz.Ports.Database
             WordRelationRelatedWord = source.WordRelationRelatedWord.Select(m => m.Map())?.ToArray(),
             WordRelationSourceWord = source.WordRelationSourceWord?.Select(m => m.Map())?.ToArray()
         };
-        
-        #endregion
+
+        #endregion Word
 
         #region Meaning
 
@@ -132,9 +136,10 @@ namespace Inshapardaz.Ports.Database
             WordId = source.WordId
         };
 
-        #endregion
+        #endregion Meaning
 
         #region Translation
+
         public static Entities.Dictionaries.Translation Map(this Translation source)
         => source == null ? null : new Entities.Dictionaries.Translation
         {
@@ -155,7 +160,7 @@ namespace Inshapardaz.Ports.Database
             WordId = source.WordId
         };
 
-        #endregion
+        #endregion Translation
 
         #region WordRelation
 
@@ -175,12 +180,12 @@ namespace Inshapardaz.Ports.Database
             RelatedWordId = source.RelatedWordId,
             RelationType = source.RelationType,
             SourceWordId = source.SourceWordId,
-
         };
 
-        #endregion
-        
+        #endregion WordRelation
+
         #region Category
+
         public static Entities.Library.Category Map(this CategoryModel source)
         => source == null ? null : new Entities.Library.Category
         {
@@ -201,9 +206,11 @@ namespace Inshapardaz.Ports.Database
             Id = source.CategoryId,
             Name = source.Category?.Name
         };
-        #endregion
-        
-        #region  Series
+
+        #endregion Category
+
+        #region Series
+
         public static Entities.Library.Series Map(this SeriesModel source)
         => source == null ? null : new Entities.Library.Series
         {
@@ -222,9 +229,10 @@ namespace Inshapardaz.Ports.Database
             ImageId = source.ImageId
         };
 
-        #endregion
+        #endregion Series
 
         #region Author
+
         public static Entities.Library.Author Map(this AuthorModel source)
         => source == null ? null : new Entities.Library.Author
         {
@@ -240,54 +248,58 @@ namespace Inshapardaz.Ports.Database
             Name = source.Name,
             ImageId = source.ImageId
         };
-        #endregion
 
-        #region  Book
+        #endregion Author
+
+        #region Book
+
         public static Entities.Library.Book Map(this BookModel source)
         => source == null ? null : new Entities.Library.Book
         {
-                Id = source.Id,
-                Title = source.Title,
-                Description = source.Description,
-                AuthorId = source.AuthorId,
-                IsPublic = source.IsPublic,
-                Language = source.Language,
-                ImageId = source.ImageId,
-                DateAdded = source.DateAdded,
-                DateUpdated = source.DateUpdated,
-                SeriesId = source.SeriesId,
-                SeriesIndex = source.SeriesIndex,
-                Copyrights = source.Copyrights,
-                Status = source.Status,
-                YearPublished = source.YearPublished,
-                IsPublished = source.IsPublished
+            Id = source.Id,
+            Title = source.Title,
+            Description = source.Description,
+            AuthorId = source.AuthorId,
+            IsPublic = source.IsPublic,
+            Language = source.Language,
+            ImageId = source.ImageId,
+            DateAdded = source.DateAdded,
+            DateUpdated = source.DateUpdated,
+            SeriesId = source.SeriesId,
+            SeriesIndex = source.SeriesIndex,
+            Copyrights = source.Copyrights,
+            Status = source.Status,
+            YearPublished = source.YearPublished,
+            IsPublished = source.IsPublished
         };
 
         public static BookModel Map(this Entities.Library.Book source)
         => source == null ? null : new BookModel
         {
-                Id = source.Id,
-                Title = source.Title,
-                Description = source.Description,
-                AuthorId = source.AuthorId,
-                IsPublic = source.IsPublic,
-                Language = source.Language,
-                Categories = source.BookCategory.Select(c => c.MapFromBookCategory()).ToArray(),
-                ImageId = source.ImageId,
-                DateAdded = source.DateAdded,
-                DateUpdated = source.DateUpdated,
-                SeriesId = source.SeriesId,
-                SeriesIndex = source.SeriesIndex,
-                Copyrights = source.Copyrights,
-                Status = source.Status,
-                YearPublished = source.YearPublished,
-                IsPublished = source.IsPublished,
-                SeriesName = source.Series?.Name,
-                AuthorName = source.Author?.Name
+            Id = source.Id,
+            Title = source.Title,
+            Description = source.Description,
+            AuthorId = source.AuthorId,
+            IsPublic = source.IsPublic,
+            Language = source.Language,
+            Categories = source.BookCategory.Select(c => c.MapFromBookCategory()).ToList(),
+            ImageId = source.ImageId,
+            DateAdded = source.DateAdded,
+            DateUpdated = source.DateUpdated,
+            SeriesId = source.SeriesId,
+            SeriesIndex = source.SeriesIndex,
+            Copyrights = source.Copyrights,
+            Status = source.Status,
+            YearPublished = source.YearPublished,
+            IsPublished = source.IsPublished,
+            SeriesName = source.Series?.Name,
+            AuthorName = source.Author?.Name
         };
-        #endregion
+
+        #endregion Book
 
         #region Chapter
+
         public static Entities.Library.Chapter Map(this ChapterModel source)
         => source == null ? null : new Entities.Library.Chapter
         {
@@ -303,11 +315,13 @@ namespace Inshapardaz.Ports.Database
             Id = source.Id,
             Title = source.Title,
             BookId = source.BookId,
-            ChapterNumber =source.ChapterNumber
+            ChapterNumber = source.ChapterNumber
         };
-        #endregion
+
+        #endregion Chapter
 
         #region ChaterContent
+
         public static Entities.Library.ChapterContent Map(this ChapterContentModel source)
         => source == null ? null : new Entities.Library.ChapterContent
         {
@@ -322,12 +336,13 @@ namespace Inshapardaz.Ports.Database
             Id = source.Id,
             ChapterId = source.ChapterId,
             MimeType = source.MimeType,
-            BookId = source.Chapter?.BookId??0
+            BookId = source.Chapter?.BookId ?? 0
         };
 
-        #endregion
+        #endregion ChaterContent
 
         #region Periodical
+
         public static Entities.Library.Periodical Map(this Periodical source)
         => source == null ? null : new Entities.Library.Periodical
         {
@@ -348,9 +363,10 @@ namespace Inshapardaz.Ports.Database
             CategoryId = source.CategoryId
         };
 
-        #endregion
+        #endregion Periodical
 
-        #region  Issue
+        #region Issue
+
         public static Entities.Library.Issue Map(this Issue source)
         => source == null ? null : new Entities.Library.Issue
         {
@@ -372,9 +388,11 @@ namespace Inshapardaz.Ports.Database
             ImageId = source.ImageId,
             PeriodicalId = source.PeriodicalId
         };
-        #endregion
+
+        #endregion Issue
 
         #region Article
+
         public static Entities.Library.Article Map(this Article source)
         => source == null ? null : new Entities.Library.Article
         {
@@ -396,6 +414,7 @@ namespace Inshapardaz.Ports.Database
             AuthorId = source.AuthorId,
             IssueId = source.IssueId
         };
-        #endregion
+
+        #endregion Article
     }
 }

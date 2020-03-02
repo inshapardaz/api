@@ -2,18 +2,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
-using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
 {
     [TestFixture]
-    public class WhenUpdatingAuthorThatDoesNotExist : LibraryTest
+    public class WhenUpdatingAuthorThatDoesNotExist : LibraryTest<Functions.Library.Authors.UpdateAuthor>
     {
         private CreatedResult _response;
         private AuthorView _expected;
@@ -21,7 +19,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var handler = Container.GetService<Functions.Library.Authors.UpdateAuthor>();
             _expected = new AuthorView { Name = new Faker().Random.String() };
 
             var request = new RequestBuilder()

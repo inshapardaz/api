@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -15,7 +14,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
 {
     [TestFixture]
-    public class WhenGettingCategoryByIdWithPermission : LibraryTest
+    public class WhenGettingCategoryByIdWithPermission : LibraryTest<Functions.Library.Categories.GetCategoryById>
     {
         private OkObjectResult _response;
         private CategoryView _view;
@@ -31,7 +30,6 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
             _categories = _dataBuilder.WithLibrary(LibraryId).Build(4);
             _selectedCategory = _categories.PickRandom();
 
-            var handler = Container.GetService<Functions.Library.Categories.GetCategoryById>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as CategoryView;

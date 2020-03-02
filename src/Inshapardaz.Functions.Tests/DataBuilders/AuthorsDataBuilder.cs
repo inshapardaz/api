@@ -53,8 +53,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         public IEnumerable<AuthorDto> Build(int count)
         {
-            var authors = new List<AuthorDto>();
             var fixture = new Fixture();
+
+            var authors = new List<AuthorDto>();
 
             for (int i = 0; i < count; i++)
             {

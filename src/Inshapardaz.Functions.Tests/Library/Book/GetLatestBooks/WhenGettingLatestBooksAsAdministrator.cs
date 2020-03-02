@@ -7,13 +7,12 @@ using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
 {
     [TestFixture]
-    public class WhenGettingLatestBooksAsAdministrator : LibraryTest
+    public class WhenGettingLatestBooksAsAdministrator : LibraryTest<Functions.Library.Books.GetLatestBooks>
     {
         private OkObjectResult _response;
         private ListView<BookView> _view;
@@ -26,7 +25,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
             var builder = Container.GetService<BooksDataBuilder>();
             builder.Build(40);
 
-            var handler = Container.GetService<Functions.Library.Books.GetLatestBooks>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<BookView>;

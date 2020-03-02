@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
 {
     [TestFixture]
-    public class WhenGettingLatestBooksAsWriter : LibraryTest
+    public class WhenGettingLatestBooksAsWriter : LibraryTest<Functions.Library.Books.GetLatestBooks>
     {
         private OkObjectResult _response;
         private ListView<BookView> _view;
@@ -25,7 +25,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
             var builder = Container.GetService<BooksDataBuilder>();
             builder.Build(40);
 
-            var handler = Container.GetService<Functions.Library.Books.GetLatestBooks>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<BookView>;

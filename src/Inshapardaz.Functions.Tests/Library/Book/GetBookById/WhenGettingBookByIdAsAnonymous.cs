@@ -6,13 +6,12 @@ using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
 {
     [TestFixture]
-    public class WhenGettingBookByIdAsAnonymous : LibraryTest
+    public class WhenGettingBookByIdAsAnonymous : LibraryTest<Functions.Library.Books.GetBookById>
     {
         private OkObjectResult _response;
         private BookView _view;
@@ -26,7 +25,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
             var books = builder.Build(4);
             _expected = books.First();
 
-            var handler = Container.GetService<Functions.Library.Books.GetBookById>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as BookView;

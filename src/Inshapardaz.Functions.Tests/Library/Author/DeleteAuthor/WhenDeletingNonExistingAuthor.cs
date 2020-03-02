@@ -2,13 +2,12 @@
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
 {
     [TestFixture]
-    public class WhenDeletingNonExistingAuthor : LibraryTest
+    public class WhenDeletingNonExistingAuthor : LibraryTest<Functions.Library.Authors.DeleteAuthor>
     {
         private NoContentResult _response;
 
@@ -17,7 +16,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var handler = Container.GetService<Functions.Library.Authors.DeleteAuthor>();
             _response = (NoContentResult)await handler.Run(request, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 

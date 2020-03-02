@@ -42,8 +42,7 @@ namespace Inshapardaz.Functions.Library.Authors
                 return new ForbidResult("Bearer");
             }
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var author = JsonConvert.DeserializeObject<AuthorView>(requestBody);
+            var author = await GetBody<AuthorView>(req);
 
             author.Id = authorId;
 

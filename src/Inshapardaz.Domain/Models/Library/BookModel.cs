@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public string Description { get; set; }
 
-        public IEnumerable<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
+        public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
 
         public Languages Language { get; set; }
 
@@ -44,5 +44,7 @@ namespace Inshapardaz.Domain.Models.Library
         public bool IsPublished { get; set; }
 
         public bool IsFavorite { get; set; }
+
+        public int LibraryId { get; set; }
     }
 }

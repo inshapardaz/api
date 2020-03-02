@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public string MimeType { get; set; }
 
-        public ChapterContentModel Result { get; set; } 
+        public ChapterContentModel Result { get; set; }
     }
 
     public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterContentRequest>
@@ -35,7 +35,6 @@ namespace Inshapardaz.Domain.Ports.Library
             _chapterRepository = chapterRepository;
         }
 
-        [BookRequestValidation(1, HandlerTiming.Before)]
         public override async Task<AddChapterContentRequest> HandleAsync(AddChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var chapter = await _chapterRepository.GetChapterById(command.ChapterId, cancellationToken);
@@ -46,5 +45,5 @@ namespace Inshapardaz.Domain.Ports.Library
 
             return await base.HandleAsync(command, cancellationToken);
         }
-    } 
+    }
 }

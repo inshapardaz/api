@@ -3,7 +3,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Paramore.Brighter;
 using Paramore.Darker;
 using Inshapardaz.Functions.Authentication;
 using System.Security.Claims;

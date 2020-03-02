@@ -6,18 +6,20 @@ using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetRecentBooksQuery : IQuery<IEnumerable<BookModel>>
+    public class GetRecentBooksQuery : LibraryBaseQuery<IEnumerable<BookModel>>
     {
-        public GetRecentBooksQuery(Guid userId, int count)
+        public GetRecentBooksQuery(int libraryId, Guid userId, int count)
+            : base(libraryId)
         {
             UserId = userId;
             Count = count;
         }
 
-        public Guid UserId {get; }
+        public Guid UserId { get; }
 
         public int Count { get; }
     }
@@ -25,33 +27,15 @@ namespace Inshapardaz.Domain.Ports.Library
     public class GetRecentBooksQueryHandler : QueryHandlerAsync<GetRecentBooksQuery, IEnumerable<BookModel>>
     {
         private readonly IBookRepository _bookRepository;
-        private readonly IFavoriteRepository _favoriteRepository;
 
-        public GetRecentBooksQueryHandler(IBookRepository bookRepository, IFavoriteRepository favoriteRepository)
+        public GetRecentBooksQueryHandler(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
-            _favoriteRepository = favoriteRepository;
         }
 
         public override async Task<IEnumerable<BookModel>> ExecuteAsync(GetRecentBooksQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (command.UserId == Guid.Empty)
-            {
-                throw new NotFoundException();
-            }
-
-            var books = await _bookRepository.GetRecentBooksByUser(command.UserId, command.Count, cancellationToken);
-            return await MarkFavorites(books, command.UserId, cancellationToken);
-        }
-
-        private async Task<IEnumerable<BookModel>> MarkFavorites(IEnumerable<BookModel> books, Guid userId, CancellationToken cancellationToken)
-        {
-            foreach (var book in books)
-            {
-                book.IsFavorite = await _favoriteRepository.IsBookFavorite(userId, book.Id, cancellationToken);
-            }
-
-            return books;
+            return await _bookRepository.GetRecentBooksByUser(command.LibraryId, command.UserId, command.Count, cancellationToken);
         }
     }
 }

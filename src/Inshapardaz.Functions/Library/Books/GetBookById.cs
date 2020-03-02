@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 using Paramore.Darker;
 
 namespace Inshapardaz.Functions.Library.Books
@@ -29,7 +28,7 @@ namespace Inshapardaz.Functions.Library.Books
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-            var request = new GetBookByIdQuery(bookId, principal.GetUserId());
+            var request = new GetBookByIdQuery(libraryId, bookId, principal.GetUserId());
             var book = await QueryProcessor.ExecuteAsync(request, cancellationToken: token);
 
             if (book != null)

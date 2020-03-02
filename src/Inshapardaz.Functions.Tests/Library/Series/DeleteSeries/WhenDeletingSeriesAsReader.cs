@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
 {
     [TestFixture]
-    public class WhenDeletingSeriesAsReader : LibraryTest
+    public class WhenDeletingSeriesAsReader : LibraryTest<Functions.Library.Series.DeleteSeries>
     {
         private ForbidResult _response;
 
@@ -23,7 +23,6 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
             var series = builder.WithLibrary(LibraryId).Build(4);
             var expected = series.First();
 
-            var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();
             _response = (ForbidResult)await handler.Run(request, NullLogger.Instance, LibraryId, expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 

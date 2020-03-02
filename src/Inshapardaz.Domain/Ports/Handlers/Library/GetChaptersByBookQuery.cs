@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetChaptersByBookQuery : IQuery<IEnumerable<ChapterModel>>
+    public class GetChaptersByBookQuery : LibraryAuthorisedQuery<IEnumerable<ChapterModel>>
     {
-        public GetChaptersByBookQuery(int bookId, Guid userId)
+        public GetChaptersByBookQuery(int libraryId, int bookId, Guid userId)
+            : base(libraryId, userId)
         {
-            UserId = userId;
             BookId = bookId;
         }
 
         public int BookId { get; set; }
-
-        public Guid UserId { get; set; }
     }
 
     public class GetChaptersByBookQuerytHandler : QueryHandlerAsync<GetChaptersByBookQuery, IEnumerable<ChapterModel>>
@@ -34,10 +32,9 @@ namespace Inshapardaz.Domain.Ports.Library
             _chapterRepository = chapterRepository;
         }
 
-        [BookRequestValidation(1, HandlerTiming.Before)]
         public override async Task<IEnumerable<ChapterModel>> ExecuteAsync(GetChaptersByBookQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.BookId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
             if (book == null) return null;
 
             var chapters = await _chapterRepository.GetChaptersByBook(command.BookId, cancellationToken);

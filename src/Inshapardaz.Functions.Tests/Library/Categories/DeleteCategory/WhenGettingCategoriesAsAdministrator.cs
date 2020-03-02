@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -13,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
 {
     [TestFixture]
-    public class WhenDeletingCategoryAsAdministrator : LibraryTest
+    public class WhenDeletingCategoryAsAdministrator : LibraryTest<Functions.Library.Categories.DeleteCategory>
     {
         private NoContentResult _response;
 
@@ -29,7 +28,6 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
             _categories = _dataBuilder.WithLibrary(LibraryId).Build(4);
             _selectedCategory = _categories.PickRandom();
 
-            var handler = Container.GetService<Functions.Library.Categories.DeleteCategory>();
             _response = (NoContentResult)await handler.Run(request, LibraryId, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 

@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 {
     // TODO : Add tests for pagination
     [TestFixture]
-    public class WhenSearchingAuthors : LibraryTest
+    public class WhenSearchingAuthors : LibraryTest<Functions.Library.Authors.GetAuthors>
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
@@ -32,7 +32,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
                .WithQueryParameter("query", _searchedAuthor.Name)
                .Build();
 
-            var handler = Container.GetService<Functions.Library.Authors.GetAuthors>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _view = _response.Value as PageView<AuthorView>;

@@ -46,7 +46,7 @@ namespace Inshapardaz.Functions.Mappings
                 Status = (BookStatuses)source.Status,
                 YearPublished = source.YearPublished,
                 IsPublished = source.IsPublished,
-                Categories = source.Categories?.Select(c => c.Map())
+                Categories = source.Categories?.Select(c => c.Map()).ToList()
             };
     }
 }

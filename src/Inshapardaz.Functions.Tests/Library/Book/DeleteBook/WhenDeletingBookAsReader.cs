@@ -5,13 +5,12 @@ using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
 {
     [TestFixture]
-    public class WhenDeletingBookAsReader : LibraryTest
+    public class WhenDeletingBookAsReader : LibraryTest<Functions.Library.Books.DeleteBook>
     {
         private ForbidResult _response;
 
@@ -23,7 +22,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
             var books = builder.Build(4);
             var expected = books.First();
 
-            var handler = Container.GetService<Functions.Library.Books.DeleteBook>();
             _response = (ForbidResult)await handler.Run(request, LibraryId, expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 

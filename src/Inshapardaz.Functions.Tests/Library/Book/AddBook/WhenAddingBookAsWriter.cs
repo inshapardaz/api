@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
 {
     [TestFixture]
-    public class WhenAddingBookAsWriter : LibraryTest
+    public class WhenAddingBookAsWriter : LibraryTest<Functions.Library.Books.AddBook>
     {
         private CreatedResult _response;
         private BooksDataBuilder _builder;
@@ -34,7 +34,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
                                           Id = c.Id
                                       });
 
-            var handler = Container.GetService<Functions.Library.Books.AddBook>();
             _request = new Faker<BookView>()
                        .RuleFor(c => c.Id, 0)
                        .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))

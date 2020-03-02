@@ -1,5 +1,4 @@
-﻿using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Models.Dictionaries;
+﻿using Inshapardaz.Domain.Models.Dictionaries;
 using Inshapardaz.Functions.Views.Dictionaries;
 
 namespace Inshapardaz.Functions.Mappings

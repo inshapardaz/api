@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
 {
     [TestFixture]
-    public class WhenGettingSeriesByIdAsReader : LibraryTest
+    public class WhenGettingSeriesByIdAsReader : LibraryTest<Functions.Library.Series.GetSeriesById>
     {
         private OkObjectResult _response;
         private SeriesView _view;
@@ -31,7 +31,6 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
             var series = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
             _selectedSeries = series.PickRandom();
 
-            var handler = Container.GetService<Functions.Library.Series.GetSeriesById>();
             _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, LibraryId, _selectedSeries.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _view = _response.Value as SeriesView;

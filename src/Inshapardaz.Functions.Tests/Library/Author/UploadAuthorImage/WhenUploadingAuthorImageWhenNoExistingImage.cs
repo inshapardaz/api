@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
 {
     [TestFixture]
-    public class WhenUploadingAuthorImageWhenNoExistingImage : LibraryTest
+    public class WhenUploadingAuthorImageWhenNoExistingImage : LibraryTest<Functions.Library.Authors.UpdateAuthorImage>
     {
         private CreatedResult _response;
         private AuthorsDataBuilder _builder;
@@ -23,7 +23,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
             _builder = Container.GetService<AuthorsDataBuilder>();
 
             var author = _builder.WithLibrary(LibraryId).WithoutImage().Build();
-            var handler = Container.GetService<Functions.Library.Authors.UpdateAuthorImage>();
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
             _response = (CreatedResult)await handler.Run(request, LibraryId, author.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }

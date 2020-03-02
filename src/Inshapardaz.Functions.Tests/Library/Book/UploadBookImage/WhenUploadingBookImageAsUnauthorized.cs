@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
 {
     [TestFixture]
-    public class WhenUploadingBookImageAsUnauthorized : LibraryTest
+    public class WhenUploadingBookImageAsUnauthorized : LibraryTest<Functions.Library.Books.UpdateBookImage>
     {
         private UnauthorizedResult _response;
         private BooksDataBuilder _builder;
@@ -29,7 +29,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
             _bookId = book.Id;
             var imageUrl = _builder.GetBookImageUrl(_bookId);
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
-            var handler = Container.GetService<Functions.Library.Books.UpdateBookImage>();
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
             _response = (UnauthorizedResult)await handler.Run(request, LibraryId, _bookId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }

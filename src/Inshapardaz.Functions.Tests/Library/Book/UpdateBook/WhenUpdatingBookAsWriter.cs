@@ -10,7 +10,6 @@ using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
-using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -18,7 +17,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
 {
     [TestFixture]
-    public class WhenUpdatingBookAsWriter : LibraryTest
+    public class WhenUpdatingBookAsWriter : LibraryTest<Functions.Library.Books.UpdateBook>
     {
         private OkObjectResult _response;
         private BooksDataBuilder _dataBuilder;
@@ -34,8 +33,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
             _dataBuilder = Container.GetService<BooksDataBuilder>();
             var authorBuilder = Container.GetService<AuthorsDataBuilder>();
             _categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
-
-            var handler = Container.GetService<Functions.Library.Books.UpdateBook>();
 
             _otherAuthor = authorBuilder.Build();
             _categories = _categoriesBuilder.Build(3);

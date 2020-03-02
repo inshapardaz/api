@@ -1,27 +1,23 @@
 ﻿using System.Net;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
-using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
 {
     [TestFixture]
-    public class WhenAddingCategoryWithPermissions : LibraryTest
+    public class WhenAddingCategoryWithPermissions : LibraryTest<Functions.Library.Categories.AddCategory>
     {
         private CreatedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var handler = Container.GetService<Functions.Library.Categories.AddCategory>();
             var category = new CategoryView { Name = new Faker().Random.String() };
             var request = new RequestBuilder()
                                             .WithJsonBody(category)

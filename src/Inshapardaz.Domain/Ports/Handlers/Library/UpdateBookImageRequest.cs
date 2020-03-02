@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -10,9 +12,10 @@ using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class UpdateBookImageRequest : RequestBase
+    public class UpdateBookImageRequest : LibraryAuthorisedCommand
     {
-        public UpdateBookImageRequest(int bookId)
+        public UpdateBookImageRequest(ClaimsPrincipal claims, int libraryId, int bookId)
+            : base(claims, libraryId)
         {
             BookId = bookId;
         }
@@ -44,9 +47,10 @@ namespace Inshapardaz.Domain.Ports.Library
             _fileStorage = fileStorage;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateBookImageRequest> HandleAsync(UpdateBookImageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.BookId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
 
             if (book == null)
             {
@@ -76,7 +80,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 command.Result.HasAddedNew = true;
 
                 book.ImageId = command.Result.File.Id;
-                await _bookRepository.UpdateBook(book, cancellationToken);
+                await _bookRepository.UpdateBook(command.LibraryId, book, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

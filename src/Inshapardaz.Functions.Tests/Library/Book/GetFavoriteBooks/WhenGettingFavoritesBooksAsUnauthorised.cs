@@ -2,14 +2,12 @@
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
 {
     [TestFixture]
-    public class WhenGettingFavoritesBooksAsUnauthorised : LibraryTest
+    public class WhenGettingFavoritesBooksAsUnauthorised : LibraryTest<Functions.Library.Books.GetFavoriteBooks>
     {
         private UnauthorizedResult _response;
 
@@ -18,7 +16,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var handler = Container.GetService<Functions.Library.Books.GetFavoriteBooks>();
             _response = (UnauthorizedResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 

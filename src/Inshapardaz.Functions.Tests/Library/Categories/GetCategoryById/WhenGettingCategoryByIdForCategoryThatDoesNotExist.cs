@@ -4,13 +4,12 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
 {
     [TestFixture]
-    public class WhenGettingCategoryByIdForCategoryThatDoesNotExist : FunctionTest
+    public class WhenGettingCategoryByIdForCategoryThatDoesNotExist : LibraryTest<Functions.Library.Categories.GetCategoryById>
     {
         private NotFoundResult _response;
 
@@ -19,7 +18,6 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var handler = Container.GetService<Functions.Library.Categories.GetCategoryById>();
             _response = (NotFoundResult)await handler.Run(request, 0, new Faker().Random.Int(), AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 

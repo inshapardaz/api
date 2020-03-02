@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
 {
     [TestFixture]
-    public class WhenGettingCategoriesWithPermission : LibraryTest
+    public class WhenGettingCategoriesWithPermission : LibraryTest<Functions.Library.Categories.GetCategories>
     {
         private OkObjectResult _response;
         private ListView<CategoryView> _view;
@@ -24,7 +24,6 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
             _dataBuilder = Container.GetService<CategoriesDataBuilder>();
             _dataBuilder.WithLibrary(LibraryId).Build(4);
 
-            var handler = Container.GetService<Functions.Library.Categories.GetCategories>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<CategoryView>;

@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
 {
     [TestFixture]
-    public class WhenDeletingSeriesAsAnonymous : LibraryTest
+    public class WhenDeletingSeriesAsAnonymous : LibraryTest<Functions.Library.Series.DeleteSeries>
     {
         private UnauthorizedResult _response;
 
@@ -22,7 +22,6 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
             var builder = Container.GetService<SeriesDataBuilder>();
             var series = builder.WithLibrary(LibraryId).Build();
 
-            var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();
             _response = (UnauthorizedResult)await handler.Run(request, NullLogger.Instance, LibraryId, series.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 

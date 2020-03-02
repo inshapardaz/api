@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Library.Files
 {
     public class AddFile : CommandBase
     {
-        public AddFile(IAmACommandProcessor commandProcessor) 
+        public AddFile(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
         }
@@ -30,19 +30,9 @@ namespace Inshapardaz.Functions.Library.Files
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "files")]
             HttpRequestMessage req,
             ILogger log,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
             var multipart = await req.Content.ReadAsMultipartAsync(token);
             var content = await req.Content.ReadAsByteArrayAsync();
 
@@ -69,7 +59,7 @@ namespace Inshapardaz.Functions.Library.Files
                 return new InternalServerErrorResult();
             }
 
-            var response = request.Response.Render(principal);
+            var response = request.Response.Render(claims);
             return new CreatedResult(response.Links.Self(), response);
         }
 

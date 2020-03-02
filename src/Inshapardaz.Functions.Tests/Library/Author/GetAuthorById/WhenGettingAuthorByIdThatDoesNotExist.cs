@@ -3,13 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
 {
     [TestFixture]
-    public class WhenGettingAuthorByIdThatDoesNotExist : LibraryTest
+    public class WhenGettingAuthorByIdThatDoesNotExist : LibraryTest<Functions.Library.Authors.GetAuthorById>
     {
         private NotFoundResult _response;
 
@@ -18,7 +17,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var handler = Container.GetService<Functions.Library.Authors.GetAuthorById>();
             _response = (NotFoundResult)await handler.Run(request, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 

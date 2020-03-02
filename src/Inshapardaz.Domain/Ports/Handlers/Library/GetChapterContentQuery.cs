@@ -2,14 +2,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetChapterContentQuery : IQuery<ChapterContentModel>
+    public class GetChapterContentQuery : LibraryBaseQuery<ChapterContentModel>
     {
-        public GetChapterContentQuery(int bookId, int chapterId, string mimeType, Guid userId)
+        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string mimeType, Guid userId)
+            : base(libraryId)
         {
             UserId = userId;
             BookId = bookId;
@@ -20,7 +22,7 @@ namespace Inshapardaz.Domain.Ports.Library
         public int BookId { get; set; }
 
         public int ChapterId { get; }
-        
+
         public Guid UserId { get; set; }
 
         public string MimeType { get; set; }
@@ -44,7 +46,7 @@ namespace Inshapardaz.Domain.Ports.Library
             {
                 if (command.UserId != Guid.Empty)
                 {
-                    await _bookRepository.AddRecentBook(command.UserId, command.BookId, cancellationToken);
+                    await _bookRepository.AddRecentBook(command.LibraryId, command.UserId, command.BookId, cancellationToken);
                 }
             }
 
@@ -52,4 +54,3 @@ namespace Inshapardaz.Domain.Ports.Library
         }
     }
 }
-

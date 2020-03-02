@@ -6,19 +6,18 @@ using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetFavoriteBooksQuery : IQuery<Page<BookModel>>
+    public class GetFavoriteBooksQuery : LibraryAuthorisedQuery<Page<BookModel>>
     {
-        public GetFavoriteBooksQuery(Guid userId, int pageNumber, int pageSize)
+        public GetFavoriteBooksQuery(int libraryId, Guid userId, int pageNumber, int pageSize)
+            : base(libraryId, userId)
         {
-            UserId = userId;
             PageNumber = pageNumber;
             PageSize = pageSize;
         }
-
-        public Guid UserId { get; private set;}
 
         public int PageNumber { get; private set; }
 
@@ -27,11 +26,11 @@ namespace Inshapardaz.Domain.Ports.Library
 
     public class GetFavoriteBooksQueryHandler : QueryHandlerAsync<GetFavoriteBooksQuery, Page<BookModel>>
     {
-        private readonly IFavoriteRepository _favoriteRepository;
+        private readonly IBookRepository _bookRepository;
 
-        public GetFavoriteBooksQueryHandler(IFavoriteRepository favoriteRepository)
+        public GetFavoriteBooksQueryHandler(IBookRepository bookRepository)
         {
-            _favoriteRepository = favoriteRepository;
+            _bookRepository = bookRepository;
         }
 
         public override async Task<Page<BookModel>> ExecuteAsync(GetFavoriteBooksQuery command, CancellationToken cancellationToken = new CancellationToken())
@@ -41,9 +40,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 throw new NotFoundException();
             }
 
-            var books = await _favoriteRepository.GetFavoriteBooksByUser(command.UserId, command.PageNumber, command.PageSize, cancellationToken);
-            foreach (var book in books.Data) book.IsFavorite = true;
-            return books;
+            return await _bookRepository.GetFavoriteBooksByUser(command.LibraryId, command.UserId, command.PageNumber, command.PageSize, cancellationToken);
         }
     }
 }

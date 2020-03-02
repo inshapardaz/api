@@ -43,7 +43,6 @@ namespace Inshapardaz.Functions.Configuration
             services.AddTransient<IAuthorRepository, AuthorRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IBookRepository, BookRepository>();
-            services.AddTransient<IFavoriteRepository, FavoriteRepository>();
             services.AddTransient<IChapterRepository, ChapterRepository>();
             services.AddTransient<ISeriesRepository, SeriesRepository>();
 

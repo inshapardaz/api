@@ -19,28 +19,19 @@ namespace Inshapardaz.Functions.Library.Books.Files
 {
     public class AddBookFile : CommandBase
     {
-        public AddBookFile(IAmACommandProcessor commandProcessor) 
+        public AddBookFile(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
         }
 
         [FunctionName("AddBookFile")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/{bookId}/files")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books/{bookId}/files")] HttpRequestMessage req,
+            int libraryId,
             int bookId,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
             var multipart = await req.Content.ReadAsMultipartAsync(token);
             var content = await req.Content.ReadAsByteArrayAsync();
 
@@ -53,7 +44,7 @@ namespace Inshapardaz.Functions.Library.Books.Files
                 mimeType = fileContent.Headers?.ContentType?.MediaType;
             }
 
-            var request = new AddBookFileRequest(bookId)
+            var request = new AddBookFileRequest(claims, libraryId, bookId)
             {
                 Content = new FileModel
                 {
@@ -68,7 +59,7 @@ namespace Inshapardaz.Functions.Library.Books.Files
 
             if (request.Result != null)
             {
-                var response = request.Result.Render(principal);
+                var response = request.Result.Render(claims);
                 return new CreatedResult(response.Links.Self(), response);
             }
 

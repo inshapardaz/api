@@ -15,19 +15,20 @@ namespace Inshapardaz.Functions.Library.Books.Files
 {
     public class GetBookFiles : QueryBase
     {
-        public GetBookFiles(IQueryProcessor queryProcessor) 
+        public GetBookFiles(IQueryProcessor queryProcessor)
         : base(queryProcessor)
         {
         }
 
         [FunctionName("GetBookFiles")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/{bookId}/files")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/{bookId}/files")] HttpRequest req,
+            int libraryId,
             int bookId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-            var query = new GetFilesByBookQuery(bookId, principal.GetUserId());
+            var query = new GetFilesByBookQuery(libraryId, bookId, principal.GetUserId());
             var files = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             if (files != null)
@@ -38,6 +39,6 @@ namespace Inshapardaz.Functions.Library.Books.Files
             return new NotFoundResult();
         }
 
-        public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/{bookId}/files", relType);        
+        public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/{bookId}/files", relType);
     }
 }

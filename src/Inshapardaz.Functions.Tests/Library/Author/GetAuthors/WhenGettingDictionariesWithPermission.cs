@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenGettingDictionariesWithPermission : LibraryTest
+    public class WhenGettingDictionariesWithPermission : LibraryTest<Functions.Library.Authors.GetAuthors>
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
@@ -34,7 +34,6 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
             _builder = Container.GetService<AuthorsDataBuilder>();
             _builder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
-            var handler = Container.GetService<Functions.Library.Authors.GetAuthors>();
             _response = (OkObjectResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
 
             _view = _response.Value as PageView<AuthorView>;

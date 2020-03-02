@@ -27,26 +27,19 @@ namespace Inshapardaz.Functions.Library.Authors
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/authors")] HttpRequest req,
             int libraryId,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            if (principal == null)
+            return await Action.Execute(async () =>
             {
-                return new UnauthorizedResult();
-            }
+                var author = await GetBody<AuthorView>(req);
 
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
+                var request = new AddAuthorRequest(claims, libraryId, author.Map());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var author = await GetBody<AuthorView>(req);
-
-            var request = new AddAuthorRequest(libraryId, author.Map());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-
-            var renderResult = request.Result.Render(principal);
-            return new CreatedResult(renderResult.Links.Self(), renderResult);
+                var renderResult = request.Result.Render(claims);
+                return new CreatedResult(renderResult.Links.Self(), renderResult);
+            });
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("authors", relType, "POST");

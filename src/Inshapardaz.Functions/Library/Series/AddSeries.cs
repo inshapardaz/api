@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Newtonsoft.Json;
 using Paramore.Brighter;
 
 namespace Inshapardaz.Functions.Library.Series
@@ -29,26 +28,15 @@ namespace Inshapardaz.Functions.Library.Series
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/series")] HttpRequest req,
             int libraryId,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
+            var series = await GetBody<SeriesView>(req);
 
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var series = JsonConvert.DeserializeObject<SeriesView>(requestBody);
-
-            var request = new AddSeriesRequest(libraryId, series.Map());
+            var request = new AddSeriesRequest(claims, libraryId, series.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = request.Result.Render(principal);
+            var renderResult = request.Result.Render(claims);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 

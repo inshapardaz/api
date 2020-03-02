@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Dictionaries;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -9,9 +12,10 @@ using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class AddBookFileRequest : RequestBase
+    public class AddBookFileRequest : LibraryAuthorisedCommand
     {
-        public AddBookFileRequest(int bookId)
+        public AddBookFileRequest(ClaimsPrincipal claims, int libraryId, int bookId)
+            : base(claims, libraryId)
         {
             BookId = bookId;
         }
@@ -19,7 +23,6 @@ namespace Inshapardaz.Domain.Ports.Library
         public int BookId { get; }
 
         public FileModel Content { get; set; }
-
 
         public FileModel Result { get; set; }
     }
@@ -37,9 +40,10 @@ namespace Inshapardaz.Domain.Ports.Library
             _fileStorage = fileStorage;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<AddBookFileRequest> HandleAsync(AddBookFileRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.BookId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
 
             if (book != null)
             {

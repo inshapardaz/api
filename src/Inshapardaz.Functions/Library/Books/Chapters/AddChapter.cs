@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 {
     public class AddChapter : CommandBase
     {
-        public AddChapter(IAmACommandProcessor commandProcessor) 
+        public AddChapter(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
         }
@@ -42,8 +42,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
                 return new ForbidResult("Bearer");
             }
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var chapter = JsonConvert.DeserializeObject<ChapterView>(requestBody);
+            var chapter = await GetBody<ChapterView>(req);
 
             var request = new AddChapterRequest(bookId, chapter.Map(), principal.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);

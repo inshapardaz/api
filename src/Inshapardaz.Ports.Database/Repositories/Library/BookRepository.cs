@@ -4,371 +4,537 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
-using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.EntityFrameworkCore;
 using BookModel = Inshapardaz.Domain.Models.Library.BookModel;
+using Dapper;
+using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
     public class BookRepository : IBookRepository
     {
-        private readonly IDatabaseContext _databaseContext;
+        private readonly IProvideConnection _connectionProvider;
 
-        public BookRepository(IDatabaseContext databaseContext)
+        public BookRepository(IProvideConnection connectionProvider)
         {
-            _databaseContext = databaseContext;
+            _connectionProvider = connectionProvider;
         }
 
-        public async Task<BookModel> AddBook(BookModel book, CancellationToken cancellationToken)
+        public async Task<BookModel> AddBook(int libraryId, BookModel book, Guid? userId, CancellationToken cancellationToken)
         {
-            var author = await _databaseContext.Author
-                                             .SingleOrDefaultAsync(t => t.Id == book.AuthorId,
-                                                                   cancellationToken);
-            if (author == null)
+            int bookId;
+            using (var connection = _connectionProvider.GetConnection())
             {
-                throw new NotFoundException();
+                var sql = @"Insert Into Library.Book
+                            (Title, [Description], AuthorId, ImageId, LibraryId, IsPublic, IsPublished, [Language], [Status], SeriesId, SeriesIndex, CopyRights, YearPublished, DataAdded, DateUpdated)
+                            OUTPUT Inserted.Id VALUES(@Title, @Description, @AuthorId, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, @DataAdded, @DateUpdated);";
+                var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
+                bookId = await connection.ExecuteScalarAsync<int>(command);
+
+                var sqlCategory = @"Delete From Library.BookCategory Where BookId = @BookId;
+                           Insert Into Library.BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
+
+                var bookCategories = book.Categories.Select(c => new { BookId = book.Id, CategoryId = c.Id });
+                var commandCategory = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(commandCategory);
             }
 
-            var series = await _databaseContext.Series.SingleOrDefaultAsync(s => s.Id == book.SeriesId, cancellationToken);
+            return await GetBookById(libraryId, bookId, userId, cancellationToken);
+        }
 
-            var item = book.Map();
-            item.BookCategory.Clear();
-            item.Series = series;
-            item.Author = author;
-
-            _databaseContext.Book.Add(item);
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-
-            item.BookCategory = new List<BookCategory>();
-
-            if (book.Categories != null)
+        public async Task UpdateBook(int libraryId, BookModel book, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
             {
-                foreach (var category in book.Categories)
+                var sql = @"Update Library.Book
+                            Title = @Title, [Description] = @Description,
+                            AuthorId = @AuthorId, ImageId = @ImageId,
+                            IsPublic = @IsPublic, IsPublished = @IsPublished,
+                            [Language] = @Language, [Status] = @Status, SeriesId = @SeriesId,
+                            SeriesIndex = @SeriesIndex, CopyRights = @CopyRights,
+                            YearPublished = @YearPublished, DataAdded = @DataAdded, DateUpdated = @DateUpdated
+                            Where LibraryId = @LibraryId And Id = @Id";
+                var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
+                await connection.ExecuteScalarAsync<int>(command);
+
+                var sqlCategory = @"Delete From Library.BookCategory Where BookId = @BookId;
+                           Insert Into Library.BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
+
+                var bookCategories = book.Categories.Select(c => new { BookId = book.Id, CategoryId = c.Id });
+                var commandCategory = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(commandCategory);
+            }
+        }
+
+        public async Task DeleteBook(int libraryId, int bookId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Delete From Library.Book Where LibraryId = @LibraryId AND Id = @Id";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = bookId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var books = new Dictionary<int, BookModel>();
+
+                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                            From Library.Book b
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @UserId Is Null)
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Library.Category c ON bc.CategoryId = c.Id
+                            Where b.LibraryId = @LibraryId
+                            Order By b.Title
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, PageSize = pageSize, PageNumber = pageNumber, UserId = userId },
+                                                    cancellationToken: cancellationToken);
+
+                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
                 {
-                    var gen = await _databaseContext.Category.SingleOrDefaultAsync(g => g.Id == category.Id, cancellationToken);
-                    if (gen != null)
-                        item.BookCategory.Add(new BookCategory {BookId = item.Id, Book = item, CategoryId = gen.Id, Category = gen});
-                }
-            }
-            
-            await _databaseContext.SaveChangesAsync(cancellationToken);
+                    if (!books.TryGetValue(b.Id, out BookModel book))
+                        books.Add(b.Id, book = b);
 
-            var newBook = await _databaseContext.Book
-                                                .Include(b => b.Author)
-                                                .Include(b => b.Series)
-                                                .Include(b => b.BookCategory)
-                                                .ThenInclude(c => c.Category)
-                                                .SingleOrDefaultAsync(t => t.Id == item.Id,
-                                                                      cancellationToken);
-            return newBook.Map();
-        }
+                    book.Categories.Add(c);
+                    return book;
+                });
 
-        public async Task UpdateBook(BookModel book, CancellationToken cancellationToken)
-        {
-            var existingEntity = await _databaseContext.Book
-                                                       .SingleOrDefaultAsync(g => g.Id == book.Id,
-                                                                             cancellationToken);
+                var sqlCount = "SELECT COUNT(*) FROM Library.Books WHERE LibraryId = @LibraryId";
+                var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
 
-            if (existingEntity == null)
-            {
-                throw new NotFoundException();
-            }
-
-            existingEntity.Title = book.Title;
-            existingEntity.Description = book.Description;
-            existingEntity.AuthorId = book.AuthorId;
-            existingEntity.IsPublic = book.IsPublic;
-            existingEntity.Language = book.Language;
-            existingEntity.SeriesId = book.SeriesId;
-            existingEntity.SeriesIndex = book.SeriesIndex;
-            existingEntity.Status = book.Status;
-            existingEntity.Copyrights = book.Copyrights;
-            existingEntity.YearPublished = book.YearPublished;
-            existingEntity.IsPublished = book.IsPublished;
-
-            if (book.ImageId > 0)
-            {
-                existingEntity.ImageId = book.ImageId;
-            }
-
-            existingEntity.BookCategory.Clear();
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-
-            foreach (var category in book.Categories)
-            {
-                var gen = await _databaseContext.Category.SingleOrDefaultAsync(g => g.Id == category.Id, cancellationToken);
-                if (gen != null)
-                    existingEntity.BookCategory.Add(new BookCategory { BookId = existingEntity.Id, Book = existingEntity, CategoryId = gen.Id, Category = gen });
-            }
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task DeleteBook(int bookId, CancellationToken cancellationToken)
-        {
-            var book = await _databaseContext.Book.SingleOrDefaultAsync(g => g.Id == bookId, cancellationToken);
-
-            if (book != null)
-            {
-                _databaseContext.Book.Remove(book);
-            }
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task<Page<BookModel>> GetBooks(int pageNumber, int pageSize, CancellationToken cancellationToken)
-        {
-            var book = _databaseContext.Book
-                        .Include(b => b.Author)
-                        .Include(b => b.Series)
-                        .Include(b => b.BookCategory)
-                        .ThenInclude(c => c.Category);
-
-            var count = await book.CountAsync(cancellationToken);
-            var data = await book
-                             .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map())
-                             .ToListAsync(cancellationToken);
-
-            return new Page<BookModel>
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalCount = count,
-                Data = data
-            };
-        }
-
-        public async Task<Page<BookModel>> SearchBooks(string searchText, int pageNumber, int pageSize, CancellationToken cancellationToken)
-        {
-            var query = _databaseContext.Book
-                            .Include(b => b.Author)
-                            .Include(b => b.Series)
-                            .Include(b => b.BookCategory)
-                            .ThenInclude(c => c.Category)
-                            .Where(b => b.Title.Contains(searchText));
-            var count = await query.CountAsync(cancellationToken);
-            var data = await query
-                             .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map())
-                             .ToListAsync(cancellationToken);
-
-            return new Page<BookModel>
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalCount = count,
-                Data = data
-            };
-        }
-
-        public async Task<IEnumerable<BookModel>> GetLatestBooks(CancellationToken cancellationToken)
-        {
-            return await _databaseContext.Book
-                                        .Include(b => b.Author)
-                                        .Include(b => b.Series)
-                                        .Include(b => b.BookCategory)
-                                        .ThenInclude(c => c.Category)
-                                        .OrderByDescending(b => b.DateAdded)
-                                        .Take(10)
-                                        .Select(a => a.Map())
-                                        .ToListAsync(cancellationToken);
-        }
-
-        public async Task<Page<BookModel>> GetBooksByCategory(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
-        {
-            var book = _databaseContext.Book
-                        .Include(b => b.Author)
-                        .Include(b => b.Series)
-                        .Include(b => b.BookCategory)
-                        .ThenInclude(c => c.Category)
-                        .Where(b => b.BookCategory.Any(g => g.CategoryId == categoryId));
-
-            var count = book.Count();
-            var data = await book
-                             .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map())
-                             .ToListAsync(cancellationToken);
-
-            return new Page<BookModel>
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalCount = count,
-                Data = data
-            };
-        }
-
-        public async Task<Page<BookModel>> GetBooksByAuthor(int authorId, int pageNumber, int pageSize, CancellationToken cancellationToken)
-        {
-            var book = _databaseContext
-                        .Book
-                        .Include(b => b.Author)
-                        .Include(b => b.Series)
-                        .Include(b => b.BookCategory)
-                        .ThenInclude(c => c.Category)
-                        .Where(b => b.AuthorId == authorId);
-
-            var count = book.Count();
-            var data = await book
-                             .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map())
-                             .ToListAsync(cancellationToken);
-
-            return new Page<BookModel>
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalCount = count,
-                Data = data
-            };
-        }
-
-        public async Task<Page<BookModel>> GetBooksBySeries(int seriesId, int pageNumber, int pageSize, CancellationToken cancellationToken)
-        {
-            var book = _databaseContext
-                       .Book
-                       .Include(b => b.Author)
-                       .Include(b => b.Series)
-                       .Include(b => b.BookCategory)
-                       .ThenInclude(c => c.Category)
-                       .Where(b => b.SeriesId == seriesId)
-                       .OrderBy(b => b.SeriesIndex);
-
-            var count = book.Count();
-            var data = await book
-                             .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map())
-                             .ToListAsync(cancellationToken);
-
-            return new Page<BookModel>
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalCount = count,
-                Data = data
-            };
-        }
-
-        public async Task<BookModel> GetBookById(int bookId, CancellationToken cancellationToken)
-        {
-            var book = await _databaseContext.Book
-                                             .Include(b => b.Author)
-                                             .Include(b => b.Series)
-                                             .Include(b => b.BookCategory)
-                                             .ThenInclude(c => c.Category)
-                                             .SingleOrDefaultAsync(t => t.Id == bookId,
-                                                                     cancellationToken);
-            return book.Map();
-        }
-
-        public async Task AddRecentBook(Guid userId, int bookId, CancellationToken cancellationToken)
-        {
-            var book = await _databaseContext.Book.SingleOrDefaultAsync(b => b.Id == bookId, cancellationToken);
-            if (book == null)
-            {
-                throw new NotFoundException();
-            }
-
-            var recent = await _databaseContext.RecentBooks.SingleOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId, cancellationToken);
-
-            if (recent == null)
-            {
-                recent = new RecentBook
+                return new Page<BookModel>
                 {
-                    UserId = userId,
-                    BookId = bookId,
-                    DateRead = DateTime.UtcNow,
-                    Book = book
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = bookCount,
+                    Data = books.Values
                 };
-                await _databaseContext.RecentBooks.AddAsync(recent, cancellationToken);
             }
-            else
+        }
+
+        public async Task<Page<BookModel>> SearchBooks(int libraryId, string searchText, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
             {
-                recent.DateRead = DateTime.UtcNow;
+                var books = new Dictionary<int, BookModel>();
+
+                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                            From Library.Book b
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Library.Category c ON bc.CategoryId = c.Id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @UserId Is Null)
+                            Where b.LibraryId = @LibraryId And b.Name Like @Query
+                            Order By b.Title
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, Query = $"%{searchText}%", PageSize = pageSize, PageNumber = pageNumber, UserId = userId },
+                                                    cancellationToken: cancellationToken);
+
+                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
+                {
+                    if (!books.TryGetValue(b.Id, out BookModel book))
+                        books.Add(b.Id, book = b);
+
+                    book.Categories.Add(c);
+                    return book;
+                });
+
+                var sqlCount = "SELECT COUNT(*) FROM Library.Books Where b.Name Like @Query AND LibraryId = @LibraryId";
+                var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, new { LibraryId = libraryId, Query = $"%{searchText}%" }, cancellationToken: cancellationToken));
+
+                return new Page<BookModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = bookCount,
+                    Data = books.Values
+                };
             }
-            await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task DeleteBookFromRecent(Guid userId, int bookId, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetLatestBooks(int libraryId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken)
         {
-            var recent = await _databaseContext.RecentBooks.SingleOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId, cancellationToken);
-
-            if (recent == null)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                throw new NotFoundException();
+                var books = new Dictionary<int, BookModel>();
+
+                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                            From Library.Book b
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @UserId Is Null)
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Library.Category c ON bc.CategoryId = c.Id
+                            Where b.LibraryId = @LibraryId
+                            Order By b.DateAdded
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, PageSize = pageSize, PageNumber = pageNumber, UserId = userId },
+                                                    cancellationToken: cancellationToken);
+
+                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
+                {
+                    if (!books.TryGetValue(b.Id, out BookModel book))
+                        books.Add(b.Id, book = b);
+
+                    book.Categories.Add(c);
+                    return book;
+                });
+
+                var sqlCount = "SELECT COUNT(*) FROM Library.Books WHERE LibraryId = @LibraryId";
+                var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
+
+                return new Page<BookModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = bookCount,
+                    Data = books.Values
+                };
             }
-
-            _databaseContext.RecentBooks.Remove(recent);
-            await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<BookModel>> GetRecentBooksByUser(Guid userId, int count, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetBooksByCategory(int libraryId, int categoryId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken)
         {
-            var recents = await _databaseContext.RecentBooks
-                                                .Include(r => r.Book)
-                                                .Where(r => r.UserId == userId)
-                                                .OrderByDescending(r => r.DateRead)
-                                                .Take(count)
-                                                .Select(r => r.Book)
-                                                .ToListAsync(cancellationToken);
-            return recents.Select(b => b.Map());
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var books = new Dictionary<int, BookModel>();
+
+                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                            From Library.Book b
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @UserId Is Null)
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Library.Category c ON bc.CategoryId = c.Id
+                            Where b.LibraryId = @LibraryId And c.Id = @CategoryId
+                            Order By b.DateAdded
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, CategoryId = categoryId, PageSize = pageSize, PageNumber = pageNumber, UserId = userId },
+                                                    cancellationToken: cancellationToken);
+
+                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
+                {
+                    if (!books.TryGetValue(b.Id, out BookModel book))
+                        books.Add(b.Id, book = b);
+
+                    book.Categories.Add(c);
+                    return book;
+                });
+
+                var sqlCount = @"Select Count(b.*) From Library.Books b
+                                Inner Join Library.BookCategory bc On b.Id = bc.BookId
+                                Where LibraryId = @LibraryId And bc.CategoryId = @CategoryId";
+                var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, new { LibraryId = libraryId, CategoryId = categoryId }, cancellationToken: cancellationToken));
+
+                return new Page<BookModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = bookCount,
+                    Data = books.Values
+                };
+            }
         }
 
-
-        public async Task<int> GetBookCountByAuthor(int authorId, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetBooksByAuthor(int libraryId, int authorId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken)
         {
-            return await _databaseContext.Book.CountAsync(b => b.AuthorId == authorId, cancellationToken);
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var books = new Dictionary<int, BookModel>();
+
+                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                            From Library.Book b
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @UserId Is Null)
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Library.Category c ON bc.CategoryId = c.Id
+                            Where b.LibraryId = @LibraryId And a.Id = @AuthorId
+                            Order By b.DateAdded
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, AuthorId = authorId, PageSize = pageSize, PageNumber = pageNumber, UserId = userId },
+                                                    cancellationToken: cancellationToken);
+
+                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
+                {
+                    if (!books.TryGetValue(b.Id, out BookModel book))
+                        books.Add(b.Id, book = b);
+
+                    book.Categories.Add(c);
+                    return book;
+                });
+
+                var sqlCount = @"Select Count(b.*) From Library.Books b
+                                Inner Join Library.Author a On b.AuthorId = a.Id
+                                Where LibraryId = @LibraryId And a.Id = @AuthorId";
+                var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, new { LibraryId = libraryId, AuthorId = authorId }, cancellationToken: cancellationToken));
+
+                return new Page<BookModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = bookCount,
+                    Data = books.Values
+                };
+            }
         }
 
-        public async Task<int> GetBookCountBySeries(int seriesId, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetBooksBySeries(int libraryId, int seriesId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken)
         {
-            return await _databaseContext.Book.CountAsync(b => b.SeriesId == seriesId, cancellationToken);
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var books = new Dictionary<int, BookModel>();
+
+                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                            From Library.Book b
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @UserId Is Null)
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Library.Category c ON bc.CategoryId = c.Id
+                            Where b.LibraryId = @LibraryId And b.SeriesId = @SeriesId
+                            Order By b.Title
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, SeriesId = seriesId, PageSize = pageSize, PageNumber = pageNumber, UserId = userId },
+                                                    cancellationToken: cancellationToken);
+
+                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
+                {
+                    if (!books.TryGetValue(b.Id, out BookModel book))
+                        books.Add(b.Id, book = b);
+
+                    book.Categories.Add(c);
+                    return book;
+                });
+
+                var sqlCount = @"Select Count(*) From Library.Books
+                                Where LibraryId = @LibraryId And SeriesId = @SeriesId";
+                var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, new { LibraryId = libraryId, SeriesId = seriesId }, cancellationToken: cancellationToken));
+
+                return new Page<BookModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = bookCount,
+                    Data = books.Values
+                };
+            }
         }
 
-        public async Task<int> GetBookCountByCategory(int categoryId, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetFavoriteBooksByUser(int libraryId, Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            return await _databaseContext.Book.CountAsync(b => b.BookCategory.Any(g => g.CategoryId == categoryId), cancellationToken);
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var books = new Dictionary<int, BookModel>();
+
+                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                            From Library.Book b
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId)
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Library.Category c ON bc.CategoryId = c.Id
+                            Where b.LibraryId = @LibraryId
+                            Order By b.Title
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, PageSize = pageSize, PageNumber = pageNumber, UserId = userId },
+                                                    cancellationToken: cancellationToken);
+
+                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
+                {
+                    if (!books.TryGetValue(b.Id, out BookModel book))
+                        books.Add(b.Id, book = b);
+
+                    book.Categories.Add(c);
+                    return book;
+                });
+
+                var sqlCount = "SELECT COUNT(*) FROM Library.Books WHERE LibraryId = @LibraryId";
+                var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
+
+                return new Page<BookModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = bookCount,
+                    Data = books.Values
+                };
+            }
+        }
+
+        public async Task<BookModel> GetBookById(int libraryId, int bookId, Guid? userId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                BookModel book = null;
+                var sql = @"Select top 1 b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                            from Library.Book b
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @UserId Is Null)
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Library.Category c ON bc.CategoryId = c.Id
+                            Where b.LibraryId = @LibraryId AND b.Id = @Id";
+                var retval = await connection.QueryAsync<BookModel, CategoryModel, BookModel>(sql, (b, c) =>
+                {
+                    if (book == null)
+                    {
+                        book = b;
+                    }
+
+                    book.Categories.Add(c);
+                    return b;
+                }, new { LibraryId = libraryId, Id = bookId, UserId = userId });
+
+                return retval?.FirstOrDefault();
+            }
+        }
+
+        public async Task AddRecentBook(int libraryId, Guid userId, int bookId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                // TODO :  Delete to old records
+                var sql = @"Delete From Library.RecentBooks Where LibraryId = @LibraryId And BookId = @BookId And UserId = @UserId;
+                            Insert Into Library.RecentBooks (BookId, UserId, DateRead, LibraryId) VALUES (@BookId, @UserId, GETDATE(), @LibraryId);";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, UserId = userId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task DeleteBookFromRecent(int libraryId, Guid userId, int bookId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Delete From Library.RecentBooks Where LibraryId = @LibraryId And BookId = @BookId And UserId = @UserId;";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, UserId = userId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task<IEnumerable<BookModel>> GetRecentBooksByUser(int libraryId, Guid userId, int count, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var books = new Dictionary<int, BookModel>();
+
+                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                            From Library.Book b
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Inner Join Library.RecentBooks r On b.Id = r.BookId
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Library.Category c ON bc.CategoryId = c.Id
+                            Where b.LibraryId = @LibraryId And r.UserId = @UserId
+                            Order By r.DateRead
+                            OFFSET 0 ROWS
+                            FETCH NEXT @Count ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, UserId = userId, Count = count },
+                                                    cancellationToken: cancellationToken);
+
+                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
+                {
+                    if (!books.TryGetValue(b.Id, out BookModel book))
+                        books.Add(b.Id, book = b);
+
+                    book.Categories.Add(c);
+                    return book;
+                });
+
+                return books.Values;
+            }
+        }
+
+        public async Task AddBookToFavorites(Guid userId, int bookId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var check = "Select count(*) From Library.FavoriteBooks Where f.UserId = @UserId And BookId = @BookId;";
+                var commandCheck = new CommandDefinition(check, new { UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
+                var count = await connection.ExecuteScalarAsync<int>(commandCheck);
+
+                if (count > 0) return;
+
+                var sql = @"Delete From Library.FavoriteBooks Where f.UserId = @UserId And BookId = @BookId;";
+                var command = new CommandDefinition(sql, new { UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task DeleteBookFromFavorites(Guid userId, int bookId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Delete From Library.FavoriteBooks Where f.UserId = @UserId And BookId = @BookId";
+                var command = new CommandDefinition(sql, new { UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
         }
 
         public async Task DeleteBookFile(int bookId, int fileId, CancellationToken cancellationToken)
         {
-            var bookFile = await _databaseContext.BookFiles.SingleOrDefaultAsync(bf => bf.Id == fileId, cancellationToken: cancellationToken);
-
-            if (bookFile != null)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                _databaseContext.BookFiles.Remove(bookFile);
-                await _databaseContext.SaveChangesAsync(cancellationToken);
+                var sql = @"Delete From Library.BookFile Where BookId = @BookId And FileId = @FileId";
+                var command = new CommandDefinition(sql, new { FileId = fileId, BookId = bookId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
             }
         }
 
         public async Task<FileModel> GetBookFileById(int bookId, int fileId, CancellationToken cancellationToken)
         {
-            var bookFile = await _databaseContext.BookFiles
-                                                 .Include(b=> b.File)
-                                                 .SingleOrDefaultAsync(bf => bf.Id == fileId, cancellationToken: cancellationToken);
-
-            return bookFile?.File.Map();
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select f.* from Library.BookFile bf
+                            Inner Join Inshapardaz.[File] f On bf.FileId = f.Id
+                            Where bf.BookId = @BookId And bf.FileId = @FileId;";
+                var command = new CommandDefinition(sql, new { FileId = fileId, BookId = bookId }, cancellationToken: cancellationToken);
+                return await connection.QuerySingleOrDefaultAsync<FileModel>(command);
+            }
         }
 
         public async Task<IEnumerable<FileModel>> GetFilesByBook(int bookId, CancellationToken cancellationToken)
         {
-            var files = await _databaseContext.BookFiles
-                                              .Include(bf => bf.File)
-                                              .Where(f => f.BookId == bookId)
-                                              .ToListAsync(cancellationToken);
-            return files.Select(bf => bf.File.Map());
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select f.* from Library.BookFile bf
+                            Inner Join Inshapardaz.[File] f On bf.FileId = f.Id
+                            Where bf.BookId = @BookId";
+                var command = new CommandDefinition(sql, new { BookId = bookId }, cancellationToken: cancellationToken);
+                return await connection.QueryAsync<FileModel>(command);
+            }
         }
 
         public async Task AddBookFile(int bookId, int fileId, CancellationToken cancellationToken)
         {
-            _databaseContext.BookFiles.Add(new BookFile {BookId = bookId, FileId = fileId });
-            await _databaseContext.SaveChangesAsync(cancellationToken);
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Insert Into Library.BookFile (BookId, FileId) Values (@BookId, @FileId)";
+                var command = new CommandDefinition(sql, new { FileId = fileId, BookId = bookId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
         }
     }
 }

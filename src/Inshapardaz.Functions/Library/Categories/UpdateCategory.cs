@@ -42,8 +42,7 @@ namespace Inshapardaz.Functions.Library.Categories
                 return new ForbidResult("Bearer");
             }
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var category = JsonConvert.DeserializeObject<CategoryView>(requestBody);
+            var category = await GetBody<CategoryView>(req);
 
             category.Id = categoryId;
             var request = new UpdateCategoryRequest(libraryId, category.Map());

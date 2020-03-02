@@ -4,20 +4,18 @@ using Bogus;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
 {
     [TestFixture]
-    public class WhenAddingAuthorAsAnonymousUser : LibraryTest
+    public class WhenAddingAuthorAsAnonymousUser : LibraryTest<Functions.Library.Authors.AddAuthor>
     {
         private UnauthorizedResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var handler = Container.GetService<Functions.Library.Authors.AddAuthor>();
             var author = new AuthorView { Name = new Faker().Random.String() };
 
             _response = (UnauthorizedResult)await handler.Run(author.ToRequest(), LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);

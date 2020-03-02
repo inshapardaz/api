@@ -1,4 +1,5 @@
-﻿using Paramore.Darker;
+﻿using System;
+using System.Security.Claims;
 
 namespace Inshapardaz.Domain.Ports.Handlers.Library
 {
@@ -10,5 +11,18 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library
         }
 
         public int LibraryId { get; private set; }
+    }
+
+    public abstract class LibraryAuthorisedCommand : AuthoriseRequestBase
+    {
+        public LibraryAuthorisedCommand(ClaimsPrincipal claims, int libraryId)
+            : base(claims)
+        {
+            LibraryId = libraryId;
+        }
+
+        public int LibraryId { get; private set; }
+
+        public Guid? UserId { get; set; }
     }
 }

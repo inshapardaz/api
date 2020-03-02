@@ -1,16 +1,14 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
 {
     [TestFixture]
-    public class WhenDeletingNonExistingSeries : LibraryTest
+    public class WhenDeletingNonExistingSeries : LibraryTest<Functions.Library.Series.DeleteSeries>
     {
         private NoContentResult _response;
 
@@ -19,7 +17,6 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var handler = Container.GetService<Functions.Library.Series.DeleteSeries>();
             _response = (NoContentResult)await handler.Run(request, NullLogger.Instance, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 

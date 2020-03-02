@@ -15,17 +15,17 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 {
     public class GetChaptersByBook : QueryBase
     {
-        public GetChaptersByBook(IQueryProcessor queryProcessor) 
+        public GetChaptersByBook(IQueryProcessor queryProcessor)
         : base(queryProcessor)
         {
         }
 
         [FunctionName("GetChaptersByBook")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "books/{bookId:int}/chapters")] HttpRequest req,
-            int bookId, ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/{bookId:int}/chapters")] HttpRequest req,
+            int libraryId, int bookId, ClaimsPrincipal principal, CancellationToken token)
         {
-            var query = new GetChaptersByBookQuery(bookId, principal.GetUserId());
+            var query = new GetChaptersByBookQuery(libraryId, bookId, principal.GetUserId());
             var chapters = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             if (chapters != null)

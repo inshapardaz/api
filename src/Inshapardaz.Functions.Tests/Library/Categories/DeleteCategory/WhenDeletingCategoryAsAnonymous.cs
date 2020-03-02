@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
 {
     [TestFixture]
-    public class WhenDeletingCategoryAsAnonymous : LibraryTest
+    public class WhenDeletingCategoryAsAnonymous : LibraryTest<Functions.Library.Categories.DeleteCategory>
     {
         private UnauthorizedResult _response;
 
@@ -28,7 +28,6 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
             _categories = _dataBuilder.WithLibrary(LibraryId).Build(4);
             _selectedCategory = _categories.PickRandom();
 
-            var handler = Container.GetService<Functions.Library.Categories.DeleteCategory>();
             _response = (UnauthorizedResult)await handler.Run(request, LibraryId, _selectedCategory.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 

@@ -1,10 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
@@ -32,18 +33,21 @@ namespace Inshapardaz.Domain.Ports.Library
     {
         private readonly IBookRepository _bookRepository;
         private readonly IChapterRepository _chapterRepository;
+        private readonly IFileStorage _fileStorage;
 
-        public GetChapterContentQueryHandler(IBookRepository bookRepository, IChapterRepository chapterRepository)
+        public GetChapterContentQueryHandler(IBookRepository bookRepository, IChapterRepository chapterRepository, IFileStorage fileStorage)
         {
             _bookRepository = bookRepository;
             _chapterRepository = chapterRepository;
+            _fileStorage = fileStorage;
         }
 
         public override async Task<ChapterContentModel> ExecuteAsync(GetChapterContentQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var chapterContent = await _chapterRepository.GetChapterContent(command.BookId, command.ChapterId, command.MimeType, cancellationToken);
+            var chapterContent = await _chapterRepository.GetChapterContent(command.ChapterId, command.MimeType, cancellationToken);
             if (chapterContent != null)
             {
+                chapterContent.Content = await _fileStorage.GetTextFile(chapterContent.ContentUrl, cancellationToken);
                 if (command.UserId != Guid.Empty)
                 {
                     await _bookRepository.AddRecentBook(command.LibraryId, command.UserId, command.BookId, cancellationToken);

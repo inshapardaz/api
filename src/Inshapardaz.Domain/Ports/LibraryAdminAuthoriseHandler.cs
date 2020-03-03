@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports
 {
-    public class AuthoriseHandler<T>
+    public class LibraryAdminAuthoriseHandler<T>
         : RequestHandlerAsync<T> where T : LibraryAuthorisedCommand
     {
         private readonly IReadClaims _claimsReader;
 
-        public AuthoriseHandler(IReadClaims claimsReader)
+        public LibraryAdminAuthoriseHandler(IReadClaims claimsReader)
         {
             _claimsReader = claimsReader;
         }
@@ -25,7 +25,7 @@ namespace Inshapardaz.Domain.Ports
                 throw new UnauthorizedException();
             }
 
-            if (!_claimsReader.IsWriter(command.Claims))
+            if (!_claimsReader.IsAdministrator(command.Claims))
             {
                 throw new ForbiddenException("Bearer");
             }
@@ -34,9 +34,9 @@ namespace Inshapardaz.Domain.Ports
         }
     }
 
-    public class AuthoriseAttribute : RequestHandlerAttribute
+    public class LibraryAdminAuthoriseAttribute : RequestHandlerAttribute
     {
-        public AuthoriseAttribute(int step, HandlerTiming timing)
+        public LibraryAdminAuthoriseAttribute(int step, HandlerTiming timing)
             : base(step, timing)
         { }
 
@@ -47,7 +47,7 @@ namespace Inshapardaz.Domain.Ports
 
         public override Type GetHandlerType()
         {
-            return typeof(AuthoriseHandler<>);
+            return typeof(LibraryAdminAuthoriseHandler<>);
         }
     }
 }

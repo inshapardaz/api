@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContents
 {
     [TestFixture]
-    public class WhenGettingChapterContentsWhenContentMissing : FunctionTest
+    public class WhenGettingChapterContentsWhenContentMissing : LibraryTest<Functions.Library.Books.Chapters.Contents.GetChapterContents>
     {
         private NotFoundResult _response;
 
@@ -25,10 +25,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
             var faker = new Faker();
             var contentUrl = faker.Internet.Url();
             var chapter = dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
-            
-            var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.GetChapterContents>();
-            var actionResult = await handler.Run(null, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
-            _response = (NotFoundResult) actionResult;
+
+            var actionResult = await handler.Run(null, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (NotFoundResult)actionResult;
         }
 
         [OneTimeTearDown]

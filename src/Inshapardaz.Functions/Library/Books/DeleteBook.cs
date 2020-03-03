@@ -1,6 +1,3 @@
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
@@ -9,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Books
 {
@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Library.Books
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var request = new DeleteBookRequest(claims, libraryId, bookId);
+            var request = new DeleteBookRequest(claims, libraryId, bookId, claims.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

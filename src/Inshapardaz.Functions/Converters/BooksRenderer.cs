@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
@@ -13,6 +9,10 @@ using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 
 namespace Inshapardaz.Functions.Converters
 {

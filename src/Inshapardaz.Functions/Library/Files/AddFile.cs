@@ -1,10 +1,3 @@
-using System;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web.Http;
 using Inshapardaz.Domain.Ports;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
@@ -15,6 +8,13 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace Inshapardaz.Functions.Library.Files
 {

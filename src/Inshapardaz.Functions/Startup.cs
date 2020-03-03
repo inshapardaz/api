@@ -1,12 +1,12 @@
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Configuration;
 using Inshapardaz.Storage;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
-using Inshapardaz.Domain.Adapters;
 
 [assembly: WebJobsStartup(typeof(Inshapardaz.Functions.Startup))]
 

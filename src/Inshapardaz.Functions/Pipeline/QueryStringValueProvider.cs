@@ -1,7 +1,7 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Host.Bindings;
+using System;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Pipeline
 {

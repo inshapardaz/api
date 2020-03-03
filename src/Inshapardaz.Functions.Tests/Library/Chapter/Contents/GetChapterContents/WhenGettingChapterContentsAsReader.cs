@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContents
 {
     [TestFixture]
-    public class WhenGettingChapterContentsAsReader : FunctionTest
+    public class WhenGettingChapterContentsAsReader : LibraryTest<Functions.Library.Books.Chapters.Contents.GetChapterContents>
     {
         private OkObjectResult _response;
         private ChapterContentView _view;
@@ -36,9 +36,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
             fileStore.SetupFileContents(contentUrl, _contents);
             _chapter = dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
             _expected = _chapter.Contents.First();
-            
-            var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.GetChapterContents>();
-            _response = (OkObjectResult) await handler.Run(null, _chapter.BookId, _chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+
+            _response = (OkObjectResult)await handler.Run(null, LibraryId, _chapter.BookId, _chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _view = _response.Value as ChapterContentView;
         }

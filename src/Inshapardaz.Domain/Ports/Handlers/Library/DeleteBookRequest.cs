@@ -1,22 +1,19 @@
-﻿using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Ports.Handlers.Library;
-using Inshapardaz.Domain.Repositories;
+﻿using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class DeleteBookRequest : LibraryAuthorisedCommand
+    public class DeleteBookRequest : BookRequest
     {
-        public DeleteBookRequest(ClaimsPrincipal claims, int libraryId, int bookId)
-            : base(claims, libraryId)
+        public DeleteBookRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid userId)
+            : base(claims, libraryId, bookId, userId)
         {
-            BookId = bookId;
         }
-
-        public int BookId { get; }
     }
 
     public class DeleteBookRequestHandler : RequestHandlerAsync<DeleteBookRequest>
@@ -40,7 +37,7 @@ namespace Inshapardaz.Domain.Ports.Library
             {
                 if (book.ImageId.HasValue)
                 {
-                    var image = await _fileRepository.GetFileById(book.ImageId.Value, true, cancellationToken);
+                    var image = await _fileRepository.GetFileById(book.ImageId.Value, cancellationToken);
                     if (image != null && !string.IsNullOrWhiteSpace(image.FilePath))
                     {
                         await _fileStorage.TryDeleteImage(image.FilePath, cancellationToken);

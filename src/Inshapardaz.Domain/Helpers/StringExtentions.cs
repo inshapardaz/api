@@ -9,7 +9,7 @@ namespace Inshapardaz.Domain.Helpers
     {
         public static string TrimSpecialCharacters(this string input)
         {
-            return input.Trim(' ', '\'', '"', '[', ']', '(', ')', ',', '۔', '.', '‌', '،' );
+            return input.Trim(' ', '\'', '"', '[', ']', '(', ')', ',', '۔', '.', '‌', '،');
         }
 
         public static string RemoveMovements(this string input)
@@ -37,7 +37,7 @@ namespace Inshapardaz.Domain.Helpers
 
         public static string[] PreserveSpecialCharacters(this string[] input)
         {
-            char[] separators = {'?', '۔', '؟', '.', ',', '!', ':', ';', '\'', '/', '"', '&', '(', ')', '[', ']', '{', '}'};
+            char[] separators = { '?', '۔', '؟', '.', ',', '!', ':', ';', '\'', '/', '"', '&', '(', ')', '[', ']', '{', '}' };
             var result = new List<string>();
             foreach (var word in input)
             {

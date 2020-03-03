@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +5,13 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Newtonsoft.Json;
 using Paramore.Brighter;
 using Paramore.Darker;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace Inshapardaz.Functions
 {

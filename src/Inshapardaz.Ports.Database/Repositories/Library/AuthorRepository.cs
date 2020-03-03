@@ -1,10 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using Dapper;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
-using Microsoft.EntityFrameworkCore;
-using Dapper;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
@@ -125,8 +124,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
                 var authors = await connection.QueryAsync<AuthorModel>(command);
 
-                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Author WHERE LibraryId = @LibraryId";
-                var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Author WHERE LibraryId = @LibraryId And a.Name LIKE @Query";
+                var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, Query = query }, cancellationToken: cancellationToken));
 
                 return new Page<AuthorModel>
                 {

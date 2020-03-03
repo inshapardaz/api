@@ -7,10 +7,14 @@ namespace Inshapardaz.Domain.Repositories.Library
 {
     public interface IIssueRepository
     {
-        Task<Issue> GetIssueById(int periodicalId, int issueId, CancellationToken cancellationToken);
-        Task<Page<Issue>> GetIssues(int periodicalId, int pageNumber, int pageSize, CancellationToken cancellationToken);
-        Task<Issue> AddIssue(int periodicalId, Issue issue, CancellationToken cancellationToken);
-        Task UpdateIssue(int periodicalId, Issue issue, CancellationToken cancellationToken);
-        Task DeleteIssue(int periodicalId, int issueId, CancellationToken cancellationToken);
+        Task<IssueModel> GetIssueById(int libraryId, int periodicalId, int issueId, CancellationToken cancellationToken);
+
+        Task<Page<IssueModel>> GetIssues(int libraryId, int periodicalId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+        Task<IssueModel> AddIssue(int libraryId, int periodicalId, IssueModel issue, CancellationToken cancellationToken);
+
+        Task UpdateIssue(int libraryId, int periodicalId, IssueModel issue, CancellationToken cancellationToken);
+
+        Task DeleteIssue(int libraryId, int issueId, CancellationToken cancellationToken);
     }
 }

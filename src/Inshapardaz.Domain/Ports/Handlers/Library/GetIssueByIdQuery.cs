@@ -1,14 +1,16 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetIssueByIdQuery : IQuery<Issue>
+    public class GetIssueByIdQuery : LibraryBaseQuery<IssueModel>
     {
-        public GetIssueByIdQuery(int periodicalId, int issueId)
+        public GetIssueByIdQuery(int libraryId, int periodicalId, int issueId)
+            : base(libraryId)
         {
             PeriodicalId = periodicalId;
             IssueId = issueId;
@@ -19,7 +21,7 @@ namespace Inshapardaz.Domain.Ports.Library
         public int IssueId { get; }
     }
 
-    public class GetIssueByIdQueryHandler : QueryHandlerAsync<GetIssueByIdQuery, Issue>
+    public class GetIssueByIdQueryHandler : QueryHandlerAsync<GetIssueByIdQuery, IssueModel>
     {
         private readonly IIssueRepository _issueRepository;
 
@@ -28,10 +30,9 @@ namespace Inshapardaz.Domain.Ports.Library
             _issueRepository = issueRepository;
         }
 
-        public override async Task<Issue> ExecuteAsync(GetIssueByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<IssueModel> ExecuteAsync(GetIssueByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _issueRepository.GetIssueById(command.PeriodicalId, command.IssueId, cancellationToken);
+            return await _issueRepository.GetIssueById(command.LibraryId, command.PeriodicalId, command.IssueId, cancellationToken);
         }
     }
 }
-

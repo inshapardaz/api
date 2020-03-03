@@ -1,6 +1,3 @@
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
@@ -9,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 {
@@ -21,24 +21,15 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 
         [FunctionName("DeleteChapterContents")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId:int}/chapter/{chapterId:int}/contents/{contentId:int}")] HttpRequest req,
-            int bookId, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/books/{bookId:int}/chapter/{chapterId:int}/contents")] HttpRequest req,
+            int libraryId,
+            int bookId,
             int chapterId,
-            int contentId,
-        [AccessToken] ClaimsPrincipal principal = null,
-            CancellationToken token = default(CancellationToken))
+            [AccessToken] ClaimsPrincipal claims = null,
+            CancellationToken token = default)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
-            var request = new DeleteChapterContentRequest(bookId, chapterId, contentId, principal.GetUserId());
+            var contentType = GetHeader(req, "Content-Type", "text/markdown");
+            var request = new DeleteChapterContentRequest(claims, libraryId, bookId, chapterId, contentType, claims.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

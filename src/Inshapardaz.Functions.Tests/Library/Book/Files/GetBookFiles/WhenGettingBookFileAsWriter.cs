@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
 {
     [TestFixture]
-    public class WhenGettingBookFileAsWriter : FunctionTest
+    public class WhenGettingBookFileAsWriter : LibraryTest<Functions.Library.Books.Files.GetBookFiles>
     {
         private OkObjectResult _response;
 
@@ -26,8 +26,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
 
             _book = _dataBuilder.WithFiles(5).Build();
             var request = new RequestBuilder().Build();
-            var handler = Container.GetService<Functions.Library.Books.Files.GetBookFiles>();
-            _response = (OkObjectResult)await handler.Run(request, _book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = (BookFilesView)_response.Value;
         }

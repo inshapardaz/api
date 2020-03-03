@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Library;
+using Paramore.Brighter;
+using System;
 using System.IO;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Ports.Dictionaries;
-using Inshapardaz.Domain.Ports.Handlers.Library;
-using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Domain.Repositories.Library;
-using Paramore.Brighter;
 using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Ports.Library
@@ -48,7 +47,9 @@ namespace Inshapardaz.Domain.Ports.Library
             if (book != null)
             {
                 var url = await StoreFile(book.Id, command.Content.FileName, command.Content.Contents, cancellationToken);
-                var file = await _fileRepository.AddFile(command.Content, url, true, cancellationToken);
+                command.Content.FilePath = url;
+                command.Content.IsPublic = true;
+                var file = await _fileRepository.AddFile(command.Content, cancellationToken);
                 await _bookRepository.AddBookFile(book.Id, file.Id, cancellationToken);
 
                 command.Result = file;

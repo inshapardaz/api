@@ -8,16 +8,15 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
 {
     [TestFixture]
-    public class WhenGettingBookFileForNonExistingBook : FunctionTest
+    public class WhenGettingBookFileForNonExistingBook : LibraryTest<Functions.Library.Books.Files.GetBookFiles>
     {
         private NotFoundResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var handler = Container.GetService<Functions.Library.Books.Files.GetBookFiles>();
             var request = new RequestBuilder().Build();
-            _response = (NotFoundResult) await handler.Run(request, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NotFoundResult)await handler.Run(request, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

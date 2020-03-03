@@ -10,6 +10,8 @@
 
         public string Content { get; set; }
 
+        public string ContentUrl { get; set; }
+
         public string MimeType { get; set; }
     }
 }

@@ -1,6 +1,3 @@
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
@@ -10,6 +7,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Files
 {
@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Files
         [FunctionName("DeleteFile")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "files/{id:int}")] HttpRequest req,
-            ILogger log, 
+            ILogger log,
             int id,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)

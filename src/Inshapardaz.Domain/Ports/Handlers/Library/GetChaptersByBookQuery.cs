@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Repositories.Library;
+using Paramore.Darker;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Handlers.Library;
-using Inshapardaz.Domain.Repositories.Library;
-using Paramore.Brighter;
-using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
@@ -37,15 +36,7 @@ namespace Inshapardaz.Domain.Ports.Library
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
             if (book == null) return null;
 
-            var chapters = await _chapterRepository.GetChaptersByBook(command.BookId, cancellationToken);
-
-            foreach (var chapter in chapters)
-            {
-                var contents = await _chapterRepository.GetChapterContents(command.BookId, chapter.Id, cancellationToken);
-                chapter.Contents = contents;
-            }
-
-            return chapters;
+            return await _chapterRepository.GetChaptersByBook(command.BookId, cancellationToken);
         }
     }
 }

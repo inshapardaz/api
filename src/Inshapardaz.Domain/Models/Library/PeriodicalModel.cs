@@ -1,6 +1,6 @@
 ﻿namespace Inshapardaz.Domain.Models.Library
 {
-    public class Periodical
+    public class PeriodicalModel
     {
         public int Id { get; set; }
 
@@ -10,6 +10,10 @@
 
         public int? ImageId { get; set; }
 
+        public string ImageUrl { get; set; }
+
         public int? CategoryId { get; set; }
+
+        public int IssueCount { get; set; }
     }
 }

@@ -1,14 +1,12 @@
-﻿using System;
+﻿using Dapper;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Repositories.Library;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Repositories.Library;
-using Microsoft.EntityFrameworkCore;
-using BookModel = Inshapardaz.Domain.Models.Library.BookModel;
-using Dapper;
-using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
@@ -396,7 +394,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                             Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
                             Left Outer Join Library.Category c ON bc.CategoryId = c.Id
                             Where b.LibraryId = @LibraryId AND b.Id = @Id";
-                var retval = await connection.QueryAsync<BookModel, CategoryModel, BookModel>(sql, (b, c) =>
+                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(sql, (b, c) =>
                 {
                     if (book == null)
                     {
@@ -404,10 +402,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                     }
 
                     book.Categories.Add(c);
-                    return b;
+                    return book;
                 }, new { LibraryId = libraryId, Id = bookId, UserId = userId });
 
-                return retval?.FirstOrDefault();
+                return book;
             }
         }
 
@@ -467,28 +465,28 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
         }
 
-        public async Task AddBookToFavorites(Guid userId, int bookId, CancellationToken cancellationToken)
+        public async Task AddBookToFavorites(int libraryId, Guid? userId, int bookId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var check = "Select count(*) From Library.FavoriteBooks Where f.UserId = @UserId And BookId = @BookId;";
-                var commandCheck = new CommandDefinition(check, new { UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
+                var check = "Select count(*) From Library.FavoriteBooks Where LibraryId = @LibraryId And UserId = @UserId And BookId = @BookId;";
+                var commandCheck = new CommandDefinition(check, new { LibraryId = libraryId, UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
                 var count = await connection.ExecuteScalarAsync<int>(commandCheck);
 
                 if (count > 0) return;
 
-                var sql = @"Delete From Library.FavoriteBooks Where f.UserId = @UserId And BookId = @BookId;";
-                var command = new CommandDefinition(sql, new { UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
+                var sql = @"Delete From Library.FavoriteBooks Where LibraryId = @LibraryId And UserId = @UserId And BookId = @BookId;";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
 
-        public async Task DeleteBookFromFavorites(Guid userId, int bookId, CancellationToken cancellationToken)
+        public async Task DeleteBookFromFavorites(int libraryId, Guid userId, int bookId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From Library.FavoriteBooks Where f.UserId = @UserId And BookId = @BookId";
-                var command = new CommandDefinition(sql, new { UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
+                var sql = @"Delete From Library.FavoriteBooks Where LibraryId = @LibraryId And UserId = @UserId And BookId = @BookId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }

@@ -16,9 +16,6 @@
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
 
     <PackageReference Include="Microsoft.Data.SQLite" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Paramore.Brighter" Version="7.4.2" />
     <PackageReference Include="Paramore.Darker" Version="2.0.78" />

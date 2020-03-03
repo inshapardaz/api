@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace Inshapardaz.Ports.Database.Entities.Library
+namespace Inshapardaz.Domain.Models.Library
 {
-    public class Issue
+    public class IssueModel
     {
         public int Id { get; set; }
 
@@ -17,8 +16,6 @@ namespace Inshapardaz.Ports.Database.Entities.Library
 
         public int PeriodicalId { get; set; }
 
-        public virtual Periodical Periodical { get; set; }
-
-        public virtual ICollection<Article> Articles { get; set; }
+        public virtual PeriodicalModel Periodical { get; set; }
     }
 }

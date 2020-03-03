@@ -1,22 +1,18 @@
-﻿using System;
+﻿using Inshapardaz.Domain.Repositories.Library;
+using Paramore.Brighter;
+using System;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Repositories.Library;
-using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class DeleteBookToFavoriteRequest : RequestBase
+    public class DeleteBookToFavoriteRequest : BookRequest
     {
-        public DeleteBookToFavoriteRequest(int bookId, Guid user)
+        public DeleteBookToFavoriteRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid userId)
+            : base(claims, libraryId, bookId, userId)
         {
-            BookId = bookId;
-            User = user;
         }
-
-        public int BookId { get; }
-
-        public Guid User { get; }
     }
 
     public class DeleteBookToFavoriteRequestHandler : RequestHandlerAsync<DeleteBookToFavoriteRequest>
@@ -28,9 +24,10 @@ namespace Inshapardaz.Domain.Ports.Library
             _bookRepository = bookRepository;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<DeleteBookToFavoriteRequest> HandleAsync(DeleteBookToFavoriteRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            await _bookRepository.AddBookToFavorites(command.User, command.BookId, cancellationToken);
+            await _bookRepository.AddBookToFavorites(command.LibraryId, command.UserId, command.BookId, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

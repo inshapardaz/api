@@ -1,6 +1,3 @@
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extensions;
@@ -10,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Authors
 {

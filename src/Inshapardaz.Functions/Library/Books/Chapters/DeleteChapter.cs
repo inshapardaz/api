@@ -1,6 +1,3 @@
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
@@ -10,6 +7,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters
 {
@@ -22,23 +22,15 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("DeleteChapter")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "books/{bookId:int}/chapters/{chapterId:int}")] HttpRequest req,
-            int bookId, int chapterId,
-            [AccessToken] ClaimsPrincipal principal,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/books/{bookId:int}/chapters/{chapterId:int}")] HttpRequest req,
+            int libraryId,
+            int bookId,
+            int chapterId,
+            [AccessToken] ClaimsPrincipal claims,
             ILogger log,
             CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
-            var request = new DeleteChapterRequest(bookId, chapterId, principal.GetUserId());
+            var request = new DeleteChapterRequest(claims, libraryId, bookId, chapterId, claims.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

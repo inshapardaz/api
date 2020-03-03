@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
@@ -9,10 +6,13 @@ using Inshapardaz.Functions.Library.Files;
 using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 
 namespace Inshapardaz.Functions.Converters
 {
-    public static class AuthorsRenderer 
+    public static class AuthorsRenderer
     {
         public static PageView<AuthorView> Render(this PageRendererArgs<AuthorModel> source, ClaimsPrincipal principal)
         {
@@ -21,7 +21,6 @@ namespace Inshapardaz.Functions.Converters
                 Data = source.Page.Data?.Select(x => x.Render(principal))
             };
 
-            
             var links = new List<LinkView>
             {
                 source.LinkFunc(page.CurrentPageIndex, page.PageSize, RelTypes.Self)

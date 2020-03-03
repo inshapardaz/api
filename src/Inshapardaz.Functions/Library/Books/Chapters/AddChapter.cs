@@ -1,7 +1,3 @@
-using System.IO;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
@@ -13,8 +9,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Newtonsoft.Json;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters
 {
@@ -27,29 +25,20 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("AddChapter")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/{bookId:int}/chapters")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books/{bookId:int}/chapters")] HttpRequest req,
+            int libraryId,
             int bookId,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
             var chapter = await GetBody<ChapterView>(req);
 
-            var request = new AddChapterRequest(bookId, chapter.Map(), principal.GetUserId());
+            var request = new AddChapterRequest(claims, libraryId, bookId, chapter.Map(), claims.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)
             {
-                var renderResult = request.Result.Render(principal);
+                var renderResult = request.Result.Render(claims);
                 return new CreatedResult(renderResult.Links.Self(), renderResult);
             }
 

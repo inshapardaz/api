@@ -1,12 +1,12 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Authentication
 {
@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Authentication
 
         public async Task<object> GetValueAsync()
         {
-            if(_request.Headers.ContainsKey(AUTH_HEADER_NAME) && 
+            if (_request.Headers.ContainsKey(AUTH_HEADER_NAME) &&
                _request.Headers[AUTH_HEADER_NAME].ToString().StartsWith(BEARER_PREFIX))
             {
                 var token = _request.Headers["Authorization"].ToString().Substring(BEARER_PREFIX.Length);
@@ -39,7 +39,7 @@ namespace Inshapardaz.Functions.Authentication
                 var parameters = new TokenValidationParameters
                 {
                     ValidIssuer = $"https://{_issuer}/",
-                    ValidAudiences = new[] {_audience},
+                    ValidAudiences = new[] { _audience },
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKeys = config.SigningKeys
                 };

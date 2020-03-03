@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
 {
     [TestFixture]
-    public class WhenGettingChaptersByBookAsAdministrator : FunctionTest
+    public class WhenGettingChaptersByBookAsAdministrator : LibraryTest<Functions.Library.Books.Chapters.GetChaptersByBook>
     {
         private OkObjectResult _response;
         private ListView<ChapterView> _view;
@@ -26,8 +26,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
             var chapters = dataBuilder.WithContents().AsPublic().Build(4);
             var book = chapters.First().Book;
 
-            var handler = Container.GetService<Functions.Library.Books.Chapters.GetChaptersByBook>();
-            _response = (OkObjectResult) await handler.Run(null, book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(null, LibraryId, book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<ChapterView>;
         }
@@ -37,7 +36,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
         {
             Cleanup();
         }
-        
+
         [Test]
         public void ShouldReturnOk()
         {
@@ -61,7 +60,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
                         .ShouldHaveSomeHref();
         }
 
-         [Test]
+        [Test]
         public void ShouldHaveCorrectNumberOfChapters()
         {
             Assert.That(_view.Items.Count(), Is.EqualTo(4));

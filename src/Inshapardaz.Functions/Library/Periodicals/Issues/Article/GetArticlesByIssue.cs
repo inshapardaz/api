@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Library.Periodicals.Issues.Article
             // pageNumber
             // pageSize
             // orderBy
-             return new OkObjectResult($"GET:Articles for Issue {issueId} for Periodical {periodicalId}");
+            return new OkObjectResult($"GET:Articles for Issue {issueId} for Periodical {periodicalId}");
         }
     }
 }

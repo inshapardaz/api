@@ -1,7 +1,6 @@
 ﻿using Inshapardaz.Domain.Exception;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Extensions

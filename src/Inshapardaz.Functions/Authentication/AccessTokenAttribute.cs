@@ -1,5 +1,5 @@
-using System;
 using Microsoft.Azure.WebJobs.Description;
+using System;
 
 namespace Inshapardaz.Functions.Authentication
 {

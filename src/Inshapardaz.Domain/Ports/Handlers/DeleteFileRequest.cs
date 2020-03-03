@@ -1,7 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Repositories;
+﻿using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports
 {
@@ -14,6 +14,7 @@ namespace Inshapardaz.Domain.Ports
 
         public int ImageId { get; private set; }
     }
+
     public class DeleteFileRequestHandler : RequestHandlerAsync<DeleteFileRequest>
     {
         private readonly IFileRepository _fileRepository;

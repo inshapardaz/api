@@ -12,6 +12,7 @@ namespace Inshapardaz.Domain.Helpers
         {
             return source.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
         }
+
         public static IQueryable<T> Paginate<T>(
             this IQueryable<T> source,
             int pageNumber,

@@ -1,14 +1,14 @@
-using System.Threading.Tasks;
+using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Commands;
+using Inshapardaz.Functions.Views;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
-using Inshapardaz.Functions.Commands;
-using Inshapardaz.Functions.Authentication;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using Inshapardaz.Functions.Views;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions
 {
@@ -16,11 +16,11 @@ namespace Inshapardaz.Functions
     {
         public GetEntry(IAmACommandProcessor commandProcessor)
             : base(commandProcessor)
-        {   
+        {
         }
 
         [FunctionName("GetEntry")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "entry")] HttpRequest req, 
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "entry")] HttpRequest req,
                                              ILogger log,
                                               [AccessToken] ClaimsPrincipal principal)
         {

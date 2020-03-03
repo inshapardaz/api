@@ -1,16 +1,16 @@
-﻿using System.Threading;
+﻿using Inshapardaz.Domain.Models;
+using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Domain.Repositories
 {
     public interface IFileRepository
     {
-        Task<FileModel> GetFileById(int id, bool isPublic, CancellationToken cancellationToken);
+        Task<FileModel> GetFileById(int id, CancellationToken cancellationToken);
 
-        Task<FileModel> AddFile(FileModel file, string url, bool isPublic, CancellationToken cancellationToken);
+        Task<FileModel> AddFile(FileModel file, CancellationToken cancellationToken);
 
-        Task<FileModel> UpdateFile(FileModel file, string url, bool isPublic, CancellationToken cancellationToken);
+        Task UpdateFile(FileModel file, CancellationToken cancellationToken);
 
         Task DeleteFile(int id, CancellationToken cancellationToken);
     }

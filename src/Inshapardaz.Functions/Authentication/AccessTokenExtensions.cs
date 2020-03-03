@@ -1,5 +1,5 @@
-using System;
 using Microsoft.Azure.WebJobs;
+using System;
 
 namespace Inshapardaz.Functions.Authentication
 {
@@ -15,5 +15,5 @@ namespace Inshapardaz.Functions.Authentication
             builder.AddExtension<AccessTokenExtensionProvider>();
             return builder;
         }
-    }   
+    }
 }

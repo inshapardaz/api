@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Models.Library
         public string Title { get; set; }
 
         public int BookId { get; set; }
-        
-        public IEnumerable<ChapterContentModel> Contents { get; set; }
+
+        public List<ChapterContentModel> Contents { get; set; } = new List<ChapterContentModel>();
     }
 }

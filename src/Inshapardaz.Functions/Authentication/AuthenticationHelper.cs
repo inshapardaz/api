@@ -1,9 +1,9 @@
+using Inshapardaz.Domain.Adapters;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Inshapardaz.Domain.Adapters;
-using Newtonsoft.Json;
 
 namespace Inshapardaz.Functions.Authentication
 {
@@ -12,6 +12,11 @@ namespace Inshapardaz.Functions.Authentication
         public bool IsWriter(ClaimsPrincipal claims)
         {
             return claims.IsWriter();
+        }
+
+        public bool IsAdministrator(this ClaimsPrincipal claims)
+        {
+            return claims.IsAdministrator();
         }
     }
 

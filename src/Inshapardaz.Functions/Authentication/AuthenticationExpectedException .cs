@@ -1,7 +1,7 @@
+using Inshapardaz.Functions.Views;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Inshapardaz.Functions.Views;
 
 namespace Inshapardaz.Functions.Authentication
 {
@@ -17,5 +17,5 @@ namespace Inshapardaz.Functions.Authentication
             response.Headers.WwwAuthenticate.Add(new AuthenticationHeaderValue("Bearer", "token_type=\"JWT\""));
             response.StatusCode = HttpStatusCode.Unauthorized;
         }
-}
+    }
 }

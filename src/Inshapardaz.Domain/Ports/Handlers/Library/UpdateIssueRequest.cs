@@ -1,14 +1,17 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class UpdateIssueRequest : RequestBase
+    public class UpdateIssueRequest : LibraryAuthorisedCommand
     {
-        public UpdateIssueRequest(int periodicalId, int issueId, Issue issue)
+        public UpdateIssueRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId, IssueModel issue)
+            : base(claims, libraryId)
         {
             PeriodicalId = periodicalId;
             IssueId = issueId;
@@ -19,13 +22,13 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public int IssueId { get; set; }
 
-        public Issue Issue { get; }
+        public IssueModel Issue { get; }
 
         public RequestResult Result { get; set; } = new RequestResult();
 
         public class RequestResult
         {
-            public Issue Issue { get; set; }
+            public IssueModel Issue { get; set; }
 
             public bool HasAddedNew { get; set; }
         }
@@ -40,20 +43,21 @@ namespace Inshapardaz.Domain.Ports.Library
             _issueRepository = issueRepository;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateIssueRequest> HandleAsync(UpdateIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _issueRepository.GetIssueById(command.PeriodicalId, command.IssueId, cancellationToken);
+            var result = await _issueRepository.GetIssueById(command.LibraryId, command.PeriodicalId, command.IssueId, cancellationToken);
 
             if (result == null)
             {
                 var Issue = command.Issue;
                 Issue.Id = default(int);
-                command.Result.Issue =  await  _issueRepository.AddIssue(command.PeriodicalId, Issue, cancellationToken);
+                command.Result.Issue = await _issueRepository.AddIssue(command.LibraryId, command.PeriodicalId, Issue, cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                await _issueRepository.UpdateIssue(command.PeriodicalId, command.Issue, cancellationToken);
+                await _issueRepository.UpdateIssue(command.LibraryId, command.PeriodicalId, command.Issue, cancellationToken);
                 command.Result.Issue = command.Issue;
             }
 

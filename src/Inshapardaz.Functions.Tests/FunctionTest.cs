@@ -2,7 +2,6 @@
 using System.Data;
 using FluentMigrator.Runner;
 using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Functions.Dictionaries;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Books.Chapters;
@@ -44,9 +43,7 @@ namespace Inshapardaz.Functions.Tests
                              .AddTransient<AuthorsDataBuilder>()
                              .AddTransient<BooksDataBuilder>()
                              .AddTransient<ChapterDataBuilder>()
-                             .AddTransient<DictionaryDataBuilder>()
-                             .AddSingleton<IFileStorage>(new FakeFileStorage())
-                             .AddTransient<DictionaryDataHelper>();
+                             .AddSingleton<IFileStorage>(new FakeFileStorage());
 
             RegisterHandlers(_builder);
             _startup.Configure(_builder);
@@ -142,12 +139,7 @@ namespace Inshapardaz.Functions.Tests
                    .AddTransient<GetChapterContents>()
                    .AddTransient<AddChapterContents>()
                    .AddTransient<UpdateChapterContents>()
-                   .AddTransient<DeleteChapterContents>()
-                   .AddTransient<GetDictionaries>()
-                   .AddTransient<GetDictionaryById>()
-                   .AddTransient<AddDictionary>()
-                   .AddTransient<UpdateDictionary>()
-                   .AddTransient<DeleteDictionary>();
+                   .AddTransient<DeleteChapterContents>();
         }
     }
 }

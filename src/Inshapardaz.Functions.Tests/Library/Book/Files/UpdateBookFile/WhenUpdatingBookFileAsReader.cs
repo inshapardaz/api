@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
 {
     [TestFixture]
-    public class WhenUpdatingBookFileAsReader : FunctionTest
+    public class WhenUpdatingBookFileAsReader : LibraryTest<Functions.Library.Books.Files.UpdateBookFile>
     {
         private ForbidResult _response;
 
@@ -27,8 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
             _book = _dataBuilder.WithFile().Build();
             _expected = new Faker().Image.Random.Bytes(50);
             var request = new RequestBuilder().WithBytes(_expected).BuildRequestMessage();
-            var handler = Container.GetService<Functions.Library.Books.Files.UpdateBookFile>();
-            _response = (ForbidResult)await handler.Run(request, _book.Id, _book.Files.First().Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, _book.Id, _book.Files.First().Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

@@ -7,7 +7,6 @@ namespace Inshapardaz.Functions.Extensions
 {
     public static class EnumExtensions
     {
-
         public static string GetEnumDescription<T>(string value)
         {
             Type type = typeof(T);
@@ -33,7 +32,7 @@ namespace Inshapardaz.Functions.Extensions
             if (memInfo.Length > 0)
             {
                 var attrs = memInfo.First().GetCustomAttributes(typeof(DescriptionAttribute), false);
-                
+
                 if (attrs.Any())
                 {
                     return ((DescriptionAttribute)attrs.First()).Description;
@@ -41,7 +40,6 @@ namespace Inshapardaz.Functions.Extensions
             }
 
             return value.ToString();
-
         }
 
         public static string GetFlagDescription<T>(T value)

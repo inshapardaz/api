@@ -1,11 +1,10 @@
-﻿using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Ports.Dictionaries;
-using Inshapardaz.Domain.Ports.Handlers.Library;
+﻿using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
@@ -41,7 +40,7 @@ namespace Inshapardaz.Domain.Ports.Library
             {
                 if (author.ImageId.HasValue)
                 {
-                    var image = await _fileRepository.GetFileById(author.ImageId.Value, true, cancellationToken);
+                    var image = await _fileRepository.GetFileById(author.ImageId.Value, cancellationToken);
                     if (image != null && !string.IsNullOrWhiteSpace(image.FilePath))
                     {
                         await _fileStore.TryDeleteImage(image.FilePath, cancellationToken);

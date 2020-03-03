@@ -1,12 +1,11 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Protocols;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Pipeline
 {
-
-    public class QueryStringBinding: IBinding
+    public class QueryStringBinding : IBinding
     {
         public Task<IValueProvider> BindAsync(BindingContext context)
         {

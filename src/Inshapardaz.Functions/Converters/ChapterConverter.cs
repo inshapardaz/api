@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Books.Chapters;
@@ -9,10 +6,13 @@ using Inshapardaz.Functions.Library.Books.Chapters.Contents;
 using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 
 namespace Inshapardaz.Functions.Converters
 {
-    public static class ChapterConverter 
+    public static class ChapterConverter
     {
         public static ListView<ChapterView> Render(this IEnumerable<ChapterModel> source, int bookId, ClaimsPrincipal principal)
         {
@@ -67,7 +67,7 @@ namespace Inshapardaz.Functions.Converters
             return result;
         }
 
-        public static ChapterContentView Render (this ChapterContentModel source, ClaimsPrincipal principal)
+        public static ChapterContentView Render(this ChapterContentModel source, ClaimsPrincipal principal)
         {
             var result = source.Map();
 
@@ -86,7 +86,6 @@ namespace Inshapardaz.Functions.Converters
 
             result.Links = links;
             return result;
-
         }
     }
 }

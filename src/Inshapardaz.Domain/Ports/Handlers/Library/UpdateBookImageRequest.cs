@@ -1,13 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Exception;
+﻿using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System;
+using System.IO;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Ports.Library
@@ -60,7 +60,7 @@ namespace Inshapardaz.Domain.Ports.Library
             if (book.ImageId.HasValue)
             {
                 command.Image.Id = book.ImageId.Value;
-                var existingImage = await _fileRepository.GetFileById(book.ImageId.Value, true, cancellationToken);
+                var existingImage = await _fileRepository.GetFileById(book.ImageId.Value, cancellationToken);
                 if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
                 {
                     await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
@@ -68,7 +68,9 @@ namespace Inshapardaz.Domain.Ports.Library
 
                 var url = await AddImageToFileStore(book.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
 
-                await _fileRepository.UpdateFile(command.Image, url, true, cancellationToken);
+                command.Image.FilePath = url;
+                command.Image.IsPublic = true;
+                await _fileRepository.UpdateFile(command.Image, cancellationToken);
                 command.Result.File = command.Image;
                 command.Result.File.Id = book.ImageId.Value;
             }
@@ -76,7 +78,9 @@ namespace Inshapardaz.Domain.Ports.Library
             {
                 command.Image.Id = default(int);
                 var url = await AddImageToFileStore(book.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
-                command.Result.File = await _fileRepository.AddFile(command.Image, url, true, cancellationToken);
+                command.Image.FilePath = url;
+                command.Image.IsPublic = true;
+                command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
                 command.Result.HasAddedNew = true;
 
                 book.ImageId = command.Result.File.Id;

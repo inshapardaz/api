@@ -1,6 +1,3 @@
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
@@ -11,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 {
@@ -23,35 +23,26 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 
         [FunctionName("UpdateChapterContents")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "books/{bookId:int}/chapter/{chapterId:int}/contents")] HttpRequest req,
-            int bookId, int chapterId, 
-            [AccessToken] ClaimsPrincipal principal = null,
-            CancellationToken token = default(CancellationToken))
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/books/{bookId:int}/chapter/{chapterId:int}/contents")] HttpRequest req,
+            int libraryId,
+            int bookId, int chapterId,
+            [AccessToken] ClaimsPrincipal claims,
+            CancellationToken token = default)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
             var contents = await ReadBody(req);
             var contentType = GetHeader(req, "Accept", "text/markdown");
 
-            var request = new UpdateChapterContentRequest(bookId, chapterId, contents, contentType, principal.GetUserId());
+            var request = new UpdateChapterContentRequest(claims, libraryId, bookId, chapterId, contents, contentType, claims.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)
             {
                 if (request.Result.HasAddedNew)
                 {
-                    var renderResult = request.Result.ChapterContent.Render(principal);
+                    var renderResult = request.Result.ChapterContent.Render(claims);
                     return new CreatedResult(renderResult.Links.Self(), renderResult);
                 }
-                
+
                 return new NoContentResult();
             }
 

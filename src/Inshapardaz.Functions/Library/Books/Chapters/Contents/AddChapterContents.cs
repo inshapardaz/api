@@ -1,6 +1,3 @@
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
@@ -11,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 {
@@ -23,30 +23,21 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 
         [FunctionName("AddChapterContents")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "books/{bookId:int}/chapters/{chapterId:int}/contents")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books/{bookId:int}/chapters/{chapterId:int}/contents")] HttpRequest req,
+            int libraryId,
             int bookId, int chapterId,
-            [AccessToken] ClaimsPrincipal principal = null,
-            CancellationToken token = default(CancellationToken))
+            [AccessToken] ClaimsPrincipal claims,
+            CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsWriter())
-            {
-                return new ForbidResult("Bearer");
-            }
-
             var contents = await ReadBody(req);
             var contentType = GetHeader(req, "Accept", "text/markdown");
 
-            var request = new AddChapterContentRequest(bookId, chapterId, contents, contentType, principal.GetUserId());
+            var request = new AddChapterContentRequest(claims, libraryId, bookId, chapterId, contents, contentType, claims.GetUserId());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)
             {
-                var renderResult = request.Result.Render(principal);
+                var renderResult = request.Result.Render(claims);
                 return new CreatedResult(renderResult.Links.Self(), renderResult);
             }
 

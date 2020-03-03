@@ -1,16 +1,19 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
     public class UpdateChapterContentRequest : BookRequest
     {
-        public UpdateChapterContentRequest(int bookId, int chapterId, string contents, string mimetype, Guid userId)
-            : base(bookId, userId)
+        public UpdateChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string contents, string mimetype, Guid userId)
+            : base(claims, libraryId, bookId, userId)
         {
             ChapterId = chapterId;
             Contents = contents;
@@ -22,7 +25,6 @@ namespace Inshapardaz.Domain.Ports.Library
         public string Contents { get; set; }
 
         public int ChapterId { get; set; }
-
 
         public RequestResult Result { get; set; } = new RequestResult();
 
@@ -37,36 +39,66 @@ namespace Inshapardaz.Domain.Ports.Library
     public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChapterContentRequest>
     {
         private readonly IChapterRepository _chapterRepository;
+        private readonly IFileStorage _fileStorage;
 
-        public UpdateChapterContentRequestHandler(IChapterRepository chapterRepository)
+        public UpdateChapterContentRequestHandler(IChapterRepository chapterRepository, IFileStorage fileStorage)
         {
             _chapterRepository = chapterRepository;
+            _fileStorage = fileStorage;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateChapterContentRequest> HandleAsync(UpdateChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var chapterContent = await _chapterRepository.GetChapterContent(command.BookId, command.ChapterId, command.MimeType, cancellationToken);
+            var contentUrl = await _chapterRepository.GetChapterContentUrl(command.ChapterId, command.MimeType, cancellationToken);
 
-            if (chapterContent == null)
+            if (contentUrl == null)
             {
-                command.Result.ChapterContent =  await  _chapterRepository.AddChapterContent(command.BookId, 
+                var name = GenerateChapterContentUrl(command.BookId, command.ChapterId, command.MimeType);
+                var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
+
+                command.Result.ChapterContent = await _chapterRepository.AddChapterContent(command.BookId,
                                                                                              command.ChapterId,
-                                                                                             command.MimeType, 
-                                                                                             command.Contents,
+                                                                                             command.MimeType,
+                                                                                             actualUrl,
                                                                                              cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                await _chapterRepository.UpdateChapterContent(command.BookId, 
+                string url = contentUrl ?? GenerateChapterContentUrl(command.BookId, command.ChapterId, command.MimeType);
+                var actualUrl = await _fileStorage.StoreTextFile(url, command.Contents, cancellationToken);
+
+                await _chapterRepository.UpdateChapterContent(command.BookId,
                                                               command.ChapterId,
-                                                              command.MimeType, 
-                                                              command.Contents,
+                                                              command.MimeType,
+                                                              actualUrl,
                                                               cancellationToken);
-                command.Result.ChapterContent = chapterContent;
+                command.Result.ChapterContent = await _chapterRepository.GetChapterContent(command.ChapterId, command.MimeType, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);
+        }
+
+        private string GenerateChapterContentUrl(int bookId, int chapterId, string mimeType)
+        {
+            var extension = MimetypeToExtension(mimeType);
+            return $"books/{bookId}/chapters/{chapterId}.{extension}";
+        }
+
+        private string MimetypeToExtension(string mimeType)
+        {
+            switch (mimeType.ToLower())
+            {
+                case "text/plain": return "txt";
+                case "text/markdown": return "md";
+                case "text/html": return "md";
+                case "application/msword": return "doc";
+                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": return "doc";
+                case "application/pdf": return "pdf";
+                case "application/epub+zip": return "epub";
+                default: throw new BadRequestException();
+            }
         }
     }
 }

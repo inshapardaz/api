@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Inshapardaz.Domain.Repositories;
+using Paramore.Brighter;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Repositories;
-using Paramore.Brighter;
 using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Ports
@@ -18,6 +18,7 @@ namespace Inshapardaz.Domain.Ports
         public FileModel File { get; set; }
         public FileModel Response { get; set; }
     }
+
     public class AddFileRequestHandler : RequestHandlerAsync<AddFileRequest>
     {
         private readonly IFileRepository _fileRepository;
@@ -32,7 +33,9 @@ namespace Inshapardaz.Domain.Ports
         public override async Task<AddFileRequest> HandleAsync(AddFileRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var url = await AddImageToFileStore(command.File.FileName, command.File.Contents, cancellationToken);
-            command.Response = await _fileRepository.AddFile(command.File, url, true, cancellationToken);
+            command.File.FilePath = url;
+            command.File.IsPublic = true;
+            command.Response = await _fileRepository.AddFile(command.File, cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
 

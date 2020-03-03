@@ -1,21 +1,24 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class AddPeriodicalRequest : RequestBase
+    public class AddPeriodicalRequest : LibraryAuthorisedCommand
     {
-        public AddPeriodicalRequest(Periodical periodical)
+        public AddPeriodicalRequest(ClaimsPrincipal claims, int libraryId, PeriodicalModel periodical)
+            : base(claims, libraryId)
         {
             Periodical = periodical;
         }
 
-        public Periodical Periodical { get; }
+        public PeriodicalModel Periodical { get; }
 
-        public Periodical Result { get; set; }
+        public PeriodicalModel Result { get; set; }
     }
 
     public class AddPeriodicalRequestHandler : RequestHandlerAsync<AddPeriodicalRequest>
@@ -27,11 +30,12 @@ namespace Inshapardaz.Domain.Ports.Library
             _periodicalRepository = periodicalRepository;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<AddPeriodicalRequest> HandleAsync(AddPeriodicalRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            command.Result= await _periodicalRepository.AddPeriodical(command.Periodical, cancellationToken);
+            command.Result = await _periodicalRepository.AddPeriodical(command.LibraryId, command.Periodical, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }
-    } 
+    }
 }

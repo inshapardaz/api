@@ -1,5 +1,5 @@
-using System;
 using Microsoft.Azure.WebJobs;
+using System;
 
 namespace Inshapardaz.Functions.Pipeline
 {
@@ -15,5 +15,5 @@ namespace Inshapardaz.Functions.Pipeline
             builder.AddExtension<QueryStringExtensionProvider>();
             return builder;
         }
-    }   
+    }
 }

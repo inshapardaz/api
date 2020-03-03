@@ -8,6 +8,8 @@ namespace Inshapardaz.Domain.Models
 
         public string MimeType { get; set; }
 
+        public bool IsPublic { get; set; }
+
         public string FileName { get; set; }
 
         public DateTime DateCreated { get; set; }

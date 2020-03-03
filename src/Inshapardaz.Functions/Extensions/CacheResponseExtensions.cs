@@ -7,7 +7,7 @@ namespace Inshapardaz.Functions.Extensions
 {
     public static class CacheResponseExtensions
     {
-        private static  TimeSpan defaultTimeSpan = TimeSpan.FromDays(1);
+        private static TimeSpan defaultTimeSpan = TimeSpan.FromDays(1);
 
         public static HttpResponseMessage CreateCachedResponse<T>(this HttpRequestMessage request, HttpStatusCode statusCode, T value, TimeSpan? maxAge = null)
         {

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Paramore.Brighter;
+using System;
 using System.Security.Claims;
-using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports
 {

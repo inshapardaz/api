@@ -1,14 +1,15 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Ports.Handlers.Library;
+﻿using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
     public class DeleteCategoryRequest : LibraryBaseCommand
     {
-        public DeleteCategoryRequest(int libraryId, int categoryId)
+        public DeleteCategoryRequest(ClaimsPrincipal claims, int libraryId, int categoryId)
             : base(libraryId)
         {
             CategoryId = categoryId;
@@ -26,6 +27,7 @@ namespace Inshapardaz.Domain.Ports.Library
             _categoryRepository = categoryRepository;
         }
 
+        [LibraryAdminAuthorise(step: 1, HandlerTiming.Before)]
         public override async Task<DeleteCategoryRequest> HandleAsync(DeleteCategoryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             await _categoryRepository.DeleteCategory(command.LibraryId, command.CategoryId, cancellationToken);

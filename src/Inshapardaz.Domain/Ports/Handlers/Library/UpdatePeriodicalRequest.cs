@@ -1,25 +1,28 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class UpdatePeriodicalRequest : RequestBase
+    public class UpdatePeriodicalRequest : LibraryAuthorisedCommand
     {
-        public UpdatePeriodicalRequest(Periodical periodical)
+        public UpdatePeriodicalRequest(ClaimsPrincipal claims, int libraryId, PeriodicalModel periodical)
+            : base(claims, libraryId)
         {
             Periodical = periodical;
         }
 
-        public Periodical Periodical { get; }
+        public PeriodicalModel Periodical { get; }
 
         public RequestResult Result { get; set; } = new RequestResult();
 
         public class RequestResult
         {
-            public Periodical Periodical { get; set; }
+            public PeriodicalModel Periodical { get; set; }
 
             public bool HasAddedNew { get; set; }
         }
@@ -34,20 +37,21 @@ namespace Inshapardaz.Domain.Ports.Library
             _periodicalRepository = periodicalRepository;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdatePeriodicalRequest> HandleAsync(UpdatePeriodicalRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _periodicalRepository.GetPeriodicalById(command.Periodical.Id, cancellationToken);
+            var result = await _periodicalRepository.GetPeriodicalById(command.LibraryId, command.Periodical.Id, cancellationToken);
 
             if (result == null)
             {
                 var periodical = command.Periodical;
                 periodical.Id = default(int);
-                command.Result.Periodical =  await _periodicalRepository.AddPeriodical(periodical, cancellationToken);
+                command.Result.Periodical = await _periodicalRepository.AddPeriodical(command.LibraryId, periodical, cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                await _periodicalRepository.UpdatePeriodical(command.Periodical, cancellationToken);
+                await _periodicalRepository.UpdatePeriodical(command.LibraryId, command.Periodical, cancellationToken);
                 command.Result.Periodical = command.Periodical;
             }
 

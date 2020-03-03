@@ -1,12 +1,11 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Protocols;
+using System;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Authentication
 {
-
     public class AccessTokenBinding : IBinding
     {
         public Task<IValueProvider> BindAsync(BindingContext context)

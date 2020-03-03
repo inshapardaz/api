@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
 {
     [TestFixture]
-    public class WhenGettingChaptersByBookWithNoChapters : FunctionTest
+    public class WhenGettingChaptersByBookWithNoChapters : LibraryTest<Functions.Library.Books.Chapters.GetChaptersByBook>
     {
         private OkObjectResult _response;
         private ListView<ChapterView> _view;
@@ -25,8 +25,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
             var dataBuilder = Container.GetService<BooksDataBuilder>();
             var book = dataBuilder.Build();
 
-            var handler = Container.GetService<Functions.Library.Books.Chapters.GetChaptersByBook>();
-            _response = (OkObjectResult) await handler.Run(null, book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(null, LibraryId, book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<ChapterView>;
         }
@@ -36,7 +35,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
         {
             Cleanup();
         }
-        
+
         [Test]
         public void ShouldReturnOk()
         {
@@ -60,7 +59,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
                         .ShouldHaveSomeHref();
         }
 
-         [Test]
+        [Test]
         public void ShouldHaveNoChapters()
         {
             Assert.That(_view.Items, Is.Not.Null);

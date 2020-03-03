@@ -1,239 +1,168 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using Dapper;
+using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Repositories.Library;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Domain.Repositories.Library;
-using Microsoft.EntityFrameworkCore;
-using ChapterModel = Inshapardaz.Domain.Models.Library.ChapterModel;
-using ChapterContentModel = Inshapardaz.Domain.Models.Library.ChapterContentModel;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
     public class ChapterRepository : IChapterRepository
     {
-        private readonly IDatabaseContext _databaseContext;
-        private readonly IFileStorage _fileStorage;
+        private readonly IProvideConnection _connectionProvider;
 
-        public ChapterRepository(IDatabaseContext databaseContext, IFileStorage fileStorage)
+        public ChapterRepository(IProvideConnection connectionProvider)
         {
-            _databaseContext = databaseContext;
-            _fileStorage = fileStorage;
+            _connectionProvider = connectionProvider;
         }
 
         public async Task<ChapterModel> AddChapter(int bookId, ChapterModel chapter, CancellationToken cancellationToken)
         {
-            var book = await _databaseContext.Book
-                                               .SingleOrDefaultAsync(t => t.Id == bookId,
-                                                                     cancellationToken);
-            if (book == null)
+            int id;
+            using (var connection = _connectionProvider.GetConnection())
             {
-                throw new NotFoundException();
+                var sql = "Insert Into Library.Chapter (Title, BookId, ChapterNumber) Output Inserted.Id Values (@Title, @BookId, @ChapterNumber)";
+                var command = new CommandDefinition(sql, new { Title = chapter.Title, BookId = bookId, ChapterNumber = chapter.ChapterNumber }, cancellationToken: cancellationToken);
+                id = await connection.ExecuteScalarAsync<int>(command);
             }
 
-            var item = chapter.Map();
-
-            item.Book = book;
-            _databaseContext.Chapter.Add(item);
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-
-            return item.Map();
+            return await GetChapterById(id, cancellationToken);
         }
 
         public async Task UpdateChapter(ChapterModel chapter, CancellationToken cancellationToken)
         {
-            var existingEntity = await _databaseContext.Chapter
-                                                       .SingleOrDefaultAsync(g => g.Id == chapter.Id,
-                                                                             cancellationToken);
-
-            if (existingEntity == null)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                throw new NotFoundException();
+                var sql = "Update Library.Chapter Set Title = @Title, BookId = @BookId, ChapterNumber = @ChapterNumber Where Id = @Id";
+                var command = new CommandDefinition(sql, chapter, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
             }
-
-            existingEntity.Title = chapter.Title;
-            existingEntity.ChapterNumber = chapter.ChapterNumber;
-            existingEntity.BookId = chapter.BookId;
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
         }
 
         public async Task DeleteChapter(int chapterId, CancellationToken cancellationToken)
         {
-            var chapter = await _databaseContext.Chapter
-                                                .Include(c => c.Contents)
-                                                .SingleOrDefaultAsync(g => g.Id == chapterId, cancellationToken);
-
-            if (chapter != null)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                _databaseContext.Chapter.Remove(chapter);
-
-                foreach (var content in chapter.Contents)
-                {
-                    if (string.IsNullOrWhiteSpace(content.ContentUrl))
-                    {
-                        await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
-                    }
-                }
-
-                await _databaseContext.SaveChangesAsync(cancellationToken);
+                var sql = "Delete From Library.Chapter Where Id = @Id";
+                var command = new CommandDefinition(sql, new { Id = chapterId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
             }
         }
 
         public async Task<IEnumerable<ChapterModel>> GetChaptersByBook(int bookId, CancellationToken cancellationToken)
         {
-            return await _databaseContext.Chapter
-                                         .Where(c => c.BookId == bookId)
-                                         .OrderBy(c => c.ChapterNumber)
-                                         .Select(t => t.Map())
-                                         .ToListAsync(cancellationToken);
-        }
-
-        public async Task<int> GetChapterCountByBook(int bookId, CancellationToken cancellationToken)
-        {
-            return await _databaseContext.Chapter
-                                         .CountAsync(c => c.BookId == bookId, cancellationToken);
-        }
-
-        public async Task<IEnumerable<ChapterContentModel>> GetChapterContents(int bookId, int chapterId, CancellationToken cancellationToken)
-        {
-            return await _databaseContext.ChapterContent
-                                         .Include(c => c.Chapter)
-                                         .ThenInclude(c => c.Book)
-                                         .Where(c => c.ChapterId == chapterId)
-                                         .Select(t => t.Map())
-                                         .ToArrayAsync(cancellationToken);
-        }
-
-        public async Task<ChapterContentModel> GetChapterContentById(int bookId, int chapterId, int id, CancellationToken cancellationToken)
-        {
-            var chapterContent = await _databaseContext.ChapterContent
-                                                       .Include(c => c.Chapter)
-                                                       .ThenInclude(c => c.Book)
-                                                       .Where(c => c.Id == id)
-                                                       .SingleOrDefaultAsync(cancellationToken);
-
-            if (chapterContent != null && !string.IsNullOrWhiteSpace(chapterContent.ContentUrl))
+            using (var connection = _connectionProvider.GetConnection())
             {
-                var result = chapterContent.Map();
-                var content = await _fileStorage.GetTextFile(chapterContent.ContentUrl, cancellationToken);
-                if (content != null)
+                var chapters = new Dictionary<int, ChapterModel>();
+
+                var sql = @"Select c.*, cc.Id, cc.MimeType From Library.Chapter c
+                            Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
+                            Where c.BookId = @BookId";
+                var command = new CommandDefinition(sql, new { BookId = bookId }, cancellationToken: cancellationToken);
+                await connection.QueryAsync<ChapterModel, int, string, ChapterModel>(command, (c, id, mimeType) =>
                 {
-                    result.Content = content;
-                    return result;
-                }
-            }
-            
-            return null;
-        }
+                    if (!chapters.TryGetValue(c.Id, out ChapterModel chapter))
+                        chapters.Add(c.Id, chapter = c);
 
-        public async Task<ChapterContentModel> GetChapterContent(int bookId, int chapterId, string mimeType, CancellationToken cancellationToken)
-        {
-            var chapterContent = await _databaseContext.ChapterContent
-                                                       .Include(c => c.Chapter)
-                                                       .ThenInclude(c => c.Book)
-                                                       .Where(c => c.ChapterId == chapterId && c.MimeType == mimeType)
-                                                       .SingleOrDefaultAsync(cancellationToken);
+                    chapter.Contents.Add(new ChapterContentModel
+                    {
+                        BookId = c.BookId,
+                        ChapterId = c.Id,
+                        MimeType = mimeType,
+                        Id = id
+                    });
 
-            if (chapterContent != null && !string.IsNullOrWhiteSpace(chapterContent.ContentUrl))
-            {
-                var result = chapterContent.Map();
-                var content = await _fileStorage.GetTextFile(chapterContent.ContentUrl, cancellationToken);
-                if (content != null)
-                {
-                    result.Content = content;
-                    return result;
-                }
-            }
-            
-            return null;
-        }
+                    return chapter;
+                });
 
-        public async Task<ChapterContentModel> AddChapterContent(int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken)
-        {
-            var name = GenerateChapterContentUrl(bookId, chapterId, mimeType);
-            var actualUrl = await _fileStorage.StoreTextFile(name, contents, cancellationToken);
-            var chapterContent = new Entities.Library.ChapterContent
-            {
-                ChapterId = chapterId,
-                MimeType = mimeType,
-                ContentUrl = actualUrl
-            };
-            _databaseContext.ChapterContent
-                            .Add(chapterContent);
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-            var result = chapterContent.Map();
-            result.Content = contents;
-            return result;
-        }
-
-        public async Task UpdateChapterContent(int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken)
-        {
-            var content = await _databaseContext.ChapterContent.SingleAsync(c => c.ChapterId == chapterId && c.MimeType == mimeType, cancellationToken);
-
-            string name = content != null ? content.ContentUrl : GenerateChapterContentUrl(bookId, chapterId, mimeType);
-            var actualUrl = await _fileStorage.StoreTextFile(name, contents, cancellationToken);
-
-            if (content == null)
-            {
-                var entity = new Entities.Library.ChapterContent()
-                {
-                    ChapterId = chapterId,
-                    MimeType = mimeType,
-                    ContentUrl = actualUrl
-                };
-
-                await _databaseContext.ChapterContent.AddAsync(entity, cancellationToken);
-            }
-            else if (content.ContentUrl != actualUrl)
-            {
-                content.ContentUrl = actualUrl;
-                await _databaseContext.SaveChangesAsync(cancellationToken);
-
-            }
-        }
-
-        public async Task DeleteChapterContentById(int bookId, int chapterId, int contentId, CancellationToken cancellationToken)
-        {
-            var content = await _databaseContext.ChapterContent.SingleOrDefaultAsync(c => c.Id == contentId, cancellationToken);
-            if (content != null)
-            {
-                await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
-                _databaseContext.ChapterContent.Remove(content);
-                await _databaseContext.SaveChangesAsync(cancellationToken);
+                return chapters.Values;
             }
         }
 
         public async Task<ChapterModel> GetChapterById(int chapterId, CancellationToken cancellationToken)
         {
-            var chapter = await _databaseContext.Chapter
-                                                .Include(c => c.Contents)
-                                               .SingleOrDefaultAsync(t => t.Id == chapterId,
-                                                                     cancellationToken);
-            return chapter.Map();
-        }
-
-        private string GenerateChapterContentUrl(int bookId, int chapterId, string mimeType)
-        {
-            var extension = MimetypeToExtension(mimeType);
-            return $"books/{bookId}/chapters/{chapterId}.{extension}";
-        }
-
-        private string MimetypeToExtension(string mimeType)
-        {
-            switch (mimeType.ToLower())
+            using (var connection = _connectionProvider.GetConnection())
             {
-                case "text/plain": return "txt";
-                case "text/markdown": return "md";
-                case "text/html": return "md";
-                case "application/msword": return "doc";
-                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": return "doc";
-                case "application/pdf": return "pdf";
-                case "application/epub+zip": return "epub";
-                default: throw new BadRequestException();
+                ChapterModel chapter = null;
+                var sql = @"Select c.*, cc.Id, cc.MimeType From Library.Chapter c
+                            Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
+                            Where Id = @Id";
+                var command = new CommandDefinition(sql, new { Id = chapterId }, cancellationToken: cancellationToken);
+                await connection.QueryAsync<ChapterModel, int, string, ChapterModel>(command, (c, id, mimeType) =>
+                {
+                    if (chapter == null)
+                    {
+                        chapter = c;
+                    }
+
+                    chapter.Contents.Add(new ChapterContentModel
+                    {
+                        BookId = c.BookId,
+                        ChapterId = c.Id,
+                        MimeType = mimeType,
+                        Id = id
+                    });
+
+                    return chapter;
+                });
+
+                return chapter;
+            }
+        }
+
+        public async Task<ChapterContentModel> GetChapterContent(int chapterId, string mimeType, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select cc.* From Library.Chapter c
+                            Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
+                            Where c.Id = @Id And cc.MimeType = @MimeType";
+                var command = new CommandDefinition(sql, new { Id = chapterId, MimeType = mimeType }, cancellationToken: cancellationToken);
+                return await connection.QuerySingleOrDefaultAsync<ChapterContentModel>(command);
+            }
+        }
+
+        public async Task<string> GetChapterContentUrl(int chapterId, string mimeType, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select cc.ContentUrl From Library.Chapter c
+                            Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
+                            Where c.Id = @Id And cc.MimeType = @MimeType";
+                var command = new CommandDefinition(sql, new { Id = chapterId, MimeType = mimeType }, cancellationToken: cancellationToken);
+                return await connection.QuerySingleOrDefaultAsync<string>(command);
+            }
+        }
+
+        public async Task<ChapterContentModel> AddChapterContent(int bookId, int chapterId, string mimeType, string contentUrl, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Insert Into Library.ChapterContent (ContentUrl, ChapterId, MimeType) Values (@ContentUrl, @ChapterId, @MimeType)";
+                var command = new CommandDefinition(sql, new { ChapterId = chapterId, MimeType = mimeType, ContentUrl = contentUrl }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+
+                return await GetChapterContent(chapterId, mimeType, cancellationToken);
+            }
+        }
+
+        public async Task UpdateChapterContent(int bookId, int chapterId, string mimeType, string contentUrl, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update Library.ChapterContent SET ContentUrl = @ContentUrl Where ChapterId = @ChapterId And MimeType @MimeType";
+                var command = new CommandDefinition(sql, new { ChapterId = chapterId, MimeType = mimeType, ContentUrl = contentUrl }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task DeleteChapterContentById(int bookId, int chapterId, string mimeType, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Delete From Library.ChapterContent Where ChapterId = @ChapterId And MimeType @MimeType";
+                var command = new CommandDefinition(sql, new { ChapterId = chapterId, MimeType = mimeType }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
             }
         }
     }

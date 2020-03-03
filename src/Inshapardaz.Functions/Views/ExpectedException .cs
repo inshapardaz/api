@@ -21,6 +21,8 @@ namespace Inshapardaz.Functions.Views
             return result;
         }
 
-        protected virtual void ApplyResponseDetails(HttpResponseMessage response) { }
+        protected virtual void ApplyResponseDetails(HttpResponseMessage response)
+        {
+        }
     }
 }

@@ -1,10 +1,7 @@
-﻿using Inshapardaz.Domain.Models;
+﻿using Dapper;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,97 +9,138 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 {
     public class PeriodicalRepository : IPeriodicalRepository
     {
-        private readonly IDatabaseContext _databaseContext;
+        private readonly IProvideConnection _connectionProvider;
 
-        public PeriodicalRepository(IDatabaseContext databaseContext)
+        public PeriodicalRepository(IProvideConnection connectionProvider)
         {
-            _databaseContext = databaseContext;
+            _connectionProvider = connectionProvider;
         }
 
-        public async Task<Page<Periodical>> GetPeriodicals(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<PeriodicalModel>> GetPeriodicals(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var count = await _databaseContext.Periodical.CountAsync(cancellationToken);
-            var data = await _databaseContext.Periodical
-                             .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map())
-                             .ToListAsync(cancellationToken);
-
-            return new Page<Periodical>
+            using (var connection = _connectionProvider.GetConnection())
             {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalCount = count,
-                Data = data
-            };
+                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Library.Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                            FROM Library.Periodical AS p
+                            INNER JOIN Inshapardaz.[File] f ON f.Id = p.ImageId
+                            Where p.LibraryId = @LibraryId
+                            Order By p.Title
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var periodicals = await connection.QueryAsync<PeriodicalModel>(command);
+
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Periodical WHERE LibraryId = @LibraryId";
+                var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
+
+                return new Page<PeriodicalModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = authorCount,
+                    Data = periodicals
+                };
+            }
         }
 
-        public async Task<Page<Periodical>> SearchPeriodicals(string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<PeriodicalModel>> SearchPeriodicals(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var periodicals = _databaseContext.Periodical.Where(b => b.Title.Contains(query));
-            var count = await periodicals.CountAsync(cancellationToken);
-            var data = await periodicals
-                             .Paginate(pageNumber, pageSize)
-                             .Select(a => a.Map())
-                             .ToListAsync(cancellationToken);
-
-            return new Page<Periodical>
+            using (var connection = _connectionProvider.GetConnection())
             {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalCount = count,
-                Data = data
-            };
+                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Library.Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                            FROM Library.Periodical AS p
+                            INNER JOIN Inshapardaz.[File] f ON f.Id = p.ImageId
+                            Where p.LibraryId = @LibraryId
+                            And a.Title LIKE @Query
+                            Order By p.Title
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, PageSize = pageSize, PageNumber = pageNumber, Query = query },
+                                                    cancellationToken: cancellationToken);
+
+                var periodicals = await connection.QueryAsync<PeriodicalModel>(command);
+
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Periodical WHERE LibraryId = @LibraryId And a.Title LIKE @Query";
+                var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, Query = query }, cancellationToken: cancellationToken));
+
+                return new Page<PeriodicalModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = authorCount,
+                    Data = periodicals
+                };
+            }
         }
 
-        public async Task<Periodical> GetPeriodicalById(int periodicalId, CancellationToken cancellationToken)
+        public async Task<PeriodicalModel> GetPeriodicalById(int libraryId, int periodicalId, CancellationToken cancellationToken)
         {
-            var periodical = await _databaseContext.Periodical
-                                             .SingleOrDefaultAsync(t => t.Id == periodicalId,
-                                                                     cancellationToken);
-            return periodical.Map();
-        }
-
-        public async Task<Periodical> AddPeriodical(Periodical periodical, CancellationToken cancellationToken)
-        {
-            var item = periodical.Map();
-
-            _databaseContext.Periodical.Add(item);
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-            return item.Map();
-        }
-
-        public async Task UpdatePeriodical(Periodical periodical, CancellationToken cancellationToken)
-        {
-            var existingEntity = await _databaseContext.Periodical
-                                                        .SingleOrDefaultAsync(g => g.Id == periodical.Id,
-                                                                              cancellationToken);
-
-            if (existingEntity == null)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                throw new NotFoundException();
+                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Library.Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                            FROM Library.Periodical AS p
+                            INNER JOIN Inshapardaz.[File] f ON f.Id = p.ImageId
+                            Where p.LibraryId = @LibraryId
+                            And a.Id = @Id";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = periodicalId }, cancellationToken: cancellationToken);
+
+                return await connection.QuerySingleOrDefaultAsync<PeriodicalModel>(command);
+            }
+        }
+
+        public async Task<PeriodicalModel> AddPeriodical(int libraryId, PeriodicalModel periodical, CancellationToken cancellationToken)
+        {
+            int id;
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = "Insert Into Library.Periodical (Title, [Description], CategoryId, ImageId, LibraryId) Output Inserted.Id Values (@Title, @Description, @CategoryId, @ImageId, @LibraryId)";
+                var parameter = new
+                {
+                    LibraryId = libraryId,
+                    Title = periodical.Title,
+                    Description = periodical.Description,
+                    CategoryId = periodical.CategoryId,
+                    ImageId = periodical.ImageId,
+                };
+                var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
+                id = await connection.ExecuteScalarAsync<int>(command);
             }
 
-            existingEntity.Title = periodical.Title;
-            existingEntity.Description = periodical.Description;
-            existingEntity.CategoryId = periodical.CategoryId;
-
-            if (periodical.ImageId > 0)
-            {
-                existingEntity.ImageId = periodical.ImageId;
-            }
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
+            return await GetPeriodicalById(libraryId, id, cancellationToken);
         }
 
-        public async Task DeletePeriodical(int periodicalId, CancellationToken cancellationToken)
+        public async Task UpdatePeriodical(int libraryId, PeriodicalModel periodical, CancellationToken cancellationToken)
         {
-            var periodical = await _databaseContext.Periodical.SingleOrDefaultAsync(g => g.Id == periodicalId, cancellationToken);
-
-            if (periodical != null)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                _databaseContext.Periodical.Remove(periodical);
-                await _databaseContext.SaveChangesAsync(cancellationToken);
+                var sql = @"Update Library.Periodical
+                            Set Title = @Title, Description = @Description, CategoryId = @CategoryId, ImageId = @ImageId
+                            Where Id = @Id AND LibraryId = @LibraryId";
+                var parameter = new
+                {
+                    Id = periodical.Id,
+                    LibraryId = libraryId,
+                    Name = periodical.Title,
+                    Description = periodical.Description,
+                    CategoryId = periodical.CategoryId,
+                    ImageId = periodical.ImageId,
+                };
+                var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
+                await connection.ExecuteScalarAsync<int>(command);
+            }
+        }
+
+        public async Task DeletePeriodical(int libraryId, int periodicalId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Delete From Library.Periodical Where LibraryId = @LibraryId AND Id = @Id";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = periodicalId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
             }
         }
     }

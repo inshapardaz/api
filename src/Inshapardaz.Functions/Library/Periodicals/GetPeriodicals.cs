@@ -10,7 +10,7 @@ namespace Inshapardaz.Functions.Library.Periodicals
 {
     public class GetPeriodicals : CommandBase
     {
-        public GetPeriodicals(IAmACommandProcessor commandProcessor) 
+        public GetPeriodicals(IAmACommandProcessor commandProcessor)
         : base(commandProcessor)
         {
         }

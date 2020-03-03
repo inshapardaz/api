@@ -1,7 +1,3 @@
-using System.IO;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
@@ -13,8 +9,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Newtonsoft.Json;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Categories
 {
@@ -29,26 +27,16 @@ namespace Inshapardaz.Functions.Library.Categories
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/categories/{categoryId:int}")] HttpRequest req,
             int libraryId, int categoryId,
-            [AccessToken] ClaimsPrincipal principal,
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            if (principal == null)
-            {
-                return new UnauthorizedResult();
-            }
-
-            if (!principal.IsAdministrator())
-            {
-                return new ForbidResult("Bearer");
-            }
-
             var category = await GetBody<CategoryView>(req);
 
             category.Id = categoryId;
-            var request = new UpdateCategoryRequest(libraryId, category.Map());
+            var request = new UpdateCategoryRequest(claims, libraryId, category.Map());
             await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = request.Result.Category.Render(principal);
+            var renderResult = request.Result.Category.Render(claims);
 
             if (request.Result.HasAddedNew)
             {

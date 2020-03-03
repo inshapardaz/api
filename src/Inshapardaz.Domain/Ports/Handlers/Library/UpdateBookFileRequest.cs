@@ -1,13 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using FileModel = Inshapardaz.Domain.Models.FileModel;
+using System;
+using System.IO;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
@@ -65,14 +65,17 @@ namespace Inshapardaz.Domain.Ports.Library
 
                     var url = await StoreFile(command.BookId, command.Content.FileName, command.Content.Contents, cancellationToken);
                     bookFile.FilePath = url;
-                    var file = await _fileRepository.UpdateFile(bookFile, url, true, cancellationToken);
+                    bookFile.IsPublic = true;
+                    await _fileRepository.UpdateFile(bookFile, cancellationToken);
 
-                    command.Result.Content = file;
+                    command.Result.Content = bookFile;
                 }
                 else
                 {
                     var url = await StoreFile(command.BookId, command.Content.FileName, command.Content.Contents, cancellationToken);
-                    var file = await _fileRepository.AddFile(command.Content, url, true, cancellationToken);
+                    command.Content.FilePath = url;
+                    command.Content.IsPublic = true;
+                    var file = await _fileRepository.AddFile(command.Content, cancellationToken);
                     await _bookRepository.AddBookFile(command.BookId, file.Id, cancellationToken);
 
                     command.Result.HasAddedNew = true;

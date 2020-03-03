@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Repositories.Library;
+using Paramore.Darker;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Repositories.Library;
-using Paramore.Darker;
-using Inshapardaz.Domain.Ports.Handlers.Library;
 
 namespace Inshapardaz.Domain.Ports.Library
 {

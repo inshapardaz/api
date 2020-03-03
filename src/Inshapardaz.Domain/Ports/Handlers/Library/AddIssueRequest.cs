@@ -1,14 +1,17 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class AddIssueRequest : RequestBase
+    public class AddIssueRequest : LibraryAuthorisedCommand
     {
-        public AddIssueRequest(int periodicalId, Issue issue)
+        public AddIssueRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, IssueModel issue)
+            : base(claims, libraryId)
         {
             PeriodicalId = periodicalId;
             Issue = issue;
@@ -16,9 +19,9 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public int PeriodicalId { get; private set; }
 
-        public Issue Issue { get; }
+        public IssueModel Issue { get; }
 
-        public Issue Result { get; set; }
+        public IssueModel Result { get; set; }
     }
 
     public class AddIssueRequestHandler : RequestHandlerAsync<AddIssueRequest>
@@ -30,11 +33,12 @@ namespace Inshapardaz.Domain.Ports.Library
             _issueRepository = issueRepository;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<AddIssueRequest> HandleAsync(AddIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            command.Result= await _issueRepository.AddIssue(command.PeriodicalId, command.Issue, cancellationToken);
+            command.Result = await _issueRepository.AddIssue(command.LibraryId, command.PeriodicalId, command.Issue, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }
-    } 
+    }
 }

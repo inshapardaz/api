@@ -1,37 +1,49 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
     public class DeleteChapterContentRequest : BookRequest
     {
-        public DeleteChapterContentRequest(int bookId, int chapterId, int contentId, Guid userId)
-            : base(bookId, userId)
+        public DeleteChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string mimeType, Guid userId)
+            : base(claims, libraryId, bookId, userId)
         {
             ChapterId = chapterId;
-            ContentId = contentId;
+            MimeType = mimeType;
         }
 
         public int ChapterId { get; }
 
-        public int ContentId { get; }
+        public string MimeType { get; }
     }
 
     public class DeleteChapterContentRequestHandler : RequestHandlerAsync<DeleteChapterContentRequest>
     {
         private readonly IChapterRepository _chapterRepository;
+        private readonly IFileStorage _fileStorage;
 
-        public DeleteChapterContentRequestHandler(IChapterRepository chapterRepository)
+        public DeleteChapterContentRequestHandler(IChapterRepository chapterRepository, IFileStorage fileStorage)
         {
             _chapterRepository = chapterRepository;
+            _fileStorage = fileStorage;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<DeleteChapterContentRequest> HandleAsync(DeleteChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            await _chapterRepository.DeleteChapterContentById(command.BookId, command.ChapterId, command.ContentId, cancellationToken);
+            var contentUrl = await _chapterRepository.GetChapterContentUrl(command.ChapterId, command.MimeType, cancellationToken);
+
+            if (!string.IsNullOrWhiteSpace(contentUrl))
+            {
+                await _fileStorage.TryDeleteFile(contentUrl, cancellationToken);
+            }
+
+            await _chapterRepository.DeleteChapterContentById(command.BookId, command.ChapterId, command.MimeType, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

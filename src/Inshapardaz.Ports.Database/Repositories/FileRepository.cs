@@ -1,73 +1,66 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using Dapper;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Ports.Database.Repositories
 {
     public class FileRepository : IFileRepository
     {
-        private readonly IDatabaseContext _databaseContext;
+        private readonly IProvideConnection _connectionProvider;
 
-        public FileRepository(IDatabaseContext databaseContext)
+        public FileRepository(IProvideConnection connectionProvider)
         {
-            _databaseContext = databaseContext;
+            _connectionProvider = connectionProvider;
         }
 
-        public async Task<FileModel> GetFileById(int id, bool isPublic, CancellationToken cancellationToken)
+        public async Task<FileModel> GetFileById(int id, CancellationToken cancellationToken)
         {
-            var file = await _databaseContext.File.SingleOrDefaultAsync(i => i.Id == id && (!isPublic || i.IsPublic == isPublic), cancellationToken);
-            return file.Map();
-        }
-
-        public async Task<FileModel> AddFile(FileModel file, string url, bool isPublic, CancellationToken cancellationToken)
-        {
-            var entity = file.Map();
-
-            entity.FilePath = url;
-            entity.IsPublic = isPublic;
-            entity.DateCreated = DateTime.UtcNow;
-
-            _databaseContext.File.Add(entity);
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-
-            return entity.Map();
-        }
-
-        public async Task<FileModel> UpdateFile(FileModel file, string url, bool isPublic, CancellationToken cancellationToken)
-        {
-            var entity = await _databaseContext.File.SingleOrDefaultAsync(f => f.Id == file.Id, cancellationToken);
-            if (entity == null)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                throw new NotFoundException();
+                var sql = @"Select *
+                            FROM Inshapardaz.File
+                            Where Id = @id";
+                var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
+
+                return await connection.QuerySingleOrDefaultAsync<FileModel>(command);
+            }
+        }
+
+        public async Task<FileModel> AddFile(FileModel file, CancellationToken cancellationToken)
+        {
+            int id;
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Insert Into Inshapardaz.File (FileName, MimeType, FilePath, IsPublic, DateCreated)
+                            Output Inserted.Id
+                            VALUES (@FileName, @MimeType, @FilePath, @IsPublic, @DateCreated)"; ;
+                var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);
+                id = await connection.ExecuteScalarAsync<int>(command);
             }
 
-            entity.FilePath = url;
-            entity.FileName = file.FileName;
-            entity.MimeType = file.MimeType;
-            entity.FilePath = url;
-            entity.IsPublic = isPublic;
-            entity.DateCreated = DateTime.UtcNow;
+            return await GetFileById(id, cancellationToken);
+        }
 
-            await _databaseContext.SaveChangesAsync(cancellationToken);
-
-            return entity.Map();
+        public async Task UpdateFile(FileModel file, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update Library.Series Set FileName = @FileName, MimeType = @MimeType, FilePath = @FilePath, IsPublic = @IsPublic, DateCreated = @DateCreated  Where Id = @Id";
+                var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);
+                await connection.ExecuteScalarAsync<int>(command);
+            }
         }
 
         public async Task DeleteFile(int id, CancellationToken cancellationToken)
         {
-            var entity = await _databaseContext.File.SingleOrDefaultAsync(f => f.Id == id, cancellationToken);
-            if (entity == null)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                throw new NotFoundException();
+                var sql = @"Delete From Inshapardaz.File Where Id = @Id";
+                var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
             }
-
-            _databaseContext.File.Remove(entity);
-
-            await _databaseContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

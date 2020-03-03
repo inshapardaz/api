@@ -1,9 +1,9 @@
-﻿using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Exception;
+﻿using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories;
 using Paramore.Darker;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Ports
@@ -36,7 +36,7 @@ namespace Inshapardaz.Domain.Ports
 
         public override async Task<FileModel> ExecuteAsync(GetFileQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            var file = await _fileRepository.GetFileById(query.ImageId, query.IsPublic, cancellationToken);
+            var file = await _fileRepository.GetFileById(query.ImageId, cancellationToken);
 
             if (string.IsNullOrWhiteSpace(file.FilePath))
             {
@@ -45,6 +45,7 @@ namespace Inshapardaz.Domain.Ports
 
             var contents = await _fileStorage.GetFile(file.FilePath, cancellationToken);
             using (var stream = new MemoryStream(contents))
+            // TODO : Implementation needed
             /*using (var output = new MemoryStream())
             {
                 if (IsImageFile(command.Response.MimeType))
@@ -78,6 +79,7 @@ namespace Inshapardaz.Domain.Ports
                 case "image/png":
                 case "image/gif":
                     return true;
+
                 default:
                     return false;
             }

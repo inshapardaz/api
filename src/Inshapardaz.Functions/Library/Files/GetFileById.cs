@@ -1,6 +1,3 @@
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Ports;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
@@ -11,12 +8,15 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Paramore.Darker;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Files
 {
     public class GetFileById : QueryBase
     {
-        public GetFileById(IQueryProcessor queryProcessor) 
+        public GetFileById(IQueryProcessor queryProcessor)
         : base(queryProcessor)
         {
         }
@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Library.Files
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "files/{fileId:int}")] HttpRequest req,
             ILogger log, int fileId,
-            [AccessToken] ClaimsPrincipal claims, 
+            [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
             // TODO : Secure private files
@@ -38,8 +38,8 @@ namespace Inshapardaz.Functions.Library.Files
             }
 
             return new FileContentResult(file.Contents, new MediaTypeHeaderValue(file.MimeType));
-}
+        }
 
-        public static LinkView Link(int fileId, string relType = RelTypes.Self) => SelfLink($"files/{fileId}", relType, "GET");        
+        public static LinkView Link(int fileId, string relType = RelTypes.Self) => SelfLink($"files/{fileId}", relType, "GET");
     }
 }

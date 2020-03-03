@@ -1,15 +1,17 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Models;
+﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetPeriodicalsQuery : IQuery<Page<Periodical>>
+    public class GetPeriodicalsQuery : LibraryBaseQuery<Page<PeriodicalModel>>
     {
-        public GetPeriodicalsQuery(int pageNumber, int pageSize)
+        public GetPeriodicalsQuery(int libraryId, int pageNumber, int pageSize)
+            : base(libraryId)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
@@ -22,7 +24,7 @@ namespace Inshapardaz.Domain.Ports.Library
         public string Query { get; set; }
     }
 
-    public class GetPeriodicalsQueryHandler : QueryHandlerAsync<GetPeriodicalsQuery, Page<Periodical>>
+    public class GetPeriodicalsQueryHandler : QueryHandlerAsync<GetPeriodicalsQuery, Page<PeriodicalModel>>
     {
         private readonly IPeriodicalRepository _periodicalRepository;
 
@@ -31,14 +33,14 @@ namespace Inshapardaz.Domain.Ports.Library
             _periodicalRepository = periodicalRepository;
         }
 
-        public override async Task<Page<Periodical>> ExecuteAsync(GetPeriodicalsQuery command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<Page<PeriodicalModel>> ExecuteAsync(GetPeriodicalsQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             if (string.IsNullOrWhiteSpace(command.Query))
             {
-                return await _periodicalRepository.GetPeriodicals(command.PageNumber, command.PageSize, cancellationToken);
+                return await _periodicalRepository.GetPeriodicals(command.LibraryId, command.PageNumber, command.PageSize, cancellationToken);
             }
-            
-            return await _periodicalRepository.SearchPeriodicals(command.Query, command.PageNumber, command.PageSize, cancellationToken);
+
+            return await _periodicalRepository.SearchPeriodicals(command.LibraryId, command.Query, command.PageNumber, command.PageSize, cancellationToken);
         }
     }
 }

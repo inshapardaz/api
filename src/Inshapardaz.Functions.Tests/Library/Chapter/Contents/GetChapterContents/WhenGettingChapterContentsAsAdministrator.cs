@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContents
 {
     [TestFixture]
-    public class WhenGettingChapterContentsAsAdministrator : FunctionTest
+    public class WhenGettingChapterContentsAsAdministrator : LibraryTest<Functions.Library.Books.Chapters.Contents.GetChapterContents>
     {
         private OkObjectResult _response;
         private ChapterContentView _view;
@@ -35,9 +35,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
             fileStore.SetupFileContents(contentUrl, _contents);
             _chapter = dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
             _expected = _chapter.Contents.First();
-            
-            var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.GetChapterContents>();
-            _response = (OkObjectResult) await handler.Run(null, _chapter.BookId, _chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+
+            _response = (OkObjectResult)await handler.Run(null, LibraryId, _chapter.BookId, _chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as ChapterContentView;
         }
@@ -87,7 +86,6 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
                  .ShouldHaveSomeHref();
         }
 
-
         [Test]
         public void ShouldHaveDeleteLink()
         {
@@ -104,7 +102,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
             Assert.That(_view.ChapterId, Is.EqualTo(_expected.ChapterId), "Chapter id does not match");
             Assert.That(_view.Contents, Is.EqualTo(_contents), "contents should match");
         }
-        
+
         [Test]
         public void ShouldAddBookToRecent()
         {

@@ -1,14 +1,14 @@
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Functions.Views;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using Inshapardaz.Domain.Models;
-using System.Linq;
-using System.Collections.Generic;
 using Paramore.Brighter;
-using Inshapardaz.Functions.Views;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Inshapardaz.Functions
 {
@@ -18,16 +18,16 @@ namespace Inshapardaz.Functions
             : base(commandProcessor)
         {
         }
-        
+
         [FunctionName("GetLanguages")]
         public IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "languages")] HttpRequest req,
             ILogger log)
         {
-             var result = Enum.GetValues(typeof(Languages))
-                .Cast<Languages>()
-                .Select(lang => new KeyValuePair<string, int>(Enum.GetName(typeof(Languages), lang), (int)lang))
-                .ToList();
+            var result = Enum.GetValues(typeof(Languages))
+               .Cast<Languages>()
+               .Select(lang => new KeyValuePair<string, int>(Enum.GetName(typeof(Languages), lang), (int)lang))
+               .ToList();
             return new OkObjectResult(result);
         }
 

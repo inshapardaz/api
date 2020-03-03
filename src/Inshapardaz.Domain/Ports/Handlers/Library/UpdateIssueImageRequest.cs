@@ -1,18 +1,21 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Exception;
+﻿using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
+using System;
+using System.IO;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class UpdateIssueImageRequest : RequestBase
+    public class UpdateIssueImageRequest : LibraryAuthorisedCommand
     {
-        public UpdateIssueImageRequest(int periodicalId, int issueId)
+        public UpdateIssueImageRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId)
+            : base(claims, libraryId)
         {
             PeriodicalId = periodicalId;
             IssueId = issueId;
@@ -47,9 +50,10 @@ namespace Inshapardaz.Domain.Ports.Library
             _fileStorage = fileStorage;
         }
 
+        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateIssueImageRequest> HandleAsync(UpdateIssueImageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var issue = await _issueRepository.GetIssueById(command.PeriodicalId, command.IssueId, cancellationToken);
+            var issue = await _issueRepository.GetIssueById(command.LibraryId, command.PeriodicalId, command.IssueId, cancellationToken);
 
             if (issue == null)
             {
@@ -59,7 +63,7 @@ namespace Inshapardaz.Domain.Ports.Library
             if (issue.ImageId.HasValue)
             {
                 command.Image.Id = issue.ImageId.Value;
-                var existingImage = await _fileRepository.GetFileById(issue.ImageId.Value, true, cancellationToken);
+                var existingImage = await _fileRepository.GetFileById(issue.ImageId.Value, cancellationToken);
                 if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
                 {
                     await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
@@ -67,19 +71,23 @@ namespace Inshapardaz.Domain.Ports.Library
 
                 var url = await AddImageToFileStore(command.PeriodicalId, issue.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
 
-                await _fileRepository.UpdateFile(command.Image, url, true, cancellationToken);
+                command.Image.FilePath = url;
+                command.Image.IsPublic = true;
+                await _fileRepository.UpdateFile(command.Image, cancellationToken);
                 command.Result.File = command.Image;
                 command.Result.File.Id = issue.ImageId.Value;
             }
             else
             {
-                command.Image.Id = default(int);
+                command.Image.Id = default;
                 var url = await AddImageToFileStore(command.PeriodicalId, issue.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
-                command.Result.File = await _fileRepository.AddFile(command.Image, url, true, cancellationToken);
+                command.Image.FilePath = url;
+                command.Image.IsPublic = true;
+                command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
                 command.Result.HasAddedNew = true;
 
                 issue.ImageId = command.Result.File.Id;
-                await _issueRepository.UpdateIssue(command.PeriodicalId, issue, cancellationToken);
+                await _issueRepository.UpdateIssue(command.LibraryId, command.PeriodicalId, issue, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

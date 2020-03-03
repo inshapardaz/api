@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using Bogus;
 using Newtonsoft.Json;
+using System;
 
 namespace Inshapardaz.Functions.Tests.Helpers
 {
@@ -18,6 +19,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
         private string _contents;
 
         private byte[] _file;
+        private string _acceptType;
 
         public RequestBuilder WithQueryParameter(string name, object value)
         {
@@ -49,9 +51,20 @@ namespace Inshapardaz.Functions.Tests.Helpers
             return this;
         }
 
+        internal RequestBuilder WithAcceptType(string acceptType)
+        {
+            _acceptType = acceptType;
+            return this;
+        }
+
         public DefaultHttpRequest Build()
         {
             var request = new DefaultHttpRequest(new DefaultHttpContext());
+
+            if (!string.IsNullOrEmpty(_acceptType))
+            {
+                request.Headers.Add("Content-Type", _acceptType);
+            }
 
             if (_parameters.Count > 0)
             {

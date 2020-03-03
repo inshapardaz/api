@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterContents
 {
     [TestFixture]
-    public class WhenDeletingChapterContentsAsReader : FunctionTest
+    public class WhenDeletingChapterContentsAsReader : LibraryTest<Functions.Library.Books.Chapters.Contents.DeleteChapterContents>
     {
         private ForbidResult _response;
         private int _contentId;
@@ -38,8 +38,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
             var chapterContent = chapter.Contents.First();
             _contentId = chapterContent.Id;
             _contentUrl = chapterContent.ContentUrl;
-            var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.DeleteChapterContents>();
-            _response = (ForbidResult) await handler.Run(null, chapter.BookId, chapterContent.ChapterId, chapterContent.Id,  AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            var request = new RequestBuilder().WithAcceptType("text/markdown").Build();
+
+            _response = (ForbidResult)await handler.Run(request, LibraryId, chapter.BookId, chapterContent.ChapterId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

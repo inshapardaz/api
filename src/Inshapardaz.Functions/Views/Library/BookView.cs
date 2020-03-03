@@ -27,16 +27,16 @@ namespace Inshapardaz.Functions.Views.Library
 
         public int? SeriesIndex { get; set; }
 
-        public DateTime DateAdded {get; set;}
+        public DateTime DateAdded { get; set; }
 
-        public DateTime DateUpdated { get; set;}
+        public DateTime DateUpdated { get; set; }
 
         public int? YearPublished { get; set; }
 
         public int Copyrights { get; set; }
 
         public int Status { get; set; }
-        
+
         public bool IsPublished { get; set; }
     }
 }

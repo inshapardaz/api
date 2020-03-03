@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Domain.Repositories.Library
 {
@@ -35,9 +35,9 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<IEnumerable<BookModel>> GetRecentBooksByUser(int libraryId, Guid userId, int count, CancellationToken cancellationToken);
 
-        Task AddBookToFavorites(Guid userId, int bookId, CancellationToken cancellationToken);
+        Task AddBookToFavorites(int libraryId, Guid? userId, int bookId, CancellationToken cancellationToken);
 
-        Task DeleteBookFromFavorites(Guid userId, int bookId, CancellationToken cancellationToken);
+        Task DeleteBookFromFavorites(int libraryId, Guid userId, int bookId, CancellationToken cancellationToken);
 
         Task AddBookFile(int bookId, int id, CancellationToken cancellationToken);
 

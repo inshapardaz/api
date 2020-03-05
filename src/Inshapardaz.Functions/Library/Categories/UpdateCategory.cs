@@ -25,27 +25,29 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("UpdateCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/categories/{categoryId:int}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/categories/{categoryId:int}")]
+            CategoryView category,
             int libraryId, int categoryId,
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var category = await GetBody<CategoryView>(req);
-
-            category.Id = categoryId;
-            var request = new UpdateCategoryRequest(claims, libraryId, category.Map());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-
-            var renderResult = request.Result.Category.Render(claims);
-
-            if (request.Result.HasAddedNew)
+            return await Executor.Execute(async () =>
             {
-                return new CreatedResult(renderResult.Links.Self(), renderResult);
-            }
-            else
-            {
-                return new OkObjectResult(renderResult);
-            }
+                category.Id = categoryId;
+                var request = new UpdateCategoryRequest(claims, libraryId, category.Map());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+                var renderResult = request.Result.Category.Render(claims);
+
+                if (request.Result.HasAddedNew)
+                {
+                    return new CreatedResult(renderResult.Links.Self(), renderResult);
+                }
+                else
+                {
+                    return new OkObjectResult(renderResult);
+                }
+            });
         }
 
         public static LinkView Link(int categoryId, string relType = RelTypes.Self) => SelfLink($"categories/{categoryId}", relType, "PUT");

@@ -1,5 +1,6 @@
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,10 +29,13 @@ namespace Inshapardaz.Functions.Library.Books
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var request = new AddBookToFavoriteRequest(claims, libraryId, bookId, claims.GetUserId());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+            return await Executor.Execute(async () =>
+            {
+                var request = new AddBookToFavoriteRequest(claims, libraryId, bookId, claims.GetUserId());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new CreatedResult(new Uri(GetFavoriteBooks.Link(RelTypes.Self).Href), null);
+                return new CreatedResult(new Uri(GetFavoriteBooks.Link(RelTypes.Self).Href), null);
+            });
         }
 
         public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/favorite/{bookId}", relType, "POST");

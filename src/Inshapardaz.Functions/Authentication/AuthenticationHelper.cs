@@ -14,7 +14,7 @@ namespace Inshapardaz.Functions.Authentication
             return claims.IsWriter();
         }
 
-        public bool IsAdministrator(this ClaimsPrincipal claims)
+        public bool IsAdministrator(ClaimsPrincipal claims)
         {
             return claims.IsAdministrator();
         }

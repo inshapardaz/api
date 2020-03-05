@@ -1,5 +1,6 @@
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -27,9 +28,12 @@ namespace Inshapardaz.Functions.Library.Books.Files
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var request = new DeleteBookFileRequest(claims, libraryId, bookId, fileId, claims.GetUserId());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-            return new NoContentResult();
+            return await Executor.Execute(async () =>
+            {
+                var request = new DeleteBookFileRequest(claims, libraryId, bookId, fileId, claims.GetUserId());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
+                return new NoContentResult();
+            });
         }
     }
 }

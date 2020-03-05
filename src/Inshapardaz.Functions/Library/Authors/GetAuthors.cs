@@ -26,6 +26,11 @@ namespace Inshapardaz.Functions.Library.Authors
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/authors")] HttpRequest req,
             int libraryId,
+
+            // TODO : Make this work
+            //[FromQuery("query")] string query,
+            //[FromQuery("pageNumber", 1)] int pageNumber,
+            //[FromQuery("pageNumber", 20)] int pageSize,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {

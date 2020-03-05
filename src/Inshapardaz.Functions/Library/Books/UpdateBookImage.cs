@@ -30,37 +30,40 @@ namespace Inshapardaz.Functions.Library.Books
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token = default)
         {
-            var multipart = await req.Content.ReadAsMultipartAsync(token);
-            var content = await req.Content.ReadAsByteArrayAsync();
-
-            var fileName = $"{bookId}";
-            var mimeType = "application/binary";
-            var fileContent = multipart.Contents.FirstOrDefault();
-            if (fileContent != null)
+            return await Executor.Execute(async () =>
             {
-                fileName = $"{bookId}{GetFileExtension(fileContent.Headers?.ContentDisposition?.FileName)}";
-                mimeType = fileContent.Headers?.ContentType?.MediaType;
-            }
+                var multipart = await req.Content.ReadAsMultipartAsync(token);
+                var content = await req.Content.ReadAsByteArrayAsync();
 
-            var request = new UpdateBookImageRequest(claims, libraryId, bookId)
-            {
-                Image = new Domain.Models.FileModel
+                var fileName = $"{bookId}";
+                var mimeType = "application/binary";
+                var fileContent = multipart.Contents.FirstOrDefault();
+                if (fileContent != null)
                 {
-                    FileName = fileName,
-                    MimeType = mimeType,
-                    Contents = content
+                    fileName = $"{bookId}{GetFileExtension(fileContent.Headers?.ContentDisposition?.FileName)}";
+                    mimeType = fileContent.Headers?.ContentType?.MediaType;
                 }
-            };
 
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+                var request = new UpdateBookImageRequest(claims, libraryId, bookId)
+                {
+                    Image = new Domain.Models.FileModel
+                    {
+                        FileName = fileName,
+                        MimeType = mimeType,
+                        Contents = content
+                    }
+                };
 
-            if (request.Result.HasAddedNew)
-            {
-                var response = request.Result.File.Render(claims);
-                return new CreatedResult(response.Links.Self(), response);
-            }
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkResult();
+                if (request.Result.HasAddedNew)
+                {
+                    var response = request.Result.File.Render(claims);
+                    return new CreatedResult(response.Links.Self(), response);
+                }
+
+                return new OkResult();
+            });
         }
 
         public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/{bookId}/image", relType, "PUT");

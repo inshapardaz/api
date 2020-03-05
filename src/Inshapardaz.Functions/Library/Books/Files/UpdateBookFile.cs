@@ -13,6 +13,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Executor = Inshapardaz.Functions.Extensions.Executor;
 
 namespace Inshapardaz.Functions.Library.Books.Files
 {
@@ -32,46 +33,49 @@ namespace Inshapardaz.Functions.Library.Books.Files
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var multipart = await req.Content.ReadAsMultipartAsync(token);
-            var content = await req.Content.ReadAsByteArrayAsync();
-
-            var fileName = $"{bookId}";
-            var mimeType = "application/binary";
-            var fileContent = multipart.Contents.FirstOrDefault();
-            if (fileContent != null)
+            return await Executor.Execute(async () =>
             {
-                fileName = $"{bookId}{GetFileExtension(fileContent.Headers?.ContentDisposition?.FileName)}";
-                mimeType = fileContent.Headers?.ContentType?.MediaType;
-            }
+                var multipart = await req.Content.ReadAsMultipartAsync(token);
+                var content = await req.Content.ReadAsByteArrayAsync();
 
-            var request = new UpdateBookFileRequest(claims, libraryId, bookId, fileId)
-            {
-                Content = new FileModel
+                var fileName = $"{bookId}";
+                var mimeType = "application/binary";
+                var fileContent = multipart.Contents.FirstOrDefault();
+                if (fileContent != null)
                 {
-                    Contents = content,
-                    MimeType = mimeType,
-                    DateCreated = DateTime.Now,
-                    FileName = fileName
+                    fileName = $"{bookId}{GetFileExtension(fileContent.Headers?.ContentDisposition?.FileName)}";
+                    mimeType = fileContent.Headers?.ContentType?.MediaType;
                 }
-            };
 
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-
-            if (request.Result.Content != null)
-            {
-                var renderResult = request.Result.Content.Render(claims);
-
-                if (request.Result.HasAddedNew)
+                var request = new UpdateBookFileRequest(claims, libraryId, bookId, fileId)
                 {
-                    return new CreatedResult(renderResult.Links.Self(), renderResult);
-                }
-                else
-                {
-                    return new OkObjectResult(renderResult);
-                }
-            }
+                    Content = new FileModel
+                    {
+                        Contents = content,
+                        MimeType = mimeType,
+                        DateCreated = DateTime.Now,
+                        FileName = fileName
+                    }
+                };
 
-            return new BadRequestResult();
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+                if (request.Result.Content != null)
+                {
+                    var renderResult = request.Result.Content.Render(claims);
+
+                    if (request.Result.HasAddedNew)
+                    {
+                        return new CreatedResult(renderResult.Links.Self(), renderResult);
+                    }
+                    else
+                    {
+                        return new OkObjectResult(renderResult);
+                    }
+                }
+
+                return new BadRequestResult();
+            });
         }
 
         private object GetFileExtension(string fileName)

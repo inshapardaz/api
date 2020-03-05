@@ -32,38 +32,41 @@ namespace Inshapardaz.Functions.Library.Books.Files
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var multipart = await req.Content.ReadAsMultipartAsync(token);
-            var content = await req.Content.ReadAsByteArrayAsync();
-
-            var fileName = $"{bookId}";
-            var mimeType = "application/binary";
-            var fileContent = multipart.Contents.FirstOrDefault();
-            if (fileContent != null)
+            return await Executor.Execute(async () =>
             {
-                fileName = $"{bookId}{GetFileExtension(fileContent.Headers?.ContentDisposition?.FileName)}";
-                mimeType = fileContent.Headers?.ContentType?.MediaType;
-            }
+                var multipart = await req.Content.ReadAsMultipartAsync(token);
+                var content = await req.Content.ReadAsByteArrayAsync();
 
-            var request = new AddBookFileRequest(claims, libraryId, bookId)
-            {
-                Content = new FileModel
+                var fileName = $"{bookId}";
+                var mimeType = "application/binary";
+                var fileContent = multipart.Contents.FirstOrDefault();
+                if (fileContent != null)
                 {
-                    Contents = content,
-                    MimeType = mimeType,
-                    DateCreated = DateTime.Now,
-                    FileName = fileName
+                    fileName = $"{bookId}{GetFileExtension(fileContent.Headers?.ContentDisposition?.FileName)}";
+                    mimeType = fileContent.Headers?.ContentType?.MediaType;
                 }
-            };
 
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
+                var request = new AddBookFileRequest(claims, libraryId, bookId)
+                {
+                    Content = new FileModel
+                    {
+                        Contents = content,
+                        MimeType = mimeType,
+                        DateCreated = DateTime.Now,
+                        FileName = fileName
+                    }
+                };
 
-            if (request.Result != null)
-            {
-                var response = request.Result.Render(claims);
-                return new CreatedResult(response.Links.Self(), response);
-            }
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new BadRequestResult();
+                if (request.Result != null)
+                {
+                    var response = request.Result.Render(claims);
+                    return new CreatedResult(response.Links.Self(), response);
+                }
+
+                return new BadRequestResult();
+            });
         }
 
         public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/{bookId}/files", relType, "POST");

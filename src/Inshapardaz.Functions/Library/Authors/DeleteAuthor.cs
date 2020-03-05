@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Library.Authors
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            return await Action.Execute(async () =>
+            return await Executor.Execute(async () =>
             {
                 var request = new DeleteAuthorRequest(claims, libraryId, authorId);
                 await CommandProcessor.SendAsync(request, cancellationToken: token);

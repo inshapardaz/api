@@ -1,5 +1,6 @@
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,9 +30,12 @@ namespace Inshapardaz.Functions.Library.Series
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var request = new DeleteSeriesRequest(claims, libraryId, seriesId);
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-            return new NoContentResult();
+            return await Executor.Execute(async () =>
+            {
+                var request = new DeleteSeriesRequest(claims, libraryId, seriesId);
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
+                return new NoContentResult();
+            });
         }
 
         public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}", relType, "DELETE");

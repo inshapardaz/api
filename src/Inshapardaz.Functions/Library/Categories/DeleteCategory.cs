@@ -1,5 +1,6 @@
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,9 +28,12 @@ namespace Inshapardaz.Functions.Library.Categories
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var request = new DeleteCategoryRequest(claims, libraryId, categoryId);
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-            return new NoContentResult();
+            return await Executor.Execute(async () =>
+            {
+                var request = new DeleteCategoryRequest(claims, libraryId, categoryId);
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
+                return new NoContentResult();
+            });
         }
 
         public static LinkView Link(int categoryId, string relType = RelTypes.Self) => SelfLink($"categories/{categoryId}", relType, "DELETE");

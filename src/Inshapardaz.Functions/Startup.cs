@@ -16,7 +16,8 @@ namespace Inshapardaz.Functions
     {
         public void Configure(IWebJobsBuilder builder)
         {
-            builder.AddAccessTokenBinding()
+            builder //.AddAccessTokenBinding()
+                    //.AddBinders()
                 .Services.AddTransient<IReadClaims, ClaimsReader>()
                          .AddHttpClient()
                          .AddBrighterCommand()

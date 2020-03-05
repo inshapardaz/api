@@ -25,18 +25,20 @@ namespace Inshapardaz.Functions.Library.Series
 
         [FunctionName("AddSeries")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/series")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/series")]
+            SeriesView series,
             int libraryId,
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var series = await GetBody<SeriesView>(req);
+            return await Executor.Execute(async () =>
+            {
+                var request = new AddSeriesRequest(claims, libraryId, series.Map());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var request = new AddSeriesRequest(claims, libraryId, series.Map());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-
-            var renderResult = request.Result.Render(claims);
-            return new CreatedResult(renderResult.Links.Self(), renderResult);
+                var renderResult = request.Result.Render(claims);
+                return new CreatedResult(renderResult.Links.Self(), renderResult);
+            });
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("series", relType, "POST");

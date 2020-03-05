@@ -1,5 +1,6 @@
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,10 +29,13 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             [AccessToken] ClaimsPrincipal claims = null,
             CancellationToken token = default)
         {
-            var contentType = GetHeader(req, "Content-Type", "text/markdown");
-            var request = new DeleteChapterContentRequest(claims, libraryId, bookId, chapterId, contentType, claims.GetUserId());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-            return new NoContentResult();
+            return await Executor.Execute(async () =>
+            {
+                var contentType = GetHeader(req, "Content-Type", "text/markdown");
+                var request = new DeleteChapterContentRequest(claims, libraryId, bookId, chapterId, contentType, claims.GetUserId());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
+                return new NoContentResult();
+            });
         }
 
         public static LinkView Link(int bookId, int chapterId, int contentId, string mimetype, string relType = RelTypes.Self) => SelfLink($"book/{bookId}/chapters/{chapterId}/contents/{contentId}", relType, "DELETE", type: mimetype);

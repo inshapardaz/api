@@ -25,26 +25,28 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("UpdateChapter")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/books/{bookId:int}/chapter/{chapterId:int}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/books/{bookId:int}/chapter/{chapterId:int}")]
+            ChapterView chapter,
             int libraryId,
             int bookId,
             int chapterId,
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var chapter = await GetBody<ChapterView>(req);
-
-            var request = new UpdateChapterRequest(claims, libraryId, bookId, chapterId, chapter.Map(), claims.GetUserId());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-
-            var renderResult = request.Result.Chapter.Render(claims);
-
-            if (request.Result.HasAddedNew)
+            return await Executor.Execute(async () =>
             {
-                return new CreatedResult(renderResult.Links.Self(), renderResult);
-            }
+                var request = new UpdateChapterRequest(claims, libraryId, bookId, chapterId, chapter.Map(), claims.GetUserId());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            return new OkObjectResult(renderResult);
+                var renderResult = request.Result.Chapter.Render(claims);
+
+                if (request.Result.HasAddedNew)
+                {
+                    return new CreatedResult(renderResult.Links.Self(), renderResult);
+                }
+
+                return new OkObjectResult(renderResult);
+            });
         }
 
         public static LinkView Link(int bookId, int chapterId, string relType = RelTypes.Self) => SelfLink($"book/{bookId}/chapters/{chapterId}", relType, "PUT");

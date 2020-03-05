@@ -25,12 +25,13 @@ namespace Inshapardaz.Functions.Library.Series
         [FunctionName("GetSeries")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/series")] HttpRequest req,
-            ILogger log, int libraryId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            ILogger log, int libraryId,
+            CancellationToken token)
         {
             var query = new GetSeriesQuery(libraryId);
             var series = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-            return new OkObjectResult(series.Render(principal));
+            return new OkObjectResult(series.Render(null));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("series", relType);

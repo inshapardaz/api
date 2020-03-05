@@ -25,18 +25,20 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("AddBook")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books")]
+            BookView book,
             int libraryId,
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var book = await GetBody<BookView>(req);
+            return await Executor.Execute(async () =>
+            {
+                var request = new AddBookRequest(claims, libraryId, book.Map());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var request = new AddBookRequest(claims, libraryId, book.Map());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-
-            var renderResult = request.Result.Render(claims);
-            return new CreatedResult(renderResult.Links.Self(), renderResult);
+                var renderResult = request.Result.Render(claims);
+                return new CreatedResult(renderResult.Links.Self(), renderResult);
+            });
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books", relType, "POST");

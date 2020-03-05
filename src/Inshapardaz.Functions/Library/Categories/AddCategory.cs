@@ -25,18 +25,20 @@ namespace Inshapardaz.Functions.Library.Categories
 
         [FunctionName("AddCategory")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "/library/{libraryId}/categories")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/categories")]
+            CategoryView category,
             int libraryId,
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var category = await GetBody<CategoryView>(req);
+            return await Executor.Execute(async () =>
+            {
+                var request = new AddCategoryRequest(claims, libraryId, category.Map());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-            var request = new AddCategoryRequest(claims, libraryId, category.Map());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-
-            var renderResult = request.Result.Render(claims);
-            return new CreatedResult(renderResult.Links.Self(), renderResult);
+                var renderResult = request.Result.Render(claims);
+                return new CreatedResult(renderResult.Links.Self(), renderResult);
+            });
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("categories", relType, "POST");

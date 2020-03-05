@@ -25,29 +25,31 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("UpdateBook")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/books/{bookId:int}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/books/{bookId:int}")]
+            BookView book,
             int libraryId,
             int bookId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-            var book = await GetBody<BookView>(req);
-
-            book.Id = bookId;
-
-            var request = new UpdateBookRequest(principal, libraryId, book.Map());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-
-            var renderResult = request.Result.Book.Render(principal);
-
-            if (request.Result.HasAddedNew)
+            return await Executor.Execute(async () =>
             {
-                return new CreatedResult(renderResult.Links.Self(), renderResult);
-            }
-            else
-            {
-                return new OkObjectResult(renderResult);
-            }
+                book.Id = bookId;
+
+                var request = new UpdateBookRequest(principal, libraryId, book.Map());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+                var renderResult = request.Result.Book.Render(principal);
+
+                if (request.Result.HasAddedNew)
+                {
+                    return new CreatedResult(renderResult.Links.Self(), renderResult);
+                }
+                else
+                {
+                    return new OkObjectResult(renderResult);
+                }
+            });
         }
 
         public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/{bookId}", relType, "PUT");

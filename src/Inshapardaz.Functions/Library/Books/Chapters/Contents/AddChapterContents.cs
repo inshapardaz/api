@@ -25,23 +25,29 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books/{bookId:int}/chapters/{chapterId:int}/contents")] HttpRequest req,
             int libraryId,
-            int bookId, int chapterId,
+            int bookId,
+            int chapterId,
+            // TODO : Make this work
+            //[FromHeader("Accept", "text/markdown")] string contentType,
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
-            var contents = await ReadBody(req);
-            var contentType = GetHeader(req, "Accept", "text/markdown");
-
-            var request = new AddChapterContentRequest(claims, libraryId, bookId, chapterId, contents, contentType, claims.GetUserId());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-
-            if (request.Result != null)
+            return await Executor.Execute(async () =>
             {
-                var renderResult = request.Result.Render(claims);
-                return new CreatedResult(renderResult.Links.Self(), renderResult);
-            }
+                var contents = await ReadBody(req);
+                var contentType = GetHeader(req, "Accept", "text/markdown");
 
-            return new BadRequestResult();
+                var request = new AddChapterContentRequest(claims, libraryId, bookId, chapterId, contents, contentType, claims.GetUserId());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+                if (request.Result != null)
+                {
+                    var renderResult = request.Result.Render(claims);
+                    return new CreatedResult(renderResult.Links.Self(), renderResult);
+                }
+
+                return new BadRequestResult();
+            });
         }
 
         public static LinkView Link(int bookId, int chapterId, string relType = RelTypes.Self) => SelfLink($"book/{bookId}/chapters/{chapterId}/contents", relType, "POST");

@@ -11,6 +11,11 @@ namespace Inshapardaz.Functions.Authentication
         public Task<IValueProvider> BindAsync(BindingContext context)
         {
             // Get the HTTP request
+            if (!context.BindingData.ContainsKey("req"))
+            {
+                return null;
+            }
+
             var request = context.BindingData["req"] as DefaultHttpRequest;
 
             // Get the configuration files for the OAuth token issuer

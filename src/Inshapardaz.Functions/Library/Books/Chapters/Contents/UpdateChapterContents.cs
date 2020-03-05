@@ -29,24 +29,27 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token = default)
         {
-            var contents = await ReadBody(req);
-            var contentType = GetHeader(req, "Accept", "text/markdown");
-
-            var request = new UpdateChapterContentRequest(claims, libraryId, bookId, chapterId, contents, contentType, claims.GetUserId());
-            await CommandProcessor.SendAsync(request, cancellationToken: token);
-
-            if (request.Result != null)
+            return await Executor.Execute(async () =>
             {
-                if (request.Result.HasAddedNew)
+                var contents = await ReadBody(req);
+                var contentType = GetHeader(req, "Accept", "text/markdown");
+
+                var request = new UpdateChapterContentRequest(claims, libraryId, bookId, chapterId, contents, contentType, claims.GetUserId());
+                await CommandProcessor.SendAsync(request, cancellationToken: token);
+
+                if (request.Result != null)
                 {
-                    var renderResult = request.Result.ChapterContent.Render(claims);
-                    return new CreatedResult(renderResult.Links.Self(), renderResult);
+                    if (request.Result.HasAddedNew)
+                    {
+                        var renderResult = request.Result.ChapterContent.Render(claims);
+                        return new CreatedResult(renderResult.Links.Self(), renderResult);
+                    }
+
+                    return new NoContentResult();
                 }
 
-                return new NoContentResult();
-            }
-
-            return new BadRequestResult();
+                return new BadRequestResult();
+            });
         }
 
         public static LinkView Link(int bookId, int chapterId, string mimetype, string relType = RelTypes.Self) => SelfLink($"book/{bookId}/chapters/{chapterId}/contents", relType, "PUT", type: mimetype);

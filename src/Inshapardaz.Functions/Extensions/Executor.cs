@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Extensions
 {
-    public static class Action
+    public static class Executor
     {
         public static async Task<IActionResult> Execute(Func<Task<IActionResult>> action)
         {

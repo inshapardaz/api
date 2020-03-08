@@ -29,7 +29,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
 
             var author = _builder.WithLibrary(LibraryId).Build();
             _authorId = author.Id;
-            var imageUrl = _builder.GetAuthorImageUrl(_authorId);
+            var imageUrl = DatabaseConnection.GetAuthorImageUrl(_authorId);
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
             _response = (OkResult)await handler.Run(request, LibraryId, _authorId, AuthenticationBuilder.WriterClaim, CancellationToken.None);

@@ -29,10 +29,8 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
         public async Task Setup()
         {
             var series = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
-            var request = new RequestBuilder()
-                                            .WithJsonBody(series)
-                                            .Build();
-            _response = (CreatedResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
+
+            _response = (CreatedResult)await handler.Run(series, LibraryId, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

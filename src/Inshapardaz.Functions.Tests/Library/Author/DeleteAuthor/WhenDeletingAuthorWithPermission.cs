@@ -56,15 +56,14 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
         [Test]
         public void ShouldHaveDeletedAuthor()
         {
-            var cat = _dataBuilder.GetById(_expected.Id);
+            var cat = DatabaseConnection.GetAuthorById(_expected.Id);
             Assert.That(cat, Is.Null, "Author should be deleted.");
         }
 
         [Test]
         public void ShouldHaveDeletedTheAuthorImage()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            var file = db.File.Where(i => i.Id == _expected.ImageId);
+            var file = DatabaseConnection.GetAuthorImageUrl(_expected.Id);
             Assert.That(file, Is.Empty, "Author Image should be deleted");
         }
 

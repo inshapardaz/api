@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -12,20 +13,20 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
 {
     [TestFixture]
-    public class WhenGettingChapterByIdHavingContentAsWriter : FunctionTest
+    public class WhenGettingChapterByIdHavingContentAsWriter
+        : LibraryTest<Functions.Library.Books.Chapters.GetChapterById>
     {
         private OkObjectResult _response;
         private ChapterView _view;
-        private Ports.Database.Entities.Library.Chapter _expected;
+        private ChapterDto _expected;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
             _expected = dataBuilder.AsPublic().WithContents().Build(4).First();
-            
-            var handler = Container.GetService<Functions.Library.Books.Chapters.GetChapterById>();
-            _response = (OkObjectResult) await handler.Run(null, _expected.BookId, _expected.Id, NullLogger.Instance, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+
+            _response = (OkObjectResult)await handler.Run(null, LibraryId, _expected.BookId, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = _response.Value as ChapterView;
         }
@@ -42,7 +43,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
             Assert.That(_response, Is.Not.Null);
             Assert.That(_response.StatusCode, Is.EqualTo(200));
         }
-        
+
         [Test]
         public void ShouldNotHaveAddChapterContentLink()
         {

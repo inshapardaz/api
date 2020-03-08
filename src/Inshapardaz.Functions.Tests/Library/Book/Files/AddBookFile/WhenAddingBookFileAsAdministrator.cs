@@ -78,9 +78,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
         [Test, Ignore("Need attention")]
         public void ShouldReturnCorrectBookFile()
         {
-            var _expected = _dataBuilder.GetFileById(_view.Id);
-            Assert.That(_view, Is.Not.Null, "Should return chapter");
-            Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Content id does not match");
+            Check.ThatFileExists(_view.Id);
         }
     }
 }

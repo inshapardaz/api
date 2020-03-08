@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Ports.Database.Entities.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -14,11 +15,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterContents
 {
     [TestFixture]
-    public class WhenUpdatingChapterContentsAsUnauthorised : FunctionTest
+    public class WhenUpdatingChapterContentsAsUnauthorised : LibraryTest<Functions.Library.Books.Chapters.Contents.UpdateChapterContents>
     {
         private UnauthorizedResult _response;
         private FakeFileStorage _fileStore;
-        private ChapterContent _chapterContents;
+        private ChapterContentDto _chapterContents;
         private int _chapterId;
         private string _contents;
         private string _newContents;
@@ -39,12 +40,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
             _fileStore.SetupFileContents(contentUrl, _contents);
 
             var chapter = _dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
-            _chapterContents = chapter.Contents.FirstOrDefault();
+            _chapterContents = DatabaseConnection.GetContentByChapter(chapter.Id).FirstOrDefault();
             _chapterId = chapter.Id;
             _contents = new Faker().Random.Words(60);
-            var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.UpdateChapterContents>();
             var request = new RequestBuilder().WithBody(_contents).Build();
-            _response = (UnauthorizedResult) await handler.Run(request, chapter.BookId, chapter.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -62,7 +62,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
         [Test]
         public async Task ShouldReturnCorrectContentData()
         {
-            var expected = _dataBuilder.GetContentById(_chapterId);
+            var expected = DatabaseConnection.GetContentById(_chapterId);
             var savedContents = await _fileStore.GetTextFile(expected.ContentUrl, CancellationToken.None);
             Assert.That(expected, Is.Not.Null, "Should return chapter");
             Assert.That(_chapterContents.Id, Is.EqualTo(expected.Id), "Content id does not match");

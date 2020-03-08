@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -13,27 +14,24 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
 {
     [TestFixture]
-    public class WhenUpdatingChapterAsAdministrator : FunctionTest
+    public class WhenUpdatingChapterAsAdministrator
+        : LibraryTest<Functions.Library.Books.Chapters.UpdateChapter>
     {
         private OkObjectResult _response;
         private ChapterDataBuilder _dataBuilder;
-        private ChapterView _expected;
+        private ChapterView newChapter;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _dataBuilder = Container.GetService<ChapterDataBuilder>();
 
-            var handler = Container.GetService<Functions.Library.Books.Chapters.UpdateChapter>();
             var chapters = _dataBuilder.WithContents().Build(4);
 
             var chapter = chapters.First();
 
-            _expected = new ChapterView { Title = new Faker().Name.FirstName() };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_expected)
-                                            .Build();
-            _response = (OkObjectResult) await handler.Run(request, chapter.BookId, chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            newChapter = new ChapterView { Title = new Faker().Name.FirstName() };
+            _response = (OkObjectResult)await handler.Run(newChapter, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -46,7 +44,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
         public void ShouldHaveOKResult()
         {
             Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int) HttpStatusCode.OK));
+            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
         [Test]
@@ -55,8 +53,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
             var returned = _response.Value as ChapterView;
             Assert.That(returned, Is.Not.Null);
 
-            var actual = _dataBuilder.GetById(returned.Id);
-            Assert.That(actual.Title, Is.EqualTo(_expected.Title), "Chapter should have expected title.");
+            var actual = DatabaseConnection.GetChapterById(returned.Id);
+            Assert.That(actual.Title, Is.EqualTo(newChapter.Title), "Chapter should have expected title.");
         }
     }
 }

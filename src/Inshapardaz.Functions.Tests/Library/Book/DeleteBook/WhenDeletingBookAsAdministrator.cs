@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Ports.Database;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +18,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
     {
         private NoContentResult _response;
 
-        private Ports.Database.Entities.Library.Book _expected;
+        private BookDto _expected;
         private BooksDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
@@ -27,8 +29,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
             var books = _dataBuilder.WithCategories(1).HavingSeries().Build(1);
             _expected = books.First();
 
-            _dataBuilder.AddBookToFavorite(_expected, Guid.NewGuid());
-            _dataBuilder.AddBookToRecentReads(_expected, Guid.NewGuid());
+            DatabaseConnection.AddBookToFavorites(_expected.Id, Guid.NewGuid());
+            DatabaseConnection.AddBookToRecentReads(_expected.Id, Guid.NewGuid());
 
             _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
@@ -49,52 +51,45 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
         [Test]
         public void ShouldHaveDeletedBook()
         {
-            var cat = _dataBuilder.GetById(_expected.Id);
+            var cat = DatabaseConnection.GetBookById(_expected.Id);
             Assert.That(cat, Is.Null, "Book should be deleted.");
         }
 
         [Test]
         public void ShouldHaveDeletedTheBookImage()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            var file = db.File.SingleOrDefault(i => i.Id == _expected.ImageId);
-            Assert.That(file, Is.Null, "Book Image should be deleted");
+            Check.ThatFileIsDeleted(_expected.ImageId.Value);
         }
 
         [Test]
         public void ShouldNotHaveDeletedTheAuthor()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            var author = db.Author.SingleOrDefault(a => a.Id == _expected.AuthorId);
-            Assert.That(author, Is.Not.Null, "Book author should not be deleted");
+            Check.ThatAuthorExists(_expected.AuthorId);
         }
 
         [Test]
         public void ShouldNotHaveDeletedTheSeries()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            var series = db.Series.SingleOrDefault(a => a.Id == _expected.SeriesId);
-            Assert.That(series, Is.Not.Null, "Book series should not be deleted");
+            Check.ThatSeriesExists(_expected.SeriesId.Value);
         }
 
         [Test]
         public void ShouldNotHaveDeletedTheCategory()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            var category = db.Category.SingleOrDefault(a => a.Id == _expected.BookCategory.First().CategoryId);
-            Assert.That(category, Is.Not.Null, "Book category should not be deleted");
+            var cats = DatabaseConnection.GetCategoriesByBook(_expected.Id);
+            cats.ForEach(cat => Check.ThatCategoryExists(cat.Id));
         }
 
         [Test]
         public void ShouldBeDeletedFromTheFavoritesOfAllUsers()
         {
-            Assert.That(_dataBuilder.DoesBookExistsInFavorites(_expected), Is.False);
+            Assert.That(DatabaseConnection.DoesBookExistsInFavorites(_expected.Id), Is.False);
         }
 
         [Test]
         public void ShouldBeDeletedFromTheRecentReadBooks()
         {
-            Assert.That(_dataBuilder.DoesBookExistsInRecent(_expected), Is.False);
+            Assert.That(DatabaseConnection.DoesBookExistsInRecent(_expected.Id), Is.False);
         }
     }
 }

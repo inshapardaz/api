@@ -18,10 +18,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
         {
             var faker = new Faker();
             var book = new BookView { Id = faker.Random.Number(), Title = faker.Random.String() };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(book)
-                                            .Build();
-            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+
+            _response = (UnauthorizedResult)await handler.Run(book, LibraryId, book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
@@ -20,8 +22,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
         private ChapterContentView _view;
 
         private string _contents;
-        private Ports.Database.Entities.Library.ChapterContent _expected;
-        private Ports.Database.Entities.Library.Chapter _chapter;
+        private ChapterContentDto _expected;
+        private ChapterDto _chapter;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,7 +36,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
             _contents = faker.Random.Words(10);
             fileStore.SetupFileContents(contentUrl, _contents);
             _chapter = dataBuilder.WithContentLink(contentUrl).WithContents().AsPublic().Build();
-            _expected = _chapter.Contents.First();
+            _expected = DatabaseConnection.GetContentByChapter(_chapter.Id).PickRandom();
 
             _response = (OkObjectResult)await handler.Run(null, LibraryId, _chapter.BookId, _chapter.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
@@ -90,9 +92,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
         [Test]
         public void ShouldNotAddBookToRecent()
         {
-            var builder = Container.GetService<BooksDataBuilder>();
-            var recentBooks = builder.GetRecentBooks();
-            Assert.That(recentBooks.Any(b => b.Id == _chapter.BookId), Is.False, "Book should not be added to recent books");
+            var recentBooks = DatabaseConnection.GetRecentBooks();
+            Assert.That(recentBooks.Any(b => b.BookId == _chapter.BookId), Is.False, "Book should not be added to recent books");
         }
     }
 }

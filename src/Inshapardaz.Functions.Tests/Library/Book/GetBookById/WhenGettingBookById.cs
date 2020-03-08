@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +13,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
 {
     [TestFixture]
-    public class WhenGettingBookById : LibraryTest<Functions.Library.Books.GetBookById>
+    public class WhenGettingBookById
+        : LibraryTest<Functions.Library.Books.GetBookById>
     {
         private OkObjectResult _response;
         private BookView _view;
-        private Ports.Database.Entities.Library.Book _expected;
+        private BookDto _expected;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -107,10 +110,15 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
             Assert.That(_view.DateUpdated, Is.EqualTo(_expected.DateUpdated), "Book date updated should match");
             Assert.That(_view.Status, Is.EqualTo((int)_expected.Status), "Book status should match");
             Assert.That(_view.YearPublished, Is.EqualTo(_expected.YearPublished), "Book year published should match");
-            Assert.That(_view.AuthorId, Is.EqualTo(_expected.Author.Id), "Book author id should match");
-            Assert.That(_view.AuthorName, Is.EqualTo(_expected.Author.Name), "Book author name should match");
-            Assert.That(_view.SeriesId, Is.EqualTo(_expected.Series.Id), "Book series id should match");
-            Assert.That(_view.SeriesName, Is.EqualTo(_expected.Series.Name), "Book series name should match");
+            Assert.That(_view.AuthorId, Is.EqualTo(_expected.AuthorId), "Book author id should match");
+
+            var author = DatabaseConnection.GetAuthorById(_expected.AuthorId);
+            Assert.That(_view.AuthorName, Is.EqualTo(author.Name), "Book author name should match");
+
+            Assert.That(_view.SeriesId, Is.EqualTo(_expected.SeriesId), "Book series id should match");
+            var series = DatabaseConnection.GetSeriesById(_expected.SeriesId.Value);
+
+            Assert.That(_view.SeriesName, Is.EqualTo(series.Name), "Book series name should match");
             Assert.That(_view.SeriesIndex, Is.EqualTo(_expected.SeriesIndex), "Book series index should match");
         }
     }

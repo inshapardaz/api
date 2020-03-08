@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +13,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
 {
     [TestFixture]
-    public class WhenGettingBookFileAsAdministrator : LibraryTest<Functions.Library.Books.Files.GetBookFiles>
+    public class WhenGettingBookFileAsAdministrator
+        : LibraryTest<Functions.Library.Books.Files.GetBookFiles>
     {
         private OkObjectResult _response;
 
-        private Ports.Database.Entities.Library.Book _book;
+        private BookDto _book;
         private BookFilesView _view;
         private BooksDataBuilder _dataBuilder;
 
@@ -47,12 +50,13 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
         [Test]
         public void ShouldReturnAllBookFiles()
         {
-            foreach (var file in _book.Files)
+            foreach (var bookFile in _dataBuilder.Files)
             {
-                var actual = _view.Items.SingleOrDefault(f => f.Id == file.File.Id);
-                Assert.That(actual, Is.Not.Null, "File ot found in resonse");
-                Assert.That(actual.FileName, Is.EqualTo(file.File.FileName), "File Name doesn't match");
-                Assert.That(actual.MimeType, Is.EqualTo(file.File.MimeType), "MimeType doesn't match");
+                var file = DatabaseConnection.GetFileById(bookFile.FileId);
+                var actual = _view.Items.SingleOrDefault(f => f.Id == bookFile.Id);
+                Assert.That(actual, Is.Not.Null, "File not found in resonse");
+                Assert.That(actual.FileName, Is.EqualTo(file.FileName), "File Name doesn't match");
+                Assert.That(actual.MimeType, Is.EqualTo(file.MimeType), "MimeType doesn't match");
             }
         }
     }

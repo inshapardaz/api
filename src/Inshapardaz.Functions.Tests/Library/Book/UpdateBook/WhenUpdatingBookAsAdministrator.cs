@@ -55,11 +55,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
                 Categories = _categories.Select(c => new CategoryView { Id = c.Id })
             };
 
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_expected)
-                                            .Build();
-
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, selectedBook.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(_expected, LibraryId, selectedBook.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
             _actual = _response.Value as BookView;
         }
 
@@ -81,7 +77,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
         {
             Assert.That(_actual, Is.Not.Null);
 
-            var actual = _dataBuilder.GetById(_actual.Id);
+            var actual = DatabaseConnection.GetBookById(_actual.Id);
             Assert.That(actual.Title, Is.EqualTo(_expected.Title), "Book should have expected title.");
             Assert.That(actual.Description, Is.EqualTo(_expected.Description), "Book should have expected description.");
             Assert.That(actual.AuthorId, Is.EqualTo(_otherAuthor.Id), "Author should be updated");

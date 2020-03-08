@@ -9,7 +9,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.DeleteBookFile
 {
     [TestFixture]
-    public class WhenDeletingBookFileThatDoesNotExist : FunctionTest
+    public class WhenDeletingBookFileThatDoesNotExist
+        : LibraryTest<Functions.Library.Books.Files.DeleteBookFile>
     {
         private NoContentResult _response;
 
@@ -21,9 +22,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.DeleteBookFile
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<BooksDataBuilder>();
             var book = _dataBuilder.Build();
-            
-            var handler = Container.GetService<Functions.Library.Books.Files.DeleteBookFile>();
-            _response = (NoContentResult)await handler.Run(request, book.Id, Random.Number, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+
+            _response = (NoContentResult)await handler.Run(request, LibraryId, book.Id, Random.Number, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
     {
         private OkObjectResult _response;
         private BookView _view;
-        private Ports.Database.Entities.Library.Book _expected;
+        private BookDto _expected;
 
         [OneTimeSetUp]
         public async Task Setup()

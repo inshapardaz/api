@@ -7,13 +7,13 @@ using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
 {
     [TestFixture]
-    public class WhenGettingSeriesAsReader : LibraryTest<Functions.Library.Series.GetSeries>
+    public class WhenGettingSeriesAsReader
+        : LibraryTest<Functions.Library.Series.GetSeries>
     {
         private OkObjectResult _response;
         private ListView<SeriesView> _view;
@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
             _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
-            _response = (OkObjectResult)await handler.Run(request, NullLogger.Instance, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<SeriesView>;
         }

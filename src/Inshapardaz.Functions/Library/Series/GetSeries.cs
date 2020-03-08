@@ -25,7 +25,8 @@ namespace Inshapardaz.Functions.Library.Series
         [FunctionName("GetSeries")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/series")] HttpRequest req,
-            ILogger log, int libraryId,
+            int libraryId,
+            ClaimsPrincipal claims,
             CancellationToken token)
         {
             var query = new GetSeriesQuery(libraryId);

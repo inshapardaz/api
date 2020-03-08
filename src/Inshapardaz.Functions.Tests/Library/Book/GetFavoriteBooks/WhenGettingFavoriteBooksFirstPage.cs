@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -29,7 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
 
             var builder = Container.GetService<BooksDataBuilder>();
             var books = builder.Build(40);
-            builder.AddSomeToFavorite(books, claim.GetUserId(), 11);
+            DatabaseConnection.AddBooksToFavorites(books.Select(b => b.Id), claim.GetUserId());
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, claim, CancellationToken.None);
 

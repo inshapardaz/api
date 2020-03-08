@@ -10,7 +10,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContents
 {
     [TestFixture]
-    public class WhenAddingChapterContentsAsReader : FunctionTest
+    public class WhenAddingChapterContentsAsReader
+        : LibraryTest<Functions.Library.Books.Chapters.Contents.AddChapterContents>
     {
         private ForbidResult _response;
         private ChapterDataBuilder _dataBuilder;
@@ -22,9 +23,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
 
             var chapter = _dataBuilder.AsPublic().Build();
             var contents = new Faker().Random.Words(60);
-            var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.AddChapterContents>();
+
             var request = new RequestBuilder().WithBody(contents).Build();
-            _response = (ForbidResult) await handler.Run(request, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

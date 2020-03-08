@@ -6,7 +6,6 @@ using Bogus;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Ports.Database;
-using Inshapardaz.Ports.Database.Entities.Library;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
 {
@@ -40,9 +39,6 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public IEnumerable<SeriesDto> Build(int count)
         {
             var fixture = new Fixture();
-            var authorGenerator = new Faker<Author>()
-                                  .RuleFor(c => c.Id, 0)
-                                  .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10));
             var series = fixture.Build<SeriesDto>()
                                 .With(s => s.LibraryId, _libraryId)
                                 .Without(s => s.ImageId)

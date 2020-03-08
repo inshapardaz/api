@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContents
 {
     [TestFixture]
-    public class WhenAddingChapterContentsAsAdministrator : FunctionTest
+    public class WhenAddingChapterContentsAsAdministrator
+        : LibraryTest<Functions.Library.Books.Chapters.Contents.AddChapterContents>
     {
         private CreatedResult _response;
         private ChapterContentView _view;
@@ -26,9 +28,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
 
             var chapter = _dataBuilder.AsPublic().Build();
             _contents = new Faker().Random.Words(60);
-            var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.AddChapterContents>();
             var request = new RequestBuilder().WithBody(_contents).Build();
-            _response = (CreatedResult) await handler.Run(request, chapter.BookId, chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = _response.Value as ChapterContentView;
         }
@@ -78,7 +79,6 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
                  .ShouldHaveSomeHref();
         }
 
-
         [Test]
         public void ShouldHaveDeleteLink()
         {
@@ -90,7 +90,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         [Test]
         public void ShouldReturnCorrectChapterData()
         {
-            var expected = _dataBuilder.GetContentById(_view.Id);
+            var expected = DatabaseConnection.GetContentById(_view.Id);
             Assert.That(_view, Is.Not.Null, "Should return chapter");
             Assert.That(_view.Id, Is.EqualTo(expected.Id), "Content id does not match");
             Assert.That(_view.ChapterId, Is.EqualTo(expected.ChapterId), "Chapter id does not match");

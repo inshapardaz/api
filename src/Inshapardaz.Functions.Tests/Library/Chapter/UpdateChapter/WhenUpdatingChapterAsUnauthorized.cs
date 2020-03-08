@@ -12,7 +12,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
 {
     [TestFixture]
-    public class WhenUpdatingChapterAsUnauthorized: FunctionTest
+    public class WhenUpdatingChapterAsUnauthorized
+        : LibraryTest<Functions.Library.Books.Chapters.UpdateChapter>
     {
         private UnauthorizedResult _response;
 
@@ -23,13 +24,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
             var chapters = dataBuilder.WithContents().Build(4);
             var chapter = chapters.First();
 
-            var handler = Container.GetService<Functions.Library.Books.Chapters.UpdateChapter>();
             var faker = new Faker();
             var chapter2 = new ChapterView { Title = faker.Random.String() };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(chapter2)
-                                            .Build();
-            _response = (UnauthorizedResult)await handler.Run(request, chapter.BookId, chapter.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(chapter2, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

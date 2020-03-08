@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -24,7 +25,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
 
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
             var chapters = dataBuilder.AsPublic().Build(4);
-            var book = chapters.First().Book;
+            var book = DatabaseConnection.GetBookById(chapters.PickRandom().BookId);
 
             _response = (OkObjectResult)await handler.Run(null, LibraryId, book.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 

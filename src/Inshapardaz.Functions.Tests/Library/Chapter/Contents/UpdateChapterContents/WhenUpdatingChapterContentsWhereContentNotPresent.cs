@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
@@ -13,7 +14,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterContents
 {
     [TestFixture]
-    public class WhenUpdatingChapterContentsWhereContentNotPresent : FunctionTest
+    public class WhenUpdatingChapterContentsWhereContentNotPresent
+        : LibraryTest<Functions.Library.Books.Chapters.Contents.UpdateChapterContents>
     {
         private CreatedResult _response;
         private int _chapterId;
@@ -32,14 +34,12 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
             _fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
 
             var faker = new Faker();
-            var contentUrl = faker.Internet.Url();
             _contents = faker.Random.Words(12);
 
             var chapter = _dataBuilder.WithContents().Build();
             _chapterId = chapter.Id;
-            var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.UpdateChapterContents>();
             var request = new RequestBuilder().WithBody(_contents).Build();
-            _response = (CreatedResult) await handler.Run(request, chapter.BookId, _chapterId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, chapter.BookId, _chapterId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _responseBody = _response.Value as ChapterContentView;
         }
@@ -59,7 +59,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
         [Test]
         public async Task ShouldReturnCorrectChapterData()
         {
-            var actual = _dataBuilder.GetContentById(_responseBody.Id);
+            var actual = DatabaseConnection.GetContentById(_responseBody.Id);
             var savedContent = await _fileStore.GetTextFile(actual.ContentUrl, CancellationToken.None);
             Assert.That(actual, Is.Not.Null, "Should return chapter");
             Assert.That(savedContent, Is.EqualTo(_contents), "contents should be saved");

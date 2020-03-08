@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         {
             var author = new AuthorView { Name = new Faker().Random.String() };
 
-            _response = (UnauthorizedResult)await handler.Run(author.ToRequest(), LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(author, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

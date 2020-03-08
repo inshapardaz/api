@@ -14,18 +14,14 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
     public class WhenUpdatingAuthorThatDoesNotExist : LibraryTest<Functions.Library.Authors.UpdateAuthor>
     {
         private CreatedResult _response;
-        private AuthorView _expected;
+        private AuthorView _author;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _expected = new AuthorView { Name = new Faker().Random.String() };
+            _author = new AuthorView { Name = new Faker().Random.String() };
 
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_expected)
-                                            .Build();
-
-            _response = (CreatedResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(_author, LibraryId, _author.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

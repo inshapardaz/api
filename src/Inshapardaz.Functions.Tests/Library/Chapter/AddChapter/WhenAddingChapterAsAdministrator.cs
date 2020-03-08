@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
 {
     [TestFixture]
-    public class WhenAddingChapterAsAdministrator : FunctionTest
+    public class WhenAddingChapterAsAdministrator
+        : LibraryTest<Functions.Library.Books.Chapters.AddChapter>
     {
         private CreatedResult _response;
         private BooksDataBuilder _builder;
@@ -24,12 +26,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
 
             var book = _builder.Build();
 
-            var handler = Container.GetService<Functions.Library.Books.Chapters.AddChapter>();
             var chapter = new ChapterView { Title = new Faker().Random.String(), ChapterNumber = 1 };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(chapter)
-                                            .Build();
-            _response = (CreatedResult)await handler.Run(request, book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(chapter, LibraryId, book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -57,7 +55,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
             var actual = _response.Value as ChapterView;
             Assert.That(actual, Is.Not.Null);
 
-            var cat = _builder.GetById(actual.Id);
+            var cat = DatabaseConnection.GetBookById(actual.Id);
             Assert.That(cat, Is.Not.Null, "Chapter should be created.");
         }
     }

@@ -20,10 +20,8 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
         public async Task Setup()
         {
             _expected = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_expected)
-                                            .Build();
-            _response = (CreatedResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+
+            _response = (CreatedResult)await handler.Run(_expected, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

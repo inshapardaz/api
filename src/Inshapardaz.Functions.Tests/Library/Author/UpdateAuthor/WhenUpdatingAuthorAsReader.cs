@@ -19,11 +19,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
             var faker = new Faker();
             var author = new AuthorView { Id = faker.Random.Number(), Name = faker.Random.String() };
 
-            var request = new RequestBuilder()
-                                            .WithJsonBody(author)
-                                            .Build();
-
-            _response = (ForbidResult)await handler.Run(request, LibraryId, author.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(author, LibraryId, author.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

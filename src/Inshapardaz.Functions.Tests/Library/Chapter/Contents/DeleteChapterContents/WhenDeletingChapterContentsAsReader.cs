@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +36,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
             _fileStore.SetupFileContents(contentLink, faker.Random.Words(10));
 
             var chapter = _dataBuilder.WithContentLink(contentLink).WithContents().AsPublic().Build();
-            var chapterContent = chapter.Contents.First();
+            var chapterContent = DatabaseConnection.GetContentByChapter(chapter.Id).PickRandom();
             _contentId = chapterContent.Id;
             _contentUrl = chapterContent.ContentUrl;
             var request = new RequestBuilder().WithAcceptType("text/markdown").Build();
@@ -58,7 +59,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
         [Test]
         public void ShouldNotHaveDeletedChapterContent()
         {
-            var expected = _dataBuilder.GetContentById(_contentId);
+            var expected = DatabaseConnection.GetContentById(_contentId);
             Assert.That(expected, Is.Not.Null, "Chapter contents should not be deleted");
         }
 

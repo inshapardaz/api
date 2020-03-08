@@ -20,9 +20,9 @@ namespace Inshapardaz.Functions
         }
 
         [FunctionName("GetEntry")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "entry")] HttpRequest req,
-                                             ILogger log,
-                                             [AccessToken] ClaimsPrincipal principal)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "/library/{libraryId}")] HttpRequest req,
+                                             int libraryId,
+                                             ClaimsPrincipal principal)
         {
             if (principal != null && principal.IsAuthenticated())
             {

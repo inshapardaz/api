@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Functions.Tests.Dto;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -31,6 +32,11 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
         public static CategoryDto GetCategoryById(this IDbConnection connection, int id)
         {
             return connection.QuerySingleOrDefault<CategoryDto>("Select * From Library.Category Where Id = @Id", new { Id = id });
+        }
+
+        public static bool DoesCategoryExists(this IDbConnection connection, int id)
+        {
+            throw new NotImplementedException();
         }
 
         public static IEnumerable<CategoryDto> GetCategoriesByBook(this IDbConnection connection, int id)

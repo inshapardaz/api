@@ -41,10 +41,8 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
             var selectedSeries = _series.First();
 
             _expected = new SeriesView { Name = new Faker().Name.LastName(), Description = new Faker().Random.Words(20) };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_expected)
-                                            .Build();
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, selectedSeries.Id, _claim, CancellationToken.None);
+
+            _response = (OkObjectResult)await handler.Run(_expected, LibraryId, selectedSeries.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

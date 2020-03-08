@@ -21,10 +21,8 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
         {
             var faker = new Faker();
             _expectedCategory = new CategoryView { Id = faker.Random.Number(), Name = faker.Random.String() };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_expectedCategory)
-                                            .Build();
-            _response = (CreatedResult)await handler.Run(request, LibraryId, _expectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+
+            _response = (CreatedResult)await handler.Run(_expectedCategory, LibraryId, _expectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

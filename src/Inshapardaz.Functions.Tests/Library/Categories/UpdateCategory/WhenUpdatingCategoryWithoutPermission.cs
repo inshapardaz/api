@@ -26,10 +26,8 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
         {
             var faker = new Faker();
             var category = new CategoryView { Id = faker.Random.Number(), Name = faker.Random.String() };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(category)
-                                            .Build();
-            _response = (ForbidResult)await handler.Run(request, LibraryId, category.Id, _claim, CancellationToken.None);
+
+            _response = (ForbidResult)await handler.Run(category, LibraryId, category.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

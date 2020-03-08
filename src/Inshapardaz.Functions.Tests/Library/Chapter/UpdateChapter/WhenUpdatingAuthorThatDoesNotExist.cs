@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -12,26 +13,20 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
 {
     [TestFixture]
-    public class WhenUpdatingChapterThatDoesNotExist : FunctionTest
+    public class WhenUpdatingChapterThatDoesNotExist
+        : LibraryTest<Functions.Library.Books.Chapters.UpdateChapter>
     {
         private CreatedResult _response;
-        private ChapterDataBuilder _builder;
-        private ChapterView _expected;
+        private ChapterView newChapter;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<ChapterDataBuilder>();
             var bookBuilder = Container.GetService<BooksDataBuilder>();
             var book = bookBuilder.Build();
 
-            var handler = Container.GetService<Functions.Library.Books.Chapters.UpdateChapter>();
-            var faker = new Faker();
-            _expected = new ChapterView { Title = new Faker().Random.String() };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_expected)
-                                            .Build();
-            _response = (CreatedResult) await handler.Run(request, book.Id, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            newChapter = new ChapterView { Title = new Faker().Random.String() };
+            _response = (CreatedResult)await handler.Run(newChapter, LibraryId, book.Id, newChapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -59,7 +54,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
             var returned = _response.Value as ChapterView;
             Assert.That(returned, Is.Not.Null);
 
-            var actual = _builder.GetById(returned.Id);
+            var actual = DatabaseConnection.GetChapterById(returned.Id);
             Assert.That(actual, Is.Not.Null, "Chapter should be created.");
         }
     }

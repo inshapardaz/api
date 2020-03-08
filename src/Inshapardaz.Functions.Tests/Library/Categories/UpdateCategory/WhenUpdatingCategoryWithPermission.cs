@@ -34,10 +34,8 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
             _selectedCategory = _categories.First();
 
             _expectedCategory = new CategoryView { Name = new Faker().Name.FullName() };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_expectedCategory)
-                                            .Build();
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+
+            _response = (OkObjectResult)await handler.Run(_expectedCategory, LibraryId, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

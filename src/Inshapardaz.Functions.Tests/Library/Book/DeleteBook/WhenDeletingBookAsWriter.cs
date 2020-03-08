@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Ports.Database;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +19,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
     {
         private NoContentResult _response;
 
-        private Ports.Database.Entities.Library.Book _expected;
+        private BookDto _expected;
         private BooksDataBuilder _dataBuilder;
+        private IEnumerable<CategoryDto> _categories;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -25,10 +29,12 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<BooksDataBuilder>();
             var books = _dataBuilder.HavingSeries().WithCategories(4).Build(1);
+            _categories = DatabaseConnection.GetCategoriesByBook(_expected.Id);
+
             _expected = books.First();
 
             _dataBuilder.AddBookToFavorite(_expected, Guid.NewGuid());
-            _dataBuilder.AddBookToRecentReads(_expected, Guid.NewGuid());
+            DatabaseConnection.AddBookToRecentReads(_expected.Id, Guid.NewGuid());
 
             _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
@@ -49,59 +55,57 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
         [Test]
         public void ShouldHaveDeletedBook()
         {
-            var cat = _dataBuilder.GetById(_expected.Id);
+            var cat = DatabaseConnection.GetBookById(_expected.Id);
             Assert.That(cat, Is.Null, "Book should be deleted.");
         }
 
         [Test]
         public void ShouldHaveDeletedTheBookImage()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            var file = db.File.SingleOrDefault(i => i.Id == _expected.ImageId);
+            var file = DatabaseConnection.GetFileById(_expected.ImageId.Value);
             Assert.That(file, Is.Null, "Book Image should be deleted");
         }
 
         [Test]
         public void ShouldHaveDeletedTheBookChapters()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            Assert.That(db.Chapter.Any(i => i.BookId == _expected.Id), Is.False, "Book chapters should be deleted");
+            var chapters = DatabaseConnection.GetChaptersByBook(_expected.Id);
+            Assert.That(chapters.Any(i => i.BookId == _expected.Id), Is.False, "Book chapters should be deleted");
         }
 
         [Test]
         public void ShouldNotHaveDeletedTheAuthor()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            var author = db.Author.SingleOrDefault(a => a.Id == _expected.AuthorId);
+            var author = DatabaseConnection.GetAuthorById(_expected.AuthorId);
             Assert.That(author, Is.Not.Null, "Book author should not be deleted");
         }
 
         [Test]
         public void ShouldNotHaveDeletedTheSeries()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            var series = db.Series.SingleOrDefault(a => a.Id == _expected.SeriesId);
+            var series = DatabaseConnection.GetSeriesById(_expected.SeriesId.Value);
             Assert.That(series, Is.Not.Null, "Book series should not be deleted");
         }
 
         [Test]
         public void ShouldNotHaveDeletedTheCategory()
         {
-            var db = Container.GetService<IDatabaseContext>();
-            var category = db.Category.SingleOrDefault(a => a.Id == _expected.BookCategory.First().CategoryId);
-            Assert.That(category, Is.Not.Null, "Book category should not be deleted");
+            foreach (var cat in _categories)
+            {
+                Assert.That(DatabaseConnection.DoesCategoryExists(cat.Id), Is.Not.Null, "Book category should not be deleted");
+            }
         }
 
         [Test]
         public void ShouldBeDeletedFromTheFavoritesOfAllUsers()
         {
-            Assert.That(_dataBuilder.DoesBookExistsInFavorites(_expected), Is.False);
+            Assert.That(DatabaseConnection.DoesBookExistsInFavorites(_expected.Id), Is.False);
         }
 
         [Test]
         public void ShouldBeDeletedFromTheRecentReadBooks()
         {
-            Assert.That(_dataBuilder.DoesBookExistsInRecent(_expected), Is.False);
+            Assert.That(DatabaseConnection.DoesBookExistsInRecent(_expected.Id), Is.False);
         }
     }
 }

@@ -22,5 +22,11 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
             var sql = "Delete From Inshapardaz.[File] Where Id IN @Ids";
             connection.Execute(sql, new { Ids = file.Select(f => f.Id) });
         }
+
+        public static FileDto GetFileById(this IDbConnection connection, int fileId)
+        {
+            var sql = "Select * From Inshapardaz.[File] Where Id = @Id";
+            return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = fileId });
+        }
     }
 }

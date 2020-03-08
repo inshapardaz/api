@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -31,10 +32,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
                 Description = faker.Random.String(),
                 AuthorId = author.Id
             };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_expected)
-                                            .Build();
-            _response = (CreatedResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+
+            _response = (CreatedResult)await handler.Run(_expected, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -62,7 +61,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
             var returned = _response.Value as BookView;
             Assert.That(returned, Is.Not.Null);
 
-            var actual = _builder.GetById(returned.Id);
+            var actual = DatabaseConnection.GetBookById(returned.Id);
             Assert.That(actual, Is.Not.Null, "Book should be created.");
         }
     }

@@ -11,7 +11,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
 {
     [TestFixture]
-    public class WhenAddingChapterForNonExistingBook : FunctionTest
+    public class WhenAddingChapterForNonExistingBook
+        : LibraryTest<Functions.Library.Books.Chapters.AddChapter>
     {
         private BadRequestResult _response;
         private BooksDataBuilder _builder;
@@ -21,12 +22,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
         {
             _builder = Container.GetService<BooksDataBuilder>();
 
-            var handler = Container.GetService<Functions.Library.Books.Chapters.AddChapter>();
             var chapter = new ChapterView { Title = new Faker().Random.String(), ChapterNumber = 1 };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(chapter)
-                                            .Build();
-            _response = (BadRequestResult)await handler.Run(request, new Faker().Random.Int(), AuthenticationBuilder.WriterClaim, CancellationToken.None);
+
+            _response = (BadRequestResult)await handler.Run(chapter, LibraryId, new Faker().Random.Int(), AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

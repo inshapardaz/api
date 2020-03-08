@@ -18,10 +18,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
         {
             var book = new BookView { Title = new Faker().Random.String() };
 
-            var request = new RequestBuilder()
-                                            .WithJsonBody(book)
-                                            .Build();
-            _response = (ForbidResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(book, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

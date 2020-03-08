@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -51,10 +52,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
                        .RuleFor(c => c.SeriesIndex, f => f.Random.Int(1, 10))
                        .RuleFor(c => c.Categories, f => f.PickRandom<CategoryView>(categories, 2))
                        .Generate();
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_request)
-                                            .Build();
-            _response = (CreatedResult)await handler.Run(request, LibraryId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(_request, LibraryId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -82,7 +80,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
             var bookView = _response.Value as BookView;
             Assert.That(bookView, Is.Not.Null);
 
-            var actual = _builder.GetById(bookView.Id);
+            var actual = DatabaseConnection.GetBookById(bookView.Id);
             Assert.That(actual, Is.Not.Null, "Book should be created.");
             Assert.That(actual.Title, Is.EqualTo(_request.Title), "Title should match");
             Assert.That(actual.Description, Is.EqualTo(_request.Description), "Book description count does not match");

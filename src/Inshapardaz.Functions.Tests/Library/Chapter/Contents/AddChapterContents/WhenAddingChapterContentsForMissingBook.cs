@@ -8,16 +8,16 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContents
 {
     [TestFixture]
-    public class WhenAddingChapterContentsForMissingBook : FunctionTest
+    public class WhenAddingChapterContentsForMissingBook
+        : LibraryTest<Functions.Library.Books.Chapters.Contents.AddChapterContents>
     {
         private BadRequestResult _response;
-        
+
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.AddChapterContents>();
             var request = new RequestBuilder().WithBody("test content").Build();
-            _response = (BadRequestResult) await handler.Run(request, Random.Number, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (BadRequestResult)await handler.Run(request, LibraryId, Random.Number, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

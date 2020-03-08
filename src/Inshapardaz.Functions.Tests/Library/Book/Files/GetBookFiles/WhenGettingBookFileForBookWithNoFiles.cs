@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +11,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
 {
     [TestFixture]
-    public class WhenGettingBookFileForBookWithNoFiles : LibraryTest<Functions.Library.Books.Files.GetBookFiles>
+    public class WhenGettingBookFileForBookWithNoFiles
+        : LibraryTest<Functions.Library.Books.Files.GetBookFiles>
     {
         private OkObjectResult _response;
 
-        private Ports.Database.Entities.Library.Book _book;
+        private BookDto _book;
         private BookFilesView _view;
         private BooksDataBuilder _dataBuilder;
 

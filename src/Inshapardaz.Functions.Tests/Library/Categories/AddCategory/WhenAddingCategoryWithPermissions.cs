@@ -19,10 +19,8 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
         public async Task Setup()
         {
             var category = new CategoryView { Name = new Faker().Random.String() };
-            var request = new RequestBuilder()
-                                            .WithJsonBody(category)
-                                            .Build();
-            _response = (CreatedResult)await handler.Run(request, LibraryId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+
+            _response = (CreatedResult)await handler.Run(category, LibraryId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

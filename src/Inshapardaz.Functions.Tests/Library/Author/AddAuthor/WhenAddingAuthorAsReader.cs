@@ -18,10 +18,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         {
             var author = new AuthorView { Name = new Faker().Random.String() };
 
-            var request = new RequestBuilder()
-                                            .WithJsonBody(author)
-                                            .Build();
-            _response = (ForbidResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(author, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

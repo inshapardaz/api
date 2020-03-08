@@ -1,5 +1,7 @@
 ﻿using Dapper;
 using Inshapardaz.Functions.Tests.Dto;
+using Inshapardaz.Functions.Tests.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -24,9 +26,28 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
             }
         }
 
+        public static void AddBookToFavorites(this IDbConnection connection, int bookId, Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void AddBooksToFavorites(this IDbConnection connection, IEnumerable<int> bookIds, Guid userId)
+        {
+            bookIds.ForEach(id => AddBookToFavorites(connection, id, userId));
+        }
+
+        public static void AddBookToRecentReads(this IDbConnection connection, int bookId, Guid userId)
+        {
+        }
+
         public static int GetBookCountByAuthor(this IDbConnection connection, int id)
         {
             return connection.ExecuteScalar<int>("Select Count(*) From Library.Book Where AuthorId = @Id", new { Id = id });
+        }
+
+        public static BookDto GetBookById(this IDbConnection connection, int bookId)
+        {
+            return connection.QuerySingleOrDefault<BookDto>("Select * From Library.Book Where Id = @Id", new { Id = bookId });
         }
 
         public static IEnumerable<BookDto> GetBooksByAuthor(this IDbConnection connection, int id)
@@ -44,6 +65,37 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
         public static IEnumerable<BookDto> GetBooksBySeries(this IDbConnection connection, int seriesId)
         {
             return connection.Query<BookDto>(@"Select * From Library.Book Where SeriesId = @SeriesId ", new { SeriesId = seriesId });
+        }
+
+        public static string GetBookImageUrl(this IDbConnection connection, int bookId)
+        {
+            throw new NotImplementedException();
+        }
+
+        //TODO : Add user id.
+        public static List<RecentBookDto> GetRecentBooks(this IDbConnection connection)
+        {
+            throw new NotImplementedException();
+        }
+
+        //TODO : Add user id.
+
+        public static bool DoesBookExistsInFavorites(this IDbConnection connection, int bookId) =>
+            connection.QuerySingle<bool>(@"Select Count(1) From Library.FavoriteBooks Where BookId = @BookId", new
+            {
+                BookId = bookId
+            });
+
+        //TODO : Add user id.
+        public static bool DoesBookExistsInRecent(this IDbConnection connection, int bookId) =>
+            connection.QuerySingle<bool>(@"Select Count(1) From Library.RecentBooks Where BookId = @BookId", new
+            {
+                BookId = bookId
+            });
+
+        public static IEnumerable<BookFileDto> GetBookFiles(this IDbConnection connection, int bookId)
+        {
+            return connection.Query<BookFileDto>(@"Select * From Library.BookFile Where BookId = @BookId ", new { BookId = bookId });
         }
     }
 }

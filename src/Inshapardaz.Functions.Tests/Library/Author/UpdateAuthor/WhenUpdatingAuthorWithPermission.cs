@@ -39,10 +39,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
 
             _expected = new AuthorView { Name = new Faker().Name.FullName() };
 
-            var request = new RequestBuilder()
-                                            .WithJsonBody(_expected)
-                                            .Build();
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, author.Id, _claim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(_expected, LibraryId, author.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

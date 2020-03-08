@@ -17,11 +17,11 @@ namespace Inshapardaz.Functions.Converters
         {
             var items = seriesList.Select(g => g.Render(principal));
             var view = new ListView<SeriesView> { Items = items };
-            view.Links.Add(GetSeries.Link(RelTypes.Self));
+            view.Links.Add(GetSeries.Link(0));
 
             if (principal.IsWriter())
             {
-                view.Links.Add(AddSeries.Link(RelTypes.Create));
+                view.Links.Add(AddSeries.Link(0, RelTypes.Create));
             }
 
             return view;

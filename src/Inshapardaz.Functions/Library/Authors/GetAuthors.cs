@@ -51,10 +51,10 @@ namespace Inshapardaz.Functions.Library.Authors
             return new OkObjectResult(args.Render(principal));
         }
 
-        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("authors", relType);
+        public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/authors", relType);
 
         public static LinkView Link(int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self)
-            => SelfLink("authors", relType, queryString: new Dictionary<string, string>
+            => SelfLink("author", relType, queryString: new Dictionary<string, string>
             {
                 { "pageNumber", pageNumber.ToString()},
                 { "pageSize", pageSize.ToString()}

@@ -8,7 +8,7 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
     {
         public static void AddLibrary(this IDbConnection connection, LibraryDto library)
         {
-            var id = connection.ExecuteScalar<int>("Insert Into Library.Library (Name, Language) OUTPUT Inserted.Id VALUES (@Name, @Language)", library);
+            var id = connection.ExecuteScalar<int>("Insert Into Library.Library (Name, Language, SupportsPeriodicals) OUTPUT Inserted.Id VALUES (@Name, @Language, @SupportsPeriodicals)", library);
             library.Id = id;
         }
 

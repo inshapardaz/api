@@ -41,6 +41,6 @@ namespace Inshapardaz.Functions.Library.Series
             });
         }
 
-        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("series", relType, "POST");
+        public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/series", relType, "POST");
     }
 }

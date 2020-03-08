@@ -67,8 +67,7 @@ namespace Inshapardaz.Functions.Tests
 
         private void RegisterHandlers(TestHostBuilder builder)
         {
-            builder.Services.AddTransient<GetEntry>()
-                   .AddTransient<GetLanguages>()
+            builder.Services.AddTransient<GetLibrary>()
                    .AddTransient<GetCategories>()
                    .AddTransient<AddCategory>()
                    .AddTransient<GetCategoryById>()

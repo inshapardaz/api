@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetFavoriteBooks")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/favorite")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/favorites")] HttpRequest req,
             int libraryId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
@@ -50,7 +50,7 @@ namespace Inshapardaz.Functions.Library.Books
             return new OkObjectResult(args.Render(principal));
         }
 
-        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/favorite", relType);
+        public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/favorites", relType);
 
         public static LinkView Link(int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self)
             => SelfLink("books/favorite", relType, queryString: new Dictionary<string, string>

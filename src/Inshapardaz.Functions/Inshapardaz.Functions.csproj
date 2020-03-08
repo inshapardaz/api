@@ -6,14 +6,14 @@
     <DebugType>Full</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="automapper" Version="8.1.1" />
-    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.12" />
+    <PackageReference Include="automapper" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.16" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
 
-    <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.5.0" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.29" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.2" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.6.0" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.5" />
     <PackageReference Include="Paramore.Brighter.AspNetCore" Version="1.0.13" />
     <PackageReference Include="Paramore.Darker.AspNetCore" Version="2.0.78" />
   </ItemGroup>

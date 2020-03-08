@@ -10,13 +10,19 @@ namespace Inshapardaz.Functions.Tests
         protected T handler;
 
         public int LibraryId => _builder.Library.Id;
+        public bool PeriodicalsEnabled => _builder.Library.SupportsPeriodicals;
 
         public LibraryAsserts Check => Container.GetService<LibraryAsserts>();
 
         public LibraryTest()
+            : this(true)
+        {
+        }
+
+        public LibraryTest(bool enablePeriodicals)
         {
             _builder = Container.GetService<LibraryDataBuilder>();
-            _builder.Build();
+            _builder.WithPeriodicalsEnabled(enablePeriodicals).Build();
 
             handler = Container.GetService<T>();
         }

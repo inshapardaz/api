@@ -41,6 +41,6 @@ namespace Inshapardaz.Functions.Library.Books
             });
         }
 
-        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books", relType, "POST");
+        public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/books", relType, "POST");
     }
 }

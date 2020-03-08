@@ -17,11 +17,11 @@ namespace Inshapardaz.Functions.Converters
         {
             var items = categories.Select(g => g.Render(user));
             var view = new ListView<CategoryView> { Items = items };
-            view.Links.Add(GetCategories.Link());
+            view.Links.Add(GetCategories.Link(0));
 
             if (user.IsAdministrator())
             {
-                view.Links.Add(AddCategory.Link(RelTypes.Create));
+                view.Links.Add(AddCategory.Link(0, RelTypes.Create));
             }
 
             return view;

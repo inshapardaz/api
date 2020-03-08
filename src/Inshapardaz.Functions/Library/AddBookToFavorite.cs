@@ -2,6 +2,7 @@ using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
+using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -23,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("AddBookToFavorite")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books/favorite/{bookId:int}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/favorites")] AddToFavoriteView view,
             int libraryId,
             int bookId,
             [AccessToken] ClaimsPrincipal claims,
@@ -31,13 +32,13 @@ namespace Inshapardaz.Functions.Library.Books
         {
             return await Executor.Execute(async () =>
             {
-                var request = new AddBookToFavoriteRequest(claims, libraryId, bookId, claims.GetUserId());
+                var request = new AddBookToFavoriteRequest(claims, libraryId, view.BookId, claims.GetUserId());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-                return new CreatedResult(new Uri(GetFavoriteBooks.Link(RelTypes.Self).Href), null);
+                return new CreatedResult(new Uri(GetFavoriteBooks.Link(libraryId, RelTypes.Self).Href), null);
             });
         }
 
-        public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/favorite/{bookId}", relType, "POST");
+        public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/favorites", relType, "POST");
     }
 }

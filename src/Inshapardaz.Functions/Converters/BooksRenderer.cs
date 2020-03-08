@@ -32,7 +32,7 @@ namespace Inshapardaz.Functions.Converters
 
             if (principal.IsWriter())
             {
-                links.Add(AddBook.Link(RelTypes.Create));
+                links.Add(AddBook.Link(0, RelTypes.Create));
             }
 
             if (page.CurrentPageIndex < page.PageCount)
@@ -63,7 +63,7 @@ namespace Inshapardaz.Functions.Converters
 
             if (principal.IsWriter())
             {
-                links.Add(AddBook.Link(RelTypes.Create));
+                links.Add(AddBook.Link(0, RelTypes.Create));
             }
 
             if (page.CurrentPageIndex < page.PageCount)
@@ -80,7 +80,7 @@ namespace Inshapardaz.Functions.Converters
             return page;
         }
 
-        public static ListView<BookView> Render(this IEnumerable<BookModel> source, ClaimsPrincipal principal, Func<string, LinkView> selfLinkMethod)
+        public static ListView<BookView> Render(this IEnumerable<BookModel> source, ClaimsPrincipal principal, Func<int, string, LinkView> selfLinkMethod)
         {
             var result = new ListView<BookView>()
             {
@@ -88,7 +88,7 @@ namespace Inshapardaz.Functions.Converters
                 Links = new List<LinkView>()
             };
 
-            result.Links.Add(selfLinkMethod(RelTypes.Self));
+            result.Links.Add(selfLinkMethod(0, RelTypes.Self));
 
             return result;
         }
@@ -131,7 +131,7 @@ namespace Inshapardaz.Functions.Converters
                 }
                 else
                 {
-                    links.Add(AddBookToFavorite.Link(source.Id, RelTypes.AddFavorite));
+                    links.Add(AddBookToFavorite.Link(source.Id, RelTypes.CreateFavorite));
                 }
             }
 

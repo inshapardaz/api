@@ -1,6 +1,10 @@
-﻿namespace Inshapardaz.Functions.Tests.Dto
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Inshapardaz.Domain.Models.Library
 {
-    public class LibraryDto
+    public class LibraryModel
     {
         public int Id { get; set; }
 

@@ -22,7 +22,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("GetRecentReadBooks")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/recent")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/recents")] HttpRequest req,
             int libraryId,
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
@@ -40,6 +40,6 @@ namespace Inshapardaz.Functions.Library.Books
             return new OkObjectResult(books.Render(principal, Link));
         }
 
-        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/recent", relType);
+        public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/recents", relType);
     }
 }

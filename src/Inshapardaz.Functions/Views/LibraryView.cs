@@ -1,6 +1,6 @@
 ﻿namespace Inshapardaz.Functions.Views
 {
-    public class EntryView : ViewWithLinks
+    public class LibraryView : ViewWithLinks
     {
     }
 }

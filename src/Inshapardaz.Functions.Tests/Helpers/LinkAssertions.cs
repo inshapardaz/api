@@ -43,6 +43,14 @@ namespace Inshapardaz.Functions.Tests.Helpers
             return link;
         }
 
+        public static LinkView EndingWith(this LinkView link, string endingWith)
+        {
+            Uri uri = new Uri(link.Href);
+            uri.AbsolutePath.Should().EndWith(endingWith, $"Link {uri.AbsoluteUri} reltype '{link.Rel}' not ending with `{endingWith}`.");
+
+            return link;
+        }
+
         public static LinkView ShouldPut(this LinkView link, string url)
         {
             Assert.That(link.Method.ToLower(), Is.EqualTo("put"), $"Link with reltype '{link.Rel}' should have method 'PUT' but found '{link.Method}'");

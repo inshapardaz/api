@@ -53,7 +53,10 @@ namespace Inshapardaz.Functions.Views
         public const string Periodicals = "periodicals";
         public const string Issues = "issues";
         public const string AddIssue = "add-issue";
-        public const string AddFavorite = "add-favorite";
+        public const string CreateFavorite = "create-favorite";
         public const string RemoveFavorite = "remove-favorite";
+        public const string CreateBook = "create-book";
+        public const string CreateCategory = "create-category";
+        public const string CreateSeries = "create-series";
     }
 }

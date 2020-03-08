@@ -1,4 +1,5 @@
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Inshapardaz.Ports.Database;
@@ -15,6 +16,7 @@ namespace Inshapardaz.Functions.Configuration
         {
             services.AddTransient<IProvideConnection>(sp => new SqlServerConnectionProvider(ConfigurationSettings.DatabaseConnectionString));
             services.AddTransient<IFileRepository, FileRepository>();
+            services.AddTransient<ILibraryRepository, LibraryRepository>();
             services.AddTransient<IAuthorRepository, AuthorRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IBookRepository, BookRepository>();

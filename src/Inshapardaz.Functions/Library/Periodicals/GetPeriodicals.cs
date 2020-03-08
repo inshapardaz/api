@@ -17,12 +17,12 @@ namespace Inshapardaz.Functions.Library.Periodicals
 
         [FunctionName("GetPeriodicals")]
         public IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "periodicals")] HttpRequest req,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/periodicals")] HttpRequest req,
+            int libraryId)
         {
             return new OkObjectResult("GET:Periodicals");
         }
 
-        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("periodicals", relType);
+        public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/periodicals", relType);
     }
 }

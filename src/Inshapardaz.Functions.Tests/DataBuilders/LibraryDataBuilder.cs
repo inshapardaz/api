@@ -9,12 +9,18 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
     public class LibraryDataBuilder
     {
         private IDbConnection _connection;
-
+        private bool _enablePeriodicals;
         public LibraryDto Library { get; private set; }
 
         public LibraryDataBuilder(IProvideConnection connectionProvider)
         {
             _connection = connectionProvider.GetConnection();
+        }
+
+        public LibraryDataBuilder WithPeriodicalsEnabled(bool periodicalsEnabled = true)
+        {
+            _enablePeriodicals = periodicalsEnabled;
+            return this;
         }
 
         public LibraryDto Build()
@@ -23,6 +29,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
             Library = fixture.Build<LibraryDto>()
                                  .With(l => l.Language, "en")
+                                 .With(l => l.SupportsPeriodicals, _enablePeriodicals)
                                  .Create();
 
             _connection.AddLibrary(Library);

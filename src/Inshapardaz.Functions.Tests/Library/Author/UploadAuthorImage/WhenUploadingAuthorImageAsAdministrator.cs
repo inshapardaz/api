@@ -1,7 +1,8 @@
-﻿using System.Net;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Bogus;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Fakes;
@@ -31,6 +32,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
             _authorId = author.Id;
 
             var imageUrl = DatabaseConnection.GetAuthorImageUrl(_authorId);
+
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
             _response = (OkResult)await handler.Run(request, LibraryId, _authorId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
@@ -45,18 +47,13 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            _response.ShouldBeOk();
         }
 
         [Test]
-        public async Task ShouldHaveUpdatedAuthorImage()
+        public void ShouldHaveUpdatedAuthorImage()
         {
-            var imageUrl = DatabaseConnection.GetAuthorImageUrl(_authorId);
-            Assert.That(imageUrl, Is.Not.Null, "Author should have an image url`.");
-            var image = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
-            Assert.That(image, Is.Not.Null, "Author should have an image.");
-            Assert.That(image, Is.Not.EqualTo(_oldImage), "Author image should have updated.");
+            AuthorAssert.ShouldHaveUpdatedAuthorImage(_authorId, _oldImage, DatabaseConnection, _fileStorage);
         }
     }
 }

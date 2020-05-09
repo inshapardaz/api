@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using FluentAssertions;
 using Inshapardaz.Functions.Views;
 using NUnit.Framework;
@@ -142,6 +143,37 @@ namespace Inshapardaz.Functions.Tests.Helpers
         public static LinkView Link(this ViewWithLinks view, string relType)
         {
             return view.Links.SingleOrDefault(l => l.Rel.Equals(relType, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        public static LinkView ShouldHaveUrl(this LinkView view, string path)
+        {
+            var uri = new Uri(view.Href);
+            uri.AbsolutePath.Should().Be(path);
+            return view;
+        }
+
+        public static LinkView ShouldHaveQueryParameter<T>(this LinkView view, string name, T value)
+        {
+            var uri = new Uri(view.Href);
+            var parameters = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var param = parameters[name];
+            param.Should().NotBeNull();
+            param.Should().Be(value.ToString());
+            return view;
+        }
+
+        public static void ShouldHaveUpdateLink(this ViewWithLinks view, string url)
+        {
+            view.UpdateLink()
+                .ShouldBePut()
+                .EndingWith(url);
+        }
+
+        public static void ShouldHaveDeleteLink(this ViewWithLinks view, string url)
+        {
+            view.DeleteLink()
+                .ShouldBeDelete()
+                .EndingWith(url);
         }
     }
 }

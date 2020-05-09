@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Functions.Tests.DataBuilders;
+﻿using Inshapardaz.Functions.Tests.Asserts;
+using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 

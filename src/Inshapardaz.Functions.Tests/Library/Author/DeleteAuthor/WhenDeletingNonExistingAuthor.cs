@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
@@ -28,8 +29,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(204));
+            _response.ShouldBeNoContent();
         }
     }
 }

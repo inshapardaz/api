@@ -58,7 +58,7 @@ namespace Inshapardaz.Functions.Converters
 
             var links = new List<LinkView>
             {
-                source.LinkFuncWithParameter(id, page.CurrentPageIndex, page.PageSize, RelTypes.Self)
+                source.LinkFuncWithParameter(id, page.CurrentPageIndex, page.PageSize, source.RouteArguments.Query, RelTypes.Self)
             };
 
             if (principal.IsWriter())
@@ -68,12 +68,12 @@ namespace Inshapardaz.Functions.Converters
 
             if (page.CurrentPageIndex < page.PageCount)
             {
-                links.Add(source.LinkFuncWithParameter(id, page.CurrentPageIndex + 1, page.PageSize, RelTypes.Next));
+                links.Add(source.LinkFuncWithParameter(id, page.CurrentPageIndex + 1, page.PageSize, source.RouteArguments.Query, RelTypes.Next));
             }
 
             if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
             {
-                links.Add(source.LinkFuncWithParameter(id, page.CurrentPageIndex - 1, page.PageSize, RelTypes.Previous));
+                links.Add(source.LinkFuncWithParameter(id, page.CurrentPageIndex - 1, page.PageSize, source.RouteArguments.Query, RelTypes.Previous));
             }
 
             page.Links = links;
@@ -99,7 +99,7 @@ namespace Inshapardaz.Functions.Converters
             var links = new List<LinkView>
             {
                 GetBookById.Link(source.Id, RelTypes.Self),
-                GetAuthorById.Link(source.AuthorId, RelTypes.Author),
+                GetAuthorById.Link(0, source.AuthorId, RelTypes.Author),
                 GetChaptersByBook.Link(source.Id, RelTypes.Chapters),
                 GetBookFiles.Link(source.Id, RelTypes.Files)
             };

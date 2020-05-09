@@ -112,9 +112,6 @@ namespace Inshapardaz.Functions.Tests.Library
             _view.Links.AssertLink("favorites")
                 .ShouldBeGet()
                 .EndingWith($"/library/{LibraryId}/favorites");
-            _view.Links.AssertLink("create-favorite")
-                .ShouldBePost()
-                .EndingWith($"/library/{LibraryId}/favorites");
         }
 
         [Test]

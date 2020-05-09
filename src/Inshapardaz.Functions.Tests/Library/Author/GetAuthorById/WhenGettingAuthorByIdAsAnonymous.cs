@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -17,8 +17,8 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
-        private AuthorView _view;
         private AuthorDto _expected;
+        private AuthorAssert _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
-            _view = _response.Value as AuthorView;
+            _assert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -43,52 +43,43 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldHaveSelfLink();
         }
 
         [Test]
         public void ShouldHaveBooksLink()
         {
-            _view.Links.AssertLink("books")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldHaveBooksLink();
         }
 
         [Test]
         public void ShouldNotHaveUpdateLink()
         {
-            _view.Links.AssertLinkNotPresent("update");
+            _assert.ShouldNotHaveUpdateLink();
         }
 
         [Test]
         public void ShouldNotHaveDeleteLink()
         {
-            _view.Links.AssertLinkNotPresent("delete");
+            _assert.ShouldNotHaveDeleteLink();
         }
 
         [Test]
         public void ShouldNotHaveImageUploadLink()
         {
-            _view.Links.AssertLinkNotPresent("image-upload");
+            _assert.ShouldNotHaveImageUploadLink();
         }
 
         [Test]
         public void ShouldReturnCorrectAuthorData()
         {
-            Assert.That(_view, Is.Not.Null, "Should contain at-least one author");
-            Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Author id does not match");
-            Assert.That(_view.Name, Is.EqualTo(_expected.Name), "Author name does not match");
-            var authorBookCount = DatabaseConnection.GetBookCountByAuthor(_expected.Id);
-            Assert.That(_view.BookCount, Is.EqualTo(authorBookCount), "Author book count does not match");
+            _assert.ShouldHaveCorrectAuthorRetunred(_expected, DatabaseConnection);
         }
     }
 }

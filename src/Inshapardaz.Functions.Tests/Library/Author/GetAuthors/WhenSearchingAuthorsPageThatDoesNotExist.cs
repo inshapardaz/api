@@ -1,11 +1,8 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 {
     [TestFixture]
-    public class WhenGettingAuthorsPageInMiddle : LibraryTest<Functions.Library.Authors.GetAuthors>
+    public class WhenSearchingAuthorsPageThatDoesNotExist : LibraryTest<Functions.Library.Authors.GetAuthors>
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
@@ -24,12 +21,13 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         public async Task Setup()
         {
             var request = new RequestBuilder()
-                .WithQueryParameter("pageNumber", 3)
+                .WithQueryParameter("query", "SearchAuthor")
+                .WithQueryParameter("pageNumber", 100)
                 .WithQueryParameter("pageSize", 10)
                 .Build();
 
             _builder = Container.GetService<AuthorsDataBuilder>();
-            _builder.WithLibrary(LibraryId).WithBooks(3).Build(50);
+            _builder.WithLibrary(LibraryId).WithBooks(3).WithNamePattern("SearchAuthor").Build(20);
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
@@ -52,7 +50,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/authors");
+            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/authors", "query", "SearchAuthor");
         }
 
         [Test]
@@ -62,32 +60,21 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         }
 
         [Test]
-        public void ShouldHaveNextLink()
+        public void ShouldNotHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/api/library/{LibraryId}/authors", 4, 10);
+            _assert.ShouldNotHaveNextLink();
         }
 
         [Test]
-        public void ShouldHavePreviousLink()
+        public void ShouldNotHavepreviousLinks()
         {
-            _assert.ShouldHavePreviousLink($"/api/library/{LibraryId}/authors", 2, 10);
+            _assert.ShouldNotHavePreviousLink();
         }
 
         [Test]
-        public void ShouldReturnExpectedAuthors()
+        public void ShouldReturnNoData()
         {
-            var expectedItems = _builder.Authors.OrderBy(a => a.Name).Skip(2 * 10).Take(10);
-            foreach (var item in expectedItems)
-            {
-                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-
-                actual.Should().NotBeNull();
-                actual.Name.Should().Be(item.Name);
-                actual.BookCount.Should().Be(3);
-
-                actual.Links.AssertLinkNotPresent("update");
-                actual.Links.AssertLinkNotPresent("delete");
-            }
+            _assert.ShouldHaveNoData();
         }
     }
 }

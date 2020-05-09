@@ -35,6 +35,6 @@ namespace Inshapardaz.Functions.Library.Authors
             });
         }
 
-        public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}", relType, "DELETE");
+        public static LinkView Link(int libraryId, int authorId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/authors/{authorId}", relType, "DELETE");
     }
 }

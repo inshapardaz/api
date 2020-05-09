@@ -1,11 +1,11 @@
 ﻿using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using FluentAssertions;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +22,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
         private AuthorsDataBuilder _dataBuilder;
         private AuthorView _expected;
         private readonly ClaimsPrincipal _claim;
+        private AuthorAssert _assert;
 
         public WhenUpdatingAuthorWithPermission(AuthenticationLevel authenticationLevel)
         {
@@ -40,6 +41,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
             _expected = new AuthorView { Name = new Faker().Name.FullName() };
 
             _response = (OkObjectResult)await handler.Run(_expected, LibraryId, author.Id, _claim, CancellationToken.None);
+            _assert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -52,18 +54,13 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
         [Test]
         public void ShouldHaveCreatedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveUpdatedTheAuthor()
         {
-            var returned = _response.Value as AuthorView;
-            Assert.That(returned, Is.Not.Null);
-
-            var actual = DatabaseConnection.GetAuthorById(returned.Id);
-            Assert.That(actual.Name, Is.EqualTo(_expected.Name), "Author should have expected name.");
+            _assert.ShouldHaveSavedAuthor(DatabaseConnection);
         }
     }
 }

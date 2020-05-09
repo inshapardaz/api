@@ -3,7 +3,6 @@ using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Categories;
-using Inshapardaz.Functions.Library.Files;
 using Inshapardaz.Functions.Library.Periodicals;
 using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Views;
@@ -34,11 +33,11 @@ namespace Inshapardaz.Functions.Converters
             {
                 links.Add(GetRecentReadBooks.Link(model.Id, RelTypes.Recents));
                 links.Add(GetFavoriteBooks.Link(model.Id, RelTypes.Favorites));
-                links.Add(AddBookToFavorite.Link(model.Id, RelTypes.CreateFavorite));
             }
 
             if (user.IsWriter())
             {
+                links.Add(AddAuthor.Link(model.Id, RelTypes.CreateAuthor));
                 links.Add(AddBook.Link(model.Id, RelTypes.CreateBook));
                 links.Add(AddSeries.Link(model.Id, RelTypes.CreateSeries));
             }

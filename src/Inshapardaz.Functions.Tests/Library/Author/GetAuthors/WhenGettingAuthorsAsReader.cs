@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
-        private PageView<AuthorView> _view;
+        private PagingAssert<AuthorView> _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -28,7 +29,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
-            _view = _response.Value as PageView<AuthorView>;
+            _assert = new PagingAssert<AuthorView>(_response);
         }
 
         [OneTimeTearDown]
@@ -41,30 +42,43 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/authors");
         }
 
         [Test]
-        public void ShouldHaveCreateLink()
+        public void ShouldNotHaveCreateLink()
         {
-            _view.Links.AssertLinkNotPresent("create");
+            _assert.ShouldNotHaveCreateLink();
         }
 
         [Test]
-        public void ShouldHaveNoEditingLinkOnAuthor()
+        public void ShouldNotHaveNavigationLinks()
         {
-            var actual = _view.Data.FirstOrDefault();
-            actual.Links.AssertLinkNotPresent("update");
-            actual.Links.AssertLinkNotPresent("delete");
+            _assert.ShouldNotHaveNextLink();
+            _assert.ShouldNotHavePreviousLink();
+        }
+
+        [Test]
+        public void ShouldReturnExpectedAuthors()
+        {
+            var expectedItems = _builder.Authors.OrderBy(a => a.Name).Take(10);
+            foreach (var item in expectedItems)
+            {
+                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
+
+                actual.Should().NotBeNull();
+                actual.Name.Should().Be(item.Name);
+                actual.BookCount.Should().Be(3);
+
+                actual.Links.AssertLinkNotPresent("update");
+                actual.Links.AssertLinkNotPresent("delete");
+            }
         }
     }
 }

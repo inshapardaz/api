@@ -32,12 +32,12 @@ namespace Inshapardaz.Functions.Library.Authors
 
             if (author != null)
             {
-                return new OkObjectResult(author.Render(principal));
+                return new OkObjectResult(author.Render(libraryId, principal));
             }
 
             return new NotFoundResult();
         }
 
-        public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}", relType, "GET");
+        public static LinkView Link(int libraryId, int authorId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/authors/{authorId}", relType, "GET");
     }
 }

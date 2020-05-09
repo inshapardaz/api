@@ -1,8 +1,7 @@
-﻿using System.Net;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
-using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +14,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
     {
         private CreatedResult _response;
         private AuthorView _author;
+        private AuthorAssert _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -22,6 +22,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
             _author = new AuthorView { Name = new Faker().Random.String() };
 
             _response = (CreatedResult)await handler.Run(_author, LibraryId, _author.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _assert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -33,24 +34,19 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
         [Test]
         public void ShouldHaveCreatedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
+            _response.ShouldBeCreated();
         }
 
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            Assert.That(_response.Location, Is.Not.Empty);
+            _assert.ShouldHaveCorrectLocationHeader();
         }
 
         [Test]
         public void ShouldHaveCreatedTheAuthor()
         {
-            var returned = _response.Value as AuthorView;
-            Assert.That(returned, Is.Not.Null);
-
-            var actual = DatabaseConnection.GetAuthorById(returned.Id);
-            Assert.That(actual, Is.Not.Null, "Author should be created.");
+            _assert.ShouldHaveSavedAuthor(DatabaseConnection);
         }
     }
 }

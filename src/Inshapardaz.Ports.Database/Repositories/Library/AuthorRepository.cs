@@ -119,13 +119,13 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql,
-                                                    new { LibraryId = libraryId, Query = query, PageSize = pageSize, PageNumber = pageNumber },
+                                                    new { LibraryId = libraryId, Query = $"%{query}%", PageSize = pageSize, PageNumber = pageNumber },
                                                     cancellationToken: cancellationToken);
 
                 var authors = await connection.QueryAsync<AuthorModel>(command);
 
-                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Author WHERE LibraryId = @LibraryId And a.Name LIKE @Query";
-                var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, Query = query }, cancellationToken: cancellationToken));
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Author WHERE LibraryId = @LibraryId And Name LIKE @Query";
+                var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, Query = $"%{query}%" }, cancellationToken: cancellationToken));
 
                 return new Page<AuthorModel>
                 {

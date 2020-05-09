@@ -58,5 +58,6 @@ namespace Inshapardaz.Functions.Views
         public const string CreateBook = "create-book";
         public const string CreateCategory = "create-category";
         public const string CreateSeries = "create-series";
+        public const string CreateAuthor = "create-author";
     }
 }

@@ -69,7 +69,7 @@ namespace Inshapardaz.Functions.Library.Authors
             });
         }
 
-        public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}/image", relType, "PUT");
+        public static LinkView Link(int libraryId, int authorId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/authors/{authorId}/image", relType, "PUT");
 
         private string GetFileExtension(string fileName)
         {

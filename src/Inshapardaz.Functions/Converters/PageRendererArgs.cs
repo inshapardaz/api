@@ -12,7 +12,7 @@ namespace Inshapardaz.Functions.Converters
 
         public Func<int, int, string, LinkView> LinkFunc { get; set; }
 
-        public Func<int, int, int, string, LinkView> LinkFuncWithParameter { get; set; }
+        public Func<int, int, int, string, string, LinkView> LinkFuncWithParameter { get; set; }
     }
 
     public class PagedRouteArgs
@@ -20,22 +20,7 @@ namespace Inshapardaz.Functions.Converters
         public int PageNumber { get; set; }
 
         public int PageSize { get; set; }
-    }
-
-    public class DictionaryPagedRouteArgs : PagedRouteArgs
-    {
-        public int DictionaryId { get; set; }
-    }
-
-    public class DictionarySearchPageRouteArgs : DictionaryPagedRouteArgs
-    {
-        public int Id { get; set; }
 
         public string Query { get; set; }
-    }
-
-    public class RouteWithTitlePageRouteArgs : PagedRouteArgs
-    {
-        public string Title { get; set; }
     }
 }

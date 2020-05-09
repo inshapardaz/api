@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using FluentAssertions;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var author = new AuthorView { Name = new Faker().Random.String() };
+            var author = new AuthorView { Name = Random.Name };
 
             _response = (ForbidResult)await handler.Run(author, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
@@ -30,7 +31,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         [Test]
         public void ShouldHaveForbiddenResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.Should().NotBeNull();
         }
     }
 }

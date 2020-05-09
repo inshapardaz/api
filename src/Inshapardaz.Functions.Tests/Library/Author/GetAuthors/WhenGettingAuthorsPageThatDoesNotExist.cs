@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
@@ -15,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
-        private PageView<AuthorView> _view;
+        private PagingAssert<AuthorView> _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -30,7 +31,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
-            _view = _response.Value as PageView<AuthorView>;
+            _assert = new PagingAssert<AuthorView>(_response);
         }
 
         [OneTimeTearDown]
@@ -43,34 +44,37 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/authors");
+        }
+
+        [Test]
+        public void ShouldNotHaveCreateLink()
+        {
+            _assert.ShouldNotHaveCreateLink();
         }
 
         [Test]
         public void ShouldNotHaveNextLink()
         {
-            _view.Links.AssertLinkNotPresent("next");
+            _assert.ShouldNotHaveNextLink();
         }
 
         [Test]
         public void ShouldNotHavePreviousLink()
         {
-            _view.Links.AssertLinkNotPresent("previous");
+            _assert.ShouldNotHavePreviousLink();
         }
 
         [Test]
-        public void ShouldNotReturnAuthor()
+        public void ShouldReturnNoData()
         {
-            Assert.IsEmpty(_view.Data, "Should return no data.");
+            _assert.ShouldHaveNoData();
         }
     }
 }

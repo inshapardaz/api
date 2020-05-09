@@ -1,9 +1,7 @@
-﻿using System.Net;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
-using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +11,12 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenAddingAuthorWithPermissions : LibraryTest<Functions.Library.Authors.AddAuthor>
+    public class WhenAddingAuthorWithPermissions
+        : LibraryTest<Functions.Library.Authors.AddAuthor>
     {
-        private CreatedResult _response;
         private readonly ClaimsPrincipal _claim;
+        private AuthorAssert _authorAssert;
+        private CreatedResult _response;
 
         public WhenAddingAuthorWithPermissions(AuthenticationLevel authenticationLevel)
         {
@@ -26,9 +26,11 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var author = new AuthorView { Name = new Faker().Random.String() };
+            var _request = new AuthorView { Name = Random.Name };
 
-            _response = (CreatedResult)await handler.Run(author, LibraryId, _claim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(_request, LibraryId, _claim, CancellationToken.None);
+
+            _authorAssert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -40,24 +42,29 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         [Test]
         public void ShouldHaveCreatedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
+            _response.ShouldBeCreated();
         }
 
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            Assert.That(_response.Location, Is.Not.Empty);
+            _authorAssert.ShouldHaveCorrectLocationHeader();
         }
 
         [Test]
-        public void ShouldHaveCreatedTheAuthor()
+        public void ShouldSaveTheAuthor()
         {
-            var actual = _response.Value as AuthorView;
-            Assert.That(actual, Is.Not.Null);
+            _authorAssert.ShouldHaveSavedAuthor(DatabaseConnection);
+        }
 
-            var dbAuthor = DatabaseConnection.GetAuthorById(actual.Id);
-            Assert.That(dbAuthor, Is.Not.Null, "Author should be created.");
+        [Test]
+        public void ShouldHaveLinks()
+        {
+            _authorAssert.ShouldHaveSelfLink()
+                         .ShouldHaveBooksLink()
+                         .ShouldHaveUpdateLink()
+                         .ShouldHaveDeleteLink()
+                         .ShouldHaveUpdateLink();
         }
     }
 }

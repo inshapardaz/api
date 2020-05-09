@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Inshapardaz.Functions.Views
 {
-    public class PageView<T>
+    public class PageView<T> : ViewWithLinks
     {
         public PageView(long count, int pageSize, int currentPageIndex)
         {
@@ -25,8 +25,6 @@ namespace Inshapardaz.Functions.Views
         public int CurrentPageIndex { get; set; }
 
         public long TotalCount { get; set; }
-
-        public IEnumerable<LinkView> Links { get; set; }
 
         public IEnumerable<T> Data { get; set; }
     }

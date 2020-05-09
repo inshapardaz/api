@@ -101,7 +101,6 @@ namespace Inshapardaz.Functions.Tests.Library
             {
                 _view.Links.AssertLinkNotPresent("recents");
                 _view.Links.AssertLinkNotPresent("favorites");
-                _view.Links.AssertLinkNotPresent("create-favorite");
             }
             else
             {
@@ -110,9 +109,6 @@ namespace Inshapardaz.Functions.Tests.Library
                     .EndingWith($"/library/{LibraryId}/recents");
                 _view.Links.AssertLink("favorites")
                     .ShouldBeGet()
-                    .EndingWith($"/library/{LibraryId}/favorites");
-                _view.Links.AssertLink("create-favorite")
-                    .ShouldBePost()
                     .EndingWith($"/library/{LibraryId}/favorites");
             }
         }
@@ -123,6 +119,7 @@ namespace Inshapardaz.Functions.Tests.Library
             _view.Links.AssertLinkNotPresent("create-book");
             _view.Links.AssertLinkNotPresent("create-category");
             _view.Links.AssertLinkNotPresent("create-series");
+            _view.Links.AssertLinkNotPresent("create-author");
         }
     }
 }

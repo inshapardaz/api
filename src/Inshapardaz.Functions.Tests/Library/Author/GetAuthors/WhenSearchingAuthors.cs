@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -12,14 +14,13 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 {
-    // TODO : Add tests for pagination
     [TestFixture]
     public class WhenSearchingAuthors : LibraryTest<Functions.Library.Authors.GetAuthors>
     {
         private AuthorsDataBuilder _builder;
         private OkObjectResult _response;
-        private PageView<AuthorView> _view;
         private AuthorDto _searchedAuthor;
+        private PagingAssert<AuthorView> _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,7 +35,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
-            _view = _response.Value as PageView<AuthorView>;
+            _assert = new PagingAssert<AuthorView>(_response);
         }
 
         [OneTimeTearDown]
@@ -47,15 +48,48 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
-        public void ShouldReturnSearchedAuthor()
+        public void ShouldHaveSelfLink()
         {
-            Assert.That(_view.Data.Count(), Is.EqualTo(1));
-            Assert.That(_view.Data.First().Id, Is.EqualTo(_searchedAuthor.Id));
+            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/authors", "query", _searchedAuthor.Name);
+        }
+
+        [Test]
+        public void ShouldNotHaveCreateLink()
+        {
+            _assert.ShouldNotHaveCreateLink();
+        }
+
+        [Test]
+        public void ShouldNotHaveNextLink()
+        {
+            _assert.ShouldNotHaveNextLink();
+        }
+
+        [Test]
+        public void ShouldNotHavepreviousLinks()
+        {
+            _assert.ShouldNotHavePreviousLink();
+        }
+
+        [Test]
+        public void ShouldReturnExpectedAuthors()
+        {
+            var expectedItems = _builder.Authors.Where(a => a.Name.Contains(_searchedAuthor.Name));
+            foreach (var item in expectedItems)
+            {
+                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
+
+                actual.Should().NotBeNull();
+                actual.Name.Should().Be(item.Name);
+                actual.BookCount.Should().Be(3);
+
+                actual.Links.AssertLinkNotPresent("update");
+                actual.Links.AssertLinkNotPresent("delete");
+            }
         }
     }
 }

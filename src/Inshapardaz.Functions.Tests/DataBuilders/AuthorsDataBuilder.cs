@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using AutoFixture;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
+using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Ports.Database;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
@@ -13,13 +16,24 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<FileDto> _files = new List<FileDto>();
         private readonly IDbConnection _connection;
+        private readonly FakeFileStorage _fileStorage;
         private int _libraryId;
         private int _bookCount;
         private bool _withImage = true;
+        private string _namePattern = "";
 
-        public AuthorsDataBuilder(IProvideConnection connectionProvider)
+        public IEnumerable<AuthorDto> Authors => _authors;
+
+        public AuthorsDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage)
         {
             _connection = connectionProvider.GetConnection();
+            _fileStorage = fileStorage as FakeFileStorage;
+        }
+
+        public AuthorsDataBuilder WithNamePattern(string pattern)
+        {
+            _namePattern = pattern;
+            return this;
         }
 
         public AuthorsDataBuilder WithLibrary(int libraryId)
@@ -60,9 +74,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                     _connection.AddFile(authorImage);
 
                     _files.Add(authorImage);
+                    _fileStorage.SetupImageContents(authorImage.FilePath, Helpers.Random.Bytes);
+                    _connection.AddFile(authorImage);
                 }
 
                 var author = fixture.Build<AuthorDto>()
+                                     .With(a => a.Name, () => fixture.Create(_namePattern))
                                      .With(a => a.LibraryId, _libraryId)
                                      .With(a => a.ImageId, authorImage.Id)
                                      .Create();

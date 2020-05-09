@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -37,8 +38,8 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
         [Test]
         public void ShouldHaveUnauthorizedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            _response.Should().NotBeNull();
+            _response.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
         }
     }
 }

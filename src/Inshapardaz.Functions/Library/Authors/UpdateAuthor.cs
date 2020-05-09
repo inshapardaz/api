@@ -38,7 +38,7 @@ namespace Inshapardaz.Functions.Library.Authors
                 var request = new UpdateAuthorRequest(claims, libraryId, author.Map());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-                var renderResult = request.Result.Author.Render(claims);
+                var renderResult = request.Result.Author.Render(libraryId, claims);
 
                 if (request.Result.HasAddedNew)
                 {
@@ -49,6 +49,6 @@ namespace Inshapardaz.Functions.Library.Authors
             });
         }
 
-        public static LinkView Link(int authorId, string relType = RelTypes.Self) => SelfLink($"authors/{authorId}", relType, "PUT");
+        public static LinkView Link(int libraryId, int authorId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/authors/{authorId}", relType, "PUT");
     }
 }

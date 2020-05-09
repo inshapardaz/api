@@ -35,11 +35,11 @@ namespace Inshapardaz.Functions.Library.Authors
                 var request = new AddAuthorRequest(claims, libraryId, author.Map());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-                var renderResult = request.Result.Render(claims);
+                var renderResult = request.Result.Render(libraryId, claims);
                 return new CreatedResult(renderResult.Links.Self(), renderResult);
             });
         }
 
-        public static LinkView Link(string relType = RelTypes.Self) => SelfLink("authors", relType, "POST");
+        public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/authors", relType, "POST");
     }
 }

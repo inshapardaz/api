@@ -48,7 +48,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}/books", relType);
 
-        public static LinkView Link(int authorId, int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self)
+        public static LinkView Link(int authorId, int pageNumber = 1, int pageSize = 10, string query = null, string relType = RelTypes.Self)
             => SelfLink($"authors/{authorId}/books", relType, queryString: new Dictionary<string, string>
             {
                 { "pageNumber", pageNumber.ToString()},

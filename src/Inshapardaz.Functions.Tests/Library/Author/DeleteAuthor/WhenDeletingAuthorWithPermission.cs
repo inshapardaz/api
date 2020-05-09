@@ -2,11 +2,12 @@
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Ports.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -33,7 +34,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
         {
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<AuthorsDataBuilder>();
-            var authors = _dataBuilder.WithLibrary(LibraryId).Build(4);
+            var authors = _dataBuilder.WithLibrary(LibraryId).WithBooks(0).Build(4);
             _expected = authors.First();
 
             _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.Id, _claim, CancellationToken.None);
@@ -49,29 +50,20 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(204));
+            _response.ShouldBeNoContent();
         }
 
         [Test]
         public void ShouldHaveDeletedAuthor()
         {
-            var cat = DatabaseConnection.GetAuthorById(_expected.Id);
-            Assert.That(cat, Is.Null, "Author should be deleted.");
+            DatabaseConnection.AuthorShouldNotExist(_expected.Id);
         }
 
         [Test]
         public void ShouldHaveDeletedTheAuthorImage()
         {
             var file = DatabaseConnection.GetAuthorImageUrl(_expected.Id);
-            Assert.That(file, Is.Empty, "Author Image should be deleted");
-        }
-
-        [Test]
-        public void ShouldHaveDeletedTheAuthorBooks()
-        {
-            var authorBooks = DatabaseConnection.GetBooksByAuthor(_expected.Id);
-            Assert.That(authorBooks, Is.Empty, "Author Books should be deleted");
+            Assert.That(file, Is.Null.Or.Empty, "Author Image should be deleted");
         }
     }
 }

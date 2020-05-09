@@ -93,7 +93,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Library.Book b WHERE b.AuthorId = a.Id) AS BookCount
+                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Library.Book b WHERE b.AuthorId = a.Id) AS BookCount
                             FROM Library.Author AS a
                             LEFT OUTER JOIN Inshapardaz.[File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId

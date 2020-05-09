@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Fakes;
@@ -48,13 +49,9 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
         }
 
         [Test]
-        public async Task ShouldHaveUpdatedAuthorImage()
+        public void ShouldNotHaveUpdatedAuthorImage()
         {
-            var imageUrl = DatabaseConnection.GetAuthorImageUrl(_authorId);
-            Assert.That(imageUrl, Is.Not.Null, "Author should have an image url.");
-            var image = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
-            Assert.That(image, Is.Not.Null, "Author should have an image.");
-            Assert.That(image, Is.EqualTo(_oldImage), "Author image should not be updated.");
+            AuthorAssert.ShouldNotHaveUpdatedAuthorImage(_authorId, _oldImage, DatabaseConnection, _fileStorage);
         }
     }
 }

@@ -83,6 +83,22 @@ namespace Inshapardaz.Functions.Tests.Asserts
             image.Should().NotBeNull().And.NotEqual(oldImage);
         }
 
+        internal static void ShouldNotHaveUpdatedAuthorImage(int authorId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetAuthorImageUrl(authorId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().Equal(oldImage);
+        }
+
+        internal static void ShouldHaveAddedAuthorImage(int authorId, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetAuthorImageUrl(authorId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().NotBeNullOrEmpty();
+        }
+
         public AuthorAssert ShouldNotHaveDeleteLink()
         {
             _author.DeleteLink().Should().BeNull();

@@ -74,14 +74,14 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                     _connection.AddFile(authorImage);
 
                     _files.Add(authorImage);
-                    _fileStorage.SetupImageContents(authorImage.FilePath, Helpers.Random.Bytes);
+                    _fileStorage.SetupFileContents(authorImage.FilePath, Helpers.Random.Bytes);
                     _connection.AddFile(authorImage);
                 }
 
                 var author = fixture.Build<AuthorDto>()
                                      .With(a => a.Name, () => fixture.Create(_namePattern))
                                      .With(a => a.LibraryId, _libraryId)
-                                     .With(a => a.ImageId, authorImage.Id)
+                                     .With(a => a.ImageId, authorImage?.Id)
                                      .Create();
 
                 _connection.AddAuthor(author);

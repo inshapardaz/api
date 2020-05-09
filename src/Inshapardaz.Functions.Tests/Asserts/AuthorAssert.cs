@@ -5,6 +5,7 @@ using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Data;
 using System.Threading;
 
@@ -81,6 +82,13 @@ namespace Inshapardaz.Functions.Tests.Asserts
             imageUrl.Should().NotBeNull();
             var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.NotEqual(oldImage);
+        }
+
+        internal static void ShouldHavePublicImage(int authorId, IDbConnection dbConnection)
+        {
+            var image = dbConnection.GetAuthorImage(authorId);
+            image.Should().NotBeNull();
+            image.IsPublic.Should().BeTrue();
         }
 
         internal static void ShouldNotHaveUpdatedAuthorImage(int authorId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)

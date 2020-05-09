@@ -46,5 +46,13 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
                         Where a.Id = @Id";
             return connection.QuerySingleOrDefault<string>(sql, new { Id = id });
         }
+
+        public static FileDto GetAuthorImage(this IDbConnection connection, int id)
+        {
+            var sql = @"Select f.* from Inshapardaz.[File] f
+                        Inner Join Library.Author a ON f.Id = a.ImageId
+                        Where a.Id = @Id";
+            return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = id });
+        }
     }
 }

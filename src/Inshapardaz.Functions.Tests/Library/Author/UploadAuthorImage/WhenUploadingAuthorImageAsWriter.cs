@@ -55,5 +55,11 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
         {
             AuthorAssert.ShouldHaveUpdatedAuthorImage(_authorId, _oldImage, DatabaseConnection, _fileStorage);
         }
+
+        [Test]
+        public void ShouldSavePublicImage()
+        {
+            AuthorAssert.ShouldHavePublicImage(_authorId, DatabaseConnection);
+        }
     }
 }

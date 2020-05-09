@@ -20,7 +20,7 @@ namespace Inshapardaz.Ports.Database.Repositories
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Select *
-                            FROM Inshapardaz.File
+                            FROM Inshapardaz.[File]
                             Where Id = @id";
                 var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
 
@@ -33,9 +33,9 @@ namespace Inshapardaz.Ports.Database.Repositories
             int id;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Inshapardaz.File (FileName, MimeType, FilePath, IsPublic, DateCreated)
+                var sql = @"Insert Into Inshapardaz.[File] (FileName, MimeType, FilePath, IsPublic, DateCreated)
                             Output Inserted.Id
-                            VALUES (@FileName, @MimeType, @FilePath, @IsPublic, @DateCreated)"; ;
+                            VALUES (@FileName, @MimeType, @FilePath, @IsPublic, GETDATE())"; ;
                 var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);
                 id = await connection.ExecuteScalarAsync<int>(command);
             }
@@ -47,7 +47,13 @@ namespace Inshapardaz.Ports.Database.Repositories
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Library.Series Set FileName = @FileName, MimeType = @MimeType, FilePath = @FilePath, IsPublic = @IsPublic, DateCreated = @DateCreated  Where Id = @Id";
+                var sql = @"Update Inshapardaz.[File]
+                            Set FileName = @FileName,
+                                MimeType = @MimeType,
+                                FilePath = @FilePath,
+                                IsPublic = @IsPublic,
+                                DateCreated = GETDATE()
+                            Where Id = @Id";
                 var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
             }

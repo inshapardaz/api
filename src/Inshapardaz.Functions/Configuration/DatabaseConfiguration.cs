@@ -12,9 +12,14 @@ namespace Inshapardaz.Functions.Configuration
 {
     public static class DatabaseConfiguration
     {
-        public static IServiceCollection AddDatabase(this IServiceCollection services)
+        public static IServiceCollection AddDatabaseConnection(this IServiceCollection services)
         {
             services.AddTransient<IProvideConnection>(sp => new SqlServerConnectionProvider(ConfigurationSettings.DatabaseConnectionString));
+            return services;
+        }
+
+        public static IServiceCollection AddDatabase(this IServiceCollection services)
+        {
             services.AddTransient<IFileRepository, FileRepository>();
             services.AddTransient<ILibraryRepository, LibraryRepository>();
             services.AddTransient<IAuthorRepository, AuthorRepository>();

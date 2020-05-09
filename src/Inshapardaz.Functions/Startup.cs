@@ -21,13 +21,24 @@ namespace Inshapardaz.Functions
                 .Services.AddTransient<IReadClaims, ClaimsReader>()
                          .AddHttpClient()
                          .AddBrighterCommand()
-                         .AddDarkerQuery()
-                         .AddDatabase();
+                         .AddDarkerQuery();
+            AddDatabaseConnection(builder.Services)
+                     .AddDatabase();
 
-            if (!builder.Services.Any(x => x.ServiceType == typeof(IFileStorage)))
-            {
-                builder.Services.AddTransient<IFileStorage>(sp => new FileStorage(ConfigurationSettings.FileStorageConnectionString));
-            }
+            builder.Services.AddTransient<IFileStorage, FileStorage>();
+
+            AddCustomServices(builder.Services);
+        }
+
+        protected virtual IServiceCollection AddDatabaseConnection(IServiceCollection services)
+        {
+            services.AddDatabaseConnection();
+            return services;
+        }
+
+        protected virtual IServiceCollection AddCustomServices(IServiceCollection services)
+        {
+            return services;
         }
     }
 }

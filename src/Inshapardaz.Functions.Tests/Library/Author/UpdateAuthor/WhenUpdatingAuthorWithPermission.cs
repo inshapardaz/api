@@ -52,7 +52,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UpdateAuthor
         }
 
         [Test]
-        public void ShouldHaveCreatedResult()
+        public void ShouldHaveOkResult()
         {
             _response.ShouldBeOk();
         }

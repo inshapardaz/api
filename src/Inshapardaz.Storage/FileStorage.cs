@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Repositories;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Repositories;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using System;
@@ -12,9 +13,9 @@ namespace Inshapardaz.Storage
     {
         private readonly string _storageConnectionString;
 
-        public FileStorage(string storageConnectionString)
+        public FileStorage()
         {
-            _storageConnectionString = storageConnectionString;
+            _storageConnectionString = ConfigurationSettings.FileStorageConnectionString;
         }
 
         public async Task DeleteFile(string filePath, CancellationToken cancellationToken)

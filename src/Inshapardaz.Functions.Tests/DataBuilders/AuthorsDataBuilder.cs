@@ -70,7 +70,10 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 FileDto authorImage = null;
                 if (_withImage)
                 {
-                    authorImage = fixture.Create<FileDto>();
+                    authorImage = fixture.Build<FileDto>()
+                                         .With(a => a.FilePath, Helpers.Random.BlobUrl)
+                                         .With(a => a.IsPublic, true)
+                                         .Create();
                     _connection.AddFile(authorImage);
 
                     _files.Add(authorImage);

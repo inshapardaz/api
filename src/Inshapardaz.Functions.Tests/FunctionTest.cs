@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using FluentMigrator.Runner;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Ports.Database;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +19,9 @@ namespace Inshapardaz.Functions.Tests
 
             InitializeDatabaseMigration(_builder.Services);
             _startup.Configure(_builder);
+
+            ConfigurationSettings.BlobRoot = "http://blob.localhost";
+            ConfigurationSettings.CDNAddress = "http://cdn.localhost";
         }
 
         protected IServiceProvider Container => _builder.ServiceProvider;

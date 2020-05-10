@@ -63,7 +63,7 @@ namespace Inshapardaz.Ports.Database.Repositories
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From Inshapardaz.File Where Id = @Id";
+                var sql = @"Delete From Inshapardaz.[File] Where Id = @Id";
                 var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }

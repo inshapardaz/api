@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
@@ -22,6 +23,11 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _response = response;
             _author = response.Value as AuthorView;
+        }
+
+        private AuthorAssert(AuthorView view)
+        {
+            _author = view;
         }
 
         public static AuthorAssert WithResponse(ObjectResult response)
@@ -68,12 +74,74 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        public AuthorAssert ShouldNotHaveImageUpdateLink()
+        {
+            _author.Link("image-upload").Should().BeNull();
+            return this;
+        }
+
+        public AuthorAssert ShouldHaveImageUpdateLink()
+        {
+            _author.Link("image-upload")
+                   .ShouldBePut()
+                   .EndingWith($"library/{_libraryId}/authors/{_author.Id}/image");
+            return this;
+        }
+
         public AuthorAssert ShouldHaveDeleteLink()
         {
             _author.DeleteLink()
                   .ShouldBeDelete()
                   .EndingWith($"library/{_libraryId}/authors/{_author.Id}");
             return this;
+        }
+
+        internal void ShouldHavePublicImageLink()
+        {
+            _author.Link("image")
+                .ShouldBeGet()
+                .Href.Should()
+                .StartWith(ConfigurationSettings.CDNAddress);
+        }
+
+        internal AuthorAssert WithBookCount(int count)
+        {
+            _author.BookCount.Should().Be(count);
+            return this;
+        }
+
+        internal AuthorAssert ShouldBeSameAs(AuthorDto expected)
+        {
+            _author.Should().NotBeNull();
+            _author.Name.Should().Be(expected.Name);
+            return this;
+        }
+
+        internal AuthorAssert WithReadOnlyLinks()
+        {
+            ShouldHaveSelfLink();
+            ShouldHaveBooksLink();
+            ShouldNotHaveUpdateLink();
+            ShouldNotHaveDeleteLink();
+            ShouldNotHaveImageUpdateLink();
+
+            return this;
+        }
+
+        internal AuthorAssert WithEditableLinks()
+        {
+            ShouldHaveSelfLink();
+            ShouldHaveBooksLink();
+            ShouldHaveUpdateLink();
+            ShouldHaveDeleteLink();
+            ShouldHaveImageUpdateLink();
+
+            return this;
+        }
+
+        internal static AuthorAssert FromObject(AuthorView author)
+        {
+            return new AuthorAssert(author);
         }
 
         internal static void ShouldHaveUpdatedAuthorImage(int authorId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
@@ -162,6 +230,12 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             var cat = connection.GetAuthorById(authorId);
             cat.Should().BeNull();
+        }
+
+        public static AuthorAssert ShouldMatch(this AuthorView view, AuthorDto dto)
+        {
+            return AuthorAssert.FromObject(view)
+                               .ShouldBeSameAs(dto);
         }
     }
 }

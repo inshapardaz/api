@@ -72,13 +72,11 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-
-                actual.Should().NotBeNull();
-                actual.Name.Should().Be(item.Name);
-                actual.BookCount.Should().Be(3);
-
-                actual.ShouldHaveUpdateLink($"/api/library/{LibraryId}/authors/{item.Id}");
-                actual.ShouldHaveDeleteLink($"/api/library/{LibraryId}/authors/{item.Id}");
+                actual.ShouldMatch(item)
+                      .InLibrary(LibraryId)
+                      .WithBookCount(3)
+                      .WithEditableLinks()
+                      .ShouldHavePublicImageLink();
             }
         }
     }

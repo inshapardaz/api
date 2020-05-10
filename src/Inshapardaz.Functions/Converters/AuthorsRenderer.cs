@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
@@ -56,7 +57,11 @@ namespace Inshapardaz.Functions.Converters
                 GetBooksByAuthor.Link(libraryId, source.Id, RelTypes.Books)
             };
 
-            if (source.ImageId.HasValue)
+            if (!string.IsNullOrWhiteSpace(source.ImageUrl))
+            {
+                links.Add(new LinkView { Href = source.ImageUrl, Method = "GET", Rel = RelTypes.Image, Media = MimeTypes.Jpg });
+            }
+            else if (source.ImageId.HasValue)
             {
                 links.Add(GetFileById.Link(source.ImageId.Value, RelTypes.Image));
             }

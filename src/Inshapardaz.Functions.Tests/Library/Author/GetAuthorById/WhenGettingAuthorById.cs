@@ -60,6 +60,12 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
         }
 
         [Test]
+        public void ShouldHaveImageLink()
+        {
+            _assert.ShouldHavePublicImageLink();
+        }
+
+        [Test]
         public void ShouldReturnCorrectAuthorData()
         {
             _assert.ShouldHaveCorrectAuthorRetunred(_expected, DatabaseConnection);

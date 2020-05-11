@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Converters
             var links = new List<LinkView>
             {
                 GetChapterById.Link(source.BookId, source.Id, RelTypes.Self),
-                GetBookById.Link(source.BookId, RelTypes.Book)
+                GetBookById.Link(0, source.BookId, RelTypes.Book)
             };
 
             if (source.Contents != null)
@@ -74,7 +74,7 @@ namespace Inshapardaz.Functions.Converters
             var links = new List<LinkView>
             {
                 GetChapterContents.Link(source.BookId, source.ChapterId, source.MimeType, RelTypes.Self),
-                GetBookById.Link(source.BookId, RelTypes.Book),
+                GetBookById.Link(0, source.BookId, RelTypes.Book),
                 GetChapterById.Link(source.BookId, source.ChapterId, RelTypes.Chapter)
             };
 

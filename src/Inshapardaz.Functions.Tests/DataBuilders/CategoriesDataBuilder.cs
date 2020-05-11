@@ -4,6 +4,7 @@ using System.Linq;
 using AutoFixture;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
+using Inshapardaz.Functions.Views.Library;
 using Inshapardaz.Ports.Database;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
@@ -75,5 +76,14 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             _connection.DeleteAuthors(_authors);
             _connection.DeleteCategries(_categories);
         }
+    }
+
+    public static class CategoriesDataExtenstions
+    {
+        public static CategoryView ToView(this CategoryDto dto) => new CategoryView
+        {
+            Id = dto.Id,
+            Name = dto.Name
+        };
     }
 }

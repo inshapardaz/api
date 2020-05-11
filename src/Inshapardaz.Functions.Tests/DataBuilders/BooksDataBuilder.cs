@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Bogus;
-using Inshapardaz.Domain.Models;
+using AutoFixture;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.Dto;
-using Inshapardaz.Ports.Database;
+using Inshapardaz.Functions.Views.Library;
+using Random = Inshapardaz.Functions.Tests.Helpers.Random;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
 {
@@ -19,6 +18,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private AuthorDto _author;
         private readonly List<CategoryDto> _categories = new List<CategoryDto>();
         private SeriesDto _series;
+        private int _libraryId;
 
         public IEnumerable<BookFileDto> Files { get; set; }
 
@@ -63,6 +63,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             return this;
         }
 
+        internal BooksDataBuilder WithLibrary(int libraryId)
+        {
+            _libraryId = libraryId;
+            return this;
+        }
+
         public BooksDataBuilder WithSeries(SeriesDto series)
         {
             _series = series;
@@ -79,6 +85,17 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         {
             _fileCount = fileCount;
             return this;
+        }
+
+        internal BookView BuildView()
+        {
+            var fixture = new Fixture();
+            return fixture.Build<BookView>()
+                          .With(b => b.AuthorId, _author?.Id)
+                          .With(b => b.SeriesId, _series?.Id)
+                          .With(b => b.SeriesIndex, Random.Number)
+                          .With(b => b.Categories, _categories.Any() ? _categories.Select(c => c.ToView()) : new CategoryView[0])
+                          .Create();
         }
 
         public BookDto Build()

@@ -98,8 +98,8 @@ namespace Inshapardaz.Functions.Converters
             var result = source.Map();
             var links = new List<LinkView>
             {
-                GetBookById.Link(source.Id, RelTypes.Self),
-                GetAuthorById.Link(0, source.AuthorId, RelTypes.Author),
+                GetBookById.Link(source.LibraryId, source.Id, RelTypes.Self),
+                GetAuthorById.Link(source.LibraryId, source.AuthorId, RelTypes.Author),
                 GetChaptersByBook.Link(source.Id, RelTypes.Chapters),
                 GetBookFiles.Link(source.Id, RelTypes.Files)
             };
@@ -116,9 +116,9 @@ namespace Inshapardaz.Functions.Converters
 
             if (principal.IsWriter())
             {
-                links.Add(UpdateBook.Link(source.Id, RelTypes.Update));
-                links.Add(DeleteBook.Link(source.Id, RelTypes.Delete));
-                links.Add(UpdateBookImage.Link(source.Id, RelTypes.ImageUpload));
+                links.Add(UpdateBook.Link(source.LibraryId, source.Id, RelTypes.Update));
+                links.Add(DeleteBook.Link(source.LibraryId, source.Id, RelTypes.Delete));
+                links.Add(UpdateBookImage.Link(source.LibraryId, source.Id, RelTypes.ImageUpload));
                 links.Add(AddChapter.Link(source.Id, RelTypes.CreateChapter));
                 links.Add(AddBookFile.Link(source.Id, RelTypes.AddFile));
             }

@@ -24,16 +24,17 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             int bookId;
             using (var connection = _connectionProvider.GetConnection())
             {
+                book.LibraryId = libraryId;
                 var sql = @"Insert Into Library.Book
-                            (Title, [Description], AuthorId, ImageId, LibraryId, IsPublic, IsPublished, [Language], [Status], SeriesId, SeriesIndex, CopyRights, YearPublished, DataAdded, DateUpdated)
-                            OUTPUT Inserted.Id VALUES(@Title, @Description, @AuthorId, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, @DataAdded, @DateUpdated);";
+                            (Title, [Description], AuthorId, ImageId, LibraryId, IsPublic, IsPublished, [Language], [Status], SeriesId, SeriesIndex, CopyRights, YearPublished, DateAdded, DateUpdated)
+                            OUTPUT Inserted.Id VALUES(@Title, @Description, @AuthorId, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, @DateAdded, @DateUpdated);";
                 var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
                 bookId = await connection.ExecuteScalarAsync<int>(command);
 
                 var sqlCategory = @"Delete From Library.BookCategory Where BookId = @BookId;
                            Insert Into Library.BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
 
-                var bookCategories = book.Categories.Select(c => new { BookId = book.Id, CategoryId = c.Id });
+                var bookCategories = book.Categories.Select(c => new { BookId = bookId, CategoryId = c.Id });
                 var commandCategory = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(commandCategory);
             }

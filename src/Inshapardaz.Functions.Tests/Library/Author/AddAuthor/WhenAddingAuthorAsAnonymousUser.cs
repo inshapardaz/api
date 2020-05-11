@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
         [Test]
         public void ShouldHaveUnauthorizedResult()
         {
-            _response.Should().NotBeNull();
+            _response.ShouldBeUnauthorized();
         }
     }
 }

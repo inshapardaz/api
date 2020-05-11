@@ -4,6 +4,8 @@ using Inshapardaz.Functions.Tests.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.Linq;
 
 namespace Inshapardaz.Functions.Tests.DataHelpers
 {
@@ -26,18 +28,38 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
             }
         }
 
-        public static void AddBookToFavorites(this IDbConnection connection, int bookId, Guid userId)
+        public static void AddBookToFavorites(this IDbConnection connection, int libraryId, int bookId, Guid userId)
         {
-            throw new NotImplementedException();
+            var sql = @"Insert into Library.FavoriteBooks (LibraryId, BookId, UserId, DateAdded)
+                        Values (@LibraryId, @BookId, @UserId, GETDATE())";
+            connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, userId });
         }
 
-        public static void AddBooksToFavorites(this IDbConnection connection, IEnumerable<int> bookIds, Guid userId)
+        public static void AddBooksToFavorites(this IDbConnection connection, int libraryId, IEnumerable<int> bookIds, Guid userId)
         {
-            bookIds.ForEach(id => AddBookToFavorites(connection, id, userId));
+            bookIds.ForEach(id => connection.AddBookToFavorites(libraryId, id, userId));
         }
 
-        public static void AddBookToRecentReads(this IDbConnection connection, int bookId, Guid userId)
+        public static void AddBooksToRecentReads(this IDbConnection connection, int libraryId, IEnumerable<int> bookIds, Guid userId)
         {
+            bookIds.ForEach(id => connection.AddBookToRecentReads(libraryId, id, userId));
+        }
+
+        public static void AddBookToRecentReads(this IDbConnection connection, int libraryId, int bookId, Guid userId)
+        {
+            var sql = @"Insert into Library.RecentBooks (LibraryId, BookId, UserId, DateRead)
+                        Values (@LibraryId, @BookId, @UserId, GETDATE())";
+            connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, userId });
+        }
+
+        public static void AddBookFiles(this IDbConnection connection, int bookId, IEnumerable<FileDto> files) =>
+            files.ForEach(f => connection.AddBookFile(bookId, f));
+
+        public static void AddBookFile(this IDbConnection connection, int bookId, FileDto file)
+        {
+            var sql = @"Insert Into Library.BookFile (BookId, FileId)
+                        Values (@BookId, @FileId)";
+            connection.Execute(sql, new { BookId = bookId, FileId = file.Id });
         }
 
         public static int GetBookCountByAuthor(this IDbConnection connection, int id)
@@ -69,7 +91,24 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
 
         public static string GetBookImageUrl(this IDbConnection connection, int bookId)
         {
-            throw new NotImplementedException();
+            var sql = @"Select f.FilePath from Inshapardaz.[File] f
+                        Inner Join Library.Book b ON f.Id = b.ImageId
+                        Where b.Id = @Id";
+            return connection.QuerySingleOrDefault<string>(sql, new { Id = bookId });
+        }
+
+        public static FileDto GetBookImage(this IDbConnection connection, int bookId)
+        {
+            var sql = @"Select f.* from Inshapardaz.[File] f
+                        Inner Join Library.Book b ON f.Id = b.ImageId
+                        Where b.Id = @Id";
+            return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = bookId });
+        }
+
+        public static void DeleteBooks(this IDbConnection connection, IEnumerable<BookDto> books)
+        {
+            var sql = "Delete From Library.Book Where Id IN @Ids";
+            connection.Execute(sql, new { Ids = books.Select(f => f.Id) });
         }
 
         //TODO : Add user id.

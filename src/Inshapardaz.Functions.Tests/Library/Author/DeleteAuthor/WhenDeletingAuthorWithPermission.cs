@@ -56,14 +56,19 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
         [Test]
         public void ShouldHaveDeletedAuthor()
         {
-            DatabaseConnection.AuthorShouldNotExist(_expected.Id);
+            AuthorAssert.ShouldHaveDeletedAuthor(_expected.Id, DatabaseConnection);
         }
 
         [Test]
         public void ShouldHaveDeletedTheAuthorImage()
         {
-            var file = DatabaseConnection.GetAuthorImageUrl(_expected.Id);
-            Assert.That(file, Is.Null.Or.Empty, "Author Image should be deleted");
+            AuthorAssert.ShouldHaveDeletedAuthorImage(_expected.Id, DatabaseConnection);
+        }
+
+        [Test]
+        public void ShouldDeleteAuthorBooks()
+        {
+            Assert.Inconclusive("Define a policy and implement");
         }
     }
 }

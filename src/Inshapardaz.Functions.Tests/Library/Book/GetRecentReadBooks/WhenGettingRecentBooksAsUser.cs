@@ -21,12 +21,10 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetRecentReadBooks
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
+            var principal = AuthenticationBuilder.ReaderClaim;
 
             var builder = Container.GetService<BooksDataBuilder>();
-            var books = builder.Build(40);
-
-            var principal = AuthenticationBuilder.ReaderClaim;
-            builder.AddSomeToRecentReads(books, principal.GetUserId(), 15);
+            var books = builder.AddToRecentReads(principal.GetUserId(), 15).Build(40);
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, principal, CancellationToken.None);
 

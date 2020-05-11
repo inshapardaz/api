@@ -6,6 +6,7 @@ using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -29,8 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
             var claim = AuthenticationBuilder.ReaderClaim;
 
             var builder = Container.GetService<BooksDataBuilder>();
-            var books = builder.Build(40);
-            DatabaseConnection.AddBooksToFavorites(books.Select(b => b.Id), claim.GetUserId());
+            var books = builder.AddToFavorites(claim.GetUserId()).Build(40);
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, claim, CancellationToken.None);
 

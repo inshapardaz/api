@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Functions.Tests.Dto;
+using Inshapardaz.Functions.Tests.Helpers;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -8,6 +9,9 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
 {
     public static class FileDataHelper
     {
+        public static void AddFiles(this IDbConnection connection, IEnumerable<FileDto> files) =>
+            files.ForEach(f => connection.AddFile(f));
+
         public static void AddFile(this IDbConnection connection, FileDto file)
         {
             var sql = @"Insert Into Inshapardaz.[File] (DateCreated, [FileName], MimeType, FilePath, IsPublic)

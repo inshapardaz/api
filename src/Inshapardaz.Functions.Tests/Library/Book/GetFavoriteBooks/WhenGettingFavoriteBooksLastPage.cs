@@ -28,8 +28,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
             var claim = AuthenticationBuilder.ReaderClaim;
 
             var builder = Container.GetService<BooksDataBuilder>();
-            var books = builder.Build(40);
-            builder.AddSomeToFavorite(books, claim.GetUserId(), 20);
+            var books = builder.AddToFavorites(claim.GetUserId(), 20).Build(40);
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, claim, CancellationToken.None);
 

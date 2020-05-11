@@ -32,7 +32,7 @@ namespace Inshapardaz.Functions.Library.Books
             {
                 var request = new DeleteBookRequest(claims, libraryId, bookId, claims.GetUserId());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
-                return new NoContentResult();
+                return new OkResult();
             });
         }
 

@@ -175,6 +175,24 @@ namespace Inshapardaz.Functions.Tests.Asserts
             image.Should().NotBeNullOrEmpty();
         }
 
+        internal static void ShouldHaveDeletedAuthorImage(int authorId, IDbConnection dbConnection)
+        {
+            var image = dbConnection.GetAuthorImage(authorId);
+            image.Should().BeNull();
+        }
+
+        internal static void ShouldHaveDeletedAuthor(int authorId, IDbConnection dbConnection)
+        {
+            var author = dbConnection.GetAuthorById(authorId);
+            author.Should().BeNull();
+        }
+
+        internal static void ShouldNotHaveDeletedAuthor(int authorId, IDbConnection dbConnection)
+        {
+            var author = dbConnection.GetAuthorById(authorId);
+            author.Should().NotBeNull();
+        }
+
         public AuthorAssert ShouldNotHaveDeleteLink()
         {
             _author.DeleteLink().Should().BeNull();
@@ -226,12 +244,6 @@ namespace Inshapardaz.Functions.Tests.Asserts
 
     public static class AuthorAssertionExtensions
     {
-        public static void AuthorShouldNotExist(this IDbConnection connection, int authorId)
-        {
-            var cat = connection.GetAuthorById(authorId);
-            cat.Should().BeNull();
-        }
-
         public static AuthorAssert ShouldMatch(this AuthorView view, AuthorDto dto)
         {
             return AuthorAssert.FromObject(view)

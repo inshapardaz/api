@@ -5,6 +5,8 @@ using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace Inshapardaz.Functions.Tests.Asserts
@@ -110,6 +112,16 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return ShouldBeSameAs(dbbook);
         }
 
+        internal static void ShouldHaveDeletedBookFromFavorites(int bookId, IDbConnection dbConnection)
+        {
+            dbConnection.DoesBookExistsInFavorites(bookId).Should().BeFalse();
+        }
+
+        internal static void ShouldHaveDeletedBookFromRecentReads(int bookId, IDbConnection dbConnection)
+        {
+            dbConnection.DoesBookExistsInRecent(bookId).Should().BeFalse();
+        }
+
         internal BookAssert ShouldBeSameAs(BookDto expected)
         {
             _book.Should().NotBeNull();
@@ -129,6 +141,17 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _book.SeriesIndex.Should().Be(expected.SeriesIndex);
 
             return this;
+        }
+
+        internal static void ShouldHaveDeletedBook(int id, IDbConnection databaseConnection)
+        {
+            databaseConnection.GetBookById(id).Should().BeNull();
+        }
+
+        internal static void ShouldHaveDeletedBookImage(int id, IDbConnection databaseConnection)
+        {
+            var image = databaseConnection.GetBookImage(id);
+            image.Should().BeNull();
         }
     }
 

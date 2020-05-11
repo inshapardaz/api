@@ -19,5 +19,8 @@ namespace Inshapardaz.Functions.Tests.Helpers
 
         public static T PickRandom<T>(this IEnumerable<T> source) =>
             new Faker().PickRandom<T>(source);
+
+        public static IEnumerable<T> PickRandom<T>(this IEnumerable<T> source, int count) =>
+            new Faker().PickRandom<T>(source, count);
     }
 }

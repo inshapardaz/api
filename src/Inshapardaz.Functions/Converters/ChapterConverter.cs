@@ -18,11 +18,11 @@ namespace Inshapardaz.Functions.Converters
         {
             var items = source.Select(c => c.Render(principal));
             var view = new ListView<ChapterView> { Items = items };
-            view.Links.Add(GetChaptersByBook.Link(bookId, RelTypes.Self));
+            view.Links.Add(GetChaptersByBook.Link(0, bookId, RelTypes.Self));
 
             if (principal.IsWriter())
             {
-                view.Links.Add(AddChapter.Link(bookId, RelTypes.Create));
+                view.Links.Add(AddChapter.Link(0, bookId, RelTypes.Create));
             }
 
             return view;

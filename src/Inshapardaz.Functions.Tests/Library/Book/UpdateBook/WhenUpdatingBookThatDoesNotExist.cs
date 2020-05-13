@@ -1,9 +1,8 @@
-﻿using System.Net;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +15,13 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
     public class WhenUpdatingBookThatDoesNotExist : LibraryTest<Functions.Library.Books.UpdateBook>
     {
         private CreatedResult _response;
-        private BooksDataBuilder _builder;
         private BookView _expected;
+        private BookAssert _bookAssert;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<BooksDataBuilder>();
-            var author = Container.GetService<AuthorsDataBuilder>().Build();
+            var author = Container.GetService<AuthorsDataBuilder>().WithLibrary(LibraryId).Build();
 
             var faker = new Faker();
             _expected = new BookView
@@ -34,6 +32,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
             };
 
             _response = (CreatedResult)await handler.Run(_expected, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _bookAssert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -45,24 +44,29 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UpdateBook
         [Test]
         public void ShouldHaveCreatedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
+            _response.ShouldBeCreated();
         }
 
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            Assert.That(_response.Location, Is.Not.Empty);
+            _bookAssert.ShouldHaveCorrectLocationHeader();
         }
 
         [Test]
-        public void ShouldHaveCreatedTheBook()
+        public void ShouldSaveTheBook()
         {
-            var returned = _response.Value as BookView;
-            Assert.That(returned, Is.Not.Null);
+            _bookAssert.ShouldHaveSavedBook(DatabaseConnection);
+        }
 
-            var actual = DatabaseConnection.GetBookById(returned.Id);
-            Assert.That(actual, Is.Not.Null, "Book should be created.");
+        [Test]
+        public void ShouldHaveLinks()
+        {
+            _bookAssert.ShouldHaveSelfLink()
+                        .ShouldHaveAuthorLink()
+                        .ShouldHaveUpdateLink()
+                        .ShouldHaveDeleteLink()
+                        .ShouldHaveUpdateLink();
         }
     }
 }

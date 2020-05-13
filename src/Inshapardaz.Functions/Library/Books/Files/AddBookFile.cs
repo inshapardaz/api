@@ -69,7 +69,7 @@ namespace Inshapardaz.Functions.Library.Books.Files
             });
         }
 
-        public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/{bookId}/files", relType, "POST");
+        public static LinkView Link(int libraryId, int bookId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/books/{bookId}/files", relType, "POST");
 
         private string GetFileExtension(string fileName)
         {

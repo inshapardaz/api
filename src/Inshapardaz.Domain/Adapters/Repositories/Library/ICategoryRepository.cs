@@ -16,5 +16,7 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task<IEnumerable<CategoryModel>> GetCategories(int libraryId, CancellationToken cancellationToken);
 
         Task<CategoryModel> GetCategoryById(int libraryId, int categoryId, CancellationToken cancellationToken);
+
+        Task<IEnumerable<CategoryModel>> GetCategoriesByIds(int libraryId, IEnumerable<int> enumerable, CancellationToken cancellationToken);
     }
 }

@@ -1,24 +1,33 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
+using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
 {
-    [TestFixture]
-    public class WhenGettingBookByIdAsReader
-        : LibraryTest<Functions.Library.Books.GetBookById>
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingBookByIdWithPermission : LibraryTest<Functions.Library.Books.GetBookById>
     {
+        private readonly ClaimsPrincipal _claim;
         private OkObjectResult _response;
         private BookDto _expected;
         private BookAssert _assert;
         private IEnumerable<CategoryDto> _categories;
+
+        public WhenGettingBookByIdWithPermission(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,7 +42,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
                                         .Build(4);
             _expected = books.PickRandom();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, _claim, CancellationToken.None);
             _assert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
@@ -83,6 +92,36 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         public void ShouldHaveSeriesLink()
         {
             _assert.ShouldHaveSeriesLink();
+        }
+
+        [Test]
+        public void ShouldHaveUpdateLink()
+        {
+            _assert.ShouldHaveUpdateLink();
+        }
+
+        [Test]
+        public void ShouldHaveDeleteLink()
+        {
+            _assert.ShouldHaveDeleteLink();
+        }
+
+        [Test]
+        public void ShouldHaveImageUploadLink()
+        {
+            _assert.ShouldHaveImageUpdateLink();
+        }
+
+        [Test]
+        public void ShouldHaveCreateChapterLink()
+        {
+            _assert.ShouldHaveCreateChaptersLink();
+        }
+
+        [Test]
+        public void ShouldHaveAddFileLink()
+        {
+            _assert.ShouldHaveAddFileLink();
         }
 
         [Test]

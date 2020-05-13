@@ -76,5 +76,19 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 return await connection.QuerySingleOrDefaultAsync<CategoryModel>(command);
             }
         }
+
+        public async Task<IEnumerable<CategoryModel>> GetCategoriesByIds(int libraryId, IEnumerable<int> categoryIds, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select c.Id, c.Name,
+                            (Select Count(*) From Library.BookCategory b Where b.CategoryId = c.Id) AS BookCount
+                            FROM Library.Category AS c
+                            Where c.LibraryId = @LibraryId And c.Id IN @Id";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryIds }, cancellationToken: cancellationToken);
+
+                return await connection.QueryAsync<CategoryModel>(command);
+            }
+        }
     }
 }

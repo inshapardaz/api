@@ -54,5 +54,14 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
                     new { BookId = book.Id, CategoryId = category.Id });
             }
         }
+
+        public static void AddBookToCategories(this IDbConnection connection, int bookId, IEnumerable<CategoryDto> categories)
+        {
+            foreach (var category in categories)
+            {
+                connection.Execute("Insert Into Library.BookCategory (BookId, CategoryId) Values(@BookId, @CategoryId)",
+                    new { BookId = bookId, CategoryId = category.Id });
+            }
+        }
     }
 }

@@ -27,32 +27,35 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 book.LibraryId = libraryId;
                 var sql = @"Insert Into Library.Book
                             (Title, [Description], AuthorId, ImageId, LibraryId, IsPublic, IsPublished, [Language], [Status], SeriesId, SeriesIndex, CopyRights, YearPublished, DateAdded, DateUpdated)
-                            OUTPUT Inserted.Id VALUES(@Title, @Description, @AuthorId, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, @DateAdded, @DateUpdated);";
+                            OUTPUT Inserted.Id VALUES(@Title, @Description, @AuthorId, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, GETDATE(), GETDATE());";
                 var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
                 bookId = await connection.ExecuteScalarAsync<int>(command);
 
                 var sqlCategory = @"Delete From Library.BookCategory Where BookId = @BookId;
                            Insert Into Library.BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
 
-                var bookCategories = book.Categories.Select(c => new { BookId = bookId, CategoryId = c.Id });
-                var commandCategory = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(commandCategory);
-            }
+                if (book.Categories != null && book.Categories.Any())
+                {
+                    var bookCategories = book.Categories.Select(c => new { BookId = bookId, CategoryId = c.Id });
+                    var commandCategory = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
+                    await connection.ExecuteAsync(commandCategory);
+                }
 
-            return await GetBookById(libraryId, bookId, userId, cancellationToken);
+                return await GetBookById(libraryId, bookId, userId, cancellationToken);
+            }
         }
 
         public async Task UpdateBook(int libraryId, BookModel book, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Library.Book
+                var sql = @"Update Library.Book SET
                             Title = @Title, [Description] = @Description,
                             AuthorId = @AuthorId, ImageId = @ImageId,
                             IsPublic = @IsPublic, IsPublished = @IsPublished,
                             [Language] = @Language, [Status] = @Status, SeriesId = @SeriesId,
                             SeriesIndex = @SeriesIndex, CopyRights = @CopyRights,
-                            YearPublished = @YearPublished, DataAdded = @DataAdded, DateUpdated = @DateUpdated
+                            YearPublished = @YearPublished, DateUpdated = GETDATE()
                             Where LibraryId = @LibraryId And Id = @Id";
                 var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
@@ -387,10 +390,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 BookModel book = null;
-                var sql = @"Select top 1 b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
                             from Library.Book b
                             Inner Join Library.Author a On b.AuthorId = a.Id
-                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.Series s On b.SeriesId = s.id
                             Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @UserId Is Null)
                             Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
                             Left Outer Join Library.Category c ON bc.CategoryId = c.Id
@@ -404,7 +407,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
                     book.Categories.Add(c);
                     return book;
-                }, new { LibraryId = libraryId, Id = bookId, UserId = userId });
+                }, new { LibraryId = libraryId, Id = bookId, UserId = userId == Guid.Empty ? null : userId });
 
                 return book;
             }

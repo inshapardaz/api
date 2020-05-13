@@ -20,6 +20,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private readonly IDbConnection _connection;
         private readonly AuthorsDataBuilder _authorBuilder;
         private readonly SeriesDataBuilder _seriesBuilder;
+        private readonly CategoriesDataBuilder _categoriesBuilder;
         private readonly FakeFileStorage _fileStorage;
 
         private List<BookDto> _books;
@@ -28,7 +29,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private bool _hasSeries, _hasImage = true;
         private int _chapterCount, _categoriesCount, _fileCount;
         private AuthorDto _author;
-        private readonly List<CategoryDto> _categories = new List<CategoryDto>();
+        private List<CategoryDto> _categories = new List<CategoryDto>();
         private SeriesDto _series;
         private int _libraryId;
         private int? _bookCountToAddToFavorite;
@@ -39,12 +40,14 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public IEnumerable<BookFileDto> Files { get; set; }
 
         public BooksDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage,
-                                AuthorsDataBuilder authorBuilder, SeriesDataBuilder seriesDataBuilder)
+                                AuthorsDataBuilder authorBuilder, SeriesDataBuilder seriesDataBuilder,
+                                CategoriesDataBuilder categoriesBuilder)
         {
             _connection = connectionProvider.GetConnection();
             _fileStorage = fileStorage as FakeFileStorage;
             _authorBuilder = authorBuilder;
             _seriesBuilder = seriesDataBuilder;
+            _categoriesBuilder = categoriesBuilder;
         }
 
         public BooksDataBuilder HavingSeries()
@@ -56,6 +59,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public BooksDataBuilder WithCategories(int categoriesCount)
         {
             _categoriesCount = categoriesCount;
+            return this;
+        }
+
+        public BooksDataBuilder WithCategories(IEnumerable<CategoryDto> categories)
+        {
+            _categories = categories.ToList();
             return this;
         }
 
@@ -167,6 +176,17 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                           .CreateMany(numberOfBooks)
                           .ToList();
 
+            IEnumerable<CategoryDto> categories;
+
+            if (_categoriesCount > 0 && !_categories.Any())
+            {
+                categories = _categoriesBuilder.WithLibrary(_libraryId).Build(_categoriesCount);
+            }
+            else
+            {
+                categories = _categories;
+            }
+
             foreach (var book in _books)
             {
                 if (_hasSeries && _series == null)
@@ -210,10 +230,11 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                     _connection.AddFiles(files);
                 }
 
-                // create category
-                //
-
                 _connection.AddBook(book);
+
+                if (categories != null && categories.Any())
+                    _connection.AddBookToCategories(book.Id, categories);
+
                 if (files != null)
                     _connection.AddBookFiles(book.Id, files);
             }

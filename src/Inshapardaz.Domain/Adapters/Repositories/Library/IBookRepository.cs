@@ -48,5 +48,7 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task<IEnumerable<FileModel>> GetFilesByBook(int bookId, CancellationToken cancellationToken);
 
         Task<FileModel> GetBookFileById(int bookId, int fileId, CancellationToken cancellationToken);
+
+        Task UpdateBookImage(int libraryId, int bookId, int fileId, CancellationToken cancellationToken);
     }
 }

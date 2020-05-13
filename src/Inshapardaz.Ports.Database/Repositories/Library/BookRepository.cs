@@ -538,5 +538,17 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 await connection.ExecuteAsync(command);
             }
         }
+
+        public async Task UpdateBookImage(int libraryId, int bookId, int imageId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update Library.Book
+                            Set ImageId = @ImageId
+                            Where Id = @BookId And LibraryId = @LibraryId;";
+                var command = new CommandDefinition(sql, new { ImageId = imageId, BookId = bookId, LibraryId = libraryId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
     }
 }

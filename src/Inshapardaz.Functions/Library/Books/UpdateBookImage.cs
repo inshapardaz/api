@@ -59,6 +59,7 @@ namespace Inshapardaz.Functions.Library.Books
                 if (request.Result.HasAddedNew)
                 {
                     var response = request.Result.File.Render(claims);
+
                     return new CreatedResult(response.Links.Self(), response);
                 }
 

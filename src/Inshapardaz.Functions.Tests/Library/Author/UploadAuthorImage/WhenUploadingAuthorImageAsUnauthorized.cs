@@ -43,9 +43,9 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
         }
 
         [Test]
-        public void ShouldHaveForbidResult()
+        public void ShouldHaveUnauthorizedResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeUnauthorized();
         }
 
         [Test]

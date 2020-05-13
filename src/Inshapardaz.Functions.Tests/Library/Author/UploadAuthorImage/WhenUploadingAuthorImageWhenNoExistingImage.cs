@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -45,14 +46,14 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
         [Test]
         public void ShouldHaveCreatedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
+            _response.ShouldBeCreated();
         }
 
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            Assert.That(_response.Location, Is.Not.Empty);
+            var authorAssert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);
+            authorAssert.ShouldHaveCorrectImageLocationHeader(_authorId);
         }
 
         [Test]

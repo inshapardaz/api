@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Fakes;
@@ -26,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
             _builder = Container.GetService<BooksDataBuilder>();
             _fileStorage = Container.GetService<IFileStorage>() as FakeFileStorage;
 
-            var book = _builder.Build();
+            var book = _builder.WithLibrary(LibraryId).Build();
             _bookId = book.Id;
             var imageUrl = DatabaseConnection.GetBookImageUrl(_bookId);
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
@@ -37,23 +38,20 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
         [OneTimeTearDown]
         public void Teardown()
         {
+            _builder.CleanUp();
             Cleanup();
         }
 
         [Test]
-        public void ShouldHaveUnauthorizedResult()
+        public void ShouldHaveUnauthorisedResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeUnauthorized();
         }
 
         [Test]
-        public async Task ShouldHaveUpdatedBookImage()
+        public void ShouldNotHaveUpdatedBookImage()
         {
-            var imageUrl = DatabaseConnection.GetBookImageUrl(_bookId);
-            Assert.That(imageUrl, Is.Not.Null, "Book should have an image url`.");
-            var image = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
-            Assert.That(image, Is.Not.Null, "Book should have an image.");
-            Assert.That(image, Is.EqualTo(_oldImage), "Book image should not be updated.");
+            BookAssert.ShouldNotHaveUpdatedBookImage(_bookId, _oldImage, DatabaseConnection, _fileStorage);
         }
     }
 }

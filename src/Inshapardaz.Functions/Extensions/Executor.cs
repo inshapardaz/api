@@ -21,6 +21,10 @@ namespace Inshapardaz.Functions.Extensions
             {
                 return new ForbidResult();
             }
+            catch (BadRequestException)
+            {
+                return new BadRequestResult();
+            }
             catch
             {
                 return new StatusCodeResult(500);

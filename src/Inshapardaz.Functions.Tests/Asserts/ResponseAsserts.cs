@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Inshapardaz.Functions.Tests.Asserts
 {
@@ -43,6 +44,11 @@ namespace Inshapardaz.Functions.Tests.Asserts
         public static void ShouldBeForbidden(this ActionResult result)
         {
             result.Should().BeOfType<ForbidResult>();
+        }
+
+        public static void ShouldBeBadRequest(this BadRequestResult result)
+        {
+            result.Should().NotBeNull();
         }
     }
 }

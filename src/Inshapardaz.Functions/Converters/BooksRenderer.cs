@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
@@ -63,7 +64,7 @@ namespace Inshapardaz.Functions.Converters
 
             if (principal.IsWriter())
             {
-                links.Add(AddBook.Link(0, RelTypes.Create));
+                links.Add(AddBook.Link(id, RelTypes.Create));
             }
 
             if (page.CurrentPageIndex < page.PageCount)
@@ -100,16 +101,20 @@ namespace Inshapardaz.Functions.Converters
             {
                 GetBookById.Link(source.LibraryId, source.Id, RelTypes.Self),
                 GetAuthorById.Link(source.LibraryId, source.AuthorId, RelTypes.Author),
-                GetChaptersByBook.Link(source.Id, RelTypes.Chapters),
-                GetBookFiles.Link(source.Id, RelTypes.Files)
+                GetChaptersByBook.Link(source.LibraryId, source.Id, RelTypes.Chapters),
+                GetBookFiles.Link(source.LibraryId, source.Id, RelTypes.Files)
             };
 
             if (source.SeriesId.HasValue)
             {
-                links.Add(GetSeriesById.Link(source.SeriesId.Value, RelTypes.Series));
+                links.Add(GetSeriesById.Link(source.LibraryId, source.SeriesId.Value, RelTypes.Series));
             }
 
-            if (source.ImageId.HasValue)
+            if (!string.IsNullOrWhiteSpace(source.ImageUrl))
+            {
+                links.Add(new LinkView { Href = source.ImageUrl, Method = "GET", Rel = RelTypes.Image, Media = MimeTypes.Jpg });
+            }
+            else if (source.ImageId.HasValue)
             {
                 links.Add(GetFileById.Link(source.ImageId.Value, RelTypes.Image));
             }
@@ -119,19 +124,19 @@ namespace Inshapardaz.Functions.Converters
                 links.Add(UpdateBook.Link(source.LibraryId, source.Id, RelTypes.Update));
                 links.Add(DeleteBook.Link(source.LibraryId, source.Id, RelTypes.Delete));
                 links.Add(UpdateBookImage.Link(source.LibraryId, source.Id, RelTypes.ImageUpload));
-                links.Add(AddChapter.Link(source.Id, RelTypes.CreateChapter));
-                links.Add(AddBookFile.Link(source.Id, RelTypes.AddFile));
+                links.Add(AddChapter.Link(source.LibraryId, source.Id, RelTypes.CreateChapter));
+                links.Add(AddBookFile.Link(source.LibraryId, source.Id, RelTypes.AddFile));
             }
 
             if (principal.IsAuthenticated())
             {
                 if (source.IsFavorite)
                 {
-                    links.Add(DeleteBookFromFavorite.Link(source.Id, RelTypes.RemoveFavorite));
+                    links.Add(DeleteBookFromFavorite.Link(source.LibraryId, source.Id, RelTypes.RemoveFavorite));
                 }
                 else
                 {
-                    links.Add(AddBookToFavorite.Link(source.Id, RelTypes.CreateFavorite));
+                    links.Add(AddBookToFavorite.Link(source.LibraryId, RelTypes.CreateFavorite));
                 }
             }
 

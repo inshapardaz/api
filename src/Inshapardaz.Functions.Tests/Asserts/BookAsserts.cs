@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using Bogus.DataSets;
+using FluentAssertions;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
@@ -6,8 +7,10 @@ using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Inshapardaz.Functions.Tests.Asserts
 {
@@ -39,7 +42,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _book.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_book.Id}");
+                  .EndingWith($"api/library/{_libraryId}/books/{_book.Id}");
 
             return this;
         }
@@ -48,7 +51,34 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _book.Link("author")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/authors/{_book.AuthorId}");
+                  .EndingWith($"api/library/{_libraryId}/authors/{_book.AuthorId}");
+
+            return this;
+        }
+
+        public BookAssert ShouldHaveChaptersLink()
+        {
+            _book.Link("chapters")
+                  .ShouldBeGet()
+                  .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/chapters");
+
+            return this;
+        }
+
+        public BookAssert ShouldHaveFilesLink()
+        {
+            _book.Link("files")
+                  .ShouldBeGet()
+                  .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/files");
+
+            return this;
+        }
+
+        public BookAssert ShouldHaveSeriesLink()
+        {
+            _book.Link("series")
+                  .ShouldBeGet()
+                  .EndingWith($"api/library/{_libraryId}/series/{_book.SeriesId}");
 
             return this;
         }
@@ -57,7 +87,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _book.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/books/{_book.Id}");
+                  .EndingWith($"api/library/{_libraryId}/books/{_book.Id}");
 
             return this;
         }
@@ -78,7 +108,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _book.Link("image-upload")
                    .ShouldBePut()
-                   .EndingWith($"library/{_libraryId}/books/{_book.Id}/image");
+                   .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/image");
             return this;
         }
 
@@ -86,7 +116,23 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _book.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/books/{_book.Id}");
+                  .EndingWith($"api/library/{_libraryId}/books/{_book.Id}");
+            return this;
+        }
+
+        public BookAssert ShouldHaveCreateChaptersLink()
+        {
+            _book.Link("create-chapter")
+                  .ShouldBePost()
+                  .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/chapters");
+            return this;
+        }
+
+        public BookAssert ShouldHaveAddFileLink()
+        {
+            _book.Link("add-file")
+                  .ShouldBePost()
+                  .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/files");
             return this;
         }
 
@@ -102,14 +148,14 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             var response = _response as CreatedResult;
             response.Location.Should().NotBeNull();
-            response.Location.Should().EndWith($"library/{_libraryId}/books/{_book.Id}");
+            response.Location.Should().EndWith($"api/library/{_libraryId}/books/{_book.Id}");
             return this;
         }
 
         public BookAssert ShouldHaveSavedBook(IDbConnection dbConnection)
         {
             var dbbook = dbConnection.GetBookById(_book.Id);
-            return ShouldBeSameAs(dbbook);
+            return ShouldBeSameAs(dbbook, dbConnection);
         }
 
         internal static void ShouldHaveDeletedBookFromFavorites(int bookId, IDbConnection dbConnection)
@@ -122,7 +168,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             dbConnection.DoesBookExistsInRecent(bookId).Should().BeFalse();
         }
 
-        internal BookAssert ShouldBeSameAs(BookDto expected)
+        internal BookAssert ShouldBeSameAs(BookDto expected, IDbConnection db)
         {
             _book.Should().NotBeNull();
             _book.Title.Should().Be(expected.Title);
@@ -132,14 +178,55 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _book.IsPublic.Should().Be(expected.IsPublic);
             _book.IsPublished.Should().Be(expected.IsPublished);
             _book.Copyrights.Should().Be((int)expected.Copyrights);
-            _book.DateAdded.Should().Be(expected.DateAdded);
-            _book.DateUpdated.Should().Be(expected.DateUpdated);
+            _book.DateAdded.Should().BeCloseTo(expected.DateAdded);
+            _book.DateUpdated.Should().BeCloseTo(expected.DateUpdated);
             _book.Status.Should().Be((int)expected.Status);
             _book.YearPublished.Should().Be(expected.YearPublished);
             _book.AuthorId.Should().Be(expected.AuthorId);
+            _book.AuthorName.Should().Be(db.GetAuthorById(expected.AuthorId).Name);
             _book.SeriesId.Should().Be(expected.SeriesId);
+            if (_book.SeriesId.HasValue)
+            {
+                _book.SeriesName.Should().Be(db.GetSeriesById(expected.SeriesId.Value).Name);
+                _book.SeriesIndex.Should().Be(expected.SeriesIndex);
+            }
+            return this;
+        }
+
+        internal BookAssert ShouldBeSameAs(BookView expected, IDbConnection db)
+        {
+            _book.Should().NotBeNull();
+            _book.Title.Should().Be(expected.Title);
+            _book.Description.Should().Be(expected.Description);
+            _book.Language.Should().Be((int)expected.Language);
+
+            _book.IsPublic.Should().Be(expected.IsPublic);
+            _book.IsPublished.Should().Be(expected.IsPublished);
+            _book.Copyrights.Should().Be(expected.Copyrights);
+            _book.DateAdded.Should().BeCloseTo(expected.DateAdded);
+            _book.DateUpdated.Should().BeCloseTo(expected.DateUpdated);
+            _book.Status.Should().Be(expected.Status);
+            _book.YearPublished.Should().Be(expected.YearPublished);
+            _book.AuthorId.Should().Be(expected.AuthorId);
+            _book.AuthorName.Should().Be(db.GetAuthorById(expected.AuthorId).Name);
+            _book.SeriesId.Should().Be(expected.SeriesId);
+            _book.SeriesName.Should().Be(db.GetSeriesById(expected.SeriesId.Value).Name);
             _book.SeriesIndex.Should().Be(expected.SeriesIndex);
 
+            _book.Categories.Should().HaveSameCount(expected.Categories);
+
+            return this;
+        }
+
+        internal BookAssert ShouldBeSameCategories(IEnumerable<CategoryDto> expectedCategories)
+        {
+            expectedCategories.Should().HaveSameCount(_book.Categories);
+            foreach (var expectedCategory in expectedCategories)
+            {
+                var category = _book.Categories.SingleOrDefault(c => c.Id == expectedCategory.Id);
+                category.Should().NotBeNull();
+                category.ShouldMatch(expectedCategory);
+            }
             return this;
         }
 
@@ -153,9 +240,5 @@ namespace Inshapardaz.Functions.Tests.Asserts
             var image = databaseConnection.GetBookImage(id);
             image.Should().BeNull();
         }
-    }
-
-    public static class BookAssertionExtensions
-    {
     }
 }

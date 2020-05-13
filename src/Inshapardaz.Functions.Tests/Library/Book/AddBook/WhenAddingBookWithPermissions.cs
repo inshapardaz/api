@@ -21,7 +21,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
         private readonly ClaimsPrincipal _claim;
         private BookAssert _bookAssert;
         private CreatedResult _response;
-        private BooksDataBuilder _builder;
         private BookView _request;
 
         public WhenAddingBookWithPermissions(AuthenticationLevel authenticationLevel)
@@ -32,8 +31,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _builder = Container.GetService<BooksDataBuilder>();
-
             var author = Container.GetService<AuthorsDataBuilder>().WithLibrary(LibraryId).Build();
             var series = Container.GetService<SeriesDataBuilder>().WithLibrary(LibraryId).Build();
             var categories = Container.GetService<CategoriesDataBuilder>().WithLibrary(LibraryId).Build(3);

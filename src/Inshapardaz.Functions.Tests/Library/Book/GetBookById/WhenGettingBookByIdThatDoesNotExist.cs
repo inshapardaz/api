@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
@@ -30,8 +31,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         [Test]
         public void ShouldHaveNotFoundResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
+            _response.ShouldBeNotFound();
         }
     }
 }

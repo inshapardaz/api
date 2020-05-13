@@ -1,5 +1,7 @@
-﻿using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 using System;
@@ -22,15 +24,22 @@ namespace Inshapardaz.Domain.Ports.Library
     public class GetBookByIdQueryHandler : QueryHandlerAsync<GetBookByIdQuery, BookModel>
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IFileRepository _fileRepository;
 
-        public GetBookByIdQueryHandler(IBookRepository bookRepository)
+        public GetBookByIdQueryHandler(IBookRepository bookRepository, IFileRepository fileRepository)
         {
             _bookRepository = bookRepository;
+            _fileRepository = fileRepository;
         }
 
         public override async Task<BookModel> ExecuteAsync(GetBookByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
+            if (book != null && book.ImageId.HasValue)
+            {
+                book.ImageUrl = await ImageHelper.TryConvertToPublicImage(book.ImageId.Value, _fileRepository, cancellationToken);
+            }
+            return book;
         }
     }
 }

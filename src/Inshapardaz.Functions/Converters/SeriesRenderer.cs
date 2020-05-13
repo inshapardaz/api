@@ -31,7 +31,7 @@ namespace Inshapardaz.Functions.Converters
         {
             var view = series.Map();
 
-            view.Links.Add(GetSeriesById.Link(series.Id, RelTypes.Self));
+            view.Links.Add(GetSeriesById.Link(0, series.Id, RelTypes.Self));
             view.Links.Add(GetBooksBySeries.Link(series.Id, RelTypes.Books));
 
             if (principal.IsWriter())

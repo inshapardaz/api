@@ -36,6 +36,6 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
             return new NotFoundResult();
         }
 
-        public static LinkView Link(int bookId, string relType = RelTypes.Self) => SelfLink($"books/{bookId}/chapters", relType);
+        public static LinkView Link(int libraryId, int bookId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/books/{bookId}/chapters", relType);
     }
 }

@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class DeleteCategoryRequest : LibraryBaseCommand
+    public class DeleteCategoryRequest : LibraryAuthorisedCommand
     {
         public DeleteCategoryRequest(ClaimsPrincipal claims, int libraryId, int categoryId)
-            : base(libraryId)
+            : base(claims, libraryId)
         {
             CategoryId = categoryId;
         }

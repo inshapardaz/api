@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -41,8 +42,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.DeleteCategory
         [Test]
         public void ShouldHaveUnauthorizedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            _response.ShouldBeUnauthorized();
         }
     }
 }

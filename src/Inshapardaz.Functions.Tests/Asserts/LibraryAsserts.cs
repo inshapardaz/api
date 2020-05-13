@@ -53,13 +53,6 @@ namespace Inshapardaz.Functions.Tests.Asserts
             series.Should().NotBeNull();
         }
 
-        public void ThatCategoryExists(int categoryId)
-        {
-            var category = _connection.GetCategoryById(categoryId);
-
-            category.Should().NotBeNull();
-        }
-
         public void ThatFileExists(int fileId)
         {
             var file = _connection.GetFileById(fileId);

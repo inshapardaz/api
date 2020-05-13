@@ -29,9 +29,10 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
             connection.Execute(sql, new { Ids = categories.Select(a => a.Id) });
         }
 
-        public static CategoryDto GetCategoryById(this IDbConnection connection, int id)
+        public static CategoryDto GetCategoryById(this IDbConnection connection, int libraryId, int id)
         {
-            return connection.QuerySingleOrDefault<CategoryDto>("Select * From Library.Category Where Id = @Id", new { Id = id });
+            return connection.QuerySingleOrDefault<CategoryDto>("Select * From Library.Category Where Id = @Id AND LibraryId = @LibraryId",
+                new { Id = id, LibraryId = libraryId });
         }
 
         public static bool DoesCategoryExists(this IDbConnection connection, int id)

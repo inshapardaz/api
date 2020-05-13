@@ -35,9 +35,9 @@ namespace Inshapardaz.Functions.Library.Categories
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(category.Render(principal));
+            return new OkObjectResult(category.Render(libraryId, principal));
         }
 
-        public static LinkView Link(int categoryById, string relType = RelTypes.Self) => SelfLink($"categories/{categoryById}", relType);
+        public static LinkView Link(int libraryId, int categoryById, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/categories/{categoryById}", relType);
     }
 }

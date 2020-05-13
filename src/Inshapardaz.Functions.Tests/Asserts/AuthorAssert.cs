@@ -74,6 +74,13 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        internal AuthorAssert ShouldHaveCorrectImageLocationHeader(int authorId)
+        {
+            var response = _response as CreatedResult;
+            response.Location.Should().NotBeNull();
+            return this;
+        }
+
         public AuthorAssert ShouldNotHaveImageUpdateLink()
         {
             _author.Link("image-upload").Should().BeNull();

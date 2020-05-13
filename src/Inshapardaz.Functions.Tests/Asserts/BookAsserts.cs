@@ -1,6 +1,7 @@
 ﻿using Bogus.DataSets;
 using FluentAssertions;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -11,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 
 namespace Inshapardaz.Functions.Tests.Asserts
 {
@@ -72,6 +74,20 @@ namespace Inshapardaz.Functions.Tests.Asserts
                   .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/files");
 
             return this;
+        }
+
+        internal BookAssert ShouldHaveCorrectImageLocationHeader(int bookId)
+        {
+            var response = _response as CreatedResult;
+            response.Location.Should().NotBeEmpty();
+            return this;
+        }
+
+        internal static void ShouldHavePublicImage(int bookId, IDbConnection dbConnection)
+        {
+            var image = dbConnection.GetBookImage(bookId);
+            image.Should().NotBeNull();
+            image.IsPublic.Should().BeTrue();
         }
 
         public BookAssert ShouldHaveSeriesLink()
@@ -239,6 +255,30 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             var image = databaseConnection.GetBookImage(id);
             image.Should().BeNull();
+        }
+
+        internal static void ShouldNotHaveUpdatedBookImage(int bookId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetBookImageUrl(bookId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().Equal(oldImage);
+        }
+
+        internal static void ShouldHaveAddedBookImage(int bookId, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetBookImageUrl(bookId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().NotBeNullOrEmpty();
+        }
+
+        internal static void ShouldHaveUpdatedBookImage(int bookId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetBookImageUrl(bookId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().NotBeNull().And.NotEqual(oldImage);
         }
     }
 }

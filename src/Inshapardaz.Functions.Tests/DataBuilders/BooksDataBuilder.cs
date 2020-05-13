@@ -26,8 +26,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private List<BookDto> _books;
         private readonly List<FileDto> _files = new List<FileDto>();
 
-        private bool _hasSeries, _hasImage = true;
+        private bool _hasSeries, _hasImage = true, _isPublic = Random.Bool;
         private int _chapterCount, _categoriesCount, _fileCount;
+
         private AuthorDto _author;
         private List<CategoryDto> _categories = new List<CategoryDto>();
         private SeriesDto _series;
@@ -53,6 +54,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public BooksDataBuilder HavingSeries()
         {
             _hasSeries = true;
+            return this;
+        }
+
+        internal BooksDataBuilder IsPublic()
+        {
+            _isPublic = true;
             return this;
         }
 
@@ -172,6 +179,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                           .With(b => b.LibraryId, _libraryId)
                           .With(b => b.AuthorId, _author != null ? _author.Id : Random.PickRandom(authors).Id)
                           .With(b => b.ImageId, _hasImage ? Random.Number : 0)
+                          .With(b => b.IsPublic, _isPublic)
                           .With(b => b.SeriesIndex, _hasSeries ? Random.Number : (int?)null)
                           .CreateMany(numberOfBooks)
                           .ToList();
@@ -213,6 +221,10 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                     _connection.AddFile(bookImage);
 
                     book.ImageId = bookImage.Id;
+                }
+                else
+                {
+                    book.ImageId = null;
                 }
 
                 List<FileDto> files = null;

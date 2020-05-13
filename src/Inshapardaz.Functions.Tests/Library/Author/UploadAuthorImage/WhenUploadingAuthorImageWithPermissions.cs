@@ -1,6 +1,8 @@
-﻿using System.Threading;
+﻿using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Database.Migrations;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -13,14 +15,21 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
 {
-    [TestFixture]
-    public class WhenUploadingAuthorImageAsAdministrator : LibraryTest<Functions.Library.Authors.UpdateAuthorImage>
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenUploadingAuthorImageWithPermissions : LibraryTest<Functions.Library.Authors.UpdateAuthorImage>
     {
+        private readonly ClaimsPrincipal _claim;
         private OkResult _response;
         private AuthorsDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _authorId;
         private byte[] _oldImage;
+
+        public WhenUploadingAuthorImageWithPermissions(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,7 +44,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.UploadAuthorImage
 
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
-            _response = (OkResult)await handler.Run(request, LibraryId, _authorId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkResult)await handler.Run(request, LibraryId, _authorId, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

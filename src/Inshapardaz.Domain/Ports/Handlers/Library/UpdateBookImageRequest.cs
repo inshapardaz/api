@@ -83,8 +83,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
                 command.Result.HasAddedNew = true;
 
-                book.ImageId = command.Result.File.Id;
-                await _bookRepository.UpdateBook(command.LibraryId, book, cancellationToken);
+                await _bookRepository.UpdateBookImage(command.LibraryId, command.BookId, command.Result.File.Id, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

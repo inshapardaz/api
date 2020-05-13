@@ -1,7 +1,8 @@
-﻿using System.Net;
+﻿using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Fakes;
@@ -12,14 +13,21 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
 {
-    [TestFixture]
-    public class WhenUploadingBookImageAsWriter : LibraryTest<Functions.Library.Books.UpdateBookImage>
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenUploadingBookImageWithPermissions : LibraryTest<Functions.Library.Books.UpdateBookImage>
     {
+        private readonly ClaimsPrincipal _claim;
         private OkResult _response;
         private BooksDataBuilder _builder;
         private FakeFileStorage _fileStorage;
         private int _bookId;
         private byte[] _oldImage;
+
+        public WhenUploadingBookImageWithPermissions(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,35 +35,32 @@ namespace Inshapardaz.Functions.Tests.Library.Book.UploadBookImage
             _builder = Container.GetService<BooksDataBuilder>();
             _fileStorage = Container.GetService<IFileStorage>() as FakeFileStorage;
 
-            var book = _builder.Build();
+            var book = _builder.WithLibrary(LibraryId).Build();
             _bookId = book.Id;
+
             var imageUrl = DatabaseConnection.GetBookImageUrl(_bookId);
+
             _oldImage = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
             var request = new RequestBuilder().WithImage().BuildRequestMessage();
-            _response = (OkResult)await handler.Run(request, LibraryId, _bookId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkResult)await handler.Run(request, LibraryId, _bookId, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
-            Cleanup();
+            _builder.CleanUp();
         }
 
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            _response.ShouldBeOk();
         }
 
         [Test]
-        public async Task ShouldHaveUpdatedBookImage()
+        public void ShouldHaveUpdatedBookImage()
         {
-            var imageUrl = DatabaseConnection.GetBookImageUrl(_bookId);
-            Assert.That(imageUrl, Is.Not.Null, "Book should have an image url`.");
-            var image = await _fileStorage.GetFile(imageUrl, CancellationToken.None);
-            Assert.That(image, Is.Not.Null, "Book should have an image.");
-            Assert.That(image, Is.Not.EqualTo(_oldImage), "Book image should have updated.");
+            BookAssert.ShouldHaveUpdatedBookImage(_bookId, _oldImage, DatabaseConnection, _fileStorage);
         }
     }
 }

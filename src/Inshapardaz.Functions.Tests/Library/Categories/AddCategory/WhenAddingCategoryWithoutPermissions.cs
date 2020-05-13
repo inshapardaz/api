@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +12,12 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
 {
     [TestFixture(AuthenticationLevel.Reader)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenAddingCategoryWhen : LibraryTest<Functions.Library.Categories.AddCategory>
+    public class WhenAddingCategoryWithoutPermissions : LibraryTest<Functions.Library.Categories.AddCategory>
     {
         private ForbidResult _response;
         private readonly ClaimsPrincipal _claim;
 
-        public WhenAddingCategoryWhen(AuthenticationLevel authenticationLevel)
+        public WhenAddingCategoryWithoutPermissions(AuthenticationLevel authenticationLevel)
         {
             _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
         }
@@ -38,7 +39,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
         [Test]
         public void ShouldHaveForbiddenResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeForbidden();
         }
     }
 }

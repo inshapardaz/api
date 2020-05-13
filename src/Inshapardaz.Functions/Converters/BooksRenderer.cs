@@ -147,7 +147,7 @@ namespace Inshapardaz.Functions.Converters
                 var categories = new List<CategoryView>();
                 foreach (var category in source.Categories)
                 {
-                    categories.Add(category.Render(principal));
+                    categories.Add(category.Render(source.LibraryId, principal));
                 }
 
                 result.Categories = categories;

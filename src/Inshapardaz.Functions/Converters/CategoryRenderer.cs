@@ -13,9 +13,9 @@ namespace Inshapardaz.Functions.Converters
 {
     public static class CategoryRenderer
     {
-        public static ListView<CategoryView> Render(this IEnumerable<CategoryModel> categories, ClaimsPrincipal user)
+        public static ListView<CategoryView> Render(this IEnumerable<CategoryModel> categories, int libraryId, ClaimsPrincipal user)
         {
-            var items = categories.Select(g => g.Render(user));
+            var items = categories.Select(g => g.Render(libraryId, user));
             var view = new ListView<CategoryView> { Items = items };
             view.Links.Add(GetCategories.Link(0));
 
@@ -27,17 +27,17 @@ namespace Inshapardaz.Functions.Converters
             return view;
         }
 
-        public static CategoryView Render(this CategoryModel category, ClaimsPrincipal principal)
+        public static CategoryView Render(this CategoryModel category, int libraryId, ClaimsPrincipal principal)
         {
             var view = category.Map();
 
-            view.Links.Add(GetCategoryById.Link(category.Id));
-            view.Links.Add(GetBooksByCategory.Self(category.Id, RelTypes.Books));
+            view.Links.Add(GetCategoryById.Link(libraryId, category.Id));
+            view.Links.Add(GetBooksByCategory.Self(libraryId, category.Id, RelTypes.Books));
 
             if (principal.IsAdministrator())
             {
-                view.Links.Add(UpdateCategory.Link(category.Id, RelTypes.Update));
-                view.Links.Add(DeleteCategory.Link(category.Id, RelTypes.Delete));
+                view.Links.Add(UpdateCategory.Link(libraryId, category.Id, RelTypes.Update));
+                view.Links.Add(DeleteCategory.Link(libraryId, category.Id, RelTypes.Delete));
             }
 
             return view;

@@ -1,28 +1,29 @@
-﻿using System.Threading;
+﻿using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using FluentAssertions;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Categories.UpdateCategory
+namespace Inshapardaz.Functions.Tests.Library.Categories.AddCategory
 {
     [TestFixture]
-    public class WhenUpdatingCategoryThatDoesNotExist : LibraryTest<Functions.Library.Categories.UpdateCategory>
+    public class WhenAddingCategoryAsAdministrator : LibraryTest<Functions.Library.Categories.AddCategory>
     {
+        private CategoryView _category;
         private CreatedResult _response;
-        private CategoryView _expectedCategory;
         private CategoryAssert _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var faker = new Faker();
-            _expectedCategory = new CategoryView { Id = faker.Random.Number(), Name = faker.Random.String() };
+            _category = new CategoryView { Name = new Faker().Random.String() };
 
-            _response = (CreatedResult)await handler.Run(_expectedCategory, LibraryId, _expectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(_category, LibraryId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
             _assert = CategoryAssert.FromResponse(_response).InLibrary(LibraryId);
         }
 

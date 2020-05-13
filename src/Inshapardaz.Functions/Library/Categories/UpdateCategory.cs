@@ -37,7 +37,7 @@ namespace Inshapardaz.Functions.Library.Categories
                 var request = new UpdateCategoryRequest(claims, libraryId, category.Map());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-                var renderResult = request.Result.Category.Render(claims);
+                var renderResult = request.Result.Category.Render(libraryId, claims);
 
                 if (request.Result.HasAddedNew)
                 {
@@ -50,6 +50,7 @@ namespace Inshapardaz.Functions.Library.Categories
             });
         }
 
-        public static LinkView Link(int categoryId, string relType = RelTypes.Self) => SelfLink($"categories/{categoryId}", relType, "PUT");
+        public static LinkView Link(int libraryId, int categoryId, string relType = RelTypes.Self)
+            => SelfLink($"library/{libraryId}/categories/{categoryId}", relType, "PUT");
     }
 }

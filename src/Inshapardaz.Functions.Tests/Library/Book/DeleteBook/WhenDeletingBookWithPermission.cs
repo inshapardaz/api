@@ -85,7 +85,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
         public void ShouldNotHaveDeletedTheCategory()
         {
             var cats = DatabaseConnection.GetCategoriesByBook(_expected.Id);
-            cats.ForEach(cat => CategoryAssert.ShouldNotHaveDeletedCategory(cat.Id, DatabaseConnection));
+            cats.ForEach(cat => CategoryAssert.ShouldNotHaveDeletedCategory(LibraryId, cat.Id, DatabaseConnection));
         }
 
         [Test]

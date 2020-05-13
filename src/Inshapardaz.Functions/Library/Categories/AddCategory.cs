@@ -36,7 +36,7 @@ namespace Inshapardaz.Functions.Library.Categories
                 var request = new AddCategoryRequest(claims, libraryId, category.Map());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-                var renderResult = request.Result.Render(claims);
+                var renderResult = request.Result.Render(libraryId, claims);
                 return new CreatedResult(renderResult.Links.Self(), renderResult);
             });
         }

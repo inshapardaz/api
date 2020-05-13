@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Library.Categories
             var query = new GetCategoriesQuery(libraryId);
             var categories = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-            return new OkObjectResult(categories.Render(principal));
+            return new OkObjectResult(categories.Render(libraryId, principal));
         }
 
         public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/categories", relType);

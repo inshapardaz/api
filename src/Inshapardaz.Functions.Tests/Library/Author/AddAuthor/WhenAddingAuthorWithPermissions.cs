@@ -64,7 +64,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.AddAuthor
                          .ShouldHaveBooksLink()
                          .ShouldHaveUpdateLink()
                          .ShouldHaveDeleteLink()
-                         .ShouldHaveUpdateLink();
+                         .ShouldHaveImageUpdateLink();
         }
     }
 }

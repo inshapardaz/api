@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -14,25 +14,26 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
 {
     [TestFixture]
-    public class WhenGettingCategoryByIdWithPermission : LibraryTest<Functions.Library.Categories.GetCategoryById>
+    public class WhenGettingCategoryWithWritePermissions : LibraryTest<Functions.Library.Categories.GetCategoryById>
     {
         private OkObjectResult _response;
-        private CategoryView _view;
+        private CategoriesDataBuilder _dataBuilder;
         private IEnumerable<CategoryDto> _categories;
         private CategoryDto _selectedCategory;
-        private CategoriesDataBuilder _dataBuilder;
+        private CategoryAssert _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
+
             _dataBuilder = Container.GetService<CategoriesDataBuilder>();
-            _categories = _dataBuilder.WithLibrary(LibraryId).Build(4);
-            _selectedCategory = _categories.PickRandom();
+            _categories = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            _selectedCategory = _categories.First();
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
-            _view = _response.Value as CategoryView;
+            _assert = CategoryAssert.FromResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -45,42 +46,32 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldHaveSelfLink();
         }
 
         [Test]
-        public void ShouldHaveUpdateLink()
+        public void ShouldNotEditLinks()
         {
-            _view.Links.AssertLink("update")
-                 .ShouldBePut()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldHaveUpdateLink();
+            _assert.ShouldHaveDeleteLink();
         }
 
         [Test]
-        public void ShouldHaveDeleteLink()
+        public void ShouldHaveBooksLink()
         {
-            _view.Links.AssertLink("delete")
-                 .ShouldBeDelete()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldHaveBooksLink();
         }
 
         [Test]
         public void ShouldReturnCorrectCategoryData()
         {
-            Assert.That(_view, Is.Not.Null, "Should contain at-least one category");
-            Assert.That(_view.Id, Is.EqualTo(_selectedCategory.Id), "Category id does not match");
-            Assert.That(_view.Name, Is.EqualTo(_selectedCategory.Name), "Category name does not match");
-            var bookCount = DatabaseConnection.GetBooksByCategory(_selectedCategory.Id);
-            Assert.That(_view.BookCount, Is.EqualTo(bookCount.Count()), "Category book count does not match");
+            _assert.ShouldBeSameAs(_selectedCategory);
         }
     }
 }

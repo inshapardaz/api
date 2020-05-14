@@ -13,9 +13,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
     {
         private readonly IDbConnection _connection;
         private List<AuthorDto> _authors = new List<AuthorDto>();
+        private List<BookDto> _books = new List<BookDto>();
         private List<SeriesDto> _series = new List<SeriesDto>();
         private int _bookCount;
         private int _libraryId;
+
+        public IEnumerable<BookDto> Books => _books;
 
         public SeriesDataBuilder(IProvideConnection connectionProvider)
         {
@@ -63,6 +66,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                                    .Without(b => b.ImageId)
                                    .With(b => b.SeriesId, s.Id)
                                    .CreateMany(_bookCount);
+                _books.AddRange(books);
                 _connection.AddBooks(books);
             }
 
@@ -73,6 +77,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         {
             _connection.DeleteAuthors(_authors);
             _connection.DeleteSeries(_series);
+            _connection.DeleteBooks(_books);
         }
     }
 }

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using System.Security.Claims;
 using System.Threading;
@@ -24,7 +23,6 @@ namespace Inshapardaz.Functions.Library.Series
         [FunctionName("DeleteSeries")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/series/{seriesId:int}")] HttpRequest req,
-            ILogger log,
             int libraryId,
             int seriesId,
             [AccessToken] ClaimsPrincipal claims,
@@ -38,6 +36,6 @@ namespace Inshapardaz.Functions.Library.Series
             });
         }
 
-        public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}", relType, "DELETE");
+        public static LinkView Link(int libraryId, int seriesId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/series/{seriesId}", relType, "DELETE");
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using AutoFixture;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var series = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
+            var series = new SeriesView { Name = Random.Name };
 
             _response = (ForbidResult)await handler.Run(series, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
         [Test]
         public void ShouldHaveForbiddenResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeForbidden();
         }
     }
 }

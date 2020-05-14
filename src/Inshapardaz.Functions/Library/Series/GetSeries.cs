@@ -32,7 +32,7 @@ namespace Inshapardaz.Functions.Library.Series
             var query = new GetSeriesQuery(libraryId);
             var series = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-            return new OkObjectResult(series.Render(null));
+            return new OkObjectResult(series.Render(libraryId, claims));
         }
 
         public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/series", relType);

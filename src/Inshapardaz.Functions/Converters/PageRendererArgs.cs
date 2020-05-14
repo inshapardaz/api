@@ -13,6 +13,8 @@ namespace Inshapardaz.Functions.Converters
         public Func<int, int, string, LinkView> LinkFunc { get; set; }
 
         public Func<int, int, int, string, string, LinkView> LinkFuncWithParameter { get; set; }
+
+        public Func<int, int, int, int, string, string, LinkView> LinkFuncWithParameterEx { get; set; }
     }
 
     public class PagedRouteArgs

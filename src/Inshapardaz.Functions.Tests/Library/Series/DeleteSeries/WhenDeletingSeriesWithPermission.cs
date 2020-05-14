@@ -1,31 +1,30 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenDeletingSeriesWithPermissions : LibraryTest<Functions.Library.Series.DeleteSeries>
+    public class WhenDeletingSeriesWithPermission : LibraryTest<Functions.Library.Series.DeleteSeries>
     {
         private NoContentResult _response;
 
-        private IEnumerable<SeriesDto> _series;
         private SeriesDto _expected;
         private SeriesDataBuilder _dataBuilder;
         private readonly ClaimsPrincipal _claim;
 
-        public WhenDeletingSeriesWithPermissions(AuthenticationLevel authenticationLevel)
+        public WhenDeletingSeriesWithPermission(AuthenticationLevel authenticationLevel)
         {
             _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
         }
@@ -35,10 +34,10 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         {
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
-            _series = _dataBuilder.WithLibrary(LibraryId).Build(4);
-            _expected = _series.First();
+            var series = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            _expected = series.First();
 
-            _response = (NoContentResult)await handler.Run(request, NullLogger.Instance, LibraryId, _expected.Id, _claim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -51,15 +50,25 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(204));
+            _response.ShouldBeNoContent();
         }
 
         [Test]
         public void ShouldHaveDeletedSeries()
         {
-            var cat = DatabaseConnection.GetSeriesById(_expected.Id);
-            Assert.That(cat, Is.Null, "Series should be deleted.");
+            SeriesAssert.ShouldHaveDeletedSeries(_expected.Id, DatabaseConnection);
+        }
+
+        [Test]
+        public void ShouldNotDeleteSeriesBooks()
+        {
+            var seriesBooks = _dataBuilder.Books.Where(b => b.SeriesId == _expected.Id);
+            foreach (var book in seriesBooks)
+            {
+                var b = DatabaseConnection.GetBookById(book.Id);
+                b.SeriesId.Should().BeNull();
+                b.SeriesIndex.Should().BeNull();
+            }
         }
     }
 }

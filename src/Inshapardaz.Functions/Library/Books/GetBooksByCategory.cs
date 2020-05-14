@@ -40,7 +40,7 @@ namespace Inshapardaz.Functions.Library.Books
             {
                 Page = books,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-                LinkFuncWithParameter = Link
+                LinkFuncWithParameterEx = Link
             };
 
             return new OkObjectResult(args.Render(categoryId, claims));
@@ -49,8 +49,8 @@ namespace Inshapardaz.Functions.Library.Books
         public static LinkView Self(int libraryId, int categoryById, string relType = RelTypes.Self)
             => SelfLink($"library/{libraryId}/categories/{categoryById}/books", relType);
 
-        public static LinkView Link(int categoryById, int pageNumber = 1, int pageSize = 10, string query = null, string relType = RelTypes.Self)
-            => SelfLink($"categories/{categoryById}/books", relType, queryString: new Dictionary<string, string>
+        public static LinkView Link(int libraryId, int categoryById, int pageNumber = 1, int pageSize = 10, string query = null, string relType = RelTypes.Self)
+            => SelfLink($"library/{libraryId}/categories/{categoryById}/books", relType, queryString: new Dictionary<string, string>
             {
                 { "pageNumber", pageNumber.ToString()},
                 { "pageSize", pageSize.ToString()}

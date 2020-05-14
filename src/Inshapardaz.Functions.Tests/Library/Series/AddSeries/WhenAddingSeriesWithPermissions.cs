@@ -1,10 +1,7 @@
-﻿using System.Net;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoFixture;
-using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +11,12 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenAddingSeriesWithPermissions : LibraryTest<Functions.Library.Series.AddSeries>
+    public class WhenAddingSeriesWithPermissions
+        : LibraryTest<Functions.Library.Series.AddSeries>
     {
-        private CreatedResult _response;
-        private LibraryDataBuilder _builder;
         private readonly ClaimsPrincipal _claim;
+        private SeriesAssert _assert;
+        private CreatedResult _response;
 
         public WhenAddingSeriesWithPermissions(AuthenticationLevel authenticationLevel)
         {
@@ -28,9 +26,11 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var series = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
+            var _request = new SeriesView { Name = Random.Name };
 
-            _response = (CreatedResult)await handler.Run(series, LibraryId, _claim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(_request, LibraryId, _claim, CancellationToken.None);
+
+            _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -42,24 +42,28 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
         [Test]
         public void ShouldHaveCreatedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
+            _response.ShouldBeCreated();
         }
 
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            Assert.That(_response.Location, Is.Not.Empty);
+            _assert.ShouldHaveCorrectLocationHeader();
         }
 
         [Test]
-        public void ShouldHaveCreatedTheSeries()
+        public void ShouldSaveTheSeries()
         {
-            var series = _response.Value as SeriesView;
-            Assert.That(series, Is.Not.Null);
+            _assert.ShouldHaveSavedSeries(DatabaseConnection);
+        }
 
-            var cat = DatabaseConnection.GetSeriesById(series.Id);
-            Assert.That(cat, Is.Not.Null, "Series should be created.");
+        [Test]
+        public void ShouldHaveLinks()
+        {
+            _assert.ShouldHaveSelfLink()
+                         .ShouldHaveBooksLink()
+                         .ShouldHaveUpdateLink()
+                         .ShouldHaveDeleteLink();
         }
     }
 }

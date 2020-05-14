@@ -1,8 +1,7 @@
-﻿using System.Net;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using AutoFixture;
-using Inshapardaz.Functions.Tests.DataHelpers;
+using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +13,16 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
     public class WhenUpdatingSeriesThatDoesNotExist : LibraryTest<Functions.Library.Series.UpdateSeries>
     {
         private CreatedResult _response;
-        private SeriesView _expected;
+        private SeriesView _series;
+        private SeriesAssert _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _expected = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
+            _series = new SeriesView { Name = new Faker().Random.String() };
 
-            _response = (CreatedResult)await handler.Run(_expected, LibraryId, _expected.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(_series, LibraryId, _series.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -33,24 +34,19 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
         [Test]
         public void ShouldHaveCreatedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
+            _response.ShouldBeCreated();
         }
 
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            Assert.That(_response.Location, Is.Not.Empty);
+            _assert.ShouldHaveCorrectLocationHeader();
         }
 
         [Test]
         public void ShouldHaveCreatedTheSeries()
         {
-            var returned = _response.Value as SeriesView;
-            Assert.That(returned, Is.Not.Null);
-
-            var actual = DatabaseConnection.GetSeriesById(returned.Id);
-            Assert.That(actual, Is.Not.Null, "Series should be created.");
+            _assert.ShouldHaveSavedSeries(DatabaseConnection);
         }
     }
 }

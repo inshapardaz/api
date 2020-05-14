@@ -4,6 +4,7 @@ using Inshapardaz.Domain.Repositories.Library;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Inshapardaz.Ports.Database.Repositories.Library
 {
@@ -45,9 +46,13 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From Library.Series Where LibraryId = @LibraryId AND Id = @Id";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = seriesId }, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(command);
+                var sql1 = @"Update Library.Book SET SeriesIndex = NULL Where LibraryId = @LibraryId AND SeriesId = @SeriesId";
+                var command1 = new CommandDefinition(sql1, new { LibraryId = libraryId, SeriesId = seriesId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command1);
+
+                var sql2 = @"Delete From Library.Series Where LibraryId = @LibraryId AND Id = @Id";
+                var command2 = new CommandDefinition(sql2, new { LibraryId = libraryId, Id = seriesId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command2);
             }
         }
 

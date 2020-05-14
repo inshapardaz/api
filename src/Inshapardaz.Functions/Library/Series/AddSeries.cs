@@ -36,7 +36,7 @@ namespace Inshapardaz.Functions.Library.Series
                 var request = new AddSeriesRequest(claims, libraryId, series.Map());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-                var renderResult = request.Result.Render(claims);
+                var renderResult = request.Result.Render(libraryId, claims);
                 return new CreatedResult(renderResult.Links.Self(), renderResult);
             });
         }

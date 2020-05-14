@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using AutoFixture;
+using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +17,8 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var series = new Fixture().Build<SeriesView>().Without(s => s.Links).Without(s => s.BookCount).Create();
-
+            var faker = new Faker();
+            var series = new SeriesView { Id = faker.Random.Number(), Name = faker.Random.String() };
             _response = (UnauthorizedResult)await handler.Run(series, LibraryId, series.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
@@ -30,7 +31,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
         [Test]
         public void ShouldHaveForbiddenResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeUnauthorized();
         }
     }
 }

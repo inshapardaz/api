@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using FluentAssertions;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.DataHelpers;
-using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +16,15 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenUpdatingSeriesWithWritePermissions : LibraryTest<Functions.Library.Series.UpdateSeries>
+    public class WhenUpdatingSeriesWithPermission : LibraryTest<Functions.Library.Series.UpdateSeries>
     {
         private OkObjectResult _response;
         private SeriesDataBuilder _dataBuilder;
-        private IEnumerable<SeriesDto> _series;
         private SeriesView _expected;
         private readonly ClaimsPrincipal _claim;
+        private SeriesAssert _assert;
 
-        public WhenUpdatingSeriesWithWritePermissions(AuthenticationLevel authenticationLevel)
+        public WhenUpdatingSeriesWithPermission(AuthenticationLevel authenticationLevel)
         {
             _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
         }
@@ -36,13 +34,14 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
         {
             _dataBuilder = Container.GetService<SeriesDataBuilder>();
 
-            _series = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            var series = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
-            var selectedSeries = _series.First();
+            var selectedSeries = series.First();
 
-            _expected = new SeriesView { Name = new Faker().Name.LastName(), Description = new Faker().Random.Words(20) };
+            _expected = new SeriesView { Name = new Faker().Name.FullName() };
 
             _response = (OkObjectResult)await handler.Run(_expected, LibraryId, selectedSeries.Id, _claim, CancellationToken.None);
+            _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -53,22 +52,15 @@ namespace Inshapardaz.Functions.Tests.Library.Series.UpdateSeries
         }
 
         [Test]
-        public void ShouldHaveCreatedResult()
+        public void ShouldHaveOkResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveUpdatedTheSeries()
         {
-            var returned = _response.Value as SeriesView;
-            Assert.That(returned, Is.Not.Null);
-
-            var actual = DatabaseConnection.GetSeriesById(returned.Id);
-
-            Assert.That(actual.Name, Is.EqualTo(_expected.Name), "Series should have expected name.");
-            Assert.That(actual.Description, Is.EqualTo(_expected.Description), "Series should have expected description.");
+            _assert.ShouldHaveSavedSeries(DatabaseConnection);
         }
     }
 }

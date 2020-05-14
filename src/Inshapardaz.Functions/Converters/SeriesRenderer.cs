@@ -13,33 +13,33 @@ namespace Inshapardaz.Functions.Converters
 {
     public static class SeriesRenderer
     {
-        public static ListView<SeriesView> Render(this IEnumerable<SeriesModel> seriesList, ClaimsPrincipal principal)
+        public static ListView<SeriesView> Render(this IEnumerable<SeriesModel> seriesList, int libraryId, ClaimsPrincipal principal)
         {
-            var items = seriesList.Select(g => g.Render(principal));
+            var items = seriesList.Select(g => g.Render(libraryId, principal));
             var view = new ListView<SeriesView> { Items = items };
-            view.Links.Add(GetSeries.Link(0));
+            view.Links.Add(GetSeries.Link(libraryId));
 
             if (principal.IsWriter())
             {
-                view.Links.Add(AddSeries.Link(0, RelTypes.Create));
+                view.Links.Add(AddSeries.Link(libraryId, RelTypes.Create));
             }
 
             return view;
         }
 
-        public static SeriesView Render(this SeriesModel series, ClaimsPrincipal principal)
+        public static SeriesView Render(this SeriesModel series, int libraryId, ClaimsPrincipal principal)
         {
             var view = series.Map();
 
-            view.Links.Add(GetSeriesById.Link(0, series.Id, RelTypes.Self));
-            view.Links.Add(GetBooksBySeries.Link(series.Id, RelTypes.Books));
+            view.Links.Add(GetSeriesById.Link(libraryId, series.Id, RelTypes.Self));
+            view.Links.Add(GetBooksBySeries.Link(libraryId, series.Id, RelTypes.Books));
 
             if (principal.IsWriter())
             {
                 // TODO: Add image upload for series
                 //view.Links.Add(UpdateSeriesImage.Link(series.Id, RelTypes.ImageUpload));
-                view.Links.Add(UpdateSeries.Link(series.Id, RelTypes.Update));
-                view.Links.Add(DeleteSeries.Link(series.Id, RelTypes.Delete));
+                view.Links.Add(UpdateSeries.Link(libraryId, series.Id, RelTypes.Update));
+                view.Links.Add(DeleteSeries.Link(libraryId, series.Id, RelTypes.Delete));
             }
 
             return view;

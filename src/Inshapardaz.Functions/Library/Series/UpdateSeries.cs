@@ -38,7 +38,7 @@ namespace Inshapardaz.Functions.Library.Series
                 var request = new UpdateSeriesRequest(claims, libraryId, series.Map());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-                var renderResult = request.Result.Series.Render(claims);
+                var renderResult = request.Result.Series.Render(libraryId, claims);
 
                 if (request.Result.HasAddedNew)
                 {
@@ -51,6 +51,6 @@ namespace Inshapardaz.Functions.Library.Series
             });
         }
 
-        public static LinkView Link(int seriesId, string relType = RelTypes.Self) => SelfLink($"series/{seriesId}", relType, "PUT");
+        public static LinkView Link(int libraryId, int seriesId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/series/{seriesId}", relType, "PUT");
     }
 }

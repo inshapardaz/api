@@ -39,5 +39,12 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
                                 Inner Join Library.Book b ON s.Id = b.SeriesId
                                 Where b.Id = @BookId ", new { BookId = id });
         }
+
+        public static int GetBookCountBySeries(this IDbConnection connection, int seriesId)
+        {
+            return connection.QuerySingleOrDefault<int>(@"Select Count(*) From Library.Series s
+                                Inner Join Library.Book b ON s.Id = b.SeriesId
+                                Where s.Id = @SeriesId", new { SeriesId = seriesId });
+        }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         {
             var request = TestHelpers.CreateGetRequest();
 
-            _response = (NoContentResult)await handler.Run(request, NullLogger.Instance, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -29,8 +29,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(204));
+            _response.ShouldBeNoContent();
         }
     }
 }

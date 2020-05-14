@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using System.Collections.Generic;
@@ -56,17 +57,64 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
         }
 
-        public async Task<IEnumerable<SeriesModel>> GetSeries(int libraryId, CancellationToken cancellationToken)
+        public async Task<Page<SeriesModel>> GetSeries(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Select s.Id, s.Name, s.[Description], s.ImageId,
-                            (Select Count(*) From Library.Book b Where b.SeriesId = s.Id) AS BookCount
+                var sql = @"SELECT  s.Id, s.Name, s.[Description], s.ImageId, f.FilePath AS ImageUrl, (Select Count(*) From Library.Book b Where b.SeriesId = s.Id) AS BookCount
                             FROM Library.Series AS s
-                            Where LibraryId = @LibraryId";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId }, cancellationToken: cancellationToken);
+                            INNER JOIN Inshapardaz.[File] f ON f.Id = s.ImageId
+                            Where s.LibraryId = @LibraryId
+                            Order By s.Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
 
-                return await connection.QueryAsync<SeriesModel>(command);
+                var series = await connection.QueryAsync<SeriesModel>(command);
+
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Series WHERE LibraryId = @LibraryId";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
+
+                return new Page<SeriesModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
+        }
+
+        public async Task<Page<SeriesModel>> FindSeries(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT s.Id, s.Name, s.[Description], s.ImageId, f.FilePath AS ImageUrl, (Select Count(*) From Library.Book b Where b.SeriesId = s.Id) AS BookCount
+                            FROM Library.Series AS s
+                            INNER JOIN Inshapardaz.[File] f ON f.Id = s.ImageId
+                            Where s.LibraryId = @LibraryId AND
+                            s.Name LIKE @Query
+                            Order By s.Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, Query = $"%{query}%", PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<SeriesModel>(command);
+
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Series WHERE LibraryId = @LibraryId And Name LIKE @Query";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, Query = $"%{query}%" }, cancellationToken: cancellationToken));
+
+                return new Page<SeriesModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
             }
         }
 
@@ -81,6 +129,16 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = seriesId }, cancellationToken: cancellationToken);
 
                 return await connection.QuerySingleOrDefaultAsync<SeriesModel>(command);
+            }
+        }
+
+        public async Task UpdateSeriesImage(int libraryId, int seriesId, int imageId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update Library.Series Set ImageId = @ImageId Where Id = @Id AND LibraryId = @LibraryId ";
+                var command = new CommandDefinition(sql, new { Id = seriesId, LibraryId = libraryId, ImageId = imageId }, cancellationToken: cancellationToken);
+                await connection.ExecuteScalarAsync<int>(command);
             }
         }
     }

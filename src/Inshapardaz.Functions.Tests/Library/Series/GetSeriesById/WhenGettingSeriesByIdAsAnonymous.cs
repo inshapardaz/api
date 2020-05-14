@@ -13,9 +13,9 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
 {
     [TestFixture]
-    public class WhenGettingSeriesByIdAsReader : LibraryTest<Functions.Library.Series.GetSeriesById>
+    public class WhenGettingSeriesByIdAsAnonymous : LibraryTest<Functions.Library.Series.GetSeriesById>
     {
-        public SeriesDataBuilder _builder;
+        private SeriesDataBuilder _builder;
         private OkObjectResult _response;
         private SeriesDto _expected;
         private SeriesAssert _assert;
@@ -28,7 +28,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
             var series = _builder.WithLibrary(LibraryId).Build(4);
             _expected = series.First();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
         }

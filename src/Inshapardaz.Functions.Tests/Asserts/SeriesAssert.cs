@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
@@ -80,6 +81,52 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        internal SeriesAssert ShouldHaveCorrectImageLocationHeader(int authorId)
+        {
+            var response = _response as CreatedResult;
+            response.Location.Should().NotBeNull();
+            return this;
+        }
+
+        public SeriesAssert ShouldNotHaveImageUpdateLink()
+        {
+            _series.Link("image-upload").Should().BeNull();
+            return this;
+        }
+
+        public SeriesAssert ShouldHaveImageUpdateLink()
+        {
+            _series.Link("image-upload")
+                   .ShouldBePut()
+                   .EndingWith($"library/{_libraryId}/series/{_series.Id}/image");
+            return this;
+        }
+
+        internal SeriesAssert ShouldHavePublicImageLink()
+        {
+            _series.Link("image")
+                .ShouldBeGet()
+                .Href.Should()
+                .StartWith(ConfigurationSettings.CDNAddress);
+            return this;
+        }
+
+        public SeriesAssert ShouldHaveImageUploadLink()
+        {
+            _series.Link("image-upload")
+                  .ShouldBePut()
+                  .EndingWith($"library/{_libraryId}/series/{_series.Id}/image");
+
+            return this;
+        }
+
+        public SeriesAssert ShouldNotHaveImageUploadLink()
+        {
+            _series.Link("image-upload").Should().BeNull();
+
+            return this;
+        }
+
         internal SeriesAssert WithBookCount(int count)
         {
             _series.BookCount.Should().Be(count);
@@ -99,6 +146,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             ShouldHaveBooksLink();
             ShouldNotHaveUpdateLink();
             ShouldNotHaveDeleteLink();
+            ShouldNotHaveImageUpdateLink();
 
             return this;
         }
@@ -109,6 +157,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             ShouldHaveBooksLink();
             ShouldHaveUpdateLink();
             ShouldHaveDeleteLink();
+            ShouldHaveImageUpdateLink();
 
             return this;
         }
@@ -160,6 +209,52 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _series.Name.Should().Be(series.Name);
             _series.BookCount.Should().Be(dbConnection.GetBookCountBySeries(_series.Id));
             return this;
+        }
+
+        internal static void ShouldHaveUpdatedSeriesImage(int authorId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetSeriesImageUrl(authorId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().NotBeNull().And.NotEqual(oldImage);
+        }
+
+        internal static void ShouldHavePublicImage(int authorId, IDbConnection dbConnection)
+        {
+            var image = dbConnection.GetSeriesImage(authorId);
+            image.Should().NotBeNull();
+            image.IsPublic.Should().BeTrue();
+        }
+
+        internal static void ShouldNotHaveUpdatedSeriesImage(int authorId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetSeriesImageUrl(authorId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().Equal(oldImage);
+        }
+
+        internal static void ShouldHaveAddedSeriesImage(int authorId, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetSeriesImageUrl(authorId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().NotBeNullOrEmpty();
+        }
+
+        internal static void ShouldHaveDeletedSeriesImage(int authorId, IDbConnection dbConnection)
+        {
+            var image = dbConnection.GetSeriesImage(authorId);
+            image.Should().BeNull();
+        }
+    }
+
+    internal static class SeriesAssertionExtensions
+    {
+        internal static SeriesAssert ShouldMatch(this SeriesView view, SeriesDto dto)
+        {
+            return SeriesAssert.FromObject(view)
+                               .ShouldBeSameAs(dto);
         }
     }
 }

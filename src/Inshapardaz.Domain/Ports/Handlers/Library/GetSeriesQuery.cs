@@ -1,5 +1,8 @@
-﻿using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 using System.Collections.Generic;
@@ -8,26 +11,48 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetSeriesQuery : LibraryBaseQuery<IEnumerable<SeriesModel>>
+    public class GetSeriesQuery : LibraryBaseQuery<Page<SeriesModel>>
     {
-        public GetSeriesQuery(int libraryId)
+        public GetSeriesQuery(int libraryId, int pageNumber, int pageSize)
             : base(libraryId)
         {
+            PageNumber = pageNumber;
+            PageSize = pageSize;
         }
+
+        public int PageNumber { get; private set; }
+
+        public int PageSize { get; private set; }
+
+        public string Query { get; set; }
     }
 
-    public class GetSeriesQueryHandler : QueryHandlerAsync<GetSeriesQuery, IEnumerable<SeriesModel>>
+    public class GetSeriesQueryHandler : QueryHandlerAsync<GetSeriesQuery, Page<SeriesModel>>
     {
         private readonly ISeriesRepository _seriesRepository;
+        private readonly IFileRepository _fileRepository;
 
-        public GetSeriesQueryHandler(ISeriesRepository seriesRepository)
+        public GetSeriesQueryHandler(ISeriesRepository seriesRepository, IFileRepository fileRepository)
         {
             _seriesRepository = seriesRepository;
+            _fileRepository = fileRepository;
         }
 
-        public override async Task<IEnumerable<SeriesModel>> ExecuteAsync(GetSeriesQuery command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<Page<SeriesModel>> ExecuteAsync(GetSeriesQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _seriesRepository.GetSeries(command.LibraryId, cancellationToken);
+            var authors = (string.IsNullOrWhiteSpace(query.Query))
+             ? await _seriesRepository.GetSeries(query.LibraryId, query.PageNumber, query.PageSize, cancellationToken)
+             : await _seriesRepository.FindSeries(query.LibraryId, query.Query, query.PageNumber, query.PageSize, cancellationToken);
+
+            foreach (var author in authors.Data)
+            {
+                if (author != null && author.ImageId.HasValue)
+                {
+                    author.ImageUrl = await ImageHelper.TryConvertToPublicImage(author.ImageId.Value, _fileRepository, cancellationToken);
+                }
+            }
+
+            return authors;
         }
     }
 }

@@ -60,6 +60,12 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         }
 
         [Test]
+        public void ShouldHaveDeletedTheSeriesImage()
+        {
+            SeriesAssert.ShouldHaveDeletedSeriesImage(_expected.Id, DatabaseConnection);
+        }
+
+        [Test]
         public void ShouldNotDeleteSeriesBooks()
         {
             var seriesBooks = _dataBuilder.Books.Where(b => b.SeriesId == _expected.Id);

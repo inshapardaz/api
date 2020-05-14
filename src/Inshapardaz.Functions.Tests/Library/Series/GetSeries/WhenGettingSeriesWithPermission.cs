@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -12,12 +13,19 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
 {
-    [TestFixture]
-    public class WhenGettingSeriesAsReader : LibraryTest<Functions.Library.Series.GetSeries>
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingSeriesWithPermission : LibraryTest<Functions.Library.Series.GetSeries>
     {
         private SeriesDataBuilder _builder;
         private OkObjectResult _response;
         private PagingAssert<SeriesView> _assert;
+        private readonly ClaimsPrincipal _claim;
+
+        public WhenGettingSeriesWithPermission(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,7 +35,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
             _builder = Container.GetService<SeriesDataBuilder>();
             _builder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
 
             _assert = new PagingAssert<SeriesView>(_response);
         }
@@ -52,30 +60,23 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
+        public void ShouldHaveCreateLink()
         {
-            _assert.ShouldNotHaveCreateLink();
+            _assert.ShouldHaveCreateLink($"/api/library/{LibraryId}/series");
         }
 
         [Test]
-        public void ShouldNotHaveNavigationLinks()
+        public void ShouldHaveEditingLinkOnSeries()
         {
-            _assert.ShouldNotHaveNextLink();
-            _assert.ShouldNotHavePreviousLink();
-        }
-
-        [Test]
-        public void ShouldReturnExpectedSeries()
-        {
-            var expectedItems = _builder.Series.OrderBy(a => a.Name).Take(10);
+            var expectedItems = _builder.Series;
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
                 actual.ShouldMatch(item)
-                            .InLibrary(LibraryId)
-                            .WithBookCount(3)
-                            .WithReadOnlyLinks()
-                            .ShouldHavePublicImageLink();
+                      .InLibrary(LibraryId)
+                      .WithBookCount(3)
+                      .WithEditableLinks()
+                      .ShouldHavePublicImageLink();
             }
         }
     }

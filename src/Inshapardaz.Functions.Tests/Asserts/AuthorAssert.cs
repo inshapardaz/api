@@ -95,20 +95,20 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
-        public AuthorAssert ShouldHaveDeleteLink()
-        {
-            _author.DeleteLink()
-                  .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/authors/{_author.Id}");
-            return this;
-        }
-
         internal void ShouldHavePublicImageLink()
         {
             _author.Link("image")
                 .ShouldBeGet()
                 .Href.Should()
                 .StartWith(ConfigurationSettings.CDNAddress);
+        }
+
+        public AuthorAssert ShouldHaveDeleteLink()
+        {
+            _author.DeleteLink()
+                  .ShouldBeDelete()
+                  .EndingWith($"library/{_libraryId}/authors/{_author.Id}");
+            return this;
         }
 
         internal AuthorAssert WithBookCount(int count)

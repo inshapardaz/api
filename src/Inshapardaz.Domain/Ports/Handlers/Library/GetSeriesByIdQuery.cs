@@ -1,5 +1,7 @@
-﻿using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 using System.Threading;
@@ -22,16 +24,25 @@ namespace Inshapardaz.Domain.Ports.Library
     {
         private readonly ISeriesRepository _seriesRepository;
         private readonly IBookRepository _bookRepository;
+        private readonly IFileRepository _fileRepository;
 
-        public GetSeriesByIdQueryHandler(ISeriesRepository seriesRepository, IBookRepository bookRepository)
+        public GetSeriesByIdQueryHandler(ISeriesRepository seriesRepository, IBookRepository bookRepository, IFileRepository fileRepository)
         {
             _seriesRepository = seriesRepository;
             _bookRepository = bookRepository;
+            _fileRepository = fileRepository;
         }
 
         public override async Task<SeriesModel> ExecuteAsync(GetSeriesByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _seriesRepository.GetSeriesById(command.LibraryId, command.SeriesId, cancellationToken);
+            var series = await _seriesRepository.GetSeriesById(command.LibraryId, command.SeriesId, cancellationToken);
+
+            if (series != null && series.ImageId.HasValue)
+            {
+                series.ImageUrl = await ImageHelper.TryConvertToPublicImage(series.ImageId.Value, _fileRepository, cancellationToken);
+            }
+
+            return series;
         }
     }
 }

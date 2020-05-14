@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
 {
     [TestFixture]
-    public class WhenGettingSeriesAsReader : LibraryTest<Functions.Library.Series.GetSeries>
+    public class WhenSearchingSeriesLastPage : LibraryTest<Functions.Library.Series.GetSeries>
     {
         private SeriesDataBuilder _builder;
         private OkObjectResult _response;
@@ -22,10 +22,14 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var request = TestHelpers.CreateGetRequest();
-
             _builder = Container.GetService<SeriesDataBuilder>();
-            _builder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            _builder.WithLibrary(LibraryId).WithBooks(3).WithNamePattern("SearchSeries").Build(50);
+
+            var request = new RequestBuilder()
+               .WithQueryParameter("query", "SearchSeries")
+               .WithQueryParameter("pageNumber", 5)
+               .WithQueryParameter("pageSize", 10)
+               .Build();
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
@@ -48,7 +52,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/series");
+            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/series", "query", "SearchSeries");
         }
 
         [Test]
@@ -58,24 +62,30 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
         }
 
         [Test]
-        public void ShouldNotHaveNavigationLinks()
+        public void ShouldNotHaveNextLink()
         {
             _assert.ShouldNotHaveNextLink();
-            _assert.ShouldNotHavePreviousLink();
+        }
+
+        [Test]
+        public void ShouldHavePreviousLinks()
+        {
+            _assert.ShouldHavePreviousLink($"/api/library/{LibraryId}/series", 4, 10, "query", "SearchSeries");
         }
 
         [Test]
         public void ShouldReturnExpectedSeries()
         {
-            var expectedItems = _builder.Series.OrderBy(a => a.Name).Take(10);
+            var expectedItems = _builder.Series.Where(a => a.Name.Contains("SearchSeries")).OrderBy(a => a.Name).Skip(4 * 10).Take(10);
+
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
                 actual.ShouldMatch(item)
-                            .InLibrary(LibraryId)
-                            .WithBookCount(3)
-                            .WithReadOnlyLinks()
-                            .ShouldHavePublicImageLink();
+                      .InLibrary(LibraryId)
+                      .WithBookCount(3)
+                      .WithReadOnlyLinks()
+                      .ShouldHavePublicImageLink();
             }
         }
     }

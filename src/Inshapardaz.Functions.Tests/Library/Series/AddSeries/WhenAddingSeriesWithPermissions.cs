@@ -63,7 +63,8 @@ namespace Inshapardaz.Functions.Tests.Library.Series.AddSeries
             _assert.ShouldHaveSelfLink()
                          .ShouldHaveBooksLink()
                          .ShouldHaveUpdateLink()
-                         .ShouldHaveDeleteLink();
+                         .ShouldHaveDeleteLink()
+                         .ShouldHaveImageUpdateLink();
         }
     }
 }

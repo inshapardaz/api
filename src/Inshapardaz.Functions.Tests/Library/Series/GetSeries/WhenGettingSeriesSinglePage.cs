@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -13,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
 {
     [TestFixture]
-    public class WhenGettingSeriesAsReader : LibraryTest<Functions.Library.Series.GetSeries>
+    public class WhenGettingSeriesSinglePage : LibraryTest<Functions.Library.Series.GetSeries>
     {
         private SeriesDataBuilder _builder;
         private OkObjectResult _response;
@@ -27,7 +26,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
             _builder = Container.GetService<SeriesDataBuilder>();
             _builder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _assert = new PagingAssert<SeriesView>(_response);
         }
@@ -58,24 +57,29 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
         }
 
         [Test]
-        public void ShouldNotHaveNavigationLinks()
+        public void ShouldNotHaveNextLink()
         {
             _assert.ShouldNotHaveNextLink();
+        }
+
+        [Test]
+        public void ShouldNotHavePreviousLink()
+        {
             _assert.ShouldNotHavePreviousLink();
         }
 
         [Test]
         public void ShouldReturnExpectedSeries()
         {
-            var expectedItems = _builder.Series.OrderBy(a => a.Name).Take(10);
+            var expectedItems = _builder.Series;
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
                 actual.ShouldMatch(item)
-                            .InLibrary(LibraryId)
-                            .WithBookCount(3)
-                            .WithReadOnlyLinks()
-                            .ShouldHavePublicImageLink();
+                      .InLibrary(LibraryId)
+                      .WithBookCount(3)
+                      .WithReadOnlyLinks()
+                      .ShouldHavePublicImageLink();
             }
         }
     }

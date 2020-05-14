@@ -1,6 +1,10 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -11,18 +15,20 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
 {
     [TestFixture]
-    public class WhenGettingCategoriesWithPermission : LibraryTest<Functions.Library.Categories.GetCategories>
+    public class WhenGettingCategoriesWithWritePermissions : LibraryTest<Functions.Library.Categories.GetCategories>
     {
         private OkObjectResult _response;
-        private ListView<CategoryView> _view;
         private CategoriesDataBuilder _dataBuilder;
+        private IEnumerable<CategoryDto> _categories;
+        private ListView<CategoryView> _view;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
+
             _dataBuilder = Container.GetService<CategoriesDataBuilder>();
-            _dataBuilder.WithLibrary(LibraryId).Build(4);
+            _categories = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
@@ -39,24 +45,37 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _view.SelfLink()
+                .ShouldBeGet()
+                .EndingWith($"/api/library/{LibraryId}/categories");
         }
 
         [Test]
         public void ShouldHaveCreateLink()
         {
-            _view.Links.AssertLink("create")
-                 .ShouldBePost()
-                 .ShouldHaveSomeHref();
+            _view.CreateLink()
+                .ShouldBePost()
+                .EndingWith($"/api/library/{LibraryId}/categories");
+        }
+
+        [Test]
+        public void ShouldHaveSomeCategories()
+        {
+            foreach (var item in _categories)
+            {
+                var actual = _view.Items.FirstOrDefault(x => x.Id == item.Id);
+                actual.ShouldMatch(item)
+                      .InLibrary(LibraryId)
+                      .WithBookCount(3)
+                      .ShouldHaveUpdateLink()
+                      .ShouldHaveDeleteLink();
+            }
         }
     }
 }

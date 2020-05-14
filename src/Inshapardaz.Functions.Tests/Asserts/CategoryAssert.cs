@@ -1,13 +1,12 @@
 ﻿using FluentAssertions;
+using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
 namespace Inshapardaz.Functions.Tests.Asserts
 {
@@ -81,6 +80,26 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        internal CategoryAssert ShouldNotHaveUpdateLink()
+        {
+            _category.UpdateLink().Should().BeNull();
+
+            return this;
+        }
+
+        internal CategoryAssert ShouldNotHaveDeleteLink()
+        {
+            _category.DeleteLink().Should().BeNull();
+            return this;
+        }
+
+        internal CategoryAssert WithReadOnlyLinks()
+        {
+            ShouldNotHaveDeleteLink();
+            ShouldNotHaveUpdateLink();
+            return this;
+        }
+
         internal CategoryAssert ShouldHaveUpdatedCategory(IDbConnection dbConnection)
         {
             var dbCat = dbConnection.GetCategoryById(_libraryId, _category.Id);
@@ -90,11 +109,26 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        internal CategoryAssert WithBookCount(int bookCount)
+        {
+            _category.BookCount.Should().Be(bookCount);
+            return this;
+        }
+
         internal CategoryAssert ShouldHaveUpdateLink()
         {
             _category.UpdateLink()
                   .ShouldBePut()
                   .EndingWith($"library/{_libraryId}/categories/{_category.Id}");
+
+            return this;
+        }
+
+        internal CategoryAssert ShouldHaveSelfLink(string url)
+        {
+            _category.SelfLink()
+                  .ShouldBeGet()
+                  .EndingWith(url);
 
             return this;
         }

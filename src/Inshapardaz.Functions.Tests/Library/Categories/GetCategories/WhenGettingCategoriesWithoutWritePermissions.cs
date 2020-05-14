@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -12,14 +15,16 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
 {
+    [TestFixture(AuthenticationLevel.Unauthorized)]
     [TestFixture(AuthenticationLevel.Reader)]
     [TestFixture(AuthenticationLevel.Writer)]
     public class WhenGettingCategoriesWithoutWritePermissions : LibraryTest<Functions.Library.Categories.GetCategories>
     {
         private OkObjectResult _response;
-        private ListView<CategoryView> _view;
         private CategoriesDataBuilder _dataBuilder;
+        private IEnumerable<CategoryDto> _categories;
         private readonly ClaimsPrincipal _claim;
+        private ListView<CategoryView> _view;
 
         public WhenGettingCategoriesWithoutWritePermissions(AuthenticationLevel authenticationLevel)
         {
@@ -32,7 +37,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
             var request = TestHelpers.CreateGetRequest();
 
             _dataBuilder = Container.GetService<CategoriesDataBuilder>();
-            _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            _categories = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
 
@@ -49,32 +54,28 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _view.SelfLink()
+                .ShouldBeGet()
+                .EndingWith($"/api/library/{LibraryId}/categories");
         }
 
         [Test]
         public void ShouldHaveSomeCategories()
         {
-            Assert.IsNotEmpty(_view.Items, "Should return some categories.");
-            Assert.That(_view.Items.Count(), Is.EqualTo(4), "Should return all categories");
-        }
-
-        [Test]
-        public void ShouldHaveCorrectCategoryData()
-        {
-            var firstCategory = _view.Items.FirstOrDefault();
-            Assert.That(firstCategory, Is.Not.Null, "Should contain at-least one category");
-            Assert.That(firstCategory.Name, Is.Not.Empty, "Category name should have a value");
-            Assert.That(firstCategory.BookCount, Is.GreaterThan(0), "Category should have some books");
+            foreach (var item in _categories)
+            {
+                var actual = _view.Items.FirstOrDefault(x => x.Id == item.Id);
+                actual.ShouldMatch(item)
+                      .InLibrary(LibraryId)
+                      .WithBookCount(3)
+                      .WithReadOnlyLinks();
+            }
         }
     }
 }

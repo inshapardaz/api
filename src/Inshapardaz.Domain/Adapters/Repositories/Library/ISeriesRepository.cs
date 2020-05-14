@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,8 +14,12 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task DeleteSeries(int libraryId, int seriesId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<SeriesModel>> GetSeries(int libraryId, CancellationToken cancellationToken);
+        Task<Page<SeriesModel>> GetSeries(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+        Task<Page<SeriesModel>> FindSeries(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<SeriesModel> GetSeriesById(int libraryId, int seriesId, CancellationToken cancellationToken);
+
+        Task UpdateSeriesImage(int libraryId, int seriesId, int imageId, CancellationToken cancellationToken);
     }
 }

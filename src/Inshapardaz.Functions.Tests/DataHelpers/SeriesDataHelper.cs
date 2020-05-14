@@ -46,5 +46,21 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
                                 Inner Join Library.Book b ON s.Id = b.SeriesId
                                 Where s.Id = @SeriesId", new { SeriesId = seriesId });
         }
+
+        public static string GetSeriesImageUrl(this IDbConnection connection, int id)
+        {
+            var sql = @"Select f.FilePath from Inshapardaz.[File] f
+                        Inner Join Library.Series s ON f.Id = s.ImageId
+                        Where s.Id = @Id";
+            return connection.QuerySingleOrDefault<string>(sql, new { Id = id });
+        }
+
+        public static FileDto GetSeriesImage(this IDbConnection connection, int id)
+        {
+            var sql = @"Select f.* from Inshapardaz.[File] f
+                        Inner Join Library.Series s ON f.Id = s.ImageId
+                        Where s.Id = @Id";
+            return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = id });
+        }
     }
 }

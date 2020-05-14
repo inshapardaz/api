@@ -48,6 +48,7 @@ namespace Inshapardaz.Functions.Tests
                     .AddTransient<GetSeries>()
                     .AddTransient<AddSeries>()
                     .AddTransient<GetSeriesById>()
+                    .AddTransient<UpdateSeriesImage>()
                     .AddTransient<UpdateSeries>()
                     .AddTransient<DeleteSeries>()
                     .AddTransient<GetAuthors>()

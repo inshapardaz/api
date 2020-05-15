@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
@@ -22,7 +23,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
         {
             _builder = Container.GetService<BooksDataBuilder>();
 
-            var book = _builder.Build();
+            var book = _builder.WithLibrary(LibraryId).Build();
 
             var chapter = new ChapterView { Title = new Faker().Random.String(), ChapterNumber = 1 };
 
@@ -38,7 +39,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
         [Test]
         public void ShouldHaveUnauthorisedResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeUnauthorized();
         }
     }
 }

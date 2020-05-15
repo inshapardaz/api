@@ -40,13 +40,13 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 
             if (chapterContents != null)
             {
-                return new OkObjectResult(chapterContents.Render(principal));
+                return new OkObjectResult(chapterContents.Render(libraryId, principal));
             }
 
             return new NotFoundResult();
         }
 
-        public static LinkView Link(int bookId, int chapterId, string mimeType, string relType = RelTypes.Self)
-            => SelfLink($"book/{bookId}/chapters/{chapterId}/contents", relType, type: mimeType);
+        public static LinkView Link(int libraryId, int bookId, int chapterId, string mimeType, string relType = RelTypes.Self)
+            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", relType, type: mimeType);
     }
 }

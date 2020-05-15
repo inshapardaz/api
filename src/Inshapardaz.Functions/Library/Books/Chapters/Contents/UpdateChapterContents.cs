@@ -41,7 +41,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
                 {
                     if (request.Result.HasAddedNew)
                     {
-                        var renderResult = request.Result.ChapterContent.Render(claims);
+                        var renderResult = request.Result.ChapterContent.Render(libraryId, claims);
                         return new CreatedResult(renderResult.Links.Self(), renderResult);
                     }
 
@@ -52,6 +52,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             });
         }
 
-        public static LinkView Link(int bookId, int chapterId, string mimetype, string relType = RelTypes.Self) => SelfLink($"book/{bookId}/chapters/{chapterId}/contents", relType, "PUT", type: mimetype);
+        public static LinkView Link(int libraryId, int bookId, int chapterId, string mimetype, string relType = RelTypes.Self)
+            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", relType, "PUT", type: mimetype);
     }
 }

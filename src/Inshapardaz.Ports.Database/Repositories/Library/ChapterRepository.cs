@@ -84,24 +84,22 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 ChapterModel chapter = null;
-                var sql = @"Select c.*, cc.Id, cc.MimeType From Library.Chapter c
+                var sql = @"Select *
+                            From Library.Chapter c
                             Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
-                            Where Id = @Id";
+                            Where c.Id = @Id";
                 var command = new CommandDefinition(sql, new { Id = chapterId }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ChapterModel, int, string, ChapterModel>(command, (c, id, mimeType) =>
+                await connection.QueryAsync<ChapterModel, ChapterContentModel, ChapterModel>(command, (c, cc) =>
                 {
                     if (chapter == null)
                     {
                         chapter = c;
                     }
 
-                    chapter.Contents.Add(new ChapterContentModel
+                    if (cc != null)
                     {
-                        BookId = c.BookId,
-                        ChapterId = c.Id,
-                        MimeType = mimeType,
-                        Id = id
-                    });
+                        chapter.Contents.Add(cc);
+                    }
 
                     return chapter;
                 });

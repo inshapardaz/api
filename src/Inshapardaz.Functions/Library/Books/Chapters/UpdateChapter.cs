@@ -38,7 +38,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
                 var request = new UpdateChapterRequest(claims, libraryId, bookId, chapterId, chapter.Map(), claims.GetUserId());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-                var renderResult = request.Result.Chapter.Render(claims);
+                var renderResult = request.Result.Chapter.Render(libraryId, claims);
 
                 if (request.Result.HasAddedNew)
                 {
@@ -49,6 +49,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
             });
         }
 
-        public static LinkView Link(int bookId, int chapterId, string relType = RelTypes.Self) => SelfLink($"book/{bookId}/chapters/{chapterId}", relType, "PUT");
+        public static LinkView Link(int libraryId, int bookId, int chapterId, string relType = RelTypes.Self)
+            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}", relType, "PUT");
     }
 }

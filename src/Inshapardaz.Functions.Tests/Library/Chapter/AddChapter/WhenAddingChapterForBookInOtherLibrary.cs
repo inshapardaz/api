@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -12,22 +11,27 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
 {
     [TestFixture]
-    public class WhenAddingChapterForNonExistingBook
+    public class WhenAddingChapterForBookInOtherLibrary
         : LibraryTest<Functions.Library.Books.Chapters.AddChapter>
     {
         private BadRequestResult _response;
+        private LibraryDataBuilder _builder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var chapter = new ChapterView { Title = Random.Name, ChapterNumber = 1 };
+            _builder = Container.GetService<LibraryDataBuilder>();
+            var library2 = _builder.Build();
+            var book = Container.GetService<BooksDataBuilder>().WithLibrary(library2.Id).Build();
+            var chapter = new ChapterView { Title = Random.Name, ChapterNumber = 1, BookId = book.Id };
 
-            _response = (BadRequestResult)await handler.Run(chapter, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (BadRequestResult)await handler.Run(chapter, LibraryId, book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
+            _builder.CleanUp();
             Cleanup();
         }
 

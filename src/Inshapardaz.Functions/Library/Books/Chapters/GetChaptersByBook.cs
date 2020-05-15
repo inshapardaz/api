@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
             if (chapters != null)
             {
-                return new OkObjectResult(chapters.Render(bookId, principal));
+                return new OkObjectResult(chapters.Render(libraryId, bookId, principal));
             }
 
             return new NotFoundResult();

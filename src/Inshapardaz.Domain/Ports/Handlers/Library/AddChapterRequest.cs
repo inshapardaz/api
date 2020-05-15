@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
@@ -24,15 +25,23 @@ namespace Inshapardaz.Domain.Ports.Library
     public class AddChapterRequestHandler : RequestHandlerAsync<AddChapterRequest>
     {
         private readonly IChapterRepository _chapterRepository;
+        private readonly IBookRepository _bookRepository;
 
-        public AddChapterRequestHandler(IChapterRepository chapterRepository)
+        public AddChapterRequestHandler(IChapterRepository chapterRepository, IBookRepository bookRepository)
         {
             _chapterRepository = chapterRepository;
+            _bookRepository = bookRepository;
         }
 
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<AddChapterRequest> HandleAsync(AddChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
+            if (book == null)
+            {
+                throw new BadRequestException();
+            }
+
             command.Result = await _chapterRepository.AddChapter(command.BookId, command.Chapter, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);

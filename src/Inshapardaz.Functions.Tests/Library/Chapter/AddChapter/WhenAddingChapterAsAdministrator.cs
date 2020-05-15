@@ -1,7 +1,10 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Database.Migrations;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -12,22 +15,33 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
 {
-    [TestFixture]
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
     public class WhenAddingChapterAsAdministrator
         : LibraryTest<Functions.Library.Books.Chapters.AddChapter>
     {
+        private ChapterView _chapter;
         private CreatedResult _response;
         private BooksDataBuilder _builder;
+        private ChapterAssert _assert;
+        private ClaimsPrincipal _claim;
+
+        public WhenAddingChapterAsAdministrator(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _builder = Container.GetService<BooksDataBuilder>();
 
-            var book = _builder.Build();
+            var book = _builder.WithLibrary(LibraryId).Build();
 
-            var chapter = new ChapterView { Title = new Faker().Random.String(), ChapterNumber = 1 };
-            _response = (CreatedResult)await handler.Run(chapter, LibraryId, book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _chapter = new ChapterView { Title = Random.Name, ChapterNumber = 1, BookId = book.Id };
+            _response = (CreatedResult)await handler.Run(_chapter, LibraryId, _chapter.BookId, _claim, CancellationToken.None);
+
+            _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }
 
         [OneTimeTearDown]
@@ -39,24 +53,36 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
         [Test]
         public void ShouldHaveCreatedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
+            _response.ShouldBeCreated();
         }
 
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            Assert.That(_response.Location, Is.Not.Empty);
+            _assert.ShouldHaveCorrectLoactionHeader();
         }
 
         [Test]
-        public void ShouldHaveCreatedTheChapter()
+        public void ShouldSaveTheChapter()
         {
-            var actual = _response.Value as ChapterView;
-            Assert.That(actual, Is.Not.Null);
+            _assert.ShouldHaveSavedChapter(DatabaseConnection);
+        }
 
-            var cat = DatabaseConnection.GetBookById(actual.Id);
-            Assert.That(cat, Is.Not.Null, "Chapter should be created.");
+        [Test]
+        public void ShouldHaveCorrectObjectRetured()
+        {
+            _assert.ShouldMatch(_chapter);
+        }
+
+        [Test]
+        public void ShouldHaveLinks()
+        {
+            _assert.ShouldHaveSelfLink()
+                   .ShouldHaveBookLink()
+                   .ShouldHaveUpdateLink()
+                   .ShouldHaveDeleteLink()
+                   .ShouldNotHaveContentsLink()
+                   .ShouldHaveAddChapterContentLink();
         }
     }
 }

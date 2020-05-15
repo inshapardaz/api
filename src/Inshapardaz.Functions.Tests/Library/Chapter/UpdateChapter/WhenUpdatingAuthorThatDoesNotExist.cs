@@ -54,7 +54,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
             var returned = _response.Value as ChapterView;
             Assert.That(returned, Is.Not.Null);
 
-            var actual = DatabaseConnection.GetChapterById(returned.Id);
+            var actual = DatabaseConnection.GetChapterById(LibraryId, returned.Id);
             Assert.That(actual, Is.Not.Null, "Chapter should be created.");
         }
     }

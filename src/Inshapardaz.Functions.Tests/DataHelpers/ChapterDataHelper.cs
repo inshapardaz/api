@@ -24,9 +24,9 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
             throw new NotImplementedException();
         }
 
-        public static ChapterDto GetChapterById(this IDbConnection connection, int id)
+        public static ChapterDto GetChapterById(this IDbConnection connection, int libraryId, int id)
         {
-            throw new NotImplementedException();
+            return connection.QuerySingleOrDefault<ChapterDto>("Select * From Library.Chapter Where Id = @Id", new { Id = id });
         }
 
         public static IEnumerable<ChapterDto> GetChaptersByBook(this IDbConnection connection, int id)

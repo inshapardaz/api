@@ -46,7 +46,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.DeleteChapter
         [Test]
         public void ShouldHaveDeletedChapter()
         {
-            var cat = DatabaseConnection.GetChapterById(_expected.Id);
+            var cat = DatabaseConnection.GetChapterById(LibraryId, _expected.Id);
             Assert.That(cat, Is.Null, "Chapter should be deleted.");
         }
 

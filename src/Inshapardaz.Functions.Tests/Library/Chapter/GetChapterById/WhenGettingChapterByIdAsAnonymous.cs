@@ -75,9 +75,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         }
 
         [Test]
-        public void ShouldHaveCorrectContents()
+        public void ShouldHaveNoContentsLink()
         {
-            _assert.ShouldHaveCorrectContents(DatabaseConnection);
+            _assert.ShouldNotHaveContentsLink();
         }
     }
 }

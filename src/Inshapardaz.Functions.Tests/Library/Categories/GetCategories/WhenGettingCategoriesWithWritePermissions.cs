@@ -69,7 +69,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         {
             foreach (var item in _categories)
             {
-                var actual = _view.Items.FirstOrDefault(x => x.Id == item.Id);
+                var actual = _view.Data.FirstOrDefault(x => x.Id == item.Id);
                 actual.ShouldMatch(item)
                       .InLibrary(LibraryId)
                       .WithBookCount(3)

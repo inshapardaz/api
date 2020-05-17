@@ -54,13 +54,13 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
         [Test]
         public void ShouldReturn10Books()
         {
-            Assert.That(_view.Items.Count(), Is.EqualTo(10));
+            Assert.That(_view.Data.Count(), Is.EqualTo(10));
         }
 
         [Test]
         public void ShouldHaveCorrectBookData()
         {
-            var actual = _view.Items.FirstOrDefault();
+            var actual = _view.Data.FirstOrDefault();
             Assert.That(actual, Is.Not.Null, "Should contain at-least one book");
             Assert.That(actual.Title, Is.Not.Empty, "Book name should have a value");
             Assert.That(actual.Description, Is.Not.Empty, "Book should have some description.");

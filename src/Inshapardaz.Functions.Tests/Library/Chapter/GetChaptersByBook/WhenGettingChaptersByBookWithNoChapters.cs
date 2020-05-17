@@ -1,7 +1,10 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -11,21 +14,21 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
 {
-    [TestFixture, Ignore("ToFix")]
-    public class WhenGettingChaptersByBookWithNoChapters : LibraryTest<Functions.Library.Books.Chapters.GetChaptersByBook>
+    [TestFixture]
+    public class WhenGettingChaptersByBookWithNoChapters
+        : LibraryTest<Functions.Library.Books.Chapters.GetChaptersByBook>
     {
+        private BookDto _book;
         private OkObjectResult _response;
         private ListView<ChapterView> _view;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var request = TestHelpers.CreateGetRequest();
-
             var dataBuilder = Container.GetService<BooksDataBuilder>();
-            var book = dataBuilder.Build();
+            _book = dataBuilder.WithLibrary(LibraryId).Build();
 
-            _response = (OkObjectResult)await handler.Run(null, LibraryId, book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(LibraryId, _book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<ChapterView>;
         }
@@ -39,31 +42,29 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _view.SelfLink()
+                .ShouldBeGet()
+                .EndingWith($"library/{LibraryId}/books/{_book.Id}/chapters");
         }
 
         [Test]
         public void ShouldNotHaveCreateLink()
         {
-            _view.Links.AssertLink("create")
-                        .ShouldBePost()
-                        .ShouldHaveSomeHref();
+            _view.CreateLink()
+                .ShouldBePost()
+                .EndingWith($"library/{LibraryId}/books/{_book.Id}/chapters");
         }
 
         [Test]
         public void ShouldHaveNoChapters()
         {
-            Assert.That(_view.Items, Is.Not.Null);
-            Assert.That(_view.Items.Count(), Is.Zero);
+            _view.Data.Should().BeEmpty();
         }
     }
 }

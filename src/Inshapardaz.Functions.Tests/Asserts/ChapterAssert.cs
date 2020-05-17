@@ -16,6 +16,12 @@ namespace Inshapardaz.Functions.Tests.Asserts
         private readonly int _libraryId;
         private ChapterView _chapter;
 
+        public ChapterAssert(ChapterView view, int libraryId)
+        {
+            _libraryId = libraryId;
+            _chapter = view;
+        }
+
         public ChapterAssert(ObjectResult response, int libraryId)
         {
             _response = response;
@@ -26,6 +32,11 @@ namespace Inshapardaz.Functions.Tests.Asserts
         internal static ChapterAssert FromResponse(ObjectResult response, int libraryId)
         {
             return new ChapterAssert(response, libraryId);
+        }
+
+        internal static ChapterAssert FromObject(ChapterView view, int libraryId)
+        {
+            return new ChapterAssert(view, libraryId);
         }
 
         internal ChapterAssert ShouldHaveCorrectLoactionHeader()
@@ -67,6 +78,32 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        internal ChapterAssert WithReadOnlyLinks()
+        {
+            ShouldNotHaveAddChapterContentLink();
+            ShouldNotHaveUpdateLink();
+            ShouldNotHaveDeleteLink();
+            return this;
+        }
+
+        internal ChapterAssert WithWriteableLinks()
+        {
+            ShouldHaveAddChapterContentLink();
+            ShouldHaveUpdateLink();
+            ShouldHaveDeleteLink();
+            return this;
+        }
+
+        internal void ShouldHaveContentLink(ChapterContentDto content)
+        {
+            _chapter.Links("content")
+                    .Where(x =>
+                        x.Href.EndsWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents/{content.Id}")
+                        && x.AcceptLanguage == content.Language
+                        && x.Method.Equals("GET", StringComparison.InvariantCultureIgnoreCase)
+                    );
+        }
+
         internal void ShouldHaveNoCorrectContents()
         {
             _chapter.Link("content").Should().BeNull();
@@ -86,10 +123,10 @@ namespace Inshapardaz.Functions.Tests.Asserts
             var contents = db.GetContentByChapter(_chapter.Id);
 
             contents.Should().HaveSameCount(_chapter.Links("content"));
-            foreach (var contentLink in _chapter.Links("content"))
+
+            foreach (var content in contents)
             {
-                var expected = contents.SingleOrDefault(x => x.Language == contentLink.AcceptLanguage);
-                expected.Should().NotBeNull();
+                ShouldHaveContentLink(content);
             }
         }
 
@@ -141,7 +178,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
         internal ChapterAssert ShouldHaveUpdateChapterContentLink()
         {
             _chapter.Link("add-content")
-                 .ShouldBePut()
+                 .ShouldBePost()
                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
 
             return this;
@@ -149,24 +186,16 @@ namespace Inshapardaz.Functions.Tests.Asserts
 
         internal ChapterAssert ShouldHaveDeleteChapterContentLink()
         {
-            _chapter.Link("add-content")
+            _chapter.Link("delete-content")
                  .ShouldBeDelete()
                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
 
             return this;
         }
 
-        internal ChapterAssert ShouldHaveContentsLink()
-        {
-            _chapter.Link("content")
-                  .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
-            return this;
-        }
-
         internal ChapterAssert ShouldNotHaveContentsLink()
         {
-            _chapter.Link("contents").Should().BeNull();
+            _chapter.Link("content").Should().BeNull();
             return this;
         }
 
@@ -182,6 +211,23 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _chapter.Title.Should().Be(dto.Title);
             _chapter.BookId.Should().Be(dto.BookId);
             _chapter.ChapterNumber.Should().Be(dto.ChapterNumber);
+        }
+
+        internal ChapterAssert ShouldBeSameAs(ChapterDto dto)
+        {
+            _chapter.Title.Should().Be(dto.Title);
+            _chapter.ChapterNumber.Should().Be(dto.ChapterNumber);
+            _chapter.BookId.Should().Be(dto.BookId);
+
+            return this;
+        }
+    }
+
+    internal static class ChapterAssertExtensions
+    {
+        internal static ChapterAssert ShouldMatch(this ChapterView view, ChapterDto dto, int libraryId)
+        {
+            return ChapterAssert.FromObject(view, libraryId).ShouldBeSameAs(dto);
         }
     }
 }

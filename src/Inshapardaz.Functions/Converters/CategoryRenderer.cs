@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Converters
         public static ListView<CategoryView> Render(this IEnumerable<CategoryModel> categories, int libraryId, ClaimsPrincipal user)
         {
             var items = categories.Select(g => g.Render(libraryId, user));
-            var view = new ListView<CategoryView> { Items = items };
+            var view = new ListView<CategoryView> { Data = items };
             view.Links.Add(GetCategories.Link(libraryId));
 
             if (user.IsAdministrator())

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Dto;
@@ -66,11 +67,17 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategories
         }
 
         [Test]
+        public void ShouldNotHaveCreateLink()
+        {
+            _view.CreateLink().Should().BeNull();
+        }
+
+        [Test]
         public void ShouldHaveSomeCategories()
         {
             foreach (var item in _categories)
             {
-                var actual = _view.Items.FirstOrDefault(x => x.Id == item.Id);
+                var actual = _view.Data.FirstOrDefault(x => x.Id == item.Id);
                 actual.ShouldMatch(item)
                       .InLibrary(LibraryId)
                       .WithBookCount(3)

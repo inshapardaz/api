@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -15,13 +16,21 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
 {
-    [TestFixture]
-    public class WhenGettingChaptersByBookAsReader : LibraryTest<Functions.Library.Books.Chapters.GetChaptersByBook>
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingChaptersByBookWithWritePermissions
+        : LibraryTest<Functions.Library.Books.Chapters.GetChaptersByBook>
     {
-        private BookDto _book;
         private OkObjectResult _response;
         private ListView<ChapterView> _view;
+        private readonly ClaimsPrincipal _claim;
         private ChapterDataBuilder _dataBuilder;
+        private BookDto _book;
+
+        public WhenGettingChaptersByBookWithWritePermissions(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -29,7 +38,8 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
             _dataBuilder = Container.GetService<ChapterDataBuilder>();
             var chapters = _dataBuilder.WithLibrary(LibraryId).WithContents().Build(4);
             _book = DatabaseConnection.GetBookById(chapters.PickRandom().BookId);
-            _response = (OkObjectResult)await handler.Run(LibraryId, _book.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+
+            _response = (OkObjectResult)await handler.Run(LibraryId, _book.Id, _claim, CancellationToken.None);
 
             _view = _response.Value as ListView<ChapterView>;
         }
@@ -55,9 +65,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
+        public void ShouldHaveCreateLink()
         {
-            _view.CreateLink().Should().BeNull();
+            _view.CreateLink()
+                .ShouldBePost()
+                .EndingWith($"library/{LibraryId}/books/{_book.Id}/chapters");
         }
 
         [Test]
@@ -74,13 +86,16 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
                 var actual = _view.Data.FirstOrDefault(x => x.Id == expected.Id);
                 var assert = new ChapterAssert(actual, LibraryId);
                 assert.ShouldBeSameAs(expected)
-                      .WithReadOnlyLinks();
+                      .WithWriteableLinks();
 
                 var contents = _dataBuilder.Contents.Where(c => c.ChapterId == expected.Id);
                 foreach (var content in contents)
                 {
                     assert.ShouldHaveContentLink(content);
                 }
+
+                assert.ShouldHaveUpdateChapterContentLink();
+                assert.ShouldHaveDeleteChapterContentLink();
             }
         }
     }

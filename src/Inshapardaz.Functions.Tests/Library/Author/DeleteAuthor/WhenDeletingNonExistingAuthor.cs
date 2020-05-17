@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.DeleteAuthor
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldReturnNoContent()
         {
             _response.ShouldBeNoContent();
         }

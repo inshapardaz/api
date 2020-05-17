@@ -61,6 +61,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         public IEnumerable<SeriesDto> Build(int count)
         {
+            var seriesList = new List<SeriesDto>();
             var fixture = new Fixture();
 
             for (int i = 0; i < count; i++)
@@ -94,7 +95,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                                 .Create();
 
                 _connection.AddSeries(series);
-                _series.Add(series);
+                seriesList.Add(series);
 
                 var books = fixture.Build<BookDto>()
                                    .With(b => b.AuthorId, author.Id)
@@ -106,7 +107,8 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 _connection.AddBooks(books);
             }
 
-            return _series;
+            _series.AddRange(seriesList);
+            return seriesList;
         }
 
         public void CleanUp()

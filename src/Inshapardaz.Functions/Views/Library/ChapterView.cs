@@ -1,4 +1,6 @@
-﻿namespace Inshapardaz.Functions.Views.Library
+﻿using System.Collections.Generic;
+
+namespace Inshapardaz.Functions.Views.Library
 {
     public class ChapterView : ViewWithLinks
     {

@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -13,25 +15,34 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
 {
-    [TestFixture]
-    public class WhenUpdatingChapterAsAdministrator
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenUpdatingChapterWithPermission
         : LibraryTest<Functions.Library.Books.Chapters.UpdateChapter>
     {
+        private readonly ClaimsPrincipal _claim;
         private OkObjectResult _response;
         private ChapterDataBuilder _dataBuilder;
         private ChapterView newChapter;
+        private ChapterAssert _assert;
+
+        public WhenUpdatingChapterWithPermission(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _dataBuilder = Container.GetService<ChapterDataBuilder>();
 
-            var chapters = _dataBuilder.WithContents().Build(4);
+            var chapters = _dataBuilder.WithLibrary(LibraryId).Build(4);
 
-            var chapter = chapters.First();
+            var chapter = chapters.PickRandom();
 
-            newChapter = new ChapterView { Title = new Faker().Name.FirstName() };
+            newChapter = new ChapterView { Title = Random.Name, ChapterNumber = Random.Number, BookId = chapter.BookId };
             _response = (OkObjectResult)await handler.Run(newChapter, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }
 
         [OneTimeTearDown]
@@ -43,18 +54,19 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
         [Test]
         public void ShouldHaveOKResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            _response.ShouldBeOk();
         }
 
         [Test]
-        public void ShouldHaveUpdatedTheChapter()
+        public void ShouldHaveReturnedUpdatedChapter()
         {
-            var returned = _response.Value as ChapterView;
-            Assert.That(returned, Is.Not.Null);
+            _assert.ShouldMatch(newChapter);
+        }
 
-            var actual = DatabaseConnection.GetChapterById(LibraryId, returned.Id);
-            Assert.That(actual.Title, Is.EqualTo(newChapter.Title), "Chapter should have expected title.");
+        [Test]
+        public void ShouldHaveUpdatedChater()
+        {
+            _assert.ShouldHaveSavedChapter(DatabaseConnection);
         }
     }
 }

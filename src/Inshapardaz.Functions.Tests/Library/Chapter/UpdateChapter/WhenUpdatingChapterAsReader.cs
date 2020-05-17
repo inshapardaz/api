@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
@@ -21,11 +22,10 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
         public async Task Setup()
         {
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
-            var chapters = dataBuilder.WithContents().Build(4);
-            var chapter = chapters.First();
+            var chapters = dataBuilder.WithLibrary(LibraryId).WithContents().Build(4);
+            var chapter = chapters.PickRandom();
 
-            var faker = new Faker();
-            var chapter2 = new ChapterView { Title = faker.Random.String() };
+            var chapter2 = new ChapterView { Title = Random.Name };
             _response = (ForbidResult)await handler.Run(chapter2, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
@@ -38,7 +38,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
         [Test]
         public void ShouldHaveForbiddenResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeForbidden();
         }
     }
 }

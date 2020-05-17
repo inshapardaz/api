@@ -48,7 +48,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.DeleteSeries
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldReturnNoContent()
         {
             _response.ShouldBeNoContent();
         }

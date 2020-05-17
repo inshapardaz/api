@@ -55,7 +55,7 @@ namespace Inshapardaz.Functions.Converters
 
             if (!string.IsNullOrWhiteSpace(series.ImageUrl))
             {
-                view.Links.Add(new LinkView { Href = series.ImageUrl, Method = "GET", Rel = RelTypes.Image, Media = MimeTypes.Jpg });
+                view.Links.Add(new LinkView { Href = series.ImageUrl, Method = "GET", Rel = RelTypes.Image, Accept = MimeTypes.Jpg });
             }
             else if (series.ImageId.HasValue)
             {

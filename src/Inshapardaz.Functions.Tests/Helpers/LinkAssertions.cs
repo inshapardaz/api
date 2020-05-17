@@ -145,6 +145,11 @@ namespace Inshapardaz.Functions.Tests.Helpers
             return view.Links.SingleOrDefault(l => l.Rel.Equals(relType, StringComparison.CurrentCultureIgnoreCase));
         }
 
+        public static IEnumerable<LinkView> Links(this ViewWithLinks view, string relType)
+        {
+            return view.Links.Where(l => l.Rel.Equals(relType, StringComparison.CurrentCultureIgnoreCase));
+        }
+
         public static LinkView ShouldHaveUrl(this LinkView view, string path)
         {
             var uri = new Uri(view.Href);

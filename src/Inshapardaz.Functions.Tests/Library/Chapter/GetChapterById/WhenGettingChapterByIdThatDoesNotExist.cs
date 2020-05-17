@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = (NotFoundResult)await handler.Run(null, LibraryId, Random.Number, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NotFoundResult)await handler.Run(LibraryId, Random.Number, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -31,8 +32,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         [Test]
         public void ShouldHaveNotFoundResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
+            _response.ShouldBeNotFound();
         }
     }
 }

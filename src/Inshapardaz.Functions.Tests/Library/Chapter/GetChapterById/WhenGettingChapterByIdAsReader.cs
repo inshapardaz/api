@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -17,18 +18,20 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         : LibraryTest<Functions.Library.Books.Chapters.GetChapterById>
     {
         private OkObjectResult _response;
-        private ChapterView _view;
+
         private ChapterDto _expected;
+
+        private ChapterAssert _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
-            _expected = dataBuilder.AsPublic().Build(4).First();
+            _expected = dataBuilder.WithLibrary(LibraryId).Build(4).First();
 
-            _response = (OkObjectResult)await handler.Run(null, LibraryId, _expected.BookId, _expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(LibraryId, _expected.BookId, _expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
-            _view = _response.Value as ChapterView;
+            _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }
 
         [OneTimeTearDown]
@@ -38,64 +41,43 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldHaveOkResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
-        public void ShouldHaveSelfLink()
+        public void ShouldSaveTheChapter()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldHaveSavedChapter(DatabaseConnection);
         }
 
         [Test]
-        public void ShouldHaveBookLink()
+        public void ShouldHaveCorrectObjectRetured()
         {
-            _view.Links.AssertLink("book")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldMatch(_expected);
         }
 
         [Test]
-        public void ShouldNotHaveUpdateLink()
+        public void ShouldHaveLinks()
         {
-            _view.Links.AssertLinkNotPresent("update");
+            _assert.ShouldHaveSelfLink()
+                   .ShouldHaveBookLink()
+                   .ShouldNotHaveContentsLink();
         }
 
         [Test]
-        public void ShouldNotHaveDeleteLink()
+        public void ShouldNotHaveEditLinks()
         {
-            _view.Links.AssertLinkNotPresent("delete");
+            _assert.ShouldNotHaveUpdateLink()
+                   .ShouldNotHaveDeleteLink()
+                   .ShouldNotHaveAddChapterContentLink();
         }
 
         [Test]
-        public void ShouldNotHaveAddChapterContentLink()
+        public void ShouldNotHaveContentsLink()
         {
-            _view.Links.AssertLinkNotPresent("add-content");
-        }
-
-        [Test]
-        public void ShouldNotHaveUpdateChapterContentLink()
-        {
-            _view.Links.AssertLinkNotPresent("update-content");
-        }
-
-        [Test]
-        public void ShouldNotHaveDeleteChapterContentLink()
-        {
-            _view.Links.AssertLinkNotPresent("delete-contents");
-        }
-
-        [Test]
-        public void ShouldReturnCorrectAuthorData()
-        {
-            Assert.That(_view, Is.Not.Null, "Should return chapter");
-            Assert.That(_view.Id, Is.EqualTo(_expected.Id), "Chapter id does not match");
-            Assert.That(_view.Title, Is.EqualTo(_expected.Title), "Chapter name does not match");
+            _assert.ShouldHaveNoCorrectContents();
         }
     }
 }

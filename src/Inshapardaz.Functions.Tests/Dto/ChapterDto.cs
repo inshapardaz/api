@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Inshapardaz.Functions.Tests.Dto
+﻿namespace Inshapardaz.Functions.Tests.Dto
 {
     public class ChapterDto
     {
@@ -19,10 +15,10 @@ namespace Inshapardaz.Functions.Tests.Dto
     {
         public int Id { get; set; }
 
-        public string ContentUrl { get; set; }
-
         public int ChapterId { get; set; }
 
-        public string MimeType { get; set; }
+        public int FileId { get; set; }
+
+        public string Language { get; set; }
     }
 }

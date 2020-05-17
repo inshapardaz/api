@@ -10,14 +10,14 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
     [TestFixture]
     public class WhenDeletingNonExistingBook : LibraryTest<Functions.Library.Books.DeleteBook>
     {
-        private OkResult _response;
+        private NoContentResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
 
-            _response = (OkResult)await handler.Run(request, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -27,9 +27,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldReturnNoContent()
         {
-            _response.ShouldBeOk();
+            _response.ShouldBeNoContent();
         }
     }
 }

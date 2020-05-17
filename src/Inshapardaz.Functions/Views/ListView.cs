@@ -4,6 +4,6 @@ namespace Inshapardaz.Functions.Views
 {
     public class ListView<T> : ViewWithLinks
     {
-        public IEnumerable<T> Items { get; set; }
+        public IEnumerable<T> Data { get; set; }
     }
 }

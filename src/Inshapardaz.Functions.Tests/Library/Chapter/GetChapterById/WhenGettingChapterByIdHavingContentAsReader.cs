@@ -62,8 +62,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         public void ShouldHaveLinks()
         {
             _assert.ShouldHaveSelfLink()
-                   .ShouldHaveBookLink()
-                   .ShouldHaveContentsLink();
+                   .ShouldHaveBookLink();
         }
 
         [Test]

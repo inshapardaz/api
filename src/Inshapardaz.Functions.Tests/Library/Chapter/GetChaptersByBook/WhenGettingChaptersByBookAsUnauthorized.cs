@@ -1,8 +1,12 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -12,22 +16,23 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
 {
-    [TestFixture, Ignore("ToFix")]
-    public class WhenGettingChaptersByBookAsUnauthorized : LibraryTest<Functions.Library.Books.Chapters.GetChaptersByBook>
+    [TestFixture]
+    public class WhenGettingChaptersByBookAsUnauthorized
+        : LibraryTest<Functions.Library.Books.Chapters.GetChaptersByBook>
     {
         private OkObjectResult _response;
         private ListView<ChapterView> _view;
+        private IEnumerable<ChapterDto> _chapters;
+        private BookDto _book;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var request = TestHelpers.CreateGetRequest();
-
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
-            var chapters = dataBuilder.Build(4);
-            var book = DatabaseConnection.GetBookById(chapters.PickRandom().BookId);
+            _chapters = dataBuilder.WithLibrary(LibraryId).WithContents().Build(4);
+            _book = DatabaseConnection.GetBookById(_chapters.PickRandom().BookId);
 
-            _response = (OkObjectResult)await handler.Run(null, LibraryId, book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(LibraryId, _book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as ListView<ChapterView>;
         }
@@ -41,40 +46,39 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _view.SelfLink()
+                .ShouldBeGet()
+                .EndingWith($"library/{LibraryId}/books/{_book.Id}/chapters");
         }
 
         [Test]
         public void ShouldNotHaveCreateLink()
         {
-            _view.Links.AssertLinkNotPresent("create");
+            _view.CreateLink().Should().BeNull();
         }
 
         [Test]
         public void ShouldHaveCorrectNumberOfChapters()
         {
-            Assert.That(_view.Items.Count(), Is.EqualTo(4));
+            Assert.That(_view.Data.Count(), Is.EqualTo(4));
         }
 
         [Test]
-        public void ShouldHaveCorrectChapterData()
+        public void ShouldHaveCorrectChaptersData()
         {
-            var actual = _view.Items.FirstOrDefault();
-            Assert.That(actual, Is.Not.Null, "Should contain at-least one chapter");
-            Assert.That(actual.Title, Is.Not.Empty, "Chapter name should have a value");
-            Assert.That(actual.ChapterNumber, Is.GreaterThan(0), "Chapter should have some number.");
-
-            actual.Links.AssertLinkNotPresent("update");
-            actual.Links.AssertLinkNotPresent("delete");
+            foreach (var item in _chapters.Where(c => c.BookId == _book.Id))
+            {
+                var actual = _view.Data.FirstOrDefault(x => x.Id == item.Id);
+                actual.ShouldMatch(item, LibraryId)
+                      .WithReadOnlyLinks()
+                      .ShouldNotHaveContentsLink();
+            }
         }
     }
 }

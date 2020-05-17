@@ -57,23 +57,37 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             {
                 var chapters = new Dictionary<int, ChapterModel>();
 
-                var sql = @"Select c.*, cc.Id, cc.MimeType, cc.Language From Library.Chapter c
+                var sql = @"Select *  From Library.Chapter c
                             Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
+                            Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
                             Where c.BookId = @BookId";
                 var command = new CommandDefinition(sql, new { BookId = bookId }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ChapterModel, int, string, string, ChapterModel>(command, (c, id, mimeType, language) =>
+                await connection.QueryAsync<ChapterModel, ChapterContentModel, FileModel, ChapterModel>(command, (c, cc, f) =>
                 {
                     if (!chapters.TryGetValue(c.Id, out ChapterModel chapter))
-                        chapters.Add(c.Id, chapter = c);
-
-                    chapter.Contents.Add(new ChapterContentModel
                     {
-                        BookId = c.BookId,
-                        ChapterId = c.Id,
-                        MimeType = mimeType,
-                        Language = language,
-                        Id = id
-                    });
+                        chapters.Add(c.Id, chapter = c);
+                    }
+
+                    chapter = chapters[c.Id];
+                    if (cc != null)
+                    {
+                        var content = chapter.Contents.SingleOrDefault(x => x.Id == cc.Id);
+                        if (content == null)
+                        {
+                            chapter.Contents.Add(cc);
+                        }
+                    }
+
+                    if (f != null)
+                    {
+                        var content = chapter.Contents.SingleOrDefault(x => x.Id == cc.Id);
+                        if (content != null)
+                        {
+                            content.MimeType = f.MimeType;
+                            content.ContentUrl = f.FilePath;
+                        }
+                    }
 
                     return chapter;
                 });

@@ -22,8 +22,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("GetChaptersByBook")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/{bookId:int}/chapters")] HttpRequest req,
-            int libraryId, int bookId, ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/{bookId:int}/chapters")] int libraryId, int bookId, ClaimsPrincipal principal, CancellationToken token)
         {
             var query = new GetChaptersByBookQuery(libraryId, bookId, principal.GetUserId());
             var chapters = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
@@ -36,6 +35,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
             return new NotFoundResult();
         }
 
-        public static LinkView Link(int libraryId, int bookId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/books/{bookId}/chapters", relType);
+        public static LinkView Link(int libraryId, int bookId, string relType = RelTypes.Self)
+            => SelfLink($"library/{libraryId}/books/{bookId}/chapters", relType);
     }
 }

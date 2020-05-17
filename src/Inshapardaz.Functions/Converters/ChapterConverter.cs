@@ -16,13 +16,13 @@ namespace Inshapardaz.Functions.Converters
     {
         public static ListView<ChapterView> Render(this IEnumerable<ChapterModel> source, int libraryId, int bookId, ClaimsPrincipal principal)
         {
-            var items = source.Select(c => c.Render(libraryId, principal));
-            var view = new ListView<ChapterView> { Items = items };
-            view.Links.Add(GetChaptersByBook.Link(0, bookId, RelTypes.Self));
+            var items = source.Select(c => c.Render(libraryId, principal)).ToList();
+            var view = new ListView<ChapterView> { Data = items };
+            view.Links.Add(GetChaptersByBook.Link(libraryId, bookId, RelTypes.Self));
 
             if (principal.IsWriter())
             {
-                view.Links.Add(AddChapter.Link(0, bookId, RelTypes.Create));
+                view.Links.Add(AddChapter.Link(libraryId, bookId, RelTypes.Create));
             }
 
             return view;
@@ -42,11 +42,19 @@ namespace Inshapardaz.Functions.Converters
                 links.Add(UpdateChapter.Link(libraryId, source.BookId, source.Id, RelTypes.Update));
                 links.Add(DeleteChapter.Link(libraryId, source.BookId, source.Id, RelTypes.Delete));
                 links.Add(AddChapterContents.Link(libraryId, source.BookId, source.Id, RelTypes.AddContent));
+                if (source.Contents.Any())
+                {
+                    links.Add(UpdateChapterContents.Link(libraryId, source.BookId, source.Id, null, RelTypes.UpdateContent));
+                    links.Add(DeleteChapterContents.Link(libraryId, source.BookId, source.Id, null, RelTypes.DeleteContent));
+                }
             }
 
-            foreach (var content in source.Contents)
+            if (principal.IsAuthenticated())
             {
-                links.Add(GetChapterContents.Link(libraryId, source.BookId, source.Id, RelTypes.Content, language: content.Language));
+                foreach (var content in source.Contents)
+                {
+                    links.Add(GetChapterContents.Link(libraryId, source.BookId, source.Id, RelTypes.Content, language: content.Language));
+                }
             }
 
             result.Links = links;
@@ -66,8 +74,8 @@ namespace Inshapardaz.Functions.Converters
 
             if (principal.IsWriter())
             {
-                links.Add(UpdateChapterContents.Link(libraryId, source.BookId, source.ChapterId, source.MimeType, RelTypes.Update));
-                links.Add(DeleteChapterContents.Link(libraryId, source.BookId, source.ChapterId, source.Id, source.MimeType, RelTypes.Delete));
+                links.Add(UpdateChapterContents.Link(libraryId, source.BookId, source.ChapterId, source.MimeType, RelTypes.UpdateContent));
+                links.Add(DeleteChapterContents.Link(libraryId, source.BookId, source.ChapterId, source.MimeType, RelTypes.DeleteContent));
             }
 
             result.Links = links;

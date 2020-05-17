@@ -15,10 +15,14 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
     {
         private readonly List<ChapterDto> _chapters = new List<ChapterDto>();
         private readonly List<FileDto> _files = new List<FileDto>();
+        private readonly List<ChapterContentDto> _contents = new List<ChapterContentDto>();
         private readonly IDbConnection _connection;
         private readonly BooksDataBuilder _booksBuilder;
         private int _contentCount;
         private int _libraryId;
+
+        public IEnumerable<ChapterContentDto> Contents => _contents;
+        public IEnumerable<ChapterDto> Chapters => _chapters;
 
         public ChapterDataBuilder(IProvideConnection connectionProvider,
                                     BooksDataBuilder booksBuilder)
@@ -68,8 +72,10 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                     var content = fixture.Build<ChapterContentDto>()
                         .With(c => c.ChapterId, chapter.Id)
                         .With(c => c.FileId, chapterContent.Id)
-                        .With(c => c.Language, Random.Locale)
+                        .With(c => c.Language, Random.Name)
                         .Create();
+
+                    _contents.Add(content);
 
                     _connection.AddChapterContent(content);
                 }

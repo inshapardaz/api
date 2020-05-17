@@ -36,12 +36,12 @@ namespace Inshapardaz.Functions.Views
         public const string Categories = "categories";
         public const string Image = "image";
         public const string ImageUpload = "image-upload";
-        public const string Contents = "contents";
+        public const string Content = "content";
         public const string Chapters = "chapters";
         public const string CreateChapter = "create-chapter";
-        public const string AddContents = "add-contents";
-        public const string UpdateContents = "update-contents";
-        public const string DeleteContents = "delete-contents";
+        public const string AddContent = "add-content";
+        public const string UpdateContent = "update-content";
+        public const string DeleteContent = "delete-content";
         public const string Chapter = "chapter";
         public const string Latest = "latest";
         public const string Recents = "recents";

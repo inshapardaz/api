@@ -1,35 +1,40 @@
-﻿using System.Linq;
+﻿using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
 {
-    [TestFixture]
-    public class WhenGettingChapterByIdHavingContentAsReader
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingChapterByIdHavingContentsWithWritePermissions
         : LibraryTest<Functions.Library.Books.Chapters.GetChapterById>
     {
         private OkObjectResult _response;
-
         private ChapterDto _expected;
-
         private ChapterAssert _assert;
+        private ClaimsPrincipal _claim;
+        private ChapterDataBuilder _dataBuilder;
+
+        public WhenGettingChapterByIdHavingContentsWithWritePermissions(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var dataBuilder = Container.GetService<ChapterDataBuilder>();
-            _expected = dataBuilder.WithLibrary(LibraryId).WithContents().Build(4).First();
+            _dataBuilder = Container.GetService<ChapterDataBuilder>();
+            var chapters = _dataBuilder.WithLibrary(LibraryId).WithContents(2).Build(4);
+            _expected = chapters.PickRandom();
 
-            _response = (OkObjectResult)await handler.Run(LibraryId, _expected.BookId, _expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(LibraryId, _expected.BookId, _expected.Id, _claim, CancellationToken.None);
 
             _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }
@@ -62,16 +67,15 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         public void ShouldHaveLinks()
         {
             _assert.ShouldHaveSelfLink()
-                   .ShouldHaveBookLink()
-                   .ShouldHaveContentsLink();
+                   .ShouldHaveBookLink();
         }
 
         [Test]
-        public void ShouldNotHaveEditLinks()
+        public void ShouldHaveEditLinks()
         {
-            _assert.ShouldNotHaveUpdateLink()
-                   .ShouldNotHaveDeleteLink()
-                   .ShouldNotHaveAddChapterContentLink();
+            _assert.ShouldHaveUpdateLink()
+                   .ShouldHaveDeleteLink()
+                   .ShouldHaveAddChapterContentLink();
         }
 
         [Test]

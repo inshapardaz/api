@@ -1,7 +1,9 @@
 ﻿using Dapper;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,11 +57,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             {
                 var chapters = new Dictionary<int, ChapterModel>();
 
-                var sql = @"Select c.*, cc.Id, cc.MimeType From Library.Chapter c
+                var sql = @"Select c.*, cc.Id, cc.MimeType, cc.Language From Library.Chapter c
                             Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
                             Where c.BookId = @BookId";
                 var command = new CommandDefinition(sql, new { BookId = bookId }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ChapterModel, int, string, ChapterModel>(command, (c, id, mimeType) =>
+                await connection.QueryAsync<ChapterModel, int, string, string, ChapterModel>(command, (c, id, mimeType, language) =>
                 {
                     if (!chapters.TryGetValue(c.Id, out ChapterModel chapter))
                         chapters.Add(c.Id, chapter = c);
@@ -69,6 +71,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                         BookId = c.BookId,
                         ChapterId = c.Id,
                         MimeType = mimeType,
+                        Language = language,
                         Id = id
                     });
 
@@ -87,9 +90,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 var sql = @"Select *
                             From Library.Chapter c
                             Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
+                            Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
                             Where c.Id = @Id";
                 var command = new CommandDefinition(sql, new { Id = chapterId }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ChapterModel, ChapterContentModel, ChapterModel>(command, (c, cc) =>
+                await connection.QueryAsync<ChapterModel, ChapterContentModel, FileModel, ChapterModel>(command, (c, cc, f) =>
                 {
                     if (chapter == null)
                     {
@@ -98,7 +102,21 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
                     if (cc != null)
                     {
-                        chapter.Contents.Add(cc);
+                        var content = chapter.Contents.SingleOrDefault(x => x.Id == cc.Id);
+                        if (content == null)
+                        {
+                            chapter.Contents.Add(cc);
+                        }
+                    }
+
+                    if (f != null)
+                    {
+                        var content = chapter.Contents.SingleOrDefault(x => x.Id == cc.Id);
+                        if (content != null)
+                        {
+                            content.MimeType = f.MimeType;
+                            content.ContentUrl = f.FilePath;
+                        }
                     }
 
                     return chapter;

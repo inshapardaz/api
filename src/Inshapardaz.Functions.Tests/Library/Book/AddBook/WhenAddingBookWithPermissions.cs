@@ -39,8 +39,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.AddBook
                                     .WithLibrary(LibraryId)
                                     .WithAuthor(author)
                                     .WithSeries(series)
-                                    .WithCategory(Random.PickRandom<CategoryDto>(categories))
-                                    .WithCategory(Random.PickRandom<CategoryDto>(categories))
+                                    .WithCategories(Random.PickRandom<CategoryDto>(categories, 2))
                                     .BuildView();
 
             _response = (CreatedResult)await handler.Run(_request, LibraryId, _claim, CancellationToken.None);

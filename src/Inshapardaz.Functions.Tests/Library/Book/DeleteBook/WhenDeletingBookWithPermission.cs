@@ -19,7 +19,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
     public class WhenDeletingBookWithPermission : LibraryTest<Functions.Library.Books.DeleteBook>
     {
         private readonly ClaimsPrincipal _claim;
-        private OkResult _response;
+        private NoContentResult _response;
 
         private BookDto _expected;
         private BooksDataBuilder _dataBuilder;
@@ -42,7 +42,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
             _expected = books.First();
 
             var request = TestHelpers.CreateGetRequest();
-            _response = (OkResult)await handler.Run(request, LibraryId, _expected.Id, _claim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.Id, _claim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -52,9 +52,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.DeleteBook
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldReturnNoContent()
         {
-            _response.ShouldBeOk();
+            _response.ShouldBeNoContent();
         }
 
         [Test]

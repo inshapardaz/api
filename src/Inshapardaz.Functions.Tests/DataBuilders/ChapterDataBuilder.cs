@@ -1,7 +1,12 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using AutoFixture;
 using Bogus;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
+using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Ports.Database;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
@@ -10,42 +15,27 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
     {
         private readonly List<ChapterDto> _chapters = new List<ChapterDto>();
         private readonly List<FileDto> _files = new List<FileDto>();
-        private readonly IProvideConnection _connectionProvider;
-        private bool _hasContent = false;
-        private bool? _isPublic = false;
-        private string _contentLink = string.Empty;
+        private readonly IDbConnection _connection;
+        private readonly BooksDataBuilder _booksBuilder;
+        private int _contentCount;
+        private int _libraryId;
 
-        public ChapterDataBuilder(IProvideConnection connectionProvider)
+        public ChapterDataBuilder(IProvideConnection connectionProvider,
+                                    BooksDataBuilder booksBuilder)
         {
-            _connectionProvider = connectionProvider;
+            _connection = connectionProvider.GetConnection();
+            _booksBuilder = booksBuilder;
         }
 
-        public ChapterDataBuilder WithContentLink(string contentLink)
+        public ChapterDataBuilder WithContents(int count = 1)
         {
-            _contentLink = contentLink;
+            _contentCount = count;
             return this;
         }
 
-        public ChapterDataBuilder WithContents()
+        internal ChapterDataBuilder WithLibrary(int libraryId)
         {
-            _hasContent = true;
-            return this;
-        }
-
-        public ChapterDataBuilder AsPrivate()
-        {
-            _isPublic = false;
-            return this;
-        }
-
-        public ChapterDataBuilder AsPublic()
-        {
-            _isPublic = true;
-            return this;
-        }
-
-        public ChapterDataBuilder WithChapters(string a, int count, bool? isPublic = null, bool hasContent = false)
-        {
+            _libraryId = libraryId;
             return this;
         }
 
@@ -53,53 +43,39 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         public IEnumerable<ChapterDto> Build(int count)
         {
-            //var author = new Faker<AuthorDto>()
-            //             .RuleFor(c => c.Id, 0)
-            //             .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
-            //             .RuleFor(c => c.ImageId, f => f.Random.Int(1))
-            //             .Generate();
+            var fixture = new Fixture();
+            var book = _booksBuilder.WithLibrary(_libraryId).Build();
 
-            //var book = new Faker<BookDto>()
-            //           .RuleFor(c => c.Id, 0)
-            //           .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
-            //           .RuleFor(c => c.AuthorId, author.Id)
-            //           .RuleFor(c => c.IsPublic, f => _isPublic ?? f.Random.Bool())
-            //           .Generate();
+            for (int i = 0; i < count; i++)
+            {
+                var chapter = fixture.Build<ChapterDto>()
+                                     .With(c => c.BookId, book.Id)
+                                     .Create();
 
-            //var chapterIndex = 1;
-            //var chapters = new Faker<ChapterDto>()
-            //               .RuleFor(c => c.Id, 0)
-            //               .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
-            //               .RuleFor(c => c.ChapterNumber, chapterIndex++)
-            //               .Generate(count);
+                _connection.AddChapter(chapter);
+                _chapters.Add(chapter);
 
-            //var chapterContent = new Faker<ChapterContent>()
-            //                     .RuleFor(c => c.MimeType, "text/markdown")
-            //                     .RuleFor(c => c.ContentUrl, f => _contentLink ?? f.Internet.Url());
+                for (int j = 0; j < _contentCount; j++)
+                {
+                    var chapterContent = fixture.Build<FileDto>()
+                                                 .With(a => a.FilePath, Random.BlobUrl)
+                                                 .With(c => c.MimeType, MimeTypes.Pdf)
+                                                 .With(a => a.IsPublic, true)
+                                                 .Create();
+                    _connection.AddFile(chapterContent);
+                    _files.Add(chapterContent);
 
-            //if (_hasContent)
-            //{
-            //    foreach (var chapter in chapters)
-            //    {
-            //        chapter.Contents = new List<ChapterContent>()
-            //        {
-            //            chapterContent.RuleFor(c => c.Chapter, chapter).Generate()
-            //        };
-            //    }
-            //}
+                    var content = fixture.Build<ChapterContentDto>()
+                        .With(c => c.ChapterId, chapter.Id)
+                        .With(c => c.FileId, chapterContent.Id)
+                        .With(c => c.Language, Random.Locale)
+                        .Create();
 
-            //foreach (var chapter in chapters)
-            //{
-            //    chapter.Book = book;
-            //}
+                    _connection.AddChapterContent(content);
+                }
+            }
 
-            //_chapters.AddRange(chapters);
-            //_context.Chapter.AddRange(_chapters);
-
-            //_context.SaveChanges();
-
-            //return _chapters;
-            return null;
+            return _chapters;
         }
     }
 }

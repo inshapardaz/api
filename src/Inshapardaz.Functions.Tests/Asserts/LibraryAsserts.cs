@@ -67,14 +67,6 @@ namespace Inshapardaz.Functions.Tests.Asserts
             file.Should().BeNull();
         }
 
-        public void ThatFilesAreDeletedForChapter(int chapterId)
-        {
-            var contents = _connection.GetContentByChapter(chapterId);
-            contents.Should().BeNullOrEmpty();
-
-            // TODO : improve and check if files are deleted too
-        }
-
         internal async Task ThatFileContentsMatch(int id, byte[] expected)
         {
             var file = _connection.GetFileById(id);

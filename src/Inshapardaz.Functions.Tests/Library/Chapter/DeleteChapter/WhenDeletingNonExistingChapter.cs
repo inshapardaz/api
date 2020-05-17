@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -28,10 +29,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.DeleteChapter
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldReturnNoContent()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(204));
+            _response.ShouldBeNoContent();
         }
     }
 }

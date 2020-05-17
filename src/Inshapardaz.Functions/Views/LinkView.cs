@@ -15,6 +15,9 @@ namespace Inshapardaz.Functions.Views
         public string Method { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string Media { get; set; }
+        public string Accept { get; set; }
+
+        [JsonProperty(PropertyName = "accept-language", NullValueHandling = NullValueHandling.Ignore)]
+        public string AcceptLanguage { get; set; }
     }
 }

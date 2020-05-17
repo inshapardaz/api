@@ -1,7 +1,9 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Database.Migrations;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.DataHelpers;
@@ -11,24 +13,34 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
+namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter
 {
-    [TestFixture]
-    public class WhenUpdatingChapterThatDoesNotExist
-        : LibraryTest<Functions.Library.Books.Chapters.UpdateChapter>
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenAddingChapterWithPermission
+        : LibraryTest<Functions.Library.Books.Chapters.AddChapter>
     {
+        private ChapterView _chapter;
         private CreatedResult _response;
-        private ChapterView _newChapter;
+        private BooksDataBuilder _builder;
         private ChapterAssert _assert;
+        private ClaimsPrincipal _claim;
+
+        public WhenAddingChapterWithPermission(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var bookBuilder = Container.GetService<BooksDataBuilder>();
-            var book = bookBuilder.WithLibrary(LibraryId).Build();
+            _builder = Container.GetService<BooksDataBuilder>();
 
-            _newChapter = new ChapterView { Title = Random.Name, BookId = book.Id, ChapterNumber = Random.Number };
-            _response = (CreatedResult)await handler.Run(_newChapter, LibraryId, book.Id, _newChapter.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            var book = _builder.WithLibrary(LibraryId).Build();
+
+            _chapter = new ChapterView { Title = Random.Name, ChapterNumber = 1, BookId = book.Id };
+            _response = (CreatedResult)await handler.Run(_chapter, LibraryId, _chapter.BookId, _claim, CancellationToken.None);
+
             _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }
 
@@ -59,7 +71,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.UpdateChapter
         [Test]
         public void ShouldHaveCorrectObjectRetured()
         {
-            _assert.ShouldMatch(_newChapter);
+            _assert.ShouldMatch(_chapter);
         }
 
         [Test]

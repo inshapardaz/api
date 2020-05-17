@@ -37,30 +37,16 @@ namespace Inshapardaz.Functions.Converters
                 GetBookById.Link(libraryId, source.BookId, RelTypes.Book)
             };
 
-            if (source.Contents != null)
-            {
-                foreach (var content in source.Contents)
-                {
-                    links.Add(GetChapterContents.Link(libraryId, source.BookId, source.Id, content.MimeType, RelTypes.Contents));
-                }
-            }
-
             if (principal.IsWriter())
             {
                 links.Add(UpdateChapter.Link(libraryId, source.BookId, source.Id, RelTypes.Update));
                 links.Add(DeleteChapter.Link(libraryId, source.BookId, source.Id, RelTypes.Delete));
-                if (source.Contents == null || !source.Contents.Any())
-                {
-                    links.Add(AddChapterContents.Link(libraryId, source.BookId, source.Id, RelTypes.AddContents));
-                }
-                else
-                {
-                    foreach (var content in source.Contents)
-                    {
-                        links.Add(UpdateChapterContents.Link(libraryId, source.BookId, source.Id, content.MimeType, RelTypes.UpdateContents));
-                        links.Add(DeleteChapterContents.Link(libraryId, source.BookId, source.Id, content.Id, content.MimeType, RelTypes.DeleteContents));
-                    }
-                }
+                links.Add(AddChapterContents.Link(libraryId, source.BookId, source.Id, RelTypes.AddContent));
+            }
+
+            foreach (var content in source.Contents)
+            {
+                links.Add(GetChapterContents.Link(libraryId, source.BookId, source.Id, RelTypes.Content, language: content.Language));
             }
 
             result.Links = links;

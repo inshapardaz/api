@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContents
 {
-    [TestFixture, Ignore("ToFix")]
+    [TestFixture]
     public class WhenAddingChapterContentsAsUnauthorized
         : LibraryTest<Functions.Library.Books.Chapters.Contents.AddChapterContents>
     {
@@ -21,7 +22,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         {
             _dataBuilder = Container.GetService<ChapterDataBuilder>();
 
-            var chapter = _dataBuilder.Build();
+            var chapter = _dataBuilder.WithLibrary(LibraryId).Build();
             var contents = new Faker().Random.Words(60);
             var request = new RequestBuilder().WithBody(contents).Build();
             _response = (UnauthorizedResult)await handler.Run(request, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
@@ -36,7 +37,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         [Test]
         public void ShouldHaveUnauthorizedResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeUnauthorized();
         }
     }
 }

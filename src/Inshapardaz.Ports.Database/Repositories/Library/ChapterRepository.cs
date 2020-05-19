@@ -18,7 +18,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             _connectionProvider = connectionProvider;
         }
 
-        public async Task<ChapterModel> AddChapter(int bookId, ChapterModel chapter, CancellationToken cancellationToken)
+        public async Task<ChapterModel> AddChapter(int libraryId, int bookId, ChapterModel chapter, CancellationToken cancellationToken)
         {
             int id;
             using (var connection = _connectionProvider.GetConnection())
@@ -28,40 +28,60 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 id = await connection.ExecuteScalarAsync<int>(command);
             }
 
-            return await GetChapterById(id, cancellationToken);
+            return await GetChapterById(libraryId, bookId, id, cancellationToken);
         }
 
-        public async Task UpdateChapter(ChapterModel chapter, CancellationToken cancellationToken)
+        public async Task UpdateChapter(int libraryId, int bookId, ChapterModel chapter, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = "Update Library.Chapter Set Title = @Title, BookId = @BookId, ChapterNumber = @ChapterNumber Where Id = @Id";
-                var command = new CommandDefinition(sql, chapter, cancellationToken: cancellationToken);
+                var sql = @"Update C Set C.Title = @Title, C.BookId = @BookId, C.ChapterNumber = @ChapterNumber
+                            From Library.Chapter C
+                            Inner Join Library.Book b On b.Id = C.BookId
+                            Where C.Id = @ChapterId AND C.Bookid = @OldBookId And b.LibraryId = @LibraryId";
+                var args = new
+                {
+                    LibraryId = libraryId,
+                    OldBookId = bookId,
+                    ChapterId = chapter.Id,
+                    Title = chapter.Title,
+                    BookId = chapter.BookId,
+                    ChapterNumber = chapter.ChapterNumber
+                };
+                var command = new CommandDefinition(sql, args, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
 
-        public async Task DeleteChapter(int chapterId, CancellationToken cancellationToken)
+        public async Task DeleteChapter(int libraryId, int bookId, int chapterId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = "Delete From Library.Chapter Where Id = @Id";
-                var command = new CommandDefinition(sql, new { Id = chapterId }, cancellationToken: cancellationToken);
+                var sql = @"Delete c From Library.Chapter c
+                            Inner Join Library.Book b On b.Id = c.BookId
+                            Where c.Id = @ChapterId AND c.BookId = @BookId And b.LibraryId = @LibraryId";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    BookId = bookId,
+                    ChapterId = chapterId
+                }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
 
-        public async Task<IEnumerable<ChapterModel>> GetChaptersByBook(int bookId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ChapterModel>> GetChaptersByBook(int libraryId, int bookId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 var chapters = new Dictionary<int, ChapterModel>();
 
-                var sql = @"Select *  From Library.Chapter c
+                var sql = @"Select c.*, cc.*, f.*  From Library.Chapter c
+                            Inner Join Library.Book b On b.Id = c.BookId
                             Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
                             Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
-                            Where c.BookId = @BookId";
-                var command = new CommandDefinition(sql, new { BookId = bookId }, cancellationToken: cancellationToken);
+                            Where b.Id = @BookId AND b.LibraryId = @LibraryId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
                 await connection.QueryAsync<ChapterModel, ChapterContentModel, FileModel, ChapterModel>(command, (c, cc, f) =>
                 {
                     if (!chapters.TryGetValue(c.Id, out ChapterModel chapter))
@@ -72,6 +92,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                     chapter = chapters[c.Id];
                     if (cc != null)
                     {
+                        cc.BookId = bookId;
                         var content = chapter.Contents.SingleOrDefault(x => x.Id == cc.Id);
                         if (content == null)
                         {
@@ -96,17 +117,18 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
         }
 
-        public async Task<ChapterModel> GetChapterById(int chapterId, CancellationToken cancellationToken)
+        public async Task<ChapterModel> GetChapterById(int libraryId, int bookId, int chapterId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 ChapterModel chapter = null;
-                var sql = @"Select *
+                var sql = @"Select c.*, cc.*, f.*
                             From Library.Chapter c
+                            Inner Join Library.Book b On b.Id = c.BookId
                             Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
                             Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
-                            Where c.Id = @Id";
-                var command = new CommandDefinition(sql, new { Id = chapterId }, cancellationToken: cancellationToken);
+                            Where c.Id = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterId }, cancellationToken: cancellationToken);
                 await connection.QueryAsync<ChapterModel, ChapterContentModel, FileModel, ChapterModel>(command, (c, cc, f) =>
                 {
                     if (chapter == null)
@@ -140,31 +162,33 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
         }
 
-        public async Task<ChapterContentModel> GetChapterContent(int chapterId, string mimeType, CancellationToken cancellationToken)
+        public async Task<ChapterContentModel> GetChapterContent(int libraryId, int bookId, int chapterId, string mimeType, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Select cc.* From Library.Chapter c
+                            Inner Join Library.Book b On b.Id = c.BookId
                             Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
-                            Where c.Id = @Id And cc.MimeType = @MimeType";
-                var command = new CommandDefinition(sql, new { Id = chapterId, MimeType = mimeType }, cancellationToken: cancellationToken);
+                            Where c.Id = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId cc.MimeType = @MimeType";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterId, MimeType = mimeType }, cancellationToken: cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<ChapterContentModel>(command);
             }
         }
 
-        public async Task<string> GetChapterContentUrl(int chapterId, string mimeType, CancellationToken cancellationToken)
+        public async Task<string> GetChapterContentUrl(int libraryId, int bookId, int chapterId, string mimeType, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Select cc.ContentUrl From Library.Chapter c
+                            Inner Join Library.Book b On b.Id = c.BookId
                             Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
-                            Where c.Id = @Id And cc.MimeType = @MimeType";
-                var command = new CommandDefinition(sql, new { Id = chapterId, MimeType = mimeType }, cancellationToken: cancellationToken);
+                            Where c.Id = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId And cc.MimeType = @MimeType";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterId, MimeType = mimeType }, cancellationToken: cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<string>(command);
             }
         }
 
-        public async Task<ChapterContentModel> AddChapterContent(int bookId, int chapterId, string mimeType, string contentUrl, CancellationToken cancellationToken)
+        public async Task<ChapterContentModel> AddChapterContent(int libraryId, int bookId, int chapterId, string mimeType, string contentUrl, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -172,26 +196,46 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 var command = new CommandDefinition(sql, new { ChapterId = chapterId, MimeType = mimeType, ContentUrl = contentUrl }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
 
-                return await GetChapterContent(chapterId, mimeType, cancellationToken);
+                return await GetChapterContent(libraryId, bookId, chapterId, mimeType, cancellationToken);
             }
         }
 
-        public async Task UpdateChapterContent(int bookId, int chapterId, string mimeType, string contentUrl, CancellationToken cancellationToken)
+        public async Task UpdateChapterContent(int libraryId, int bookId, int chapterId, string mimeType, string contentUrl, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Library.ChapterContent SET ContentUrl = @ContentUrl Where ChapterId = @ChapterId And MimeType @MimeType";
-                var command = new CommandDefinition(sql, new { ChapterId = chapterId, MimeType = mimeType, ContentUrl = contentUrl }, cancellationToken: cancellationToken);
+                var sql = @"Update cc SET ContentUrl = @ContentUrl
+                            From Library.ChapterContent cc
+                            Inner Joing Library.Chapter c On c.Id = cc.ChapterId
+                            Inner Join Library.Book b On b.Id = C.BookId
+                            Where cc.ChapterId = @ChapterId And b.LibraryId = @LibraryId and b.BookId = @BookId And cc.MimeType @MimeType";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    BookId = bookId,
+                    ChapterId = chapterId,
+                    MimeType = mimeType,
+                    ContentUrl = contentUrl
+                }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
 
-        public async Task DeleteChapterContentById(int bookId, int chapterId, string mimeType, CancellationToken cancellationToken)
+        public async Task DeleteChapterContentById(int libraryId, int bookId, int chapterId, string mimeType, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From Library.ChapterContent Where ChapterId = @ChapterId And MimeType @MimeType";
-                var command = new CommandDefinition(sql, new { ChapterId = chapterId, MimeType = mimeType }, cancellationToken: cancellationToken);
+                var sql = @"Delete From Library.ChapterContent  cc
+                            Inner Joing Library.Chapter c On c.Id = cc.ChapterId
+                            Inner Join Library.Book b On b.Id = C.BookId
+                            Where cc.ChapterId = @ChapterId And b.LibraryId = @LibraryId and b.BookId = @BookId And cc.MimeType = @MimeType";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    BookId = bookId,
+                    ChapterId = chapterId,
+                    MimeType = mimeType
+                }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }

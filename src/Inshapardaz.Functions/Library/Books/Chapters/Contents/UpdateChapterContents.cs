@@ -52,7 +52,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             });
         }
 
-        public static LinkView Link(int libraryId, int bookId, int chapterId, string mimetype, string relType = RelTypes.Self)
-            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", relType, "PUT", type: mimetype);
+        public static LinkView Link(int libraryId, int bookId, int chapterId, string mimetype, string relType = RelTypes.Self, string langugae = null)
+            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", relType, "PUT", type: mimetype, language: langugae);
     }
 }

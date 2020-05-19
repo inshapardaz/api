@@ -36,7 +36,7 @@ namespace Inshapardaz.Domain.Ports.Library
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
             if (book == null) return null;
 
-            return await _chapterRepository.GetChaptersByBook(command.BookId, cancellationToken);
+            return await _chapterRepository.GetChaptersByBook(command.LibraryId, command.BookId, cancellationToken);
         }
     }
 }

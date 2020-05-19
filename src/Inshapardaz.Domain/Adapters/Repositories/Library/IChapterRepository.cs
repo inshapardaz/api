@@ -7,24 +7,24 @@ namespace Inshapardaz.Domain.Repositories.Library
 {
     public interface IChapterRepository
     {
-        Task<ChapterModel> AddChapter(int bookId, ChapterModel chapter, CancellationToken cancellationToken);
+        Task<ChapterModel> AddChapter(int libraryId, int bookId, ChapterModel chapter, CancellationToken cancellationToken);
 
-        Task UpdateChapter(ChapterModel chapter, CancellationToken cancellationToken);
+        Task UpdateChapter(int libraryId, int bookId, ChapterModel chapter, CancellationToken cancellationToken);
 
-        Task DeleteChapter(int chapterId, CancellationToken cancellationToken);
+        Task DeleteChapter(int libraryId, int bookId, int chapterId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<ChapterModel>> GetChaptersByBook(int bookId, CancellationToken cancellationToken);
+        Task<IEnumerable<ChapterModel>> GetChaptersByBook(int libraryId, int bookId, CancellationToken cancellationToken);
 
-        Task<ChapterModel> GetChapterById(int chapterId, CancellationToken cancellationToken);
+        Task<ChapterModel> GetChapterById(int libraryId, int bookid, int chapterId, CancellationToken cancellationToken);
 
-        Task<ChapterContentModel> GetChapterContent(int chapterId, string mimeType, CancellationToken cancellationToken);
+        Task<ChapterContentModel> GetChapterContent(int libraryId, int bookId, int chapterId, string mimeType, CancellationToken cancellationToken);
 
-        Task<string> GetChapterContentUrl(int chapterId, string mimeType, CancellationToken cancellationToken);
+        Task<string> GetChapterContentUrl(int libraryId, int bookId, int chapterId, string mimeType, CancellationToken cancellationToken);
 
-        Task<ChapterContentModel> AddChapterContent(int bookId, int chapterId, string mimeType, string contentUrl, CancellationToken cancellationToken);
+        Task<ChapterContentModel> AddChapterContent(int libraryId, int bookId, int chapterId, string mimeType, string contentUrl, CancellationToken cancellationToken);
 
-        Task UpdateChapterContent(int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken);
+        Task UpdateChapterContent(int libraryId, int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken);
 
-        Task DeleteChapterContentById(int bookId, int chapterId, string mimeType, CancellationToken cancellationToken);
+        Task DeleteChapterContentById(int libraryId, int bookId, int chapterId, string mimeType, CancellationToken cancellationToken);
     }
 }

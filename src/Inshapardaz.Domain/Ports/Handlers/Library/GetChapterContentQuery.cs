@@ -44,7 +44,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<ChapterContentModel> ExecuteAsync(GetChapterContentQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var chapterContent = await _chapterRepository.GetChapterContent(command.ChapterId, command.MimeType, cancellationToken);
+            var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
             if (chapterContent != null)
             {
                 chapterContent.Content = await _fileStorage.GetTextFile(chapterContent.ContentUrl, cancellationToken);

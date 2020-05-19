@@ -115,6 +115,12 @@ namespace Inshapardaz.Functions.Tests.Helpers
             return link;
         }
 
+        public static LinkView ShouldHaveAcceptLanguage(this LinkView link, string expected)
+        {
+            Assert.That(link.AcceptLanguage, Is.EqualTo(expected), $"Link with reltype '{link.Rel}' and method '{link.Method}' has invalis accepted language");
+            return link;
+        }
+
         public static LinkView SelfLink(this ViewWithLinks view)
         {
             return view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.Self, StringComparison.CurrentCultureIgnoreCase));

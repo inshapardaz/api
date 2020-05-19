@@ -4,6 +4,7 @@ using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Data;
 using System.Linq;
@@ -96,12 +97,10 @@ namespace Inshapardaz.Functions.Tests.Asserts
 
         internal void ShouldHaveContentLink(ChapterContentDto content)
         {
-            _chapter.Links("content")
-                    .Where(x =>
-                        x.Href.EndsWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents/{content.Id}")
-                        && x.AcceptLanguage == content.Language
-                        && x.Method.Equals("GET", StringComparison.InvariantCultureIgnoreCase)
-                    );
+            var actual = _chapter.Contents.Single(x => x.Id == content.Id);
+            actual.SelfLink()
+                  .ShouldBeGet()
+                  .ShouldHaveAcceptLanguage(content.Language);
         }
 
         internal void ShouldHaveNoCorrectContents()
@@ -122,7 +121,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             var contents = db.GetContentByChapter(_chapter.Id);
 
-            contents.Should().HaveSameCount(_chapter.Links("content"));
+            contents.Should().HaveSameCount(_chapter.Contents);
 
             foreach (var content in contents)
             {
@@ -175,20 +174,22 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldHaveUpdateChapterContentLink()
+        internal ChapterAssert ShouldHaveUpdateChapterContentLink(ChapterContentDto content)
         {
-            _chapter.Link("add-content")
-                 .ShouldBePost()
-                 .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
+            var actual = _chapter.Contents.Single(x => x.Id == content.Id);
+            actual.UpdateLink()
+                  .ShouldBePut()
+                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
 
             return this;
         }
 
-        internal ChapterAssert ShouldHaveDeleteChapterContentLink()
+        internal ChapterAssert ShouldHaveDeleteChapterContentLink(ChapterContentDto content)
         {
-            _chapter.Link("delete-content")
-                 .ShouldBeDelete()
-                 .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
+            var actual = _chapter.Contents.Single(x => x.Id == content.Id);
+            actual.DeleteLink()
+                  .ShouldBeDelete()
+                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
 
             return this;
         }

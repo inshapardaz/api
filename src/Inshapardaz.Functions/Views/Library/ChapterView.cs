@@ -11,5 +11,7 @@ namespace Inshapardaz.Functions.Views.Library
         public string Title { get; set; }
 
         public int BookId { get; set; }
+
+        public IEnumerable<ChapterContentView> Contents { get; set; }
     }
 }

@@ -42,18 +42,18 @@ namespace Inshapardaz.Domain.Ports.Library
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateChapterRequest> HandleAsync(UpdateChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _chapterRepository.GetChapterById(command.Chapter.Id, cancellationToken);
+            var result = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.Chapter.Id, cancellationToken);
 
             if (result == null)
             {
                 var chapter = command.Chapter;
                 chapter.Id = default(int);
-                command.Result.Chapter = await _chapterRepository.AddChapter(command.BookId, chapter, cancellationToken);
+                command.Result.Chapter = await _chapterRepository.AddChapter(command.LibraryId, command.BookId, chapter, cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                await _chapterRepository.UpdateChapter(command.Chapter, cancellationToken);
+                await _chapterRepository.UpdateChapter(command.LibraryId, command.BookId, command.Chapter, cancellationToken);
                 command.Result.Chapter = command.Chapter;
             }
 

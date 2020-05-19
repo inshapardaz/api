@@ -36,7 +36,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<ChapterModel> ExecuteAsync(GetChapterByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _chapterRepository.GetChapterById(command.ChapterId, cancellationToken);
+            return await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterId, cancellationToken);
         }
     }
 }

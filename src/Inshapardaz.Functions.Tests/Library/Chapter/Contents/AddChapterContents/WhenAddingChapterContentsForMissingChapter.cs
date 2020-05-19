@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContents
 {
-    [TestFixture, Ignore("ToFix")]
+    [TestFixture]
     public class WhenAddingChapterContentsForMissingChapter
         : LibraryTest<Functions.Library.Books.Chapters.Contents.AddChapterContents>
     {
@@ -18,7 +19,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         public async Task Setup()
         {
             var dataBuilder = Container.GetService<BooksDataBuilder>();
-            var book = dataBuilder.Build();
+            var book = dataBuilder.WithLibrary(LibraryId).Build();
             var request = new RequestBuilder().WithBody("test content").Build();
             _response = (BadRequestResult)await handler.Run(request, LibraryId, book.Id, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
@@ -32,7 +33,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         [Test]
         public void ShouldHaveBadRequestResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeBadRequest();
         }
     }
 }

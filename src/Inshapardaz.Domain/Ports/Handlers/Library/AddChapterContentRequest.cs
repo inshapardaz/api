@@ -43,13 +43,13 @@ namespace Inshapardaz.Domain.Ports.Library
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<AddChapterContentRequest> HandleAsync(AddChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var chapter = await _chapterRepository.GetChapterById(command.ChapterId, cancellationToken);
+            var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterId, cancellationToken);
             if (chapter != null)
             {
                 var name = GenerateChapterContentUrl(command.BookId, command.ChapterId, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
 
-                command.Result = await _chapterRepository.AddChapterContent(command.BookId, command.ChapterId, command.MimeType, actualUrl, cancellationToken);
+                command.Result = await _chapterRepository.AddChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, actualUrl, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

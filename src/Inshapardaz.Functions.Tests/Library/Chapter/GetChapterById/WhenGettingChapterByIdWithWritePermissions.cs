@@ -53,12 +53,6 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         }
 
         [Test]
-        public void ShouldSaveTheChapter()
-        {
-            _assert.ShouldHaveSavedChapter(DatabaseConnection);
-        }
-
-        [Test]
         public void ShouldHaveCorrectObjectRetured()
         {
             _assert.ShouldMatch(_expected);

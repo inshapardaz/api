@@ -50,18 +50,19 @@ namespace Inshapardaz.Domain.Ports.Library
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateChapterContentRequest> HandleAsync(UpdateChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var contentUrl = await _chapterRepository.GetChapterContentUrl(command.ChapterId, command.MimeType, cancellationToken);
+            var contentUrl = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
 
             if (contentUrl == null)
             {
                 var name = GenerateChapterContentUrl(command.BookId, command.ChapterId, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
 
-                command.Result.ChapterContent = await _chapterRepository.AddChapterContent(command.BookId,
-                                                                                             command.ChapterId,
-                                                                                             command.MimeType,
-                                                                                             actualUrl,
-                                                                                             cancellationToken);
+                command.Result.ChapterContent = await _chapterRepository.AddChapterContent(command.LibraryId,
+                                                                                           command.BookId,
+                                                                                           command.ChapterId,
+                                                                                           command.MimeType,
+                                                                                           actualUrl,
+                                                                                           cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
@@ -69,12 +70,13 @@ namespace Inshapardaz.Domain.Ports.Library
                 string url = contentUrl ?? GenerateChapterContentUrl(command.BookId, command.ChapterId, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(url, command.Contents, cancellationToken);
 
-                await _chapterRepository.UpdateChapterContent(command.BookId,
+                await _chapterRepository.UpdateChapterContent(command.LibraryId,
+                                                              command.BookId,
                                                               command.ChapterId,
                                                               command.MimeType,
                                                               actualUrl,
                                                               cancellationToken);
-                command.Result.ChapterContent = await _chapterRepository.GetChapterContent(command.ChapterId, command.MimeType, cancellationToken);
+                command.Result.ChapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

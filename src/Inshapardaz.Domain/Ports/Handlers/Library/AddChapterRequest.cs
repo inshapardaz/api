@@ -42,7 +42,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 throw new BadRequestException();
             }
 
-            command.Result = await _chapterRepository.AddChapter(command.BookId, command.Chapter, cancellationToken);
+            command.Result = await _chapterRepository.AddChapter(command.LibraryId, command.BookId, command.Chapter, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

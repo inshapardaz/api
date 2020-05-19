@@ -92,10 +92,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
                 foreach (var content in contents)
                 {
                     assert.ShouldHaveContentLink(content);
+                    assert.ShouldHaveUpdateChapterContentLink(content);
+                    assert.ShouldHaveDeleteChapterContentLink(content);
                 }
-
-                assert.ShouldHaveUpdateChapterContentLink();
-                assert.ShouldHaveDeleteChapterContentLink();
             }
         }
     }

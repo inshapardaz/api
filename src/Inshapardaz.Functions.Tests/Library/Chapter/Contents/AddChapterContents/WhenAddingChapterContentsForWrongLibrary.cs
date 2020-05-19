@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -11,22 +10,18 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContents
 {
     [TestFixture]
-    public class WhenAddingChapterContentsAsReader
+    public class WhenAddingChapterContentsForWrongLibrary
         : LibraryTest<Functions.Library.Books.Chapters.Contents.AddChapterContents>
     {
-        private ForbidResult _response;
-        private ChapterDataBuilder _dataBuilder;
+        private BadRequestResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<ChapterDataBuilder>();
-
-            var chapter = _dataBuilder.WithLibrary(LibraryId).Build();
-            var contents = new Faker().Random.Words(60);
-
-            var request = new RequestBuilder().WithBody(contents).Build();
-            _response = (ForbidResult)await handler.Run(request, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            var book = Container.GetService<BooksDataBuilder>().WithLibrary(LibraryId).Build();
+            var chapter = Container.GetService<ChapterDataBuilder>().WithLibrary(LibraryId).Build();
+            var request = new RequestBuilder().WithBody("test content").Build();
+            _response = (BadRequestResult)await handler.Run(request, -Random.Number, book.Id, chapter.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -36,9 +31,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         }
 
         [Test]
-        public void ShouldHaveForbiddenResult()
+        public void ShouldHaveBadRequestResult()
         {
-            _response.ShouldBeForbidden();
+            _response.ShouldBeBadRequest();
         }
     }
 }

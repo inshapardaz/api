@@ -36,14 +36,14 @@ namespace Inshapardaz.Domain.Ports.Library
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<DeleteChapterContentRequest> HandleAsync(DeleteChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var contentUrl = await _chapterRepository.GetChapterContentUrl(command.ChapterId, command.MimeType, cancellationToken);
+            var contentUrl = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(contentUrl))
             {
                 await _fileStorage.TryDeleteFile(contentUrl, cancellationToken);
             }
 
-            await _chapterRepository.DeleteChapterContentById(command.BookId, command.ChapterId, command.MimeType, cancellationToken);
+            await _chapterRepository.DeleteChapterContentById(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

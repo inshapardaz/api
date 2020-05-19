@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +8,7 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContents
 {
-    [TestFixture, Ignore("ToFix")]
+    [TestFixture]
     public class WhenAddingChapterContentsForMissingBook
         : LibraryTest<Functions.Library.Books.Chapters.Contents.AddChapterContents>
     {
@@ -29,7 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         [Test]
         public void ShouldHaveBadRequestResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeBadRequest();
         }
     }
 }

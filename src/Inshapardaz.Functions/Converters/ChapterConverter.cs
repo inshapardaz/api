@@ -42,11 +42,6 @@ namespace Inshapardaz.Functions.Converters
                 links.Add(UpdateChapter.Link(libraryId, source.BookId, source.Id, RelTypes.Update));
                 links.Add(DeleteChapter.Link(libraryId, source.BookId, source.Id, RelTypes.Delete));
                 links.Add(AddChapterContents.Link(libraryId, source.BookId, source.Id, RelTypes.AddContent));
-                //if (source.Contents.Any())
-                //{
-                //    links.Add(UpdateChapterContents.Link(libraryId, source.BookId, source.Id, null, RelTypes.UpdateContent));
-                //    links.Add(DeleteChapterContents.Link(libraryId, source.BookId, source.Id, null, RelTypes.DeleteContent));
-                //}
             }
 
             if (principal.IsAuthenticated())
@@ -54,7 +49,6 @@ namespace Inshapardaz.Functions.Converters
                 var contents = new List<ChapterContentView>();
                 foreach (var content in source.Contents)
                 {
-                    //links.Add(GetChapterContents.Link(libraryId, source.BookId, source.Id, RelTypes.Content, language: content.Language));
                     contents.Add(content.Render(libraryId, principal));
                 }
 
@@ -71,15 +65,15 @@ namespace Inshapardaz.Functions.Converters
 
             var links = new List<LinkView>
             {
-                GetChapterContents.Link(libraryId, source.BookId, source.ChapterId, RelTypes.Self, source.MimeType, source.Language),
+                GetChapterContents.Link(libraryId, source.BookId, source.ChapterId, source.Id, RelTypes.Self, source.MimeType, source.Language),
                 GetBookById.Link(libraryId, source.BookId, RelTypes.Book),
                 GetChapterById.Link(libraryId, source.BookId, source.ChapterId, RelTypes.Chapter)
             };
 
             if (principal.IsWriter())
             {
-                links.Add(UpdateChapterContents.Link(libraryId, source.BookId, source.ChapterId, source.MimeType, RelTypes.Update, source.Language));
-                links.Add(DeleteChapterContents.Link(libraryId, source.BookId, source.ChapterId, source.MimeType, RelTypes.Delete, source.Language));
+                links.Add(UpdateChapterContents.Link(libraryId, source.BookId, source.ChapterId, source.Id, source.MimeType, RelTypes.Update, source.Language));
+                links.Add(DeleteChapterContents.Link(libraryId, source.BookId, source.ChapterId, source.Id, source.MimeType, RelTypes.Delete, source.Language));
             }
 
             result.Links = links;

@@ -12,16 +12,18 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class UpdateChapterContentRequest : BookRequest
     {
-        public UpdateChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string contents, string mimetype, Guid userId)
+        public UpdateChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string contents, string language, string mimetype, Guid userId)
             : base(claims, libraryId, bookId, userId)
         {
             ChapterId = chapterId;
             Contents = contents;
             MimeType = mimetype;
+            Language = language;
         }
 
         public string MimeType { get; set; }
 
+        public string Language { get; set; }
         public string Contents { get; set; }
 
         public int ChapterId { get; set; }
@@ -40,52 +42,64 @@ namespace Inshapardaz.Domain.Ports.Library
     {
         private readonly IChapterRepository _chapterRepository;
         private readonly IFileStorage _fileStorage;
+        private readonly IFileRepository _fileRepository;
 
-        public UpdateChapterContentRequestHandler(IChapterRepository chapterRepository, IFileStorage fileStorage)
+        public UpdateChapterContentRequestHandler(IChapterRepository chapterRepository, IFileStorage fileStorage, IFileRepository fileRepository)
         {
             _chapterRepository = chapterRepository;
             _fileStorage = fileStorage;
+            _fileRepository = fileRepository;
         }
 
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateChapterContentRequest> HandleAsync(UpdateChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var contentUrl = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
+            //TODO: check and update langauge
+            var contentUrl = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
 
             if (contentUrl == null)
             {
-                var name = GenerateChapterContentUrl(command.BookId, command.ChapterId, command.MimeType);
+                var name = GenerateChapterContentUrl(command.BookId, command.ChapterId, command.Language, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
 
+                var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = false, FileName = name };
+                var file = await _fileRepository.AddFile(fileModel, cancellationToken);
+                var chapterContent = new ChapterContentModel
+                {
+                    BookId = command.BookId,
+                    ChapterId = command.ChapterId,
+                    Language = command.Language,
+                    MimeType = command.MimeType,
+                    FileId = file.Id
+                };
+
                 command.Result.ChapterContent = await _chapterRepository.AddChapterContent(command.LibraryId,
-                                                                                           command.BookId,
-                                                                                           command.ChapterId,
-                                                                                           command.MimeType,
-                                                                                           actualUrl,
+                                                                                           chapterContent,
                                                                                            cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                string url = contentUrl ?? GenerateChapterContentUrl(command.BookId, command.ChapterId, command.MimeType);
+                string url = contentUrl ?? GenerateChapterContentUrl(command.BookId, command.ChapterId, command.Language, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(url, command.Contents, cancellationToken);
 
                 await _chapterRepository.UpdateChapterContent(command.LibraryId,
                                                               command.BookId,
                                                               command.ChapterId,
+                                                              command.Language,
                                                               command.MimeType,
                                                               actualUrl,
                                                               cancellationToken);
-                command.Result.ChapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
+                command.Result.ChapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private string GenerateChapterContentUrl(int bookId, int chapterId, string mimeType)
+        private string GenerateChapterContentUrl(int bookId, int chapterId, string language, string mimeType)
         {
             var extension = MimetypeToExtension(mimeType);
-            return $"books/{bookId}/chapters/{chapterId}.{extension}";
+            return $"books/{bookId}/chapters/{chapterId}_{language}.{extension}";
         }
 
         private string MimetypeToExtension(string mimeType)

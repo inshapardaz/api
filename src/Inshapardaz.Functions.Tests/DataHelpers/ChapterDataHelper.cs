@@ -47,7 +47,7 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
             return connection.Query<ChapterDto>("Select * From Library.Chapter Where BookId = @Id", new { Id = id });
         }
 
-        public static ChapterContentDto GetContentById(this IDbConnection connection, int id)
+        public static ChapterContentDto GetChapterContentById(this IDbConnection connection, int id)
         {
             return connection.QuerySingleOrDefault<ChapterContentDto>("Select * From Library.ChapterContent Where Id = @Id", new { Id = id });
         }
@@ -61,6 +61,14 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
         {
             var sql = "Select f.* From Inshapardaz.[File] f INNER JOIN Library.ChapterContent cc ON cc.FileId = f.Id Where cc.ChapterId = @Id";
             return connection.Query<FileDto>(sql, new { Id = chapterId });
+        }
+
+        public static FileDto GetFileByChapter(this IDbConnection connection, int chapterId, string language, string mimetype)
+        {
+            var sql = @"Select f.* From Inshapardaz.[File] f
+                        INNER JOIN Library.ChapterContent cc ON cc.FileId = f.Id
+                        Where cc.ChapterId = @Id AND cc.language = @Language AND cc.MimeType = @MimeType";
+            return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = chapterId, language = language, MimeType = mimetype });
         }
     }
 }

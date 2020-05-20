@@ -1,3 +1,4 @@
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
@@ -35,9 +36,10 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             return await Executor.Execute(async () =>
             {
                 var contents = await ReadBody(req);
-                var contentType = GetHeader(req, "Accept", "text/markdown");
+                var contentType = GetHeader(req, "Content-Type", "text/markdown");
+                var language = GetHeader(req, "Accept-Language", "");
 
-                var request = new AddChapterContentRequest(claims, libraryId, bookId, chapterId, contents, contentType, claims.GetUserId());
+                var request = new AddChapterContentRequest(claims, libraryId, bookId, chapterId, contents, language, contentType, claims.GetUserId());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
                 if (request.Result != null)

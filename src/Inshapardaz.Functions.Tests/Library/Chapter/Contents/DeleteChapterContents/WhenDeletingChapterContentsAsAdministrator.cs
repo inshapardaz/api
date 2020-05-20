@@ -41,7 +41,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
             _chapterContent = DatabaseConnection.GetContentByChapter(chapter.Id).PickRandom();
             _contentId = _chapterContent.Id;
             //_contentUrl = _chapterContent.ContentUrl;
-            var request = new RequestBuilder().WithAcceptType("text/markdown").Build();
+            var request = new RequestBuilder().WithContentType("text/markdown").Build();
             _response = (NoContentResult)await handler.Run(request, LibraryId, chapter.BookId, _chapterContent.ChapterId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
@@ -60,7 +60,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
         [Test]
         public void ShouldHaveDeletedChapterContent()
         {
-            var expected = DatabaseConnection.GetContentById(_contentId);
+            var expected = DatabaseConnection.GetChapterContentById(_contentId);
             Assert.That(expected, Is.Null, "Chapter contents not deleted");
         }
 

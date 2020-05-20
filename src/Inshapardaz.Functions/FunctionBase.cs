@@ -110,7 +110,7 @@ namespace Inshapardaz.Functions
         {
             if (request != null && request.Headers.ContainsKey(headerName))
             {
-                return request.Headers["headerName"];
+                return request.Headers[headerName];
             }
 
             return defaultValue;

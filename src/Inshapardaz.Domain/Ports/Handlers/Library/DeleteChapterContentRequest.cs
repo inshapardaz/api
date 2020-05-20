@@ -10,16 +10,18 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class DeleteChapterContentRequest : BookRequest
     {
-        public DeleteChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string mimeType, Guid userId)
+        public DeleteChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string language, string mimeType, Guid userId)
             : base(claims, libraryId, bookId, userId)
         {
             ChapterId = chapterId;
             MimeType = mimeType;
+            Language = language;
         }
 
         public int ChapterId { get; }
 
         public string MimeType { get; }
+        public string Language { get; }
     }
 
     public class DeleteChapterContentRequestHandler : RequestHandlerAsync<DeleteChapterContentRequest>
@@ -36,14 +38,14 @@ namespace Inshapardaz.Domain.Ports.Library
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<DeleteChapterContentRequest> HandleAsync(DeleteChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var contentUrl = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
+            var contentUrl = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(contentUrl))
             {
                 await _fileStorage.TryDeleteFile(contentUrl, cancellationToken);
             }
 
-            await _chapterRepository.DeleteChapterContentById(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
+            await _chapterRepository.DeleteChapterContentById(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

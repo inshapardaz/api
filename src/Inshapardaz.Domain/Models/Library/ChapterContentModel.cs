@@ -13,9 +13,11 @@ namespace Inshapardaz.Domain.Models.Library
         [Obsolete]
         public string Content { get; set; }
 
+        [Obsolete]
         public string ContentUrl { get; set; }
 
         public string MimeType { get; set; }
         public string Language { get; set; }
+        public object FileId { get; internal set; }
     }
 }

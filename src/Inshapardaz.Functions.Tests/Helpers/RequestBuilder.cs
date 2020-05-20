@@ -9,6 +9,7 @@ using System.Text;
 using Bogus;
 using Newtonsoft.Json;
 using System;
+using System.Net.Mime;
 
 namespace Inshapardaz.Functions.Tests.Helpers
 {
@@ -19,7 +20,8 @@ namespace Inshapardaz.Functions.Tests.Helpers
         private string _contents;
 
         private byte[] _file;
-        private string _acceptType;
+        private string _contentType;
+        private string _language = Random.Locale;
 
         public RequestBuilder WithQueryParameter(string name, object value)
         {
@@ -45,15 +47,27 @@ namespace Inshapardaz.Functions.Tests.Helpers
             return this;
         }
 
+        internal RequestBuilder WithConentType(string contentType)
+        {
+            _contentType = contentType;
+            return this;
+        }
+
         internal RequestBuilder WithBytes(byte[] binaryContent)
         {
             _file = binaryContent;
             return this;
         }
 
-        internal RequestBuilder WithAcceptType(string acceptType)
+        internal RequestBuilder WithoutLanguage()
         {
-            _acceptType = acceptType;
+            _language = null;
+            return this;
+        }
+
+        internal RequestBuilder WithContentType(string acceptType)
+        {
+            _contentType = acceptType;
             return this;
         }
 
@@ -61,9 +75,10 @@ namespace Inshapardaz.Functions.Tests.Helpers
         {
             var request = new DefaultHttpRequest(new DefaultHttpContext());
 
-            if (!string.IsNullOrEmpty(_acceptType))
+            if (!string.IsNullOrEmpty(_contentType))
             {
-                request.Headers.Add("Content-Type", _acceptType);
+                request.Headers.Add("Content-Type", _contentType);
+                request.Headers.Add("Accept-Language", _language);
             }
 
             if (_parameters.Count > 0)
@@ -112,5 +127,17 @@ namespace Inshapardaz.Functions.Tests.Helpers
     {
         public static DefaultHttpRequest ToRequest(this object body) =>
             new RequestBuilder().WithJsonBody(body).Build();
+
+        public static string MimeType(this DefaultHttpRequest request)
+        {
+            request.Headers.TryGetValue("content-type", out var mimeType);
+            return mimeType;
+        }
+
+        public static string Language(this DefaultHttpRequest request)
+        {
+            request.Headers.TryGetValue("accept-language", out var language);
+            return language;
+        }
     }
 }

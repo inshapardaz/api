@@ -50,11 +50,11 @@ namespace Inshapardaz.Functions.Tests.Asserts
 
         internal ChapterAssert ShouldHaveSavedChapter(IDbConnection dbConnection)
         {
-            var dbAuthor = dbConnection.GetChapterById(_chapter.Id);
-            dbAuthor.Should().NotBeNull();
-            _chapter.Title.Should().Be(dbAuthor.Title);
-            _chapter.BookId.Should().Be(dbAuthor.BookId);
-            _chapter.ChapterNumber.Should().Be(dbAuthor.ChapterNumber);
+            var dbChapter = dbConnection.GetChapterById(_chapter.Id);
+            dbChapter.Should().NotBeNull();
+            _chapter.Title.Should().Be(dbChapter.Title);
+            _chapter.BookId.Should().Be(dbChapter.BookId);
+            _chapter.ChapterNumber.Should().Be(dbChapter.ChapterNumber);
             return this;
         }
 

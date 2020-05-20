@@ -11,13 +11,14 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetChapterContentQuery : LibraryBaseQuery<ChapterContentModel>
     {
-        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string mimeType, Guid userId)
+        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string language, string mimeType, Guid userId)
             : base(libraryId)
         {
             UserId = userId;
             BookId = bookId;
             ChapterId = chapterId;
             MimeType = mimeType;
+            Language = language;
         }
 
         public int BookId { get; set; }
@@ -27,6 +28,7 @@ namespace Inshapardaz.Domain.Ports.Library
         public Guid UserId { get; set; }
 
         public string MimeType { get; set; }
+        public string Language { get; set; }
     }
 
     public class GetChapterContentQueryHandler : QueryHandlerAsync<GetChapterContentQuery, ChapterContentModel>
@@ -44,7 +46,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<ChapterContentModel> ExecuteAsync(GetChapterContentQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
+            var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
             if (chapterContent != null)
             {
                 chapterContent.Content = await _fileStorage.GetTextFile(chapterContent.ContentUrl, cancellationToken);

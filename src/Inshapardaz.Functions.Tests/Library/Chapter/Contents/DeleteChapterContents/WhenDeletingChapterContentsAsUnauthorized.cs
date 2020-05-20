@@ -58,7 +58,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
         [Test]
         public void ShouldNotHaveDeletedChapterContent()
         {
-            var expected = DatabaseConnection.GetContentById(_contentId);
+            var expected = DatabaseConnection.GetChapterContentById(_contentId);
             Assert.That(expected, Is.Not.Null, "Chapter contents should not be deleted");
         }
 

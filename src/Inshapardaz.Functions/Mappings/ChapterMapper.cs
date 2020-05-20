@@ -28,7 +28,10 @@ namespace Inshapardaz.Functions.Mappings
             {
                 Id = source.Id,
                 Contents = source.Content,
-                ChapterId = source.ChapterId
+                ChapterId = source.ChapterId,
+                BookId = source.BookId,
+                Language = source.Language,
+                MimeType = source.MimeType
             };
 
         public static ChapterContentModel Map(this ChapterContentView source)

@@ -35,7 +35,8 @@ namespace Inshapardaz.Domain.Ports.Library
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<DeleteChapterRequest> HandleAsync(DeleteChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var filePath = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, cancellationToken);
+            //TODO:  support multiple
+            var filePath = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, "", command.MimeType, cancellationToken);
 
             await _chapterRepository.DeleteChapter(command.LibraryId, command.BookId, command.ChapterId, cancellationToken);
 

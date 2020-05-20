@@ -17,14 +17,14 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<ChapterModel> GetChapterById(int libraryId, int bookid, int chapterId, CancellationToken cancellationToken);
 
-        Task<ChapterContentModel> GetChapterContent(int libraryId, int bookId, int chapterId, string mimeType, CancellationToken cancellationToken);
+        Task<ChapterContentModel> GetChapterContent(int libraryId, int bookId, int chapterId, string language, string mimeType, CancellationToken cancellationToken);
 
-        Task<string> GetChapterContentUrl(int libraryId, int bookId, int chapterId, string mimeType, CancellationToken cancellationToken);
+        Task<string> GetChapterContentUrl(int libraryId, int bookId, int chapterId, string language, string mimeType, CancellationToken cancellationToken);
 
-        Task<ChapterContentModel> AddChapterContent(int libraryId, int bookId, int chapterId, string mimeType, string contentUrl, CancellationToken cancellationToken);
+        Task<ChapterContentModel> AddChapterContent(int libraryId, ChapterContentModel content, CancellationToken cancellationToken);
 
-        Task UpdateChapterContent(int libraryId, int bookId, int chapterId, string mimeType, string contents, CancellationToken cancellationToken);
+        Task UpdateChapterContent(int libraryId, int bookId, int chapterId, string language, string mimeType, string contents, CancellationToken cancellationToken);
 
-        Task DeleteChapterContentById(int libraryId, int bookId, int chapterId, string mimeType, CancellationToken cancellationToken);
+        Task DeleteChapterContentById(int libraryId, int bookId, int chapterId, string language, string mimeType, CancellationToken cancellationToken);
     }
 }

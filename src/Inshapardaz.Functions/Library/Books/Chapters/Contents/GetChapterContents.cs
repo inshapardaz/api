@@ -30,8 +30,9 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             CancellationToken token = default)
         {
             var contentType = GetHeader(req, "Accept", "text/markdown");
+            var language = GetHeader(req, "Accept-Language", "");
 
-            var query = new GetChapterContentQuery(libraryId, bookId, chapterId, contentType, principal.GetUserId())
+            var query = new GetChapterContentQuery(libraryId, bookId, chapterId, language, contentType, principal.GetUserId())
             {
                 UserId = principal.GetUserId()
             };
@@ -46,7 +47,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             return new NotFoundResult();
         }
 
-        public static LinkView Link(int libraryId, int bookId, int chapterId, string relType = RelTypes.Self, string mimeType = null, string language = null)
-            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", relType, type: mimeType, language: language);
+        public static LinkView Link(int libraryId, int bookId, int chapterId, int contentId, string relType = RelTypes.Self, string mimeType = null, string language = null)
+            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents/{contentId}", relType, type: mimeType, language: language);
     }
 }

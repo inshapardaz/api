@@ -1,9 +1,11 @@
-﻿using Inshapardaz.Domain.Exception;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,12 +14,13 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class AddChapterContentRequest : BookRequest
     {
-        public AddChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string contents, string mimeType, Guid userId)
+        public AddChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string contents, string language, string mimeType, Guid userId)
             : base(claims, libraryId, bookId, userId)
         {
             ChapterId = chapterId;
             Contents = contents;
             MimeType = mimeType;
+            Language = language;
         }
 
         public int ChapterId { get; set; }
@@ -26,6 +29,8 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public string MimeType { get; set; }
 
+        public string Language { get; set; }
+
         public ChapterContentModel Result { get; set; }
     }
 
@@ -33,32 +38,58 @@ namespace Inshapardaz.Domain.Ports.Library
     {
         private readonly IChapterRepository _chapterRepository;
         private readonly IFileStorage _fileStorage;
+        private readonly ILibraryRepository _libraryRepository;
+        private readonly IFileRepository _fileRepository;
 
-        public AddChapterContentRequestHandler(IChapterRepository chapterRepository, IFileStorage fileStorage)
+        public AddChapterContentRequestHandler(IChapterRepository chapterRepository, IFileStorage fileStorage, ILibraryRepository libraryRepository, IFileRepository fileRepository)
         {
             _chapterRepository = chapterRepository;
             _fileStorage = fileStorage;
+            _libraryRepository = libraryRepository;
+            _fileRepository = fileRepository;
         }
 
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<AddChapterContentRequest> HandleAsync(AddChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
+            if (string.IsNullOrWhiteSpace(command.Language))
+            {
+                var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
+                if (library == null)
+                {
+                    throw new BadRequestException();
+                }
+
+                command.Language = library.Language;
+            }
+
             var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterId, cancellationToken);
             if (chapter != null)
             {
-                var name = GenerateChapterContentUrl(command.BookId, command.ChapterId, command.MimeType);
+                var name = GenerateChapterContentUrl(command.BookId, command.ChapterId, command.Language, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
 
-                command.Result = await _chapterRepository.AddChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.MimeType, actualUrl, cancellationToken);
+                var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = false, FileName = name };
+                var file = await _fileRepository.AddFile(fileModel, cancellationToken);
+                var chapterContent = new ChapterContentModel
+                {
+                    BookId = command.BookId,
+                    ChapterId = command.ChapterId,
+                    Language = command.Language,
+                    MimeType = command.MimeType,
+                    FileId = file.Id
+                };
+
+                command.Result = await _chapterRepository.AddChapterContent(command.LibraryId, chapterContent, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private string GenerateChapterContentUrl(int bookId, int chapterId, string mimeType)
+        private string GenerateChapterContentUrl(int bookId, int chapterId, string language, string mimeType)
         {
             var extension = MimetypeToExtension(mimeType);
-            return $"books/{bookId}/chapters/{chapterId}.{extension}";
+            return $"books/{bookId}/chapters/{chapterId}_{language}.{extension}";
         }
 
         private string MimetypeToExtension(string mimeType)
@@ -68,8 +99,8 @@ namespace Inshapardaz.Domain.Ports.Library
                 case "text/plain": return "txt";
                 case "text/markdown": return "md";
                 case "text/html": return "md";
-                case "application/msword": return "doc";
-                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": return "doc";
+                case "application/msword": return "docx";
+                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": return "docx";
                 case "application/pdf": return "pdf";
                 case "application/epub+zip": return "epub";
                 default: throw new BadRequestException();

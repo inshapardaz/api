@@ -33,8 +33,9 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             {
                 var contents = await ReadBody(req);
                 var contentType = GetHeader(req, "Accept", "text/markdown");
+                var language = GetHeader(req, "Accept-Language", "");
 
-                var request = new UpdateChapterContentRequest(claims, libraryId, bookId, chapterId, contents, contentType, claims.GetUserId());
+                var request = new UpdateChapterContentRequest(claims, libraryId, bookId, chapterId, contents, language, contentType, claims.GetUserId());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
                 if (request.Result != null)
@@ -52,7 +53,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             });
         }
 
-        public static LinkView Link(int libraryId, int bookId, int chapterId, string mimetype, string relType = RelTypes.Self, string langugae = null)
-            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", relType, "PUT", type: mimetype, language: langugae);
+        public static LinkView Link(int libraryId, int bookId, int chapterId, int contentId, string mimetype, string relType = RelTypes.Self, string langugae = null)
+            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents/{contentId}", relType, "PUT", type: mimetype, language: langugae);
     }
 }

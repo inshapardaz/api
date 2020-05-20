@@ -6,10 +6,15 @@ namespace Inshapardaz.Functions.Views.Library
     {
         public int Id { get; set; }
 
-        //TODO : Delete this
+        public int BookId { get; set; }
+
         public int ChapterId { get; set; }
+
+        public string Language { get; set; }
 
         [Obsolete]
         public string Contents { get; set; }
+
+        public string MimeType { get; internal set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.Helpers;
+using Inshapardaz.Functions.Tests.Dto;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inshapardaz.Functions.Tests
@@ -12,6 +12,8 @@ namespace Inshapardaz.Functions.Tests
 
         public int LibraryId => _builder.Library.Id;
         public bool PeriodicalsEnabled => _builder.Library.SupportsPeriodicals;
+
+        public LibraryDto Library => _builder.Library;
 
         public LibraryAsserts Check => Container.GetService<LibraryAsserts>();
 

@@ -14,6 +14,7 @@ namespace Inshapardaz.Domain.Models
 
         public DateTime DateCreated { get; set; }
 
+        [Obsolete()]
         public byte[] Contents { get; set; }
 
         public string FilePath { get; set; }

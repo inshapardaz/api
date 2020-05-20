@@ -32,13 +32,15 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             return await Executor.Execute(async () =>
             {
                 var contentType = GetHeader(req, "Content-Type", "text/markdown");
-                var request = new DeleteChapterContentRequest(claims, libraryId, bookId, chapterId, contentType, claims.GetUserId());
+                var language = GetHeader(req, "Accept-Language", "");
+
+                var request = new DeleteChapterContentRequest(claims, libraryId, bookId, chapterId, language, contentType, claims.GetUserId());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
                 return new NoContentResult();
             });
         }
 
-        public static LinkView Link(int libraryId, int bookId, int chapterId, string mimetype, string relType = RelTypes.Self, string language = null)
-            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", relType, "DELETE", type: mimetype, language: language);
+        public static LinkView Link(int libraryId, int bookId, int chapterId, int contentId, string mimetype, string relType = RelTypes.Self, string language = null)
+            => SelfLink($"library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents/{contentId}", relType, "DELETE", type: mimetype, language: language);
     }
 }

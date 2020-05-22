@@ -42,7 +42,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
 
             _chapter = _dataBuilder.WithLibrary(LibraryId).Build();
             _contents = new Faker().Random.Bytes(60);
-            _request = new RequestBuilder().WithBytes(_contents).WithConentType("text/plain").Build();
+            _request = new RequestBuilder().WithBytes(_contents).WithContentType("text/plain").Build();
             _response = (CreatedResult)await handler.Run(_request, LibraryId, _chapter.BookId, _chapter.Id, _claim, CancellationToken.None);
 
             _assert = new ChapterContentAssert(_response, LibraryId);

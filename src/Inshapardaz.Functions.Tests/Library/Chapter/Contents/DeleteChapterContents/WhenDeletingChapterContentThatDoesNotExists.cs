@@ -1,5 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -8,20 +10,21 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterContents
 {
-    [TestFixture, Ignore("ToFix")]
-    public class WhenDeletingChapterContentThatDoesNotExists : FunctionTest
+    [TestFixture]
+    public class WhenDeletingChapterContentThatDoesNotExists
+        : LibraryTest<Functions.Library.Books.Chapters.Contents.DeleteChapterContents>
     {
         private NoContentResult _response;
-        private ChapterDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<ChapterDataBuilder>();
-
-            var chapter = _dataBuilder.Build();
-            var handler = Container.GetService<Functions.Library.Books.Chapters.Contents.DeleteChapterContents>();
-            _response = (NoContentResult)await handler.Run(null, chapter.BookId, chapter.Id, -Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            var _dataBuilder = Container.GetService<ChapterDataBuilder>();
+            var _newContents = new Faker().Random.Words(12);
+            var chapter = _dataBuilder.WithLibrary(LibraryId).WithoutContents().Build();
+            var request = new RequestBuilder().WithBody(_newContents)
+                                              .Build();
+            _response = (NoContentResult)await handler.Run(request, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -31,9 +34,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
         }
 
         [Test]
-        public void ShouldHaveNoContentResult()
+        public void ShouldReturnNoContentResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeNoContent();
         }
     }
 }

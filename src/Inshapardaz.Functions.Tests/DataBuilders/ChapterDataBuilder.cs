@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public IEnumerable<ChapterContentDto> Contents => _contents;
         public IEnumerable<ChapterDto> Chapters => _chapters;
 
+        public IEnumerable<FileDto> Files => _files;
+
         public ChapterDataBuilder(IProvideConnection connectionProvider,
                                     BooksDataBuilder booksBuilder)
         {
@@ -34,6 +37,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public ChapterDataBuilder WithContents(int count = 1)
         {
             _contentCount = count;
+            return this;
+        }
+
+        public ChapterDataBuilder WithoutContents()
+        {
+            _contentCount = 0;
             return this;
         }
 
@@ -61,18 +70,18 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
                 for (int j = 0; j < _contentCount; j++)
                 {
-                    var chapterContent = fixture.Build<FileDto>()
-                                                 .With(a => a.FilePath, Random.BlobUrl)
-                                                 .With(c => c.MimeType, MimeTypes.Pdf)
-                                                 .With(a => a.IsPublic, true)
-                                                 .Create();
-                    _connection.AddFile(chapterContent);
-                    _files.Add(chapterContent);
+                    var file = fixture.Build<FileDto>()
+                                                    .With(a => a.FilePath, Helpers.Random.BlobUrl)
+                                                    .With(c => c.MimeType, MimeTypes.Pdf)
+                                                    .With(a => a.IsPublic, true)
+                                                    .Create();
+                    _connection.AddFile(file);
+                    _files.Add(file);
 
                     var content = fixture.Build<ChapterContentDto>()
                         .With(c => c.ChapterId, chapter.Id)
-                        .With(c => c.FileId, chapterContent.Id)
-                        .With(c => c.Language, Random.Name)
+                        .With(c => c.FileId, file.Id)
+                        .With(c => c.Language, Helpers.Random.Name)
                         .Create();
 
                     _contents.Add(content);

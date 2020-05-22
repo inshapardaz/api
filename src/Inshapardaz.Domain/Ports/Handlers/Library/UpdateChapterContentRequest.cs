@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Exception;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
@@ -43,18 +44,31 @@ namespace Inshapardaz.Domain.Ports.Library
         private readonly IChapterRepository _chapterRepository;
         private readonly IFileStorage _fileStorage;
         private readonly IFileRepository _fileRepository;
+        private readonly ILibraryRepository _libraryRepository;
 
-        public UpdateChapterContentRequestHandler(IChapterRepository chapterRepository, IFileStorage fileStorage, IFileRepository fileRepository)
+        public UpdateChapterContentRequestHandler(IChapterRepository chapterRepository, IFileStorage fileStorage,
+                                                  IFileRepository fileRepository, ILibraryRepository libraryRepository)
         {
             _chapterRepository = chapterRepository;
             _fileStorage = fileStorage;
             _fileRepository = fileRepository;
+            _libraryRepository = libraryRepository;
         }
 
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateChapterContentRequest> HandleAsync(UpdateChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            //TODO: check and update langauge
+            if (string.IsNullOrWhiteSpace(command.Language))
+            {
+                var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
+                if (library == null)
+                {
+                    throw new BadRequestException();
+                }
+
+                command.Language = library.Language;
+            }
+
             var contentUrl = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
 
             if (contentUrl == null)

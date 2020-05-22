@@ -41,15 +41,15 @@ namespace Inshapardaz.Functions.Tests.Helpers
             return this;
         }
 
-        public RequestBuilder WithImage()
+        internal RequestBuilder WithLanguage(string language)
         {
-            _file = new Faker().Image.Random.Bytes(20);
+            _language = language;
             return this;
         }
 
-        internal RequestBuilder WithConentType(string contentType)
+        public RequestBuilder WithImage()
         {
-            _contentType = contentType;
+            _file = new Faker().Image.Random.Bytes(20);
             return this;
         }
 

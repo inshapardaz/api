@@ -2,10 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
-using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.DataHelpers;
-using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,35 +11,27 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterContents
 {
-    [TestFixture, Ignore("ToFix")]
-    public class WhenDeletingChapterContentsAsReader : LibraryTest<Functions.Library.Books.Chapters.Contents.DeleteChapterContents>
+    [TestFixture]
+    public class WhenDeletingChapterContentsAsReader
+        : LibraryTest<Functions.Library.Books.Chapters.Contents.DeleteChapterContents>
     {
         private ForbidResult _response;
-        private int _contentId;
-        private string _contentUrl;
-        private ChapterDataBuilder _dataBuilder;
-
-        private FakeFileStorage _fileStore;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<ChapterDataBuilder>();
+            var _dataBuilder = Container.GetService<ChapterDataBuilder>();
+            var _newContents = new Faker().Random.Words(12);
+            var chapter = _dataBuilder.WithLibrary(LibraryId).WithContents().Build();
+            var content = _dataBuilder.Contents.Single(x => x.ChapterId == chapter.Id);
+            var file = _dataBuilder.Files.Single(x => x.Id == content.FileId);
 
-            _fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
+            var request = new RequestBuilder().WithBody(_newContents)
+                                              .WithLanguage(content.Language)
+                                              .WithContentType(file.MimeType)
+                                              .Build();
 
-            var faker = new Faker();
-
-            var contentLink = faker.Internet.Url();
-            _fileStore.SetupFileContents(contentLink, faker.Random.Words(10));
-
-            var chapter = _dataBuilder.WithContents().Build();
-            var chapterContent = DatabaseConnection.GetContentByChapter(chapter.Id).PickRandom();
-            _contentId = chapterContent.Id;
-            //_contentUrl = chapterContent.ContentUrl;
-            var request = new RequestBuilder().WithContentType("text/markdown").Build();
-
-            _response = (ForbidResult)await handler.Run(request, LibraryId, chapter.BookId, chapterContent.ChapterId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -51,22 +41,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.DeleteChapterCont
         }
 
         [Test]
-        public void ShouldHaveForbidResult()
+        public void ShouldHaveForbiddenResult()
         {
-            Assert.That(_response, Is.Not.Null);
-        }
-
-        [Test]
-        public void ShouldNotHaveDeletedChapterContent()
-        {
-            var expected = DatabaseConnection.GetChapterContentById(_contentId);
-            Assert.That(expected, Is.Not.Null, "Chapter contents should not be deleted");
-        }
-
-        [Test]
-        public void ShouldNotHaveDeletedChapterData()
-        {
-            Assert.That(_fileStore.DoesFileExists(_contentUrl), Is.True, "Chapter data should not be deleted");
+            _response.ShouldBeForbidden();
         }
     }
 }

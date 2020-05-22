@@ -66,8 +66,10 @@ namespace Inshapardaz.Functions.Tests.Asserts
 
         internal static void ThatFilesAreDeletedForChapter(int chapterId, IDbConnection databaseConnection)
         {
-            var contents = databaseConnection.GetFilesByChapter(chapterId);
+            var contents = databaseConnection.GetContentByChapter(chapterId);
             contents.Should().BeNullOrEmpty();
+            var files = databaseConnection.GetFilesByChapter(chapterId);
+            files.Should().BeNullOrEmpty();
         }
 
         internal ChapterAssert ShouldHaveSelfLink()

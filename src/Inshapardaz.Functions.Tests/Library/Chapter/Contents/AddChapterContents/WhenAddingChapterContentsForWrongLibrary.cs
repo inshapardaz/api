@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         {
             var book = Container.GetService<BooksDataBuilder>().WithLibrary(LibraryId).Build();
             var chapter = Container.GetService<ChapterDataBuilder>().WithLibrary(LibraryId).Build();
-            var request = new RequestBuilder().WithConentType("something").WithBody("test content").Build();
+            var request = new RequestBuilder().WithContentType("something").WithBody("test content").Build();
             _response = (BadRequestResult)await handler.Run(request, -Random.Number, book.Id, chapter.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 

@@ -151,5 +151,14 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _chapterContent.Language.Should().Be(request.Language());
             return this;
         }
+
+        internal static void ShouldHaveDeletedContent(IDbConnection dbConnection, ChapterContentDto content)
+        {
+            var dbContent = dbConnection.GetChapterContentById(content.Id);
+            dbContent.Should().BeNull("Chapter contnet should be deleted");
+
+            var dbFile = dbConnection.GetFileById(content.FileId);
+            dbFile.Should().BeNull("Files for content should be deleted");
+        }
     }
 }

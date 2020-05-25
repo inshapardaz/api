@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
@@ -41,14 +42,16 @@ namespace Inshapardaz.Domain.Ports.Library
 
     public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChapterContentRequest>
     {
+        private readonly IBookRepository _bookRepository;
         private readonly IChapterRepository _chapterRepository;
         private readonly IFileStorage _fileStorage;
         private readonly IFileRepository _fileRepository;
         private readonly ILibraryRepository _libraryRepository;
 
-        public UpdateChapterContentRequestHandler(IChapterRepository chapterRepository, IFileStorage fileStorage,
+        public UpdateChapterContentRequestHandler(IBookRepository bookRepository, IChapterRepository chapterRepository, IFileStorage fileStorage,
                                                   IFileRepository fileRepository, ILibraryRepository libraryRepository)
         {
+            _bookRepository = bookRepository;
             _chapterRepository = chapterRepository;
             _fileStorage = fileStorage;
             _fileRepository = fileRepository;
@@ -58,6 +61,13 @@ namespace Inshapardaz.Domain.Ports.Library
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateChapterContentRequest> HandleAsync(UpdateChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
+
+            if (book == null)
+            {
+                throw new BadRequestException();
+            }
+
             if (string.IsNullOrWhiteSpace(command.Language))
             {
                 var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
@@ -76,7 +86,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 var name = GenerateChapterContentUrl(command.BookId, command.ChapterId, command.Language, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
 
-                var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = false, FileName = name };
+                var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = book.IsPublic, FileName = name };
                 var file = await _fileRepository.AddFile(fileModel, cancellationToken);
                 var chapterContent = new ChapterContentModel
                 {
@@ -106,6 +116,8 @@ namespace Inshapardaz.Domain.Ports.Library
                                                               cancellationToken);
                 command.Result.ChapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
             }
+
+            command.Result.ChapterContent.ContentUrl = await ImageHelper.TryConvertToPublicImage(command.Result.ChapterContent.FileId, _fileRepository, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

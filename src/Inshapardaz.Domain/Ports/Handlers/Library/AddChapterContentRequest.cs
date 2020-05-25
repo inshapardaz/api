@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
@@ -36,13 +37,15 @@ namespace Inshapardaz.Domain.Ports.Library
 
     public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterContentRequest>
     {
+        private readonly IBookRepository _bookRepository;
         private readonly IChapterRepository _chapterRepository;
         private readonly IFileStorage _fileStorage;
         private readonly ILibraryRepository _libraryRepository;
         private readonly IFileRepository _fileRepository;
 
-        public AddChapterContentRequestHandler(IChapterRepository chapterRepository, IFileStorage fileStorage, ILibraryRepository libraryRepository, IFileRepository fileRepository)
+        public AddChapterContentRequestHandler(IBookRepository bookRepository, IChapterRepository chapterRepository, IFileStorage fileStorage, ILibraryRepository libraryRepository, IFileRepository fileRepository)
         {
+            _bookRepository = bookRepository;
             _chapterRepository = chapterRepository;
             _fileStorage = fileStorage;
             _libraryRepository = libraryRepository;
@@ -63,13 +66,15 @@ namespace Inshapardaz.Domain.Ports.Library
                 command.Language = library.Language;
             }
 
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
+
             var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterId, cancellationToken);
             if (chapter != null)
             {
                 var name = GenerateChapterContentUrl(command.BookId, command.ChapterId, command.Language, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
 
-                var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = false, FileName = name };
+                var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = book.IsPublic, FileName = name };
                 var file = await _fileRepository.AddFile(fileModel, cancellationToken);
                 var chapterContent = new ChapterContentModel
                 {
@@ -81,6 +86,12 @@ namespace Inshapardaz.Domain.Ports.Library
                 };
 
                 command.Result = await _chapterRepository.AddChapterContent(command.LibraryId, chapterContent, cancellationToken);
+
+                if (file.IsPublic)
+                {
+                    var url = await ImageHelper.TryConvertToPublicImage(file.Id, _fileRepository, cancellationToken);
+                    command.Result.ContentUrl = url;
+                }
             }
 
             return await base.HandleAsync(command, cancellationToken);

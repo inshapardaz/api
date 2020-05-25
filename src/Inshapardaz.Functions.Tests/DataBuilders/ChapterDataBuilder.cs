@@ -25,6 +25,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private int _contentCount;
         private int _libraryId;
         private bool _public;
+        private string _mimeType = MimeTypes.Pdf;
 
         public IEnumerable<ChapterContentDto> Contents => _contents;
         public IEnumerable<ChapterDto> Chapters => _chapters;
@@ -64,6 +65,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             return this;
         }
 
+        public ChapterDataBuilder WithMimeType(string mimeType)
+        {
+            _mimeType = mimeType;
+            return this;
+        }
+
         internal ChapterDataBuilder WithLibrary(int libraryId)
         {
             _libraryId = libraryId;
@@ -90,7 +97,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 {
                     var file = fixture.Build<FileDto>()
                                                     .With(a => a.FilePath, Helpers.Random.BlobUrl)
-                                                    .With(c => c.MimeType, MimeTypes.Pdf)
+                                                    .With(c => c.MimeType, _mimeType)
                                                     .With(a => a.IsPublic, true)
                                                     .Create();
                     _fileStorage.SetupFileContents(file.FilePath, Helpers.Random.Bytes);

@@ -10,7 +10,7 @@
 
         public static string Markdown = "text/markdown";
 
-        public static string Pdf = "text/pdf";
+        public static string Pdf = "application/pdf";
 
         public static string Jpg = "image/jpeg";
     }

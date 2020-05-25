@@ -211,8 +211,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                             From  Inshapardaz.[File] f
                             Inner Join Library.ChapterContent cc On cc.FileId = f.Id
                             Inner Join Library.Chapter c On c.Id = cc.ChapterId
-                            Inner Join Library.Book b On b.Id = C.BookId
-                            Where cc.ChapterId = @ChapterId And b.LibraryId = @LibraryId and b.BookId = @BookId And f.MimeType @MimeType AND cc.Language = @Language";
+                            Inner Join Library.Book b On b.Id = c.BookId
+                            Where cc.ChapterId = @ChapterId And b.LibraryId = @LibraryId and b.Id = @BookId And f.MimeType  = @MimeType AND cc.Language = @Language";
                 var command = new CommandDefinition(sql, new
                 {
                     LibraryId = libraryId,

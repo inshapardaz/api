@@ -25,5 +25,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
             new Faker().PickRandom<T>(source, count);
 
         internal static string Locale => PickRandom(new[] { "en", "ur", "hi", "pn", "pr" });
+
+        internal static object Words(int count) => new Faker().Random.Words(count);
     }
 }

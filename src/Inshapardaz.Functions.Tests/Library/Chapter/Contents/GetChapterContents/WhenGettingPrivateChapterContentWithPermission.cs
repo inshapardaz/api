@@ -85,7 +85,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
         [Test]
         public void ShouldHaveDownloadLink()
         {
-            _assert.ShouldHaveDownloadLink();
+            _assert.ShouldHavePrivateDownloadLink();
         }
 
         [Test]

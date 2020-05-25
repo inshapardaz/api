@@ -1,8 +1,10 @@
-﻿using Inshapardaz.Domain.Models.Library;
+﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Books.Chapters;
 using Inshapardaz.Functions.Library.Books.Chapters.Contents;
+using Inshapardaz.Functions.Library.Files;
 using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -69,6 +71,11 @@ namespace Inshapardaz.Functions.Converters
                 GetBookById.Link(libraryId, source.BookId, RelTypes.Book),
                 GetChapterById.Link(libraryId, source.BookId, source.ChapterId, RelTypes.Chapter)
             };
+
+            if (!string.IsNullOrWhiteSpace(source.ContentUrl))
+            {
+                links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = MimeTypes.Jpg });
+            }
 
             if (principal.IsWriter())
             {

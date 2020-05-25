@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenGettingPrivateChapterContentWithPermission
+    public class WhenGettingPublicChapterContentWithPermission
         : LibraryTest<Functions.Library.Books.Chapters.Contents.GetChapterContents>
     {
         private ObjectResult _response;
@@ -27,7 +27,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
         private ChapterContentDto _content;
         private ClaimsPrincipal _claim;
 
-        public WhenGettingPrivateChapterContentWithPermission(AuthenticationLevel authenticationLevel)
+        public WhenGettingPublicChapterContentWithPermission(AuthenticationLevel authenticationLevel)
         {
             _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
         }
@@ -36,7 +36,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
         public async Task Setup()
         {
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
-            _chapter = dataBuilder.WithLibrary(LibraryId).Private().WithContents().Build();
+            _chapter = dataBuilder.WithLibrary(LibraryId).Public().WithContents().Build();
             _content = dataBuilder.Contents.Single(x => x.ChapterId == _chapter.Id);
             var file = dataBuilder.Files.Single(x => x.Id == _content.FileId);
             var fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
@@ -83,9 +83,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
         }
 
         [Test]
-        public void ShouldHaveDownloadLink()
+        public void ShouldHavePublicDownloadLink()
         {
-            _assert.ShouldHaveDownloadLink();
+            _assert.ShouldHavePublicDownloadLink();
         }
 
         [Test]

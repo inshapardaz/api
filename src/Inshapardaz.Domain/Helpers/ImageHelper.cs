@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Helpers
 {
-    internal class ImageHelper
+    public class ImageHelper
     {
         public static async Task<string> TryConvertToPublicImage(int imageId, IFileRepository fileRepository, CancellationToken cancellationToken)
         {

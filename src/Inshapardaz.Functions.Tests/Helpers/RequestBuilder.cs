@@ -85,7 +85,6 @@ namespace Inshapardaz.Functions.Tests.Helpers
             if (!string.IsNullOrEmpty(_contentType))
             {
                 request.Headers.Add("Content-Type", _contentType);
-                request.Headers.Add("Accept-Language", _language);
             }
 
             if (!string.IsNullOrEmpty(_language))

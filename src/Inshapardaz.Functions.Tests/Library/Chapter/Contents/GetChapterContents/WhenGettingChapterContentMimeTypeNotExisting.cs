@@ -12,29 +12,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContentsById
+namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContents
 {
     [TestFixture]
-    public class WhenGettingPrivateChapterContentsByIdAsUnauthorised
-        : LibraryTest<Functions.Library.Books.Chapters.Contents.GetChapterContentsById>
+    public class WhenGettingChapterContentMimeTypeNotExisting
+        : LibraryTest<Functions.Library.Books.Chapters.Contents.GetChapterContents>
     {
-        private UnauthorizedResult _response;
-        private DefaultHttpRequest _request;
-        private ChapterDto _chapter;
+        private NotFoundResult _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
-            _chapter = dataBuilder.WithLibrary(LibraryId).Private().WithContents().Build();
-            var content = dataBuilder.Contents.Single(x => x.ChapterId == _chapter.Id);
+            var chapter = dataBuilder.WithLibrary(LibraryId).Public().WithContents().Build();
+            var content = dataBuilder.Contents.Single(x => x.ChapterId == chapter.Id);
             var file = dataBuilder.Files.Single(x => x.Id == content.FileId);
             var fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
             var contents = fileStore.GetFile(file.FilePath, CancellationToken.None).Result;
 
-            _request = new RequestBuilder().Build();
+            var request = new RequestBuilder()
+                .WithAccept("unknown-mime-type")
+                .WithLanguage(content.Language)
+                .Build();
 
-            _response = (UnauthorizedResult)await handler.Run(_request, LibraryId, _chapter.BookId, _chapter.Id, content.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (NotFoundResult)await handler.Run(request, LibraryId, chapter.BookId, chapter.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -44,9 +45,9 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
         }
 
         [Test]
-        public void ShouldReturnUnathorised()
+        public void ShouldReturnNotFound()
         {
-            _response.ShouldBeUnauthorized();
+            _response.ShouldBeNotFound();
         }
     }
 }

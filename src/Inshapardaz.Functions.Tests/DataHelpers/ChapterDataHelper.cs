@@ -67,7 +67,7 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
         {
             var sql = @"Select f.* From Inshapardaz.[File] f
                         INNER JOIN Library.ChapterContent cc ON cc.FileId = f.Id
-                        Where cc.ChapterId = @Id AND cc.language = @Language AND cc.MimeType = @MimeType";
+                        Where cc.ChapterId = @Id AND cc.language = @Language AND f.MimeType = @MimeType";
             return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = chapterId, language = language, MimeType = mimetype });
         }
     }

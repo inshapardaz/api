@@ -166,26 +166,12 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Select cc.*, b.Id As BookId, f.Id As FileId, f.FilePath As ContentUrl From Library.Chapter c
+                var sql = @"Select cc.*, b.Id As BookId, f.Id As FileId, f.FilePath As ContentUrl, f.MimeType as MimeType From Library.Chapter c
                             Inner Join Library.Book b On b.Id = c.BookId
                             Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
                             Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
                             Where c.Id = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId AND f.MimeType = @MimeType AND cc.Language = @Language";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterId, MimeType = mimeType, Language = language }, cancellationToken: cancellationToken);
-                return await connection.QuerySingleOrDefaultAsync<ChapterContentModel>(command);
-            }
-        }
-
-        public async Task<ChapterContentModel> GetChapterContentById(int libraryId, int bookId, int chapterId, int contentId, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetConnection())
-            {
-                var sql = @"Select cc.*, b.Id As BookId, f.Id As FileId, f.FilePath As ContentUrl, f.MimeType As MimeType From Library.Chapter c
-                            Inner Join Library.Book b On b.Id = c.BookId
-                            Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
-                            Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
-                            Where c.Id = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId AND cc.Id = @ContentId";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterId, ContentId = contentId }, cancellationToken: cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<ChapterContentModel>(command);
             }
         }

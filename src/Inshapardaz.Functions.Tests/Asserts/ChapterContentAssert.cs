@@ -5,6 +5,7 @@ using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
+using Lucene.Net.Codecs.Compressing;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -79,6 +80,11 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        internal void ShouldHaveCorrectContents(object contents, object fileStorage, IDbConnection databaseConnection)
+        {
+            throw new NotImplementedException();
+        }
+
         internal ChapterContentAssert ShouldHaveCorrectLoactionHeader()
         {
             var response = _response as CreatedResult;
@@ -95,7 +101,23 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
-        internal ChapterContentAssert ShouldHaveDownloadLink()
+        internal ChapterContentAssert ShouldHaveCorrectContentsForMimeType(byte[] expected, string mimeType, IFileStorage fileStorage, IDbConnection dbConnection)
+        {
+            var file = dbConnection.GetFileByChapter(_chapterContent.ChapterId, _chapterContent.Language, mimeType);
+            var content = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
+            content.Should().NotBeNull().And.NotEqual(expected);
+            return this;
+        }
+
+        internal ChapterContentAssert ShouldHaveCorrectContentsForLanguage(byte[] expected, string language, IFileStorage fileStorage, IDbConnection dbConnection)
+        {
+            var file = dbConnection.GetFileByChapter(_chapterContent.ChapterId, language, _chapterContent.MimeType);
+            var content = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
+            content.Should().NotBeNull().And.NotEqual(expected);
+            return this;
+        }
+
+        internal ChapterContentAssert ShouldHavePrivateDownloadLink()
         {
             _chapterContent.Link("download")
                            .ShouldBeGet()

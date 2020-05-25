@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenAddingChapterContentsWithPermission
+    public class WhenAddingChapterContentsToPublicBookWithPermission
         : LibraryTest<Functions.Library.Books.Chapters.Contents.AddChapterContents>
     {
         private CreatedResult _response;
@@ -29,7 +29,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         private ChapterContentAssert _assert;
         private ClaimsPrincipal _claim;
 
-        public WhenAddingChapterContentsWithPermission(AuthenticationLevel authenticationLevel)
+        public WhenAddingChapterContentsToPublicBookWithPermission(AuthenticationLevel authenticationLevel)
         {
             _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
         }
@@ -40,7 +40,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
             _dataBuilder = Container.GetService<ChapterDataBuilder>();
             _fileStorage = Container.GetService<IFileStorage>() as FakeFileStorage;
 
-            _chapter = _dataBuilder.WithLibrary(LibraryId).Build();
+            _chapter = _dataBuilder.WithLibrary(LibraryId).Public().Build();
             _contents = new Faker().Random.Bytes(60);
             _request = new RequestBuilder().WithBytes(_contents).WithContentType("text/plain").Build();
             _response = (CreatedResult)await handler.Run(_request, LibraryId, _chapter.BookId, _chapter.Id, _claim, CancellationToken.None);
@@ -90,6 +90,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
             _assert.ShouldHaveSelfLink()
                    .ShouldHaveBookLink()
                    .ShouldHaveChapterLink()
+                   .ShouldHavePublicDownloadLink()
                    .ShouldHaveUpdateLink()
                    .ShouldHaveDeleteLink();
         }

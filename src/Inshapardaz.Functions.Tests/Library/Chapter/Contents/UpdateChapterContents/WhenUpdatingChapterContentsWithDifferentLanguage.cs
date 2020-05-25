@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Repositories;
@@ -14,12 +15,14 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterContents
 {
     [TestFixture]
-    public class WhenUpdatingChapterContentsAsUnauthorised
+    public class WhenUpdatingChapterContentsWithDifferentLanguage
         : LibraryTest<Functions.Library.Books.Chapters.Contents.UpdateChapterContents>
     {
-        private UnauthorizedResult _response;
+        private ObjectResult _response;
         private ChapterDto _chapter;
         private ChapterContentDto _content;
+        private ChapterContentAssert _assert;
+        private FakeFileStorage _fileStore;
 
         private byte[] _newContents;
 
@@ -30,17 +33,20 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
             _chapter = dataBuilder.WithLibrary(LibraryId).Public().WithContents().Build();
             _content = dataBuilder.Contents.Single(x => x.ChapterId == _chapter.Id);
             var file = dataBuilder.Files.Single(x => x.Id == _content.FileId);
-            var fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
-            var contents = fileStore.GetFile(file.FilePath, CancellationToken.None).Result;
+            _fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
+            var contents = _fileStore.GetFile(file.FilePath, CancellationToken.None).Result;
 
             _newContents = Random.Bytes;
 
             var request = new RequestBuilder()
                                 .WithContentType(file.MimeType)
-                                .WithLanguage(_content.Language)
+                                .WithLanguage(_content.Language + "1")
                                 .WithBytes(_newContents)
                                 .Build();
-            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, _chapter.BookId, _chapter.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+
+            _response = (ObjectResult)await handler.Run(request, LibraryId, _chapter.BookId, _chapter.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+
+            _assert = new ChapterContentAssert(_response, LibraryId);
         }
 
         [OneTimeTearDown]
@@ -50,9 +56,26 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
         }
 
         [Test]
-        public void ShouldHaveUnauthorizedResult()
+        public void ShouldHaveCreatedResult()
         {
-            _response.ShouldBeUnauthorized();
+            _response.ShouldBeCreated();
+        }
+
+        [Test]
+        public void ShouldHaveLinks()
+        {
+            _assert.ShouldHaveSelfLink()
+                   .ShouldHaveBookLink()
+                   .ShouldHaveChapterLink()
+                   .ShouldHaveUpdateLink()
+                   .ShouldHavePublicDownloadLink()
+                   .ShouldHaveDeleteLink();
+        }
+
+        [Test]
+        public void ShouldHaveUpdatedContents()
+        {
+            _assert.ShouldHaveCorrectContentsForLanguage(_newContents, _content.Language + "1", _fileStore, DatabaseConnection);
         }
     }
 }

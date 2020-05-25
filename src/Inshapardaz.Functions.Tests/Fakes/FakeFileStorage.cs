@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 
 namespace Inshapardaz.Functions.Tests.Fakes
@@ -16,6 +17,8 @@ namespace Inshapardaz.Functions.Tests.Fakes
         {
             Console.Write("");
         }
+
+        private static string GetUrl(string name) => $"{ConfigurationSettings.BlobRoot}/{name}";
 
         public void SetupFileContents(string filePath, string content)
         {
@@ -57,14 +60,14 @@ namespace Inshapardaz.Functions.Tests.Fakes
 
         public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
         {
-            var url = $"http://temp.file/{name}";
+            var url = GetUrl(name);
             SetupFileContents(url, content);
             return await Task.FromResult(url);
         }
 
         public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
         {
-            var url = $"http://temp.file/{name}";
+            var url = GetUrl(name);
             SetupFileContents(url, content);
             return await Task.FromResult(url);
         }
@@ -91,7 +94,7 @@ namespace Inshapardaz.Functions.Tests.Fakes
 
         public async Task<string> StoreImage(string name, byte[] content, CancellationToken cancellationToken)
         {
-            var url = $"http://temp.images/{name}";
+            var url = GetUrl(name);
             SetupFileContents(url, content);
             return await Task.FromResult(url);
         }

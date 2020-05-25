@@ -32,7 +32,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             return await Executor.Execute(async () =>
             {
                 var contents = await ReadBody(req);
-                var contentType = GetHeader(req, "Accept", "text/markdown");
+                var contentType = GetHeader(req, "Content-Type", "text/markdown");
                 var language = GetHeader(req, "Accept-Language", "");
 
                 var request = new UpdateChapterContentRequest(claims, libraryId, bookId, chapterId, contents, language, contentType, claims.GetUserId());
@@ -40,13 +40,13 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 
                 if (request.Result != null)
                 {
+                    var renderResult = request.Result.ChapterContent.Render(libraryId, claims);
                     if (request.Result.HasAddedNew)
                     {
-                        var renderResult = request.Result.ChapterContent.Render(libraryId, claims);
                         return new CreatedResult(renderResult.Links.Self(), renderResult);
                     }
 
-                    return new NoContentResult();
+                    return new OkObjectResult(renderResult);
                 }
 
                 return new BadRequestResult();

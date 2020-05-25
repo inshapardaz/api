@@ -1,6 +1,7 @@
-﻿using System.Linq;
+﻿using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Bogus;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -12,35 +13,37 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterContents
+namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContents
 {
-    [TestFixture]
-    public class WhenUpdatingChapterContentsWhereContentNotPresent
-        : LibraryTest<Functions.Library.Books.Chapters.Contents.UpdateChapterContents>
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenAddingChapterContentsToPrivateBookWithPermission
+        : LibraryTest<Functions.Library.Books.Chapters.Contents.AddChapterContents>
     {
-        private ObjectResult _response;
+        private CreatedResult _response;
+        private byte[] _contents;
+        private DefaultHttpRequest _request;
+        private ChapterDataBuilder _dataBuilder;
+        private FakeFileStorage _fileStorage;
         private ChapterDto _chapter;
         private ChapterContentAssert _assert;
-        private FakeFileStorage _fileStore;
-        private DefaultHttpRequest _request;
-        private byte[] _newContents;
+        private ClaimsPrincipal _claim;
+
+        public WhenAddingChapterContentsToPrivateBookWithPermission(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var dataBuilder = Container.GetService<ChapterDataBuilder>();
-            _fileStore = Container.GetService<IFileStorage>() as FakeFileStorage;
-            _chapter = dataBuilder.WithLibrary(LibraryId).Public().WithContents().Build();
+            _dataBuilder = Container.GetService<ChapterDataBuilder>();
+            _fileStorage = Container.GetService<IFileStorage>() as FakeFileStorage;
 
-            _newContents = Random.Bytes;
-
-            _request = new RequestBuilder()
-                                .WithContentType("text/markdown")
-                                .WithLanguage("en")
-                                .WithBytes(_newContents)
-                                .Build();
-
-            _response = (CreatedResult)await handler.Run(_request, LibraryId, _chapter.BookId, _chapter.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _chapter = _dataBuilder.WithLibrary(LibraryId).Private().Build();
+            _contents = new Faker().Random.Bytes(60);
+            _request = new RequestBuilder().WithBytes(_contents).WithContentType("text/plain").Build();
+            _response = (CreatedResult)await handler.Run(_request, LibraryId, _chapter.BookId, _chapter.Id, _claim, CancellationToken.None);
 
             _assert = new ChapterContentAssert(_response, LibraryId);
         }
@@ -78,7 +81,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
         [Test]
         public void ShouldHaveCorrectContentSaved()
         {
-            _assert.ShouldHaveCorrectContents(_newContents, _fileStore, DatabaseConnection);
+            _assert.ShouldHaveCorrectContents(_contents, _fileStorage, DatabaseConnection);
         }
 
         [Test]
@@ -87,7 +90,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.UpdateChapterCont
             _assert.ShouldHaveSelfLink()
                    .ShouldHaveBookLink()
                    .ShouldHaveChapterLink()
-                   .ShouldHavePublicDownloadLink()
+                   .ShouldHavePrivateDownloadLink()
                    .ShouldHaveUpdateLink()
                    .ShouldHaveDeleteLink();
         }

@@ -1,20 +1,17 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
-using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContentsById
+namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContents
 {
     [TestFixture]
-    public class WhenGettingChapterContentsByIdWhenNoChapterNotExists
-        : LibraryTest<Functions.Library.Books.Chapters.Contents.GetChapterContentsById>
+    public class WhenGettingChapterContentWhenNoChapterNotExists
+        : LibraryTest<Functions.Library.Books.Chapters.Contents.GetChapterContents>
     {
         private NotFoundResult _response;
 
@@ -26,7 +23,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
             var dataBuilder = Container.GetService<BooksDataBuilder>();
             var book = dataBuilder.WithLibrary(LibraryId).Build();
 
-            _response = (NotFoundResult)await handler.Run(request, LibraryId, book.Id, -Random.Number, -Random.Number, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (NotFoundResult)await handler.Run(request, LibraryId, book.Id, -Random.Number, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

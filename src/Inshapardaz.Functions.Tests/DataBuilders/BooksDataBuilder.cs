@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using AutoFixture;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
@@ -57,9 +56,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             return this;
         }
 
-        internal BooksDataBuilder IsPublic()
+        internal BooksDataBuilder IsPublic(bool isPublic = true)
         {
-            _isPublic = true;
+            _isPublic = isPublic;
             return this;
         }
 

@@ -10,9 +10,6 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int ChapterId { get; set; }
 
-        [Obsolete]
-        public string Content { get; set; }
-
         public string ContentUrl { get; set; }
 
         public string MimeType { get; set; }

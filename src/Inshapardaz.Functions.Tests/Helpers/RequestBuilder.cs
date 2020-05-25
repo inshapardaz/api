@@ -22,6 +22,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
         private byte[] _file;
         private string _contentType;
         private string _language = Random.Locale;
+        private string _accept;
 
         public RequestBuilder WithQueryParameter(string name, object value)
         {
@@ -59,6 +60,12 @@ namespace Inshapardaz.Functions.Tests.Helpers
             return this;
         }
 
+        internal RequestBuilder WithAccept(string mimeType)
+        {
+            _accept = mimeType;
+            return this;
+        }
+
         internal RequestBuilder WithoutLanguage()
         {
             _language = null;
@@ -79,6 +86,16 @@ namespace Inshapardaz.Functions.Tests.Helpers
             {
                 request.Headers.Add("Content-Type", _contentType);
                 request.Headers.Add("Accept-Language", _language);
+            }
+
+            if (!string.IsNullOrEmpty(_language))
+            {
+                request.Headers.Add("Accept-Language", _language);
+            }
+
+            if (!string.IsNullOrEmpty(_accept))
+            {
+                request.Headers.Add("Accept", _accept);
             }
 
             if (_parameters.Count > 0)

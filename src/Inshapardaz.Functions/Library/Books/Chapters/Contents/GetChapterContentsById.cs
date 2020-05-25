@@ -14,28 +14,26 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 {
-    public class GetChapterContents : QueryBase
+    public class GetChapterContentsById : QueryBase
     {
-        public GetChapterContents(IQueryProcessor queryProcessor)
+        public GetChapterContentsById(IQueryProcessor queryProcessor)
             : base(queryProcessor)
         {
         }
 
-        [FunctionName("GetChapterContents")]
+        [FunctionName("GetChapterContentsById")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/book/{bookId:int}/chapters/{chapterId:int}/contents")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/book/{bookId:int}/chapters/{chapterId:int}/contents/{contentId:int}")] HttpRequest req,
             int libraryId,
             int bookId,
             int chapterId,
+            int contentId,
             [AccessToken] ClaimsPrincipal principal = null,
             CancellationToken token = default)
         {
             return await Executor.Execute(async () =>
             {
-                var contentType = GetHeader(req, "Accept", "text/markdown");
-                var language = GetHeader(req, "Accept-Language", "");
-
-                var query = new GetChapterContentQuery(libraryId, bookId, chapterId, language, contentType, principal.GetUserId())
+                var query = new GetChapterContentByIdQuery(libraryId, bookId, chapterId, contentId, principal.GetUserId())
                 {
                     UserId = principal.GetUserId()
                 };

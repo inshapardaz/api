@@ -12,9 +12,6 @@ namespace Inshapardaz.Functions.Views.Library
 
         public string Language { get; set; }
 
-        [Obsolete]
-        public string Contents { get; set; }
-
         public string MimeType { get; internal set; }
     }
 }

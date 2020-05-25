@@ -19,6 +19,8 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<ChapterContentModel> GetChapterContent(int libraryId, int bookId, int chapterId, string language, string mimeType, CancellationToken cancellationToken);
 
+        Task<ChapterContentModel> GetChapterContentById(int libraryId, int bookId, int chapterId, int contentId, CancellationToken cancellationToken);
+
         Task<string> GetChapterContentUrl(int libraryId, int bookId, int chapterId, string language, string mimeType, CancellationToken cancellationToken);
 
         Task<ChapterContentModel> AddChapterContent(int libraryId, ChapterContentModel content, CancellationToken cancellationToken);

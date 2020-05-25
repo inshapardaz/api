@@ -18,6 +18,12 @@ namespace Inshapardaz.Functions.Tests.Asserts
             result.StatusCode.Should().Be(200);
         }
 
+        public static void ShouldBeRedirect(this StatusCodeResult result)
+        {
+            result.Should().NotBeNull();
+            result.StatusCode.Should().Be(302);
+        }
+
         public static void ShouldBeNoContent(this StatusCodeResult result)
         {
             result.Should().NotBeNull();

@@ -81,7 +81,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContent
         [Test]
         public void ShouldHaveCorrectContentSaved()
         {
-            _assert.ShouldHaveCorrectContentSaved(_contents, _fileStorage, DatabaseConnection);
+            _assert.ShouldHaveCorrectContents(_contents, _fileStorage, DatabaseConnection);
         }
 
         [Test]

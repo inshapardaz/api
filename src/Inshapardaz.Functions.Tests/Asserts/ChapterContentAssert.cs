@@ -6,12 +6,8 @@ using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Inshapardaz.Functions.Tests.Asserts
@@ -23,14 +19,14 @@ namespace Inshapardaz.Functions.Tests.Asserts
         private ChapterContentView _chapterContent;
         private LibraryDto _library;
 
-        public ChapterContentAssert(CreatedResult response, int libraryId)
+        public ChapterContentAssert(ObjectResult response, int libraryId)
         {
             _response = response;
             _libraryId = libraryId;
             _chapterContent = response.Value as ChapterContentView;
         }
 
-        public ChapterContentAssert(CreatedResult response, LibraryDto library)
+        public ChapterContentAssert(ObjectResult response, LibraryDto library)
         {
             _response = response;
             _libraryId = library.Id;
@@ -90,7 +86,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
-        internal ChapterContentAssert ShouldHaveCorrectContentSaved(byte[] expected, IFileStorage fileStorage, IDbConnection dbConnection)
+        internal ChapterContentAssert ShouldHaveCorrectContents(byte[] expected, IFileStorage fileStorage, IDbConnection dbConnection)
         {
             var file = dbConnection.GetFileByChapter(_chapterContent.ChapterId, _chapterContent.Language, _chapterContent.MimeType);
             var content = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
@@ -152,6 +148,18 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        internal ChapterContentAssert ShouldMatch(ChapterContentDto content, int bookId, IDbConnection dbConnection)
+        {
+            _chapterContent.ChapterId.Should().Be(content.ChapterId);
+            _chapterContent.BookId.Should().Be(bookId);
+            _chapterContent.Language.Should().Be(content.Language);
+
+            var dbFile = dbConnection.GetFileById(content.FileId);
+            _chapterContent.MimeType.Should().Be(dbFile.MimeType);
+
+            return this;
+        }
+
         internal static void ShouldHaveDeletedContent(IDbConnection dbConnection, ChapterContentDto content)
         {
             var dbContent = dbConnection.GetChapterContentById(content.Id);
@@ -159,6 +167,13 @@ namespace Inshapardaz.Functions.Tests.Asserts
 
             var dbFile = dbConnection.GetFileById(content.FileId);
             dbFile.Should().BeNull("Files for content should be deleted");
+        }
+
+        internal static void ShouldHaveLocationHeader(RedirectResult result, int libraryId, int bookId, ChapterContentDto content)
+        {
+            var response = result as RedirectResult;
+            response.Url.Should().NotBeNull();
+            response.Url.Should().EndWith($"library/{libraryId}/books/{bookId}/chapters/{content.ChapterId}/contents/{content.Id}");
         }
     }
 }

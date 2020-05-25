@@ -181,7 +181,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             var actual = _chapter.Contents.Single(x => x.Id == content.Id);
             actual.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
+                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents/{content.Id}");
 
             return this;
         }
@@ -191,7 +191,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             var actual = _chapter.Contents.Single(x => x.Id == content.Id);
             actual.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
+                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents/{content.Id}");
 
             return this;
         }

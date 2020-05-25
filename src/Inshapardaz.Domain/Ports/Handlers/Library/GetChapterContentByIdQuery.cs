@@ -11,42 +11,36 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class GetChapterContentQuery : LibraryBaseQuery<ChapterContentModel>
+    public class GetChapterContentByIdQuery : LibraryBaseQuery<ChapterContentModel>
     {
-        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string language, string mimeType, Guid userId)
+        public GetChapterContentByIdQuery(int libraryId, int bookId, int chapterId, int contentId, Guid userId)
             : base(libraryId)
         {
             UserId = userId;
             BookId = bookId;
             ChapterId = chapterId;
-            MimeType = mimeType;
-            Language = language;
+            ContentId = contentId;
         }
 
         public int BookId { get; set; }
 
         public int ChapterId { get; }
-
+        public int ContentId { get; }
         public Guid UserId { get; set; }
-
-        public string MimeType { get; set; }
-        public string Language { get; set; }
     }
 
-    public class GetChapterContentQueryHandler : QueryHandlerAsync<GetChapterContentQuery, ChapterContentModel>
+    public class GetChapterContentByIdQueryHandler : QueryHandlerAsync<GetChapterContentByIdQuery, ChapterContentModel>
     {
         private readonly IBookRepository _bookRepository;
         private readonly IChapterRepository _chapterRepository;
-        private readonly IFileStorage _fileStorage;
 
-        public GetChapterContentQueryHandler(IBookRepository bookRepository, IChapterRepository chapterRepository, IFileStorage fileStorage)
+        public GetChapterContentByIdQueryHandler(IBookRepository bookRepository, IChapterRepository chapterRepository)
         {
             _bookRepository = bookRepository;
             _chapterRepository = chapterRepository;
-            _fileStorage = fileStorage;
         }
 
-        public override async Task<ChapterContentModel> ExecuteAsync(GetChapterContentQuery command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ChapterContentModel> ExecuteAsync(GetChapterContentByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
             if (book == null)
@@ -59,7 +53,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 throw new UnauthorizedException();
             }
 
-            var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
+            var chapterContent = await _chapterRepository.GetChapterContentById(command.LibraryId, command.BookId, command.ChapterId, command.ContentId, cancellationToken);
             if (chapterContent != null)
             {
                 if (command.UserId != Guid.Empty)

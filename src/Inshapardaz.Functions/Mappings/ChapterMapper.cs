@@ -27,7 +27,6 @@ namespace Inshapardaz.Functions.Mappings
             => new ChapterContentView
             {
                 Id = source.Id,
-                Contents = source.Content,
                 ChapterId = source.ChapterId,
                 BookId = source.BookId,
                 Language = source.Language,
@@ -38,7 +37,6 @@ namespace Inshapardaz.Functions.Mappings
             => new ChapterContentModel
             {
                 Id = source.Id,
-                Content = source.Contents,
                 ChapterId = source.ChapterId
             };
     }

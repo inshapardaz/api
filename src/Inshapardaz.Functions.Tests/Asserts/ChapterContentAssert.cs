@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
@@ -91,6 +92,26 @@ namespace Inshapardaz.Functions.Tests.Asserts
             var file = dbConnection.GetFileByChapter(_chapterContent.ChapterId, _chapterContent.Language, _chapterContent.MimeType);
             var content = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.NotEqual(expected);
+            return this;
+        }
+
+        internal ChapterContentAssert ShouldHaveDownloadLink()
+        {
+            _chapterContent.Link("download")
+                           .ShouldBeGet()
+                           .Href.Should()
+                           .StartWith(ConfigurationSettings.BlobRoot);
+
+            return this;
+        }
+
+        internal ChapterContentAssert ShouldHavePublicDownloadLink()
+        {
+            _chapterContent.Link("download")
+                           .ShouldBeGet()
+                           .Href.Should()
+                           .StartWith(ConfigurationSettings.CDNAddress);
+
             return this;
         }
 

@@ -47,7 +47,7 @@ namespace Inshapardaz.Domain.Ports.Library
             {
                 if (author != null && author.ImageId.HasValue)
                 {
-                    author.ImageUrl = await ImageHelper.TryConvertToPublicImage(author.ImageId.Value, _fileRepository, cancellationToken);
+                    author.ImageUrl = await ImageHelper.TryConvertToPublicFile(author.ImageId.Value, _fileRepository, cancellationToken);
                 }
             }
 

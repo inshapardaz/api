@@ -10,7 +10,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.DeleteBookFile
 {
     [TestFixture, Ignore("ToFix")]
     public class WhenDeletingBookFileThatDoesNotExist
-        : LibraryTest<Functions.Library.Books.Files.DeleteBookFile>
+        : LibraryTest<Functions.Library.Books.Content.DeleteBookContent>
     {
         private NoContentResult _response;
 
@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.DeleteBookFile
             _dataBuilder = Container.GetService<BooksDataBuilder>();
             var book = _dataBuilder.Build();
 
-            _response = (NoContentResult)await handler.Run(request, LibraryId, book.Id, Random.Number, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, LibraryId, book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

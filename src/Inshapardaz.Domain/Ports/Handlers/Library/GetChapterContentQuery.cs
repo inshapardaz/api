@@ -37,15 +37,12 @@ namespace Inshapardaz.Domain.Ports.Library
     {
         private readonly IBookRepository _bookRepository;
         private readonly IChapterRepository _chapterRepository;
-        private readonly IFileStorage _fileStorage;
         private readonly IFileRepository _fileRepository;
 
-        public GetChapterContentQueryHandler(IBookRepository bookRepository, IChapterRepository chapterRepository,
-                                             IFileStorage fileStorage, IFileRepository fileRepository)
+        public GetChapterContentQueryHandler(IBookRepository bookRepository, IChapterRepository chapterRepository, IFileRepository fileRepository)
         {
             _bookRepository = bookRepository;
             _chapterRepository = chapterRepository;
-            _fileStorage = fileStorage;
             _fileRepository = fileRepository;
         }
 
@@ -72,7 +69,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
                 if (book.IsPublic)
                 {
-                    chapterContent.ContentUrl = await ImageHelper.TryConvertToPublicImage(chapterContent.FileId, _fileRepository, cancellationToken);
+                    chapterContent.ContentUrl = await ImageHelper.TryConvertToPublicFile(chapterContent.FileId, _fileRepository, cancellationToken);
                 }
             }
 

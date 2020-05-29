@@ -10,7 +10,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenUpdatingBookFileForNonExistingBook : LibraryTest<Functions.Library.Books.Files.UpdateBookFile>
+    public class WhenUpdatingBookFileForNonExistingBook
+        : LibraryTest<Functions.Library.Books.Content.UpdateBookContent>
     {
         private BadRequestResult _response;
 
@@ -23,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
 
             var newContents = new Faker().Image.Random.Bytes(50);
             var request = new RequestBuilder().WithBytes(newContents).BuildRequestMessage();
-            _response = (BadRequestResult)await handler.Run(request, LibraryId, Random.Number, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (BadRequestResult)await handler.Run(request, LibraryId, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenAddingBookFileForNonExistingBook : LibraryTest<Functions.Library.Books.Files.AddBookFile>
+    public class WhenAddingBookFileForNonExistingBook : LibraryTest<Functions.Library.Books.Content.AddBookContent>
     {
         private BadRequestResult _response;
 

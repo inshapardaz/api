@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenAddingBookFileAsWriter : LibraryTest<Functions.Library.Books.Files.AddBookFile>
+    public class WhenAddingBookFileAsWriter : LibraryTest<Functions.Library.Books.Content.AddBookContent>
     {
         private CreatedResult _response;
         private BooksDataBuilder _dataBuilder;

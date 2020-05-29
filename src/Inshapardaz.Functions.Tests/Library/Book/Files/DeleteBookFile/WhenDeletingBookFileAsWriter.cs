@@ -13,7 +13,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.DeleteBookFile
 {
     [TestFixture, Ignore("ToFix")]
     public class WhenDeletingBookFileAsWriter
-        : LibraryTest<Functions.Library.Books.Files.DeleteBookFile>
+        : LibraryTest<Functions.Library.Books.Content.DeleteBookContent>
     {
         private NoContentResult _response;
 
@@ -25,10 +25,10 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.DeleteBookFile
         {
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<BooksDataBuilder>();
-            var book = _dataBuilder.WithFile().Build();
+            var book = _dataBuilder.WithContent().Build();
             _expected = _dataBuilder.Files.PickRandom();
 
-            _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.BookId, _expected.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.BookId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -47,7 +47,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.DeleteBookFile
         [Test]
         public void ShouldHaveDeletedBookFile()
         {
-            var files = DatabaseConnection.GetBookFiles(_expected.BookId);
+            var files = DatabaseConnection.GetBookContents(_expected.BookId);
             Assert.That(files, Is.Empty, "Book File should be deleted.");
         }
 

@@ -48,5 +48,23 @@ namespace Inshapardaz.Functions.Mappings
                 IsPublished = source.IsPublished,
                 Categories = source.Categories?.Select(c => c.Map()).ToList()
             };
+
+        public static BookContentView Map(this BookContentModel source)
+            => new BookContentView
+            {
+                Id = source.Id,
+                BookId = source.BookId,
+                Language = source.Language,
+                MimeType = source.MimeType
+            };
+
+        public static BookContentModel Map(this BookContentView source)
+            => new BookContentModel
+            {
+                Id = source.Id,
+                BookId = source.BookId,
+                Language = source.Language,
+                MimeType = source.MimeType
+            };
     }
 }

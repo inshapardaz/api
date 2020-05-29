@@ -13,6 +13,8 @@ namespace Inshapardaz.Domain.Models.Library
 
         public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
 
+        public List<BookContentModel> Contents { get; set; } = new List<BookContentModel>();
+
         public Languages Language { get; set; }
 
         public bool IsPublic { get; set; }

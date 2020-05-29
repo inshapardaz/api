@@ -12,7 +12,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
 {
     [TestFixture, Ignore("ToFix")]
     public class WhenUpdatingBookFileAsReader
-        : LibraryTest<Functions.Library.Books.Files.UpdateBookFile>
+        : LibraryTest<Functions.Library.Books.Content.UpdateBookContent>
     {
         private ForbidResult _response;
 
@@ -25,11 +25,11 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
         {
             _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            _book = _dataBuilder.WithFile().Build();
+            _book = _dataBuilder.WithContent().Build();
             var file = _dataBuilder.Files.PickRandom();
             _expected = new Faker().Image.Random.Bytes(50);
             var request = new RequestBuilder().WithBytes(_expected).BuildRequestMessage();
-            _response = (ForbidResult)await handler.Run(request, LibraryId, _book.Id, file.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

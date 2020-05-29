@@ -13,6 +13,8 @@ namespace Inshapardaz.Functions.Views.Library
 
         public IEnumerable<CategoryView> Categories { get; set; }
 
+        public IEnumerable<BookContentView> Contents { get; set; }
+
         public int Language { get; set; }
 
         public bool IsPublic { get; set; }

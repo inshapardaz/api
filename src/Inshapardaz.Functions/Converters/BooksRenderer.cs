@@ -4,7 +4,7 @@ using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Books.Chapters;
-using Inshapardaz.Functions.Library.Books.Files;
+using Inshapardaz.Functions.Library.Books.Content;
 using Inshapardaz.Functions.Library.Files;
 using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Mappings;
@@ -102,7 +102,6 @@ namespace Inshapardaz.Functions.Converters
                 GetBookById.Link(source.LibraryId, source.Id, RelTypes.Self),
                 GetAuthorById.Link(source.LibraryId, source.AuthorId, RelTypes.Author),
                 GetChaptersByBook.Link(source.LibraryId, source.Id, RelTypes.Chapters),
-                GetBookFiles.Link(source.LibraryId, source.Id, RelTypes.Files)
             };
 
             if (source.SeriesId.HasValue)
@@ -125,7 +124,7 @@ namespace Inshapardaz.Functions.Converters
                 links.Add(DeleteBook.Link(source.LibraryId, source.Id, RelTypes.Delete));
                 links.Add(UpdateBookImage.Link(source.LibraryId, source.Id, RelTypes.ImageUpload));
                 links.Add(AddChapter.Link(source.LibraryId, source.Id, RelTypes.CreateChapter));
-                links.Add(AddBookFile.Link(source.LibraryId, source.Id, RelTypes.AddFile));
+                links.Add(AddBookContent.Link(source.LibraryId, source.Id, RelTypes.AddFile));
             }
 
             if (principal.IsAuthenticated())
@@ -153,6 +152,42 @@ namespace Inshapardaz.Functions.Converters
                 result.Categories = categories;
             }
 
+            if (source.Contents.Any())
+            {
+                var contents = new List<BookContentView>();
+                foreach (var content in source.Contents)
+                {
+                    contents.Add(content.Render(source.LibraryId, principal));
+                }
+
+                result.Contents = contents;
+            }
+
+            return result;
+        }
+
+        public static BookContentView Render(this BookContentModel source, int libraryId, ClaimsPrincipal principal)
+        {
+            var result = source.Map();
+
+            var links = new List<LinkView>
+            {
+                GetBookContent.Link(libraryId, source.BookId, source.Language, source.MimeType,  RelTypes.Self),
+                GetBookById.Link(libraryId, source.BookId, RelTypes.Book)
+            };
+
+            if (!string.IsNullOrWhiteSpace(source.ContentUrl))
+            {
+                links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = MimeTypes.Jpg });
+            }
+
+            if (principal.IsWriter())
+            {
+                links.Add(UpdateBookContent.Link(libraryId, source.BookId, source.MimeType, source.Language, RelTypes.Update));
+                links.Add(DeleteBookContent.Link(libraryId, source.BookId, source.MimeType, source.Language, RelTypes.Delete));
+            }
+
+            result.Links = links;
             return result;
         }
     }

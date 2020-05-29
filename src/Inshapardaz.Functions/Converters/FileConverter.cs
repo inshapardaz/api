@@ -30,10 +30,10 @@ namespace Inshapardaz.Functions.Converters
             return result;
         }
 
-        public static BookFilesView Render(this IEnumerable<FileModel> source, ClaimsPrincipal user)
+        public static BookContentView Render(this IEnumerable<FileModel> source, ClaimsPrincipal user)
         {
-            var result = new BookFilesView();
-            result.Items = source.Select(f => f.Render(user));
+            var result = new BookContentView();
+            //result.Items = source.Select(f => f.Render(user));
 
             return result;
         }

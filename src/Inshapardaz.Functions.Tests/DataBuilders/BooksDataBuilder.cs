@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using AutoFixture;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
@@ -26,7 +28,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private readonly List<FileDto> _files = new List<FileDto>();
 
         private bool _hasSeries, _hasImage = true, _isPublic = Random.Bool;
-        private int _chapterCount, _categoriesCount, _fileCount;
+        private int _chapterCount, _categoriesCount, _contentCount;
 
         private AuthorDto _author;
         private List<CategoryDto> _categories = new List<CategoryDto>();
@@ -110,15 +112,15 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             return this;
         }
 
-        public BooksDataBuilder WithFile()
+        public BooksDataBuilder WithContent()
         {
-            _fileCount = 1;
+            _contentCount = 1;
             return this;
         }
 
-        public BooksDataBuilder WithFiles(int fileCount)
+        public BooksDataBuilder WithContents(int contentCount)
         {
-            _fileCount = fileCount;
+            _contentCount = contentCount;
             return this;
         }
 
@@ -227,14 +229,14 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 }
 
                 List<FileDto> files = null;
-                if (_fileCount > 0)
+                if (_contentCount > 0)
                 {
                     files = fixture.Build<FileDto>()
                                          .With(f => f.FilePath, Random.BlobUrl)
                                          .With(f => f.IsPublic, false)
-                                         .With(f => f.MimeType, "application/pdf")
+                                         .With(f => f.MimeType, Random.MimeType)
                                          .With(f => f.FilePath, Random.BlobUrl)
-                                         .CreateMany(_fileCount)
+                                         .CreateMany(_contentCount)
                                          .ToList();
                     _files.AddRange(files);
                     files.ForEach(f => _fileStorage.SetupFileContents(f.FilePath, Random.Bytes));
@@ -247,7 +249,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                     _connection.AddBookToCategories(book.Id, categories);
 
                 if (files != null)
-                    _connection.AddBookFiles(book.Id, files);
+                {
+                    _connection.AddBookFiles(book.Id, files.Select(f => new BookContentDto { BookId = book.Id, Language = Random.Name, FileId = f.Id, MimeType = f.MimeType }));
+                }
             }
 
             if (_addToFavoriteForUser != Guid.Empty)
@@ -263,94 +267,6 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             }
 
             return _books;
-
-            //var books = new Faker<BookDto>()
-            //            .RuleFor(c => c.Id, 0)
-            //            .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
-            //            .RuleFor(c => c.Description, f => f.Random.Words(10))
-            //            .RuleFor(c => c.Copyrights, f => f.PickRandom<CopyrightStatuses>())
-            //            .RuleFor(c => c.DateAdded, f => f.Date.Past())
-            //            .RuleFor(c => c.DateUpdated, f => f.Date.Past())
-            //            .RuleFor(c => c.IsPublic, f => f.Random.Bool())
-            //            .RuleFor(c => c.ImageId, f => _hasImage ? f.Random.Int(1) : new int?())
-            //            .RuleFor(c => c.Language, f => f.PickRandom<Languages>())
-            //            .RuleFor(c => c.IsPublished, f => f.Random.Bool())
-            //            .RuleFor(c => c.YearPublished, f => f.Random.Int(1900, 2000))
-            //            .RuleFor(c => c.Status, f => f.PickRandom<BookStatuses>())
-            //            .Generate(numberOfBooks);
-
-            //var series = _series ?? new Faker<SeriesDto>()
-            //    .RuleFor(s => s.Id, 0)
-            //    .RuleFor(s => s.Name, f => f.Random.String())
-            //    .Generate();
-
-            //var categories = _categories.Any()
-            //    ? _categories
-            //    : new Faker<CategoryDto>()
-            //      .RuleFor(c => c.Name, f => f.Random.String())
-            //      .Generate(_categoriesCount);
-
-            //var files = new List<FileDto>();
-            //int seriesIndex = 1;
-            //foreach (var book in books)
-            //{
-            //    var author = _author ?? new Faker<AuthorDto>()
-            //                  .RuleFor(c => c.Id, 0)
-            //                  .RuleFor(c => c.Name, f => f.Random.AlphaNumeric(10))
-            //                  .RuleFor(c => c.ImageId, f => f.Random.Int(1))
-            //                  .Generate();
-
-            //    book.AuthorId = author.Id;
-            //    if (_hasSeries)
-            //    {
-            //        book.SeriesId = series.Id;
-            //        book.SeriesIndex = seriesIndex++;
-            //    }
-
-            //    if (book.ImageId.HasValue)
-            //    {
-            //        var url = _fileStorage.StoreFile($"{book.Id}", new Faker().Image.Random.Bytes(10), CancellationToken.None).Result;
-            //        files.Add(new File { Id = book.ImageId.Value, IsPublic = true, FilePath = url });
-            //    }
-
-            //    foreach (var category in categories)
-            //    {
-            //        book.BookCategory.Add(new BookCategory { Category = category });
-            //    }
-
-            //    for (int i = 0; i < _fileCount; i++)
-            //    {
-            //        var url = _fileStorage.StoreFile($"{book.Id}", new Faker().Random.Bytes(10), CancellationToken.None).Result;
-            //        var file = new Faker<File>()
-            //            .RuleFor(f => f.FilePath, url)
-            //            .RuleFor(f => f.IsPublic, false)
-            //            .RuleFor(f => f.FileName, f => f.Name.Prefix())
-            //            .RuleFor(f => f.DateCreated, f => f.Date.Recent(5))
-            //            .RuleFor(f => f.MimeType, "application/pdf")
-            //            .Generate();
-            //        book.Files.Add(new BookFile { Book = book, File = file });
-            //        files.Add(file);
-            //    }
-
-            //    var chapterIndex = 1;
-            //    book.Chapters = new Faker<Chapter>()
-            //                                    .RuleFor(c => c.Id, 0)
-            //                                    .RuleFor(c => c.Title, f => f.Random.AlphaNumeric(10))
-            //                                    .RuleFor(c => c.ChapterNumber, chapterIndex++)
-            //                                    .Generate(_chapterCount);
-            //}
-
-            //if (!_categories.Any())
-            //{
-            //    _context.Category.AddRange(categories);
-            //}
-
-            //_context.Book.AddRange(books);
-            //_context.File.AddRange(files);
-            //_context.SaveChanges();
-
-            // return books;
-            return null;
         }
 
         public void CleanUp()

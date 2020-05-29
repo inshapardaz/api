@@ -11,7 +11,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenUpdatingBookFileAsUnauthorisedUser : LibraryTest<Functions.Library.Books.Files.UpdateBookFile>
+    public class WhenUpdatingBookFileAsUnauthorisedUser
+        : LibraryTest<Functions.Library.Books.Content.UpdateBookContent>
     {
         private UnauthorizedResult _response;
 
@@ -24,11 +25,11 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
         {
             _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            _book = _dataBuilder.WithFile().Build();
+            _book = _dataBuilder.WithContent().Build();
             var file = _dataBuilder.Files.PickRandom();
             _expected = new Faker().Image.Random.Bytes(50);
             var request = new RequestBuilder().WithBytes(_expected).BuildRequestMessage();
-            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, _book.Id, file.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

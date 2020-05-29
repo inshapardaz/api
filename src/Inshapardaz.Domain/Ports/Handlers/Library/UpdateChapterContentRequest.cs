@@ -117,7 +117,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 command.Result.ChapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
             }
 
-            command.Result.ChapterContent.ContentUrl = await ImageHelper.TryConvertToPublicImage(command.Result.ChapterContent.FileId, _fileRepository, cancellationToken);
+            command.Result.ChapterContent.ContentUrl = await ImageHelper.TryConvertToPublicFile(command.Result.ChapterContent.FileId, _fileRepository, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

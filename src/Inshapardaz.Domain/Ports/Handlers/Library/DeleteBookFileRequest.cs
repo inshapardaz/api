@@ -10,13 +10,15 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class DeleteBookFileRequest : BookRequest
     {
-        public DeleteBookFileRequest(ClaimsPrincipal claims, int libraryId, int bookId, int fileId, Guid userId)
+        public DeleteBookFileRequest(ClaimsPrincipal claims, int libraryId, int bookId, string language, string mimeType, Guid userId)
             : base(claims, libraryId, bookId, userId)
         {
-            FileId = fileId;
+            Language = language;
+            MimeType = mimeType;
         }
 
-        public int FileId { get; }
+        public string Language { get; }
+        public string MimeType { get; }
     }
 
     public class DeleteBookFileRequestHandler : RequestHandlerAsync<DeleteBookFileRequest>
@@ -35,12 +37,12 @@ namespace Inshapardaz.Domain.Ports.Library
         [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<DeleteBookFileRequest> HandleAsync(DeleteBookFileRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var file = await _bookRepository.GetBookFileById(command.BookId, command.FileId, cancellationToken);
-            if (file != null)
+            var content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);
+            if (content != null)
             {
-                await _fileStorage.TryDeleteFile(file.FilePath, cancellationToken);
-                await _bookRepository.DeleteBookFile(command.BookId, command.FileId, cancellationToken);
-                await _fileRepository.DeleteFile(command.FileId, cancellationToken);
+                await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
+                await _bookRepository.DeleteBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);
+                await _fileRepository.DeleteFile(content.FileId, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

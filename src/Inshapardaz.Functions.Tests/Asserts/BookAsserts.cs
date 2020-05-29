@@ -67,11 +67,45 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
-        public BookAssert ShouldHaveFilesLink()
+        public BookAssert ShouldHaveContents(IDbConnection db, bool haveEditableLinks = false)
         {
-            _book.Link("files")
-                  .ShouldBeGet()
-                  .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/files");
+            var bookContents = db.GetBookContents(_book.Id);
+            _book.Contents.Should().NotBeEmpty();
+            _book.Contents.Should().HaveSameCount(bookContents);
+
+            foreach (var content in bookContents)
+            {
+                var bookContent = _book.Contents.SingleOrDefault(c => c.Language == content.Language && c.MimeType == content.MimeType);
+                bookContent.Should().NotBeNull();
+                bookContent.Link("self")
+                    .ShouldBeGet()
+                    .ShouldHaveAcceptLanguage(content.Language)
+                    .ShouldHaveAccept(content.MimeType)
+                    .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/content");
+
+                bookContent.Link("book")
+                    .ShouldBeGet()
+                    .EndingWith($"api/library/{_libraryId}/books/{_book.Id}");
+
+                if (haveEditableLinks)
+                {
+                    bookContent.Link("update")
+                                        .ShouldBePut()
+                                        .ShouldHaveAcceptLanguage(content.Language)
+                                        .ShouldHaveAccept(content.MimeType)
+                                        .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/content");
+                    bookContent.Link("delete")
+                                        .ShouldBeDelete()
+                                        .ShouldHaveAcceptLanguage(content.Language)
+                                        .ShouldHaveAccept(content.MimeType)
+                                        .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/content");
+                }
+                else
+                {
+                    bookContent.Link("update").Should().BeNull();
+                    bookContent.Link("delete").Should().BeNull();
+                }
+            }
 
             return this;
         }
@@ -148,7 +182,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _book.Link("add-file")
                   .ShouldBePost()
-                  .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/files");
+                  .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/content");
             return this;
         }
 

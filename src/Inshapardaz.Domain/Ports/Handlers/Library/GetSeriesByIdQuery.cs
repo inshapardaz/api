@@ -39,7 +39,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
             if (series != null && series.ImageId.HasValue)
             {
-                series.ImageUrl = await ImageHelper.TryConvertToPublicImage(series.ImageId.Value, _fileRepository, cancellationToken);
+                series.ImageUrl = await ImageHelper.TryConvertToPublicFile(series.ImageId.Value, _fileRepository, cancellationToken);
             }
 
             return series;

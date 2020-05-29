@@ -5,7 +5,6 @@ using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
-using Lucene.Net.Codecs.Compressing;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -78,11 +77,6 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _chapterContent.Language.Should().Be(_library.Language);
             return this;
-        }
-
-        internal void ShouldHaveCorrectContents(object contents, object fileStorage, IDbConnection databaseConnection)
-        {
-            throw new NotImplementedException();
         }
 
         internal ChapterContentAssert ShouldHaveCorrectLoactionHeader()

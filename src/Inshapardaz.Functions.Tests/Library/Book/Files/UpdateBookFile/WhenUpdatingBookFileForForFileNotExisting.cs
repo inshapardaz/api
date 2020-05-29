@@ -13,7 +13,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenUpdatingBookFileForForFileNotExisting : LibraryTest<Functions.Library.Books.Files.UpdateBookFile>
+    public class WhenUpdatingBookFileForForFileNotExisting
+        : LibraryTest<Functions.Library.Books.Content.UpdateBookContent>
     {
         private CreatedResult _response;
 
@@ -30,7 +31,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
             _book = _dataBuilder.Build();
             _expected = new Faker().Image.Random.Bytes(50);
             var request = new RequestBuilder().WithBytes(_expected).BuildRequestMessage();
-            _response = (CreatedResult)await handler.Run(request, LibraryId, _book.Id, Random.Number, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (CreatedResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _view = (FileView)_response.Value;
         }

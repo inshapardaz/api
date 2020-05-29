@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -111,6 +112,16 @@ namespace Inshapardaz.Functions
             if (request != null && request.Headers.ContainsKey(headerName))
             {
                 return request.Headers[headerName];
+            }
+
+            return defaultValue;
+        }
+
+        protected string GetHeader(HttpRequestMessage request, string headerName, string defaultValue)
+        {
+            if (request.Headers.TryGetValues(headerName, out var values))
+            {
+                return values.First();
             }
 
             return defaultValue;

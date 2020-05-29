@@ -11,22 +11,26 @@ using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class AddBookFileRequest : LibraryAuthorisedCommand
+    public class AddBookContentRequest : LibraryAuthorisedCommand
     {
-        public AddBookFileRequest(ClaimsPrincipal claims, int libraryId, int bookId)
+        public AddBookContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, string language, string mimeType)
             : base(claims, libraryId)
         {
             BookId = bookId;
+            Language = language;
+            MimeType = mimeType;
         }
 
         public int BookId { get; }
 
+        public string Language { get; }
+        public string MimeType { get; }
         public FileModel Content { get; set; }
 
         public FileModel Result { get; set; }
     }
 
-    public class AddBookFileRequestHandler : RequestHandlerAsync<AddBookFileRequest>
+    public class AddBookFileRequestHandler : RequestHandlerAsync<AddBookContentRequest>
     {
         private readonly IBookRepository _bookRepository;
         private readonly IFileRepository _fileRepository;
@@ -40,7 +44,7 @@ namespace Inshapardaz.Domain.Ports.Library
         }
 
         [Authorise(step: 1, HandlerTiming.Before)]
-        public override async Task<AddBookFileRequest> HandleAsync(AddBookFileRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<AddBookContentRequest> HandleAsync(AddBookContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
 
@@ -50,7 +54,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 command.Content.FilePath = url;
                 command.Content.IsPublic = true;
                 var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-                await _bookRepository.AddBookFile(book.Id, file.Id, cancellationToken);
+                await _bookRepository.AddBookContent(book.Id, file.Id, command.Language, command.MimeType, cancellationToken);
 
                 command.Result = file;
             }

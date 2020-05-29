@@ -89,7 +89,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
                 if (file.IsPublic)
                 {
-                    var url = await ImageHelper.TryConvertToPublicImage(file.Id, _fileRepository, cancellationToken);
+                    var url = await ImageHelper.TryConvertToPublicFile(file.Id, _fileRepository, cancellationToken);
                     command.Result.ContentUrl = url;
                 }
             }

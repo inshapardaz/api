@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenGettingBookFileForNonExistingBook : LibraryTest<Functions.Library.Books.Files.GetBookFiles>
+    public class WhenGettingBookFileForNonExistingBook
+        : LibraryTest<Functions.Library.Books.Content.GetBookContent>
     {
         private NotFoundResult _response;
 

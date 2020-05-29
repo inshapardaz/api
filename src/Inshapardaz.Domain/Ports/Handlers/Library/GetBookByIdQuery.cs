@@ -5,6 +5,7 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,10 +36,18 @@ namespace Inshapardaz.Domain.Ports.Library
         public override async Task<BookModel> ExecuteAsync(GetBookByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
-            if (book != null && book.ImageId.HasValue)
+            if (book != null)
             {
-                book.ImageUrl = await ImageHelper.TryConvertToPublicImage(book.ImageId.Value, _fileRepository, cancellationToken);
+                if (book.ImageId.HasValue)
+                {
+                    book.ImageUrl = await ImageHelper.TryConvertToPublicFile(book.ImageId.Value, _fileRepository, cancellationToken);
+                }
+
+                var contents = await _bookRepository.GetBookContents(command.LibraryId, command.BookId, cancellationToken);
+
+                book.Contents = contents.ToList();
             }
+
             return book;
         }
     }

@@ -30,6 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
             var books = dataBuilder.WithLibrary(LibraryId)
                                         .HavingSeries()
                                         .WithCategories(_categories)
+                                        .WithContents(2)
                                         .Build(4);
             _expected = books.PickRandom();
 
@@ -68,9 +69,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         }
 
         [Test]
-        public void ShouldHaveFilesLink()
+        public void ShouldHaveContents()
         {
-            _assert.ShouldHaveFilesLink();
+            _assert.ShouldHaveContents(DatabaseConnection);
         }
 
         [Test]

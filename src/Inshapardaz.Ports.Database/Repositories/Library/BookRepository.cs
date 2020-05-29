@@ -495,46 +495,76 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             }
         }
 
-        public async Task DeleteBookFile(int bookId, int fileId, CancellationToken cancellationToken)
+        public async Task DeleteBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From Library.BookFile Where BookId = @BookId And FileId = @FileId";
-                var command = new CommandDefinition(sql, new { FileId = fileId, BookId = bookId }, cancellationToken: cancellationToken);
+                var sql = @"Delete bc
+                            From Library.BookContent bc
+                            Inner Join Library.Book b On b.Id = bc.BookId
+                            INNER JOIN Inshapardaz.[File] f ON bc.FileId = f.Id
+                            Where b.LibraryId = @LibraryId and b.Id = @BookId And f.MimeType = @MimeType AND bc.Language = @Language";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Language = language, MimeType = mimeType, BookId = bookId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
 
-        public async Task<FileModel> GetBookFileById(int bookId, int fileId, CancellationToken cancellationToken)
+        public async Task<BookContentModel> GetBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Select f.* from Library.BookFile bf
-                            Inner Join Inshapardaz.[File] f On bf.FileId = f.Id
-                            Where bf.BookId = @BookId And bf.FileId = @FileId;";
-                var command = new CommandDefinition(sql, new { FileId = fileId, BookId = bookId }, cancellationToken: cancellationToken);
-                return await connection.QuerySingleOrDefaultAsync<FileModel>(command);
+                var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl
+                            FROM Library.BookContent bc
+                            INNER JOING Library.Book b ON b.Id = bc.BooklId
+                            INNER JOIN Inshapardaz.[File] f ON bc.FileId = f.Id
+                            WHERE b.LibraryId = @LibraryId, bc.BookId = @BookId AND bc.Language = @Language AND f.MimeType = @MimeType";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, Language = language, MimeType = mimeType }, cancellationToken: cancellationToken);
+                return await connection.QuerySingleOrDefaultAsync<BookContentModel>(command);
             }
         }
 
-        public async Task<IEnumerable<FileModel>> GetFilesByBook(int bookId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<BookContentModel>> GetBookContents(int libraryId, int bookId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Select f.* from Library.BookFile bf
-                            Inner Join Inshapardaz.[File] f On bf.FileId = f.Id
-                            Where bf.BookId = @BookId";
-                var command = new CommandDefinition(sql, new { BookId = bookId }, cancellationToken: cancellationToken);
-                return await connection.QueryAsync<FileModel>(command);
+                var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl
+                            FROM Library.BookContent bc
+                            INNER JOIN Library.Book b ON b.Id = bc.BookId
+                            INNER JOIN Inshapardaz.[File] f ON bc.FileId = f.Id
+                            WHERE b.LibraryId = @LibraryId AND bc.BookId = @BookId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
+                return await connection.QueryAsync<BookContentModel>(command);
             }
         }
 
-        public async Task AddBookFile(int bookId, int fileId, CancellationToken cancellationToken)
+        public async Task UpdateBookContentUrl(int libraryId, int bookId, string language, string mimeType, string contentUrl, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Library.BookFile (BookId, FileId) Values (@BookId, @FileId)";
-                var command = new CommandDefinition(sql, new { FileId = fileId, BookId = bookId }, cancellationToken: cancellationToken);
+                var sql = @"Update f SET FilePath = @ContentUrl
+                            From  Inshapardaz.[File] f
+                            Inner Join Library.BookContent bc On bc.FileId = f.Id
+                            Inner Join Library.Book b On b.Id = bc.BookId
+                            Where b.LibraryId = @LibraryId and b.Id = @BookId And f.MimeType  = @MimeType AND bc.Language = @Language";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    BookId = bookId,
+                    Language = language,
+                    MimeType = mimeType,
+                    ContentUrl = contentUrl
+                }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task AddBookContent(int bookId, int fileId, string language, string mimeType, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Insert Into Library.BookContent (BookId, FileId, Language)
+                            Values (@BookId, @FileId, @Language)";
+                var command = new CommandDefinition(sql, new { FileId = fileId, BookId = bookId, Language = language }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }

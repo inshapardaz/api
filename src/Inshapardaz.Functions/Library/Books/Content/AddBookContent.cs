@@ -3,6 +3,7 @@ using Inshapardaz.Domain.Ports.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
+using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -13,23 +14,21 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Executor = Inshapardaz.Functions.Extensions.Executor;
 
-namespace Inshapardaz.Functions.Library.Books.Files
+namespace Inshapardaz.Functions.Library.Books.Content
 {
-    public class UpdateBookFile : CommandBase
+    public class AddBookContent : CommandBase
     {
-        public UpdateBookFile(IAmACommandProcessor commandProcessor)
-            : base(commandProcessor)
+        public AddBookContent(IAmACommandProcessor commandProcessor)
+        : base(commandProcessor)
         {
         }
 
-        [FunctionName("UpdateBookFile")]
+        [FunctionName("AddBookFile")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "library/{libraryId}/books/{bookId}/files/{fileId}")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books/{bookId}/content")] HttpRequestMessage req,
             int libraryId,
             int bookId,
-            int fileId,
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
         {
@@ -38,8 +37,10 @@ namespace Inshapardaz.Functions.Library.Books.Files
                 var multipart = await req.Content.ReadAsMultipartAsync(token);
                 var content = await req.Content.ReadAsByteArrayAsync();
 
+                var mimeType = GetHeader(req, "Content-Type", "text/markdown");
+                var language = GetHeader(req, "Accept-Language", "");
+
                 var fileName = $"{bookId}";
-                var mimeType = "application/binary";
                 var fileContent = multipart.Contents.FirstOrDefault();
                 if (fileContent != null)
                 {
@@ -47,7 +48,7 @@ namespace Inshapardaz.Functions.Library.Books.Files
                     mimeType = fileContent.Headers?.ContentType?.MediaType;
                 }
 
-                var request = new UpdateBookFileRequest(claims, libraryId, bookId, fileId)
+                var request = new AddBookContentRequest(claims, libraryId, bookId, language, mimeType)
                 {
                     Content = new FileModel
                     {
@@ -60,25 +61,20 @@ namespace Inshapardaz.Functions.Library.Books.Files
 
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-                if (request.Result.Content != null)
+                if (request.Result != null)
                 {
-                    var renderResult = request.Result.Content.Render(claims);
-
-                    if (request.Result.HasAddedNew)
-                    {
-                        return new CreatedResult(renderResult.Links.Self(), renderResult);
-                    }
-                    else
-                    {
-                        return new OkObjectResult(renderResult);
-                    }
+                    var response = request.Result.Render(claims);
+                    return new CreatedResult(response.Links.Self(), response);
                 }
 
                 return new BadRequestResult();
             });
         }
 
-        private object GetFileExtension(string fileName)
+        public static LinkView Link(int libraryId, int bookId, string relType = RelTypes.Self)
+            => SelfLink($"library/{libraryId}/books/{bookId}/content", relType, "POST");
+
+        private string GetFileExtension(string fileName)
         {
             if (!string.IsNullOrWhiteSpace(fileName))
             {

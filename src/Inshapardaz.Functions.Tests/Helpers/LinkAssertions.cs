@@ -117,7 +117,13 @@ namespace Inshapardaz.Functions.Tests.Helpers
 
         public static LinkView ShouldHaveAcceptLanguage(this LinkView link, string expected)
         {
-            Assert.That(link.AcceptLanguage, Is.EqualTo(expected), $"Link with reltype '{link.Rel}' and method '{link.Method}' has invalis accepted language");
+            Assert.That(link.AcceptLanguage, Is.EqualTo(expected), $"Link with reltype '{link.Rel}' and method '{link.Method}' has invalid accepted language");
+            return link;
+        }
+
+        public static LinkView ShouldHaveAccept(this LinkView link, string expected)
+        {
+            Assert.That(link.Accept, Is.EqualTo(expected), $"Link with reltype '{link.Rel}' and method '{link.Method}' has invalid accept");
             return link;
         }
 

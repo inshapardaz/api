@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using System;
 using System.Collections.Generic;
 
@@ -27,5 +28,8 @@ namespace Inshapardaz.Functions.Tests.Helpers
         internal static string Locale => PickRandom(new[] { "en", "ur", "hi", "pn", "pr" });
 
         internal static object Words(int count) => new Faker().Random.Words(count);
+
+        internal static string MimeType =>
+            new Faker().PickRandom(new[] { MimeTypes.Csv, MimeTypes.Jpg, MimeTypes.Json, MimeTypes.Markdown, MimeTypes.Pdf });
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
@@ -11,32 +12,33 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
-    public class UpdateBookFileRequest : LibraryAuthorisedCommand
+    public class UpdateBookContentRequest : LibraryAuthorisedCommand
     {
-        public UpdateBookFileRequest(ClaimsPrincipal claims, int libraryId, int bookId, int fileId)
+        public UpdateBookContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, string language, string mimeType)
             : base(claims, libraryId)
         {
             BookId = bookId;
-            FileId = fileId;
+            Language = language;
+            MimeType = mimeType;
         }
 
         public int BookId { get; }
 
-        public int FileId { get; set; }
-
+        public string Language { get; }
+        public string MimeType { get; }
         public FileModel Content { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();
 
         public class RequestResult
         {
-            public FileModel Content { get; set; }
+            public BookContentModel Content { get; set; }
 
             public bool HasAddedNew { get; set; }
         }
     }
 
-    public class UpdateBookFileRequestHandler : RequestHandlerAsync<UpdateBookFileRequest>
+    public class UpdateBookFileRequestHandler : RequestHandlerAsync<UpdateBookContentRequest>
     {
         private readonly IBookRepository _bookRepository;
         private readonly IFileRepository _fileRepository;
@@ -50,36 +52,39 @@ namespace Inshapardaz.Domain.Ports.Library
         }
 
         [Authorise(step: 1, HandlerTiming.Before)]
-        public override async Task<UpdateBookFileRequest> HandleAsync(UpdateBookFileRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<UpdateBookContentRequest> HandleAsync(UpdateBookContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
             if (book != null)
             {
-                var bookFile = await _bookRepository.GetBookFileById(command.BookId, command.FileId, cancellationToken);
-                if (bookFile != null)
+                var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);
+                if (bookContent != null)
                 {
-                    if (!string.IsNullOrWhiteSpace(bookFile.FilePath))
+                    if (!string.IsNullOrWhiteSpace(bookContent.ContentUrl))
                     {
-                        await _fileStorage.TryDeleteFile(bookFile.FilePath, cancellationToken);
+                        await _fileStorage.TryDeleteFile(bookContent.ContentUrl, cancellationToken);
                     }
 
                     var url = await StoreFile(command.BookId, command.Content.FileName, command.Content.Contents, cancellationToken);
-                    bookFile.FilePath = url;
-                    bookFile.IsPublic = true;
-                    await _fileRepository.UpdateFile(bookFile, cancellationToken);
+                    bookContent.ContentUrl = url;
+                    await _bookRepository.UpdateBookContentUrl(command.LibraryId,
+                                                            command.BookId,
+                                                            command.Language,
+                                                            command.MimeType,
+                                                            url, cancellationToken);
 
-                    command.Result.Content = bookFile;
+                    command.Result.Content = bookContent;
                 }
                 else
                 {
                     var url = await StoreFile(command.BookId, command.Content.FileName, command.Content.Contents, cancellationToken);
                     command.Content.FilePath = url;
-                    command.Content.IsPublic = true;
+                    command.Content.IsPublic = book.IsPublic;
                     var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-                    await _bookRepository.AddBookFile(command.BookId, file.Id, cancellationToken);
+                    await _bookRepository.AddBookContent(command.BookId, file.Id, command.Language, command.MimeType, cancellationToken);
 
                     command.Result.HasAddedNew = true;
-                    command.Result.Content = file;
+                    command.Result.Content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken); ;
                 }
             }
 

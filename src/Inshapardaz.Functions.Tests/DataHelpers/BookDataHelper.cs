@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using System;
@@ -52,14 +53,14 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
             connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, userId });
         }
 
-        public static void AddBookFiles(this IDbConnection connection, int bookId, IEnumerable<FileDto> files) =>
-            files.ForEach(f => connection.AddBookFile(bookId, f));
+        public static void AddBookFiles(this IDbConnection connection, int bookId, IEnumerable<BookContentDto> contentDto) =>
+            contentDto.ForEach(f => connection.AddBookFile(bookId, f));
 
-        public static void AddBookFile(this IDbConnection connection, int bookId, FileDto file)
+        public static void AddBookFile(this IDbConnection connection, int bookId, BookContentDto contentDto)
         {
-            var sql = @"Insert Into Library.BookFile (BookId, FileId)
-                        Values (@BookId, @FileId)";
-            connection.Execute(sql, new { BookId = bookId, FileId = file.Id });
+            var sql = @"Insert Into Library.BookContent (BookId, FileId, Language)
+                        Values (@BookId, @FileId, @Language)";
+            connection.Execute(sql, new { BookId = bookId, FileId = contentDto.FileId, Language = contentDto.Language });
         }
 
         public static int GetBookCountByAuthor(this IDbConnection connection, int id)
@@ -132,9 +133,47 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
                 BookId = bookId
             });
 
-        public static IEnumerable<BookFileDto> GetBookFiles(this IDbConnection connection, int bookId)
+        public static IEnumerable<BookContentDto> GetBookContents(this IDbConnection connection, int bookId)
         {
-            return connection.Query<BookFileDto>(@"Select * From Library.BookFile Where BookId = @BookId ", new { BookId = bookId });
+            string sql = @"Select bc.*, f.MimeType From Library.BookContent bc
+                           INNER Join Library.Book b ON b.Id = bc.BookId
+                           INNER Join Inshapardaz.[File] f ON f.Id = bc.FileId
+                           Where b.Id = @BookId";
+
+            return connection.Query<BookContentDto>(sql, new
+            {
+                BookId = bookId
+            });
+        }
+
+        public static BookFileDto GetBookContent(this IDbConnection connection, int bookId, string language, string mimetype)
+        {
+            string sql = @"Select * From Library.BookContent bc
+                           INNER Join Library.Book b ON b.Id = bc.BookId
+                           INNER Join Inshapardaz.[File] f ON f.Id = bc.FileId
+                           Where b.Id = @BookId AND bc.Language = @Language AND f.MimeType = @MimeType";
+
+            return connection.QuerySingleOrDefault<BookFileDto>(sql, new
+            {
+                BookId = bookId,
+                Language = language,
+                MimeType = mimetype
+            });
+        }
+
+        public static string GetBookContentPath(this IDbConnection connection, int bookId, string language, string mimetype)
+        {
+            string sql = @"Select f.FilePath From Library.BookContent bc
+                           INNER Join Library.Book b ON b.Id = bc.BookId
+                           INNER Join Inshapardaz.[File] f ON f.Id = bc.FileId
+                           Where b.BookId = @BookId AND bc.Language = @Language AND f.MimeType = @MimeType";
+
+            return connection.QuerySingleOrDefault<string>(sql, new
+            {
+                BookId = bookId,
+                Language = language,
+                MimeType = mimetype
+            });
         }
     }
 }

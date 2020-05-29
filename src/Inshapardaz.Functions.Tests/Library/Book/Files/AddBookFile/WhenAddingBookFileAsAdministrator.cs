@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views;
@@ -11,18 +12,18 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenAddingBookFileAsAdministrator : LibraryTest<Functions.Library.Books.Files.AddBookFile>
+    public class WhenAddingBookFileAsAdministrator
+        : LibraryTest<Functions.Library.Books.Content.AddBookContent>
     {
         private CreatedResult _response;
-        private BooksDataBuilder _dataBuilder;
         private FileView _view;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _dataBuilder = Container.GetService<BooksDataBuilder>();
+            var dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            var book = _dataBuilder.Build();
+            var book = dataBuilder.WithLibrary(LibraryId).Build();
             var contents = new Faker().Random.Words(60);
             var request = new RequestBuilder().WithBody(contents).BuildRequestMessage();
             _response = (CreatedResult)await handler.Run(request, LibraryId, book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
@@ -39,8 +40,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
         [Test]
         public void ShouldHaveCreatedResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(201));
+            _response.ShouldBeCreated();
         }
 
         [Test]

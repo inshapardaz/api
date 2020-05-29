@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Ports.Handlers.Library;
+﻿using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -27,7 +28,7 @@ namespace Inshapardaz.Domain.Ports.Library
         public string MimeType { get; }
         public FileModel Content { get; set; }
 
-        public FileModel Result { get; set; }
+        public BookContentModel Result { get; set; }
     }
 
     public class AddBookFileRequestHandler : RequestHandlerAsync<AddBookContentRequest>
@@ -56,7 +57,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 var file = await _fileRepository.AddFile(command.Content, cancellationToken);
                 await _bookRepository.AddBookContent(book.Id, file.Id, command.Language, command.MimeType, cancellationToken);
 
-                command.Result = file;
+                command.Result = await _bookRepository.GetBookContent(book.LibraryId, book.Id, command.Language, command.MimeType, cancellationToken); ;
             }
 
             return await base.HandleAsync(command, cancellationToken);

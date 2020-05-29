@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Files.DeleteBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.DeleteBookFile
 {
     [TestFixture, Ignore("ToFix")]
     public class WhenDeletingBookFileAsReader

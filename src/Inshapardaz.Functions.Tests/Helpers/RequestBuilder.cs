@@ -111,9 +111,20 @@ namespace Inshapardaz.Functions.Tests.Helpers
         public HttpRequestMessage BuildRequestMessage()
         {
             var request = new HttpRequestMessage();
+
+            if (!string.IsNullOrEmpty(_language))
+            {
+                request.Headers.Add("Accept-Language", _language);
+            }
+
+            if (!string.IsNullOrEmpty(_accept))
+            {
+                request.Headers.Add("Accept", _accept);
+            }
+
             if (_file != null)
             {
-                request.Content = CreateMultiPartImageData(_file);
+                request.Content = CreateMultiPartImageData(_file, _contentType ?? "image/jpeg");
             }
             else
             {

@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
@@ -10,10 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenGettingBookFileAsAdministrator
+    public class WhenGettingBookFileAsUnauthorised
         : LibraryTest<Functions.Library.Books.Content.GetBookContent>
     {
         private OkObjectResult _response;
@@ -29,7 +28,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
 
             _book = _dataBuilder.WithContents(5).Build();
             var request = new RequestBuilder().Build();
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = (BookContentView)_response.Value;
         }
@@ -50,14 +49,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
         [Test]
         public void ShouldReturnAllBookFiles()
         {
-            foreach (var bookFile in _dataBuilder.Files)
-            {
-                //var file = DatabaseConnection.GetFileById(bookFile.FileId);
-                //var actual = _view.Items.SingleOrDefault(f => f.Id == bookFile.Id);
-                //Assert.That(actual, Is.Not.Null, "File not found in resonse");
-                //Assert.That(actual.FileName, Is.EqualTo(file.FileName), "File Name doesn't match");
-                //Assert.That(actual.MimeType, Is.EqualTo(file.MimeType), "MimeType doesn't match");
-            }
+            //_view.Items.ForEach(f => Check.ThatFileMatch(f));
         }
     }
 }

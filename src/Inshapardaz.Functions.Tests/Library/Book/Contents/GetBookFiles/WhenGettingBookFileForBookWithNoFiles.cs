@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Dto;
@@ -9,10 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenGettingBookFileAsUnauthorised
+    public class WhenGettingBookFileForBookWithNoFiles
         : LibraryTest<Functions.Library.Books.Content.GetBookContent>
     {
         private OkObjectResult _response;
@@ -26,9 +25,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
         {
             _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            _book = _dataBuilder.WithContents(5).Build();
+            _book = _dataBuilder.Build();
             var request = new RequestBuilder().Build();
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = (BookContentView)_response.Value;
         }
@@ -47,9 +46,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
         }
 
         [Test]
-        public void ShouldReturnAllBookFiles()
+        public void ShouldReturnNoFiles()
         {
-            //_view.Items.ForEach(f => Check.ThatFileMatch(f));
+            // Assert.That(_view.Items, Is.Empty);
         }
     }
 }

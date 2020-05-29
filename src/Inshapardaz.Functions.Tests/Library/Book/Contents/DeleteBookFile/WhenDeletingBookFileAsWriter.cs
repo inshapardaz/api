@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Files.DeleteBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.DeleteBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenDeletingBookFileAsAdministrator
+    public class WhenDeletingBookFileAsWriter
         : LibraryTest<Functions.Library.Books.Content.DeleteBookContent>
     {
         private NoContentResult _response;
@@ -26,9 +26,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.DeleteBookFile
             var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<BooksDataBuilder>();
             var book = _dataBuilder.WithContent().Build();
-            _expected = _dataBuilder.Files.PickRandom<BookFileDto>();
+            _expected = _dataBuilder.Files.PickRandom();
 
-            _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.BookId, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (NoContentResult)await handler.Run(request, LibraryId, _expected.BookId, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

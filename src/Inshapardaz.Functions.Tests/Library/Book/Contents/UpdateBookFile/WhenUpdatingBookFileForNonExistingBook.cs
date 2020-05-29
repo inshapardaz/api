@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
 {
     [TestFixture, Ignore("ToFix")]
     public class WhenUpdatingBookFileForNonExistingBook

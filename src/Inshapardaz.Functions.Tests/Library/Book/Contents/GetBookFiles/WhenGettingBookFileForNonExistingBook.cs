@@ -4,7 +4,7 @@ using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Files.GetBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
 {
     [TestFixture, Ignore("ToFix")]
     public class WhenGettingBookFileForNonExistingBook

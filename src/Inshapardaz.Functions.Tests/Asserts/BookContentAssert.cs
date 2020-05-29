@@ -38,7 +38,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _bookContent.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}/files");
+                  .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}/content");
 
             return this;
         }
@@ -61,8 +61,20 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _bookContent.UpdateLink()
                  .ShouldBePut()
-                 .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}/files");
+                 .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}/content");
 
+            return this;
+        }
+
+        internal BookContentAssert ShouldHaveCorrectLanguage(string locale)
+        {
+            _bookContent.Language.Should().Be(locale);
+            return this;
+        }
+
+        internal BookContentAssert ShouldHaveCorrectMimeType(string mimeType)
+        {
+            _bookContent.MimeType.Should().Be(mimeType);
             return this;
         }
 
@@ -82,7 +94,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             var response = _response as CreatedResult;
             response.Location.Should().NotBeNull();
-            response.Location.Should().EndWith($"library/{_libraryId}/books/{_bookContent.BookId}/files");
+            response.Location.Should().EndWith($"library/{_libraryId}/books/{_bookContent.BookId}/content");
             return this;
         }
 
@@ -146,7 +158,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _bookContent.DeleteLink()
                  .ShouldBeDelete()
-                 .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}/files");
+                 .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}/content");
 
             return this;
         }
@@ -159,9 +171,9 @@ namespace Inshapardaz.Functions.Tests.Asserts
 
         internal BookContentAssert ShouldHaveBookLink()
         {
-            _bookContent.Link("chapter")
+            _bookContent.Link("book")
                 .ShouldBeGet()
-                .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}/files");
+                .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}");
 
             return this;
         }

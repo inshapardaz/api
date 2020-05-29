@@ -1,15 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.AddBookContent
 {
-    [TestFixture, Ignore("ToFix")]
-    public class WhenAddingBookFileForNonExistingBook : LibraryTest<Functions.Library.Books.Content.AddBookContent>
+    [TestFixture]
+    public class WhenAddingBookContentForNonExistingBook
+        : LibraryTest<Functions.Library.Books.Content.AddBookContent>
     {
         private BadRequestResult _response;
 
@@ -30,7 +31,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.AddBookFile
         [Test]
         public void ShouldHaveBadRequestResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeBadRequest();
         }
     }
 }

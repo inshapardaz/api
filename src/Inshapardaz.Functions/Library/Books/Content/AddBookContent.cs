@@ -63,7 +63,7 @@ namespace Inshapardaz.Functions.Library.Books.Content
 
                 if (request.Result != null)
                 {
-                    var response = request.Result.Render(claims);
+                    var response = request.Result.Render(libraryId, claims);
                     return new CreatedResult(response.Links.Self(), response);
                 }
 

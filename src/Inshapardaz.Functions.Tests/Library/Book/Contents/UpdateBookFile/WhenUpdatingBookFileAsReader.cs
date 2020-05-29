@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenUpdatingBookFileAsUnauthorisedUser
+    public class WhenUpdatingBookFileAsReader
         : LibraryTest<Functions.Library.Books.Content.UpdateBookContent>
     {
-        private UnauthorizedResult _response;
+        private ForbidResult _response;
 
         private BookDto _book;
         private byte[] _expected;
@@ -29,7 +29,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
             var file = _dataBuilder.Files.PickRandom();
             _expected = new Faker().Image.Random.Bytes(50);
             var request = new RequestBuilder().WithBytes(_expected).BuildRequestMessage();
-            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (ForbidResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -39,7 +39,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Files.UpdateBookFile
         }
 
         [Test]
-        public void ShouldReturnUnauthorizedResult()
+        public void ShouldReturnForbidResult()
         {
             Assert.That(_response, Is.Not.Null);
         }

@@ -515,9 +515,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             {
                 var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl
                             FROM Library.BookContent bc
-                            INNER JOING Library.Book b ON b.Id = bc.BooklId
+                            INNER JOIN Library.Book b ON b.Id = bc.BookId
                             INNER JOIN Inshapardaz.[File] f ON bc.FileId = f.Id
-                            WHERE b.LibraryId = @LibraryId, bc.BookId = @BookId AND bc.Language = @Language AND f.MimeType = @MimeType";
+                            WHERE b.LibraryId = @LibraryId AND bc.BookId = @BookId AND bc.Language = @Language AND f.MimeType = @MimeType";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, Language = language, MimeType = mimeType }, cancellationToken: cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<BookContentModel>(command);
             }

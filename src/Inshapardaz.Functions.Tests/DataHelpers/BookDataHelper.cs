@@ -59,8 +59,10 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
         public static void AddBookFile(this IDbConnection connection, int bookId, BookContentDto contentDto)
         {
             var sql = @"Insert Into Library.BookContent (BookId, FileId, Language)
+                        Output Inserted.Id
                         Values (@BookId, @FileId, @Language)";
-            connection.Execute(sql, new { BookId = bookId, FileId = contentDto.FileId, Language = contentDto.Language });
+            var id = connection.ExecuteScalar<int>(sql, new { BookId = bookId, FileId = contentDto.FileId, Language = contentDto.Language });
+            contentDto.Id = id;
         }
 
         public static int GetBookCountByAuthor(this IDbConnection connection, int id)

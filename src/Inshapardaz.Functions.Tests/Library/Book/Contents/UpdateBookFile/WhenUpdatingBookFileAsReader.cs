@@ -26,7 +26,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
             _dataBuilder = Container.GetService<BooksDataBuilder>();
 
             _book = _dataBuilder.WithContent().Build();
-            var file = _dataBuilder.Files.PickRandom();
+            var file = _dataBuilder.Contents.PickRandom();
             _expected = new Faker().Image.Random.Bytes(50);
             var request = new RequestBuilder().WithBytes(_expected).BuildRequestMessage();
             _response = (ForbidResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);

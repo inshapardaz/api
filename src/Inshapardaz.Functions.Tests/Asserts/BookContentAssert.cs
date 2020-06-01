@@ -7,6 +7,7 @@ using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Data;
 using System.Threading;
 
@@ -55,6 +56,18 @@ namespace Inshapardaz.Functions.Tests.Asserts
             ShouldHaveUpdateLink();
             ShouldHaveDeleteLink();
             return this;
+        }
+
+        internal static void ShouldNotHaveBookContent(int bookId, string language, string mimeType, IDbConnection db)
+        {
+            var content = db.GetBookContent(bookId, language, mimeType);
+            content.Should().BeNull();
+        }
+
+        internal static void ShouldHaveBookContent(int bookId, string language, string mimeType, IDbConnection db)
+        {
+            var content = db.GetBookContent(bookId, language, mimeType);
+            content.Should().NotBeNull();
         }
 
         internal BookContentAssert ShouldHaveUpdateLink()

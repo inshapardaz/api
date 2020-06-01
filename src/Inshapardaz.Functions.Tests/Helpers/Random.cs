@@ -25,11 +25,25 @@ namespace Inshapardaz.Functions.Tests.Helpers
         public static IEnumerable<T> PickRandom<T>(this IEnumerable<T> source, int count) =>
             new Faker().PickRandom<T>(source, count);
 
-        internal static string Locale => PickRandom(new[] { "en", "ur", "hi", "pn", "pr" });
+        internal static string Locale => PickRandom(Langs);
 
         internal static object Words(int count) => new Faker().Random.Words(count);
 
         internal static string MimeType =>
             new Faker().PickRandom(new[] { MimeTypes.Csv, MimeTypes.Jpg, MimeTypes.Json, MimeTypes.Markdown, MimeTypes.Pdf });
+
+        private static string[] Langs = new[] { "en", "ur", "hi", "pn", "pr", "fr", "ar", "pr", "tr" };
+
+        private static int LangPos = 0;
+
+        internal static string NextLocale()
+        {
+            if (LangPos > Langs.Length - 1)
+            {
+                LangPos = 0;
+            }
+
+            return Langs[LangPos++];
+        }
     }
 }

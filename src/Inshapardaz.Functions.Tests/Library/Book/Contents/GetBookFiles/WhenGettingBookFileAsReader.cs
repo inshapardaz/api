@@ -50,7 +50,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
         [Test]
         public void ShouldReturnAllBookFiles()
         {
-            foreach (var bookFile in _dataBuilder.Files)
+            foreach (var bookFile in _dataBuilder.Contents)
             {
                 //var file = DatabaseConnection.GetFileById(bookFile.FileId);
 

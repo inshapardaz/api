@@ -38,8 +38,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private Guid _addToFavoriteForUser;
         private int? _bookCountToAddToRecent;
         private Guid _addToRecentReadsForUser;
+        private List<BookContentDto> _contents = new List<BookContentDto>();
 
-        public IEnumerable<BookFileDto> Files { get; set; }
+        public IEnumerable<BookContentDto> Contents => _contents;
 
         public BooksDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage,
                                 AuthorsDataBuilder authorBuilder, SeriesDataBuilder seriesDataBuilder,
@@ -231,10 +232,11 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 List<FileDto> files = null;
                 if (_contentCount > 0)
                 {
+                    var mimeType = Random.MimeType;
                     files = fixture.Build<FileDto>()
                                          .With(f => f.FilePath, Random.BlobUrl)
                                          .With(f => f.IsPublic, false)
-                                         .With(f => f.MimeType, Random.MimeType)
+                                         .With(f => f.MimeType, mimeType)
                                          .With(f => f.FilePath, Random.BlobUrl)
                                          .CreateMany(_contentCount)
                                          .ToList();
@@ -250,7 +252,10 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
                 if (files != null)
                 {
-                    _connection.AddBookFiles(book.Id, files.Select(f => new BookContentDto { BookId = book.Id, Language = Random.Name, FileId = f.Id, MimeType = f.MimeType }));
+                    var contents = files.Select(f => new BookContentDto { BookId = book.Id, Language = Random.NextLocale(), FileId = f.Id, MimeType = f.MimeType })
+                        .ToList();
+                    _connection.AddBookFiles(book.Id, contents);
+                    _contents.AddRange(contents);
                 }
             }
 

@@ -1,14 +1,15 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Contents.DeleteBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.DeleteBookContent
 {
-    [TestFixture, Ignore("ToFix")]
+    [TestFixture]
     public class WhenDeletingBookFileThatDoesNotExist
         : LibraryTest<Functions.Library.Books.Content.DeleteBookContent>
     {
@@ -19,10 +20,10 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.DeleteBookFile
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var request = TestHelpers.CreateGetRequest();
             _dataBuilder = Container.GetService<BooksDataBuilder>();
-            var book = _dataBuilder.Build();
+            var book = _dataBuilder.WithLibrary(LibraryId).Build();
 
+            var request = new RequestBuilder().WithLanguage(Random.Locale).WithAccept(Random.MimeType).Build();
             _response = (NoContentResult)await handler.Run(request, LibraryId, book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
         }
 
@@ -35,8 +36,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.DeleteBookFile
         [Test]
         public void ShouldHaveNoContentResult()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(204));
+            _response.ShouldBeNoContent();
         }
     }
 }

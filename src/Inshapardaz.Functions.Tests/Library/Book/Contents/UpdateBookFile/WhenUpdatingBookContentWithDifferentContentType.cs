@@ -4,43 +4,44 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Contents.AddBookContent
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
 {
-    [TestFixture(AuthenticationLevel.Administrator)]
-    [TestFixture(AuthenticationLevel.Writer)]
-    public class WhenAddingBookContentWithPermission
-        : LibraryTest<Functions.Library.Books.Content.AddBookContent>
+    [TestFixture]
+    public class WhenUpdatingBookContentWithDifferentContentType
+        : LibraryTest<Functions.Library.Books.Content.UpdateBookContent>
     {
         private CreatedResult _response;
-        private string _mimeType;
-        private string _locale;
-        private BookContentAssert _assert;
-        private ClaimsPrincipal _claim;
+        private string _newMimeType;
+        private BookDto _book;
+        private BookContentDto _file;
         private byte[] _contents;
-
-        public WhenAddingBookContentWithPermission(AuthenticationLevel authenticationLevel)
-        {
-            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
-        }
+        private BooksDataBuilder _dataBuilder;
+        private BookContentAssert _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _mimeType = Random.MimeType;
-            _locale = Random.Locale;
+            _newMimeType = Random.MimeType;
+            _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            var dataBuilder = Container.GetService<BooksDataBuilder>();
+            _book = _dataBuilder.WithLibrary(LibraryId).WithContents(2).Build();
+            _file = _dataBuilder.Contents.PickRandom();
 
-            var book = dataBuilder.WithLibrary(LibraryId).Build();
-            _contents = Random.Bytes;
+            _contents = new Faker().Image.Random.Bytes(50);
 
-            var request = new RequestBuilder().WithBytes(_contents).WithContentType(_mimeType).WithLanguage(_locale).BuildRequestMessage();
-            _response = (CreatedResult)await handler.Run(request, LibraryId, book.Id, _claim, CancellationToken.None);
+            var request = new RequestBuilder()
+                .WithBytes(_contents)
+                .WithContentType(_newMimeType)
+                .WithLanguage(_file.Language)
+                .BuildRequestMessage();
+
+            _response = (CreatedResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _assert = new BookContentAssert(_response, LibraryId);
         }
@@ -69,13 +70,13 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.AddBookContent
         [Test]
         public void ShouldHaveCorrectLanguage()
         {
-            _assert.ShouldHaveCorrectLanguage(_locale);
+            _assert.ShouldHaveCorrectLanguage(_file.Language);
         }
 
         [Test]
         public void ShouldHaveCorrectMimeType()
         {
-            _assert.ShouldHaveCorrectMimeType(_mimeType);
+            _assert.ShouldHaveCorrectMimeType(_newMimeType);
         }
 
         [Test]

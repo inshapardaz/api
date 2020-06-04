@@ -70,6 +70,16 @@ namespace Inshapardaz.Functions.Tests.Asserts
             content.Should().NotBeNull();
         }
 
+        internal void ShouldHaveBookContent(byte[] expected, IDbConnection db, IFileStorage fileStore)
+        {
+            var content = db.GetBookContent(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
+            content.Should().NotBeNull();
+
+            // TODO: Make sure the contents are correct
+            //var file = fileStore.GetFile(content.FilePath, CancellationToken.None).Result;
+            //file.Should().NotBeNull().And.Should().Be(expected);
+        }
+
         internal BookContentAssert ShouldHaveUpdateLink()
         {
             _bookContent.UpdateLink()

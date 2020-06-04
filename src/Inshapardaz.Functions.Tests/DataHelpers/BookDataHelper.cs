@@ -148,14 +148,14 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
             });
         }
 
-        public static BookFileDto GetBookContent(this IDbConnection connection, int bookId, string language, string mimetype)
+        public static BookContentDto GetBookContent(this IDbConnection connection, int bookId, string language, string mimetype)
         {
             string sql = @"Select * From Library.BookContent bc
                            INNER Join Library.Book b ON b.Id = bc.BookId
                            INNER Join Inshapardaz.[File] f ON f.Id = bc.FileId
                            Where b.Id = @BookId AND bc.Language = @Language AND f.MimeType = @MimeType";
 
-            return connection.QuerySingleOrDefault<BookFileDto>(sql, new
+            return connection.QuerySingleOrDefault<BookContentDto>(sql, new
             {
                 BookId = bookId,
                 Language = language,

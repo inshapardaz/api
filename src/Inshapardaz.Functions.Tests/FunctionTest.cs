@@ -2,6 +2,7 @@
 using System.Data;
 using FluentMigrator.Runner;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Ports.Database;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,6 +28,8 @@ namespace Inshapardaz.Functions.Tests
         protected IServiceProvider Container => _builder.ServiceProvider;
 
         protected IDbConnection DatabaseConnection => Container.GetService<IProvideConnection>().GetConnection();
+
+        protected IFileStorage FileStorage => Container.GetService<IFileStorage>();
 
         protected void InitializeDatabaseMigration(IServiceCollection services)
         {

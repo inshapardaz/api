@@ -24,6 +24,8 @@ namespace Inshapardaz.Functions.Tests.Dto
         public string Language { get; set; }
 
         public string MimeType { get; set; }
+
+        public string FilePath { get; set; }
     }
 
     public class RecentBookDto

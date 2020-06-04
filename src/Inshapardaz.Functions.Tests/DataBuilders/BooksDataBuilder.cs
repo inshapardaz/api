@@ -252,8 +252,14 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
                 if (files != null)
                 {
-                    var contents = files.Select(f => new BookContentDto { BookId = book.Id, Language = Random.NextLocale(), FileId = f.Id, MimeType = f.MimeType })
-                        .ToList();
+                    var contents = files.Select(f => new BookContentDto
+                    {
+                        BookId = book.Id,
+                        Language = Random.NextLocale(),
+                        FileId = f.Id,
+                        MimeType = f.MimeType,
+                        FilePath = f.FilePath
+                    }).ToList();
                     _connection.AddBookFiles(book.Id, contents);
                     _contents.AddRange(contents);
                 }

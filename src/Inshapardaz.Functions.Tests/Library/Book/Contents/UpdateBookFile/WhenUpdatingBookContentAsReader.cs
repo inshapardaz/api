@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
@@ -10,11 +11,11 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
 {
-    [TestFixture, Ignore("ToFix")]
-    public class WhenUpdatingBookFileAsUnauthorisedUser
+    [TestFixture]
+    public class WhenUpdatingBookContentAsReader
         : LibraryTest<Functions.Library.Books.Content.UpdateBookContent>
     {
-        private UnauthorizedResult _response;
+        private ForbidResult _response;
 
         private BookDto _book;
         private byte[] _expected;
@@ -25,11 +26,17 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
         {
             _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            _book = _dataBuilder.WithContent().Build();
+            _book = _dataBuilder.WithLibrary(LibraryId).WithContent().Build();
             var file = _dataBuilder.Contents.PickRandom();
             _expected = new Faker().Image.Random.Bytes(50);
-            var request = new RequestBuilder().WithBytes(_expected).BuildRequestMessage();
-            _response = (UnauthorizedResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+
+            var request = new RequestBuilder()
+                .WithBytes(_expected)
+                .WithLanguage(file.Language)
+                .WithContentType(file.MimeType)
+                .BuildRequestMessage();
+
+            _response = (ForbidResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -39,9 +46,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
         }
 
         [Test]
-        public void ShouldReturnUnauthorizedResult()
+        public void ShouldReturnForbidResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeForbidden();
         }
     }
 }

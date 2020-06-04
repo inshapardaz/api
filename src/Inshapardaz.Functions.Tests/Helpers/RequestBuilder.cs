@@ -145,6 +145,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
         {
             ByteArrayContent byteContent = new ByteArrayContent(data);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+            byteContent.Headers.ContentLength = data.Length;
             byteContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = new Faker().System.FileName("jpg") };
             return new MultipartFormDataContent { byteContent };
         }

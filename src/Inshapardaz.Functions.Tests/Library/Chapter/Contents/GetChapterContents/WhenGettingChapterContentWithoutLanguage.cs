@@ -41,7 +41,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.GetChapterContent
 
             _response = (ObjectResult)await handler.Run(_request, LibraryId, _chapter.BookId, _chapter.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
-            _assert = new ChapterContentAssert(_response, LibraryId);
+            _assert = new ChapterContentAssert(_response, Library);
         }
 
         [OneTimeTearDown]

@@ -8,6 +8,7 @@ using Paramore.Darker;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 
 namespace Inshapardaz.Domain.Ports.Library
 {
@@ -35,12 +36,14 @@ namespace Inshapardaz.Domain.Ports.Library
 
     public class GetChapterContentQueryHandler : QueryHandlerAsync<GetChapterContentQuery, ChapterContentModel>
     {
+        private readonly ILibraryRepository _libraryRepository;
         private readonly IBookRepository _bookRepository;
         private readonly IChapterRepository _chapterRepository;
         private readonly IFileRepository _fileRepository;
 
-        public GetChapterContentQueryHandler(IBookRepository bookRepository, IChapterRepository chapterRepository, IFileRepository fileRepository)
+        public GetChapterContentQueryHandler(ILibraryRepository libraryRepository, IBookRepository bookRepository, IChapterRepository chapterRepository, IFileRepository fileRepository)
         {
+            _libraryRepository = libraryRepository;
             _bookRepository = bookRepository;
             _chapterRepository = chapterRepository;
             _fileRepository = fileRepository;
@@ -57,6 +60,17 @@ namespace Inshapardaz.Domain.Ports.Library
             if (!book.IsPublic && command.UserId == Guid.Empty)
             {
                 throw new UnauthorizedException();
+            }
+
+            if (string.IsNullOrWhiteSpace(command.Language))
+            {
+                var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
+                if (library == null)
+                {
+                    throw new BadRequestException();
+                }
+
+                command.Language = library.Language;
             }
 
             var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);

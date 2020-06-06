@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Exception;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library;
@@ -30,18 +31,20 @@ namespace Inshapardaz.Domain.Ports.Library
 
     public class GetBookContentQueryHandler : QueryHandlerAsync<GetBookContentQuery, BookContentModel>
     {
+        private readonly ILibraryRepository _libraryRepository;
         private readonly IBookRepository _bookRepository;
         private readonly IFileRepository _fileRepository;
 
-        public GetBookContentQueryHandler(IBookRepository bookRepository, IFileRepository fileRepository)
+        public GetBookContentQueryHandler(ILibraryRepository libraryRepository, IBookRepository bookRepository, IFileRepository fileRepository)
         {
+            _libraryRepository = libraryRepository;
             _bookRepository = bookRepository;
             _fileRepository = fileRepository;
         }
 
         public override async Task<BookContentModel> ExecuteAsync(GetBookContentQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
             if (book == null)
             {
                 throw new NotFoundException();
@@ -50,6 +53,17 @@ namespace Inshapardaz.Domain.Ports.Library
             if (!book.IsPublic && command.UserId == Guid.Empty)
             {
                 throw new UnauthorizedException();
+            }
+
+            if (string.IsNullOrWhiteSpace(command.Language))
+            {
+                var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
+                if (library == null)
+                {
+                    throw new BadRequestException();
+                }
+
+                command.Language = library.Language;
             }
 
             var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);

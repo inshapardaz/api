@@ -25,6 +25,10 @@ namespace Inshapardaz.Functions.Extensions
             {
                 return new BadRequestResult();
             }
+            catch (NotFoundException)
+            {
+                return new NotFoundResult();
+            }
             catch
             {
                 return new StatusCodeResult(500);

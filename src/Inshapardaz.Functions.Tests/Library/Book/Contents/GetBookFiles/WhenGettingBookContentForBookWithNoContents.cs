@@ -1,23 +1,23 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
 {
-    [TestFixture, Ignore("ToFix")]
-    public class WhenGettingBookFileForBookWithNoFiles
+    [TestFixture]
+    public class WhenGettingBookContentForBookWithNoContents
         : LibraryTest<Functions.Library.Books.Content.GetBookContent>
     {
-        private OkObjectResult _response;
+        private NotFoundResult _response;
 
         private BookDto _book;
-        private BookContentView _view;
         private BooksDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
@@ -25,11 +25,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
         {
             _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            _book = _dataBuilder.Build();
-            var request = new RequestBuilder().Build();
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
-
-            _view = (BookContentView)_response.Value;
+            _book = _dataBuilder.WithLibrary(LibraryId).Build();
+            var request = new RequestBuilder().WithAccept(MimeTypes.Pdf).WithLanguage(Random.Locale).Build();
+            _response = (NotFoundResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]
@@ -41,14 +39,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
-        }
-
-        [Test]
-        public void ShouldReturnNoFiles()
-        {
-            // Assert.That(_view.Items, Is.Empty);
+            _response.ShouldBeNotFound();
         }
     }
 }

@@ -209,7 +209,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
-        internal BookContentAssert ShouldMatch(BookFileDto content, int bookId, IDbConnection dbConnection)
+        internal BookContentAssert ShouldMatch(BookContentDto content, int bookId, IDbConnection dbConnection)
         {
             _bookContent.BookId.Should().Be(content.BookId);
             _bookContent.BookId.Should().Be(bookId);

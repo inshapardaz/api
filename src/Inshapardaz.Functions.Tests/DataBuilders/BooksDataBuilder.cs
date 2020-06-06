@@ -39,6 +39,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private int? _bookCountToAddToRecent;
         private Guid _addToRecentReadsForUser;
         private List<BookContentDto> _contents = new List<BookContentDto>();
+        private string _language = null;
 
         public IEnumerable<BookContentDto> Contents => _contents;
 
@@ -122,6 +123,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public BooksDataBuilder WithContents(int contentCount)
         {
             _contentCount = contentCount;
+            return this;
+        }
+
+        internal BooksDataBuilder WithContentLanguage(string language)
+        {
+            _language = language;
             return this;
         }
 
@@ -255,7 +262,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                     var contents = files.Select(f => new BookContentDto
                     {
                         BookId = book.Id,
-                        Language = Random.NextLocale(),
+                        Language = _language ?? Random.NextLocale(),
                         FileId = f.Id,
                         MimeType = f.MimeType,
                         FilePath = f.FilePath

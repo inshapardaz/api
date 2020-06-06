@@ -26,6 +26,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private int _libraryId;
         private bool _public;
         private string _mimeType = MimeTypes.Pdf;
+        private string _language;
 
         public IEnumerable<ChapterContentDto> Contents => _contents;
         public IEnumerable<ChapterDto> Chapters => _chapters;
@@ -62,6 +63,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public ChapterDataBuilder WithoutContents()
         {
             _contentCount = 0;
+            return this;
+        }
+
+        internal ChapterDataBuilder WithContentLanguage(string language)
+        {
+            _language = language;
             return this;
         }
 
@@ -107,7 +114,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                     var content = fixture.Build<ChapterContentDto>()
                         .With(c => c.ChapterId, chapter.Id)
                         .With(c => c.FileId, file.Id)
-                        .With(c => c.Language, Helpers.Random.Name)
+                        .With(c => c.Language, _language ?? Helpers.Random.Locale)
                         .Create();
 
                     _contents.Add(content);

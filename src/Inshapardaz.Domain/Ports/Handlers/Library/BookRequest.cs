@@ -6,7 +6,7 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public abstract class BookRequest : LibraryAuthorisedCommand
     {
-        protected BookRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid userId)
+        protected BookRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid? userId)
             : base(claims, libraryId)
         {
             BookId = bookId;

@@ -14,7 +14,7 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetBookContentQuery : LibraryAuthorisedQuery<BookContentModel>
     {
-        public GetBookContentQuery(int libraryId, int bookId, string language, string mimeType, Guid userId)
+        public GetBookContentQuery(int libraryId, int bookId, string language, string mimeType, Guid? userId)
             : base(libraryId, userId)
         {
             BookId = bookId;
@@ -50,7 +50,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 throw new NotFoundException();
             }
 
-            if (!book.IsPublic && command.UserId == Guid.Empty)
+            if (!book.IsPublic && command.UserId == null)
             {
                 throw new UnauthorizedException();
             }
@@ -69,9 +69,9 @@ namespace Inshapardaz.Domain.Ports.Library
             var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);
             if (bookContent != null)
             {
-                if (command.UserId != Guid.Empty)
+                if (command.UserId != null)
                 {
-                    await _bookRepository.AddRecentBook(command.LibraryId, command.UserId, command.BookId, cancellationToken);
+                    await _bookRepository.AddRecentBook(command.LibraryId, command.UserId.Value, command.BookId, cancellationToken);
                 }
 
                 if (book.IsPublic)

@@ -10,6 +10,7 @@ namespace Inshapardaz.Functions.Converters
 
         public PagedRouteArgs RouteArguments { get; set; }
 
+        // TODO :  Depricate
         public Func<int, int, string, LinkView> LinkFunc { get; set; }
 
         public Func<int, int, int, string, string, LinkView> LinkFuncWithParameter { get; set; }

@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetChaptersByBookQuery : LibraryAuthorisedQuery<IEnumerable<ChapterModel>>
     {
-        public GetChaptersByBookQuery(int libraryId, int bookId, Guid userId)
+        public GetChaptersByBookQuery(int libraryId, int bookId, Guid? userId)
             : base(libraryId, userId)
         {
             BookId = bookId;

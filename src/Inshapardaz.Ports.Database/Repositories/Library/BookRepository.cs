@@ -88,11 +88,11 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
                             From Library.Book b
                             Inner Join Library.Author a On b.AuthorId = a.Id
-                            Inner Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.Series s On b.SeriesId = s.id
                             Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @UserId Is Null)
                             Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
                             Left Outer Join Library.Category c ON bc.CategoryId = c.Id
-                            Where b.LibraryId = @LibraryId
+                            Where b.LibraryId = @LibraryId AND (@UserId Is not Null OR b.IsPublic = 1)
                             Order By b.Title
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -104,12 +104,15 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 {
                     if (!books.TryGetValue(b.Id, out BookModel book))
                         books.Add(b.Id, book = b);
+                    if (c != null)
+                    {
+                        book.Categories.Add(c);
+                    }
 
-                    book.Categories.Add(c);
                     return book;
                 });
 
-                var sqlCount = "SELECT COUNT(*) FROM Library.Books WHERE LibraryId = @LibraryId";
+                var sqlCount = "SELECT COUNT(*) FROM Library.Book WHERE LibraryId = @LibraryId";
                 var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
 
                 return new Page<BookModel>

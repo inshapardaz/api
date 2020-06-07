@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetLatestBooksQuery : LibraryAuthorisedQuery<Page<BookModel>>
     {
-        public GetLatestBooksQuery(int libraryId, Guid userId)
+        public GetLatestBooksQuery(int libraryId, Guid? userId)
             : base(libraryId, userId)
         {
         }

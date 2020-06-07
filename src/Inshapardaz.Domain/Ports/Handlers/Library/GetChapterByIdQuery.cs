@@ -10,7 +10,7 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetChapterByIdQuery : LibraryBaseQuery<ChapterModel>
     {
-        public GetChapterByIdQuery(int libraryId, int bookId, int chapterId, Guid userId)
+        public GetChapterByIdQuery(int libraryId, int bookId, int chapterId, Guid? userId)
             : base(libraryId)
         {
             UserId = userId;
@@ -22,7 +22,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public int ChapterId { get; }
 
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
     }
 
     public class GetChapterByIdQueryHandler : QueryHandlerAsync<GetChapterByIdQuery, ChapterModel>

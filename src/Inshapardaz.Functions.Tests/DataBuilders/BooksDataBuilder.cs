@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 using AutoFixture;
-using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
@@ -27,7 +25,8 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private List<BookDto> _books;
         private readonly List<FileDto> _files = new List<FileDto>();
 
-        private bool _hasSeries, _hasImage = true, _isPublic = Random.Bool;
+        private bool _hasSeries, _hasImage = true;
+        private bool? _isPublic = null;
         private int _chapterCount, _categoriesCount, _contentCount;
 
         private AuthorDto _author;
@@ -41,6 +40,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private List<BookContentDto> _contents = new List<BookContentDto>();
         private string _language = null;
 
+        public IEnumerable<BookDto> Books => _books;
         public IEnumerable<BookContentDto> Contents => _contents;
 
         public BooksDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage,
@@ -184,11 +184,13 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 authors = _authorBuilder.WithLibrary(_libraryId).Build(numberOfBooks);
             }
 
+            Func<bool> f = () => _isPublic ?? Random.Bool;
+
             _books = fixture.Build<BookDto>()
                           .With(b => b.LibraryId, _libraryId)
                           .With(b => b.AuthorId, _author != null ? _author.Id : Random.PickRandom(authors).Id)
                           .With(b => b.ImageId, _hasImage ? Random.Number : 0)
-                          .With(b => b.IsPublic, _isPublic)
+                          .With(b => b.IsPublic, f)
                           .With(b => b.SeriesIndex, _hasSeries ? Random.Number : (int?)null)
                           .CreateMany(numberOfBooks)
                           .ToList();

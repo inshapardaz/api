@@ -35,12 +35,12 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public override async Task<Page<BookModel>> ExecuteAsync(GetFavoriteBooksQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (command.UserId == Guid.Empty)
+            if (command.UserId == null)
             {
                 throw new NotFoundException();
             }
 
-            return await _bookRepository.GetFavoriteBooksByUser(command.LibraryId, command.UserId, command.PageNumber, command.PageSize, cancellationToken);
+            return await _bookRepository.GetFavoriteBooksByUser(command.LibraryId, command.UserId.Value, command.PageNumber, command.PageSize, cancellationToken);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
-            _assert = new PagingAssert<AuthorView>(_response);
+            _assert = new PagingAssert<AuthorView>(_response, Library);
         }
 
         [OneTimeTearDown]

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookContent
 {
     [TestFixture(AuthenticationLevel.Administrator)]
     [TestFixture(AuthenticationLevel.Writer)]

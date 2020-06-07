@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Library.Books
 
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var query = new GetRecentBooksQuery(libraryId, principal.GetUserId(), pageSize);
+            var query = new GetRecentBooksQuery(libraryId, principal.GetUserId().Value, pageSize);
             var books = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             return new OkObjectResult(books.Render(principal, Link));

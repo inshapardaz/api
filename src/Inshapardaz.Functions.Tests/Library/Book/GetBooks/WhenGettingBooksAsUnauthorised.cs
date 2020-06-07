@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +15,13 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
 {
     [TestFixture]
-    public class WhenGettingBooksSinglePage
+    public class WhenGettingBooksAsUnauthorised
         : LibraryTest<Functions.Library.Books.GetBooks>
     {
         private OkObjectResult _response;
         private PagingAssert<BookView> _assert;
         private BooksDataBuilder _builder;
+        private IEnumerable<CategoryDto> _categories;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -25,10 +29,15 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
             var request = TestHelpers.CreateGetRequest();
 
             _builder = Container.GetService<BooksDataBuilder>();
+            _categories = Container.GetService<CategoriesDataBuilder>().WithLibrary(LibraryId).Build(2);
 
-            _builder.WithLibrary(LibraryId).HavingSeries().Build(10);
+            _builder.WithLibrary(LibraryId)
+                    .WithCategories(_categories)
+                    .HavingSeries()
+                    .WithContents(2)
+                    .Build(9);
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _assert = new PagingAssert<BookView>(_response, Library);
         }
@@ -67,7 +76,8 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
         [Test]
         public void ShouldReturnExpectedBooks()
         {
-            var expectedItems = _builder.Books.OrderBy(a => a.Title).Take(10);
+            var expectedItems = _builder.Books.Where(b => b.IsPublic).OrderBy(b => b.Title).Take(10);
+            expectedItems.Should().HaveSameCount(_assert.Data);
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
@@ -79,8 +89,10 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
                             .ShouldNotHaveCreateChaptersLink()
                             .ShouldNotHaveAddContentLink()
                             .ShouldHaveSeriesLink()
+                            .ShouldBeSameCategories(_categories)
                             .ShouldHaveChaptersLink()
-                            .ShouldHavePublicImageLink();
+                            .ShouldHavePublicImageLink()
+                            .ShouldHaveContents(DatabaseConnection, false);
             }
         }
     }

@@ -42,7 +42,7 @@ namespace Inshapardaz.Functions.Library.Books
                 LinkFunc = Link
             };
 
-            return new OkObjectResult(args.Render(principal));
+            return new OkObjectResult(args.Render(libraryId, principal));
         }
 
         public static LinkView Link(string relType = RelTypes.Self) => SelfLink("books/latest", relType);

@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookContent
 {
     [TestFixture]
-    public class WhenGettingBookContentAsReader
+    public class WhenGettingPublicBookContentAsUnauthorised
         : LibraryTest<Functions.Library.Books.Content.GetBookContent>
     {
         private OkObjectResult _response;
@@ -25,11 +25,11 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
         {
             _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            _book = _dataBuilder.WithLibrary(LibraryId).WithContents(5).Build();
+            _book = _dataBuilder.WithLibrary(LibraryId).WithContents(5).IsPublic().Build();
             _expected = _dataBuilder.Contents.PickRandom();
 
             var request = new RequestBuilder().WithAccept(_expected.MimeType).WithLanguage(_expected.Language).Build();
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _assert = new BookContentAssert(_response, LibraryId);
         }

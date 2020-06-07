@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +14,21 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
 {
-    [TestFixture]
-    public class WhenGettingBooksSinglePage
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingBooksWithPermissions
         : LibraryTest<Functions.Library.Books.GetBooks>
     {
         private OkObjectResult _response;
         private PagingAssert<BookView> _assert;
         private BooksDataBuilder _builder;
+        private IEnumerable<CategoryDto> _categories;
+        private ClaimsPrincipal _claim;
+
+        public WhenGettingBooksWithPermissions(AuthenticationLevel level)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(level);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -25,10 +36,11 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
             var request = TestHelpers.CreateGetRequest();
 
             _builder = Container.GetService<BooksDataBuilder>();
+            _categories = Container.GetService<CategoriesDataBuilder>().WithLibrary(LibraryId).Build(2);
 
-            _builder.WithLibrary(LibraryId).HavingSeries().Build(10);
+            _builder.WithLibrary(LibraryId).WithCategories(_categories).HavingSeries().WithContents(2).Build(4);
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
 
             _assert = new PagingAssert<BookView>(_response, Library);
         }
@@ -52,9 +64,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
+        public void ShouldHaveCreateLink()
         {
-            _assert.ShouldNotHaveCreateLink();
+            _assert.ShouldHaveCreateLink($"/api/library/{LibraryId}/books");
         }
 
         [Test]
@@ -74,13 +86,15 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
                 actual.ShouldMatch(item, DatabaseConnection)
                             .InLibrary(LibraryId)
                             .ShouldHaveCorrectLinks()
-                            .ShouldNotHaveEditLinks()
-                            .ShouldNotHaveImageUpdateLink()
-                            .ShouldNotHaveCreateChaptersLink()
-                            .ShouldNotHaveAddContentLink()
+                            .ShouldHaveEditLinks()
+                            .ShouldHaveImageUpdateLink()
+                            .ShouldHaveCreateChaptersLink()
+                            .ShouldHaveAddContentLink()
                             .ShouldHaveSeriesLink()
+                            .ShouldBeSameCategories(_categories)
                             .ShouldHaveChaptersLink()
-                            .ShouldHavePublicImageLink();
+                            .ShouldHavePublicImageLink()
+                            .ShouldHaveContents(DatabaseConnection, true);
             }
         }
     }

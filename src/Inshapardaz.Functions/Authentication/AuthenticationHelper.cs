@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Authentication
         public static bool IsReader(this ClaimsPrincipal principal)
             => IsAuthenticated(principal) && (IsWriter(principal) || GetRoles(principal).Contains("reader"));
 
-        public static Guid GetUserId(this ClaimsPrincipal principal)
+        public static Guid? GetUserId(this ClaimsPrincipal principal)
         {
             if (principal != null)
             {
@@ -45,7 +45,7 @@ namespace Inshapardaz.Functions.Authentication
                 }
             }
 
-            return Guid.Empty;
+            return null;
         }
 
         private static IEnumerable<string> GetRoles(ClaimsPrincipal principal)

@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Ports.Handlers.Library;
+﻿using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Ports.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
@@ -10,11 +11,14 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class AddBookToFavoriteRequest : LibraryAuthorisedCommand
     {
-        public AddBookToFavoriteRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid user)
+        public AddBookToFavoriteRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid? user)
             : base(claims, libraryId)
         {
             BookId = bookId;
-            User = user;
+
+            if (user == null)
+                throw new BadRequestException();
+            User = user.Value;
         }
 
         public int BookId { get; }

@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetBooksByCategoryQuery : LibraryAuthorisedQuery<Page<BookModel>>
     {
-        public GetBooksByCategoryQuery(int libraryId, int categoryId, int pageNumber, int pageSize, Guid userId)
+        public GetBooksByCategoryQuery(int libraryId, int categoryId, int pageNumber, int pageSize, Guid? userId)
             : base(libraryId, userId)
         {
             CategoryId = categoryId;

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
@@ -8,10 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
+namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookContent
 {
     [TestFixture]
-    public class WhenGettingPublicBookContentAsUnauthorised
+    public class WhenGettingBookContentWithoutLanguage
         : LibraryTest<Functions.Library.Books.Content.GetBookContent>
     {
         private OkObjectResult _response;
@@ -25,11 +26,11 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
         {
             _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            _book = _dataBuilder.WithLibrary(LibraryId).WithContents(5).IsPublic().Build();
+            _book = _dataBuilder.WithLibrary(LibraryId).WithContents(1).WithContentLanguage(Library.Language).Build();
             _expected = _dataBuilder.Contents.PickRandom();
 
-            var request = new RequestBuilder().WithAccept(_expected.MimeType).WithLanguage(_expected.Language).Build();
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            var request = new RequestBuilder().WithAccept(_expected.MimeType).WithoutLanguage().Build();
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _assert = new BookContentAssert(_response, LibraryId);
         }
@@ -50,6 +51,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
         public void ShouldHaveSelfLink()
         {
             _assert.ShouldHaveSelfLink();
+            _assert.ShouldHaveCorrectLanguage(Library.Language);
         }
 
         [Test]
@@ -68,7 +70,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookFile
         [Test]
         public void ShouldHaveCorrectLanguage()
         {
-            _assert.ShouldHaveCorrectLanguage(_expected.Language);
+            _assert.ShouldHaveCorrectLanguage(Library.Language);
         }
 
         [Test]

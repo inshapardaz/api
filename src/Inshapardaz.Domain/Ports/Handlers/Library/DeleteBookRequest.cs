@@ -10,7 +10,7 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class DeleteBookRequest : BookRequest
     {
-        public DeleteBookRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid userId)
+        public DeleteBookRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid? userId)
             : base(claims, libraryId, bookId, userId)
         {
         }

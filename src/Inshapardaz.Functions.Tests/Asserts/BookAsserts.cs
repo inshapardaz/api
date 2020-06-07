@@ -1,5 +1,4 @@
-﻿using Bogus.DataSets;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
@@ -8,7 +7,6 @@ using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -27,6 +25,11 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _response = response;
             _book = response.Value as BookView;
+        }
+
+        public BookAssert(BookView view)
+        {
+            _book = view;
         }
 
         internal static BookAssert WithResponse(ObjectResult response)
@@ -110,6 +113,25 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        internal BookAssert ShouldHaveEditLinks()
+        {
+            return ShouldHaveUpdateLink()
+                   .ShouldHaveDeleteLink();
+        }
+
+        internal BookAssert ShouldNotHaveEditLinks()
+        {
+            return ShouldNotHaveUpdateLink()
+                   .ShouldNotHaveDeleteLink();
+        }
+
+        internal BookAssert ShouldHaveCorrectLinks()
+        {
+            ShouldHaveSelfLink();
+            ShouldHaveAuthorLink();
+            return this;
+        }
+
         internal BookAssert ShouldHaveCorrectImageLocationHeader(int bookId)
         {
             var response = _response as CreatedResult;
@@ -148,6 +170,12 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        public BookAssert ShouldNotHaveDeleteLink()
+        {
+            _book.DeleteLink().Should().BeNull();
+            return this;
+        }
+
         public BookAssert ShouldNotHaveImageUpdateLink()
         {
             _book.Link("image-upload").Should().BeNull();
@@ -178,7 +206,13 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
-        public BookAssert ShouldHaveAddFileLink()
+        public BookAssert ShouldNotHaveCreateChaptersLink()
+        {
+            _book.Link("create-chapter").Should().BeNull();
+            return this;
+        }
+
+        public BookAssert ShouldHaveAddContentLink()
         {
             _book.Link("add-file")
                   .ShouldBePost()
@@ -186,12 +220,20 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
-        internal void ShouldHavePublicImageLink()
+        public BookAssert ShouldNotHaveAddContentLink()
+        {
+            _book.Link("add-file").Should().BeNull();
+            return this;
+        }
+
+        internal BookAssert ShouldHavePublicImageLink()
         {
             _book.Link("image")
                 .ShouldBeGet()
                 .Href.Should()
                 .StartWith(ConfigurationSettings.CDNAddress);
+
+            return this;
         }
 
         internal BookAssert ShouldHaveCorrectLocationHeader()
@@ -313,6 +355,15 @@ namespace Inshapardaz.Functions.Tests.Asserts
             imageUrl.Should().NotBeNull();
             var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.NotEqual(oldImage);
+        }
+    }
+
+    public static class BookAssertionExtensions
+    {
+        public static BookAssert ShouldMatch(this BookView view, BookDto dto, IDbConnection dbConnection)
+        {
+            return new BookAssert(view)
+                               .ShouldBeSameAs(dto, dbConnection);
         }
     }
 }

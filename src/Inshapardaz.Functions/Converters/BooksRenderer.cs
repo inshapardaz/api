@@ -19,37 +19,6 @@ namespace Inshapardaz.Functions.Converters
 {
     public static class BooksRenderer
     {
-        public static PageView<BookView> Render(this PageRendererArgs<BookModel> source, ClaimsPrincipal principal)
-        {
-            var page = new PageView<BookView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
-            {
-                Data = source.Page.Data?.Select(x => x.Render(principal))
-            };
-
-            var links = new List<LinkView>
-            {
-                source.LinkFunc(page.CurrentPageIndex, page.PageSize, RelTypes.Self)
-            };
-
-            if (principal.IsWriter())
-            {
-                links.Add(AddBook.Link(0, RelTypes.Create));
-            }
-
-            if (page.CurrentPageIndex < page.PageCount)
-            {
-                links.Add(source.LinkFunc(page.CurrentPageIndex + 1, page.PageSize, RelTypes.Next));
-            }
-
-            if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
-            {
-                links.Add(source.LinkFunc(page.CurrentPageIndex - 1, page.PageSize, RelTypes.Previous));
-            }
-
-            page.Links = links;
-            return page;
-        }
-
         public static PageView<BookView> Render(this PageRendererArgs<BookModel> source, int id, ClaimsPrincipal principal)
         {
             var page = new PageView<BookView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)

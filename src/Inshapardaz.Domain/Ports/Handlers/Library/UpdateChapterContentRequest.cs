@@ -14,7 +14,7 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class UpdateChapterContentRequest : BookRequest
     {
-        public UpdateChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string contents, string language, string mimetype, Guid userId)
+        public UpdateChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string contents, string language, string mimetype, Guid? userId)
             : base(claims, libraryId, bookId, userId)
         {
             ChapterId = chapterId;

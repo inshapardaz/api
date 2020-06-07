@@ -20,12 +20,12 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library
         {
         }
 
-        public LibraryAuthorisedQuery(int libraryId, Guid userId)
+        public LibraryAuthorisedQuery(int libraryId, Guid? userId)
             : base(libraryId)
         {
             UserId = userId;
         }
 
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
     }
 }

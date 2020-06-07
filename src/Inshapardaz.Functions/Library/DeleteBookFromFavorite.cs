@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Library.Books
         {
             return await Executor.Execute(async () =>
             {
-                var request = new DeleteBookToFavoriteRequest(claims, libraryId, bookId, claims.GetUserId());
+                var request = new DeleteBookToFavoriteRequest(claims, libraryId, bookId, claims.GetUserId().Value);
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
                 return new CreatedResult(new Uri(GetFavoriteBooks.Link(libraryId, RelTypes.Self).Href), null);

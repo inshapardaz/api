@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,23 +13,28 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
 {
-    [TestFixture, Ignore("ToFix")]
-    public class WhenGettingBooksAsReader : LibraryTest<Functions.Library.Books.GetBooks>
+    [TestFixture]
+    public class WhenGettingBooksAsReader
+        : LibraryTest<Functions.Library.Books.GetBooks>
     {
         private OkObjectResult _response;
-        private PageView<BookView> _view;
+        private PagingAssert<BookView> _assert;
+        private BooksDataBuilder _builder;
+        private IEnumerable<CategoryDto> _categories;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
 
-            var builder = Container.GetService<BooksDataBuilder>();
-            builder.Build(4);
+            _builder = Container.GetService<BooksDataBuilder>();
+            _categories = Container.GetService<CategoriesDataBuilder>().WithLibrary(LibraryId).Build(2);
+
+            _builder.WithLibrary(LibraryId).WithCategories(_categories).HavingSeries().WithContents(2).Build(4);
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
-            _view = _response.Value as PageView<BookView>;
+            _assert = new PagingAssert<BookView>(_response, Library);
         }
 
         [OneTimeTearDown]
@@ -39,43 +46,48 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/books");
         }
 
         [Test]
         public void ShouldNotHaveCreateLink()
         {
-            _view.Links.AssertLinkNotPresent("create");
+            _assert.ShouldNotHaveCreateLink();
         }
 
         [Test]
-        public void ShouldReturnCorrectPage()
+        public void ShouldNotHaveNavigationLinks()
         {
-            Assert.That(_view.PageCount, Is.EqualTo(1));
-            Assert.That(_view.PageSize, Is.EqualTo(10));
-            Assert.That(_view.TotalCount, Is.EqualTo(4));
-            Assert.That(_view.CurrentPageIndex, Is.EqualTo(1));
+            _assert.ShouldNotHaveNextLink();
+            _assert.ShouldNotHavePreviousLink();
         }
 
         [Test]
-        public void ShouldHaveCorrectBookData()
+        public void ShouldReturnExpectedBooks()
         {
-            var actual = _view.Data.FirstOrDefault();
-            Assert.That(actual, Is.Not.Null, "Should contain at-least one book");
-            Assert.That(actual.Title, Is.Not.Empty, "Book name should have a value");
-            Assert.That(actual.Description, Is.Not.Empty, "Book should have some description.");
-
-            actual.Links.AssertLinkNotPresent("update");
-            actual.Links.AssertLinkNotPresent("delete");
+            var expectedItems = _builder.Books.OrderBy(a => a.Title).Take(10);
+            foreach (var item in expectedItems)
+            {
+                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
+                actual.ShouldMatch(item, DatabaseConnection)
+                            .InLibrary(LibraryId)
+                            .ShouldHaveCorrectLinks()
+                            .ShouldNotHaveEditLinks()
+                            .ShouldNotHaveImageUpdateLink()
+                            .ShouldNotHaveCreateChaptersLink()
+                            .ShouldNotHaveAddContentLink()
+                            .ShouldHaveSeriesLink()
+                            .ShouldBeSameCategories(_categories)
+                            .ShouldHaveChaptersLink()
+                            .ShouldHavePublicImageLink()
+                            .ShouldHaveContents(DatabaseConnection, false);
+            }
         }
     }
 }

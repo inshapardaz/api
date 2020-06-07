@@ -40,19 +40,28 @@ namespace Inshapardaz.Functions.Library.Books
             {
                 Page = books,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-                LinkFunc = Link
+                LinkFuncWithParameter = Link
             };
 
-            return new OkObjectResult(args.Render(principal));
+            return new OkObjectResult(args.Render(libraryId, principal));
         }
 
         public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/books", relType);
 
-        public static LinkView Link(int pageNumber = 1, int pageSize = 10, string relType = RelTypes.Self)
-            => SelfLink("books", relType, queryString: new Dictionary<string, string>
+        public static LinkView Link(int libraryId, int pageNumber = 1, int pageSize = 10, string query = null, string relType = RelTypes.Self)
+        {
+            var queryString = new Dictionary<string, string>
             {
                 { "pageNumber", pageNumber.ToString()},
                 { "pageSize", pageSize.ToString()}
-            });
+            };
+
+            if (query != null)
+            {
+                queryString.Add("query", query);
+            }
+
+            return SelfLink($"library/{libraryId}/books", relType, queryString: queryString);
+        }
     }
 }

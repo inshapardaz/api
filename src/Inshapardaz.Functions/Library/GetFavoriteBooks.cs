@@ -37,7 +37,7 @@ namespace Inshapardaz.Functions.Library.Books
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 
-            var query = new GetFavoriteBooksQuery(libraryId, principal.GetUserId(), pageNumber, pageSize);
+            var query = new GetFavoriteBooksQuery(libraryId, principal.GetUserId().Value, pageNumber, pageSize);
             var books = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             var args = new PageRendererArgs<BookModel>
@@ -47,7 +47,7 @@ namespace Inshapardaz.Functions.Library.Books
                 LinkFunc = Link
             };
 
-            return new OkObjectResult(args.Render(principal));
+            return new OkObjectResult(args.Render(libraryId, principal));
         }
 
         public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/favorites", relType);

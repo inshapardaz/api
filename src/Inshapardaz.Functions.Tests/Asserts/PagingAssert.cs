@@ -11,21 +11,16 @@ namespace Inshapardaz.Functions.Tests.Asserts
     internal class PagingAssert<T>
     {
         private ObjectResult _response;
+        private readonly LibraryDto _library;
         private PageView<T> _page;
-        private int _libraryId;
 
         public IEnumerable<T> Data => _page.Data;
 
-        public PagingAssert(ObjectResult response)
+        public PagingAssert(ObjectResult response, LibraryDto library)
         {
             _response = response;
+            _library = library;
             _page = response.Value as PageView<T>;
-        }
-
-        public PagingAssert<T> InLibrary(int libraryId)
-        {
-            _libraryId = libraryId;
-            return this;
         }
 
         internal void ShouldHaveSelfLink(string endingWith, string parameterName = null, string parameterValue = null)

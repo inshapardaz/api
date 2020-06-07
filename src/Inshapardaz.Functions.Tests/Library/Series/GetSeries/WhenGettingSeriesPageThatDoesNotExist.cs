@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
-            _assert = new PagingAssert<SeriesView>(_response);
+            _assert = new PagingAssert<SeriesView>(_response, Library);
         }
 
         [OneTimeTearDown]

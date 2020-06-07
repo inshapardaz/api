@@ -14,7 +14,7 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class GetChapterContentQuery : LibraryBaseQuery<ChapterContentModel>
     {
-        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string language, string mimeType, Guid userId)
+        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string language, string mimeType, Guid? userId)
             : base(libraryId)
         {
             UserId = userId;
@@ -28,7 +28,7 @@ namespace Inshapardaz.Domain.Ports.Library
 
         public int ChapterId { get; }
 
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
 
         public string MimeType { get; set; }
         public string Language { get; set; }
@@ -57,7 +57,7 @@ namespace Inshapardaz.Domain.Ports.Library
                 throw new NotFoundException();
             }
 
-            if (!book.IsPublic && command.UserId == Guid.Empty)
+            if (!book.IsPublic && command.UserId == null)
             {
                 throw new UnauthorizedException();
             }
@@ -76,9 +76,9 @@ namespace Inshapardaz.Domain.Ports.Library
             var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
             if (chapterContent != null)
             {
-                if (command.UserId != Guid.Empty)
+                if (command.UserId != null)
                 {
-                    await _bookRepository.AddRecentBook(command.LibraryId, command.UserId, command.BookId, cancellationToken);
+                    await _bookRepository.AddRecentBook(command.LibraryId, command.UserId.Value, command.BookId, cancellationToken);
                 }
 
                 if (book.IsPublic)

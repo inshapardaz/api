@@ -10,7 +10,7 @@ namespace Inshapardaz.Domain.Ports.Library
 {
     public class DeleteBookFileRequest : BookRequest
     {
-        public DeleteBookFileRequest(ClaimsPrincipal claims, int libraryId, int bookId, string language, string mimeType, Guid userId)
+        public DeleteBookFileRequest(ClaimsPrincipal claims, int libraryId, int bookId, string language, string mimeType, Guid? userId)
             : base(claims, libraryId, bookId, userId)
         {
             Language = language;

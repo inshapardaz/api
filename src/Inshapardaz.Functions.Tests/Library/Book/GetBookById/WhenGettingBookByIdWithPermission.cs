@@ -120,9 +120,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         }
 
         [Test]
-        public void ShouldHaveAddFileLink()
+        public void ShouldHaveAddContentLink()
         {
-            _assert.ShouldHaveAddFileLink();
+            _assert.ShouldHaveAddContentLink();
         }
 
         [Test]

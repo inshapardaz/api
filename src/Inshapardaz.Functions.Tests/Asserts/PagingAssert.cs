@@ -33,6 +33,18 @@ namespace Inshapardaz.Functions.Tests.Asserts
                 _page.SelfLink().ShouldHaveQueryParameter<string>(parameterName, parameterValue);
         }
 
+        internal void ShouldHaveSelfLink(string format, int pageNumber, int pageSize = 10, string parameterName = null, string parameterValue = null)
+        {
+            var link = _page.SelfLink();
+            link.ShouldBeGet()
+                .ShouldHaveUrl(format)
+                .ShouldHaveQueryParameter("pageSize", pageSize)
+                .ShouldHaveQueryParameter("pageNumber", pageNumber);
+
+            if (parameterName != null)
+                link.ShouldHaveQueryParameter<string>(parameterName, parameterValue);
+        }
+
         internal void ShouldNotHaveNextLink()
         {
             _page.Links.AssertLinkNotPresent("next");

@@ -1,8 +1,8 @@
-﻿using Inshapardaz.Domain.Ports.Handlers.Library;
+﻿using Inshapardaz.Domain.Models.Handlers.Library;
 using System;
 using System.Security.Claims;
 
-namespace Inshapardaz.Domain.Ports.Library
+namespace Inshapardaz.Domain.Models.Library
 {
     public abstract class BookRequest : LibraryAuthorisedCommand
     {

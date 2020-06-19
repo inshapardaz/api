@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -14,6 +13,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
     public class AuthorsDataBuilder
     {
         private List<AuthorDto> _authors = new List<AuthorDto>();
+        private List<BookDto> _books = new List<BookDto>();
         private List<FileDto> _files = new List<FileDto>();
         private readonly IDbConnection _connection;
         private readonly FakeFileStorage _fileStorage;
@@ -21,6 +21,8 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private int _bookCount;
         private bool _withImage = true;
         private string _namePattern = "";
+
+        internal IEnumerable<BookDto> Books => _books;
 
         public IEnumerable<AuthorDto> Authors => _authors;
 
@@ -91,12 +93,14 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 _authors.Add(author);
 
                 var books = fixture.Build<BookDto>()
-                                   .With(b => b.AuthorId, author.Id)
                                    .With(b => b.LibraryId, _libraryId)
+                                   .With(b => b.AuthorId, author.Id)
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);
                 _connection.AddBooks(books);
+
+                _books.AddRange(books);
 
                 authors.Add(author);
             }

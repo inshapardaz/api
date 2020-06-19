@@ -1,7 +1,7 @@
 ﻿using Paramore.Darker;
 using System;
 
-namespace Inshapardaz.Domain.Ports.Handlers.Library
+namespace Inshapardaz.Domain.Models.Handlers.Library
 {
     public abstract class LibraryBaseQuery<T> : IQuery<T>
     {

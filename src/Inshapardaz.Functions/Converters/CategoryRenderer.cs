@@ -32,7 +32,7 @@ namespace Inshapardaz.Functions.Converters
             var view = category.Map();
 
             view.Links.Add(GetCategoryById.Link(libraryId, category.Id));
-            view.Links.Add(GetBooksByCategory.Self(libraryId, category.Id, RelTypes.Books));
+            view.Links.Add(GetBooks.Link(libraryId, relType: RelTypes.Books, filter: new BookFilter { CategoryId = category.Id }));
 
             if (principal.IsAdministrator())
             {

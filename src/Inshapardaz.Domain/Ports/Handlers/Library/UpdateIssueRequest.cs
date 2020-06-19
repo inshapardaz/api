@@ -1,12 +1,12 @@
 ﻿using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports.Library
+namespace Inshapardaz.Domain.Models.Library
 {
     public class UpdateIssueRequest : LibraryAuthorisedCommand
     {

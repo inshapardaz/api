@@ -1,5 +1,7 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Library;
+
+using Inshapardaz.Domain.Models.Library;
+
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
@@ -8,7 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Paramore.Darker;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,15 +36,29 @@ namespace Inshapardaz.Functions.Library.Books
             var query = GetQueryParameter<string>(req, "query", null);
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
+            var filter = GetFilter(req);
+            var sortBy = GetQueryParameter<BookSortByType>(req, "sortby", BookSortByType.Title);
+            var sortDirection = GetQueryParameter<SortDirection>(req, "sort", SortDirection.Ascending);
 
-            var request = new GetBooksQuery(libraryId, pageNumber, pageSize, principal.GetUserId()) { Query = query };
+            var request = new GetBooksQuery(libraryId, pageNumber, pageSize, principal.GetUserId())
+            {
+                Query = query,
+                Filter = filter,
+                SortBy = sortBy,
+                SortDirection = sortDirection
+            };
             var books = await QueryProcessor.ExecuteAsync(request, cancellationToken: token);
 
             var args = new PageRendererArgs<BookModel>
             {
                 Page = books,
-                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-                LinkFuncWithParameter = Link
+                RouteArguments = new PagedRouteArgs
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    BookFilter = filter
+                },
+                LinkFuncWithParameterEx = Link,
             };
 
             return new OkObjectResult(args.Render(libraryId, principal));
@@ -48,7 +66,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/books", relType);
 
-        public static LinkView Link(int libraryId, int pageNumber = 1, int pageSize = 10, string query = null, string relType = RelTypes.Self)
+        public static LinkView Link(int libraryId, int pageNumber = 1, int pageSize = 10, string query = null, string relType = RelTypes.Self, BookFilter filter = null)
         {
             var queryString = new Dictionary<string, string>
             {
@@ -61,7 +79,38 @@ namespace Inshapardaz.Functions.Library.Books
                 queryString.Add("query", query);
             }
 
+            if (filter != null)
+            {
+                if (filter.AuthorId.HasValue)
+                    queryString.Add("authorid", filter.AuthorId.Value.ToString());
+
+                if (filter.SeriesId.HasValue)
+                    queryString.Add("seriesid", filter.SeriesId.Value.ToString());
+
+                if (filter.CategoryId.HasValue)
+                    queryString.Add("categoryid", filter.CategoryId.Value.ToString());
+
+                if (filter.Favorite.HasValue)
+                    queryString.Add("favorite", bool.TrueString);
+            }
             return SelfLink($"library/{libraryId}/books", relType, queryString: queryString);
+        }
+
+        private BookFilter GetFilter(HttpRequest request)
+        {
+            // TODO : Somehow make it case-insensitive
+            var authorId = GetQueryParameter<int>(request, "authorid");
+            var seriesId = GetQueryParameter<int>(request, "seriesid");
+            var categoryId = GetQueryParameter<int>(request, "categoryid");
+            var favorite = GetQueryParameter<bool>(request, "favorite");
+
+            return new BookFilter()
+            {
+                AuthorId = authorId != 0 ? authorId : (int?)null,
+                SeriesId = seriesId != 0 ? seriesId : (int?)null,
+                CategoryId = categoryId != 0 ? categoryId : (int?)null,
+                Favorite = favorite ? true : (bool?)null
+            };
         }
     }
 }

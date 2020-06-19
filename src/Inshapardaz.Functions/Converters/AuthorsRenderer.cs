@@ -7,6 +7,7 @@ using Inshapardaz.Functions.Library.Files;
 using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Internal;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,7 +55,7 @@ namespace Inshapardaz.Functions.Converters
             var links = new List<LinkView>
             {
                 GetAuthorById.Link(libraryId, source.Id, RelTypes.Self),
-                GetBooksByAuthor.Link(libraryId, source.Id, RelTypes.Books)
+                GetBooks.Link(libraryId, source.Id, relType: RelTypes.Books, filter: new BookFilter() { AuthorId = source.Id })
             };
 
             if (!string.IsNullOrWhiteSpace(source.ImageUrl))

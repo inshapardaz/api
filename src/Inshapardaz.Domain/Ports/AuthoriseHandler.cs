@@ -1,12 +1,12 @@
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Models.Handlers.Library;
 using Paramore.Brighter;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports
+namespace Inshapardaz.Domain.Models
 {
     public class AuthoriseHandler<T>
         : RequestHandlerAsync<T> where T : LibraryAuthorisedCommand

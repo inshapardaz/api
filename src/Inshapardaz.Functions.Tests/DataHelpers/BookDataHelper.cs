@@ -1,11 +1,9 @@
 ﻿using Dapper;
-using Inshapardaz.Domain.Models;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 
 namespace Inshapardaz.Functions.Tests.DataHelpers

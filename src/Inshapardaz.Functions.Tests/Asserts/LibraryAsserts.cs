@@ -1,9 +1,7 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
-using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Views;
-using Inshapardaz.Functions.Views.Library;
 using Inshapardaz.Ports.Database;
 using System;
 using System.Collections.Generic;

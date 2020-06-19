@@ -12,7 +12,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenGettingBooksByCategoryAsUnauthorized : LibraryTest<Functions.Library.Books.GetBooksByCategory>
+    public class WhenGettingBooksByCategoryAsUnauthorized
+        : LibraryTest<Functions.Library.Books.GetBooks>
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
@@ -20,16 +21,18 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var request = TestHelpers.CreateGetRequest();
-
             var builder = Container.GetService<BooksDataBuilder>();
             builder.WithCategories(2).Build(3);
 
             var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
             var category = categoriesBuilder.Build();
-            //builder.WithCategory(category).Build(4);
+            var request = new RequestBuilder()
+                          .WithQueryParameter("pageNumber", 1)
+                          .WithQueryParameter("pageSize", 10)
+                          .WithQueryParameter("categoryid", category.Id)
+                          .Build();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, category.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;
         }

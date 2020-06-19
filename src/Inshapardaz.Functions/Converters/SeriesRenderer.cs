@@ -51,7 +51,7 @@ namespace Inshapardaz.Functions.Converters
             var view = series.Map();
 
             view.Links.Add(GetSeriesById.Link(libraryId, series.Id, RelTypes.Self));
-            view.Links.Add(GetBooksBySeries.Link(libraryId, series.Id, RelTypes.Books));
+            view.Links.Add(GetBooks.Link(libraryId, relType: RelTypes.Books, filter: new BookFilter { SeriesId = series.Id }));
 
             if (!string.IsNullOrWhiteSpace(series.ImageUrl))
             {

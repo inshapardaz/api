@@ -1,12 +1,12 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Models.Handlers.Library;
 using Paramore.Darker;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports.Handlers
+namespace Inshapardaz.Domain.Models.Handlers
 {
     public class GetLibraryQuery : LibraryBaseQuery<LibraryModel>
     {

@@ -15,13 +15,13 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task DeleteBook(int libraryId, int bookId, CancellationToken cancellationToken);
 
-        Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
+        Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, Guid? userId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
 
         Task<Page<BookModel>> GetLatestBooks(int libraryId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
 
-        Task<Page<BookModel>> SearchBooks(int libraryId, string searchText, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
+        Task<Page<BookModel>> SearchBooks(int libraryId, string searchText, int pageNumber, int pageSize, Guid? userId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
 
-        Task<Page<BookModel>> GetBooksByAuthor(int libraryId, int authorId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
+        //Task<Page<BookModel>> GetBooksByAuthor(int libraryId, int authorId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
 
         Task<Page<BookModel>> GetBooksByCategory(int libraryId, int categoryId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
 

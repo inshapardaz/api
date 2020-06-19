@@ -8,7 +8,6 @@ using Inshapardaz.Functions.Library.Categories;
 using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Fakes;
-using Inshapardaz.Ports.Database;
 using Inshapardaz.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
@@ -59,9 +58,6 @@ namespace Inshapardaz.Functions.Tests
                     .AddTransient<UpdateAuthorImage>()
                     .AddTransient<GetBooks>()
                     .AddTransient<GetBookById>()
-                    .AddTransient<GetBooksByAuthor>()
-                    .AddTransient<GetBooksByCategory>()
-                    .AddTransient<GetBooksBySeries>()
                     .AddTransient<GetFavoriteBooks>()
                     .AddTransient<GetRecentReadBooks>()
                     .AddTransient<GetLatestBooks>()

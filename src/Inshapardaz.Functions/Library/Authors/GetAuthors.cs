@@ -1,5 +1,7 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Library;
+
+using Inshapardaz.Domain.Models.Library;
+
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
@@ -34,7 +36,7 @@ namespace Inshapardaz.Functions.Library.Authors
             [AccessToken] ClaimsPrincipal principal,
             CancellationToken token)
         {
-            var query = GetQueryParameter<string>(req, "query", null);
+            var query = GetQueryParameter(req, "query", "");
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
 

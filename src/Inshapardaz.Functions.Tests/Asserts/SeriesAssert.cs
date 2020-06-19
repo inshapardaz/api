@@ -53,7 +53,8 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _series.Link("books")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/series/{_series.Id}/books");
+                  .EndingWith($"library/{_libraryId}/books")
+                  .ShouldHaveQueryParameter("seriesid", _series.Id);
 
             return this;
         }

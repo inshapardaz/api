@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
 {
-    [TestFixture, Ignore("ToFix")]
+    [TestFixture]
     public class WhenGettingBooksByCategoryAsReader
         : LibraryTest<Functions.Library.Books.GetBooks>
     {
@@ -62,6 +62,12 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
         }
 
         [Test]
+        public void ShouldNotHaveCreateLink()
+        {
+            _assert.ShouldNotHaveCreateLink();
+        }
+
+        [Test]
         public void ShouldNotHaveNextLink()
         {
             _assert.ShouldNotHaveNextLink();
@@ -71,12 +77,6 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
         public void ShouldNotHavePreviousLink()
         {
             _assert.ShouldNotHavePreviousLink();
-        }
-
-        [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
         }
 
         [Test]

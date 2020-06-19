@@ -101,13 +101,17 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 };
                 var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
                             From Library.Book b
-                            Inner Join Library.Author a On b.AuthorId = a.Id AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
-                            Left Outer Join Library.Series s On b.SeriesId = s.id AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
-                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @FavoriteFilter Is Null)
-                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null)
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Left Outer Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
                             Left Outer Join Library.Category c ON bc.CategoryId = c.Id
                             Left Outer Join Library.FavoriteBooks fb On fb.BookId = b.Id
-                            Where b.LibraryId = @LibraryId AND (@UserId Is not Null OR b.IsPublic = 1) " +
+                            Where b.LibraryId = @LibraryId AND (@UserId Is not Null OR b.IsPublic = 1)
+                            AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
+                            AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
+                            AND (f.UserId = @UserId OR @FavoriteFilter Is Null)
+                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null) " +
                             $" ORDER BY {sortByQuery} {sortDirection} " +
                             @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -127,13 +131,17 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
                 var sqlCount = @"Select Distinct Count(b.Id)
                             From Library.Book b
-                            Inner Join Library.Author a On b.AuthorId = a.Id AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
-                            Left Outer Join Library.Series s On b.SeriesId = s.id AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
-                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @FavoriteFilter Is Null)
-                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null)
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Left Outer Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
                             Left Outer Join Library.Category c ON bc.CategoryId = c.Id
                             Left Outer Join Library.FavoriteBooks fb On fb.BookId = b.Id
-                            Where b.LibraryId = @LibraryId AND (@UserId Is not Null OR b.IsPublic = 1)";
+                            Where b.LibraryId = @LibraryId AND (@UserId Is not Null OR b.IsPublic = 1)
+                            AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
+                            AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
+                            AND (f.UserId = @UserId OR @FavoriteFilter Is Null)
+                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null) ";
                 var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
                 return new Page<BookModel>
@@ -167,13 +175,17 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                 };
                 var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
                             From Library.Book b
-                            Inner Join Library.Author a On b.AuthorId = a.Id AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
-                            Left Outer Join Library.Series s On b.SeriesId = s.id AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
-                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND (f.UserId = @UserId OR @FavoriteFilter Is Null)
-                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null)
+                            Inner Join Library.Author a On b.AuthorId = a.Id
+                            Left Outer Join Library.Series s On b.SeriesId = s.id
+                            Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId
+                            Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
                             Left Outer Join Library.Category c ON bc.CategoryId = c.Id
                             Left Outer Join Library.FavoriteBooks fb On fb.BookId = b.Id
-                            Where b.LibraryId = @LibraryId And b.Title Like @Query AND (@UserId Is not Null OR b.IsPublic = 1) " +
+                            Where b.LibraryId = @LibraryId And b.Title Like @Query AND (@UserId Is not Null OR b.IsPublic = 1)
+                            AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
+                            AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
+                            AND (f.UserId = @UserId OR @FavoriteFilter Is Null)
+                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null) " +
                             $" ORDER BY {sortByQuery} {sortDirection} " +
                             @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -195,13 +207,17 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
                 var sqlCount = @"SELECT COUNT(*)
                                 From Library.Book b
-                                Inner Join Library.Author a On b.AuthorId = a.Id AND(a.Id = @AuthorFilter OR @AuthorFilter Is Null)
-                                Left Outer Join Library.Series s On b.SeriesId = s.id AND(s.Id = @SeriesFilter OR @SeriesFilter Is Null)
-                                Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId AND(f.UserId = @UserId OR @FavoriteFilter Is Null)
-                                Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId AND(bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null)
+                                Inner Join Library.Author a On b.AuthorId = a.Id
+                                Left Outer Join Library.Series s On b.SeriesId = s.id
+                                Left Outer Join Library.FavoriteBooks f On b.Id = f.BookId
+                                Left Outer Join Library.BookCategory bc ON b.Id = bc.BookId
                                 Left Outer Join Library.Category c ON bc.CategoryId = c.Id
                                 Left Outer Join Library.FavoriteBooks fb On fb.BookId = b.Id
-                                Where b.LibraryId = @LibraryId And b.Title Like @Query AND(@UserId Is not Null OR b.IsPublic = 1) ";
+                                Where b.LibraryId = @LibraryId And b.Title Like @Query AND(@UserId Is not Null OR b.IsPublic = 1)
+                                AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
+                                AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
+                                AND (f.UserId = @UserId OR @FavoriteFilter Is Null)
+                                AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null) ";
                 var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
                 return new Page<BookModel>

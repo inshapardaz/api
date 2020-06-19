@@ -1,8 +1,11 @@
-﻿using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
+using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,30 +13,34 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByAuthor
 {
-    [TestFixture, Ignore("ToFix")]
-    public class WhenGettingBooksByAuthorPageThatDoesNotExist : LibraryTest<Functions.Library.Books.GetBooksByAuthor>
+    [TestFixture]
+    public class WhenGettingBooksByAuthorPageThatDoesNotExist
+        : LibraryTest<Functions.Library.Books.GetBooks>
     {
         private OkObjectResult _response;
-        private PageView<BookView> _view;
+        private PagingAssert<BookView> _assert;
+        private AuthorsDataBuilder _builder;
+        private AuthorDto _author;
+        private IEnumerable<BookDto> _authorBooks;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
+            _builder = Container.GetService<AuthorsDataBuilder>();
+            var _bookBuilder = Container.GetService<BooksDataBuilder>();
+            _author = _builder.WithLibrary(LibraryId).Build();
+            _authorBooks = _bookBuilder.WithLibrary(LibraryId).WithAuthor(_author).IsPublic().Build(1);
+            _builder.WithLibrary(LibraryId).WithBooks(3).Build();
+
             var request = new RequestBuilder()
-                          .WithQueryParameter("pageNumber", 3)
+                          .WithQueryParameter("pageNumber", 20)
                           .WithQueryParameter("pageSize", 10)
+                          .WithQueryParameter("authorid", _author.Id)
                           .Build();
 
-            var builder = Container.GetService<BooksDataBuilder>();
-            builder.Build(20);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
-            var authorBuilder = Container.GetService<AuthorsDataBuilder>();
-            var author = authorBuilder.Build();
-            //builder.WithAuthor(author).Build(20);
-
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, author.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
-
-            _view = _response.Value as PageView<BookView>;
+            _assert = new PagingAssert<BookView>(_response, Library);
         }
 
         [OneTimeTearDown]
@@ -45,43 +52,45 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByAuthor
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(200));
+            _response.ShouldBeOk();
         }
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                 .ShouldBeGet()
-                 .ShouldHaveSomeHref();
+            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/books");
         }
 
         [Test]
         public void ShouldNotHaveNextLink()
         {
-            _view.Links.AssertLinkNotPresent("next");
+            _assert.ShouldNotHaveNextLink();
         }
 
         [Test]
-        public void ShouldHavePreviousLink()
+        public void ShouldNotHavePreviousLink()
         {
-            _view.Links.AssertLinkNotPresent("previous");
+            _assert.ShouldNotHavePreviousLink();
         }
 
         [Test]
-        public void ShouldNotHaveAnyBooks()
+        public void ShouldNotHaveCreateLink()
         {
-            Assert.IsEmpty(_view.Data, "Should return no books.");
+            _assert.ShouldNotHaveCreateLink();
         }
 
         [Test]
         public void ShouldReturnCorrectPage()
         {
-            Assert.That(_view.PageCount, Is.EqualTo(2));
-            Assert.That(_view.PageSize, Is.EqualTo(10));
-            Assert.That(_view.TotalCount, Is.EqualTo(20));
-            Assert.That(_view.CurrentPageIndex, Is.EqualTo(3));
+            _assert.ShouldHavePage(20)
+                   .ShouldHavePageSize(10)
+                   .ShouldHaveTotalCount(_authorBooks.Count());
+        }
+
+        [Test]
+        public void ShouldReturnNoBooks()
+        {
+            _assert.ShouldHaveNoData();
         }
     }
 }

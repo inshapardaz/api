@@ -6,7 +6,6 @@ using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Data;
 using System.Threading;
 
@@ -54,7 +53,8 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _author.Link("books")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/authors/{_author.Id}/books");
+                  .EndingWith($"library/{_libraryId}/books")
+                  .ShouldHaveQueryParameter("authorId", _author.Id);
 
             return this;
         }

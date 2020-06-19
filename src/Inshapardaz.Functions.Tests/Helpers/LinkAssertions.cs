@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Permissions;
 using FluentAssertions;
 using Inshapardaz.Functions.Views;
 using NUnit.Framework;
@@ -174,8 +173,8 @@ namespace Inshapardaz.Functions.Tests.Helpers
             var uri = new Uri(view.Href);
             var parameters = System.Web.HttpUtility.ParseQueryString(uri.Query);
             var param = parameters[name];
-            param.Should().NotBeNull();
-            param.Should().Be(value.ToString());
+            param.Should().NotBeNull($"Query parameter '{name}' not found.");
+            param.Should().Be(value.ToString(), $"Query parameter '{name}' has unexpected value.");
             return view;
         }
 

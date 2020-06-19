@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Views;
 using System;
 
@@ -15,7 +16,7 @@ namespace Inshapardaz.Functions.Converters
 
         public Func<int, int, int, string, string, LinkView> LinkFuncWithParameter { get; set; }
 
-        public Func<int, int, int, int, string, string, LinkView> LinkFuncWithParameterEx { get; set; }
+        public Func<int, int, int, string, string, BookFilter, LinkView> LinkFuncWithParameterEx { get; set; }
     }
 
     public class PagedRouteArgs
@@ -25,5 +26,7 @@ namespace Inshapardaz.Functions.Converters
         public int PageSize { get; set; }
 
         public string Query { get; set; }
+
+        public BookFilter BookFilter { get; set; }
     }
 }

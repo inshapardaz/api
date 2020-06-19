@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FileModel = Inshapardaz.Domain.Models.FileModel;
 
-namespace Inshapardaz.Domain.Ports
+namespace Inshapardaz.Domain.Models
 {
     public class GetFileQuery : IQuery<FileModel>
     {

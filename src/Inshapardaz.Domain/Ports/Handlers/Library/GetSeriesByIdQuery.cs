@@ -1,13 +1,13 @@
 ﻿using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports.Library
+namespace Inshapardaz.Domain.Models.Library
 {
     public class GetSeriesByIdQuery : LibraryBaseQuery<SeriesModel>
     {

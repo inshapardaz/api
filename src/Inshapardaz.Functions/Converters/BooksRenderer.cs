@@ -26,10 +26,12 @@ namespace Inshapardaz.Functions.Converters
                 Data = source.Page.Data?.Select(x => x.Render(principal))
             };
 
-            var links = new List<LinkView>
-            {
-                source.LinkFuncWithParameter(id, page.CurrentPageIndex, page.PageSize, source.RouteArguments.Query, RelTypes.Self)
-            };
+            var links = new List<LinkView>();
+
+            if (source.LinkFuncWithParameterEx != null)
+                links.Add(source.LinkFuncWithParameterEx(id, page.CurrentPageIndex, page.PageSize, source.RouteArguments.Query, RelTypes.Self, source.RouteArguments.BookFilter));
+            else
+                links.Add(source.LinkFuncWithParameter?.Invoke(id, page.CurrentPageIndex, page.PageSize, source.RouteArguments.Query, RelTypes.Self));
 
             if (principal.IsWriter())
             {
@@ -38,12 +40,18 @@ namespace Inshapardaz.Functions.Converters
 
             if (page.CurrentPageIndex < page.PageCount)
             {
-                links.Add(source.LinkFuncWithParameter(id, page.CurrentPageIndex + 1, page.PageSize, source.RouteArguments.Query, RelTypes.Next));
+                if (source.LinkFuncWithParameterEx != null)
+                    links.Add(source.LinkFuncWithParameterEx(id, page.CurrentPageIndex + 1, page.PageSize, source.RouteArguments.Query, RelTypes.Next, source.RouteArguments.BookFilter));
+                else
+                    links.Add(source.LinkFuncWithParameter?.Invoke(id, page.CurrentPageIndex + 1, page.PageSize, source.RouteArguments.Query, RelTypes.Next));
             }
 
             if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
             {
-                links.Add(source.LinkFuncWithParameter(id, page.CurrentPageIndex - 1, page.PageSize, source.RouteArguments.Query, RelTypes.Previous));
+                if (source.LinkFuncWithParameterEx != null)
+                    links.Add(source.LinkFuncWithParameterEx(id, page.CurrentPageIndex - 1, page.PageSize, source.RouteArguments.Query, RelTypes.Previous, source.RouteArguments.BookFilter));
+                else
+                    links.Add(source.LinkFuncWithParameter?.Invoke(id, page.CurrentPageIndex - 1, page.PageSize, source.RouteArguments.Query, RelTypes.Previous));
             }
 
             page.Links = links;

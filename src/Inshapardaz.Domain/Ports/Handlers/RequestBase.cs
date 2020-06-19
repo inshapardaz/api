@@ -2,7 +2,7 @@
 using System;
 using System.Security.Claims;
 
-namespace Inshapardaz.Domain.Ports
+namespace Inshapardaz.Domain.Models
 {
     public abstract class RequestBase : IRequest
     {

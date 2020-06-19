@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
 
         private List<BookDto> _books;
         private readonly List<FileDto> _files = new List<FileDto>();
-
+        private List<AuthorDto> _authors = new List<AuthorDto>();
         private bool _hasSeries, _hasImage = true;
         private bool? _isPublic = null;
         private int _chapterCount, _categoriesCount, _contentCount;
@@ -39,7 +39,9 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private Guid _addToRecentReadsForUser;
         private List<BookContentDto> _contents = new List<BookContentDto>();
         private string _language = null;
+        private int _numberOfAuthors;
 
+        public IEnumerable<AuthorDto> Authors => _authors;
         public IEnumerable<BookDto> Books => _books;
         public IEnumerable<BookContentDto> Contents => _contents;
 
@@ -93,6 +95,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         public BooksDataBuilder WithAuthor(AuthorDto author)
         {
             _author = author;
+            return this;
+        }
+
+        public BooksDataBuilder WithAuthors(int numberOfAuthors)
+        {
+            _numberOfAuthors = numberOfAuthors;
             return this;
         }
 
@@ -178,17 +186,16 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         {
             var fixture = new Fixture();
 
-            IEnumerable<AuthorDto> authors = null;
             if (_author == null)
             {
-                authors = _authorBuilder.WithLibrary(_libraryId).Build(numberOfBooks);
+                _authors = _authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : numberOfBooks).ToList();
             }
 
             Func<bool> f = () => _isPublic ?? Random.Bool;
 
             _books = fixture.Build<BookDto>()
                           .With(b => b.LibraryId, _libraryId)
-                          .With(b => b.AuthorId, _author != null ? _author.Id : Random.PickRandom(authors).Id)
+                          .With(b => b.AuthorId, _author != null ? _author.Id : Random.PickRandom(_authors).Id)
                           .With(b => b.ImageId, _hasImage ? Random.Number : 0)
                           .With(b => b.IsPublic, f)
                           .With(b => b.SeriesIndex, _hasSeries ? Random.Number : (int?)null)

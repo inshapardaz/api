@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.Contents.AddChapterContents

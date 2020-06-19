@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports.Library
+namespace Inshapardaz.Domain.Models.Library
 {
     public class UpdateChapterRequest : BookRequest
     {

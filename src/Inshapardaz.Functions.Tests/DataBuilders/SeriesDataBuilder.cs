@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using AutoFixture;
-using Bogus;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;

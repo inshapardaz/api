@@ -8,8 +8,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using Bogus;
 using Newtonsoft.Json;
-using System;
-using System.Net.Mime;
 
 namespace Inshapardaz.Functions.Tests.Helpers
 {

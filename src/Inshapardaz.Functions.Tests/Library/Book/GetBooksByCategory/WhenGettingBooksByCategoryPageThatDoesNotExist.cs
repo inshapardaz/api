@@ -11,7 +11,8 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
 {
     [TestFixture, Ignore("ToFix")]
-    public class WhenGettingBooksByCategoryPageThatDoesNotExist : LibraryTest<Functions.Library.Books.GetBooksByCategory>
+    public class WhenGettingBooksByCategoryPageThatDoesNotExist
+        : LibraryTest<Functions.Library.Books.GetBooks>
     {
         private OkObjectResult _response;
         private PageView<BookView> _view;
@@ -19,19 +20,17 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooksByCategory
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var request = new RequestBuilder()
-                          .WithQueryParameter("pageNumber", 3)
-                          .WithQueryParameter("pageSize", 10)
-                          .Build();
-
             var builder = Container.GetService<BooksDataBuilder>();
             builder.WithCategories(2).Build(20);
 
             var categoriesBuilder = Container.GetService<CategoriesDataBuilder>();
             var category = categoriesBuilder.Build();
-            // builder.WithCategory(category).Build(20);
-
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, category.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            var request = new RequestBuilder()
+                          .WithQueryParameter("pageNumber", 100)
+                          .WithQueryParameter("pageSize", 10)
+                          .WithQueryParameter("categoryid", category.Id)
+                          .Build();
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _view = _response.Value as PageView<BookView>;
         }

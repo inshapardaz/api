@@ -1,8 +1,6 @@
-﻿using System.Security.Claims;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
-using FluentAssertions;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;

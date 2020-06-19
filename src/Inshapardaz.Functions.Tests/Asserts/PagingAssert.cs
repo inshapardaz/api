@@ -2,9 +2,9 @@
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Inshapardaz.Functions.Tests.Helpers;
-using System;
 using System.Collections.Generic;
 using Inshapardaz.Functions.Tests.Dto;
+using System.Linq;
 
 namespace Inshapardaz.Functions.Tests.Asserts
 {
@@ -70,6 +70,30 @@ namespace Inshapardaz.Functions.Tests.Asserts
 
             if (parameterName != null)
                 link.ShouldHaveQueryParameter<string>(parameterName, parameterValue);
+        }
+
+        internal PagingAssert<T> ShouldHaveTotalCount(int totalCount)
+        {
+            _page.TotalCount.Should().Be(totalCount);
+            return this;
+        }
+
+        internal PagingAssert<T> ShouldHaveItems(int itemCount)
+        {
+            _page.Data.Count().Should().Be(itemCount);
+            return this;
+        }
+
+        internal PagingAssert<T> ShouldHavePageSize(int pageSize)
+        {
+            _page.PageSize.Should().Be(pageSize);
+            return this;
+        }
+
+        internal PagingAssert<T> ShouldHavePage(int pageNumber)
+        {
+            _page.CurrentPageIndex.Should().Be(pageNumber);
+            return this;
         }
 
         internal void ShouldHaveCreateLink(string endingWith)

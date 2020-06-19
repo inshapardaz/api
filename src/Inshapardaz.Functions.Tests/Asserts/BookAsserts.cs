@@ -6,7 +6,6 @@ using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -152,6 +151,12 @@ namespace Inshapardaz.Functions.Tests.Asserts
                   .ShouldBeGet()
                   .EndingWith($"api/library/{_libraryId}/series/{_book.SeriesId}");
 
+            return this;
+        }
+
+        public BookAssert ShouldNotHaveSeriesLink()
+        {
+            _book.Link("series").Should().BeNull();
             return this;
         }
 

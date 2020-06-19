@@ -1,5 +1,5 @@
 ﻿using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Ports.Handlers.Library;
+using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FileModel = Inshapardaz.Domain.Models.FileModel;
 
-namespace Inshapardaz.Domain.Ports.Library
+namespace Inshapardaz.Domain.Models.Library
 {
     public class UpdateIssueImageRequest : LibraryAuthorisedCommand
     {

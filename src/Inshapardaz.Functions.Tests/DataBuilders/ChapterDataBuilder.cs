@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -9,8 +8,6 @@ using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Ports.Database;
-using NUnit.Framework;
-using SQLitePCL;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
 {

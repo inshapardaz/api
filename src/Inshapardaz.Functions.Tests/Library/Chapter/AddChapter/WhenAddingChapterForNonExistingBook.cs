@@ -1,12 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
 using Inshapardaz.Functions.Tests.Asserts;
-using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.AddChapter

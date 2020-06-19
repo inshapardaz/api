@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace Inshapardaz.Functions.Tests.Asserts
 {

@@ -1,11 +1,9 @@
 ﻿using FluentAssertions;
-using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Data;
 
 namespace Inshapardaz.Functions.Tests.Asserts
@@ -67,7 +65,8 @@ namespace Inshapardaz.Functions.Tests.Asserts
         {
             _category.Link("books")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/categories/{_category.Id}/books");
+                  .EndingWith($"library/{_libraryId}/books")
+                  .ShouldHaveQueryParameter("categoryid", _category.Id);
 
             return this;
         }

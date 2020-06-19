@@ -1,8 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
-using Inshapardaz.Database.Migrations;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;

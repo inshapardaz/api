@@ -3,7 +3,7 @@ using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports
+namespace Inshapardaz.Domain.Models
 {
     public class DeleteFileRequest : RequestBase
     {

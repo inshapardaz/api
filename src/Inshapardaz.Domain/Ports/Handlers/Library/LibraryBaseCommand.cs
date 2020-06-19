@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
 
-namespace Inshapardaz.Domain.Ports.Handlers.Library
+namespace Inshapardaz.Domain.Models.Handlers.Library
 {
     public abstract class LibraryBaseCommand : RequestBase
     {

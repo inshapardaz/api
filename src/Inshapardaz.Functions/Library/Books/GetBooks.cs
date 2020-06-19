@@ -1,7 +1,4 @@
 using Inshapardaz.Domain.Models.Library;
-
-using Inshapardaz.Domain.Models.Library;
-
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
@@ -10,9 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Paramore.Darker;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,7 +51,8 @@ namespace Inshapardaz.Functions.Library.Books
                 {
                     PageNumber = pageNumber,
                     PageSize = pageSize,
-                    BookFilter = filter
+                    BookFilter = filter,
+                    Query = query
                 },
                 LinkFuncWithParameterEx = Link,
             };

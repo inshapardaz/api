@@ -23,9 +23,9 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         //Task<Page<BookModel>> GetBooksByAuthor(int libraryId, int authorId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
 
-        Task<Page<BookModel>> GetBooksByCategory(int libraryId, int categoryId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
+        //Task<Page<BookModel>> GetBooksByCategory(int libraryId, int categoryId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
 
-        Task<Page<BookModel>> GetFavoriteBooksByUser(int libraryId, Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+        //Task<Page<BookModel>> GetFavoriteBooksByUser(int libraryId, Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<BookModel> GetBookById(int libraryId, int bookId, Guid? userId, CancellationToken cancellationToken);
 
@@ -41,7 +41,7 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task AddBookContent(int bookId, int fileId, string language, string mimeType, CancellationToken cancellationToken);
 
-        Task<Page<BookModel>> GetBooksBySeries(int libraryId, int seriesId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
+        //Task<Page<BookModel>> GetBooksBySeries(int libraryId, int seriesId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken);
 
         Task DeleteBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken);
 

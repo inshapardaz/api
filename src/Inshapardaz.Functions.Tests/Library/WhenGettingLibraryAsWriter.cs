@@ -109,9 +109,6 @@ namespace Inshapardaz.Functions.Tests.Library
             _view.Links.AssertLink("recents")
                 .ShouldBeGet()
                 .EndingWith($"/library/{LibraryId}/recents");
-            _view.Links.AssertLink("favorites")
-                .ShouldBeGet()
-                .EndingWith($"/library/{LibraryId}/favorites");
         }
 
         [Test]

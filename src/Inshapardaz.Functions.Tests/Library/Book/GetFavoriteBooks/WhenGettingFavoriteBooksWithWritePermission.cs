@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Functions.Tests.Asserts;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
-using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,24 +14,35 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
 {
-    [TestFixture]
-    public class WhenGettingFavoritesBooksAsUnauthorised
+    [TestFixture(AuthenticationLevel.Administrator)]
+    [TestFixture(AuthenticationLevel.Writer)]
+    public class WhenGettingFavoriteBooksWithWritePermission
         : LibraryTest<Functions.Library.Books.GetBooks>
     {
         private OkObjectResult _response;
         private PagingAssert<BookView> _assert;
-        private IEnumerable<BookDto> _favoriteBooks;
+        private SeriesDataBuilder _seriesBuilder;
+        private SeriesDto _series;
+        private IEnumerable<BookDto> _seriesBooks;
+        private ClaimsPrincipal _claim;
+
+        public WhenGettingFavoriteBooksWithWritePermission(AuthenticationLevel authenticationLevel)
+        {
+            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var claim = AuthenticationBuilder.ReaderClaim;
+            _seriesBuilder = Container.GetService<SeriesDataBuilder>();
             var _bookBuilder = Container.GetService<BooksDataBuilder>();
-            _favoriteBooks = _bookBuilder.WithLibrary(LibraryId)
+            _series = _seriesBuilder.WithLibrary(LibraryId).Build();
+            _seriesBooks = _bookBuilder.WithLibrary(LibraryId)
+                                       .WithSeries(_series)
                                        .IsPublic()
-                                       .AddToFavorites(claim.GetUserId())
+                                       .AddToFavorites(_claim.GetUserId())
                                        .Build(5);
-            _bookBuilder.WithLibrary(LibraryId).IsPublic().Build(3);
+            _seriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build();
 
             var request = new RequestBuilder()
                           .WithQueryParameter("pageNumber", 1)
@@ -39,7 +50,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
                           .WithQueryParameter("favorite", bool.TrueString)
                           .Build();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _claim, CancellationToken.None);
 
             _assert = new PagingAssert<BookView>(_response, Library);
         }
@@ -63,9 +74,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
+        public void ShouldHaveCreateLink()
         {
-            _assert.ShouldNotHaveCreateLink();
+            _assert.ShouldHaveCreateLink($"/api/library/{LibraryId}/books");
         }
 
         [Test]
@@ -85,30 +96,29 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
         {
             _assert.ShouldHavePage(1)
                    .ShouldHavePageSize(10)
-                   .ShouldHaveTotalCount(0)
-                   .ShouldHaveItems(0);
+                   .ShouldHaveTotalCount(_seriesBooks.Count())
+                   .ShouldHaveItems(5);
         }
 
         [Test]
         public void ShouldReturnExpectedBooks()
         {
-            _assert.ShouldHaveNoData();
-            //var expectedItems = _favoriteBooks.OrderBy(a => a.Title).Take(10);
-            //foreach (var item in expectedItems)
-            //{
-            //    var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-            //    actual.ShouldMatch(item, DatabaseConnection)
-            //                .InLibrary(LibraryId)
-            //                .ShouldHaveCorrectLinks()
-            //                .ShouldNotHaveSeriesLink()
-            //                .ShouldNotHaveEditLinks()
-            //                .ShouldNotHaveImageUpdateLink()
-            //                .ShouldNotHaveCreateChaptersLink()
-            //                .ShouldNotHaveAddContentLink()
-            //                .ShouldNotHaveAddFavoriteLink()
-            //                .ShouldNotHaveRemoveFavoriteLink()
-            //                .ShouldHaveChaptersLink()
-            //                .ShouldHavePublicImageLink();
+            var expectedItems = _seriesBooks.OrderBy(a => a.Title).Take(10);
+            foreach (var item in expectedItems)
+            {
+                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
+                actual.ShouldMatch(item, DatabaseConnection)
+                            .InLibrary(LibraryId)
+                            .ShouldHaveCorrectLinks()
+                            .ShouldHaveSeriesLink()
+                            .ShouldHaveEditLinks()
+                            .ShouldHaveImageUpdateLink()
+                            .ShouldHaveCreateChaptersLink()
+                            .ShouldHaveAddContentLink()
+                            .ShouldHaveRemoveFavoriteLink()
+                            .ShouldHaveChaptersLink()
+                            .ShouldHavePublicImageLink();
+            }
         }
     }
 }

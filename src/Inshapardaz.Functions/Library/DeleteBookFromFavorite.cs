@@ -23,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         [FunctionName("DeleteBookFromFavorite")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/favorites/{bookId:int}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/favorites/books/{bookId:int}")] HttpRequest req,
             int libraryId, int bookId,
             [AccessToken] ClaimsPrincipal claims,
             CancellationToken token)
@@ -33,10 +33,10 @@ namespace Inshapardaz.Functions.Library.Books
                 var request = new DeleteBookToFavoriteRequest(claims, libraryId, bookId, claims.GetUserId().Value);
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
 
-                return new CreatedResult(new Uri(GetFavoriteBooks.Link(libraryId, RelTypes.Self).Href), null);
+                return new OkResult();
             });
         }
 
-        public static LinkView Link(int libraryId, int bookId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/books/favorites/{bookId}", relType, "Delete");
+        public static LinkView Link(int libraryId, int bookId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/favorites/books/{bookId}", relType, "Delete");
     }
 }

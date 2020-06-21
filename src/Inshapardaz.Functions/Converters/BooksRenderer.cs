@@ -112,7 +112,7 @@ namespace Inshapardaz.Functions.Converters
                 }
                 else
                 {
-                    links.Add(AddBookToFavorite.Link(source.LibraryId, RelTypes.CreateFavorite));
+                    links.Add(AddBookToFavorite.Link(source.LibraryId, source.Id, RelTypes.CreateFavorite));
                 }
             }
 

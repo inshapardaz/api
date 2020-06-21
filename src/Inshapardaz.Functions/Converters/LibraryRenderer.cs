@@ -32,7 +32,6 @@ namespace Inshapardaz.Functions.Converters
             if (user.IsAuthenticated())
             {
                 links.Add(GetRecentReadBooks.Link(model.Id, RelTypes.Recents));
-                links.Add(GetFavoriteBooks.Link(model.Id, RelTypes.Favorites));
             }
 
             if (user.IsWriter())

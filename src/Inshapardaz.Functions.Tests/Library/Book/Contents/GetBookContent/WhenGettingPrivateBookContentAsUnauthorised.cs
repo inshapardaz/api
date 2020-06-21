@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.GetBookContent
         {
             var dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            var book = dataBuilder.WithLibrary(LibraryId).WithContents(5).Build();
+            var book = dataBuilder.WithLibrary(LibraryId).WithContents(5).IsPublic(false).Build();
             var expected = dataBuilder.Contents.PickRandom();
 
             var request = new RequestBuilder().WithAccept(expected.MimeType).WithLanguage(expected.Language).Build();

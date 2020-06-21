@@ -199,6 +199,8 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                           .With(b => b.ImageId, _hasImage ? Random.Number : 0)
                           .With(b => b.IsPublic, f)
                           .With(b => b.SeriesIndex, _hasSeries ? Random.Number : (int?)null)
+                          .With(b => b.DateAdded, Random.Date)
+                          .With(b => b.DateUpdated, Random.Date)
                           .CreateMany(numberOfBooks)
                           .ToList();
 

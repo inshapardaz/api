@@ -86,6 +86,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
                             .ShouldBeSameCategories(_categories)
                             .ShouldHaveChaptersLink()
                             .ShouldHavePublicImageLink()
+                            .ShouldHaveAddFavoriteLink()
                             .ShouldHaveContents(DatabaseConnection, false);
             }
         }

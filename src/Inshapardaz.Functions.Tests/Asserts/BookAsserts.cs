@@ -4,6 +4,7 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Helpers;
+using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -66,6 +67,36 @@ namespace Inshapardaz.Functions.Tests.Asserts
                   .ShouldBeGet()
                   .EndingWith($"api/library/{_libraryId}/books/{_book.Id}/chapters");
 
+            return this;
+        }
+
+        public BookAssert ShouldHaveAddFavoriteLink()
+        {
+            _book.Link(RelTypes.CreateFavorite)
+                  .ShouldBePost()
+                  .EndingWith($"library/{_libraryId}/favorites/books/{_book.Id}");
+
+            return this;
+        }
+
+        public BookAssert ShouldNotHaveAddFavoriteLink()
+        {
+            _book.Link(RelTypes.CreateFavorite).Should().BeNull();
+            return this;
+        }
+
+        public BookAssert ShouldHaveRemoveFavoriteLink()
+        {
+            _book.Link(RelTypes.RemoveFavorite)
+                  .ShouldBeDelete()
+                  .EndingWith($"library/{_libraryId}/favorites/books/{_book.Id}");
+
+            return this;
+        }
+
+        public BookAssert ShouldNotHaveRemoveFavoriteLink()
+        {
+            _book.Link(RelTypes.RemoveFavorite).Should().BeNull();
             return this;
         }
 

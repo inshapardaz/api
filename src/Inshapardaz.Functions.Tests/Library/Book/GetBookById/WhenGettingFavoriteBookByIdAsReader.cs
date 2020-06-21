@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
 {
     [TestFixture]
-    public class WhenGettingBookByIdAsReader
+    public class WhenGettingFavoriteBookByIdAsReader
         : LibraryTest<Functions.Library.Books.GetBookById>
     {
         private OkObjectResult _response;
@@ -24,6 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         public async Task Setup()
         {
             var request = TestHelpers.CreateGetRequest();
+            var readerClaim = AuthenticationBuilder.ReaderClaim;
 
             var dataBuilder = Container.GetService<BooksDataBuilder>();
             _categories = Container.GetService<CategoriesDataBuilder>().WithLibrary(LibraryId).Build(2);
@@ -31,10 +32,11 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
                                         .HavingSeries()
                                         .WithCategories(_categories)
                                         .WithContents(2)
+                                        .AddToFavorites(readerClaim.GetUserId())
                                         .Build(4);
             _expected = books.PickRandom();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, readerClaim, CancellationToken.None);
             _assert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
@@ -87,9 +89,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         }
 
         [Test]
-        public void ShouldHaveAddFavoriteLinks()
+        public void ShouldHaveRemoveFavoriteLinks()
         {
-            _assert.ShouldHaveAddFavoriteLink();
+            _assert.ShouldHaveRemoveFavoriteLink();
         }
 
         [Test]

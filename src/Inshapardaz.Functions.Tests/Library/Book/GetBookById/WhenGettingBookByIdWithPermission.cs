@@ -124,6 +124,12 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
         }
 
         [Test]
+        public void ShouldHaveAddFavoriteLinks()
+        {
+            _assert.ShouldHaveAddFavoriteLink();
+        }
+
+        [Test]
         public void ShouldReturnCorrectBookData()
         {
             _assert.ShouldBeSameAs(_expected, DatabaseConnection)

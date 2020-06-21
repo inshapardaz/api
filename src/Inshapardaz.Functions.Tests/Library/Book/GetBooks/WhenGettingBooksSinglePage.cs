@@ -80,6 +80,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
                             .ShouldNotHaveAddContentLink()
                             .ShouldHaveSeriesLink()
                             .ShouldHaveChaptersLink()
+                            .ShouldHaveAddFavoriteLink()
                             .ShouldHavePublicImageLink();
             }
         }

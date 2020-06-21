@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
+namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
 {
     [TestFixture]
-    public class WhenGettingBooksLastPage
-        : LibraryTest<Functions.Library.Books.GetBooks>
+    public class WhenGettingBooksPageThatDoesNotExist
+            : LibraryTest<Functions.Library.Books.GetBooks>
     {
         private OkObjectResult _response;
         private PagingAssert<BookView> _assert;
@@ -22,15 +22,18 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
         [OneTimeSetUp]
         public async Task Setup()
         {
+            var claim = AuthenticationBuilder.ReaderClaim;
+
             var request = new RequestBuilder()
-                          .WithQueryParameter("pageNumber", 2)
+                          .WithQueryParameter("pageNumber", 6)
                           .WithQueryParameter("pageSize", 10)
+                          .WithQueryParameter("favorite", bool.TrueString)
                           .Build();
 
             _builder = Container.GetService<BooksDataBuilder>();
-            _builder.WithLibrary(LibraryId).IsPublic().Build(20);
+            _builder.WithLibrary(LibraryId).IsPublic().AddToFavorites(claim.GetUserId()).Build(5);
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, claim, CancellationToken.None);
 
             _assert = new PagingAssert<BookView>(_response, Library);
         }
@@ -62,27 +65,22 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
         [Test]
         public void ShouldNotHavePreviousLink()
         {
-            _assert.ShouldHavePreviousLink($"/api/library/{LibraryId}/books", 1);
+            _assert.ShouldNotHavePreviousLink();
+        }
+
+        [Test]
+        public void ShouldReturnCorrectPage()
+        {
+            _assert.ShouldHavePage(6)
+                   .ShouldHavePageSize(10)
+                   .ShouldHaveTotalCount(_builder.Books.Count())
+                   .ShouldHaveItems(0);
         }
 
         [Test]
         public void ShouldReturnExpectedBooks()
         {
-            var expectedItems = _builder.Books.OrderBy(a => a.Title).Skip(10).Take(10);
-            foreach (var item in expectedItems)
-            {
-                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item, DatabaseConnection)
-                            .InLibrary(LibraryId)
-                            .ShouldHaveCorrectLinks()
-                            .ShouldNotHaveEditLinks()
-                            .ShouldNotHaveImageUpdateLink()
-                            .ShouldNotHaveCreateChaptersLink()
-                            .ShouldNotHaveAddContentLink()
-                            .ShouldHaveChaptersLink()
-                            .ShouldHaveAddFavoriteLink()
-                            .ShouldHavePublicImageLink();
-            }
+            _assert.ShouldHaveNoData();
         }
     }
 }

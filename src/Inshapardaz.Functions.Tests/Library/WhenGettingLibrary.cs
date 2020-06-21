@@ -100,16 +100,12 @@ namespace Inshapardaz.Functions.Tests.Library
             if (_authenticationLevel == AuthenticationLevel.Unauthorized)
             {
                 _view.Links.AssertLinkNotPresent("recents");
-                _view.Links.AssertLinkNotPresent("favorites");
             }
             else
             {
                 _view.Links.AssertLink("recents")
                     .ShouldBeGet()
                     .EndingWith($"/library/{LibraryId}/recents");
-                _view.Links.AssertLink("favorites")
-                    .ShouldBeGet()
-                    .EndingWith($"/library/{LibraryId}/favorites");
             }
         }
 

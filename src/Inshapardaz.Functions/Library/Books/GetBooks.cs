@@ -1,6 +1,7 @@
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,8 +33,8 @@ namespace Inshapardaz.Functions.Library.Books
             var pageNumber = GetQueryParameter(req, "pageNumber", 1);
             var pageSize = GetQueryParameter(req, "pageSize", 10);
             var filter = GetFilter(req);
-            var sortBy = GetQueryParameter<BookSortByType>(req, "sortby", BookSortByType.Title);
-            var sortDirection = GetQueryParameter<SortDirection>(req, "sort", SortDirection.Ascending);
+            var sortBy = GetQueryParameter<string>(req, "sortby").ToEnum<BookSortByType>(BookSortByType.Title);
+            var sortDirection = GetQueryParameter<string>(req, "sort").ToEnum<SortDirection>(SortDirection.Ascending);
 
             var request = new GetBooksQuery(libraryId, pageNumber, pageSize, principal.GetUserId())
             {
@@ -52,7 +53,9 @@ namespace Inshapardaz.Functions.Library.Books
                     PageNumber = pageNumber,
                     PageSize = pageSize,
                     BookFilter = filter,
-                    Query = query
+                    Query = query,
+                    SortBy = sortBy,
+                    SortDirection = sortDirection
                 },
                 LinkFuncWithParameterEx = Link,
             };
@@ -62,7 +65,7 @@ namespace Inshapardaz.Functions.Library.Books
 
         public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}/books", relType);
 
-        public static LinkView Link(int libraryId, int pageNumber = 1, int pageSize = 10, string query = null, string relType = RelTypes.Self, BookFilter filter = null)
+        public static LinkView Link(int libraryId, int pageNumber = 1, int pageSize = 10, string query = null, string relType = RelTypes.Self, BookFilter filter = null, BookSortByType sortBy = BookSortByType.Title, SortDirection sortDirection = SortDirection.Ascending)
         {
             var queryString = new Dictionary<string, string>
             {
@@ -89,6 +92,13 @@ namespace Inshapardaz.Functions.Library.Books
                 if (filter.Favorite.HasValue)
                     queryString.Add("favorite", bool.TrueString);
             }
+
+            if (sortBy != BookSortByType.Title)
+                queryString.Add("sortby", sortBy.ToDescription());
+
+            if (sortDirection != SortDirection.Ascending)
+                queryString.Add("sort", sortDirection.ToDescription());
+
             return SelfLink($"library/{libraryId}/books", relType, queryString: queryString);
         }
 

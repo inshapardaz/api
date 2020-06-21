@@ -41,8 +41,4 @@
     <ProjectReference Include="..\Inshapardaz.Functions\Inshapardaz.Functions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Library\Book\GetLatestBooks\" />
-  </ItemGroup>
-
 </Project>

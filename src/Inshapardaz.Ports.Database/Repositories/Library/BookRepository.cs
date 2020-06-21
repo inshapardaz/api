@@ -85,7 +85,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var books = new Dictionary<int, BookModel>();
-                var sortByQuery = sortBy == BookSortByType.DateCreated ? "b.DateCreated" : "b.Title";
+                var sortByQuery = sortBy == BookSortByType.DateCreated ? "b.DateAdded" : "b.Title";
                 var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
 
                 var param = new
@@ -161,7 +161,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var books = new Dictionary<int, BookModel>();
-                var sortByQuery = sortBy == BookSortByType.DateCreated ? "b.DateCreated" : "b.Title";
+                var sortByQuery = sortBy == BookSortByType.DateCreated ? "b.DateAdded" : "b.Title";
                 var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
                 var param = new
                 {

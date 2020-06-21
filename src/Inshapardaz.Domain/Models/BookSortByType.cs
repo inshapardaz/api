@@ -2,7 +2,7 @@
 {
     public enum BookSortByType
     {
-        Title = 0,
+        Title,
         DateCreated
     }
 }

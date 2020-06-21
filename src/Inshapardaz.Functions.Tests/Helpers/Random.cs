@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Inshapardaz.Functions.Tests.Helpers
@@ -44,5 +45,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
 
             return Langs[LangPos++];
         }
+
+        internal static DateTime Date => new Faker().Date.Past();
     }
 }

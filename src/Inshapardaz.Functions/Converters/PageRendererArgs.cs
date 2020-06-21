@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Converters
 
         public Func<int, int, int, string, string, LinkView> LinkFuncWithParameter { get; set; }
 
-        public Func<int, int, int, string, string, BookFilter, LinkView> LinkFuncWithParameterEx { get; set; }
+        public Func<int, int, int, string, string, BookFilter, BookSortByType, SortDirection, LinkView> LinkFuncWithParameterEx { get; set; }
     }
 
     public class PagedRouteArgs
@@ -28,5 +28,7 @@ namespace Inshapardaz.Functions.Converters
         public string Query { get; set; }
 
         public BookFilter BookFilter { get; set; }
+        public BookSortByType SortBy { get; internal set; }
+        public SortDirection SortDirection { get; internal set; }
     }
 }

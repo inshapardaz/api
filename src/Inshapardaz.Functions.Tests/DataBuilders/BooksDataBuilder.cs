@@ -40,10 +40,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private List<BookContentDto> _contents = new List<BookContentDto>();
         private string _language = null;
         private int _numberOfAuthors;
+        private List<RecentBookDto> _recentBooks = new List<RecentBookDto>();
 
         public IEnumerable<AuthorDto> Authors => _authors;
         public IEnumerable<BookDto> Books => _books;
         public IEnumerable<BookContentDto> Contents => _contents;
+        public IEnumerable<RecentBookDto> RecentReads => _recentBooks;
 
         public BooksDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage,
                                 AuthorsDataBuilder authorBuilder, SeriesDataBuilder seriesDataBuilder,
@@ -292,7 +294,12 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             if (_addToRecentReadsForUser != Guid.Empty)
             {
                 var booksToAddToRecent = _bookCountToAddToRecent.HasValue ? _books.PickRandom(_bookCountToAddToRecent.Value) : _books;
-                _connection.AddBooksToRecentReads(_libraryId, booksToAddToRecent.Select(b => b.Id), _addToRecentReadsForUser);
+                foreach (var recentBook in booksToAddToRecent)
+                {
+                    RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, UserId = _addToRecentReadsForUser, DateRead = Random.Date };
+                    _connection.AddBookToRecentReads(recent);
+                    _recentBooks.Add(recent);
+                }
             }
 
             return _books;
@@ -305,42 +312,5 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             _seriesBuilder.CleanUp();
             _authorBuilder.CleanUp();
         }
-
-        //public void AddSomeToFavorite(IEnumerable<BookDto> books, Guid userId, int numberOfBooksToAdd)
-        //{
-        //    //var favorites = new Faker().PickRandom<BookDto>(books, numberOfBooksToAdd);
-
-        //    //_context.FavoriteBooks.AddRange(favorites.Select(b => new FavoriteBook
-        //    //{
-        //    //    BookId = b.Id,
-        //    //    DateAdded = DateTime.Today,
-        //    //    UserId = userId
-        //    //}));
-        //    //_context.SaveChanges();
-        //}
-
-        //public void AddBookToFavorite(BookDto book, Guid userId)
-        //{
-        //    //_context.FavoriteBooks.Add(new FavoriteBook
-        //    //{
-        //    //    BookId = book.Id,
-        //    //    DateAdded = DateTime.Today,
-        //    //    UserId = userId
-        //    //});
-        //    //_context.SaveChanges();
-        //}
-
-        //public void AddSomeToRecentReads(IEnumerable<BookDto> books, Guid userId, int numberOfBooksToAdd)
-        //{
-        //    //var recent = new Faker().PickRandom<Book>(books, numberOfBooksToAdd);
-
-        //    //_context.RecentBooks.AddRange(recent.Select(b => new RecentBook
-        //    //{
-        //    //    BookId = b.Id,
-        //    //    DateRead = DateTime.Today,
-        //    //    UserId = userId
-        //    //}));
-        //    //_context.SaveChanges();
-        //}
     }
 }

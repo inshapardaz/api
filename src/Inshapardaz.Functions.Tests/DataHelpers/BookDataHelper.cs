@@ -44,11 +44,18 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
             bookIds.ForEach(id => connection.AddBookToRecentReads(libraryId, id, userId));
         }
 
-        public static void AddBookToRecentReads(this IDbConnection connection, int libraryId, int bookId, Guid userId)
+        public static void AddBookToRecentReads(this IDbConnection connection, int libraryId, int bookId, Guid userId, DateTime? timestamp = null)
         {
             var sql = @"Insert into Library.RecentBooks (LibraryId, BookId, UserId, DateRead)
-                        Values (@LibraryId, @BookId, @UserId, GETDATE())";
-            connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, userId });
+                        Values (@LibraryId, @BookId, @UserId, @DateRead)";
+            connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, userId, DateRead = timestamp ?? DateTime.Now });
+        }
+
+        public static void AddBookToRecentReads(this IDbConnection connection, RecentBookDto dto)
+        {
+            var sql = @"Insert into Library.RecentBooks (LibraryId, BookId, UserId, DateRead)
+                        Values (@LibraryId, @BookId, @UserId, @DateRead)";
+            connection.ExecuteScalar<int>(sql, dto);
         }
 
         public static void AddBookFiles(this IDbConnection connection, int bookId, IEnumerable<BookContentDto> contentDto) =>

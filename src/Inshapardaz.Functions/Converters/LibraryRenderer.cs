@@ -31,7 +31,7 @@ namespace Inshapardaz.Functions.Converters
 
             if (user.IsAuthenticated())
             {
-                links.Add(GetRecentReadBooks.Link(model.Id, RelTypes.Recents));
+                links.Add(GetBooks.Link(model.Id, relType: RelTypes.Recents, filter: new BookFilter { Read = true }));
             }
 
             if (user.IsWriter())

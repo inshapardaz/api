@@ -105,7 +105,8 @@ namespace Inshapardaz.Functions.Tests.Library
             {
                 _view.Links.AssertLink("recents")
                     .ShouldBeGet()
-                    .EndingWith($"/library/{LibraryId}/recents");
+                    .EndingWith($"/library/{LibraryId}/books")
+                    .ShouldHaveQueryParameter("read", bool.TrueString);
             }
         }
 

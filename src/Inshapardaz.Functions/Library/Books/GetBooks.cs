@@ -91,6 +91,9 @@ namespace Inshapardaz.Functions.Library.Books
 
                 if (filter.Favorite.HasValue)
                     queryString.Add("favorite", bool.TrueString);
+
+                if (filter.Read.HasValue)
+                    queryString.Add("read", bool.TrueString);
             }
 
             if (sortBy != BookSortByType.Title)
@@ -109,13 +112,15 @@ namespace Inshapardaz.Functions.Library.Books
             var seriesId = GetQueryParameter<int>(request, "seriesid");
             var categoryId = GetQueryParameter<int>(request, "categoryid");
             var favorite = GetQueryParameter<bool>(request, "favorite");
+            var read = GetQueryParameter<bool>(request, "read");
 
             return new BookFilter()
             {
                 AuthorId = authorId != 0 ? authorId : (int?)null,
                 SeriesId = seriesId != 0 ? seriesId : (int?)null,
                 CategoryId = categoryId != 0 ? categoryId : (int?)null,
-                Favorite = favorite ? true : (bool?)null
+                Favorite = favorite ? true : (bool?)null,
+                Read = read ? true : (bool?)null
             };
         }
     }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,31 +11,31 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
+namespace Inshapardaz.Functions.Tests.Library.Book.GetRecentReadBooks
 {
     [TestFixture]
-    public class WhenGettingFavoriteBooksAsReader
+    public class WhenGettingRecentBooksLastPage
         : LibraryTest<Functions.Library.Books.GetBooks>
     {
         private OkObjectResult _response;
         private PagingAssert<BookView> _assert;
+        private BooksDataBuilder _bookBuilder;
         private IEnumerable<BookDto> _books;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var claim = AuthenticationBuilder.ReaderClaim;
-            var _bookBuilder = Container.GetService<BooksDataBuilder>();
-            _bookBuilder.WithLibrary(LibraryId).Build(3);
+            _bookBuilder = Container.GetService<BooksDataBuilder>();
             _books = _bookBuilder.WithLibrary(LibraryId)
                                        .IsPublic()
-                                       .AddToFavorites(claim.GetUserId())
-                                       .Build(5);
+                                       .AddToRecentReads(claim.GetUserId(), 25)
+                                       .Build(35);
 
             var request = new RequestBuilder()
-                          .WithQueryParameter("pageNumber", 1)
+                          .WithQueryParameter("pageNumber", 3)
                           .WithQueryParameter("pageSize", 10)
-                          .WithQueryParameter("favorite", bool.TrueString)
+                          .WithQueryParameter("read", bool.TrueString)
                           .Build();
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, claim, CancellationToken.None);
@@ -58,13 +58,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/books", 1, 10, "favorite", bool.TrueString);
-        }
-
-        [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
+            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/books", "pageNumber", "3");
+            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/books", "pageSize", "10");
+            _assert.ShouldHaveSelfLink($"/api/library/{LibraryId}/books", "read", bool.TrueString);
         }
 
         [Test]
@@ -74,36 +70,35 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetFavoriteBooks
         }
 
         [Test]
-        public void ShouldNotHavePreviousLink()
+        public void ShouldHavePreviousLink()
         {
-            _assert.ShouldNotHavePreviousLink();
+            _assert.ShouldHavePreviousLink($"/api/library/{LibraryId}/books", 2, 10, "read", bool.TrueString);
         }
 
         [Test]
         public void ShouldReturnCorrectPage()
         {
-            _assert.ShouldHavePage(1)
+            _assert.ShouldHavePage(3)
                    .ShouldHavePageSize(10)
-                   .ShouldHaveTotalCount(_books.Count())
+                   .ShouldHaveTotalCount(25)
                    .ShouldHaveItems(5);
         }
 
         [Test]
         public void ShouldReturnExpectedBooks()
         {
-            var expectedItems = _books.OrderBy(a => a.Title).Take(10);
+            var expectedItems = _bookBuilder.RecentReads.OrderBy(a => a.DateRead).Skip(2 * 10).Take(10);
             foreach (var item in expectedItems)
             {
-                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item, DatabaseConnection)
+                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.BookId);
+                var expected = _books.SingleOrDefault(b => b.Id == item.BookId);
+                actual.ShouldMatch(expected, DatabaseConnection)
                             .InLibrary(LibraryId)
                             .ShouldHaveCorrectLinks()
-                            .ShouldNotHaveSeriesLink()
                             .ShouldNotHaveEditLinks()
                             .ShouldNotHaveImageUpdateLink()
                             .ShouldNotHaveCreateChaptersLink()
                             .ShouldNotHaveAddContentLink()
-                            .ShouldHaveRemoveFavoriteLink()
                             .ShouldHaveChaptersLink()
                             .ShouldHavePublicImageLink();
             }

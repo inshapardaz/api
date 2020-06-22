@@ -9,5 +9,7 @@
         public int? CategoryId { get; set; }
 
         public bool? Favorite { get; set; }
+
+        public bool? Read { get; set; }
     }
 }

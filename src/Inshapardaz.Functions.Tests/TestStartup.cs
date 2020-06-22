@@ -58,8 +58,6 @@ namespace Inshapardaz.Functions.Tests
                     .AddTransient<UpdateAuthorImage>()
                     .AddTransient<GetBooks>()
                     .AddTransient<GetBookById>()
-                    .AddTransient<GetRecentReadBooks>()
-                    .AddTransient<GetLatestBooks>()
                     .AddTransient<AddBook>()
                     .AddTransient<UpdateBook>()
                     .AddTransient<DeleteBook>()

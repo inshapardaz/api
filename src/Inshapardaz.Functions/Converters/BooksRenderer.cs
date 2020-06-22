@@ -58,19 +58,6 @@ namespace Inshapardaz.Functions.Converters
             return page;
         }
 
-        public static ListView<BookView> Render(this IEnumerable<BookModel> source, ClaimsPrincipal principal, Func<int, string, LinkView> selfLinkMethod)
-        {
-            var result = new ListView<BookView>()
-            {
-                Data = source.Select(x => x.Render(principal)),
-                Links = new List<LinkView>()
-            };
-
-            result.Links.Add(selfLinkMethod(0, RelTypes.Self));
-
-            return result;
-        }
-
         public static BookView Render(this BookModel source, ClaimsPrincipal principal)
         {
             var result = source.Map();

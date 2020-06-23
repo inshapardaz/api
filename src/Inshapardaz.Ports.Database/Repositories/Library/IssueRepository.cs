@@ -20,9 +20,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.*, (SELECT Count(*) FROM Library.Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
-                            FROM Library.Periodical AS p
-                            INNER JOIN Inshapardaz.[File] f ON f.Id = p.ImageId
+                var sql = @"SELECT p.*, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                            FROM Periodical AS p
+                            INNER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
                             Order By p.Title
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -33,7 +33,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
                 var periodicals = await connection.QueryAsync<IssueModel>(command);
 
-                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Periodical WHERE LibraryId = @LibraryId";
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Periodical WHERE LibraryId = @LibraryId";
                 var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
 
                 return new Page<IssueModel>
@@ -50,9 +50,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.*, (SELECT Count(*) FROM Library.Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
-                            FROM Library.Periodical AS p
-                            INNER JOIN Inshapardaz.[File] f ON f.Id = p.ImageId
+                var sql = @"SELECT p.*, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                            FROM Periodical AS p
+                            INNER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
                             And PeriodicalId = @PeriodicalId
                             And IssueId = @IssueId";
@@ -73,7 +73,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             int id;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = "Insert Into Library.Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate) Output Inserted.Id Values (@PeriodicalId, @Volumenumber, @IssueNumber, @ImageId, @IssueDate)";
+                var sql = "Insert Into Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate) Output Inserted.Id Values (@PeriodicalId, @Volumenumber, @IssueNumber, @ImageId, @IssueDate)";
                 var parameter = new
                 {
                     LibraryId = libraryId,
@@ -94,7 +94,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Library.Issue
+                var sql = @"Update Issue
                             Set PeriodicalId = @PeriodicalId, Volumenumber = @Volumenumber, IssueNumber = @IssueNumber, IssueDate = @IssueDate, ImageId = @ImageId
                             Where Id = @Id AND LibraryId = @LibraryId";
                 var parameter = new
@@ -116,7 +116,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From Library.Issue Where LibraryId = @LibraryId AND Id = @Id";
+                var sql = @"Delete From Issue Where LibraryId = @LibraryId AND Id = @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = issueId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }

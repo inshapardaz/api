@@ -20,7 +20,7 @@ namespace Inshapardaz.Ports.Database.Repositories
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Select *
-                            FROM Inshapardaz.[File]
+                            FROM [File]
                             Where Id = @id";
                 var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
 
@@ -33,7 +33,7 @@ namespace Inshapardaz.Ports.Database.Repositories
             int id;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Inshapardaz.[File] (FileName, MimeType, FilePath, IsPublic, DateCreated)
+                var sql = @"Insert Into [File] (FileName, MimeType, FilePath, IsPublic, DateCreated)
                             Output Inserted.Id
                             VALUES (@FileName, @MimeType, @FilePath, @IsPublic, GETDATE())"; ;
                 var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);
@@ -47,7 +47,7 @@ namespace Inshapardaz.Ports.Database.Repositories
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Inshapardaz.[File]
+                var sql = @"Update [File]
                             Set FileName = @FileName,
                                 MimeType = @MimeType,
                                 FilePath = @FilePath,
@@ -63,7 +63,7 @@ namespace Inshapardaz.Ports.Database.Repositories
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From Inshapardaz.[File] Where Id = @Id";
+                var sql = @"Delete From [File] Where Id = @Id";
                 var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }

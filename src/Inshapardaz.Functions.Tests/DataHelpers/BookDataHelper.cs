@@ -12,7 +12,7 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
     {
         public static void AddBook(this IDbConnection connection, BookDto book)
         {
-            var sql = @"Insert Into Library.Book (Title, Description, AuthorId, ImageId, IsPublic, IsPublished, Language, Status, SeriesId, SeriesIndex, Copyrights, YearPublished, DateAdded, DateUpdated, LibraryId)
+            var sql = @"Insert Into Book (Title, Description, AuthorId, ImageId, IsPublic, IsPublished, Language, Status, SeriesId, SeriesIndex, Copyrights, YearPublished, DateAdded, DateUpdated, LibraryId)
                         Output Inserted.Id
                         Values (@Title, @Description, @AuthorId, @ImageId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @Copyrights, @YearPublished, @DateAdded, @DateUpdated, @LibraryId)";
             var id = connection.ExecuteScalar<int>(sql, book);
@@ -29,7 +29,7 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
 
         public static void AddBookToFavorites(this IDbConnection connection, int libraryId, int bookId, Guid userId)
         {
-            var sql = @"Insert into Library.FavoriteBooks (LibraryId, BookId, UserId, DateAdded)
+            var sql = @"Insert into FavoriteBooks (LibraryId, BookId, UserId, DateAdded)
                         Values (@LibraryId, @BookId, @UserId, GETDATE())";
             connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, userId });
         }
@@ -46,14 +46,14 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
 
         public static void AddBookToRecentReads(this IDbConnection connection, int libraryId, int bookId, Guid userId, DateTime? timestamp = null)
         {
-            var sql = @"Insert into Library.RecentBooks (LibraryId, BookId, UserId, DateRead)
+            var sql = @"Insert into RecentBooks (LibraryId, BookId, UserId, DateRead)
                         Values (@LibraryId, @BookId, @UserId, @DateRead)";
             connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, userId, DateRead = timestamp ?? DateTime.Now });
         }
 
         public static void AddBookToRecentReads(this IDbConnection connection, RecentBookDto dto)
         {
-            var sql = @"Insert into Library.RecentBooks (LibraryId, BookId, UserId, DateRead)
+            var sql = @"Insert into RecentBooks (LibraryId, BookId, UserId, DateRead)
                         Values (@LibraryId, @BookId, @UserId, @DateRead)";
             connection.ExecuteScalar<int>(sql, dto);
         }
@@ -63,7 +63,7 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
 
         public static void AddBookFile(this IDbConnection connection, int bookId, BookContentDto contentDto)
         {
-            var sql = @"Insert Into Library.BookContent (BookId, FileId, Language)
+            var sql = @"Insert Into BookContent (BookId, FileId, Language)
                         Output Inserted.Id
                         Values (@BookId, @FileId, @Language)";
             var id = connection.ExecuteScalar<int>(sql, new { BookId = bookId, FileId = contentDto.FileId, Language = contentDto.Language });
@@ -72,50 +72,50 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
 
         public static int GetBookCountByAuthor(this IDbConnection connection, int id)
         {
-            return connection.ExecuteScalar<int>("Select Count(*) From Library.Book Where AuthorId = @Id", new { Id = id });
+            return connection.ExecuteScalar<int>("Select Count(*) From Book Where AuthorId = @Id", new { Id = id });
         }
 
         public static BookDto GetBookById(this IDbConnection connection, int bookId)
         {
-            return connection.QuerySingleOrDefault<BookDto>("Select * From Library.Book Where Id = @Id", new { Id = bookId });
+            return connection.QuerySingleOrDefault<BookDto>("Select * From Book Where Id = @Id", new { Id = bookId });
         }
 
         public static IEnumerable<BookDto> GetBooksByAuthor(this IDbConnection connection, int id)
         {
-            return connection.Query<BookDto>("Select * From Library.Book Where AuthorId = @Id", new { Id = id });
+            return connection.Query<BookDto>("Select * From Book Where AuthorId = @Id", new { Id = id });
         }
 
         public static IEnumerable<BookDto> GetBooksByCategory(this IDbConnection connection, int categoryId)
         {
-            return connection.Query<BookDto>(@"Select b.* From Library.Book b
-                Inner Join Library.BookCategory bc ON b.Id = bc.BookId
+            return connection.Query<BookDto>(@"Select b.* From Book b
+                Inner Join BookCategory bc ON b.Id = bc.BookId
                 Where bc.CategoryId = @CategoryId", new { CategoryId = categoryId });
         }
 
         public static IEnumerable<BookDto> GetBooksBySeries(this IDbConnection connection, int seriesId)
         {
-            return connection.Query<BookDto>(@"Select * From Library.Book Where SeriesId = @SeriesId ", new { SeriesId = seriesId });
+            return connection.Query<BookDto>(@"Select * From Book Where SeriesId = @SeriesId ", new { SeriesId = seriesId });
         }
 
         public static string GetBookImageUrl(this IDbConnection connection, int bookId)
         {
-            var sql = @"Select f.FilePath from Inshapardaz.[File] f
-                        Inner Join Library.Book b ON f.Id = b.ImageId
+            var sql = @"Select f.FilePath from [File] f
+                        Inner Join Book b ON f.Id = b.ImageId
                         Where b.Id = @Id";
             return connection.QuerySingleOrDefault<string>(sql, new { Id = bookId });
         }
 
         public static FileDto GetBookImage(this IDbConnection connection, int bookId)
         {
-            var sql = @"Select f.* from Inshapardaz.[File] f
-                        Inner Join Library.Book b ON f.Id = b.ImageId
+            var sql = @"Select f.* from [File] f
+                        Inner Join Book b ON f.Id = b.ImageId
                         Where b.Id = @Id";
             return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = bookId });
         }
 
         public static void DeleteBooks(this IDbConnection connection, IEnumerable<BookDto> books)
         {
-            var sql = "Delete From Library.Book Where Id IN @Ids";
+            var sql = "Delete From Book Where Id IN @Ids";
             connection.Execute(sql, new { Ids = books.Select(f => f.Id) });
         }
 
@@ -128,23 +128,23 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
         //TODO : Add user id.
 
         public static bool DoesBookExistsInFavorites(this IDbConnection connection, int bookId) =>
-            connection.QuerySingle<bool>(@"Select Count(1) From Library.FavoriteBooks Where BookId = @BookId", new
+            connection.QuerySingle<bool>(@"Select Count(1) From FavoriteBooks Where BookId = @BookId", new
             {
                 BookId = bookId
             });
 
         //TODO : Add user id.
         public static bool DoesBookExistsInRecent(this IDbConnection connection, int bookId) =>
-            connection.QuerySingle<bool>(@"Select Count(1) From Library.RecentBooks Where BookId = @BookId", new
+            connection.QuerySingle<bool>(@"Select Count(1) From RecentBooks Where BookId = @BookId", new
             {
                 BookId = bookId
             });
 
         public static IEnumerable<BookContentDto> GetBookContents(this IDbConnection connection, int bookId)
         {
-            string sql = @"Select bc.*, f.MimeType From Library.BookContent bc
-                           INNER Join Library.Book b ON b.Id = bc.BookId
-                           INNER Join Inshapardaz.[File] f ON f.Id = bc.FileId
+            string sql = @"Select bc.*, f.MimeType From BookContent bc
+                           INNER Join Book b ON b.Id = bc.BookId
+                           INNER Join [File] f ON f.Id = bc.FileId
                            Where b.Id = @BookId";
 
             return connection.Query<BookContentDto>(sql, new
@@ -155,9 +155,9 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
 
         public static BookContentDto GetBookContent(this IDbConnection connection, int bookId, string language, string mimetype)
         {
-            string sql = @"Select * From Library.BookContent bc
-                           INNER Join Library.Book b ON b.Id = bc.BookId
-                           INNER Join Inshapardaz.[File] f ON f.Id = bc.FileId
+            string sql = @"Select * From BookContent bc
+                           INNER Join Book b ON b.Id = bc.BookId
+                           INNER Join [File] f ON f.Id = bc.FileId
                            Where b.Id = @BookId AND bc.Language = @Language AND f.MimeType = @MimeType";
 
             return connection.QuerySingleOrDefault<BookContentDto>(sql, new
@@ -170,9 +170,9 @@ namespace Inshapardaz.Functions.Tests.DataHelpers
 
         public static string GetBookContentPath(this IDbConnection connection, int bookId, string language, string mimetype)
         {
-            string sql = @"Select f.FilePath From Library.BookContent bc
-                           INNER Join Library.Book b ON b.Id = bc.BookId
-                           INNER Join Inshapardaz.[File] f ON f.Id = bc.FileId
+            string sql = @"Select f.FilePath From BookContent bc
+                           INNER Join Book b ON b.Id = bc.BookId
+                           INNER Join [File] f ON f.Id = bc.FileId
                            Where b.BookId = @BookId AND bc.Language = @Language AND f.MimeType = @MimeType";
 
             return connection.QuerySingleOrDefault<string>(sql, new

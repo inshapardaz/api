@@ -21,7 +21,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             int authorId;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Library.Author(Name, ImageId, LibraryId) OUTPUT Inserted.Id VALUES(@Name, @ImageId, @LibraryId);";
+                var sql = @"Insert Into Author(Name, ImageId, LibraryId) OUTPUT Inserted.Id VALUES(@Name, @ImageId, @LibraryId);";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Name = author.Name, ImageId = author.ImageId }, cancellationToken: cancellationToken);
                 authorId = await connection.ExecuteScalarAsync<int>(command);
             }
@@ -33,7 +33,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Library.Author Set Name = @Name, ImageId = @ImageId Where Id = @Id AND LibraryId = @LibraryId";
+                var sql = @"Update Author Set Name = @Name, ImageId = @ImageId Where Id = @Id AND LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new { Id = author.Id, LibraryId = libraryId, Name = author.Name, ImageId = author.ImageId }, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
             }
@@ -43,7 +43,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Library.Author Set ImageId = @ImageId Where Id = @Id AND LibraryId = @LibraryId ";
+                var sql = @"Update Author Set ImageId = @ImageId Where Id = @Id AND LibraryId = @LibraryId ";
                 var command = new CommandDefinition(sql, new { Id = authorId, LibraryId = libraryId, ImageId = imageId }, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
             }
@@ -53,7 +53,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From Library.Author Where LibraryId = @LibraryId AND Id = @Id";
+                var sql = @"Delete From Author Where LibraryId = @LibraryId AND Id = @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = authorId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
@@ -63,9 +63,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Library.Book b WHERE b.AuthorId = a.Id) AS BookCount
-                            FROM Library.Author AS a
-                            INNER JOIN Inshapardaz.[File] f ON f.Id = a.ImageId
+                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id) AS BookCount
+                            FROM Author AS a
+                            INNER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
                             Order By a.Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -76,7 +76,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
                 var authors = await connection.QueryAsync<AuthorModel>(command);
 
-                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Author WHERE LibraryId = @LibraryId";
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Author WHERE LibraryId = @LibraryId";
                 var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
 
                 return new Page<AuthorModel>
@@ -93,9 +93,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Library.Book b WHERE b.AuthorId = a.Id) AS BookCount
-                            FROM Library.Author AS a
-                            LEFT OUTER JOIN Inshapardaz.[File] f ON f.Id = a.ImageId
+                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id) AS BookCount
+                            FROM Author AS a
+                            LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
                             And a.Id = @AuthorId";
                 var command = new CommandDefinition(sql,
@@ -110,9 +110,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Library.Book b WHERE b.AuthorId = a.Id) AS BookCount
-                            FROM Library.Author AS a
-                            INNER JOIN Inshapardaz.[File] f ON f.Id = a.ImageId
+                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id) AS BookCount
+                            FROM Author AS a
+                            INNER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId AND
                             a.Name LIKE @Query
                             Order By a.Name
@@ -124,7 +124,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
                 var authors = await connection.QueryAsync<AuthorModel>(command);
 
-                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Author WHERE LibraryId = @LibraryId And Name LIKE @Query";
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Author WHERE LibraryId = @LibraryId And Name LIKE @Query";
                 var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, Query = $"%{query}%" }, cancellationToken: cancellationToken));
 
                 return new Page<AuthorModel>

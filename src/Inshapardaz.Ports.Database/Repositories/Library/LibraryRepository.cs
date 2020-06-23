@@ -22,7 +22,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT * FROM Library.Library Where Id = @LibraryId";
+                var sql = @"SELECT * FROM Library Where Id = @LibraryId";
                 var command = new CommandDefinition(sql,
                                                     new { LibraryId = libraryId },
                                                     cancellationToken: cancellationToken);

@@ -23,7 +23,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             int id;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = "Insert Into Library.Chapter (Title, BookId, ChapterNumber) Output Inserted.Id Values (@Title, @BookId, @ChapterNumber)";
+                var sql = "Insert Into Chapter (Title, BookId, ChapterNumber) Output Inserted.Id Values (@Title, @BookId, @ChapterNumber)";
                 var command = new CommandDefinition(sql, new { Title = chapter.Title, BookId = bookId, ChapterNumber = chapter.ChapterNumber }, cancellationToken: cancellationToken);
                 id = await connection.ExecuteScalarAsync<int>(command);
             }
@@ -36,8 +36,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Update C Set C.Title = @Title, C.BookId = @BookId, C.ChapterNumber = @ChapterNumber
-                            From Library.Chapter C
-                            Inner Join Library.Book b On b.Id = C.BookId
+                            From Chapter C
+                            Inner Join Book b On b.Id = C.BookId
                             Where C.Id = @ChapterId AND C.Bookid = @OldBookId And b.LibraryId = @LibraryId";
                 var args = new
                 {
@@ -57,8 +57,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete c From Library.Chapter c
-                            Inner Join Library.Book b On b.Id = c.BookId
+                var sql = @"Delete c From Chapter c
+                            Inner Join Book b On b.Id = c.BookId
                             Where c.Id = @ChapterId AND c.BookId = @BookId And b.LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new
                 {
@@ -76,10 +76,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             {
                 var chapters = new Dictionary<int, ChapterModel>();
 
-                var sql = @"Select c.*, cc.*, f.*  From Library.Chapter c
-                            Inner Join Library.Book b On b.Id = c.BookId
-                            Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
-                            Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
+                var sql = @"Select c.*, cc.*, f.*  From Chapter c
+                            Inner Join Book b On b.Id = c.BookId
+                            Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
+                            Left Outer Join [File] f On f.Id = cc.FileId
                             Where b.Id = @BookId AND b.LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
                 await connection.QueryAsync<ChapterModel, ChapterContentModel, FileModel, ChapterModel>(command, (c, cc, f) =>
@@ -123,10 +123,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             {
                 ChapterModel chapter = null;
                 var sql = @"Select c.*, cc.*, f.*
-                            From Library.Chapter c
-                            Inner Join Library.Book b On b.Id = c.BookId
-                            Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
-                            Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
+                            From Chapter c
+                            Inner Join Book b On b.Id = c.BookId
+                            Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
+                            Left Outer Join [File] f On f.Id = cc.FileId
                             Where c.Id = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterId }, cancellationToken: cancellationToken);
                 await connection.QueryAsync<ChapterModel, ChapterContentModel, FileModel, ChapterModel>(command, (c, cc, f) =>
@@ -166,10 +166,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Select cc.*, b.Id As BookId, f.Id As FileId, f.FilePath As ContentUrl, f.MimeType as MimeType From Library.Chapter c
-                            Inner Join Library.Book b On b.Id = c.BookId
-                            Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
-                            Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
+                var sql = @"Select cc.*, b.Id As BookId, f.Id As FileId, f.FilePath As ContentUrl, f.MimeType as MimeType From Chapter c
+                            Inner Join Book b On b.Id = c.BookId
+                            Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
+                            Left Outer Join [File] f On f.Id = cc.FileId
                             Where c.Id = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId AND f.MimeType = @MimeType AND cc.Language = @Language";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterId, MimeType = mimeType, Language = language }, cancellationToken: cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<ChapterContentModel>(command);
@@ -180,10 +180,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Select f.FilePath From Library.Chapter c
-                            Inner Join Library.Book b On b.Id = c.BookId
-                            Left Outer Join Library.ChapterContent cc On c.Id = cc.ChapterId
-                            Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
+                var sql = @"Select f.FilePath From Chapter c
+                            Inner Join Book b On b.Id = c.BookId
+                            Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
+                            Left Outer Join [File] f On f.Id = cc.FileId
                             Where c.Id = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId And f.MimeType = @MimeType AND cc.Language = @Language";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterId, MimeType = mimeType, Language = language }, cancellationToken: cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<string>(command);
@@ -194,7 +194,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Library.ChapterContent (ChapterId, Language, FileId)
+                var sql = @"Insert Into ChapterContent (ChapterId, Language, FileId)
                             Values (@ChapterId, @Language, @FileId)";
                 var command = new CommandDefinition(sql, content, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
@@ -208,10 +208,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Update f SET FilePath = @ContentUrl
-                            From  Inshapardaz.[File] f
-                            Inner Join Library.ChapterContent cc On cc.FileId = f.Id
-                            Inner Join Library.Chapter c On c.Id = cc.ChapterId
-                            Inner Join Library.Book b On b.Id = c.BookId
+                            From  [File] f
+                            Inner Join ChapterContent cc On cc.FileId = f.Id
+                            Inner Join Chapter c On c.Id = cc.ChapterId
+                            Inner Join Book b On b.Id = c.BookId
                             Where cc.ChapterId = @ChapterId And b.LibraryId = @LibraryId and b.Id = @BookId And f.MimeType  = @MimeType AND cc.Language = @Language";
                 var command = new CommandDefinition(sql, new
                 {
@@ -231,10 +231,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Delete cc
-                            From Library.ChapterContent cc
-                            Inner Join Library.Chapter c On c.Id = cc.ChapterId
-                            Inner Join Library.Book b On b.Id = C.BookId
-                            Left Outer Join Inshapardaz.[File] f On f.Id = cc.FileId
+                            From ChapterContent cc
+                            Inner Join Chapter c On c.Id = cc.ChapterId
+                            Inner Join Book b On b.Id = C.BookId
+                            Left Outer Join [File] f On f.Id = cc.FileId
                             Where cc.ChapterId = @ChapterId And b.LibraryId = @LibraryId and b.Id = @BookId And f.MimeType = @MimeType AND cc.Language = @Language";
                 var command = new CommandDefinition(sql, new
                 {

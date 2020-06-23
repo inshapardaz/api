@@ -20,9 +20,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Library.Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
-                            FROM Library.Periodical AS p
-                            INNER JOIN Inshapardaz.[File] f ON f.Id = p.ImageId
+                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                            FROM Periodical AS p
+                            INNER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
                             Order By p.Title
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -33,7 +33,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
                 var periodicals = await connection.QueryAsync<PeriodicalModel>(command);
 
-                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Periodical WHERE LibraryId = @LibraryId";
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Periodical WHERE LibraryId = @LibraryId";
                 var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
 
                 return new Page<PeriodicalModel>
@@ -50,9 +50,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Library.Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
-                            FROM Library.Periodical AS p
-                            INNER JOIN Inshapardaz.[File] f ON f.Id = p.ImageId
+                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                            FROM Periodical AS p
+                            INNER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
                             And a.Title LIKE @Query
                             Order By p.Title
@@ -64,7 +64,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
 
                 var periodicals = await connection.QueryAsync<PeriodicalModel>(command);
 
-                var sqlAuthorCount = "SELECT COUNT(*) FROM Library.Periodical WHERE LibraryId = @LibraryId And a.Title LIKE @Query";
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Periodical WHERE LibraryId = @LibraryId And a.Title LIKE @Query";
                 var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, Query = query }, cancellationToken: cancellationToken));
 
                 return new Page<PeriodicalModel>
@@ -81,9 +81,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Library.Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
-                            FROM Library.Periodical AS p
-                            INNER JOIN Inshapardaz.[File] f ON f.Id = p.ImageId
+                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                            FROM Periodical AS p
+                            INNER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
                             And a.Id = @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = periodicalId }, cancellationToken: cancellationToken);
@@ -97,7 +97,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             int id;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = "Insert Into Library.Periodical (Title, [Description], CategoryId, ImageId, LibraryId) Output Inserted.Id Values (@Title, @Description, @CategoryId, @ImageId, @LibraryId)";
+                var sql = "Insert Into Periodical (Title, [Description], CategoryId, ImageId, LibraryId) Output Inserted.Id Values (@Title, @Description, @CategoryId, @ImageId, @LibraryId)";
                 var parameter = new
                 {
                     LibraryId = libraryId,
@@ -117,7 +117,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Library.Periodical
+                var sql = @"Update Periodical
                             Set Title = @Title, Description = @Description, CategoryId = @CategoryId, ImageId = @ImageId
                             Where Id = @Id AND LibraryId = @LibraryId";
                 var parameter = new
@@ -138,7 +138,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From Library.Periodical Where LibraryId = @LibraryId AND Id = @Id";
+                var sql = @"Delete From Periodical Where LibraryId = @LibraryId AND Id = @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = periodicalId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }

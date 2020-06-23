@@ -21,7 +21,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             int id;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = "Insert Into Library.Category(Name, LibraryId) Output Inserted.Id Values(@Name, @LibraryId)";
+                var sql = "Insert Into Category(Name, LibraryId) Output Inserted.Id Values(@Name, @LibraryId)";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Name = category.Name }, cancellationToken: cancellationToken);
                 id = await connection.ExecuteScalarAsync<int>(command);
             }
@@ -33,7 +33,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Library.Category Set Name = @Name Where Id = @Id AND LibraryId = @LibraryId";
+                var sql = @"Update Category Set Name = @Name Where Id = @Id AND LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new { Id = category.Id, LibraryId = libraryId, Name = category.Name }, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
             }
@@ -43,7 +43,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From Library.Category Where LibraryId = @LibraryId AND Id = @Id";
+                var sql = @"Delete From Category Where LibraryId = @LibraryId AND Id = @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
@@ -54,8 +54,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Select c.Id, c.Name,
-                            (Select Count(*) From Library.BookCategory b Where b.CategoryId = c.Id) AS BookCount
-                            FROM Library.Category AS c
+                            (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount
+                            FROM Category AS c
                             Where LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId }, cancellationToken: cancellationToken);
 
@@ -68,8 +68,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Select c.Id, c.Name,
-                            (Select Count(*) From Library.BookCategory b Where b.CategoryId = c.Id) AS BookCount
-                            FROM Library.Category AS c
+                            (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount
+                            FROM Category AS c
                             Where c.LibraryId = @LibraryId And c.Id = @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryId }, cancellationToken: cancellationToken);
 
@@ -82,8 +82,8 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Select c.Id, c.Name,
-                            (Select Count(*) From Library.BookCategory b Where b.CategoryId = c.Id) AS BookCount
-                            FROM Library.Category AS c
+                            (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount
+                            FROM Category AS c
                             Where c.LibraryId = @LibraryId And c.Id IN @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryIds }, cancellationToken: cancellationToken);
 

@@ -30,7 +30,7 @@ artifacts:
 # Deployment
 deploy:
 - provider: WebDeploy
-  server: api-library.scm.azurewebsites.net:443/msdeploy.axd?site=api-library
+  server: https://api-library.scm.azurewebsites.net:443/msdeploy.axd?site=api-library
   website: api-library
   username: $api-library
   password:

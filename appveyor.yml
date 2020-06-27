@@ -24,7 +24,7 @@ test_script:
 
 # Create artifacts
 artifacts:
-- path: src/Inshapardaz.Functions/bin/Release/netcoreapp2.1/publish/
+- path: src/Inshapardaz.Functions/bin/Release/netcoreapp3.1/publish/
   name: Function
 
 # Deployment

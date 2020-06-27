@@ -20,7 +20,7 @@ build_script:
 # Testing
 test_script:
 - cmd: cd src/Inshapardaz.Functions.Tests
-- cmd: dotnet test --test-adapter-path:. --logger:Appveyor
+#- cmd: dotnet test --test-adapter-path:. --logger:Appveyor
 
 # Create artifacts
 artifacts:

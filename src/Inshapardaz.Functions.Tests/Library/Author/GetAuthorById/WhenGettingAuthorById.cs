@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
             var request = TestHelpers.CreateGetRequest();
 
             _builder = Container.GetService<AuthorsDataBuilder>();
-            var authors = _builder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            var authors = _builder.WithLibrary(LibraryId).WithoutImage().WithBooks(3).Build(4);
             _expected = authors.First();
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
@@ -59,9 +59,9 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthorById
         }
 
         [Test]
-        public void ShouldHaveImageLink()
+        public void ShouldNotHaveImageLink()
         {
-            _assert.ShouldHavePublicImageLink();
+            _assert.ShouldNotHaveImageLink();
         }
 
         [Test]

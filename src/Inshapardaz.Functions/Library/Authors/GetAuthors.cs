@@ -63,7 +63,7 @@ namespace Inshapardaz.Functions.Library.Authors
                 { "pageSize", pageSize.ToString()}
             };
 
-            if (query != null)
+            if (!string.IsNullOrWhiteSpace(query))
             {
                 queryString.Add("query", query);
             }

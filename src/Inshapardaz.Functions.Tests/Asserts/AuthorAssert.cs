@@ -103,6 +103,11 @@ namespace Inshapardaz.Functions.Tests.Asserts
                 .StartWith(ConfigurationSettings.CDNAddress);
         }
 
+        internal void ShouldNotHaveImageLink()
+        {
+            _author.Link("image").Should().BeNull();
+        }
+
         public AuthorAssert ShouldHaveDeleteLink()
         {
             _author.DeleteLink()

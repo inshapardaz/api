@@ -20,8 +20,8 @@ namespace Inshapardaz.Functions
         {
         }
 
-        [FunctionName("GetEntry")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "/library/{libraryId}")] HttpRequest req,
+        [FunctionName("GetLibrary")]
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}")] HttpRequest req,
                                              int libraryId,
                                              ClaimsPrincipal principal,
                                              CancellationToken cancellationToken = default(CancellationToken))

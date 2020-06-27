@@ -30,11 +30,12 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         [OneTimeSetUp]
         public async Task Setup()
         {
+            var request = new RequestBuilder().Build();
             _dataBuilder = Container.GetService<ChapterDataBuilder>();
             var chapters = _dataBuilder.WithLibrary(LibraryId).WithContents(2).Build(4);
             _expected = chapters.PickRandom();
 
-            _response = (OkObjectResult)await handler.Run(LibraryId, _expected.BookId, _expected.Id, _claim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.BookId, _expected.Id, _claim, CancellationToken.None);
 
             _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }

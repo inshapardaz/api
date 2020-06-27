@@ -30,11 +30,11 @@ artifacts:
 # Deployment
 deploy:
 - provider: WebDeploy
-  server: https://api-inshapardaz.scm.azurewebsites.net:443/msdeploy.axd?site=api-inshapardaz
-  website: api-inshapardaz
-  username: $api-inshapardaz
+  server: api-library.scm.azurewebsites.net:443/msdeploy.axd?site=api-library
+  website: api-library
+  username: $api-library
   password:
-    secure: 1OK1BZj7JR+V8bj8zkH7pf/CiuPkvMYQ9dqG2Zg6Bexe9FrB1O+o6JHdhacHTrDTbpT4MT5WiBCKl+BaIYcxWg==
+    secure: SKD61TRGqciEw/M7A15IBvydNDGu2jWuk/v0jbYsX1I9vlugfkf/ZQeBIHk6Jmsm8ku2+I1ulmSNi3Hap4HoOA==
   artifact: Function
   on:
     branch: master

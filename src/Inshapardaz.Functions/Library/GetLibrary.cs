@@ -31,6 +31,6 @@ namespace Inshapardaz.Functions
             return new OkObjectResult(library.Render(principal));
         }
 
-        public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"/library/{libraryId}", relType);
+        public static LinkView Link(int libraryId, string relType = RelTypes.Self) => SelfLink($"library/{libraryId}", relType);
     }
 }

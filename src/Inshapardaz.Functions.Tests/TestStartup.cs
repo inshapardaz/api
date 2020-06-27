@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests
 {
     internal class TestStartup : Startup
     {
-        private TestSqliteConnectionProvider _connectionProvider = new TestSqliteConnectionProvider();
+        //private TestSqliteConnectionProvider _connectionProvider = new TestSqliteConnectionProvider();
 
         // TODO : Uncomment after moved everything to one schema
         //protected override IServiceCollection AddDatabaseConnection(IServiceCollection services)

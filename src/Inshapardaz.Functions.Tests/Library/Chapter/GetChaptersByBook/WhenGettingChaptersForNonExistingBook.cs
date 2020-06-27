@@ -18,10 +18,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
         [OneTimeSetUp]
         public async Task Setup()
         {
+            var request = new RequestBuilder().Build();
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
             dataBuilder.WithLibrary(LibraryId).Build(4);
 
-            _response = (NotFoundResult)await handler.Run(LibraryId, -Random.Number, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (NotFoundResult)await handler.Run(request, LibraryId, -Random.Number, AuthenticationBuilder.Unauthorized, CancellationToken.None);
         }
 
         [OneTimeTearDown]

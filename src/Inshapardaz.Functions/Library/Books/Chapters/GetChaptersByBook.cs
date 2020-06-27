@@ -22,7 +22,8 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
 
         [FunctionName("GetChaptersByBook")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/{bookId:int}/chapters")] int libraryId, int bookId, ClaimsPrincipal principal, CancellationToken token)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books/{bookId:int}/chapters")] HttpRequest request,
+             int libraryId, int bookId, ClaimsPrincipal principal, CancellationToken token)
         {
             var query = new GetChaptersByBookQuery(libraryId, bookId, principal.GetUserId());
             var chapters = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);

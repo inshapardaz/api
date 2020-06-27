@@ -26,10 +26,10 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _newMimeType = Random.MimeType;
+            _newMimeType = "text/markdown";
             _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            _book = _dataBuilder.WithLibrary(LibraryId).WithContents(2).WithContentLanguage($"{_newMimeType}_old").Build();
+            _book = _dataBuilder.WithLibrary(LibraryId).WithContents(2, "application/pdf").Build();
             _file = _dataBuilder.Contents.PickRandom();
 
             _contents = new Faker().Image.Random.Bytes(50);

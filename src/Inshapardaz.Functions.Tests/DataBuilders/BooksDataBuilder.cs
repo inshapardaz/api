@@ -28,6 +28,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
         private bool _hasSeries, _hasImage = true;
         private bool? _isPublic = null;
         private int _chapterCount, _categoriesCount, _contentCount;
+        private string _contentMimeType;
 
         private AuthorDto _author;
         private List<CategoryDto> _categories = new List<CategoryDto>();
@@ -130,9 +131,10 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
             return this;
         }
 
-        public BooksDataBuilder WithContents(int contentCount)
+        public BooksDataBuilder WithContents(int contentCount, string mimeType = null)
         {
             _contentCount = contentCount;
+            _contentMimeType = mimeType;
             return this;
         }
 
@@ -252,7 +254,7 @@ namespace Inshapardaz.Functions.Tests.DataBuilders
                 List<FileDto> files = null;
                 if (_contentCount > 0)
                 {
-                    var mimeType = Random.MimeType;
+                    var mimeType = _contentMimeType ?? Random.MimeType;
                     files = fixture.Build<FileDto>()
                                          .With(f => f.FilePath, Random.BlobUrl)
                                          .With(f => f.IsPublic, false)

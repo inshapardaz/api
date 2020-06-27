@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Tests
             _builder = new TestHostBuilder();
             _startup = new TestStartup();
 
-            InitializeDatabaseMigration(_builder.Services);
+            //InitializeDatabaseMigration(_builder.Services);
             _startup.Configure(_builder);
 
             ConfigurationSettings.BlobRoot = "http://blob.localhost";
@@ -31,19 +31,19 @@ namespace Inshapardaz.Functions.Tests
 
         protected IFileStorage FileStorage => Container.GetService<IFileStorage>();
 
-        protected void InitializeDatabaseMigration(IServiceCollection services)
-        {
-            var serviceProvider = services.AddFluentMigratorCore()
-                .ConfigureRunner(rb => rb
-                    .AddSQLite()
-                    .WithGlobalConnectionString(TestSqliteConnectionProvider.ConnectionString)
-                    .ScanIn(typeof(Database.Migrations.Migration000001_CreateLibrarySchema).Assembly).For.Migrations())
-                .AddLogging(lb => lb.AddFluentMigratorConsole())
-                .BuildServiceProvider(false);
+        //protected void InitializeDatabaseMigration(IServiceCollection services)
+        //{
+        //    var serviceProvider = services.AddFluentMigratorCore()
+        //        .ConfigureRunner(rb => rb
+        //            .AddSQLite()
+        //            .WithGlobalConnectionString(TestSqliteConnectionProvider.ConnectionString)
+        //            .ScanIn(typeof(Database.Migrations.Migration000001_CreateLibrarySchema).Assembly).For.Migrations())
+        //        .AddLogging(lb => lb.AddFluentMigratorConsole())
+        //        .BuildServiceProvider(false);
 
-            var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
-            runner.MigrateUp();
-        }
+        //    var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
+        //    runner.MigrateUp();
+        //}
 
         protected virtual void Cleanup()
         {

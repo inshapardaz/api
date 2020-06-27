@@ -24,10 +24,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         [OneTimeSetUp]
         public async Task Setup()
         {
+            var request = new RequestBuilder().Build();
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
             _expected = dataBuilder.WithLibrary(LibraryId).WithContents().Build(4).First();
 
-            _response = (OkObjectResult)await handler.Run(LibraryId, _expected.BookId, _expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.BookId, _expected.Id, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }

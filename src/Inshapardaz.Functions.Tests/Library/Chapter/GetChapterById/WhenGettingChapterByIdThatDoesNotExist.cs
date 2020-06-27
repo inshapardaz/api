@@ -16,7 +16,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = (NotFoundResult)await handler.Run(LibraryId, Random.Number, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (NotFoundResult)await handler.Run(null, LibraryId, Random.Number, Random.Number, AuthenticationBuilder.WriterClaim, CancellationToken.None);
         }
 
         [OneTimeTearDown]

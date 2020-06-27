@@ -24,10 +24,11 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
         [OneTimeSetUp]
         public async Task Setup()
         {
+            var request = new RequestBuilder().Build();
             var dataBuilder = Container.GetService<BooksDataBuilder>();
             _book = dataBuilder.WithLibrary(LibraryId).Build();
 
-            _response = (OkObjectResult)await handler.Run(LibraryId, _book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
+            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
 
             _view = _response.Value as ListView<ChapterView>;
         }

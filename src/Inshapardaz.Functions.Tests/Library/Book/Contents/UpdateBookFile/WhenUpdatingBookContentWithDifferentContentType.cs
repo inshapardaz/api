@@ -29,7 +29,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
             _newMimeType = Random.MimeType;
             _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            _book = _dataBuilder.WithLibrary(LibraryId).WithContents(2).Build();
+            _book = _dataBuilder.WithLibrary(LibraryId).WithContents(2).WithContentLanguage($"{_newMimeType}_old").Build();
             _file = _dataBuilder.Contents.PickRandom();
 
             _contents = new Faker().Image.Random.Bytes(50);

@@ -37,7 +37,7 @@ namespace Inshapardaz.Functions.Tests
             Environment.SetEnvironmentVariable("Authentication.Authority", "inshapardaz.eu.auth0.com");
             Environment.SetEnvironmentVariable("Authentication.IssuerToken", "http://api.inshapardaz.org");
             if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DefaultDatabase")))
-                Environment.SetEnvironmentVariable("DefaultDatabase", "data source=.;initial catalog=Inshapardaz;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework");
+                Environment.SetEnvironmentVariable("DefaultDatabase", "Server=tcp:omar-azure01.database.windows.net,1433;Initial Catalog=inshapardaz-test;Persist Security Info=False;User ID=omar;Password=Celeron30);MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             Environment.SetEnvironmentVariable("API.Root", "http://localhost:7071/api");
             Environment.SetEnvironmentVariable("FileStorageConnectionString", "UseDevelopmentStorage=true");
         }

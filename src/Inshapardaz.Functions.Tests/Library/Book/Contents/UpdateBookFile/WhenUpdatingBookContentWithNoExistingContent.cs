@@ -33,7 +33,10 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
 
             _book = _dataBuilder.WithLibrary(LibraryId).Build();
             _contents = new Faker().Image.Random.Bytes(50);
-            var request = new RequestBuilder().WithBytes(_contents).WithContentType(_mimeType).WithLanguage(_locale).BuildRequestMessage();
+            var request = new RequestBuilder().WithBytes(_contents)
+                                              .WithContentType(_mimeType)
+                                              .WithLanguage(_locale)
+                                              .BuildRequestMessage();
             _response = (CreatedResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _assert = new BookContentAssert(_response, LibraryId);

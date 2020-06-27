@@ -35,6 +35,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBooks
                     .WithCategories(_categories)
                     .HavingSeries()
                     .WithContents(2)
+                    .IsPublic(false)
                     .Build(9);
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);

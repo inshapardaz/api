@@ -2,6 +2,10 @@ version: 1.0.{build}
 max_jobs: 1
 image: Visual Studio 2019
 
+environment:
+  DefaultDatabase:
+    secure: xRPJOkFVcWlOPF0wlbbRsjmPXiDSnTjd03Q4aM6bI1hjzjjUsH4wxNSJRnuH3DT9Z3x+fGXmdVdgexKx/ghFpC6znjlEgoE8gL00q86zZ+xcE3piP/6IfH8YutYJ5+OdgOS027eYbt2Ao+LmoZyjy1bGEr3af8wr1NwJrhsHshuzlNrUIpLZ4rbjuMqfiNofNLACeTJ5pif6Z00v2pSRLyEz9QnemZdtwM+zKV9IURTB9UHJFPf36DeaaVU6LCCDMMUCbgVcr1R8rxTnl2UgXZKqX7Q33/Gb2A6VEf/bm7OaqWmr/xAKRzgvInnEcftT
+
 skip_tags: true
 skip_branch_with_pr: true
 

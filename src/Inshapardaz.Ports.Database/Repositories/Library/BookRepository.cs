@@ -269,7 +269,9 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                     if (!books.TryGetValue(b.Id, out BookModel book))
                         books.Add(b.Id, book = b);
 
-                    book.Categories.Add(c);
+                    if (c != null)
+                        book.Categories.Add(c);
+
                     return book;
                 });
 
@@ -308,7 +310,10 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
                         book = b;
                     }
 
-                    book.Categories.Add(c);
+                    if (c != null)
+                    {
+                        book.Categories.Add(c);
+                    }
                     return book;
                 }, new { LibraryId = libraryId, Id = bookId, UserId = userId == Guid.Empty ? null : userId });
 

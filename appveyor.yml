@@ -34,7 +34,7 @@ deploy:
   website: api-inshapardaz
   username: $api-inshapardaz
   password:
-    secure: JtybVbpTxTWp21oT11L4dL7KzpGW6DAovgmyo4Gw9iX0wKUuZd2vzN7t6stoUucU7tyLCFHsCEQ3yiiiulR18A==
+    secure: 1OK1BZj7JR+V8bj8zkH7pf/CiuPkvMYQ9dqG2Zg6Bexe9FrB1O+o6JHdhacHTrDTbpT4MT5WiBCKl+BaIYcxWg==
   artifact: Function
   on:
     branch: master

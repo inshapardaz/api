@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
         public async Task Setup()
         {
             _builder = Container.GetService<AuthorsDataBuilder>();
-            var authors = _builder.WithLibrary(LibraryId).WithBooks(3).Build(20);
+            var authors = _builder.WithLibrary(LibraryId).WithBooks(3).WithoutImage().Build(20);
 
             _searchedAuthor = authors.PickRandom();
             var request = new RequestBuilder()
@@ -84,7 +84,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
                       .InLibrary(LibraryId)
                       .WithBookCount(3)
                       .WithReadOnlyLinks()
-                      .ShouldHavePublicImageLink();
+                      .ShouldNotHaveImageLink();
             }
         }
     }

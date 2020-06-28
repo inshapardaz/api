@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
             var request = TestHelpers.CreateGetRequest();
 
             _builder = Container.GetService<AuthorsDataBuilder>();
-            _builder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            _builder.WithLibrary(LibraryId).WithBooks(3).WithoutImage().Build(4);
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
@@ -74,7 +74,7 @@ namespace Inshapardaz.Functions.Tests.Library.Author.GetAuthors
                             .InLibrary(LibraryId)
                             .WithBookCount(3)
                             .WithReadOnlyLinks()
-                            .ShouldHavePublicImageLink();
+                            .ShouldNotHaveImageLink();
             }
         }
     }

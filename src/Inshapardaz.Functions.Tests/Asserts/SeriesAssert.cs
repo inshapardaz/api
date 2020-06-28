@@ -95,6 +95,12 @@ namespace Inshapardaz.Functions.Tests.Asserts
             return this;
         }
 
+        public SeriesAssert ShouldNotHaveImageLink()
+        {
+            _series.Link("image").Should().BeNull();
+            return this;
+        }
+
         public SeriesAssert ShouldHaveImageUpdateLink()
         {
             _series.Link("image-upload")

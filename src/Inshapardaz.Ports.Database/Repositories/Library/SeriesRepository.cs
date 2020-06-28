@@ -63,7 +63,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             {
                 var sql = @"SELECT  s.Id, s.Name, s.[Description], s.ImageId, f.FilePath AS ImageUrl, (Select Count(*) From Book b Where b.SeriesId = s.Id) AS BookCount
                             FROM Series AS s
-                            INNER JOIN [File] f ON f.Id = s.ImageId
+                            LEFT OUTER JOIN [File] f ON f.Id = s.ImageId
                             Where s.LibraryId = @LibraryId
                             Order By s.Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -93,7 +93,7 @@ namespace Inshapardaz.Ports.Database.Repositories.Library
             {
                 var sql = @"SELECT s.Id, s.Name, s.[Description], s.ImageId, f.FilePath AS ImageUrl, (Select Count(*) From Book b Where b.SeriesId = s.Id) AS BookCount
                             FROM Series AS s
-                            INNER JOIN [File] f ON f.Id = s.ImageId
+                            LEFT OUTER JOIN [File] f ON f.Id = s.ImageId
                             Where s.LibraryId = @LibraryId AND
                             s.Name LIKE @Query
                             Order By s.Name

@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
             var request = TestHelpers.CreateGetRequest();
 
             _builder = Container.GetService<SeriesDataBuilder>();
-            _builder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            _builder.WithLibrary(LibraryId).WithBooks(3).WithoutImage().Build(4);
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
@@ -79,7 +79,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
                       .InLibrary(LibraryId)
                       .WithBookCount(3)
                       .WithReadOnlyLinks()
-                      .ShouldHavePublicImageLink();
+                      .ShouldNotHaveImageLink();
             }
         }
     }

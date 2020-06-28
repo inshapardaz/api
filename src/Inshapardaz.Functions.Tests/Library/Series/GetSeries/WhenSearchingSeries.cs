@@ -24,7 +24,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
         public async Task Setup()
         {
             _builder = Container.GetService<SeriesDataBuilder>();
-            var Series = _builder.WithLibrary(LibraryId).WithBooks(3).Build(20);
+            var Series = _builder.WithLibrary(LibraryId).WithBooks(3).WithoutImage().Build(20);
 
             _searchedSeries = Series.PickRandom();
             var request = new RequestBuilder()
@@ -84,7 +84,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeries
                       .InLibrary(LibraryId)
                       .WithBookCount(3)
                       .WithReadOnlyLinks()
-                      .ShouldHavePublicImageLink();
+                      .ShouldNotHaveImageLink();
             }
         }
     }

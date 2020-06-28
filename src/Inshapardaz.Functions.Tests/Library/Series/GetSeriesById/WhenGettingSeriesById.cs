@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
             var request = TestHelpers.CreateGetRequest();
 
             _builder = Container.GetService<SeriesDataBuilder>();
-            var series = _builder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            var series = _builder.WithLibrary(LibraryId).WithBooks(3).WithoutImage().Build(4);
             _expected = series.First();
 
             _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
@@ -59,9 +59,9 @@ namespace Inshapardaz.Functions.Tests.Library.Series.GetSeriesById
         }
 
         [Test]
-        public void ShouldHaveImageLink()
+        public void ShouldNoHaveImageLink()
         {
-            _assert.ShouldHavePublicImageLink();
+            _assert.ShouldNotHaveImageLink();
         }
 
         [Test]

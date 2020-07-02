@@ -1,5 +1,4 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Series
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "library/{libraryId}/series/{seriesId:int}")] HttpRequest req,
             int libraryId,
             int seriesId,
-            [AccessToken] ClaimsPrincipal claims,
+            ClaimsPrincipal claims,
             CancellationToken token)
         {
             return await Executor.Execute(async () =>

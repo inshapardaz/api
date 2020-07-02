@@ -1,8 +1,6 @@
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
-using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +28,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             int chapterId,
             // TODO : Make this work
             //[FromHeader("Accept", "text/markdown")] string contentType,
-            [AccessToken] ClaimsPrincipal claims,
+            ClaimsPrincipal claims,
             CancellationToken token)
         {
             return await Executor.Execute(async () =>

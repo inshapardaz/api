@@ -5,7 +5,7 @@ using Inshapardaz.Domain.Repositories.Library;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Ports.Database.Repositories.Library
+namespace Inshapardaz.Database.SqlServer.Repositories.Library
 {
     public class PeriodicalRepository : IPeriodicalRepository
     {

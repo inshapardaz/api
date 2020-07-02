@@ -1,7 +1,6 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
-using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
@@ -27,7 +26,7 @@ namespace Inshapardaz.Functions.Library.Authors
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/authors")]
             AuthorView author,
             int libraryId,
-            [AccessToken] ClaimsPrincipal claims,
+            ClaimsPrincipal claims,
             CancellationToken token)
         {
             return await Executor.Execute(async () =>

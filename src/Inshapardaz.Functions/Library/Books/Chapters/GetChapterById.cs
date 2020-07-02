@@ -1,12 +1,11 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 using Paramore.Darker;
 using System.Security.Claims;
 using System.Threading;
@@ -27,7 +26,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
             int libraryId,
             int bookId,
             int chapterId,
-            [AccessToken] ClaimsPrincipal principal,
+            ClaimsPrincipal principal,
             CancellationToken token)
         {
             var query = new GetChapterByIdQuery(libraryId, bookId, chapterId, principal.GetUserId());

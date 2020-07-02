@@ -1,5 +1,4 @@
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +24,7 @@ namespace Inshapardaz.Functions.Library.Files
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "files/{fileId:int}")] HttpRequest req,
             ILogger log, int fileId,
-            [AccessToken] ClaimsPrincipal claims,
+            ClaimsPrincipal claims,
             CancellationToken token)
         {
             // TODO : Secure private files

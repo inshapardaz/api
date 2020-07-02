@@ -1,5 +1,4 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Categories
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/categories/{categoryById:int}")] HttpRequest req,
             int libraryId, int categoryById,
-            [AccessToken] ClaimsPrincipal principal,
+            ClaimsPrincipal principal,
             CancellationToken token)
         {
             var query = new GetCategoryByIdQuery(libraryId, categoryById);

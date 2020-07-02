@@ -1,14 +1,12 @@
 ﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Library.Authors;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Files;
 using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc.Internal;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;

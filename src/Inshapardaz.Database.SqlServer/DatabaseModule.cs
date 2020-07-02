@@ -1,4 +1,4 @@
-﻿namespace Inshapardaz.Ports.Database
+﻿namespace Inshapardaz.Database.SqlServer
 {
     public static class DatabaseModule
     {

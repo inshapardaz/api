@@ -1,12 +1,11 @@
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Configuration;
-using Inshapardaz.Storage;
+using Inshapardaz.Storage.Azure;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 
 [assembly: WebJobsStartup(typeof(Inshapardaz.Functions.Startup))]
 
@@ -16,14 +15,12 @@ namespace Inshapardaz.Functions
     {
         public void Configure(IWebJobsBuilder builder)
         {
-            builder //.AddAccessTokenBinding()
-                    //.AddBinders()
-                .Services.AddTransient<IReadClaims, ClaimsReader>()
+            builder.Services.AddTransient<IReadClaims, ClaimsReader>()
                          .AddHttpClient()
                          .AddBrighterCommand()
                          .AddDarkerQuery();
             AddDatabaseConnection(builder.Services)
-                     .AddDatabase();
+             .AddDatabase();
 
             builder.Services.AddTransient<IFileStorage, FileStorage>();
 

@@ -1,5 +1,4 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +22,10 @@ namespace Inshapardaz.Functions.Library.Series
         [FunctionName("GetSeriesById")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}series/{seriesId:int}")] HttpRequest req,
-            int libraryId, int seriesId, [AccessToken] ClaimsPrincipal principal, CancellationToken token)
+            int libraryId,
+            int seriesId,
+            ClaimsPrincipal principal,
+            CancellationToken token)
         {
             var query = new GetSeriesByIdQuery(libraryId, seriesId);
             var series = await QueryProcessor.ExecuteAsync(query, cancellationToken: token);

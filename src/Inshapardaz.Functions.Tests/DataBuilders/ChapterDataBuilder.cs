@@ -7,7 +7,7 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Functions.Tests.DataHelpers;
 using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Fakes;
-using Inshapardaz.Ports.Database;
+using Inshapardaz.Database.SqlServer;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders
 {

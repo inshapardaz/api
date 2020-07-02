@@ -1,11 +1,9 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
-using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -28,7 +26,7 @@ namespace Inshapardaz.Functions.Library.Books
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/books")]
             BookView book,
             int libraryId,
-            [AccessToken] ClaimsPrincipal claims,
+            ClaimsPrincipal claims,
             CancellationToken token)
         {
             return await Executor.Execute(async () =>

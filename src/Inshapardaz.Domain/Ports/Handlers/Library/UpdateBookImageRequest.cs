@@ -8,7 +8,6 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Models.Library
 {

@@ -9,7 +9,7 @@ using Inshapardaz.Functions.Tests.Dto;
 using Inshapardaz.Functions.Tests.Fakes;
 using Inshapardaz.Functions.Tests.Helpers;
 using Inshapardaz.Functions.Views.Library;
-using Inshapardaz.Ports.Database;
+using Inshapardaz.Database.SqlServer;
 using Random = Inshapardaz.Functions.Tests.Helpers.Random;
 
 namespace Inshapardaz.Functions.Tests.DataBuilders

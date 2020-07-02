@@ -22,7 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Inshapardaz.Domain\Inshapardaz.Domain.csproj" />
-    <ProjectReference Include="..\Inshapardaz.Ports.Database\Inshapardaz.Ports.Database.csproj" />
-    <ProjectReference Include="..\Inshapardaz.Storage\Inshapardaz.Storage.csproj" />
+    <ProjectReference Include="..\Inshapardaz.Database.SqlServer\Inshapardaz.Database.SqlServer.csproj" />
+    <ProjectReference Include="..\Inshapardaz.Storage.Azure\Inshapardaz.Storage.Azure.csproj" />
   </ItemGroup>
 </Project>

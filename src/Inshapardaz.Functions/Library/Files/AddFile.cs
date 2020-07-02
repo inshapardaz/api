@@ -1,7 +1,6 @@
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Functions.Authentication;
-using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -30,7 +29,7 @@ namespace Inshapardaz.Functions.Library.Files
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "files")]
             HttpRequestMessage req,
             ILogger log,
-            [AccessToken] ClaimsPrincipal claims,
+            ClaimsPrincipal claims,
             CancellationToken token)
         {
             var multipart = await req.Content.ReadAsMultipartAsync(token);

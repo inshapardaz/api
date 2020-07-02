@@ -1,9 +1,4 @@
-﻿using Inshapardaz.Ports.Database;
-using Microsoft.Data.Sqlite;
-using System.Data;
-using System.IO;
-
-namespace Inshapardaz.Functions.Tests
+﻿namespace Inshapardaz.Functions.Tests
 {
     //internal class TestSqliteConnectionProvider : IProvideConnection
     //{

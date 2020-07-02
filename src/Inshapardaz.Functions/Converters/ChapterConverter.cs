@@ -1,10 +1,9 @@
 ﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Library.Books;
 using Inshapardaz.Functions.Library.Books.Chapters;
 using Inshapardaz.Functions.Library.Books.Chapters.Contents;
-using Inshapardaz.Functions.Library.Files;
 using Inshapardaz.Functions.Mappings;
 using Inshapardaz.Functions.Views;
 using Inshapardaz.Functions.Views.Library;

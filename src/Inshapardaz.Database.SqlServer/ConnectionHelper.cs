@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 
-namespace Inshapardaz.Ports.Database
+namespace Inshapardaz.Database.SqlServer
 {
     public class SqlServerConnectionProvider : IProvideConnection
     {

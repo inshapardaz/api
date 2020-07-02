@@ -1,5 +1,4 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +26,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters
             int libraryId,
             int bookId,
             int chapterId,
-            [AccessToken] ClaimsPrincipal claims,
+            ClaimsPrincipal claims,
             ILogger log,
             CancellationToken token)
         {

@@ -1,8 +1,6 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
-using Inshapardaz.Functions.Views.Library;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -27,7 +25,7 @@ namespace Inshapardaz.Functions.Library.Books
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "library/{libraryId}/favorites/books/{bookId}")] HttpRequest req,
             int libraryId,
             int bookId,
-            [AccessToken] ClaimsPrincipal claims,
+            ClaimsPrincipal claims,
             CancellationToken token)
         {
             return await Executor.Execute(async () =>

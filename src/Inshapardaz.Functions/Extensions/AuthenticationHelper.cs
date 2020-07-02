@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
-namespace Inshapardaz.Functions.Authentication
+namespace Inshapardaz.Functions.Extensions
 {
     public class ClaimsReader : IReadClaims
     {

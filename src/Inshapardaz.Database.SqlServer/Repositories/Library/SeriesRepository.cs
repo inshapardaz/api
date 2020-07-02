@@ -2,12 +2,10 @@
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 
-namespace Inshapardaz.Ports.Database.Repositories.Library
+namespace Inshapardaz.Database.SqlServer.Repositories.Library
 {
     public class SeriesRepository : ISeriesRepository
     {

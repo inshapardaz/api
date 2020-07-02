@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Data;
-using FluentMigrator.Runner;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Ports.Database;
+using Inshapardaz.Database.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inshapardaz.Functions.Tests

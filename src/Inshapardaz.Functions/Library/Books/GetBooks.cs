@@ -1,7 +1,6 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
-using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +25,7 @@ namespace Inshapardaz.Functions.Library.Books
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/books")] HttpRequest req,
             int libraryId,
-            [AccessToken] ClaimsPrincipal principal,
+            ClaimsPrincipal principal,
             CancellationToken token)
         {
             var query = GetQueryParameter<string>(req, "query", null);

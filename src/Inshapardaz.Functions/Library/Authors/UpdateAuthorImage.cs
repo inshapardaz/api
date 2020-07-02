@@ -1,7 +1,6 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
-using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Extensions;
+using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -30,7 +29,7 @@ namespace Inshapardaz.Functions.Library.Authors
             int authorId,
             // TODO: Make this work
             //[FromFile]  object file,
-            [AccessToken] ClaimsPrincipal claims,
+            ClaimsPrincipal claims,
             CancellationToken token = default)
         {
             return await Executor.Execute(async () =>

@@ -1,5 +1,4 @@
-﻿using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -8,7 +7,6 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using FileModel = Inshapardaz.Domain.Models.FileModel;
 
 namespace Inshapardaz.Domain.Models.Library
 {

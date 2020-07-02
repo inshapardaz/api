@@ -2,9 +2,9 @@ using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
-using Inshapardaz.Ports.Database;
-using Inshapardaz.Ports.Database.Repositories;
-using Inshapardaz.Ports.Database.Repositories.Library;
+using Inshapardaz.Database.SqlServer;
+using Inshapardaz.Database.SqlServer.Repositories;
+using Inshapardaz.Database.SqlServer.Repositories.Library;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

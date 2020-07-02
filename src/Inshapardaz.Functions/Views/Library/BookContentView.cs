@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Inshapardaz.Functions.Views.Library
+﻿namespace Inshapardaz.Functions.Views.Library
 {
     public class BookContentView : ViewWithLinks
     {

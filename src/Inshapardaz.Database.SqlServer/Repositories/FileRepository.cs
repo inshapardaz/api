@@ -4,7 +4,7 @@ using Inshapardaz.Domain.Repositories;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Ports.Database.Repositories
+namespace Inshapardaz.Database.SqlServer.Repositories
 {
     public class FileRepository : IFileRepository
     {

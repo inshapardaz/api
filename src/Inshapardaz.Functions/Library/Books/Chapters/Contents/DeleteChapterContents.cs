@@ -1,5 +1,4 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -26,7 +25,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
             int libraryId,
             int bookId,
             int chapterId,
-            [AccessToken] ClaimsPrincipal claims = null,
+            ClaimsPrincipal claims = null,
             CancellationToken token = default)
         {
             return await Executor.Execute(async () =>

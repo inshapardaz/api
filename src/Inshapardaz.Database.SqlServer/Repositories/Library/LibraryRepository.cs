@@ -1,13 +1,10 @@
 ﻿using Dapper;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Library;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Ports.Database.Repositories.Library
+namespace Inshapardaz.Database.SqlServer.Repositories.Library
 {
     public class LibraryRepository : ILibraryRepository
     {

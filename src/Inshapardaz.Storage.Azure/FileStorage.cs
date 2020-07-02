@@ -7,7 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Storage
+namespace Inshapardaz.Storage.Azure
 {
     public class FileStorage : IFileStorage
     {

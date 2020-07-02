@@ -1,5 +1,5 @@
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Functions.Authentication;
+using Inshapardaz.Functions.Extensions;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +25,7 @@ namespace Inshapardaz.Functions.Library.Files
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "files/{id:int}")] HttpRequest req,
             ILogger log,
             int id,
-            [AccessToken] ClaimsPrincipal principal,
+            ClaimsPrincipal principal,
             CancellationToken token)
         {
             if (principal == null)

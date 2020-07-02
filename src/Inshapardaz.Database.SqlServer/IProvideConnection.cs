@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace Inshapardaz.Ports.Database
+namespace Inshapardaz.Database.SqlServer
 {
     public interface IProvideConnection
     {

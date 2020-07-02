@@ -1,5 +1,4 @@
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +23,7 @@ namespace Inshapardaz.Functions.Library.Authors
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "library/{libraryId}/authors/{authorId:int}")] HttpRequest req,
             int libraryId, int authorId,
-            [AccessToken] ClaimsPrincipal principal,
+            ClaimsPrincipal principal,
             CancellationToken token)
         {
             var query = new GetAuthorByIdQuery(libraryId, authorId);

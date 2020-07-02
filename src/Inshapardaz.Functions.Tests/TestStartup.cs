@@ -8,7 +8,7 @@ using Inshapardaz.Functions.Library.Categories;
 using Inshapardaz.Functions.Library.Series;
 using Inshapardaz.Functions.Tests.DataBuilders;
 using Inshapardaz.Functions.Tests.Fakes;
-using Inshapardaz.Storage;
+using Inshapardaz.Storage.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 

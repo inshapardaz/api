@@ -1,5 +1,3 @@
-using System;
-
 namespace Inshapardaz.Functions.Views.Library
 {
     public class ChapterContentView : ViewWithLinks

@@ -1,8 +1,4 @@
 using Inshapardaz.Domain.Models.Library;
-
-using Inshapardaz.Domain.Models.Library;
-
-using Inshapardaz.Functions.Authentication;
 using Inshapardaz.Functions.Converters;
 using Inshapardaz.Functions.Views;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +29,7 @@ namespace Inshapardaz.Functions.Library.Authors
             //[FromQuery("query")] string query,
             //[FromQuery("pageNumber", 1)] int pageNumber,
             //[FromQuery("pageNumber", 20)] int pageSize,
-            [AccessToken] ClaimsPrincipal principal,
+            ClaimsPrincipal principal,
             CancellationToken token)
         {
             var query = GetQueryParameter(req, "query", "");

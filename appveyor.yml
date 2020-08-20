@@ -34,7 +34,7 @@ deploy:
   website: api-library
   username: $api-library
   password:
-    secure: 0de1ZrNHcC+SzGBHpax9+mT25e9oD4C6LGRTRmRs8PkJfrqeES1md6cT9XTViJ5/K98oTkFBnBkpbO8uy3BGtQ==
+    secure: TZVfWqb7YZBbXyiukgZAfH8zPXiv0kZsn6UEOUd4IH+8TsDEKuDDHPOgEa6GBS4LeGFFxpxkkMeuyRjugKfEYQ==
   artifact: Function
   on:
     branch: master

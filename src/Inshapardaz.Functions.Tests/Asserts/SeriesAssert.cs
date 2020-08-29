@@ -114,7 +114,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _series.Link("image")
                 .ShouldBeGet()
                 .Href.Should()
-                .StartWith(ConfigurationSettings.CDNAddress);
+                .StartWith(Settings.CDNAddress);
             return this;
         }
 

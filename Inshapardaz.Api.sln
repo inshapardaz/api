@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{26B32815
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Database.SqlServer", "src\Inshapardaz.Database.SqlServer\Inshapardaz.Database.SqlServer.csproj", "{EFB37C52-0CFF-4B3A-944F-41B35628EFB7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.Azure.Azure", "src\Inshapardaz.Storage.Azure\Inshapardaz.Storage.Azure.csproj", "{7EE0CEAD-9629-4C6A-A215-97D1EC4C4BB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.Azure", "src\Inshapardaz.Storage.Azure\Inshapardaz.Storage.Azure.csproj", "{7EE0CEAD-9629-4C6A-A215-97D1EC4C4BB1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Functions", "src\Inshapardaz.Functions\Inshapardaz.Functions.csproj", "{1ABEF47F-BAB3-4563-AF8C-EF47BF4EDE38}"
 EndProject
@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api", "src\Inshapardaz.Api\Inshapardaz.Api.csproj", "{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +48,10 @@ Global
 		{AC205F32-E900-45F4-A885-ED67D10436EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC205F32-E900-45F4-A885-ED67D10436EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC205F32-E900-45F4-A885-ED67D10436EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

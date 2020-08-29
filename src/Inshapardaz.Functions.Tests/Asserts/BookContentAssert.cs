@@ -149,7 +149,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _bookContent.Link("download")
                            .ShouldBeGet()
                            .Href.Should()
-                           .StartWith(ConfigurationSettings.BlobRoot);
+                           .StartWith(Settings.BlobRoot);
 
             return this;
         }
@@ -159,7 +159,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _bookContent.Link("download")
                            .ShouldBeGet()
                            .Href.Should()
-                           .StartWith(ConfigurationSettings.CDNAddress);
+                           .StartWith(Settings.CDNAddress);
 
             return this;
         }

@@ -12,7 +12,7 @@ namespace Inshapardaz.Domain.Helpers
             var image = await fileRepository.GetFileById(imageId, cancellationToken);
             if (image != null && image.IsPublic == true)
             {
-                return image.FilePath.Replace(ConfigurationSettings.BlobRoot, ConfigurationSettings.CDNAddress);
+                //return image.FilePath.Replace(Settings.BlobRoot, Settings.CDNAddress);
             }
 
             return null;

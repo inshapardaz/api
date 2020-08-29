@@ -100,7 +100,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _author.Link("image")
                 .ShouldBeGet()
                 .Href.Should()
-                .StartWith(ConfigurationSettings.CDNAddress);
+                .StartWith(Settings.CDNAddress);
         }
 
         internal void ShouldNotHaveImageLink()

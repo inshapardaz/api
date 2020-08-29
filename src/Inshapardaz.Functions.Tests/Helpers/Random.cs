@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Helpers
         public static string Name => new Faker().Name.FullName();
         public static byte[] Bytes => new Faker().Random.Bytes(10);
 
-        public static string BlobUrl => $"{ConfigurationSettings.BlobRoot}{new Faker().Internet.UrlRootedPath()}";
+        public static string BlobUrl => $"{Settings.BlobRoot}{new Faker().Internet.UrlRootedPath()}";
 
         public static T PickRandom<T>(this IEnumerable<T> source) =>
             new Faker().PickRandom<T>(source);

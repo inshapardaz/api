@@ -8,7 +8,7 @@ using Inshapardaz.Database.SqlServer.Repositories.Library;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Inshapardaz.Functions.Configuration
+namespace Inshapardaz.Api.Configuration
 {
     public static class DatabaseConfiguration
     {

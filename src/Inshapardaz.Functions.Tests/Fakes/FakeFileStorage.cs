@@ -18,7 +18,7 @@ namespace Inshapardaz.Functions.Tests.Fakes
             Console.Write("");
         }
 
-        private static string GetUrl(string name) => $"{ConfigurationSettings.BlobRoot}/{name}";
+        private static string GetUrl(string name) => $"{Settings.BlobRoot}/{name}";
 
         public void SetupFileContents(string filePath, string content)
         {

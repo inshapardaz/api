@@ -115,7 +115,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _chapterContent.Link("download")
                            .ShouldBeGet()
                            .Href.Should()
-                           .StartWith(ConfigurationSettings.BlobRoot);
+                           .StartWith(Settings.BlobRoot);
 
             return this;
         }
@@ -125,7 +125,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _chapterContent.Link("download")
                            .ShouldBeGet()
                            .Href.Should()
-                           .StartWith(ConfigurationSettings.CDNAddress);
+                           .StartWith(Settings.CDNAddress);
 
             return this;
         }

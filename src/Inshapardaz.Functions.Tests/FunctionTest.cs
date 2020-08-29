@@ -20,8 +20,8 @@ namespace Inshapardaz.Functions.Tests
             //InitializeDatabaseMigration(_builder.Services);
             _startup.Configure(_builder);
 
-            ConfigurationSettings.BlobRoot = "http://blob.localhost";
-            ConfigurationSettings.CDNAddress = "http://cdn.localhost";
+            Settings.BlobRoot = "http://blob.localhost";
+            Settings.CDNAddress = "http://cdn.localhost";
         }
 
         protected IServiceProvider Container => _builder.ServiceProvider;

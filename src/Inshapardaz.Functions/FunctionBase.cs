@@ -48,7 +48,7 @@ namespace Inshapardaz.Functions
 
         protected static LinkView SelfLink(string href, string relType = RelTypes.Self, string method = "GET", Dictionary<string, string> queryString = null, string type = null, string media = null, string language = null)
         {
-            var urlBuilder = new UriBuilder(ConfigurationSettings.ApiRoot)
+            var urlBuilder = new UriBuilder(Settings.ApiRoot)
             {
                 Path = $"api/{href}"
             };

@@ -13,9 +13,9 @@ namespace Inshapardaz.Storage.Azure
     {
         private readonly string _storageConnectionString;
 
-        public FileStorage()
+        public FileStorage(Settings settings)
         {
-            _storageConnectionString = ConfigurationSettings.FileStorageConnectionString;
+            _storageConnectionString = settings.FileStorageConnectionString;
         }
 
         public async Task DeleteFile(string filePath, CancellationToken cancellationToken)

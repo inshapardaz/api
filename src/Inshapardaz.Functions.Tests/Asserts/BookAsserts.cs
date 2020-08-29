@@ -267,7 +267,7 @@ namespace Inshapardaz.Functions.Tests.Asserts
             _book.Link("image")
                 .ShouldBeGet()
                 .Href.Should()
-                .StartWith(ConfigurationSettings.CDNAddress);
+                .StartWith(Settings.CDNAddress);
 
             return this;
         }

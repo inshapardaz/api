@@ -7,6 +7,7 @@ namespace Inshapardaz.Api.Helpers
     {
         bool IsAuthenticated { get; }
         bool IsAdmin { get; }
+        bool IsLibraryAdmin { get; }
         bool IsWriter { get; }
         bool IsReader { get; }
         ClaimsPrincipal Claims { get; }

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Helpers;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Darker;
@@ -30,7 +31,13 @@ namespace Inshapardaz.Api.Controllers
         {
             var query = new GetLibraryQuery(libraryId, _userHelper.Claims);
             var library = await _queryProcessor.ExecuteAsync(query, cancellationToken);
-            return new OkObjectResult(_libraryRenderer.Render(library));
+
+            if (library != null)
+            {
+                return new OkObjectResult(_libraryRenderer.Render(library));
+            }
+
+            return NotFound();
         }
     }
 }

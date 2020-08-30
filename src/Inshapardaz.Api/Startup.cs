@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Converters;
@@ -8,6 +9,8 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Inshapardaz.Api
 {
@@ -55,6 +59,21 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderLibrary, LibraryRenderer>();
             services.AddTransient<IRenderLink, LinkRenderer>();
             services.AddTransient<IRenderSeries, SeriesRenderer>();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = settings.Authority;
+                options.Audience = settings.Audience;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    NameClaimType = ClaimTypes.NameIdentifier
+                };
+            });
+
             AddCustomServices(services);
         }
 
@@ -67,8 +86,14 @@ namespace Inshapardaz.Api
 
             app.UseHttpsRedirection();
 
+            app.UseCors(policy => policy.WithOrigins("http://localhost:4200")
+                                        .AllowAnyMethod()
+                                        .AllowAnyHeader()
+                                        .AllowCredentials());
+
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

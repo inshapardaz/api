@@ -36,7 +36,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("files/{fileId}")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         internal async Task<IActionResult> DeleteFile(int fileId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteFileRequest(fileId);

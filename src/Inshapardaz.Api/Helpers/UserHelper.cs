@@ -20,13 +20,14 @@ namespace Inshapardaz.Api.Helpers
 
         public bool IsAuthenticated => GetUserId() != Guid.Empty;
 
-        public bool IsAdmin => IsAuthenticated && GetRoles().Contains("admin");
+        public bool IsAdmin => IsAuthenticated && IsUserInRole("admin");
+        public bool IsLibraryAdmin => IsAuthenticated && IsUserInRole("libraryAdmin");
 
-        public bool IsWriter => IsAuthenticated && IsAdmin || GetRoles().Contains("writer");
+        public bool IsWriter => IsAuthenticated && (IsLibraryAdmin || IsUserInRole("writer"));
 
-        public bool IsReader => IsAuthenticated && IsWriter || GetRoles().Contains("reader");
+        public bool IsReader => IsAuthenticated;
 
-        public ClaimsPrincipal Claims => ClaimsPrincipal.Current;
+        public ClaimsPrincipal Claims => _contextAccessor.HttpContext.User;
 
         public Guid GetUserId()
         {
@@ -41,23 +42,23 @@ namespace Inshapardaz.Api.Helpers
 
         private bool IsUserInRole(string role)
         {
-            return _contextAccessor.HttpContext.User.HasClaim(ClaimTypes.Role, role);
+            return _contextAccessor.HttpContext.User.HasClaim("permissions", role);
         }
 
-        private IEnumerable<string> GetRoles()
+        //private IEnumerable<string> GetRoles()
 
-        {
-            var rolesIdentifierValue = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "https://api.inshapardaz.org/user_authorization")?.Value;
+        //{
+        //    var rolesIdentifierValue = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "https://api.inshapardaz.org/user_authorization")?.Value;
 
-            if (!string.IsNullOrWhiteSpace(rolesIdentifierValue))
-            {
-                var authData = JsonConvert.DeserializeObject<UserAuthenticationData>(rolesIdentifierValue);
+        //    if (!string.IsNullOrWhiteSpace(rolesIdentifierValue))
+        //    {
+        //        var authData = JsonConvert.DeserializeObject<UserAuthenticationData>(rolesIdentifierValue);
 
-                return authData.Roles;
-            }
+        //        return authData.Roles;
+        //    }
 
-            return Enumerable.Empty<string>();
-        }
+        //    return Enumerable.Empty<string>();
+        //}
 
         private class UserAuthenticationData
         {

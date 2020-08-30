@@ -63,7 +63,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/books/{bookId:int}/chapters")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         public async Task<IActionResult> CreateChapter(int libraryId, int bookId, ChapterView chapter, CancellationToken token = default(CancellationToken))
         {
             var request = new AddChapterRequest(_userHelper.Claims, libraryId, bookId, chapter.Map(), _userHelper.GetUserId());
@@ -79,7 +79,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/books/{bookId:int}/chapter/{chapterId}")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         public async Task<IActionResult> UpdateChapter(int libraryId, int bookId, int chapterId, ChapterView chapter, CancellationToken token = default(CancellationToken))
         {
             var request = new UpdateChapterRequest(_userHelper.Claims, libraryId, bookId, chapterId, chapter.Map(), _userHelper.GetUserId());
@@ -96,7 +96,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/books/{bookId:int}/chapters/{chapterId}")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         public async Task<IActionResult> DeleteChapter(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteChapterRequest(_userHelper.Claims, libraryId, bookId, chapterId, _userHelper.GetUserId());
@@ -123,7 +123,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/books/{bookId:int}/chapters/{chapterId}/content")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -146,7 +146,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/books/{bookId:int}/chapters/{chapterId}/content")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         public async Task<IActionResult> UpdateChapterContent(int libraryId, int bookId, int chapterId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -170,7 +170,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/books/{bookId:int}/chapters/{chapterId}/content")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         public async Task<IActionResult> DeleteChapterContent(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {
             var contentType = Request.Headers["Content-Type"];

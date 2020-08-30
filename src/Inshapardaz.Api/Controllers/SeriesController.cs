@@ -66,7 +66,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/series")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         public async Task<IActionResult> CreateSeries(int libraryId, SeriesView series, CancellationToken token = default(CancellationToken))
         {
             var request = new AddSeriesRequest(_userHelper.Claims, libraryId, series.Map());
@@ -77,7 +77,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/series/{seriesId}")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         public async Task<IActionResult> UpdateSeries(int libraryId, int seriesId, SeriesView series, CancellationToken token = default(CancellationToken))
         {
             series.Id = seriesId;
@@ -97,7 +97,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/series/{seriesId}")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         public async Task<IActionResult> DeleteSeries(int libraryId, int seriesId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteSeriesRequest(_userHelper.Claims, libraryId, seriesId);
@@ -106,7 +106,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/series/{seriesId:int}/image")]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize]
         public async Task<IActionResult> UpdateSeriesImage(int libraryId, int seriesId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];

@@ -21,6 +21,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int PageNumber { get; private set; }
 
         public int PageSize { get; private set; }
+        public string Query { get; set; }
     }
 
     public class GetIssuesRequestHandler : QueryHandlerAsync<GetIssuesQuery, Page<IssueModel>>

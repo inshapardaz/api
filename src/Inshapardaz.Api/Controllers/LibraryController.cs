@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Helpers;
-using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Darker;
@@ -26,7 +21,7 @@ namespace Inshapardaz.Api.Controllers
             _userHelper = userHelper;
         }
 
-        [HttpGet("library/{libraryId}")]
+        [HttpGet("library/{libraryId}", Name = nameof(LibraryController.GetLibraryById))]
         public async Task<IActionResult> GetLibraryById(int libraryId, CancellationToken cancellationToken)
         {
             var query = new GetLibraryQuery(libraryId, _userHelper.Claims);

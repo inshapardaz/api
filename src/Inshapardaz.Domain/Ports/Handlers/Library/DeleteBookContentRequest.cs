@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class DeleteBookFileRequest : BookRequest
+    public class DeleteBookContentRequest : BookRequest
     {
-        public DeleteBookFileRequest(ClaimsPrincipal claims, int libraryId, int bookId, string language, string mimeType, Guid? userId)
+        public DeleteBookContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, string language, string mimeType, Guid? userId)
             : base(claims, libraryId, bookId, userId)
         {
             Language = language;
@@ -21,13 +21,13 @@ namespace Inshapardaz.Domain.Models.Library
         public string MimeType { get; }
     }
 
-    public class DeleteBookFileRequestHandler : RequestHandlerAsync<DeleteBookFileRequest>
+    public class DeleteBookContentRequestHandler : RequestHandlerAsync<DeleteBookContentRequest>
     {
         private readonly IBookRepository _bookRepository;
         private readonly IFileRepository _fileRepository;
         private readonly IFileStorage _fileStorage;
 
-        public DeleteBookFileRequestHandler(IBookRepository bookRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+        public DeleteBookContentRequestHandler(IBookRepository bookRepository, IFileRepository fileRepository, IFileStorage fileStorage)
         {
             _bookRepository = bookRepository;
             _fileRepository = fileRepository;
@@ -35,7 +35,7 @@ namespace Inshapardaz.Domain.Models.Library
         }
 
         [Authorise(step: 1, HandlerTiming.Before)]
-        public override async Task<DeleteBookFileRequest> HandleAsync(DeleteBookFileRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<DeleteBookContentRequest> HandleAsync(DeleteBookContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);
             if (content != null)

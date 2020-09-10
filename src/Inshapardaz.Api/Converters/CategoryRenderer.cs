@@ -91,7 +91,7 @@ namespace Inshapardaz.Api.Converters
 
                 view.Links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(CategoryController.Deleteategory),
+                    ActionName = nameof(CategoryController.DeleteCategory),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
                     Parameters = new { libraryId = libraryId, categoryId = category.Id }

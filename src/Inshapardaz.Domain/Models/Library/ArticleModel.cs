@@ -1,9 +1,12 @@
+using System.Collections.Generic;
+
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class Article
+    public class ArticleModel
     {
         public int Id { get; set; }
 
+        public string Title { get; set; }
         public int SequenceNumber { get; set; }
 
         public string SeriesName { get; set; }
@@ -15,5 +18,7 @@ namespace Inshapardaz.Domain.Models.Library
         public AuthorModel Author { get; set; }
 
         public int IssueId { get; set; }
+
+        public List<ArticleContentModel> Contents { get; set; } = new List<ArticleContentModel>();
     }
 }

@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Controllers
             _queryProcessor = queryProcessor;
         }
 
-        [HttpGet("files/{fileId}")]
+        [HttpGet("files/{fileId}", Name = nameof(FileController.GetFile))]
         public async Task<IActionResult> GetFile(int fileId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetFileQuery(fileId, 200, 200);
@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Controllers
             return new FileContentResult(file.Contents, new MediaTypeHeaderValue(file.MimeType));
         }
 
-        [HttpDelete("files/{fileId}")]
+        [HttpDelete("files/{fileId}", Name = nameof(FileController.DeleteFile))]
         [Authorize]
         internal async Task<IActionResult> DeleteFile(int fileId, CancellationToken token = default(CancellationToken))
         {

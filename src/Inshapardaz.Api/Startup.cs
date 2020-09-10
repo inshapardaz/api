@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Converters;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
@@ -20,7 +21,6 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Inshapardaz.Api
@@ -40,7 +40,7 @@ namespace Inshapardaz.Api
             Configuration.Bind("Application", settings);
             services.AddSingleton(settings);
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddBrighterCommand();
             services.AddDarkerQuery();
 
@@ -49,6 +49,7 @@ namespace Inshapardaz.Api
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddSingleton<IReadClaims, ClaimsReader>();
             services.AddTransient<IFileStorage, FileStorage>();
             services.AddTransient<IUserHelper, UserHelper>();
             services.AddTransient<IRenderAuthor, AuthorRenderer>();
@@ -59,6 +60,9 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderLibrary, LibraryRenderer>();
             services.AddTransient<IRenderLink, LinkRenderer>();
             services.AddTransient<IRenderSeries, SeriesRenderer>();
+            services.AddTransient<IRenderPeriodical, PeriodicalRenderer>();
+            services.AddTransient<IRenderIssue, IssueRenderer>();
+            services.AddTransient<IRenderArticle, ArticleRenderer>();
 
             services.AddAuthentication(options =>
             {

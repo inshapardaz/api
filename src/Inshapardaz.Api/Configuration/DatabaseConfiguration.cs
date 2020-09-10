@@ -30,6 +30,7 @@ namespace Inshapardaz.Api.Configuration
 
             services.AddTransient<IPeriodicalRepository, PeriodicalRepository>();
             services.AddTransient<IIssueRepository, IssueRepository>();
+            services.AddTransient<IArticleRepository, ArticleRepository>();
             return services;
         }
 

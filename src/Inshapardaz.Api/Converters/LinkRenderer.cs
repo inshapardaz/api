@@ -50,10 +50,7 @@ namespace Inshapardaz.Api.Converters
 
         public LinkView Render(Link link)
         {
-            var urlBuilder = new UriBuilder()
-            {
-                Path = _urlHelper.RouteUrl(link.ActionName, link.Parameters, Scheme)
-            };
+            var urlBuilder = new UriBuilder(_urlHelper.RouteUrl(link.ActionName, link.Parameters, Scheme));
 
             if (link.QueryString != null && link.QueryString.Any())
             {

@@ -17,10 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Functions.Tests
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{17995680-3C9A-4E15-B619-569923E820FF}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api", "src\Inshapardaz.Api\Inshapardaz.Api.csproj", "{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api.Tests", "src\Inshapardaz.Api.Tests\Inshapardaz.Api.Tests.csproj", "{1ADABB20-5947-409C-B0FA-6F12274B8076}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,12 +55,17 @@ Global
 		{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ADABB20-5947-409C-B0FA-6F12274B8076}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ADABB20-5947-409C-B0FA-6F12274B8076}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ADABB20-5947-409C-B0FA-6F12274B8076}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ADABB20-5947-409C-B0FA-6F12274B8076}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AC205F32-E900-45F4-A885-ED67D10436EA} = {26B32815-EFF1-4EA6-A846-BE4432C7E6A7}
+		{1ADABB20-5947-409C-B0FA-6F12274B8076} = {26B32815-EFF1-4EA6-A846-BE4432C7E6A7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01E64C09-181F-45EA-ADBF-22907FDB86A8}

@@ -1,0 +1,56 @@
+﻿using Inshapardaz.Domain.Models.Handlers.Library;
+using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Repositories.Library;
+using Paramore.Brighter;
+using System;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Inshapardaz.Domain.Models.Library
+{
+    public class DeleteIssueContentRequest : LibraryAuthorisedCommand
+    {
+        public DeleteIssueContentRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId, string language, string mimeType, Guid? userId)
+            : base(claims, libraryId)
+        {
+            PeriodicalId = periodicalId;
+            IssueId = issueId;
+            Language = language;
+            MimeType = mimeType;
+        }
+
+        public int PeriodicalId { get; }
+        public int IssueId { get; }
+        public string Language { get; }
+        public string MimeType { get; }
+    }
+
+    public class DeleteIssueContentRequestHandler : RequestHandlerAsync<DeleteIssueContentRequest>
+    {
+        private readonly IIssueRepository _issueRepository;
+        private readonly IFileRepository _fileRepository;
+        private readonly IFileStorage _fileStorage;
+
+        public DeleteIssueContentRequestHandler(IIssueRepository issueRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+        {
+            _issueRepository = issueRepository;
+            _fileRepository = fileRepository;
+            _fileStorage = fileStorage;
+        }
+
+        [Authorise(step: 1, HandlerTiming.Before)]
+        public override async Task<DeleteIssueContentRequest> HandleAsync(DeleteIssueContentRequest command, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var content = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.IssueId, command.Language, command.MimeType, cancellationToken);
+            if (content != null)
+            {
+                await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
+                await _issueRepository.DeleteIssueContent(command.LibraryId, command.PeriodicalId, command.IssueId, command.Language, command.MimeType, cancellationToken);
+                await _fileRepository.DeleteFile(content.FileId, cancellationToken);
+            }
+
+            return await base.HandleAsync(command, cancellationToken);
+        }
+    }
+}

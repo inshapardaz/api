@@ -106,16 +106,36 @@ namespace Inshapardaz.Api.Tests.Library
         [Test]
         public void ShouldHaveWritableLinks()
         {
-            if (_authenticationLevel == AuthenticationLevel.Admin ||
-                _authenticationLevel == AuthenticationLevel.LibraryAdmin)
+            if (_authenticationLevel == AuthenticationLevel.Admin)
             {
                 _view.Links.AssertLink("create-category")
                        .ShouldBePost()
                        .EndingWith($"/library/{LibraryId}/categories");
+                _view.Links.AssertLink("create")
+                        .ShouldBePost()
+                        .EndingWith($"/library");
+                _view.Links.AssertLink("update")
+                        .ShouldBePut()
+                        .EndingWith($"/library/{LibraryId}");
+                _view.Links.AssertLink("delete")
+                        .ShouldBeDelete()
+                        .EndingWith($"/library/{LibraryId}");
+            }
+            else if (_authenticationLevel == AuthenticationLevel.LibraryAdmin)
+            {
+                _view.Links.AssertLink("create-category")
+                       .ShouldBePost()
+                       .EndingWith($"/library/{LibraryId}/categories");
+                _view.Links.AssertLink("update")
+                        .ShouldBePut()
+                        .EndingWith($"/library/{LibraryId}");
             }
             else
             {
                 _view.Links.AssertLinkNotPresent("create-category");
+                _view.Links.AssertLinkNotPresent("create");
+                _view.Links.AssertLinkNotPresent("update");
+                _view.Links.AssertLinkNotPresent("delete");
             }
         }
     }

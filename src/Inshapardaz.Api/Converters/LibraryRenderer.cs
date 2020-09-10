@@ -120,9 +120,35 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
+                    ActionName = nameof(LibraryController.UpdateLibrary),
+                    Method = HttpMethod.Put,
+                    Rel = RelTypes.Update,
+                    Parameters = new { libraryId = model.Id }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
                     ActionName = nameof(CategoryController.CreateCategory),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.CreateCategory,
+                    Parameters = new { libraryId = model.Id }
+                }));
+            }
+
+            if (_userHelper.IsAdmin)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(LibraryController.CreateLibrary),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.Create
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(LibraryController.DeleteLibrary),
+                    Method = HttpMethod.Delete,
+                    Rel = RelTypes.Delete,
                     Parameters = new { libraryId = model.Id }
                 }));
             }

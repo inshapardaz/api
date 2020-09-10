@@ -115,6 +115,9 @@ namespace Inshapardaz.Api.Tests.Library
             _view.Links.AssertLinkNotPresent("create-category");
             _view.Links.AssertLinkNotPresent("create-series");
             _view.Links.AssertLinkNotPresent("create-author");
+            _view.Links.AssertLinkNotPresent("create");
+            _view.Links.AssertLinkNotPresent("update");
+            _view.Links.AssertLinkNotPresent("delete");
         }
     }
 }

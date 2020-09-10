@@ -42,23 +42,8 @@ namespace Inshapardaz.Api.Helpers
 
         private bool IsUserInRole(string role)
         {
-            return _contextAccessor.HttpContext.User.HasClaim("permissions", role);
+            return Claims.HasClaim("permissions", role);
         }
-
-        //private IEnumerable<string> GetRoles()
-
-        //{
-        //    var rolesIdentifierValue = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "https://api.inshapardaz.org/user_authorization")?.Value;
-
-        //    if (!string.IsNullOrWhiteSpace(rolesIdentifierValue))
-        //    {
-        //        var authData = JsonConvert.DeserializeObject<UserAuthenticationData>(rolesIdentifierValue);
-
-        //        return authData.Roles;
-        //    }
-
-        //    return Enumerable.Empty<string>();
-        //}
 
         private class UserAuthenticationData
         {

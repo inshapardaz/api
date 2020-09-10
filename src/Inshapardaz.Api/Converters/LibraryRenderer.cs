@@ -68,13 +68,13 @@ namespace Inshapardaz.Api.Converters
 
             if (model.SupportsPeriodicals)
             {
-                //links.Add(_linkRenderer.Render(new Link
-                //{
-                //    ActionName = nameof(PeriodicalController.GetPeriodicals),
-                //    Method = HttpMethod.Get,
-                //    Rel = RelTypes.Periodicals,
-                //    Parameters = new { libraryId = model.Id }
-                //}));
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(PeriodicalController.GetPeriodicals),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Periodicals,
+                    Parameters = new { libraryId = model.Id }
+                }));
             }
 
             if (_userHelper.IsAuthenticated)
@@ -116,7 +116,7 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            if (_userHelper.IsAdmin)
+            if (_userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {

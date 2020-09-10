@@ -17,8 +17,6 @@ namespace Inshapardaz.Domain.Models.Library
         }
 
         public int ChapterId { get; }
-
-        public string MimeType { get; set; }
     }
 
     public class DeleteChapterRequestHandler : RequestHandlerAsync<DeleteChapterRequest>
@@ -36,7 +34,7 @@ namespace Inshapardaz.Domain.Models.Library
         public override async Task<DeleteChapterRequest> HandleAsync(DeleteChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             //TODO:  support multiple
-            var filePath = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, "", command.MimeType, cancellationToken);
+            var filePath = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, "", "", cancellationToken);
 
             await _chapterRepository.DeleteChapter(command.LibraryId, command.BookId, command.ChapterId, cancellationToken);
 

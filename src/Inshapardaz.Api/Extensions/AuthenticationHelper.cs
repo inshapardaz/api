@@ -52,14 +52,7 @@ namespace Inshapardaz.Api.Extensions
         {
             if (principal != null)
             {
-                var rolesIdentifierValue = principal.Claims.FirstOrDefault(c => c.Type == "https://api.inshapardaz.org/user_authorization")?.Value;
-
-                if (!string.IsNullOrWhiteSpace(rolesIdentifierValue))
-                {
-                    var authData = JsonConvert.DeserializeObject<UserAuthenticationData>(rolesIdentifierValue);
-
-                    return authData.Roles;
-                }
+                return principal.Claims.Where(c => c.Type == "permissions").Select(x => x.Value);
             }
 
             return Enumerable.Empty<string>();

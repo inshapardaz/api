@@ -32,7 +32,7 @@ namespace Inshapardaz.Functions.Library.Books.Content
                 var mimeType = GetHeader(req, "Accept", "text/markdown");
                 var language = GetHeader(req, "Accept-Language", "");
 
-                var request = new DeleteBookFileRequest(claims, libraryId, bookId, language, mimeType, claims.GetUserId());
+                var request = new DeleteBookContentRequest(claims, libraryId, bookId, language, mimeType, claims.GetUserId());
                 await CommandProcessor.SendAsync(request, cancellationToken: token);
                 return new NoContentResult();
             });

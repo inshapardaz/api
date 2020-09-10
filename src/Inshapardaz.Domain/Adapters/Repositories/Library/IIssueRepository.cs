@@ -16,5 +16,14 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task UpdateIssue(int libraryId, int periodicalId, IssueModel issue, CancellationToken cancellationToken);
 
         Task DeleteIssue(int libraryId, int issueId, CancellationToken cancellationToken);
+
+        Task AddIssueContent(int libraryId, int periodicalId, int issueId, int fileId, string language, string mimeType, CancellationToken cancellationToken);
+
+        Task<IssueContentModel> GetIssueContent(int libraryId, int periodicalId, int issueId, string language, string mimeType, CancellationToken cancellationToken);
+
+        Task UpdateIssueContentUrl(int libraryId, int periodicalId, int issueId, string language, string mimeType, string url, CancellationToken cancellationToken);
+
+        Task DeleteIssueContent(int libraryId, int periodicalId, int issueId, string language, string mimeType, CancellationToken cancellationToken);
+        Task UpdateIssueContent(int libraryId, int periodicalId, int issueId, int articleId, string language, string mimeType, string actualUrl, CancellationToken cancellationToken);
     }
 }

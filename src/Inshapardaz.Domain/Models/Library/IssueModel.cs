@@ -17,5 +17,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int PeriodicalId { get; set; }
 
         public virtual PeriodicalModel Periodical { get; set; }
+        public string ImageUrl { get; set; }
+        public bool IsPublic { get; set; }
     }
 }

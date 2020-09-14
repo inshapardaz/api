@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Helpers;
+﻿using Inshapardaz.Api.Extensions;
+using Inshapardaz.Domain.Adapters;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -21,6 +22,11 @@ namespace Inshapardaz.Api.Tests.Helpers
         public bool IsReader => IsAuthenticated;
 
         public ClaimsPrincipal Claims => new ClaimsPrincipal(new ClaimsIdentity(_claimsProvider.Claims, "Test"));
+
+        public bool CheckPermissions(Permission[] permissions)
+        {
+            return permissions.Any(p => IsUserInRole(p.ToDescription()));
+        }
 
         public Guid GetUserId()
         {

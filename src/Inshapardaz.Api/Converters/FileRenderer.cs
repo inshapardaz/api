@@ -33,13 +33,13 @@ namespace Inshapardaz.Api.Converters
                 _linkRenderer.Render(new Link
                 {
                     ActionName = nameof(FileController.GetFile),
-                    Method = HttpMethod.Post,
-                    Rel = RelTypes.Create,
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Self,
                     Parameters = new { fileId = source.Id },
                 })
-        };
+            };
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {

@@ -1,0 +1,36 @@
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.Helpers;
+using NUnit.Framework;
+
+namespace Inshapardaz.Api.Tests.Author.DeleteAuthor
+{
+    [TestFixture]
+    public class WhenDeletingAuthorAsAnonymous : TestBase
+    {
+        private HttpResponseMessage _response;
+
+        [OneTimeSetUp]
+        public async Task Setup()
+        {
+            var authors = AuthorBuilder.WithLibrary(LibraryId).Build(4);
+            var expected = authors.PickRandom();
+
+            var client = CreateClient();
+            _response = await client.DeleteAsync($"/library/{LibraryId}/authors/{expected.Id}");
+        }
+
+        [OneTimeTearDown]
+        public void Teardown()
+        {
+            Cleanup();
+        }
+
+        [Test]
+        public void ShouldHaveUnauthorizedResult()
+        {
+            _response.ShouldBeUnauthorized();
+        }
+    }
+}

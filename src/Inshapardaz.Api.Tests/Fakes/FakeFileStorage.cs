@@ -12,14 +12,8 @@ namespace Inshapardaz.Api.Tests.Fakes
         private readonly object _lock = new object();
 
         private readonly Dictionary<string, byte[]> _contents = new Dictionary<string, byte[]>();
-        private readonly Settings _settings;
 
-        public FakeFileStorage(Settings settings)
-        {
-            _settings = settings;
-        }
-
-        private string GetUrl(string name) => $"{_settings.BlobRoot}/{name}";
+        private string GetUrl(string name) => $"http://localhost.blob/{name}";
 
         public void SetupFileContents(string filePath, string content)
         {

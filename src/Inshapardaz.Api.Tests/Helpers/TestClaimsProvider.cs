@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Inshapardaz.Domain.Adapters;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -19,15 +20,15 @@ namespace Inshapardaz.Api.Tests.Helpers
             Claims = new List<Claim>();
         }
 
-        internal static TestClaimsProvider WithAuthLevel(AuthenticationLevel authenticationLevel)
+        internal static TestClaimsProvider WithAuthLevel(Permission Permission)
         {
             var provider = new TestClaimsProvider();
 
-            if (authenticationLevel != AuthenticationLevel.Unauthorized)
+            if (Permission != Permission.Unauthorised)
             {
                 provider.Claims.Add(new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()));
                 provider.Claims.Add(new Claim(ClaimTypes.Name, "Library Admin user"));
-                provider.Claims.Add(new Claim("permissions", authenticationLevel.ToString().ToLower()));
+                provider.Claims.Add(new Claim("permissions", Permission.ToString().ToLower()));
             }
 
             return provider;

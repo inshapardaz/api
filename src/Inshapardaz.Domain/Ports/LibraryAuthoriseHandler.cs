@@ -1,5 +1,4 @@
 using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Paramore.Brighter;
 using System;
@@ -8,27 +7,28 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models
 {
-    public class LibraryAdminAuthoriseHandler<T>
+    public class LibraryAuthoriseHandler<T>
         : RequestHandlerAsync<T> where T : LibraryAuthorisedCommand
     {
-        private readonly IReadClaims _claimsReader;
+        private readonly IUserHelper _userHelper;
 
-        public LibraryAdminAuthoriseHandler(IReadClaims claimsReader)
+        public LibraryAuthoriseHandler(IUserHelper claimsReader)
         {
-            _claimsReader = claimsReader;
+            _userHelper = claimsReader;
         }
 
         public override async Task<T> HandleAsync(T command, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (command.Claims == null)
-            {
-                throw new UnauthorizedException();
-            }
+            //TODO: Check if user has permissions to this particular library
+            //if (command.Claims == null)
+            //{
+            //    throw new UnauthorizedException();
+            //}
 
-            if (!_claimsReader.IsAdministrator(command.Claims))
-            {
-                throw new ForbiddenException("Bearer");
-            }
+            //if (!_userHelper.IsAdmin())
+            //{
+            //    throw new ForbiddenException("Bearer");
+            //}
 
             return await base.HandleAsync(command, cancellationToken);
         }
@@ -47,7 +47,7 @@ namespace Inshapardaz.Domain.Models
 
         public override Type GetHandlerType()
         {
-            return typeof(LibraryAdminAuthoriseHandler<>);
+            return typeof(LibraryAuthoriseHandler<>);
         }
     }
 }

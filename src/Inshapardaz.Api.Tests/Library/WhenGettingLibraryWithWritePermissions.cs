@@ -3,23 +3,24 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Adapters;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library
 {
-    [TestFixture(AuthenticationLevel.Admin, true)]
-    [TestFixture(AuthenticationLevel.Admin, false)]
-    [TestFixture(AuthenticationLevel.LibraryAdmin, true)]
-    [TestFixture(AuthenticationLevel.LibraryAdmin, false)]
-    [TestFixture(AuthenticationLevel.Writer, true)]
-    [TestFixture(AuthenticationLevel.Writer, false)]
+    [TestFixture(Permission.Admin, true)]
+    [TestFixture(Permission.Admin, false)]
+    [TestFixture(Permission.LibraryAdmin, true)]
+    [TestFixture(Permission.LibraryAdmin, false)]
+    [TestFixture(Permission.Writer, true)]
+    [TestFixture(Permission.Writer, false)]
     public class WhenGettingLibraryWithWritePermissions : TestBase
     {
         private HttpResponseMessage _response;
         private LibraryView _view;
 
-        public WhenGettingLibraryWithWritePermissions(AuthenticationLevel authLevel, bool periodicalsEnabled)
-            : base(periodicalsEnabled, authLevel)
+        public WhenGettingLibraryWithWritePermissions(Permission authLevel, bool periodicalsEnabled)
+            : base(authLevel, periodicalsEnabled)
         {
         }
 
@@ -106,7 +107,7 @@ namespace Inshapardaz.Api.Tests.Library
         [Test]
         public void ShouldHaveWritableLinks()
         {
-            if (_authenticationLevel == AuthenticationLevel.Admin)
+            if (_authenticationLevel == Permission.Admin)
             {
                 _view.Links.AssertLink("create-category")
                        .ShouldBePost()
@@ -121,7 +122,7 @@ namespace Inshapardaz.Api.Tests.Library
                         .ShouldBeDelete()
                         .EndingWith($"/library/{LibraryId}");
             }
-            else if (_authenticationLevel == AuthenticationLevel.LibraryAdmin)
+            else if (_authenticationLevel == Permission.LibraryAdmin)
             {
                 _view.Links.AssertLink("create-category")
                        .ShouldBePost()

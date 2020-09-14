@@ -7,6 +7,7 @@ using Inshapardaz.Api.Configuration;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Infrastructure;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
@@ -49,7 +50,6 @@ namespace Inshapardaz.Api
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddSingleton<IReadClaims, ClaimsReader>();
             services.AddTransient<IFileStorage, FileStorage>();
             services.AddTransient<IUserHelper, UserHelper>();
             services.AddTransient<IRenderAuthor, AuthorRenderer>();
@@ -99,7 +99,7 @@ namespace Inshapardaz.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseStatusCodeMiddleWare();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

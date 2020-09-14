@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.Security.Claims;
@@ -36,7 +37,7 @@ namespace Inshapardaz.Domain.Models.Library
             _authorRepository = authorRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
+        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<UpdateAuthorRequest> HandleAsync(UpdateAuthorRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await _authorRepository.GetAuthorById(command.LibraryId, command.Author.Id, cancellationToken);

@@ -1,14 +1,17 @@
 ﻿using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Tests.DataBuilders;
+using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Database.SqlServer;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using System;
+using System.Data;
 using System.Linq;
 using System.Net.Http;
 
@@ -16,18 +19,44 @@ namespace Inshapardaz.Api.Tests
 {
     public class TestBase : WebApplicationFactory<Startup>
     {
-        private ServiceProvider Container;
         private LibraryDataBuilder _builder;
         protected readonly bool _periodicalsEnabled;
-        protected readonly AuthenticationLevel _authenticationLevel;
+        protected readonly Permission _authenticationLevel;
 
-        public TestBase(bool periodicalsEnabled = false, AuthenticationLevel authenticationLevel = AuthenticationLevel.Unauthorized)
+        public TestBase(Permission Permission = Permission.Unauthorised, bool periodicalsEnabled = false)
         {
             _periodicalsEnabled = periodicalsEnabled;
-            _authenticationLevel = authenticationLevel;
+            _authenticationLevel = Permission;
+            Client = CreateClient();
+            _builder = Services.GetService<LibraryDataBuilder>();
+            _builder.WithPeriodicalsEnabled(_periodicalsEnabled).Build();
         }
 
-        public int LibraryId => _builder.Library.Id;
+        public HttpClient Client { get; private set; }
+
+        protected int LibraryId => _builder.Library.Id;
+        protected LibraryDto Library => _builder.Library;
+
+        protected IDbConnection DatabaseConnection => Services.GetService<IProvideConnection>().GetConnection();
+
+        protected FakeFileStorage FileStore => Services.GetService<IFileStorage>() as FakeFileStorage;
+
+        protected AuthorsDataBuilder _authorBuilder;
+
+        protected Permission CurrentAuthenticationLevel => _authenticationLevel;
+
+        protected AuthorsDataBuilder AuthorBuilder
+        {
+            get
+            {
+                if (_authorBuilder == null)
+                {
+                    _authorBuilder = Services.GetService<AuthorsDataBuilder>();
+                }
+
+                return _authorBuilder;
+            }
+        }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -36,7 +65,7 @@ namespace Inshapardaz.Api.Tests
                 if (services.Any(x => x.ServiceType == typeof(IFileStorage)))
                 {
                     services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(FileStorage), ServiceLifetime.Transient));
-                    services.AddSingleton<IFileStorage, FakeFileStorage>();
+                    services.AddSingleton<IFileStorage>(new FakeFileStorage());
                 }
 
                 services.AddTransient<LibraryDataBuilder>()
@@ -45,10 +74,6 @@ namespace Inshapardaz.Api.Tests
                     .AddTransient<AuthorsDataBuilder>()
                     .AddTransient<BooksDataBuilder>()
                     .AddTransient<ChapterDataBuilder>();
-                Container = services.BuildServiceProvider();
-
-                _builder = Container.GetService<LibraryDataBuilder>();
-                _builder.WithPeriodicalsEnabled(_periodicalsEnabled).Build();
 
                 services.AddAuthentication("Test")
                         .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", op => { });
@@ -66,6 +91,7 @@ namespace Inshapardaz.Api.Tests
         protected virtual void Cleanup()
         {
             _builder.CleanUp();
+            _authorBuilder?.CleanUp();
         }
     }
 }

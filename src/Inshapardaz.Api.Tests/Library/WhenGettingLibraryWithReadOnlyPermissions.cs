@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Adapters;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http;
@@ -7,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library
 {
-    [TestFixture(AuthenticationLevel.Unauthorized, true)]
-    [TestFixture(AuthenticationLevel.Unauthorized, false)]
-    [TestFixture(AuthenticationLevel.Reader, true)]
-    [TestFixture(AuthenticationLevel.Reader, false)]
+    [TestFixture(Permission.Unauthorised, true)]
+    [TestFixture(Permission.Unauthorised, false)]
+    [TestFixture(Permission.Reader, true)]
+    [TestFixture(Permission.Reader, false)]
     public class WhenGettingLibraryWithReadOnlyPermissions : TestBase
     {
         private HttpResponseMessage _response;
         private LibraryView _view;
 
-        public WhenGettingLibraryWithReadOnlyPermissions(AuthenticationLevel authLevel, bool periodicalsEnabled)
-            : base(periodicalsEnabled, authLevel)
+        public WhenGettingLibraryWithReadOnlyPermissions(Permission authLevel, bool periodicalsEnabled)
+            : base(authLevel, periodicalsEnabled)
         {
         }
 
@@ -95,7 +96,7 @@ namespace Inshapardaz.Api.Tests.Library
         [Test]
         public void ShouldNotHavePersonalLinks()
         {
-            if (_authenticationLevel == AuthenticationLevel.Unauthorized)
+            if (_authenticationLevel == Permission.Unauthorised)
             {
                 _view.Links.AssertLinkNotPresent("recents");
             }

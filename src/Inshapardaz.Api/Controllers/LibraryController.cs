@@ -5,6 +5,7 @@ using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Handlers;
 using Inshapardaz.Domain.Models.Library;
 using Microsoft.AspNetCore.Mvc;

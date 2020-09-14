@@ -53,7 +53,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -87,7 +87,7 @@ namespace Inshapardaz.Api.Converters
                 {
                     ActionName = nameof(SeriesController.GetSereies),
                     Method = HttpMethod.Get,
-                    Rel = RelTypes.Next,
+                    Rel = RelTypes.Previous,
                     Parameters = new { libraryId = libraryId },
                     QueryString = new Dictionary<string, string>()
                     {
@@ -141,7 +141,7 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
             {
                 view.Links.Add(_linkRenderer.Render(new Link
                 {

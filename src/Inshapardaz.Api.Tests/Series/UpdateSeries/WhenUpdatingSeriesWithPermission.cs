@@ -1,0 +1,56 @@
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Adapters;
+using NUnit.Framework;
+
+namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
+{
+    [TestFixture(Permission.Admin)]
+    [TestFixture(Permission.LibraryAdmin)]
+    [TestFixture(Permission.Writer)]
+    public class WhenUpdatingSeriesWithPermission : TestBase
+    {
+        private HttpResponseMessage _response;
+        private SeriesView _expected;
+        private SeriesAssert _assert;
+
+        public WhenUpdatingSeriesWithPermission(Permission permission)
+            : base(permission)
+        {
+        }
+
+        [OneTimeSetUp]
+        public async Task Setup()
+        {
+            var series = SeriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+
+            var selectedSeries = series.PickRandom();
+
+            _expected = new SeriesView { Name = Random.Name };
+
+            _response = await Client.PutObject($"/library/{LibraryId}/series/{selectedSeries.Id}", _expected);
+            _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
+        }
+
+        [OneTimeTearDown]
+        public void Teardown()
+        {
+            Cleanup();
+        }
+
+        [Test]
+        public void ShouldHaveOkResult()
+        {
+            _response.ShouldBeOk();
+        }
+
+        [Test]
+        public void ShouldHaveUpdatedTheSeries()
+        {
+            _assert.ShouldHaveSavedSeries(DatabaseConnection);
+        }
+    }
+}

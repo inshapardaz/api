@@ -18,8 +18,7 @@ namespace Inshapardaz.Api.Tests.Author.UpdateAuthor
 
             author.Name = Random.Name;
 
-            var client = CreateClient();
-            _response = await client.PutObject($"/library/{LibraryId}/authors/{author.Id}", author);
+            _response = await Client.PutObject($"/library/{LibraryId}/authors/{author.Id}", author);
         }
 
         [OneTimeTearDown]

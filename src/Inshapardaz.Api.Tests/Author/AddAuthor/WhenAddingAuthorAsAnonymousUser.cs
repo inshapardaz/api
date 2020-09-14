@@ -17,8 +17,7 @@ namespace Inshapardaz.Api.Tests.Author.AddAuthor
         {
             var author = new AuthorView { Name = Random.Name };
 
-            var client = CreateClient();
-            _response = await client.PostObject($"/library/{LibraryId}/authors", author);
+            _response = await Client.PostObject($"/library/{LibraryId}/authors", author);
         }
 
         [OneTimeTearDown]

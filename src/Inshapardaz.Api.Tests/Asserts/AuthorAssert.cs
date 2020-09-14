@@ -163,12 +163,12 @@ namespace Inshapardaz.Api.Tests.Asserts
             return new AuthorAssert(author);
         }
 
-        internal static void ShouldHaveUpdatedAuthorImage(int authorId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        internal static void ShouldHaveUpdatedAuthorImage(int authorId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
         {
             var imageUrl = dbConnection.GetAuthorImageUrl(authorId);
             imageUrl.Should().NotBeNull();
             var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
-            image.Should().NotBeNull().And.NotEqual(oldImage);
+            image.Should().NotBeNull().And.Equal(newImage);
         }
 
         internal static void ShouldHavePublicImage(int authorId, IDbConnection dbConnection)
@@ -178,20 +178,20 @@ namespace Inshapardaz.Api.Tests.Asserts
             image.IsPublic.Should().BeTrue();
         }
 
-        internal static void ShouldNotHaveUpdatedAuthorImage(int authorId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        internal static void ShouldNotHaveUpdatedAuthorImage(int authorId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
         {
             var imageUrl = dbConnection.GetAuthorImageUrl(authorId);
             imageUrl.Should().NotBeNull();
             var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
-            image.Should().Equal(oldImage);
+            image.Should().NotEqual(newImage);
         }
 
-        internal static void ShouldHaveAddedAuthorImage(int authorId, IDbConnection dbConnection, IFileStorage fileStorage)
+        internal static void ShouldHaveAddedAuthorImage(int authorId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
         {
             var imageUrl = dbConnection.GetAuthorImageUrl(authorId);
             imageUrl.Should().NotBeNull();
             var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
-            image.Should().NotBeNullOrEmpty();
+            image.Should().NotBeNullOrEmpty().And.Equal(newImage);
         }
 
         internal static void ShouldHaveDeletedAuthorImage(int authorId, IDbConnection dbConnection)

@@ -1,0 +1,37 @@
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.Helpers;
+using NUnit.Framework;
+
+namespace Inshapardaz.Api.Tests.Author.UpdateAuthor
+{
+    [TestFixture]
+    public class WhenUpdatingAuthorAsUnauthorized : TestBase
+    {
+        private HttpResponseMessage _response;
+
+        [OneTimeSetUp]
+        public async Task Setup()
+        {
+            var author = AuthorBuilder.WithLibrary(LibraryId).Build();
+
+            author.Name = Random.Name;
+
+            var client = CreateClient();
+            _response = await client.PutObject($"/library/{LibraryId}/authors/{author.Id}", author);
+        }
+
+        [OneTimeTearDown]
+        public void Teardown()
+        {
+            Cleanup();
+        }
+
+        [Test]
+        public void ShouldHaveForbiddenResult()
+        {
+            _response.ShouldBeUnauthorized();
+        }
+    }
+}

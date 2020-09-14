@@ -85,8 +85,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 }
 
                 var author = fixture.Build<AuthorDto>()
-                                     //.With(a => a.Name, () => fixture.Create(_namePattern))
-                                     .With(a => a.Name, Random.Name)
+                                     .With(a => a.Name, () => fixture.Create(_namePattern))
+                                     //.With(a => a.Name, Random.Name)
                                      .With(a => a.LibraryId, _libraryId)
                                      .With(a => a.ImageId, authorImage?.Id)
                                      .Create();

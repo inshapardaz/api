@@ -1,6 +1,5 @@
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Models.Handlers.Library;
 using Paramore.Brighter;
 using System;
 using System.Threading;
@@ -9,23 +8,29 @@ using System.Threading.Tasks;
 namespace Inshapardaz.Domain.Models
 {
     public class AuthoriseHandler<T>
-        : RequestHandlerAsync<T> where T : LibraryAuthorisedCommand
+        : RequestHandlerAsync<T> where T : RequestBase
     {
-        private readonly IReadClaims _claimsReader;
+        private readonly IUserHelper _userHelper;
+        public Permission[] _permissions;
 
-        public AuthoriseHandler(IReadClaims claimsReader)
+        public AuthoriseHandler(IUserHelper userHelper)
         {
-            _claimsReader = claimsReader;
+            _userHelper = userHelper;
+        }
+
+        public override void InitializeFromAttributeParams(params object[] initializerList)
+        {
+            _permissions = initializerList[0] as Permission[];
         }
 
         public override async Task<T> HandleAsync(T command, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (command.Claims == null)
+            if (!_userHelper.IsAuthenticated)
             {
                 throw new UnauthorizedException();
             }
 
-            if (!_claimsReader.IsWriter(command.Claims))
+            if (!_userHelper.CheckPermissions(_permissions))
             {
                 throw new ForbiddenException("Bearer");
             }
@@ -36,13 +41,17 @@ namespace Inshapardaz.Domain.Models
 
     public class AuthoriseAttribute : RequestHandlerAttribute
     {
-        public AuthoriseAttribute(int step, HandlerTiming timing)
+        public Permission[] Permissions { get; }
+
+        public AuthoriseAttribute(int step = 0, HandlerTiming timing = HandlerTiming.Before, params Permission[] permissions)
             : base(step, timing)
-        { }
+        {
+            Permissions = permissions;
+        }
 
         public override object[] InitializerParams()
         {
-            return new object[] { Timing };
+            return new object[] { Permissions };
         }
 
         public override Type GetHandlerType()

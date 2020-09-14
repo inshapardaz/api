@@ -3,12 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -67,8 +65,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/authors", Name = nameof(AuthorController.CreateAuthor))]
-        [Authorize(Roles = "Admin, Writer")]
-        public async Task<IActionResult> CreateAuthor(int libraryId, AuthorView author, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateAuthor(int libraryId, [FromBody]AuthorView author, CancellationToken token = default(CancellationToken))
         {
             var request = new AddAuthorRequest(_userHelper.Claims, libraryId, author.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
@@ -78,8 +75,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/authors/{authorId}", Name = nameof(AuthorController.UpdateAuthor))]
-        [Authorize(Roles = "Admin, Writer")]
-        public async Task<IActionResult> UpdateAuthor(int libraryId, int authorId, AuthorView author, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateAuthor(int libraryId, int authorId, [FromBody]AuthorView author, CancellationToken token = default(CancellationToken))
         {
             var request = new UpdateAuthorRequest(_userHelper.Claims, libraryId, author.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
@@ -96,7 +92,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/authors/{authorId}", Name = nameof(AuthorController.DeleteAuthor))]
-        [Authorize(Roles = "Admin, Writer")]
         public async Task<IActionResult> DeleteAuthor(int libraryId, int authorId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteAuthorRequest(_userHelper.Claims, libraryId, authorId);
@@ -105,7 +100,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/authors/{authorId}/image", Name = nameof(AuthorController.UpdateAuthorImage))]
-        [Authorize(Roles = "Admin, Writer")]
         public async Task<IActionResult> UpdateAuthorImage(int libraryId, int authorId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];

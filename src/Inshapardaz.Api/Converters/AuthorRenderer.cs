@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Converters
             var links = new List<LinkView>
             {
                 _linkRenderer.Render(new Link {
-                    ActionName = nameof(BookController.GetBooks),
+                    ActionName = nameof(AuthorController.GetAuthors),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
                     Parameters = new { libraryId = libraryId },
@@ -53,7 +53,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -68,7 +68,7 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(BookController.GetBooks),
+                    ActionName = nameof(AuthorController.GetAuthors),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Next,
                     Parameters = new { libraryId = libraryId },
@@ -85,7 +85,7 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(BookController.GetBooks),
+                    ActionName = nameof(AuthorController.GetAuthors),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Previous,
                     Parameters = new { libraryId = libraryId },
@@ -150,7 +150,7 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -160,13 +160,16 @@ namespace Inshapardaz.Api.Converters
                     Parameters = new { libraryId = libraryId, authorId = source.Id }
                 }));
 
-                links.Add(_linkRenderer.Render(new Link
+                if (_userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
                 {
-                    ActionName = nameof(AuthorController.DeleteAuthor),
-                    Method = HttpMethod.Delete,
-                    Rel = RelTypes.Delete,
-                    Parameters = new { libraryId = libraryId, authorId = source.Id }
-                }));
+                    links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(AuthorController.DeleteAuthor),
+                        Method = HttpMethod.Delete,
+                        Rel = RelTypes.Delete,
+                        Parameters = new { libraryId = libraryId, authorId = source.Id }
+                    }));
+                }
 
                 links.Add(_linkRenderer.Render(new Link
                 {

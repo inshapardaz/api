@@ -1,11 +1,9 @@
-﻿using Inshapardaz.Domain.Adapters;
+﻿using Inshapardaz.Api.Extensions;
+using Inshapardaz.Domain.Adapters;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Helpers
 {
@@ -29,6 +27,11 @@ namespace Inshapardaz.Api.Helpers
 
         public ClaimsPrincipal Claims => _contextAccessor.HttpContext.User;
 
+        public bool CheckPermissions(Permission[] permissions)
+        {
+            return permissions.Any(p => IsUserInRole(p));
+        }
+
         public Guid GetUserId()
         {
             var nameIdentifier = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
@@ -45,11 +48,6 @@ namespace Inshapardaz.Api.Helpers
             return Claims.HasClaim("permissions", role);
         }
 
-        private class UserAuthenticationData
-        {
-            public IEnumerable<string> Groups { get; set; }
-            public IEnumerable<string> Roles { get; set; }
-            public IEnumerable<string> Permissions { get; set; }
-        }
+        private bool IsUserInRole(Permission permission) => IsUserInRole(permission.ToDescription());
     }
 }

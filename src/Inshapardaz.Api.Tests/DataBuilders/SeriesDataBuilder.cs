@@ -89,8 +89,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 }
 
                 var series = fixture.Build<SeriesDto>()
-                                //.With(a => a.Name, () => fixture.Create(_namePattern))
-                                .With(a => a.Name, Random.Name)
+                                .With(a => a.Name, () => fixture.Create(_namePattern))
                                 .With(s => s.LibraryId, _libraryId)
                                 .With(a => a.ImageId, seriesImage?.Id)
                                 .Create();

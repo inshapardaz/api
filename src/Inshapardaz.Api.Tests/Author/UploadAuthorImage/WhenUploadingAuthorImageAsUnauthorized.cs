@@ -13,19 +13,15 @@ namespace Inshapardaz.Api.Tests.Author.UploadAuthorImage
     {
         private HttpResponseMessage _response;
         private int _authorId;
-        private byte[] _oldImage;
+        private byte[] _newImage;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var author = AuthorBuilder.WithLibrary(LibraryId).Build();
             _authorId = author.Id;
-            var imageUrl = DatabaseConnection.GetAuthorImageUrl(_authorId);
-            _oldImage = await FileStore.GetFile(imageUrl, CancellationToken.None);
-
-            var newimage = Random.Bytes;
-
-            _response = await Client.PutFile($"/library/{LibraryId}/authors/{_authorId}/image", newimage);
+            _newImage = Random.Bytes;
+            _response = await Client.PutFile($"/library/{LibraryId}/authors/{_authorId}/image", _newImage);
         }
 
         [OneTimeTearDown]
@@ -43,7 +39,7 @@ namespace Inshapardaz.Api.Tests.Author.UploadAuthorImage
         [Test]
         public void ShouldNotHaveUpdatedAuthorImage()
         {
-            AuthorAssert.ShouldNotHaveUpdatedAuthorImage(_authorId, _oldImage, DatabaseConnection, FileStore);
+            AuthorAssert.ShouldNotHaveUpdatedAuthorImage(_authorId, _newImage, DatabaseConnection, FileStore);
         }
     }
 }

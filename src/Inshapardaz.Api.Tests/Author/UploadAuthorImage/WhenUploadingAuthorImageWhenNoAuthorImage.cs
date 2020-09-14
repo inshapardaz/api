@@ -13,6 +13,8 @@ namespace Inshapardaz.Api.Tests.Author.UploadAuthorImage
         private HttpResponseMessage _response;
         private int _authorId;
 
+        private byte[] _newImage;
+
         public WhenUploadingAuthorImageWhenNoAuthorImage()
             : base(Permission.LibraryAdmin)
         {
@@ -23,10 +25,9 @@ namespace Inshapardaz.Api.Tests.Author.UploadAuthorImage
         {
             var author = AuthorBuilder.WithLibrary(LibraryId).WithoutImage().Build();
             _authorId = author.Id;
+            _newImage = Random.Bytes;
 
-            var newimage = Random.Bytes;
-
-            _response = await Client.PutFile($"/library/{LibraryId}/authors/{_authorId}/image", newimage);
+            _response = await Client.PutFile($"/library/{LibraryId}/authors/{_authorId}/image", _newImage);
         }
 
         [OneTimeTearDown]
@@ -51,7 +52,7 @@ namespace Inshapardaz.Api.Tests.Author.UploadAuthorImage
         [Test]
         public void ShouldHaveAddedImageToAuthor()
         {
-            AuthorAssert.ShouldHaveAddedAuthorImage(_authorId, DatabaseConnection, FileStore);
+            AuthorAssert.ShouldHaveAddedAuthorImage(_authorId, _newImage, DatabaseConnection, FileStore);
         }
 
         [Test]

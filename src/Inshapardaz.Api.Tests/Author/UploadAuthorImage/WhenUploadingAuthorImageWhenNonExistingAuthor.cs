@@ -21,8 +21,8 @@ namespace Inshapardaz.Api.Tests.Author.UploadAuthorImage
         public async Task Setup()
         {
             var newimage = Random.Bytes;
-            var client = CreateClient();
-            _response = await client.PutFile($"/library/{LibraryId}/authors/{-Random.Number}/image", newimage);
+
+            _response = await Client.PutFile($"/library/{LibraryId}/authors/{-Random.Number}/image", newimage);
         }
 
         [OneTimeTearDown]

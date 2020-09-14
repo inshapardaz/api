@@ -20,8 +20,7 @@ namespace Inshapardaz.Api.Tests.Author.GetAuthorById
             var authors = AuthorBuilder.WithLibrary(LibraryId).WithoutImage().WithBooks(3).Build(4);
             _expected = authors.PickRandom();
 
-            var client = CreateClient();
-            _response = await client.GetAsync($"/library/{LibraryId}/authors/{_expected.Id}");
+            _response = await Client.GetAsync($"/library/{LibraryId}/authors/{_expected.Id}");
             _assert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

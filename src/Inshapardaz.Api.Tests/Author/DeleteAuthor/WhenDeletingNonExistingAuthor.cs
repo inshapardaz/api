@@ -11,15 +11,15 @@ namespace Inshapardaz.Api.Tests.Author.DeleteAuthor
     {
         private HttpResponseMessage _response;
 
-        public WhenDeletingNonExistingAuthor() : base(Domain.Adapters.Permission.LibraryAdmin)
+        public WhenDeletingNonExistingAuthor()
+            : base(Domain.Adapters.Permission.LibraryAdmin)
         {
         }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var client = CreateClient();
-            _response = await client.DeleteAsync($"/library/{LibraryId}/authors/{-Random.Number}");
+            _response = await Client.DeleteAsync($"/library/{LibraryId}/authors/{-Random.Number}");
         }
 
         [OneTimeTearDown]

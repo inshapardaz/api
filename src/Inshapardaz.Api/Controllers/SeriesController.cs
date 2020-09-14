@@ -3,12 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -67,8 +65,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/series", Name = nameof(SeriesController.CreateSeries))]
-        [Authorize]
-        public async Task<IActionResult> CreateSeries(int libraryId, SeriesView series, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateSeries(int libraryId, [FromBody]SeriesView series, CancellationToken token = default(CancellationToken))
         {
             var request = new AddSeriesRequest(_userHelper.Claims, libraryId, series.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
@@ -78,8 +75,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.UpdateSeries))]
-        [Authorize]
-        public async Task<IActionResult> UpdateSeries(int libraryId, int seriesId, SeriesView series, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateSeries(int libraryId, int seriesId, [FromBody]SeriesView series, CancellationToken token = default(CancellationToken))
         {
             series.Id = seriesId;
             var request = new UpdateSeriesRequest(_userHelper.Claims, libraryId, series.Map());
@@ -98,7 +94,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.DeleteSeries))]
-        [Authorize]
         public async Task<IActionResult> DeleteSeries(int libraryId, int seriesId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteSeriesRequest(_userHelper.Claims, libraryId, seriesId);
@@ -107,7 +102,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/series/{seriesId}/image", Name = nameof(SeriesController.UpdateSeriesImage))]
-        [Authorize]
         public async Task<IActionResult> UpdateSeriesImage(int libraryId, int seriesId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];

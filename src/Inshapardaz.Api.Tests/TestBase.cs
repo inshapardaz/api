@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Tests
         protected FakeFileStorage FileStore => Services.GetService<IFileStorage>() as FakeFileStorage;
 
         protected AuthorsDataBuilder _authorBuilder;
-
+        protected SeriesDataBuilder _seriesDataBuilder;
         protected Permission CurrentAuthenticationLevel => _authenticationLevel;
 
         protected AuthorsDataBuilder AuthorBuilder
@@ -55,6 +55,19 @@ namespace Inshapardaz.Api.Tests
                 }
 
                 return _authorBuilder;
+            }
+        }
+
+        protected SeriesDataBuilder SeriesBuilder
+        {
+            get
+            {
+                if (_seriesDataBuilder == null)
+                {
+                    _seriesDataBuilder = Services.GetService<SeriesDataBuilder>();
+                }
+
+                return _seriesDataBuilder;
             }
         }
 
@@ -92,6 +105,7 @@ namespace Inshapardaz.Api.Tests
         {
             _builder.CleanUp();
             _authorBuilder?.CleanUp();
+            _seriesDataBuilder?.CleanUp();
         }
     }
 }

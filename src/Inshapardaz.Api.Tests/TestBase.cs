@@ -43,6 +43,7 @@ namespace Inshapardaz.Api.Tests
 
         protected AuthorsDataBuilder _authorBuilder;
         protected SeriesDataBuilder _seriesDataBuilder;
+        protected CategoriesDataBuilder _categoriesDataBuilder;
         protected Permission CurrentAuthenticationLevel => _authenticationLevel;
 
         protected AuthorsDataBuilder AuthorBuilder
@@ -68,6 +69,19 @@ namespace Inshapardaz.Api.Tests
                 }
 
                 return _seriesDataBuilder;
+            }
+        }
+
+        protected CategoriesDataBuilder CategoriesBuilder
+        {
+            get
+            {
+                if (_categoriesDataBuilder == null)
+                {
+                    _categoriesDataBuilder = Services.GetService<CategoriesDataBuilder>();
+                }
+
+                return _categoriesDataBuilder;
             }
         }
 
@@ -106,6 +120,7 @@ namespace Inshapardaz.Api.Tests
             _builder.CleanUp();
             _authorBuilder?.CleanUp();
             _seriesDataBuilder?.CleanUp();
+            _categoriesDataBuilder?.CleanUp();
         }
     }
 }

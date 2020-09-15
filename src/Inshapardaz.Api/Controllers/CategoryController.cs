@@ -56,8 +56,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/categories", Name = nameof(CategoryController.CreateCategory))]
-        [Authorize]
-        public async Task<IActionResult> CreateCategory(int libraryId, CategoryView category, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateCategory(int libraryId, [FromBody]CategoryView category, CancellationToken token = default(CancellationToken))
         {
             var request = new AddCategoryRequest(_userHelper.Claims, libraryId, category.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
@@ -67,8 +66,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/categories/{categoryId}", Name = nameof(CategoryController.UpdateCategory))]
-        [Authorize]
-        public async Task<IActionResult> UpdateCategory(int libraryId, int categoryId, CategoryView category, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateCategory(int libraryId, int categoryId, [FromBody]CategoryView category, CancellationToken token = default(CancellationToken))
         {
             category.Id = categoryId;
             var request = new UpdateCategoryRequest(_userHelper.Claims, libraryId, category.Map());
@@ -87,7 +85,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/categories/{categoryId}", Name = nameof(CategoryController.DeleteCategory))]
-        [Authorize]
         public async Task<IActionResult> DeleteCategory(int libraryId, int categoryId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteCategoryRequest(_userHelper.Claims, libraryId, categoryId);

@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Converters
                 Parameters = new { libraryId = libraryId },
             }));
 
-            if (_userHelper.IsAdmin)
+            if (_userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
             {
                 view.Links.Add(_linkRenderer.Render(new Link
                 {
@@ -79,7 +79,7 @@ namespace Inshapardaz.Api.Converters
                 }
             }));
 
-            if (_userHelper.IsAdmin)
+            if (_userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
             {
                 view.Links.Add(_linkRenderer.Render(new Link
                 {

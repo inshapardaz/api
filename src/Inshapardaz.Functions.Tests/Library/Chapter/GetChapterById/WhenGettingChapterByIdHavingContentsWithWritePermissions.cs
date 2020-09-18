@@ -11,20 +11,20 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
 {
-    [TestFixture(AuthenticationLevel.Administrator)]
-    [TestFixture(AuthenticationLevel.Writer)]
+    [TestFixture(Permission.Administrator)]
+    [TestFixture(Permission.Writer)]
     public class WhenGettingChapterByIdHavingContentsWithWritePermissions
         : LibraryTest<Functions.Library.Books.Chapters.GetChapterById>
     {
-        private OkObjectResult _response;
+        private HttpResponseMessage _response;
         private ChapterDto _expected;
         private ChapterAssert _assert;
         private ClaimsPrincipal _claim;
         private ChapterDataBuilder _dataBuilder;
 
-        public WhenGettingChapterByIdHavingContentsWithWritePermissions(AuthenticationLevel authenticationLevel)
+        public WhenGettingChapterByIdHavingContentsWithWritePermissions(Permission Permission)
         {
-            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+            _claim = AuthenticationBuilder.CreateClaim(Permission);
         }
 
         [OneTimeSetUp]
@@ -35,7 +35,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
             var chapters = _dataBuilder.WithLibrary(LibraryId).WithContents(2).Build(4);
             _expected = chapters.PickRandom();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.BookId, _expected.Id, _claim, CancellationToken.None);
+            _response = (HttpResponseMessage)await handler.Run(request, LibraryId, _expected.BookId, _expected.Id, _claim, CancellationToken.None);
 
             _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }

@@ -72,7 +72,7 @@ namespace Inshapardaz.Functions.Library.Books.Content
                     }
                     else
                     {
-                        return new OkObjectResult(renderResult);
+                        return new HttpResponseMessage(renderResult);
                     }
                 }
 

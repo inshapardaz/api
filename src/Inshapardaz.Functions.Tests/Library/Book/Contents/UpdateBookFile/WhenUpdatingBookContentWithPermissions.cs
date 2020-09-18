@@ -10,14 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
+namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
 {
-    [TestFixture(AuthenticationLevel.Administrator)]
-    [TestFixture(AuthenticationLevel.Writer)]
+    [TestFixture(Permission.Administrator)]
+    [TestFixture(Permission.Writer)]
     public class WhenUpdatingBookContentWithPermissions
-        : LibraryTest<Functions.Library.Books.Content.UpdateBookContent>
+        : TestBase
     {
-        private OkObjectResult _response;
+        private HttpResponseMessage _response;
 
         private BookDto _book;
         private BookContentDto _file;
@@ -26,9 +26,9 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
         private BookContentAssert _assert;
         private ClaimsPrincipal _claim;
 
-        public WhenUpdatingBookContentWithPermissions(AuthenticationLevel authenticationLevel)
+        public WhenUpdatingBookContentWithPermissions(Permission Permission)
         {
-            _claim = AuthenticationBuilder.CreateClaim(authenticationLevel);
+            _claim = AuthenticationBuilder.CreateClaim(Permission);
         }
 
         [OneTimeSetUp]
@@ -47,7 +47,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.Contents.UpdateBookFile
                 .WithLanguage(_file.Language)
                 .BuildRequestMessage();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, _claim, CancellationToken.None);
+            _response = (HttpResponseMessage)await handler.Run(request, LibraryId, _book.Id, _claim, CancellationToken.None);
 
             _assert = new BookContentAssert(_response, LibraryId);
         }

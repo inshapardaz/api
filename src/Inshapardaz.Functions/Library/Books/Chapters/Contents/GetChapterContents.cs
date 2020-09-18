@@ -43,7 +43,7 @@ namespace Inshapardaz.Functions.Library.Books.Chapters.Contents
 
                 if (chapterContents != null)
                 {
-                    return new OkObjectResult(chapterContents.Render(libraryId, principal));
+                    return new HttpResponseMessage(chapterContents.Render(libraryId, principal));
                 }
 
                 return new NotFoundResult();

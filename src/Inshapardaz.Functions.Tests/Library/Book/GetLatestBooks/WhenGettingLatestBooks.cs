@@ -17,7 +17,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
     public class WhenGettingLatestBooks
         : LibraryTest<Functions.Library.Books.GetBooks>
     {
-        private OkObjectResult _response;
+        private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
         private IEnumerable<BookDto> _books;
 
@@ -34,7 +34,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetLatestBooks
                           .WithQueryParameter("sort", "Ascending")
                           .Build();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
+            _response = (HttpResponseMessage)await handler.Run(request, LibraryId, AuthenticationBuilder.ReaderClaim, CancellationToken.None);
 
             _assert = new PagingAssert<BookView>(_response, Library);
         }

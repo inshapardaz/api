@@ -169,10 +169,20 @@ namespace Inshapardaz.Api.Controllers
             return new OkResult();
         }
 
-        [HttpPost("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.GetBookContent))]
+        [HttpGet("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.GetBookContent))]
         public async Task<IActionResult> GetBookContent(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
-            throw new NotImplementedException();
+            var mimeType = Request.Headers["Accept"];
+            var language = Request.Headers["Accept-Language"];
+
+            var request = new GetBookContentQuery(libraryId, bookId, language, mimeType, _userHelper.GetUserId());
+            var content = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
+            if (content != null)
+            {
+                return new OkObjectResult(_bookRenderer.Render(content, libraryId));
+            }
+
+            return new NotFoundResult();
         }
 
         [HttpPost("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.CreateBookContent))]
@@ -252,7 +262,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpDelete("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.DeleteBookContent))]
         public async Task<IActionResult> DeleteBookContent(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
-            var mimeType = Request.Headers["Content-Type"];
+            var mimeType = Request.Headers["Accept"];
             var language = Request.Headers["Accept-Language"];
 
             var request = new DeleteBookContentRequest(_userHelper.Claims, libraryId, bookId, language, mimeType, _userHelper.GetUserId());

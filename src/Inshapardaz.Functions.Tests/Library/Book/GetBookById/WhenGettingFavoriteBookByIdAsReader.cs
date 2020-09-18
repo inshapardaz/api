@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
     public class WhenGettingFavoriteBookByIdAsReader
         : LibraryTest<Functions.Library.Books.GetBookById>
     {
-        private OkObjectResult _response;
+        private HttpResponseMessage _response;
         private BookDto _expected;
         private BookAssert _assert;
         private IEnumerable<CategoryDto> _categories;
@@ -36,7 +36,7 @@ namespace Inshapardaz.Functions.Tests.Library.Book.GetBookById
                                         .Build(4);
             _expected = books.PickRandom();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.Id, readerClaim, CancellationToken.None);
+            _response = (HttpResponseMessage)await handler.Run(request, LibraryId, _expected.Id, readerClaim, CancellationToken.None);
             _assert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

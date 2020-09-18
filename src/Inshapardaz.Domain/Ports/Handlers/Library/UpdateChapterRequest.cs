@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
 using System.Security.Claims;
@@ -38,7 +39,7 @@ namespace Inshapardaz.Domain.Models.Library
             _chapterRepository = chapterRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
+        [Authorise(step: 0, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<UpdateChapterRequest> HandleAsync(UpdateChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.Chapter.Id, cancellationToken);

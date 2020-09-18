@@ -35,7 +35,6 @@ namespace Inshapardaz.Domain.Models.Library
             _fileRepository = fileRepository;
         }
 
-        [Authorise()]
         public override async Task<Page<AuthorModel>> ExecuteAsync(GetAuthorsQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
             var authors = (string.IsNullOrWhiteSpace(query.Query))

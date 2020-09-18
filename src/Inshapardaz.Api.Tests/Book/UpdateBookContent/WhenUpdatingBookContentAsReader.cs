@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
             var file = BookBuilder.Contents.PickRandom();
             _expected = new Faker().Image.Random.Bytes(50);
 
-            _response = await Client.PutFile($"/library/{LibraryId}/books/{_book.Id}/content", _expected, file.Language, file.MimeType);
+            _response = await Client.PutFile($"/library/{LibraryId}/books/{_book.Id}/contents", _expected, file.Language, file.MimeType);
         }
 
         [OneTimeTearDown]

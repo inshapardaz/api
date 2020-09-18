@@ -1,27 +1,30 @@
 ﻿using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
+namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
 {
     [TestFixture]
-    public class WhenAddingBookContentForNonExistingBook
+    public class WhenAddingChapterForNonExistingBook
         : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenAddingBookContentForNonExistingBook()
-            : base(Domain.Adapters.Permission.LibraryAdmin)
+        public WhenAddingChapterForNonExistingBook()
+            : base(Domain.Adapters.Permission.Writer)
         {
         }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostContent($"/library/{LibraryId}/books/{-Random.Number}/contents", Random.Bytes, "hi", "text/plain");
+            var chapter = new ChapterView { Title = Random.Name, ChapterNumber = 1 };
+
+            _response = await Client.PostObject($"/library/{LibraryId}/books/{-Random.Number}/chapters", chapter);
         }
 
         [OneTimeTearDown]

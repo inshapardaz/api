@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.PostContent($"/library/{LibraryId}/books/{book.Id}/content", Random.Bytes, "pn", "text/plain");
+            _response = await Client.PostContent($"/library/{LibraryId}/books/{book.Id}/contents", Random.Bytes, "pn", "text/plain");
         }
 
         [OneTimeTearDown]

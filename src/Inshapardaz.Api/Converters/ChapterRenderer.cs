@@ -81,7 +81,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {

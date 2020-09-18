@@ -169,7 +169,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkResult();
         }
 
-        [HttpGet("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.GetBookContent))]
+        [HttpGet("library/{libraryId}/books/{bookId}/contents", Name = nameof(BookController.GetBookContent))]
         public async Task<IActionResult> GetBookContent(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
             var mimeType = Request.Headers["Accept"];
@@ -185,7 +185,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpPost("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.CreateBookContent))]
+        [HttpPost("library/{libraryId}/books/{bookId}/contents", Name = nameof(BookController.CreateBookContent))]
         public async Task<IActionResult> CreateBookContent(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -218,7 +218,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.UpdateBookContent))]
+        [HttpPut("library/{libraryId}/books/{bookId}/contents", Name = nameof(BookController.UpdateBookContent))]
         public async Task<IActionResult> UpdateBookContent(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -259,7 +259,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpDelete("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.DeleteBookContent))]
+        [HttpDelete("library/{libraryId}/books/{bookId}/contents", Name = nameof(BookController.DeleteBookContent))]
         public async Task<IActionResult> DeleteBookContent(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
             var mimeType = Request.Headers["Accept"];

@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         {
             var newContents = Random.Bytes;
 
-            _response = await Client.PutFile($"/library/{LibraryId}/books/{-Random.Number}/content", newContents, Random.Locale, Random.MimeType);
+            _response = await Client.PutFile($"/library/{LibraryId}/books/{-Random.Number}/contents", newContents, Random.Locale, Random.MimeType);
         }
 
         [OneTimeTearDown]

@@ -1,29 +1,27 @@
-﻿using Inshapardaz.Api.Tests;
+﻿using Bogus;
+using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
+namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
 {
     [TestFixture]
-    public class WhenDeletingBookFileThatDoesNotExist
+    public class WhenAddingChapterAsUnauthorizedUser
         : TestBase
     {
         private HttpResponseMessage _response;
-
-        public WhenDeletingBookFileThatDoesNotExist()
-            : base(Domain.Adapters.Permission.LibraryAdmin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/books/{book.Id}/contents", Random.Locale, Random.MimeType);
+            var chapter = new ChapterView { Title = new Faker().Random.String(), ChapterNumber = 1 };
+            _response = await Client.PostObject($"/library/{LibraryId}/books/{book.Id}/chapters", chapter);
         }
 
         [OneTimeTearDown]
@@ -33,9 +31,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
         }
 
         [Test]
-        public void ShouldHaveNoContentResult()
+        public void ShouldHaveUnauthorisedResult()
         {
-            _response.ShouldBeNoContent();
+            _response.ShouldBeUnauthorized();
         }
     }
 }

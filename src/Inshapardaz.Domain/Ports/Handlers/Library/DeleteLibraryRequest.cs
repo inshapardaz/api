@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
@@ -30,7 +31,7 @@ namespace Inshapardaz.Domain.Models.Library
             _fileStore = fileStore;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
+        [Authorise(step: 0, HandlerTiming.Before, Permission.Admin)]
         public override async Task<DeleteLibraryRequest> HandleAsync(DeleteLibraryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);

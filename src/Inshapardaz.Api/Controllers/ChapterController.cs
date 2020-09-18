@@ -1,19 +1,17 @@
-﻿using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Converters;
+﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Controllers
 {
@@ -64,8 +62,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/books/{bookId}/chapters", Name = nameof(ChapterController.CreateChapter))]
-        [Authorize]
-        public async Task<IActionResult> CreateChapter(int libraryId, int bookId, ChapterView chapter, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateChapter(int libraryId, int bookId, [FromBody]ChapterView chapter, CancellationToken token = default(CancellationToken))
         {
             var request = new AddChapterRequest(_userHelper.Claims, libraryId, bookId, chapter.Map(), _userHelper.GetUserId());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
@@ -79,9 +76,8 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("library/{libraryId}/books/{bookId}/chapter/{chapterId}", Name = nameof(ChapterController.UpdateChapter))]
-        [Authorize]
-        public async Task<IActionResult> UpdateChapter(int libraryId, int bookId, int chapterId, ChapterView chapter, CancellationToken token = default(CancellationToken))
+        [HttpPut("library/{libraryId}/books/{bookId}/chapters/{chapterId}", Name = nameof(ChapterController.UpdateChapter))]
+        public async Task<IActionResult> UpdateChapter(int libraryId, int bookId, int chapterId, [FromBody]ChapterView chapter, CancellationToken token = default(CancellationToken))
         {
             var request = new UpdateChapterRequest(_userHelper.Claims, libraryId, bookId, chapterId, chapter.Map(), _userHelper.GetUserId());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
@@ -97,7 +93,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/books/{bookId}/chapters/{chapterId}", Name = nameof(ChapterController.DeleteChapter))]
-        [Authorize]
         public async Task<IActionResult> DeleteChapter(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteChapterRequest(_userHelper.Claims, libraryId, bookId, chapterId, _userHelper.GetUserId());
@@ -123,8 +118,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpPost("library/{libraryId}/books/{bookId}/chapters/{chapterId}/content", Name = nameof(ChapterController.CreateChapterContent))]
-        [Authorize]
+        [HttpPost("library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.CreateChapterContent))]
         public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -146,8 +140,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("library/{libraryId}/books/{bookId}/chapters/{chapterId}/content", Name = nameof(ChapterController.UpdateChapterContent))]
-        [Authorize]
+        [HttpPut("library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.UpdateChapterContent))]
         public async Task<IActionResult> UpdateChapterContent(int libraryId, int bookId, int chapterId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -170,8 +163,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpDelete("library/{libraryId}/books/{bookId}/chapters/{chapterId}/content", Name = nameof(ChapterController.DeleteChapterContent))]
-        [Authorize]
+        [HttpDelete("library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.DeleteChapterContent))]
         public async Task<IActionResult> DeleteChapterContent(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {
             var contentType = Request.Headers["Content-Type"];

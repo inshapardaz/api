@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.PostContent($"/library/{LibraryId}/books/{book.Id}/content", Random.Bytes, "pn", "application/pdf");
+            _response = await Client.PostContent($"/library/{LibraryId}/books/{book.Id}/contents", Random.Bytes, "pn", "application/pdf");
         }
 
         [OneTimeTearDown]

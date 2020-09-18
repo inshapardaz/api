@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Exception;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
@@ -32,7 +33,7 @@ namespace Inshapardaz.Domain.Models.Library
             _bookRepository = bookRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
+        [Authorise(step: 0, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<AddChapterRequest> HandleAsync(AddChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);

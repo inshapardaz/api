@@ -6,7 +6,7 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
 
-namespace Inshapardaz.Ap.Tests.Library.Categories.UpdateCategory
+namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
 {
     [TestFixture]
     public class WhenUpdatingCategoryThatDoesNotExist : TestBase
@@ -14,6 +14,11 @@ namespace Inshapardaz.Ap.Tests.Library.Categories.UpdateCategory
         private HttpResponseMessage _response;
         private CategoryView _expectedCategory;
         private CategoryAssert _assert;
+
+        public WhenUpdatingCategoryThatDoesNotExist()
+            : base(Domain.Adapters.Permission.LibraryAdmin)
+        {
+        }
 
         [OneTimeSetUp]
         public async Task Setup()

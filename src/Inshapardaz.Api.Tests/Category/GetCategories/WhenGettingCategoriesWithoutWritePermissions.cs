@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _categories = CategoriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            _categories = CategoryBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
             _response = await Client.GetAsync($"/library/{LibraryId}/categories");
 

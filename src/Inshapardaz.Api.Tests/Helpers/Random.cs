@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Helpers
 
         internal static string Locale => PickRandom(Langs);
 
-        internal static object Words(int count) => new Faker().Random.Words(count);
+        internal static string Words(int count) => new Faker().Random.Words(count);
 
         internal static string MimeType =>
             new Faker().PickRandom(new[] { MimeTypes.Csv, MimeTypes.Jpg, MimeTypes.Json, MimeTypes.Markdown, MimeTypes.Pdf });

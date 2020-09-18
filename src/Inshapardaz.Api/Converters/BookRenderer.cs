@@ -1,6 +1,5 @@
 ﻿using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
@@ -54,21 +53,20 @@ namespace Inshapardaz.Api.Converters
                 QueryString = query
             }));
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
                     ActionName = nameof(BookController.CreateBook),
-                    Method = HttpMethod.Get,
+                    Method = HttpMethod.Post,
                     Rel = RelTypes.Create,
                     Parameters = new { libraryId = libraryId }
                 }));
             }
 
-            Dictionary<string, string> pageQuery = CreateQueryString(source, page);
-
             if (page.CurrentPageIndex < page.PageCount)
             {
+                var pageQuery = CreateQueryString(source, page);
                 pageQuery.Add("pageNumber", (page.CurrentPageIndex + 1).ToString());
 
                 links.Add(_linkRenderer.Render(new Link
@@ -83,6 +81,7 @@ namespace Inshapardaz.Api.Converters
 
             if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
             {
+                var pageQuery = CreateQueryString(source, page);
                 pageQuery.Add("pageNumber", (page.CurrentPageIndex - 1).ToString());
 
                 links.Add(_linkRenderer.Render(new Link
@@ -104,6 +103,11 @@ namespace Inshapardaz.Api.Converters
             Dictionary<string, string> queryString = new Dictionary<string, string> {
                     { "pageSize", page.PageSize.ToString() }
                 };
+
+            if (!string.IsNullOrWhiteSpace(source.RouteArguments.Query))
+            {
+                queryString.Add("query", source.RouteArguments.Query);
+            }
 
             if (source.RouteArguments.BookFilter != null)
             {
@@ -183,7 +187,7 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -280,12 +284,12 @@ namespace Inshapardaz.Api.Converters
             var links = new List<LinkView>
             {
                 _linkRenderer.Render(new Link {
-                    ActionName = nameof(FileController.GetFile),
+                    ActionName = nameof(BookController.GetBookContent),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
                     Language = source.Language,
                     MimeType = source.MimeType,
-                    Parameters = new { fileId = source.FileId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId }
                 }),
                 _linkRenderer.Render(new Link {
                     ActionName = nameof(BookController.GetBookById),
@@ -301,7 +305,7 @@ namespace Inshapardaz.Api.Converters
                 //links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = MimeTypes.Jpg });
             }
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -317,7 +321,7 @@ namespace Inshapardaz.Api.Converters
                 {
                     ActionName = nameof(BookController.DeleteBookContent),
                     Method = HttpMethod.Delete,
-                    Rel = RelTypes.Update,
+                    Rel = RelTypes.Delete,
                     Language = source.Language,
                     MimeType = source.MimeType,
                     Parameters = new { libraryId = libraryId, bookId = source.BookId }

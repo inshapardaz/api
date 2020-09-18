@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
     [TestFixture]
     public class WhenGettingCategoryWithWritePermissions : LibraryTest<Functions.Library.Categories.GetCategoryById>
     {
-        private OkObjectResult _response;
+        private HttpResponseMessage _response;
         private CategoriesDataBuilder _dataBuilder;
         private IEnumerable<CategoryDto> _categories;
         private CategoryDto _selectedCategory;
@@ -30,7 +30,7 @@ namespace Inshapardaz.Functions.Tests.Library.Categories.GetCategoryById
             _categories = _dataBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
             _selectedCategory = _categories.First();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
+            _response = (HttpResponseMessage)await handler.Run(request, LibraryId, _selectedCategory.Id, AuthenticationBuilder.AdminClaim, CancellationToken.None);
 
             _assert = CategoryAssert.FromResponse(_response).InLibrary(LibraryId);
         }

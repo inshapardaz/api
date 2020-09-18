@@ -15,7 +15,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
     public class WhenGettingChapterByIdAsAnonymous
         : LibraryTest<Functions.Library.Books.Chapters.GetChapterById>
     {
-        private OkObjectResult _response;
+        private HttpResponseMessage _response;
 
         private ChapterDto _expected;
 
@@ -28,7 +28,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChapterById
             var dataBuilder = Container.GetService<ChapterDataBuilder>();
             _expected = dataBuilder.WithLibrary(LibraryId).WithContents().Build(4).First();
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _expected.BookId, _expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (HttpResponseMessage)await handler.Run(request, LibraryId, _expected.BookId, _expected.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }

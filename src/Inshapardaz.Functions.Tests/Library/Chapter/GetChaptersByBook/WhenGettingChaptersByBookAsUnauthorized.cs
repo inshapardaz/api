@@ -20,7 +20,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
     public class WhenGettingChaptersByBookAsUnauthorized
         : LibraryTest<Functions.Library.Books.Chapters.GetChaptersByBook>
     {
-        private OkObjectResult _response;
+        private HttpResponseMessage _response;
         private ListView<ChapterView> _view;
         private IEnumerable<ChapterDto> _chapters;
         private BookDto _book;
@@ -33,7 +33,7 @@ namespace Inshapardaz.Functions.Tests.Library.Chapter.GetChaptersByBook
             _chapters = dataBuilder.WithLibrary(LibraryId).WithContents().Build(4);
             _book = DatabaseConnection.GetBookById(_chapters.PickRandom().BookId);
 
-            _response = (OkObjectResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
+            _response = (HttpResponseMessage)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.Unauthorized, CancellationToken.None);
 
             _view = _response.Value as ListView<ChapterView>;
         }

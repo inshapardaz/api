@@ -1,13 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Bogus;
-using Inshapardaz.Functions.Tests.Asserts;
-using Inshapardaz.Functions.Tests.DataBuilders;
-using Inshapardaz.Functions.Tests.Dto;
-using Inshapardaz.Functions.Tests.Helpers;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Helpers;
 using NUnit.Framework;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
 {
@@ -15,33 +11,29 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
     public class WhenUpdatingBookContentWithDifferentContentType
         : TestBase
     {
-        private CreatedResult _response;
+        private HttpResponseMessage _response;
         private string _newMimeType;
         private BookDto _book;
         private BookContentDto _file;
         private byte[] _contents;
-        private BooksDataBuilder _dataBuilder;
         private BookContentAssert _assert;
+
+        public WhenUpdatingBookContentWithDifferentContentType()
+            : base(Domain.Adapters.Permission.Writer)
+        {
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _newMimeType = "text/markdown";
-            _dataBuilder = Container.GetService<BooksDataBuilder>();
 
-            _book = _dataBuilder.WithLibrary(LibraryId).WithContents(2, "application/pdf").Build();
-            _file = _dataBuilder.Contents.PickRandom();
+            _book = BookBuilder.WithLibrary(LibraryId).WithContents(2, "application/pdf").Build();
+            _file = BookBuilder.Contents.PickRandom();
 
-            _contents = new Faker().Image.Random.Bytes(50);
+            _contents = Random.Bytes;
 
-            var request = new RequestBuilder()
-                .WithBytes(_contents)
-                .WithContentType(_newMimeType)
-                .WithLanguage(_file.Language)
-                .BuildRequestMessage();
-
-            _response = (CreatedResult)await handler.Run(request, LibraryId, _book.Id, AuthenticationBuilder.WriterClaim, CancellationToken.None);
-
+            _response = await Client.PutFile($"/library/{LibraryId}/books/{_book.Id}/content", _contents, _file.Language, _newMimeType);
             _assert = new BookContentAssert(_response, LibraryId);
         }
 
@@ -81,7 +73,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         [Test]
         public void ShouldHaceCorrectContentSaved()
         {
-            _assert.ShouldHaveBookContent(_contents, DatabaseConnection, FileStorage);
+            _assert.ShouldHaveBookContent(_contents, DatabaseConnection, FileStore);
         }
     }
 }

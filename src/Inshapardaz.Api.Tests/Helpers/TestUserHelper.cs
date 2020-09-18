@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             _claimsProvider = claimsProvider;
         }
 
-        public bool IsAuthenticated => GetUserId() != Guid.Empty;
+        public bool IsAuthenticated => GetUserId() != null;
         public bool IsAdmin => IsAuthenticated && IsUserInRole("admin");
         public bool IsLibraryAdmin => IsAuthenticated && IsUserInRole("libraryadmin");
         public bool IsWriter => IsAuthenticated && (IsLibraryAdmin || IsUserInRole("writer"));
@@ -28,9 +28,15 @@ namespace Inshapardaz.Api.Tests.Helpers
             return permissions.Any(p => IsUserInRole(p.ToDescription()));
         }
 
-        public Guid GetUserId()
+        public Guid? GetUserId()
         {
-            return _claimsProvider.Claims.Any() ? Guid.NewGuid() : Guid.Empty;
+            var nameIdentifier = _claimsProvider.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            if (nameIdentifier != null)
+            {
+                return Guid.Parse(nameIdentifier);
+            }
+
+            return null;
         }
 
         private bool IsUserInRole(string role)

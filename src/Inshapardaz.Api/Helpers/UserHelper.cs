@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Helpers
             _contextAccessor = contextAccessor;
         }
 
-        public bool IsAuthenticated => GetUserId() != Guid.Empty;
+        public bool IsAuthenticated => GetUserId() != null;
 
         public bool IsAdmin => IsAuthenticated && IsUserInRole("admin");
         public bool IsLibraryAdmin => IsAuthenticated && IsUserInRole("libraryAdmin");
@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Helpers
             return permissions.Any(p => IsUserInRole(p));
         }
 
-        public Guid GetUserId()
+        public Guid? GetUserId()
         {
             var nameIdentifier = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
             if (nameIdentifier != null)
@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Helpers
                 return Guid.Parse(nameIdentifier.Replace("auth0|", "00000000"));
             }
 
-            return Guid.Empty;
+            return null;
         }
 
         private bool IsUserInRole(string role)

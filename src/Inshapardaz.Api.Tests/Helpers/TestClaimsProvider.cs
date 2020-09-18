@@ -20,13 +20,18 @@ namespace Inshapardaz.Api.Tests.Helpers
             Claims = new List<Claim>();
         }
 
-        internal static TestClaimsProvider WithAuthLevel(Permission Permission)
+        internal static TestClaimsProvider WithAuthLevel(Permission Permission, Guid userId)
         {
             var provider = new TestClaimsProvider();
 
+            if (userId == Guid.Empty)
+            {
+                userId = Guid.NewGuid();
+            }
+
             if (Permission != Permission.Unauthorised)
             {
-                provider.Claims.Add(new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()));
+                provider.Claims.Add(new Claim(ClaimTypes.NameIdentifier, userId.ToString()));
                 provider.Claims.Add(new Claim(ClaimTypes.Name, "Library Admin user"));
                 provider.Claims.Add(new Claim("permissions", Permission.ToString().ToLower()));
             }

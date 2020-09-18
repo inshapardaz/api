@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _categories = CategoriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            _categories = CategoryBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
             _selectedCategory = _categories.First();
 
             _response = await Client.GetAsync($"/library/{LibraryId}/categories/{_selectedCategory.Id}");

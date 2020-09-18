@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
 using System.Security.Claims;
@@ -9,7 +10,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteBookToFavoriteRequest : BookRequest
     {
-        public DeleteBookToFavoriteRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid userId)
+        public DeleteBookToFavoriteRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid? userId)
             : base(claims, libraryId, bookId, userId)
         {
         }
@@ -24,7 +25,7 @@ namespace Inshapardaz.Domain.Models.Library
             _bookRepository = bookRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
+        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer, Permission.Reader)]
         public override async Task<DeleteBookToFavoriteRequest> HandleAsync(DeleteBookToFavoriteRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             await _bookRepository.AddBookToFavorites(command.LibraryId, command.UserId, command.BookId, cancellationToken);

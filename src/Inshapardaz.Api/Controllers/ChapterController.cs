@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Controllers
             _userHelper = userHelper;
         }
 
-        [HttpGet("library/{libraryId}/book/{bookId}/chapters", Name = nameof(ChapterController.GetChaptersByBook))]
+        [HttpGet("library/{libraryId}/books/{bookId}/chapters", Name = nameof(ChapterController.GetChaptersByBook))]
         public async Task<IActionResult> GetChaptersByBook(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetChaptersByBookQuery(libraryId, bookId, _userHelper.GetUserId());
@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpGet("library/{libraryId}/book/{bookId}/chapters/{chapterId}", Name = nameof(ChapterController.GetChapterById))]
+        [HttpGet("library/{libraryId}/books/{bookId}/chapters/{chapterId}", Name = nameof(ChapterController.GetChapterById))]
         public async Task<IActionResult> GetChapterById(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetChapterByIdQuery(libraryId, bookId, chapterId, _userHelper.GetUserId());
@@ -105,7 +105,7 @@ namespace Inshapardaz.Api.Controllers
             return new NoContentResult();
         }
 
-        [HttpGet("library/{libraryId}/book/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.GetChapterContent))]
+        [HttpGet("library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.GetChapterContent))]
         public async Task<IActionResult> GetChapterContent(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {
             var contentType = Request.Headers["Accept"]; // default to "text/markdown"

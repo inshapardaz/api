@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Tests.DataBuilders;
+using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
@@ -19,7 +21,6 @@ namespace Inshapardaz.Api.Tests
 {
     public class TestBase : WebApplicationFactory<Startup>
     {
-        private LibraryDataBuilder _builder;
         protected readonly bool _periodicalsEnabled;
         protected readonly Permission _authenticationLevel;
 
@@ -28,23 +29,38 @@ namespace Inshapardaz.Api.Tests
             _periodicalsEnabled = periodicalsEnabled;
             _authenticationLevel = Permission;
             Client = CreateClient();
-            _builder = Services.GetService<LibraryDataBuilder>();
-            _builder.WithPeriodicalsEnabled(_periodicalsEnabled).Build();
+            LibraryBuilder.WithPeriodicalsEnabled(_periodicalsEnabled).Build();
         }
 
         public HttpClient Client { get; private set; }
+        public readonly Guid UserId = Guid.NewGuid();
 
-        protected int LibraryId => _builder.Library.Id;
-        protected LibraryDto Library => _builder.Library;
+        protected int LibraryId => _libraryBuilder.Library.Id;
+        protected LibraryDto Library => _libraryBuilder.Library;
 
         protected IDbConnection DatabaseConnection => Services.GetService<IProvideConnection>().GetConnection();
 
         protected FakeFileStorage FileStore => Services.GetService<IFileStorage>() as FakeFileStorage;
 
+        protected LibraryDataBuilder _libraryBuilder;
         protected AuthorsDataBuilder _authorBuilder;
         protected SeriesDataBuilder _seriesDataBuilder;
         protected CategoriesDataBuilder _categoriesDataBuilder;
+        protected BooksDataBuilder _booksDataBuilder;
         protected Permission CurrentAuthenticationLevel => _authenticationLevel;
+
+        protected LibraryDataBuilder LibraryBuilder
+        {
+            get
+            {
+                if (_libraryBuilder == null)
+                {
+                    _libraryBuilder = Services.GetService<LibraryDataBuilder>();
+                }
+
+                return _libraryBuilder;
+            }
+        }
 
         protected AuthorsDataBuilder AuthorBuilder
         {
@@ -72,7 +88,7 @@ namespace Inshapardaz.Api.Tests
             }
         }
 
-        protected CategoriesDataBuilder CategoriesBuilder
+        protected CategoriesDataBuilder CategoryBuilder
         {
             get
             {
@@ -82,6 +98,19 @@ namespace Inshapardaz.Api.Tests
                 }
 
                 return _categoriesDataBuilder;
+            }
+        }
+
+        protected BooksDataBuilder BookBuilder
+        {
+            get
+            {
+                if (_booksDataBuilder == null)
+                {
+                    _booksDataBuilder = Services.GetService<BooksDataBuilder>();
+                }
+
+                return _booksDataBuilder;
             }
         }
 
@@ -105,7 +134,7 @@ namespace Inshapardaz.Api.Tests
                 services.AddAuthentication("Test")
                         .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", op => { });
 
-                services.AddScoped<TestClaimsProvider>(_ => TestClaimsProvider.WithAuthLevel(_authenticationLevel));
+                services.AddScoped<TestClaimsProvider>(_ => TestClaimsProvider.WithAuthLevel(_authenticationLevel, UserId));
 
                 if (services.Any(x => x.ServiceType == typeof(IUserHelper)))
                 {
@@ -117,10 +146,11 @@ namespace Inshapardaz.Api.Tests
 
         protected virtual void Cleanup()
         {
-            _builder.CleanUp();
+            _libraryBuilder.CleanUp();
             _authorBuilder?.CleanUp();
             _seriesDataBuilder?.CleanUp();
             _categoriesDataBuilder?.CleanUp();
+            _booksDataBuilder?.CleanUp();
         }
     }
 }

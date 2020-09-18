@@ -1,12 +1,10 @@
 ﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -44,9 +42,9 @@ namespace Inshapardaz.Api.Controllers
             string query,
             int pageNumber = 1,
             int pageSize = 10,
-            [FromQuery]int authorId = 0,
-            [FromQuery]int categoryId = 0,
-            [FromQuery]int seriesId = 0,
+            [FromQuery]int? authorId = null,
+            [FromQuery]int? categoryId = null,
+            [FromQuery]int? seriesId = null,
             [FromQuery]bool? favorite = null,
             [FromQuery]bool? read = null,
             [FromQuery]BookSortByType sortBy = BookSortByType.Title,
@@ -68,6 +66,7 @@ namespace Inshapardaz.Api.Controllers
                 SortBy = sortBy,
                 SortDirection = sortDirection
             };
+
             var books = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
 
             var args = new PageRendererArgs<BookModel>
@@ -102,8 +101,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/books", Name = nameof(BookController.CreateBook))]
-        [Authorize]
-        public async Task<IActionResult> CreateBook(int libraryId, BookView book, CancellationToken token)
+        public async Task<IActionResult> CreateBook(int libraryId, [FromBody]BookView book, CancellationToken token)
         {
             var request = new AddBookRequest(_userHelper.Claims, libraryId, book.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
@@ -113,8 +111,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/books/{bookId}", Name = nameof(BookController.UpdateBook))]
-        [Authorize]
-        public async Task<IActionResult> UpdateBook(int libraryId, int bookId, BookView book, CancellationToken token)
+        public async Task<IActionResult> UpdateBook(int libraryId, int bookId, [FromBody]BookView book, CancellationToken token)
         {
             book.Id = bookId;
 
@@ -134,7 +131,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/books/{bookId}", Name = nameof(BookController.DeleteBook))]
-        [Authorize]
         public async Task<IActionResult> DeleteBook(int libraryId, int bookId, CancellationToken token)
         {
             var request = new DeleteBookRequest(_userHelper.Claims, libraryId, bookId, _userHelper.GetUserId());
@@ -143,7 +139,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/books/{bookId}/image", Name = nameof(BookController.UpdateBookImage))]
-        [Authorize]
         public async Task<IActionResult> UpdateBookImage(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -174,9 +169,14 @@ namespace Inshapardaz.Api.Controllers
             return new OkResult();
         }
 
+        [HttpPost("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.GetBookContent))]
+        public async Task<IActionResult> GetBookContent(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpPost("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.CreateBookContent))]
-        [Authorize]
-        public async Task<IActionResult> CreateBookContent(int libraryId, int bookId, int chapterId, IFormFile file, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateBookContent(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
             using (var stream = new MemoryStream(content))
@@ -209,7 +209,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.UpdateBookContent))]
-        [Authorize]
         public async Task<IActionResult> UpdateBookContent(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -251,8 +250,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/books/{bookId}/content", Name = nameof(BookController.DeleteBookContent))]
-        [Authorize]
-        public async Task<IActionResult> DeleteBookContent(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> DeleteBookContent(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
             var mimeType = Request.Headers["Content-Type"];
             var language = Request.Headers["Accept-Language"];
@@ -263,18 +261,15 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/favorites/books/{bookId}", Name = nameof(BookController.AddBookToFavorites))]
-        [Authorize]
         public async Task<IActionResult> AddBookToFavorites(int libraryId, int bookId, CancellationToken token)
         {
             var request = new AddBookToFavoriteRequest(_userHelper.Claims, libraryId, bookId, _userHelper.GetUserId());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             return new OkResult();
-            //return new CreatedResult(new Uri(Link(libraryId, bookId, RelTypes.Self).Href), null);
         }
 
         [HttpDelete("library/{libraryId}/favorites/books/{bookId}", Name = nameof(BookController.RemoveBookFromFavorites))]
-        [Authorize]
         public async Task<IActionResult> RemoveBookFromFavorites(int libraryId, int bookId, CancellationToken token)
         {
             var request = new DeleteBookToFavoriteRequest(_userHelper.Claims, libraryId, bookId, _userHelper.GetUserId());

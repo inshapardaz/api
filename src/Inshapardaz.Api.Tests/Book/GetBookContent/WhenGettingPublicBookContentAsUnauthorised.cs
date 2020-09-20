@@ -52,6 +52,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
         }
 
         [Test]
+        public void SHouldHaveDownloadLink()
+        {
+            _assert.ShouldHavePrivateDownloadLink();
+        }
+
+        [Test]
         public void ShouldHaveCorrectMimeType()
         {
             _assert.ShouldHaveCorrectMimeType(_expected.MimeType);

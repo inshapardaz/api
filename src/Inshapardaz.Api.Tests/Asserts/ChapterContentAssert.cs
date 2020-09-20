@@ -37,7 +37,9 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents/{_chapterContent.Id}");
+                  .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents")
+                  .ShouldHaveAcceptLanguage(_chapterContent.Language)
+                  .ShouldHaveAccept(_chapterContent.MimeType);
 
             return this;
         }
@@ -60,7 +62,9 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.UpdateLink()
                  .ShouldBePut()
-                 .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents/{_chapterContent.Id}");
+                 .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents")
+                 .ShouldHaveAcceptLanguage(_chapterContent.Language)
+                 .ShouldHaveAccept(_chapterContent.MimeType);
 
             return this;
         }
@@ -81,7 +85,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
-            location.Should().EndWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents/{_chapterContent.Id}");
+            location.Should().EndWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents");
             return this;
         }
 
@@ -145,7 +149,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.DeleteLink()
                  .ShouldBeDelete()
-                 .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents/{_chapterContent.Id}");
+                 .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents");
 
             return this;
         }

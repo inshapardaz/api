@@ -179,7 +179,8 @@ namespace Inshapardaz.Api.Tests.Asserts
             var actual = _chapter.Contents.Single(x => x.Id == content.Id);
             actual.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents/{content.Id}");
+                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents")
+                  .ShouldHaveAcceptLanguage(content.Language);
 
             return this;
         }
@@ -189,7 +190,9 @@ namespace Inshapardaz.Api.Tests.Asserts
             var actual = _chapter.Contents.Single(x => x.Id == content.Id);
             actual.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents/{content.Id}");
+                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents")
+                  .ShouldHaveAcceptLanguage(actual.Language)
+                  .ShouldHaveAccept(actual.MimeType);
 
             return this;
         }

@@ -106,13 +106,17 @@ namespace Inshapardaz.Domain.Models.Library
         {
             switch (mimeType.ToLower())
             {
-                case "text/plain": return "txt";
-                case "text/markdown": return "md";
-                case "text/html": return "md";
-                case "application/msword": return "docx";
-                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": return "docx";
-                case "application/pdf": return "pdf";
-                case "application/epub+zip": return "epub";
+                case MimeTypes.Text: return "txt";
+                case MimeTypes.Markdown: return "md";
+                case MimeTypes.Html: return "md";
+                case MimeTypes.MsWord:
+                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                    return "docx";
+
+                case MimeTypes.Json: return "json";
+                case MimeTypes.Jpg: return "jpg";
+                case MimeTypes.Pdf: return "pdf";
+                case MimeTypes.Epub: return "epub";
                 default: throw new BadRequestException();
             }
         }

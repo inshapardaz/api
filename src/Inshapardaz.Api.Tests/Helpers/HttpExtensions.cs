@@ -39,7 +39,10 @@ namespace Inshapardaz.Api.Tests.Helpers
 
         public static async Task<HttpResponseMessage> PostContent(this HttpClient client, string url, byte[] payload, string language, string mimetype)
         {
-            client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(language));
+            if (!string.IsNullOrEmpty(language))
+            {
+                client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(language));
+            }
 
             using (var stream = new MemoryStream(payload))
             using (var content = new StreamContent(stream))
@@ -79,6 +82,24 @@ namespace Inshapardaz.Api.Tests.Helpers
             using (var formData = new MultipartFormDataContent())
             {
                 content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+                formData.Add(content, "file", $"{Random.Name}.jpg");
+
+                return await client.PutAsync(url, formData);
+            }
+        }
+
+        public static async Task<HttpResponseMessage> PutContent(this HttpClient client, string url, byte[] payload, string language, string mimetype)
+        {
+            if (!string.IsNullOrEmpty(language))
+            {
+                client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(language));
+            }
+
+            using (var stream = new MemoryStream(payload))
+            using (var content = new StreamContent(stream))
+            using (var formData = new MultipartFormDataContent())
+            {
+                content.Headers.ContentType = new MediaTypeHeaderValue(mimetype);
                 formData.Add(content, "file", $"{Random.Name}.jpg");
 
                 return await client.PutAsync(url, formData);

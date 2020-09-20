@@ -301,8 +301,19 @@ namespace Inshapardaz.Api.Converters
 
             if (!string.IsNullOrWhiteSpace(source.ContentUrl))
             {
-                // TODO :  Check and add direct link
-                //links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = MimeTypes.Jpg });
+                links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = source.MimeType, AcceptLanguage = source.Language });
+            }
+            else
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(FileController.GetFile),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Download,
+                    Language = source.Language,
+                    MimeType = source.MimeType,
+                    Parameters = new { fileId = source.FileId }
+                }));
             }
 
             if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)

@@ -1,17 +1,23 @@
-﻿namespace Inshapardaz.Domain.Models
+﻿using System.ComponentModel;
+
+namespace Inshapardaz.Domain.Models
 {
     public static class MimeTypes
     {
-        public const string SqlLite = "application/x-sqlite3";
+        public const string Json = "application/json";
 
-        public const string Csv = "text/csv";
+        public const string Markdown = "text/markdown";
 
-        public static string Json = "application/json";
+        public const string Pdf = "application/pdf";
 
-        public static string Markdown = "text/markdown";
+        public const string Jpg = "image/jpeg";
 
-        public static string Pdf = "application/pdf";
+        public const string Text = "text/plain";
 
-        public static string Jpg = "image/jpeg";
+        public const string Html = "text/html";
+
+        public const string MsWord = "application/msword";
+
+        public const string Epub = "application/epub+zip";
     }
 }

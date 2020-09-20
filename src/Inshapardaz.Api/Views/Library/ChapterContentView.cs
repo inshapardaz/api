@@ -10,6 +10,6 @@ namespace Inshapardaz.Api.Views.Library
 
         public string Language { get; set; }
 
-        public string MimeType { get; internal set; }
+        public string MimeType { get; set; }
     }
 }

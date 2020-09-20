@@ -1,5 +1,4 @@
 ﻿using Inshapardaz.Api.Controllers;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
@@ -9,7 +8,6 @@ using Inshapardaz.Domain.Models.Library;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 
 namespace Inshapardaz.Api.Converters
 {
@@ -46,7 +44,7 @@ namespace Inshapardaz.Api.Converters
                 Parameters = new { libraryId = libraryId, bookId = bookId }
             }));
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
             {
                 view.Links.Add(_linkRenderer.Render(new Link
                 {
@@ -156,10 +154,22 @@ namespace Inshapardaz.Api.Converters
 
             if (!string.IsNullOrWhiteSpace(source.ContentUrl))
             {
-                links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = MimeTypes.Jpg });
+                links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = source.MimeType, AcceptLanguage = source.Language });
+            }
+            else
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(FileController.GetFile),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Download,
+                    MimeType = source.MimeType,
+                    Language = source.Language,
+                    Parameters = new { fileId = source.FileId }
+                }));
             }
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {

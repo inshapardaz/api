@@ -36,6 +36,12 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             connection.Execute(sql, new { Ids = chapters.Select(a => a.Id) });
         }
 
+        public static void DeleteChapterContents(this IDbConnection connection, IEnumerable<ChapterContentDto> chapters)
+        {
+            var sql = "Delete From ChapterContent Where Id IN @Ids";
+            connection.Execute(sql, new { Ids = chapters.Select(c => c.Id) });
+        }
+
         public static ChapterDto GetChapterById(this IDbConnection connection, int id)
         {
             return connection.QuerySingleOrDefault<ChapterDto>("Select * From Chapter Where Id = @Id", new { Id = id });

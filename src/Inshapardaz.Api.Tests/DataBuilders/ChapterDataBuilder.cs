@@ -122,5 +122,11 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
             return _chapters;
         }
+
+        public void CleanUp()
+        {
+            _connection.DeleteChapterContents(_contents);
+            _connection.DeleteChapters(_chapters);
+        }
     }
 }

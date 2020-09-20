@@ -154,19 +154,20 @@ namespace Inshapardaz.Api.Controllers
             var request = new UpdateChapterContentRequest(_userHelper.Claims, libraryId, bookId, chapterId, Encoding.Default.GetString(content), language, file.ContentType, _userHelper.GetUserId());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
-            if (request.Result != null)
+            var renderResult = _chapterRenderer.Render(request.Result.ChapterContent, libraryId);
+
+            if (request.Result != null && request.Result.HasAddedNew)
             {
-                var renderResult = _chapterRenderer.Render(request.Result.ChapterContent, libraryId);
                 return new CreatedResult(renderResult.Links.Self(), renderResult);
             }
 
-            return new BadRequestResult();
+            return new OkObjectResult(renderResult);
         }
 
         [HttpDelete("library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.DeleteChapterContent))]
         public async Task<IActionResult> DeleteChapterContent(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {
-            var contentType = Request.Headers["Content-Type"];
+            var contentType = Request.Headers["Accept"];
             var language = Request.Headers["Accept-Language"];
 
             var request = new DeleteChapterContentRequest(_userHelper.Claims, libraryId, bookId, chapterId, language, contentType, _userHelper.GetUserId());

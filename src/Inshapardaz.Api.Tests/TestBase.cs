@@ -47,6 +47,7 @@ namespace Inshapardaz.Api.Tests
         protected SeriesDataBuilder _seriesDataBuilder;
         protected CategoriesDataBuilder _categoriesDataBuilder;
         protected BooksDataBuilder _booksDataBuilder;
+        protected ChapterDataBuilder _chapterDataBuilder;
         protected Permission CurrentAuthenticationLevel => _authenticationLevel;
 
         protected LibraryDataBuilder LibraryBuilder
@@ -114,6 +115,19 @@ namespace Inshapardaz.Api.Tests
             }
         }
 
+        protected ChapterDataBuilder ChapterBuilder
+        {
+            get
+            {
+                if (_chapterDataBuilder == null)
+                {
+                    _chapterDataBuilder = Services.GetService<ChapterDataBuilder>();
+                }
+
+                return _chapterDataBuilder;
+            }
+        }
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>
@@ -151,6 +165,7 @@ namespace Inshapardaz.Api.Tests
             _seriesDataBuilder?.CleanUp();
             _categoriesDataBuilder?.CleanUp();
             _booksDataBuilder?.CleanUp();
+            _chapterDataBuilder?.CleanUp();
         }
     }
 }

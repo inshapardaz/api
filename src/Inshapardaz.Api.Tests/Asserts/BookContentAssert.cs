@@ -147,8 +147,6 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookContent.Link("download")
                            .ShouldBeGet();
-            //.Href.Should()
-            //.StartWith(Settings.BlobRoot);
 
             return this;
         }
@@ -157,8 +155,6 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookContent.Link("download")
                            .ShouldBeGet();
-            //.Href.Should()
-            //.StartWith(Settings.CDNAddress);
 
             return this;
         }

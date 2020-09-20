@@ -69,6 +69,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
         }
 
         [Test]
+        public void SHouldHaveDownloadLink()
+        {
+            _assert.ShouldHavePrivateDownloadLink();
+        }
+
+        [Test]
         public void ShouldReturnCorrectChapterData()
         {
             _assert.ShouldMatch(_expected, _book.Id, DatabaseConnection);

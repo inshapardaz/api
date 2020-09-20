@@ -55,6 +55,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
         {
             _assert.ShouldHaveSelfLink()
                    .ShouldHaveBookLink()
+                   .ShouldHavePrivateDownloadLink()
                    .ShouldHaveUpdateLink()
                    .ShouldHaveDeleteLink();
         }

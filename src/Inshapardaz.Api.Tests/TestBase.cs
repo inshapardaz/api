@@ -24,12 +24,15 @@ namespace Inshapardaz.Api.Tests
         protected readonly bool _periodicalsEnabled;
         protected readonly Permission _authenticationLevel;
 
-        public TestBase(Permission Permission = Permission.Unauthorised, bool periodicalsEnabled = false)
+        public TestBase(Permission Permission = Permission.Unauthorised, bool periodicalsEnabled = false, bool createLibrary = true)
         {
             _periodicalsEnabled = periodicalsEnabled;
             _authenticationLevel = Permission;
             Client = CreateClient();
-            LibraryBuilder.WithPeriodicalsEnabled(_periodicalsEnabled).Build();
+            if (createLibrary)
+            {
+                LibraryBuilder.WithPeriodicalsEnabled(_periodicalsEnabled).Build();
+            }
         }
 
         public HttpClient Client { get; private set; }

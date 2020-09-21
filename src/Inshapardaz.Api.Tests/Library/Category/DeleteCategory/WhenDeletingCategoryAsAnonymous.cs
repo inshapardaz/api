@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
 {
     [TestFixture]
-    public class WhenDeletingCategoryAsAnonymous : TestBase
+    public class WhenDeletingLibraryAsAnonymous : TestBase
     {
         private HttpResponseMessage _response;
 

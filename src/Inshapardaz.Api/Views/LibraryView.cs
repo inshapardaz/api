@@ -2,8 +2,8 @@
 {
     public class LibraryView : ViewWithLinks
     {
-        public string Name { get; internal set; }
-        public string Language { get; internal set; }
-        public bool SupportsPeriodicals { get; internal set; }
+        public string Name { get; set; }
+        public string Language { get; set; }
+        public bool SupportsPeriodicals { get; set; }
     }
 }

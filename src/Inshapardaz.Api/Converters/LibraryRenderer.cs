@@ -5,6 +5,7 @@ using Inshapardaz.Api.Controllers;
 using Inshapardaz.Domain.Adapters;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Inshapardaz.Api.Helpers;
+using System.Media;
 
 namespace Inshapardaz.Api.Converters
 {
@@ -153,7 +154,13 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            return new LibraryView { Links = links };
+            return new LibraryView
+            {
+                Name = model.Name,
+                Language = model.Language,
+                SupportsPeriodicals = model.SupportsPeriodicals,
+                Links = links
+            };
         }
     }
 }

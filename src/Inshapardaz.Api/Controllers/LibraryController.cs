@@ -44,7 +44,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library", Name = nameof(LibraryController.CreateLibrary))]
-        public async Task<IActionResult> CreateLibrary(LibraryView library, CancellationToken token)
+        public async Task<IActionResult> CreateLibrary([FromBody]LibraryView library, CancellationToken token)
         {
             var request = new AddLibraryRequest(_userHelper.Claims, library.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}", Name = nameof(LibraryController.UpdateLibrary))]
-        public async Task<IActionResult> UpdateLibrary(int libraryId, LibraryView library, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateLibrary(int libraryId, [FromBody]LibraryView library, CancellationToken token = default(CancellationToken))
         {
             var request = new UpdateLibraryRequest(_userHelper.Claims, libraryId, library.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);

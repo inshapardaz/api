@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.Security.Claims;
@@ -28,7 +29,7 @@ namespace Inshapardaz.Domain.Models.Library
             _libraryRepository = libraryRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
+        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin)]
         public override async Task<AddLibraryRequest> HandleAsync(AddLibraryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             command.Result = await _libraryRepository.AddLibrary(command.Library, cancellationToken);

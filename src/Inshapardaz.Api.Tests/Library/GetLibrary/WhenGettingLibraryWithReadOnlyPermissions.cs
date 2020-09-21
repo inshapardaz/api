@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Tests.Helpers;
+﻿using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters;
 using NUnit.Framework;
@@ -6,7 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library
+namespace Inshapardaz.Api.Tests.Library.GetLibrary
 {
     [TestFixture(Permission.Unauthorised, true)]
     [TestFixture(Permission.Unauthorised, false)]
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library
     public class WhenGettingLibraryWithReadOnlyPermissions : TestBase
     {
         private HttpResponseMessage _response;
-        private LibraryView _view;
+        private LibraryAssert _assert;
 
         public WhenGettingLibraryWithReadOnlyPermissions(Permission authLevel, bool periodicalsEnabled)
             : base(authLevel, periodicalsEnabled)
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library
             var client = CreateClient();
             _response = await client.GetAsync($"/library/{LibraryId}");
 
-            _view = await _response.GetContent<LibraryView>();
+            _assert = LibraryAssert.FromResponse(_response, LibraryId);
         }
 
         [Test]
@@ -41,41 +42,31 @@ namespace Inshapardaz.Api.Tests.Library
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _view.Links.AssertLink("self")
-                       .ShouldBeGet()
-                       .EndingWith($"/library/{LibraryId}");
+            _assert.ShouldHaveSelfLink();
         }
 
         [Test]
         public void ShouldHaveBooksLink()
         {
-            _view.Links.AssertLink("books")
-                       .ShouldBeGet()
-                       .EndingWith($"/library/{LibraryId}/books");
+            _assert.ShouldHaveBooksLink();
         }
 
         [Test]
         public void ShouldHaveAuthorsLink()
         {
-            _view.Links.AssertLink("authors")
-                       .ShouldBeGet()
-                       .EndingWith($"/library/{LibraryId}/authors");
+            _assert.ShouldHaveAuthorsLink();
         }
 
         [Test]
         public void ShouldHaveCategoriesLink()
         {
-            _view.Links.AssertLink("categories")
-                       .ShouldBeGet()
-                       .EndingWith($"/library/{LibraryId}/categories");
+            _assert.ShouldHaveCategoriesLink();
         }
 
         [Test]
         public void ShouldHaveSeriesLink()
         {
-            _view.Links.AssertLink("series")
-                       .ShouldBeGet()
-                       .EndingWith($"/library/{LibraryId}/series");
+            _assert.ShouldHaveSeriesLink();
         }
 
         [Test]
@@ -83,13 +74,11 @@ namespace Inshapardaz.Api.Tests.Library
         {
             if (_periodicalsEnabled)
             {
-                _view.Links.AssertLink("periodicals")
-                       .ShouldBeGet()
-                       .EndingWith($"/library/{LibraryId}/periodicals");
+                _assert.ShouldHavePeriodicalLink();
             }
             else
             {
-                _view.Links.AssertLinkNotPresent("periodicals");
+                _assert.ShouldNotHavePeriodicalLink();
             }
         }
 
@@ -98,27 +87,24 @@ namespace Inshapardaz.Api.Tests.Library
         {
             if (_authenticationLevel == Permission.Unauthorised)
             {
-                _view.Links.AssertLinkNotPresent("recents");
+                _assert.ShouldNotHaveRecentLinks();
             }
             else
             {
-                _view.Links.AssertLink("recents")
-                    .ShouldBeGet()
-                    .EndingWith($"/library/{LibraryId}/books")
-                    .ShouldHaveQueryParameter("read", bool.TrueString);
+                _assert.ShouldHaveRecentLinks();
             }
         }
 
         [Test]
         public void ShouldNotHaveWritableLinks()
         {
-            _view.Links.AssertLinkNotPresent("create-book");
-            _view.Links.AssertLinkNotPresent("create-category");
-            _view.Links.AssertLinkNotPresent("create-series");
-            _view.Links.AssertLinkNotPresent("create-author");
-            _view.Links.AssertLinkNotPresent("create");
-            _view.Links.AssertLinkNotPresent("update");
-            _view.Links.AssertLinkNotPresent("delete");
+            _assert.ShouldNotHaveCreateCategorylink()
+                    .ShouldNotHaveCreatelink()
+                    .ShouldNotHaveUpdatelink()
+                    .ShouldNotHaveDeletelink()
+                    .ShouldNotHaveCreateBookLink()
+                    .ShouldNotHaveSerieslink()
+                    .ShouldNotHaveCreateAuthorLink();
         }
     }
 }

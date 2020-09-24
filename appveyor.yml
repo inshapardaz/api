@@ -15,26 +15,26 @@ before_build:
 
 # Building
 build_script:
-  - cmd: dotnet publish -c Release src/Inshapardaz.Functions/Inshapardaz.Functions.csproj
+  - cmd: dotnet publish -c Release src/Inshapardaz.Api/Inshapardaz.Api.csproj
 
 # Testing
 test_script:
-- cmd: cd src/Inshapardaz.Functions.Tests
+- cmd: cd src/Inshapardaz.Api.Tests
 #- cmd: dotnet test --test-adapter-path:. --logger:Appveyor
 
 # Create artifacts
 artifacts:
-- path: src/Inshapardaz.Functions/bin/Release/netcoreapp3.1/publish/
-  name: Function
+- path: src/Inshapardaz.Api/bin/Release/netcoreapp3.1/publish/
+  name: APIPackage
 
 # Deployment
 deploy:
 - provider: WebDeploy
-  server: https://api-library.scm.azurewebsites.net:443/msdeploy.axd?site=api-library
+  server: https://api-nawishta.scm.azurewebsites.net:443/msdeploy.axd?site=api-nawishta
   website: api-library
-  username: $api-library
+  username: $api-nawishta
   password:
-    secure: TZVfWqb7YZBbXyiukgZAfH8zPXiv0kZsn6UEOUd4IH+8TsDEKuDDHPOgEa6GBS4LeGFFxpxkkMeuyRjugKfEYQ==
-  artifact: Function
+    secure: lBdR5hKd5QzhZfAakenkg3/E6ES59+8ueaWLFhPfFoGATilxS4jfjKiKr8EbcBJqroAq1Lj5qtkLHT/pXlMYhQ==
+  artifact: APIPackage
   on:
     branch: master

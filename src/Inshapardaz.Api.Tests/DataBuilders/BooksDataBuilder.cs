@@ -178,6 +178,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                           .With(b => b.SeriesId, series.Id)
                           .With(b => b.SeriesIndex, Random.Number)
                           .With(b => b.Categories, _categories.Any() ? _categories.Select(c => c.ToView()) : new CategoryView[0])
+                          .With(b => b.Language, Random.Locale)
                           .Create();
         }
 
@@ -202,6 +203,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                           .With(b => b.AuthorId, _author != null ? _author.Id : Random.PickRandom(_authors).Id)
                           .With(b => b.ImageId, _hasImage ? Random.Number : 0)
                           .With(b => b.IsPublic, f)
+                          .With(b => b.Language, Random.Locale)
                           .With(b => b.SeriesIndex, _hasSeries ? Random.Number : (int?)null)
                           .With(b => b.DateAdded, Random.Date)
                           .With(b => b.DateUpdated, Random.Date)

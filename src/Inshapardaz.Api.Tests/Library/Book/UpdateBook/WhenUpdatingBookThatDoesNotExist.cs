@@ -27,7 +27,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             {
                 Title = Random.Name,
                 Description = Random.Words(10),
-                AuthorId = author.Id
+                AuthorId = author.Id,
+                Language = Random.Locale
             };
 
             _response = await Client.PutObject($"/library/{LibraryId}/books/{_expected.Id}", _expected);

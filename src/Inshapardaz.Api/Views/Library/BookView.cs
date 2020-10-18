@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Views.Library
 
         public IEnumerable<BookContentView> Contents { get; set; }
 
-        public int Language { get; set; }
+        public string Language { get; set; }
 
         public bool IsPublic { get; set; }
 

@@ -13,7 +13,7 @@ namespace Inshapardaz.Api.Tests.Dto
 
         public bool IsPublic { get; set; }
 
-        public Languages Language { get; set; }
+        public string Language { get; set; }
         public BookStatuses Status { get; set; }
 
         public int AuthorId { get; set; }

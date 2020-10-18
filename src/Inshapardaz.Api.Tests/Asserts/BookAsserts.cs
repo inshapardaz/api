@@ -297,7 +297,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _book.Should().NotBeNull();
             _book.Title.Should().Be(expected.Title);
             _book.Description.Should().Be(expected.Description);
-            _book.Language.Should().Be((int)expected.Language);
+            _book.Language.Should().Be(expected.Language);
 
             _book.IsPublic.Should().Be(expected.IsPublic);
             _book.IsPublished.Should().Be(expected.IsPublished);
@@ -322,7 +322,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _book.Should().NotBeNull();
             _book.Title.Should().Be(expected.Title);
             _book.Description.Should().Be(expected.Description);
-            _book.Language.Should().Be((int)expected.Language);
+            _book.Language.Should().Be(expected.Language);
 
             _book.IsPublic.Should().Be(expected.IsPublic);
             _book.IsPublished.Should().Be(expected.IsPublished);

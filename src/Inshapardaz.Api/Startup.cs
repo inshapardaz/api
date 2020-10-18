@@ -11,6 +11,7 @@ using Inshapardaz.Api.Infrastructure;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
+using Inshapradaz.Database.SqlServer.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -50,7 +51,6 @@ namespace Inshapardaz.Api
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddTransient<IFileStorage, FileStorage>();
             services.AddTransient<IUserHelper, UserHelper>();
             services.AddTransient<IRenderAuthor, AuthorRenderer>();
             services.AddTransient<IRenderBook, BookRenderer>();
@@ -63,6 +63,15 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderPeriodical, PeriodicalRenderer>();
             services.AddTransient<IRenderIssue, IssueRenderer>();
             services.AddTransient<IRenderArticle, ArticleRenderer>();
+
+            if (settings.FileStoreType == FileStoreTypes.AzureBlobStorage)
+            {
+                services.AddTransient<IFileStorage, AzureFileStorage>();
+            }
+            else
+            {
+                services.AddTransient<IFileStorage, DatabaseFileStorage>();
+            }
 
             services.AddAuthentication(options =>
             {

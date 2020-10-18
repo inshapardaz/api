@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Storage.Azure
 {
-    public class FileStorage : IFileStorage
+    public class AzureFileStorage : IFileStorage
     {
         private readonly string _storageConnectionString;
 
-        public FileStorage(Settings settings)
+        public AzureFileStorage(Settings settings)
         {
             _storageConnectionString = settings.FileStorageConnectionString;
         }

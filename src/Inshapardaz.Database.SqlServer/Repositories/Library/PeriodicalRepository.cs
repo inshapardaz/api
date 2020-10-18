@@ -83,9 +83,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
                             FROM Periodical AS p
-                            INNER JOIN [File] f ON f.Id = p.ImageId
+                            LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
-                            And a.Id = @Id";
+                            And p.Id = @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = periodicalId }, cancellationToken: cancellationToken);
 
                 return await connection.QuerySingleOrDefaultAsync<PeriodicalModel>(command);

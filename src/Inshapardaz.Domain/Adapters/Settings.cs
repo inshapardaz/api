@@ -11,5 +11,7 @@ namespace Inshapardaz.Domain.Adapters
         public string BlobRoot { get; set; }
         public string FileStorageConnectionString { get; set; }
         public Uri ApiRoot { get; set; }
+
+        public FileStoreTypes FileStoreType { get; set; }
     }
 }

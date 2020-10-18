@@ -37,8 +37,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Inshapardaz.Functions\Inshapardaz.Functions.csproj" />
-  </ItemGroup>
-
 </Project>

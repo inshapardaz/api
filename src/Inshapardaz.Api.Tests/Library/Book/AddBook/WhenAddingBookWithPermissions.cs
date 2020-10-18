@@ -33,8 +33,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 AuthorId = author.Id,
                 SeriesId = series.Id,
                 SeriesIndex = 1,
-                SeriesName =
-                series.Name,
+                SeriesName = series.Name,
+                Language = Random.Locale,
                 Categories = Random.PickRandom(categories, 2).Select(c => new CategoryView { Id = c.Id })
             };
 

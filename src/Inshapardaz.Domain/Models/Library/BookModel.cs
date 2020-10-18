@@ -15,7 +15,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public List<BookContentModel> Contents { get; set; } = new List<BookContentModel>();
 
-        public Languages Language { get; set; }
+        public string Language { get; set; }
 
         public bool IsPublic { get; set; }
 

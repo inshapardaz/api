@@ -4,6 +4,7 @@ using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Database.SqlServer;
 
@@ -60,6 +61,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 var books = fixture.Build<BookDto>()
                                    .With(b => b.AuthorId, author.Id)
                                    .With(b => b.LibraryId, _libraryId)
+                                    .With(b => b.Language, Random.Locale)
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);

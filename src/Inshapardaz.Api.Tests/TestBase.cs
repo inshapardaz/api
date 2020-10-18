@@ -8,6 +8,7 @@ using Inshapardaz.Database.SqlServer;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
+using Inshapradaz.Database.SqlServer.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -137,7 +138,8 @@ namespace Inshapardaz.Api.Tests
             {
                 if (services.Any(x => x.ServiceType == typeof(IFileStorage)))
                 {
-                    services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(FileStorage), ServiceLifetime.Transient));
+                    services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(DatabaseFileStorage), ServiceLifetime.Transient));
+                    services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(AzureFileStorage), ServiceLifetime.Transient));
                     services.AddSingleton<IFileStorage>(new FakeFileStorage());
                 }
 

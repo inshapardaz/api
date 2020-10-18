@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 Title = fake.Name.FullName(),
                 Description = fake.Random.Words(5),
                 Copyrights = fake.Random.Int(0, 3),
-                Language = fake.Random.Int(0, 28),
+                Language = Helpers.Random.Locale,
                 YearPublished = fake.Date.Past().Year,
                 Status = fake.Random.Int(0, 2),
                 IsPublic = fake.Random.Bool(),

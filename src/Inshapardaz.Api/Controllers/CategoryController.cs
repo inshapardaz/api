@@ -58,6 +58,11 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("library/{libraryId}/categories", Name = nameof(CategoryController.CreateCategory))]
         public async Task<IActionResult> CreateCategory(int libraryId, [FromBody]CategoryView category, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new AddCategoryRequest(_userHelper.Claims, libraryId, category.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -68,6 +73,11 @@ namespace Inshapardaz.Api.Controllers
         [HttpPut("library/{libraryId}/categories/{categoryId}", Name = nameof(CategoryController.UpdateCategory))]
         public async Task<IActionResult> UpdateCategory(int libraryId, int categoryId, [FromBody]CategoryView category, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             category.Id = categoryId;
             var request = new UpdateCategoryRequest(_userHelper.Claims, libraryId, category.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);

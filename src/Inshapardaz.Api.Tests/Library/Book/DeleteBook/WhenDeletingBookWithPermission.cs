@@ -83,7 +83,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         [Test]
         public void ShouldBeDeletedFromTheFavoritesOfAllUsers()
         {
-            BookAssert.ShouldHaveDeletedBookFromFavorites(_expected.Id, DatabaseConnection);
+            BookAssert.ShouldNotBeInFavorites(_expected.Id, UserId, DatabaseConnection);
         }
 
         [Test]

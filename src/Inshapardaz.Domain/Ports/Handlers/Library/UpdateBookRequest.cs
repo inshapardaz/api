@@ -91,6 +91,7 @@ namespace Inshapardaz.Domain.Models.Library
             else
             {
                 await _bookRepository.UpdateBook(command.LibraryId, command.Book, cancellationToken);
+
                 command.Result.Book = command.Book;
                 command.Result.Book.AuthorName = author.Name;
                 command.Result.Book.SeriesName = series?.Name;

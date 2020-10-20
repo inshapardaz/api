@@ -125,12 +125,11 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             throw new NotImplementedException();
         }
 
-        //TODO : Add user id.
-
-        public static bool DoesBookExistsInFavorites(this IDbConnection connection, int bookId) =>
-            connection.QuerySingle<bool>(@"Select Count(1) From FavoriteBooks Where BookId = @BookId", new
+        public static bool DoesBookExistsInFavorites(this IDbConnection connection, int bookId, Guid userId) =>
+            connection.QuerySingle<bool>(@"Select Count(1) From FavoriteBooks Where BookId = @BookId And UserId = @UserId", new
             {
-                BookId = bookId
+                BookId = bookId,
+                UserId = userId
             });
 
         //TODO : Add user id.

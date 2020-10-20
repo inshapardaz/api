@@ -28,7 +28,7 @@ namespace Inshapardaz.Domain.Models.Library
         [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer, Permission.Reader)]
         public override async Task<DeleteBookToFavoriteRequest> HandleAsync(DeleteBookToFavoriteRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            await _bookRepository.AddBookToFavorites(command.LibraryId, command.UserId, command.BookId, cancellationToken);
+            await _bookRepository.DeleteBookFromFavorites(command.LibraryId, command.UserId.Value, command.BookId, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

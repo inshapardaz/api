@@ -39,7 +39,11 @@ namespace Inshapardaz.Domain.Models.Library
         [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer, Permission.Reader)]
         public override async Task<AddBookToFavoriteRequest> HandleAsync(AddBookToFavoriteRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            await _bookRepository.AddBookToFavorites(command.LibraryId, command.User, command.BookId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
+            if (book != null)
+            {
+                await _bookRepository.AddBookToFavorites(command.LibraryId, command.User, command.BookId, cancellationToken);
+            }
 
             return await base.HandleAsync(command, cancellationToken);
         }

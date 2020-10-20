@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _library = new LibraryView { Name = Random.Name, Language = Random.Locale, SupportsPeriodicals = Random.Bool };
+            _library = new LibraryView { Name = Random.Name, Language = Random.Locale, SupportsPeriodicals = _periodicalsEnabled };
 
             _response = await Client.PostObject($"/library", _library);
             _assert = LibraryAssert.FromResponse(_response, DatabaseConnection);

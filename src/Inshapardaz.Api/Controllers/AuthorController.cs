@@ -67,6 +67,11 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("library/{libraryId}/authors", Name = nameof(AuthorController.CreateAuthor))]
         public async Task<IActionResult> CreateAuthor(int libraryId, [FromBody]AuthorView author, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new AddAuthorRequest(_userHelper.Claims, libraryId, author.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -77,6 +82,11 @@ namespace Inshapardaz.Api.Controllers
         [HttpPut("library/{libraryId}/authors/{authorId}", Name = nameof(AuthorController.UpdateAuthor))]
         public async Task<IActionResult> UpdateAuthor(int libraryId, int authorId, [FromBody]AuthorView author, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new UpdateAuthorRequest(_userHelper.Claims, libraryId, author.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 

@@ -71,9 +71,13 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/periodicals{periodicalId}/issues", Name = nameof(IssueController.CreateIssue))]
-        [Authorize(Roles = "Admin, Writer")]
         public async Task<IActionResult> CreateIssue(int libraryId, int periodicalId, IssueView issue, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new AddIssueRequest(_userHelper.Claims, libraryId, periodicalId, issue.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -82,9 +86,13 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}", Name = nameof(IssueController.UpdateIssue))]
-        [Authorize(Roles = "Admin, Writer")]
         public async Task<IActionResult> UpdateIssue(int libraryId, int periodicalId, int issueId, IssueView issue, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new UpdateIssueRequest(_userHelper.Claims, libraryId, periodicalId, issueId, issue.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 

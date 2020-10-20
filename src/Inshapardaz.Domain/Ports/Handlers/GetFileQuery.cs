@@ -43,6 +43,11 @@ namespace Inshapardaz.Domain.Models
             }
 
             var contents = await _fileStorage.GetFile(file.FilePath, cancellationToken);
+            if (contents == null)
+            {
+                throw new NotFoundException();
+            }
+
             using (var stream = new MemoryStream(contents))
             // TODO : Implementation needed
             /*using (var output = new MemoryStream())

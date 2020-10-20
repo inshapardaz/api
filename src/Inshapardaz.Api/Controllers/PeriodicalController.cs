@@ -67,6 +67,11 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("library/{libraryId}/periodicals", Name = nameof(PeriodicalController.CreatePeriodical))]
         public async Task<IActionResult> CreatePeriodical(int libraryId, [FromBody]PeriodicalView periodical, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new AddPeriodicalRequest(_userHelper.Claims, libraryId, periodical.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -77,6 +82,11 @@ namespace Inshapardaz.Api.Controllers
         [HttpPut("library/{libraryId}/periodicals/{periodicalId}", Name = nameof(PeriodicalController.UpdatePeriodical))]
         public async Task<IActionResult> UpdatePeriodical(int libraryId, int periodicalId, [FromBody]PeriodicalView periodical, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new UpdatePeriodicalRequest(_userHelper.Claims, libraryId, periodical.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 

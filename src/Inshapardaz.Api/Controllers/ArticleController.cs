@@ -67,6 +67,11 @@ namespace Inshapardaz.Api.Controllers
         [Authorize]
         public async Task<IActionResult> CreateArticle(int libraryId, int periodicalId, int issueId, ArticleView article, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new AddArticleRequest(_userHelper.Claims, libraryId, periodicalId, issueId, article.Map(), _userHelper.GetUserId());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -83,6 +88,11 @@ namespace Inshapardaz.Api.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateArticle(int libraryId, int periodicalId, int issueId, int articleId, ArticleView chapter, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new UpdateArticleRequest(_userHelper.Claims, libraryId, periodicalId, issueId, articleId, chapter.Map(), _userHelper.GetUserId());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 

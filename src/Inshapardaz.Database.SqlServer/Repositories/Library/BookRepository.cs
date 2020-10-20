@@ -47,12 +47,12 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task UpdateBook(int libraryId, BookModel book, CancellationToken cancellationToken)
         {
+            book.LibraryId = libraryId;
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Update Book SET
                             Title = @Title, [Description] = @Description,
-                            AuthorId = @AuthorId, ImageId = @ImageId,
-                            IsPublic = @IsPublic, IsPublished = @IsPublished,
+                            AuthorId = @AuthorId, IsPublic = @IsPublic, IsPublished = @IsPublished,
                             [Language] = @Language, [Status] = @Status, SeriesId = @SeriesId,
                             SeriesIndex = @SeriesIndex, CopyRights = @CopyRights,
                             YearPublished = @YearPublished, DateUpdated = GETDATE()
@@ -347,13 +347,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var check = "Select count(*) From FavoriteBooks Where LibraryId = @LibraryId And UserId = @UserId And BookId = @BookId;";
-                var commandCheck = new CommandDefinition(check, new { LibraryId = libraryId, UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
+                var commandCheck = new CommandDefinition(check, new { LibraryId = libraryId, UserId = userId, BookId = bookId }, cancellationToken: cancellationToken);
                 var count = await connection.ExecuteScalarAsync<int>(commandCheck);
 
                 if (count > 0) return;
 
-                var sql = @"Delete From FavoriteBooks Where LibraryId = @LibraryId And UserId = @UserId And BookId = @BookId;";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
+                var sql = @"INSERT INTO FavoriteBooks (LibraryId, UserId, BookId, DateAdded) VALUES(@LibraryId, @UserId, @BookId, @DateAdded);";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, UserId = userId, BookId = bookId, DateAdded = DateTime.UtcNow }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
@@ -363,7 +363,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Delete From FavoriteBooks Where LibraryId = @LibraryId And UserId = @UserId And BookId = @BookId";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, UserId = userId, Id = bookId }, cancellationToken: cancellationToken);
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, UserId = userId, BookId = bookId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }

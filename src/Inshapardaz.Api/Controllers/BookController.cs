@@ -103,6 +103,11 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("library/{libraryId}/books", Name = nameof(BookController.CreateBook))]
         public async Task<IActionResult> CreateBook(int libraryId, [FromBody]BookView book, CancellationToken token)
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new AddBookRequest(_userHelper.Claims, libraryId, book.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -113,6 +118,11 @@ namespace Inshapardaz.Api.Controllers
         [HttpPut("library/{libraryId}/books/{bookId}", Name = nameof(BookController.UpdateBook))]
         public async Task<IActionResult> UpdateBook(int libraryId, int bookId, [FromBody]BookView book, CancellationToken token)
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             book.Id = bookId;
 
             var request = new UpdateBookRequest(_userHelper.Claims, libraryId, book.Map());

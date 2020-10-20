@@ -67,6 +67,11 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("library/{libraryId}/series", Name = nameof(SeriesController.CreateSeries))]
         public async Task<IActionResult> CreateSeries(int libraryId, [FromBody]SeriesView series, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var request = new AddSeriesRequest(_userHelper.Claims, libraryId, series.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -77,6 +82,11 @@ namespace Inshapardaz.Api.Controllers
         [HttpPut("library/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.UpdateSeries))]
         public async Task<IActionResult> UpdateSeries(int libraryId, int seriesId, [FromBody]SeriesView series, CancellationToken token = default(CancellationToken))
         {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
             series.Id = seriesId;
             var request = new UpdateSeriesRequest(_userHelper.Claims, libraryId, series.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);

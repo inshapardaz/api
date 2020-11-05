@@ -35,8 +35,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibrary
         [Test]
         public void ShouldReturnOk()
         {
-            Assert.That(_response, Is.Not.Null);
-            Assert.That(_response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            _response.ShouldBeOk();
         }
 
         [Test]

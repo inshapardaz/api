@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Domain.Adapters;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
@@ -9,6 +11,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
     public class WhenDeletingBookAsReader : TestBase
     {
         private HttpResponseMessage _response;
+
+        public WhenDeletingBookAsReader() : base(Permission.Reader)
+        {
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -28,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         [Test]
         public void ShouldHaveForbiddenResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeForbidden();
         }
     }
 }

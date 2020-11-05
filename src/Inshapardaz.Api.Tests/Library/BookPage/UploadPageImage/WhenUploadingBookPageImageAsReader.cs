@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Tests.Dto;
+﻿using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Adapters;
 using NUnit.Framework;
@@ -25,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UploadPageImage
             var book = BookBuilder.WithLibrary(LibraryId).WithPages(3).Build();
             _page = BookBuilder.GetPages(book.Id).PickRandom();
             _bookId = book.Id;
-            _response = await Client.PutFile($"/library/{LibraryId}/books/{_bookId}/pages/{_page.PageNumber}/image", Random.Bytes);
+            _response = await Client.PutFile($"/library/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}/image", Random.Bytes);
         }
 
         [OneTimeTearDown]
@@ -38,7 +39,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UploadPageImage
         [Test]
         public void ShouldHaveForbidResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeForbidden();
         }
     }
 }

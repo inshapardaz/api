@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.Converters
 {
     public interface IRenderBookPage
     {
-        BookPageView Render(BookPageModel source, int libraryId, int bookId);
+        BookPageView Render(BookPageModel source, int libraryId);
 
         PageView<BookPageView> Render(PageRendererArgs<BookPageModel> source, int libraryId, int bookId);
 
@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Converters
         {
             var page = new PageView<BookPageView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
-                Data = source.Page.Data?.Select(x => Render(x, libraryId, bookId))
+                Data = source.Page.Data?.Select(x => Render(x, libraryId))
             };
 
             var links = new List<LinkView>();
@@ -85,7 +85,7 @@ namespace Inshapardaz.Api.Converters
                 {
                     ActionName = nameof(BookPageController.GetPagesByBook),
                     Method = HttpMethod.Get,
-                    Rel = RelTypes.Next,
+                    Rel = RelTypes.Previous,
                     Parameters = new { libraryId = libraryId, bookId = bookId },
                     QueryString = new Dictionary<string, string>()
                     {
@@ -99,7 +99,7 @@ namespace Inshapardaz.Api.Converters
             return page;
         }
 
-        public BookPageView Render(BookPageModel source, int libraryId, int bookId)
+        public BookPageView Render(BookPageModel source, int libraryId)
         {
             var result = source.Map();
             var links = new List<LinkView>
@@ -109,19 +109,19 @@ namespace Inshapardaz.Api.Converters
                             ActionName = nameof(BookPageController.GetPagesByIndex),
                             Method = HttpMethod.Get,
                             Rel = RelTypes.Self,
-                            Parameters = new { libraryId = libraryId, bookId = bookId, pageNumber = source.PageNumber }
+                            Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                         }),
                         _linkRenderer.Render(new Link
                         {
                             ActionName = nameof(BookController.GetBookById),
                             Method = HttpMethod.Get,
                             Rel = RelTypes.Book,
-                            Parameters = new { libraryId = libraryId, bookId = bookId }
+                            Parameters = new { libraryId = libraryId, bookId = source.BookId }
                         })
                     };
             if (source.ImageId.HasValue)
             {
-                links.Add(RenderImageLink(libraryId, bookId, source.PageNumber));
+                links.Add(RenderImageLink(libraryId, source.BookId, source.SequenceNumber));
             }
 
             if (_userHelper.IsWriter || _userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
@@ -131,7 +131,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(BookPageController.UpdatePage),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
-                    Parameters = new { libraryId = libraryId, bookId = bookId, pageNumber = source.PageNumber }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -139,21 +139,39 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(BookPageController.DeletePage),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
-                    Parameters = new { libraryId = libraryId, bookId = bookId, pageNumber = source.PageNumber }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                 }));
+
+                if (source.ImageId.HasValue)
+                {
+                    links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(BookPageController.UpdatePageImage),
+                        Method = HttpMethod.Put,
+                        Rel = RelTypes.ImageUpload,
+                        Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
+                    }));
+                    links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(BookPageController.DeletePageImage),
+                        Method = HttpMethod.Delete,
+                        Rel = RelTypes.ImageDelete,
+                        Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
+                    }));
+                }
             }
 
             result.Links = links;
             return result;
         }
 
-        public LinkView RenderImageLink(int libraryId, int bookId, int pageNumber) =>
+        public LinkView RenderImageLink(int libraryId, int bookId, int SequenceNumber) =>
             _linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookPageController.GetPageImage),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Image,
-                Parameters = new { libraryId = libraryId, bookId = bookId, pageNumber = pageNumber }
+                Parameters = new { libraryId = libraryId, bookId = bookId, sequenceNumber = SequenceNumber }
             });
     }
 }

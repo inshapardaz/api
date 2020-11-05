@@ -12,10 +12,11 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddBookPageRequest : LibraryAuthorisedCommand
     {
-        public AddBookPageRequest(ClaimsPrincipal claims, int libraryId, BookPageModel book)
+        public AddBookPageRequest(ClaimsPrincipal claims, int libraryId, int bookId, BookPageModel book)
         : base(claims, libraryId)
         {
             BookPage = book;
+            BookPage.BookId = bookId;
         }
 
         public BookPageModel BookPage { get; }
@@ -46,16 +47,16 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new BadRequestException();
             }
 
-            var existingBookPage = await _bookPageRepository.GetPageByPageNumber(command.LibraryId, command.BookPage.BookId, command.BookPage.PageNumber, cancellationToken);
+            var existingBookPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, cancellationToken);
 
             if (existingBookPage == null)
             {
-                command.Result = await _bookPageRepository.AddPage(command.LibraryId, command.BookPage.BookId, command.BookPage.PageNumber, command.BookPage.Text, 0, cancellationToken);
+                command.Result = await _bookPageRepository.AddPage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, 0, cancellationToken);
                 command.IsAdded = true;
             }
             else
             {
-                command.Result = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.PageNumber, command.BookPage.Text, 0, cancellationToken);
+                command.Result = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, 0, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

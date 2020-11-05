@@ -40,19 +40,38 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpGet("library/{libraryId}/books/{bookId}/pages", Name = nameof(BookPageController.GetPagesByBook))]
         public async Task<IActionResult> GetPagesByBook(int libraryId, int bookId, int pageNumber = 1,
-            int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
+            int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
-            throw new NotImplementedException();
+            var authorsQuery = new GetBookPagesQuery(libraryId, bookId, pageNumber, pageSize);
+            var result = await _queryProcessor.ExecuteAsync(authorsQuery, token);
+
+            var args = new PageRendererArgs<BookPageModel>
+            {
+                Page = result,
+                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
+            };
+
+            return new OkObjectResult(_bookPageRenderer.Render(args, libraryId, bookId));
         }
 
-        [HttpGet("library/{libraryId}/books/{bookId}/pages/{pageNumber}", Name = nameof(BookPageController.GetPagesByIndex))]
-        public async Task<IActionResult> GetPagesByIndex(int libraryId, int bookId, int pageNumber, CancellationToken cancellationToken = default(CancellationToken))
+        [HttpGet("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}", Name = nameof(BookPageController.GetPagesByIndex))]
+        public async Task<IActionResult> GetPagesByIndex(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))
         {
-            throw new NotImplementedException();
+            var request = new GetBookPageByNumberQuery(libraryId, bookId, sequenceNumber);
+
+            var result = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            var renderResult = _bookPageRenderer.Render(result, libraryId);
+            return Ok(renderResult);
         }
 
         [HttpPost("library/{libraryId}/books/{bookId}/pages", Name = nameof(BookPageController.CreatePage))]
-        public async Task<IActionResult> CreatePage(int libraryId, int bookId, [FromBody]BookPageView page, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IActionResult> CreatePage(int libraryId, int bookId, [FromBody]BookPageView page, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {
@@ -60,13 +79,12 @@ namespace Inshapardaz.Api.Controllers
             }
 
             var model = page.Map();
-            model.BookId = bookId;
 
-            var request = new AddBookPageRequest(_userHelper.Claims, libraryId, model);
+            var request = new AddBookPageRequest(_userHelper.Claims, libraryId, bookId, model);
 
-            await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
 
-            var renderResult = _bookPageRenderer.Render(request.Result, libraryId, bookId);
+            var renderResult = _bookPageRenderer.Render(request.Result, libraryId);
 
             if (request.IsAdded)
             {
@@ -76,28 +94,47 @@ namespace Inshapardaz.Api.Controllers
             return Ok(renderResult);
         }
 
-        [HttpPut("library/{libraryId}/books/{bookId}/pages/{pageNumber}", Name = nameof(BookPageController.UpdatePage))]
-        [Authorize]
-        public async Task<IActionResult> UpdatePage(int libraryId, int bookId, int pageNumber, IFormFile file, CancellationToken token = default(CancellationToken))
+        [HttpPut("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}", Name = nameof(BookPageController.UpdatePage))]
+        public async Task<IActionResult> UpdatePage(int libraryId, int bookId, int sequenceNumber, [FromBody]BookPageView page, CancellationToken token = default(CancellationToken))
+        {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
+            var model = page.Map();
+
+            var request = new UpdateBookPageRequest(_userHelper.Claims, libraryId, bookId, sequenceNumber, model);
+
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            var renderResult = _bookPageRenderer.Render(request.Result.BookPage, libraryId);
+
+            if (request.Result.HasAddedNew)
+            {
+                return Created(renderResult.Links.Self(), renderResult);
+            }
+
+            return Ok(renderResult);
+        }
+
+        [HttpDelete("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}", Name = nameof(BookPageController.DeletePage))]
+        public async Task<IActionResult> DeletePage(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))
+        {
+            var request = new DeleteBookPageRequest(_userHelper.Claims, libraryId, bookId, sequenceNumber);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return Ok();
+        }
+
+        [HttpGet("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}/image", Name = nameof(BookPageController.GetPageImage))]
+        public async Task<IActionResult> GetPageImage(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))
         {
             throw new NotImplementedException();
         }
 
-        [HttpDelete("library/{libraryId}/books/{bookId}/pages/{pageNumber}", Name = nameof(BookPageController.DeletePage))]
-        [Authorize]
-        public async Task<IActionResult> DeletePage(int libraryId, int bookId, int pageNumber, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet("library/{libraryId}/books/{bookId}/pages/{pageNumber}/image", Name = nameof(BookPageController.GetPageImage))]
-        public async Task<IActionResult> GetPageImage(int libraryId, int bookId, int pageNumber, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPut("library/{libraryId}/books/{bookId}/pages/{pageNumber}/image")]
-        public async Task<IActionResult> UpdatePageImage(int libraryId, int bookId, int pageNumber, IFormFile file, CancellationToken token = default(CancellationToken))
+        [HttpPut("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}/image", Name = nameof(BookPageController.UpdatePageImage))]
+        public async Task<IActionResult> UpdatePageImage(int libraryId, int bookId, int sequenceNumber, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
             using (var stream = new MemoryStream(content))
@@ -105,7 +142,7 @@ namespace Inshapardaz.Api.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            var request = new UpdateBookPageImageRequest(_userHelper.Claims, libraryId, bookId, pageNumber)
+            var request = new UpdateBookPageImageRequest(_userHelper.Claims, libraryId, bookId, sequenceNumber)
             {
                 Image = new FileModel
                 {
@@ -119,7 +156,7 @@ namespace Inshapardaz.Api.Controllers
 
             if (request.Result.HasAddedNew)
             {
-                var imageLink = _bookPageRenderer.RenderImageLink(libraryId, bookId, pageNumber);
+                var imageLink = _bookPageRenderer.RenderImageLink(libraryId, bookId, sequenceNumber);
 
                 return new CreatedResult(imageLink.Href, null);
             }
@@ -127,23 +164,18 @@ namespace Inshapardaz.Api.Controllers
             return new OkResult();
         }
 
-        [HttpDelete("library/{libraryId}/books/{bookId}/pages/{pageNumber}/image")]
-        [Authorize]
-        public async Task<IActionResult> DeletePageImage(int libraryId, int bookId, int pageNumber, CancellationToken cancellationToken = default(CancellationToken))
+        [HttpDelete("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}/image", Name = nameof(BookPageController.DeletePageImage))]
+        public async Task<IActionResult> DeletePageImage(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))
         {
-            throw new NotImplementedException();
+            var request = new DeleteBookPageImageRequest(_userHelper.Claims, libraryId, bookId, sequenceNumber);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return Ok();
         }
 
-        [HttpPut("library/{libraryId}/books/{bookId}/pages/{pageNumber}/assign")]
+        [HttpPut("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}/assign", Name = nameof(BookPageController.AssignPage))]
         [Authorize]
-        public async Task<IActionResult> AssignPage(int libraryId, int bookId, int pageNumber, int? userId, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPut("library/{libraryId}/books/{bookId}/pages/{pageNumber}/status/{pageStatus}")]
-        [Authorize]
-        public async Task<IActionResult> SetPageStatus(int libraryId, int bookId, int pageNumber, int pageStatus, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IActionResult> AssignPage(int libraryId, int bookId, int sequenceNumber, int? userId, CancellationToken token = default(CancellationToken))
         {
             throw new NotImplementedException();
         }

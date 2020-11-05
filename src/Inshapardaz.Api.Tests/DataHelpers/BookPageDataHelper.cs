@@ -10,9 +10,9 @@ namespace Inshapardaz.Api.Tests.DataHelpers
     {
         public static void AddBookPage(this IDbConnection connection, BookPageDto bookPage)
         {
-            var sql = @"Insert Into BookPage (BookId, Text, PageNumber, ImageId)
+            var sql = @"Insert Into BookPage (BookId, Text, SequenceNumber, ImageId)
                         Output Inserted.Id
-                        Values (@BookId, @Text, @PageNumber, @ImageId)";
+                        Values (@BookId, @Text, @SequenceNumber, @ImageId)";
             var id = connection.ExecuteScalar<int>(sql, bookPage);
             bookPage.Id = id;
         }
@@ -31,14 +31,14 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             connection.Execute(sql, new { Ids = bookPages.Select(f => f.Id) });
         }
 
-        public static BookPageDto GetBookPageByNumber(this IDbConnection connection, int bookId, int pageNumber)
+        public static BookPageDto GetBookPageByNumber(this IDbConnection connection, int bookId, int sequenceNumber)
         {
             var sql = @"SELECT *
                         FROM BookPage
-                        Where BookId = @BookId AND PageNumber = @PageNumber";
-            var command = new CommandDefinition(sql, new { BookId = bookId, PageNumber = pageNumber });
+                        Where BookId = @BookId AND SequenceNumber = @SequenceNumber";
+            var command = new CommandDefinition(sql, new { BookId = bookId, SequenceNumber = sequenceNumber });
 
-            return connection.QuerySingle<BookPageDto>(command);
+            return connection.QuerySingleOrDefault<BookPageDto>(command);
         }
     }
 }

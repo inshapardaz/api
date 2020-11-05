@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UploadPageImage
             var book = BookBuilder.WithLibrary(LibraryId).WithPages(3).Build();
             _page = BookBuilder.GetPages(book.Id).PickRandom();
             _bookId = book.Id;
-            _response = await Client.PutFile($"/library/{LibraryId}/books/{_bookId}/pages/{_page.PageNumber}/image", Random.Bytes);
+            _response = await Client.PutFile($"/library/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}/image", Random.Bytes);
         }
 
         [OneTimeTearDown]
@@ -45,13 +45,13 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UploadPageImage
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            BookPageAssert.ShouldHaveCorrectImageLocationHeader(_response, LibraryId, _bookId, _page.PageNumber);
+            BookPageAssert.ShouldHaveCorrectImageLocationHeader(_response, LibraryId, _bookId, _page.SequenceNumber);
         }
 
         [Test]
         public void ShouldHaveAddedImageToBook()
         {
-            BookPageAssert.ShouldHaveAddedBookPageImage(_bookId, _page.PageNumber, DatabaseConnection, FileStore);
+            BookPageAssert.ShouldHaveAddedBookPageImage(_bookId, _page.SequenceNumber, DatabaseConnection, FileStore);
         }
     }
 }

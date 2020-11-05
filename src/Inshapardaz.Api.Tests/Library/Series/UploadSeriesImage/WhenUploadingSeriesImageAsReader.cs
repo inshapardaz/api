@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
         [Test]
         public void ShouldHaveForbidResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeForbidden();
         }
 
         [Test]

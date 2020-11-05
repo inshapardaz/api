@@ -1,5 +1,4 @@
 ﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -17,14 +16,12 @@ namespace Inshapardaz.Domain.Models.Library
         {
             BookId = bookId;
 
-            if (user == null)
-                throw new BadRequestException();
-            User = user.Value;
+            User = user;
         }
 
         public int BookId { get; }
 
-        public Guid User { get; }
+        public Guid? User { get; }
     }
 
     public class AddBookToFavoriteRequestHandler : RequestHandlerAsync<AddBookToFavoriteRequest>
@@ -42,7 +39,7 @@ namespace Inshapardaz.Domain.Models.Library
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
             if (book != null)
             {
-                await _bookRepository.AddBookToFavorites(command.LibraryId, command.User, command.BookId, cancellationToken);
+                await _bookRepository.AddBookToFavorites(command.LibraryId, command.User.Value, command.BookId, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

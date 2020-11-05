@@ -36,6 +36,7 @@ namespace Inshapardaz.Api.Views
         public const string Categories = "categories";
         public const string Image = "image";
         public const string ImageUpload = "image-upload";
+        public const string ImageDelete = "image-delete";
         public const string Content = "content";
         public const string Chapters = "chapters";
         public const string CreateChapter = "create-chapter";

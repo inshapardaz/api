@@ -20,6 +20,11 @@ namespace Inshapardaz.Api.Tests.Asserts
             return new BookPageAssert(response) { _libraryId = libraryId };
         }
 
+        public static BookPageAssert FromObject(BookPageView view)
+        {
+            return new BookPageAssert(view);
+        }
+
         public HttpResponseMessage _response;
         private BookPageView _bookPage;
         private int _libraryId;
@@ -35,12 +40,51 @@ namespace Inshapardaz.Api.Tests.Asserts
             _bookPage = view;
         }
 
-        public BookPageAssert ShouldHaveCorrectLoactionHeader()
+        public BookPageAssert InLibrary(int libraryId)
+        {
+            _libraryId = libraryId;
+            return this;
+        }
+
+        public BookPageAssert ShouldHaveCorrectLocationHeader()
         {
             string location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeEmpty();
-            location.Should().EndWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.PageNumber}");
+            location.Should().EndWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
             return this;
+        }
+
+        internal static void ShouldHaveNoBookPage(int bookId, int pageNumber, int? imageId, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        {
+            var page = databaseConnection.GetBookPageByNumber(bookId, pageNumber);
+            page.Should().BeNull();
+
+            if (imageId != null)
+            {
+                var image = databaseConnection.GetFileById(imageId.Value);
+                image.Should().BeNull();
+            }
+        }
+
+        internal static void PageShouldExist(int bookId, int pageNumber, IDbConnection databaseConnection)
+        {
+            var page = databaseConnection.GetBookPageByNumber(bookId, pageNumber);
+            page.Should().NotBeNull();
+
+            if (page.ImageId != null)
+            {
+                var image = databaseConnection.GetFileById(page.ImageId.Value);
+                image.Should().NotBeNull();
+            }
+        }
+
+        internal static void ShouldHaveNoBookPageImage(int bookId, int pageNumber, int imageId, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        {
+            var page = databaseConnection.GetBookPageByNumber(bookId, pageNumber);
+            page.ImageId.Should().BeNull();
+
+            var image = databaseConnection.GetFileById(imageId);
+            image.Should().BeNull();
         }
 
         public BookPageAssert ShouldNotHaveCorrectLoactionHeader()
@@ -51,7 +95,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         public void ShouldHaveSavedPage(IDbConnection databaseConnection)
         {
-            databaseConnection.GetBookPageByNumber(_bookPage.BookId, _bookPage.PageNumber);
+            databaseConnection.GetBookPageByNumber(_bookPage.BookId, _bookPage.SequenceNumber);
         }
 
         internal static void ShouldHaveUpdatedBookPageImage(int bookId, int pageNumber, byte[] newImage, IDbConnection databaseConnection, FakeFileStorage fileStore)
@@ -86,7 +130,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookPage.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.PageNumber}");
+                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
             return this;
         }
 
@@ -101,17 +145,29 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         public BookPageAssert ShouldHaveUpdateLink()
         {
-            _bookPage.Link("update")
+            _bookPage.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.PageNumber}");
+                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
+            return this;
+        }
+
+        public BookPageAssert ShouldNotHaveUpdateLink()
+        {
+            _bookPage.UpdateLink().Should().BeNull();
             return this;
         }
 
         public BookPageAssert ShouldHaveDeleteLink()
         {
-            _bookPage.Link("delete")
+            _bookPage.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.PageNumber}");
+                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
+            return this;
+        }
+
+        public BookPageAssert ShouldNotHaveDeleteLink()
+        {
+            _bookPage.DeleteLink().Should().BeNull();
             return this;
         }
 
@@ -119,7 +175,41 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookPage.Link("image")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.PageNumber}/image");
+                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}/image");
+            return this;
+        }
+
+        public BookPageAssert ShouldNotHaveImageLink()
+        {
+            _bookPage.Link("image").Should().BeNull();
+            return this;
+        }
+
+        public BookPageAssert ShouldHaveImageUpdateLink()
+        {
+            _bookPage.Link("image-upload")
+                  .ShouldBePut()
+                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}/image");
+            return this;
+        }
+
+        public BookPageAssert ShouldNotHaveImageUpdateLink()
+        {
+            _bookPage.Link("image-update").Should().BeNull();
+            return this;
+        }
+
+        public BookPageAssert ShouldHaveImageDeleteLink()
+        {
+            _bookPage.Link("image-delete")
+                  .ShouldBeDelete()
+                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}/image");
+            return this;
+        }
+
+        public BookPageAssert ShouldNotHaveImageDeleteLink()
+        {
+            _bookPage.Link("image-delete").Should().BeNull();
             return this;
         }
 
@@ -127,7 +217,24 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookPage.Text.Should().Be(view.Text);
             _bookPage.BookId.Should().Be(view.BookId);
-            _bookPage.PageNumber.Should().Be(view.PageNumber);
+            _bookPage.SequenceNumber.Should().Be(view.SequenceNumber);
+        }
+
+        public BookPageAssert ShouldMatch(BookPageDto dto)
+        {
+            _bookPage.Text.Should().Be(dto.Text);
+            _bookPage.BookId.Should().Be(dto.BookId);
+            _bookPage.SequenceNumber.Should().Be(dto.SequenceNumber);
+            return this;
+        }
+    }
+
+    public static class BookPageAssertionExtensions
+    {
+        public static BookPageAssert ShouldMatch(this BookPageView view, BookPageDto dto)
+        {
+            return BookPageAssert.FromObject(view)
+                               .ShouldMatch(dto);
         }
     }
 }

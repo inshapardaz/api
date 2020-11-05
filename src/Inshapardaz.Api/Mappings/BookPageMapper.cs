@@ -11,7 +11,7 @@ namespace Inshapardaz.Api.Mappings
             {
                 BookId = view.BookId,
                 Text = view.Text,
-                PageNumber = view.PageNumber
+                SequenceNumber = view.SequenceNumber
             };
         }
 
@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Mappings
             {
                 BookId = model.BookId,
                 Text = model.Text,
-                PageNumber = model.PageNumber
+                SequenceNumber = model.SequenceNumber
             };
         }
     }

@@ -323,7 +323,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
                         pages.Add(fixture.Build<BookPageDto>()
                             .With(p => p.BookId, book.Id)
-                            .With(p => p.PageNumber, i + 1)
+                            .With(p => p.SequenceNumber, i + 1)
                             .With(p => p.Text, Random.Text)
                             .With(p => p.ImageId, pageImage?.Id)
                             .Create());
@@ -332,24 +332,25 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     _connection.AddBookPages(pages);
                     _pages.AddRange(pages);
                 }
+            }
 
-                if (_addToFavoriteForUser != Guid.Empty)
-                {
-                    var booksToAddToFavorite = _bookCountToAddToFavorite.HasValue ? _books.PickRandom(_bookCountToAddToFavorite.Value) : _books;
-                    _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), _addToFavoriteForUser);
-                }
+            if (_addToFavoriteForUser != Guid.Empty)
+            {
+                var booksToAddToFavorite = _bookCountToAddToFavorite.HasValue ? _books.PickRandom(_bookCountToAddToFavorite.Value) : _books;
+                _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), _addToFavoriteForUser);
+            }
 
-                if (_addToRecentReadsForUser != Guid.Empty)
+            if (_addToRecentReadsForUser != Guid.Empty)
+            {
+                var booksToAddToRecent = _bookCountToAddToRecent.HasValue ? _books.PickRandom(_bookCountToAddToRecent.Value) : _books;
+                foreach (var recentBook in booksToAddToRecent)
                 {
-                    var booksToAddToRecent = _bookCountToAddToRecent.HasValue ? _books.PickRandom(_bookCountToAddToRecent.Value) : _books;
-                    foreach (var recentBook in booksToAddToRecent)
-                    {
-                        RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, UserId = _addToRecentReadsForUser, DateRead = Random.Date };
-                        _connection.AddBookToRecentReads(recent);
-                        _recentBooks.Add(recent);
-                    }
+                    RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, UserId = _addToRecentReadsForUser, DateRead = Random.Date };
+                    _connection.AddBookToRecentReads(recent);
+                    _recentBooks.Add(recent);
                 }
             }
+
             return _books;
         }
 

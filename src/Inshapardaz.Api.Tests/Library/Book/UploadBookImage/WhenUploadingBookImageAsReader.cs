@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
         [Test]
         public void ShouldHaveForbidResult()
         {
-            Assert.That(_response, Is.Not.Null);
+            _response.ShouldBeForbidden();
         }
 
         [Test]

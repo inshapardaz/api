@@ -14,16 +14,16 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class UpdateBookPageImageRequest : LibraryAuthorisedCommand
     {
-        public UpdateBookPageImageRequest(ClaimsPrincipal claims, int libraryId, int bookId, int pageNumber)
+        public UpdateBookPageImageRequest(ClaimsPrincipal claims, int libraryId, int bookId, int sequenceNumber)
             : base(claims, libraryId)
         {
             BookId = bookId;
-            PageNumber = pageNumber;
+            SequenceNumber = sequenceNumber;
         }
 
         public int BookId { get; }
 
-        public int PageNumber { get; }
+        public int SequenceNumber { get; }
 
         public FileModel Image { get; set; }
 
@@ -53,7 +53,7 @@ namespace Inshapardaz.Domain.Models.Library
         [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<UpdateBookPageImageRequest> HandleAsync(UpdateBookPageImageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var bookPage = await _bookPageRepository.GetPageByPageNumber(command.LibraryId, command.BookId, command.PageNumber, cancellationToken);
+            var bookPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
 
             if (bookPage == null)
             {
@@ -69,7 +69,7 @@ namespace Inshapardaz.Domain.Models.Library
                     await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
                 }
 
-                var url = await AddImageToFileStore(command.BookId, command.PageNumber, command.Image.FileName, command.Image.Contents, cancellationToken);
+                var url = await AddImageToFileStore(command.BookId, command.SequenceNumber, command.Image.FileName, command.Image.Contents, cancellationToken);
 
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
@@ -80,28 +80,28 @@ namespace Inshapardaz.Domain.Models.Library
             else
             {
                 command.Image.Id = default(int);
-                var url = await AddImageToFileStore(command.BookId, command.PageNumber, command.Image.FileName, command.Image.Contents, cancellationToken);
+                var url = await AddImageToFileStore(command.BookId, command.SequenceNumber, command.Image.FileName, command.Image.Contents, cancellationToken);
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
                 command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
                 command.Result.HasAddedNew = true;
 
-                await _bookPageRepository.UpdatePageImage(command.LibraryId, command.BookId, command.PageNumber, command.Result.File.Id, cancellationToken);
+                await _bookPageRepository.UpdatePageImage(command.LibraryId, command.BookId, command.SequenceNumber, command.Result.File.Id, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private async Task<string> AddImageToFileStore(int bookId, int pageNumber, string fileName, byte[] contents, CancellationToken cancellationToken)
+        private async Task<string> AddImageToFileStore(int bookId, int sequenceNumber, string fileName, byte[] contents, CancellationToken cancellationToken)
         {
-            var filePath = GetUniqueFileName(bookId, pageNumber, fileName);
+            var filePath = GetUniqueFileName(bookId, sequenceNumber, fileName);
             return await _fileStorage.StoreImage(filePath, contents, cancellationToken);
         }
 
-        private static string GetUniqueFileName(int bookId, int pageNumber, string fileName)
+        private static string GetUniqueFileName(int bookId, int sequenceNumber, string fileName)
         {
             var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"books/{bookId}/pages/{pageNumber}_{Guid.NewGuid():N}.{fileNameWithourExtension}";
+            return $"books/{bookId}/pages/{sequenceNumber}_{Guid.NewGuid():N}.{fileNameWithourExtension}";
         }
     }
 }

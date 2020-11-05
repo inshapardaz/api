@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
 
-            var page = new BookPageView { Text = new Faker().Random.String(), PageNumber = 1 };
+            var page = new BookPageView { Text = new Faker().Random.String(), SequenceNumber = 1 };
             _response = await Client.PostObject($"/library/{LibraryId}/books/{book.Id}/pages", page);
         }
 

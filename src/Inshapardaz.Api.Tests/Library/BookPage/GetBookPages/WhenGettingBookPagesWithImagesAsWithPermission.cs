@@ -75,7 +75,7 @@ namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
                     .InLibrary(LibraryId)
                             .ShouldHaveSelfLink()
                             .ShouldHaveBookLink()
-                            .ShouldHaveImageLink()
+                            .ShouldHaveImageLink(item.ImageId.Value)
                             .ShouldHaveUpdateLink()
                             .ShouldHaveDeleteLink()
                             .ShouldHaveImageUpdateLink()

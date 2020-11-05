@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using Paramore.Brighter;

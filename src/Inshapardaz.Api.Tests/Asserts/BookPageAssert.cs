@@ -4,9 +4,6 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System;
 using System.Data;
 using System.Net.Http;
 using System.Threading;
@@ -66,7 +63,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             }
         }
 
-        internal static void PageShouldExist(int bookId, int pageNumber, IDbConnection databaseConnection)
+        internal static void BookPageShouldExist(int bookId, int pageNumber, IDbConnection databaseConnection)
         {
             var page = databaseConnection.GetBookPageByNumber(bookId, pageNumber);
             page.Should().NotBeNull();
@@ -110,11 +107,11 @@ namespace Inshapardaz.Api.Tests.Asserts
             content.Should().BeEquivalentTo(newImage);
         }
 
-        internal static void ShouldHaveCorrectImageLocationHeader(HttpResponseMessage response, int libraryId, int bookId, int pageNumber)
+        internal static void ShouldHaveCorrectImageLocationHeader(HttpResponseMessage response, int imageId)
         {
             string location = response.Headers.Location.AbsoluteUri;
             location.Should().NotBeEmpty();
-            location.Should().EndWith($"library/{libraryId}/books/{bookId}/pages/{pageNumber}/image");
+            location.Should().EndWith($"/files/{imageId}");
         }
 
         internal static void ShouldHaveAddedBookPageImage(int bookId, int pageNumber, IDbConnection databaseConnection, FakeFileStorage fileStore)
@@ -171,11 +168,11 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        public BookPageAssert ShouldHaveImageLink()
+        public BookPageAssert ShouldHaveImageLink(int imageId)
         {
             _bookPage.Link("image")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}/image");
+                  .EndingWith($"files/{imageId}");
             return this;
         }
 

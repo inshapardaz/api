@@ -56,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
         {
             _assert.ShouldHaveSelfLink()
                    .ShouldHaveBookLink()
-                   .ShouldHaveImageLink();
+                   .ShouldHaveImageLink(_expected.ImageId.Value);
         }
 
         [Test]

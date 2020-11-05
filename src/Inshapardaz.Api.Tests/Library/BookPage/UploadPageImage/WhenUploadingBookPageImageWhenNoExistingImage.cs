@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using NUnit.Framework;
@@ -45,7 +46,8 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UploadPageImage
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            BookPageAssert.ShouldHaveCorrectImageLocationHeader(_response, LibraryId, _bookId, _page.SequenceNumber);
+            var savedPage = DatabaseConnection.GetBookPageByNumber(_page.BookId, _page.SequenceNumber);
+            BookPageAssert.ShouldHaveCorrectImageLocationHeader(_response, savedPage.ImageId.Value);
         }
 
         [Test]

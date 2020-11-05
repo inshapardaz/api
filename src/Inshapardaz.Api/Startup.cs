@@ -63,6 +63,7 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderPeriodical, PeriodicalRenderer>();
             services.AddTransient<IRenderIssue, IssueRenderer>();
             services.AddTransient<IRenderArticle, ArticleRenderer>();
+            services.AddTransient<IRenderBookPage, BookPageRenderer>();
 
             if (settings.FileStoreType == FileStoreTypes.AzureBlobStorage)
             {

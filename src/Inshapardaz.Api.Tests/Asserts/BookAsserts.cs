@@ -184,6 +184,24 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+        public BookAssert ShouldHavePagesLink()
+        {
+            _book.Link("pages")
+                  .ShouldBeGet()
+                  .EndingWith($"library/{_libraryId}/books/{_book.Id}/pages");
+
+            return this;
+        }
+
+        public BookAssert ShouldHavePagesUploadLink()
+        {
+            _book.Link("add-pages")
+                  .ShouldBePost()
+                  .EndingWith($"library/{_libraryId}/books/{_book.Id}/pages");
+
+            return this;
+        }
+
         public BookAssert ShouldNotHaveSeriesLink()
         {
             _book.Link("series").Should().BeNull();
@@ -356,6 +374,19 @@ namespace Inshapardaz.Api.Tests.Asserts
                 var category = _book.Categories.SingleOrDefault(c => c.Id == expectedCategory.Id);
                 category.Should().NotBeNull();
                 category.ShouldMatch(expectedCategory);
+            }
+            return this;
+        }
+
+        internal BookAssert ShouldHaveCategories(IEnumerable<CategoryDto> expectedCategories, IDbConnection dbConnection)
+        {
+            var bookCategories = dbConnection.GetCategoriesByBook(_book.Id);
+            bookCategories.Should().HaveSameCount(expectedCategories);
+            foreach (var expectedCategory in expectedCategories)
+            {
+                var category = bookCategories.SingleOrDefault(c => c.Id == expectedCategory.Id);
+                category.Should().NotBeNull();
+                category.Id.Should().Be(expectedCategory.Id);
             }
             return this;
         }

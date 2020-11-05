@@ -25,6 +25,10 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private List<BookDto> _books;
         private readonly List<FileDto> _files = new List<FileDto>();
         private List<AuthorDto> _authors = new List<AuthorDto>();
+        private List<BookPageDto> _pages = new List<BookPageDto>();
+
+        internal IEnumerable<BookPageDto> GetPages(int bookId) => _pages.Where(p => p.BookId == bookId);
+
         private bool _hasSeries, _hasImage = true;
         private bool? _isPublic = null;
         private int _chapterCount, _categoriesCount, _contentCount;
@@ -42,6 +46,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private string _language = null;
         private int _numberOfAuthors;
         private List<RecentBookDto> _recentBooks = new List<RecentBookDto>();
+        private int _pageCount;
+        private bool _addPageImage;
 
         public IEnumerable<AuthorDto> Authors => _authors;
         public IEnumerable<BookDto> Books => _books;
@@ -135,6 +141,13 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         {
             _contentCount = contentCount;
             _contentMimeType = mimeType;
+            return this;
+        }
+
+        public BooksDataBuilder WithPages(int count = 10, bool addImage = false)
+        {
+            _pageCount = count;
+            _addPageImage = addImage;
             return this;
         }
 
@@ -287,25 +300,56 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     _connection.AddBookFiles(book.Id, contents);
                     _contents.AddRange(contents);
                 }
-            }
 
-            if (_addToFavoriteForUser != Guid.Empty)
-            {
-                var booksToAddToFavorite = _bookCountToAddToFavorite.HasValue ? _books.PickRandom(_bookCountToAddToFavorite.Value) : _books;
-                _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), _addToFavoriteForUser);
-            }
-
-            if (_addToRecentReadsForUser != Guid.Empty)
-            {
-                var booksToAddToRecent = _bookCountToAddToRecent.HasValue ? _books.PickRandom(_bookCountToAddToRecent.Value) : _books;
-                foreach (var recentBook in booksToAddToRecent)
+                if (_pageCount > 0)
                 {
-                    RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, UserId = _addToRecentReadsForUser, DateRead = Random.Date };
-                    _connection.AddBookToRecentReads(recent);
-                    _recentBooks.Add(recent);
+                    var pages = new List<BookPageDto>();
+
+                    for (int i = 0; i < _pageCount; i++)
+                    {
+                        FileDto pageImage = null;
+                        if (_addPageImage)
+                        {
+                            pageImage = fixture.Build<FileDto>()
+                                         .With(a => a.FilePath, Random.BlobUrl)
+                                         .With(a => a.IsPublic, true)
+                                         .Create();
+                            _connection.AddFile(pageImage);
+
+                            _files.Add(pageImage);
+                            _fileStorage.SetupFileContents(pageImage.FilePath, Random.Bytes);
+                            _connection.AddFile(pageImage);
+                        }
+
+                        pages.Add(fixture.Build<BookPageDto>()
+                            .With(p => p.BookId, book.Id)
+                            .With(p => p.PageNumber, i + 1)
+                            .With(p => p.Text, Random.Text)
+                            .With(p => p.ImageId, pageImage?.Id)
+                            .Create());
+                    }
+
+                    _connection.AddBookPages(pages);
+                    _pages.AddRange(pages);
+                }
+
+                if (_addToFavoriteForUser != Guid.Empty)
+                {
+                    var booksToAddToFavorite = _bookCountToAddToFavorite.HasValue ? _books.PickRandom(_bookCountToAddToFavorite.Value) : _books;
+                    _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), _addToFavoriteForUser);
+                }
+
+                if (_addToRecentReadsForUser != Guid.Empty)
+                {
+                    var booksToAddToRecent = _bookCountToAddToRecent.HasValue ? _books.PickRandom(_bookCountToAddToRecent.Value) : _books;
+                    foreach (var recentBook in booksToAddToRecent)
+                    {
+                        RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, UserId = _addToRecentReadsForUser, DateRead = Random.Date };
+                        _connection.AddBookToRecentReads(recent);
+                        _recentBooks.Add(recent);
+                    }
                 }
             }
-
             return _books;
         }
 
@@ -313,6 +357,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         {
             _connection.DeleteBooks(_books);
             _connection.DeleteFiles(_files);
+            _connection.DeleteBookPages(_pages);
             _seriesBuilder.CleanUp();
             _authorBuilder.CleanUp();
         }

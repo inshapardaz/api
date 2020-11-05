@@ -157,6 +157,13 @@ namespace Inshapardaz.Api.Converters
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Chapters,
                     Parameters = new { libraryId = libraryId, bookId = source.Id }
+                }),
+                _linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.GetPagesByBook),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Pages,
+                    Parameters = new { libraryId = libraryId, bookId = source.Id }
                 })
             };
 
@@ -222,6 +229,13 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ChapterController.CreateChapter),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.CreateChapter,
+                    Parameters = new { libraryId = libraryId, bookId = source.Id }
+                }));
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.CreatePage),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.AddPages,
                     Parameters = new { libraryId = libraryId, bookId = source.Id }
                 }));
             }
@@ -300,8 +314,16 @@ namespace Inshapardaz.Api.Converters
             };
 
             if (!string.IsNullOrWhiteSpace(source.ContentUrl))
+
             {
-                links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = source.MimeType, AcceptLanguage = source.Language });
+                links.Add(new LinkView
+                {
+                    Href = source.ContentUrl,
+                    Method = "GET",
+                    Rel = RelTypes.Download,
+                    Accept = source.MimeType,
+                    AcceptLanguage = source.Language
+                });
             }
             else
             {

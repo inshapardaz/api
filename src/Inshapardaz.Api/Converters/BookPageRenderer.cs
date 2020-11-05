@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Converters
 
         PageView<BookPageView> Render(PageRendererArgs<BookPageModel> source, int libraryId, int bookId);
 
-        LinkView RenderImageLink(int libraryId, int bookId, int pageNumber);
+        LinkView RenderImageLink(int imageId);
     }
 
     public class BookPageRenderer : IRenderBookPage
@@ -121,7 +121,7 @@ namespace Inshapardaz.Api.Converters
                     };
             if (source.ImageId.HasValue)
             {
-                links.Add(RenderImageLink(libraryId, source.BookId, source.SequenceNumber));
+                links.Add(RenderImageLink(source.ImageId.Value));
             }
 
             if (_userHelper.IsWriter || _userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
@@ -165,13 +165,13 @@ namespace Inshapardaz.Api.Converters
             return result;
         }
 
-        public LinkView RenderImageLink(int libraryId, int bookId, int SequenceNumber) =>
+        public LinkView RenderImageLink(int imageId) =>
             _linkRenderer.Render(new Link
             {
-                ActionName = nameof(BookPageController.GetPageImage),
+                ActionName = nameof(FileController.GetFile),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Image,
-                Parameters = new { libraryId = libraryId, bookId = bookId, sequenceNumber = SequenceNumber }
+                Parameters = new { fileId = imageId }
             });
     }
 }

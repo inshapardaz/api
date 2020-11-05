@@ -127,12 +127,6 @@ namespace Inshapardaz.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}/image", Name = nameof(BookPageController.GetPageImage))]
-        public async Task<IActionResult> GetPageImage(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))
-        {
-            throw new NotImplementedException();
-        }
-
         [HttpPut("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}/image", Name = nameof(BookPageController.UpdatePageImage))]
         public async Task<IActionResult> UpdatePageImage(int libraryId, int bookId, int sequenceNumber, IFormFile file, CancellationToken token = default(CancellationToken))
         {
@@ -156,7 +150,7 @@ namespace Inshapardaz.Api.Controllers
 
             if (request.Result.HasAddedNew)
             {
-                var imageLink = _bookPageRenderer.RenderImageLink(libraryId, bookId, sequenceNumber);
+                var imageLink = _bookPageRenderer.RenderImageLink(request.Result.File.Id);
 
                 return new CreatedResult(imageLink.Href, null);
             }

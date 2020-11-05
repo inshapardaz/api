@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePage
         [Test]
         public void ShouldNotDeletePage()
         {
-            BookPageAssert.PageShouldExist(_bookId, _page.SequenceNumber, DatabaseConnection);
+            BookPageAssert.BookPageShouldExist(_bookId, _page.SequenceNumber, DatabaseConnection);
         }
     }
 }

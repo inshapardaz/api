@@ -60,7 +60,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
 
-                var sqlCategory = @"Delete From BookCategory Where BookId = @BookId;
+                var sqlCategory = @"Delete From BookCategory Where BookId = @BookId AND CategoryId = @CategoryId;
                            Insert Into BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
 
                 var bookCategories = book.Categories.Select(c => new { BookId = book.Id, CategoryId = c.Id });

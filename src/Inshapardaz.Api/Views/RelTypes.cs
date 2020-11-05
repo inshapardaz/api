@@ -63,5 +63,7 @@ namespace Inshapardaz.Api.Views
         public static string Issue = "issue";
         public static string Periodical = "periodical";
         public static string Article = "article";
+        public static string AddPages = "add-pages";
+        public static string Pages = "pages";
     }
 }

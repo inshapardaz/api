@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             var newCategories = CategoryBuilder.WithLibrary(LibraryId).Build(3);
             var otherSeries = SeriesBuilder.WithLibrary(LibraryId).Build();
             var books = BookBuilder.WithLibrary(LibraryId)
-                                    .WithCategories(2)
+                                    .WithCategories(3)
                                     .HavingSeries()
                                     .AddToFavorites(Guid.NewGuid())
                                     .AddToRecentReads(Guid.NewGuid())
@@ -86,6 +86,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         public void ShouldReturnCorrectCategories()
         {
             _bookAssert.ShouldBeSameCategories(_categoriesToUpdate);
+        }
+
+        [Test]
+        public void ShouldSaveCorrectCategories()
+        {
+            _bookAssert.ShouldHaveCategories(_categoriesToUpdate, DatabaseConnection);
         }
     }
 }

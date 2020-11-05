@@ -73,6 +73,21 @@ namespace Inshapardaz.Api.Tests.Helpers
             }
         }
 
+        public static async Task<HttpResponseMessage> PostObjectWithFile<T>(this HttpClient client, string url, T data, byte[] payload, string fileName = "image.jpg")
+        {
+            using (var stream = new MemoryStream(payload))
+            using (var content = new StreamContent(stream))
+            using (var formData = new MultipartFormDataContent())
+            {
+                var jsonContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+
+                formData.Add(jsonContent, "json");
+                formData.Add(content, "image", $"{Random.Name}.jpg");
+
+                return await client.PostAsync(url, formData);
+            }
+        }
+
         public static async Task<HttpResponseMessage> PutFile(this HttpClient client, string url, byte[] payload, string language, string mimeType, string fileName = "image.jpg")
         {
             client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(language));

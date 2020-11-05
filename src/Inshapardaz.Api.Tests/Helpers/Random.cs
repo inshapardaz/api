@@ -10,7 +10,7 @@ namespace Inshapardaz.Api.Tests.Helpers
     {
         public static int Number => new Faker().Random.Number(1);
 
-        public static string Text => new Faker().Random.String();
+        public static string Text => new Faker().Random.Words(3);
 
         public static bool Bool => new Faker().Random.Bool();
 

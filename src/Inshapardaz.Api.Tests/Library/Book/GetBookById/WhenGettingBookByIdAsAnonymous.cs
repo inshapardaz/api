@@ -24,6 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
                                         .HavingSeries()
                                         .WithCategories(_categories)
                                         .WithContents(2)
+                                        .WithPages()
                                         .Build(4);
             _expected = books.PickRandom();
 
@@ -77,6 +78,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
         public void ShouldHaveSeriesLink()
         {
             _assert.ShouldHaveSeriesLink();
+        }
+
+        [Test]
+        public void ShouldHavePagesLink()
+        {
+            _assert.ShouldHavePagesLink();
         }
 
         [Test]

@@ -11,7 +11,10 @@ namespace Inshapardaz.Api.Mappings
             {
                 BookId = view.BookId,
                 Text = view.Text,
-                SequenceNumber = view.SequenceNumber
+                SequenceNumber = view.SequenceNumber,
+                Status = view.Status,
+                UserId = view.UserId,
+                AssignTimeStamp = view.AssignTimeStamp
             };
         }
 
@@ -21,7 +24,10 @@ namespace Inshapardaz.Api.Mappings
             {
                 BookId = model.BookId,
                 Text = model.Text,
-                SequenceNumber = model.SequenceNumber
+                SequenceNumber = model.SequenceNumber,
+                Status = model.Status,
+                UserId = model.UserId,
+                AssignTimeStamp = model.AssignTimeStamp
             };
         }
     }

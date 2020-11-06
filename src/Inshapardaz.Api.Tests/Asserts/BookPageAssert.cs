@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using System;
 using System.Data;
 using System.Net.Http;
 using System.Threading;
@@ -61,6 +62,13 @@ namespace Inshapardaz.Api.Tests.Asserts
                 var image = databaseConnection.GetFileById(imageId.Value);
                 image.Should().BeNull();
             }
+        }
+
+        internal BookPageAssert ShouldHaveAssignedRecently()
+        {
+            _bookPage.AssignTimeStamp.Should().NotBeNull();
+            _bookPage.AssignTimeStamp.Value.Should().BeWithin(TimeSpan.FromMinutes(1));
+            return this;
         }
 
         internal static void BookPageShouldExist(int bookId, int pageNumber, IDbConnection databaseConnection)

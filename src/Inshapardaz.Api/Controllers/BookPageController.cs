@@ -86,6 +86,7 @@ namespace Inshapardaz.Api.Controllers
 
             var renderResult = _bookPageRenderer.Render(request.Result, libraryId);
 
+            //TODO: Remove updation
             if (request.IsAdded)
             {
                 return Created(renderResult.Links.Self(), renderResult);
@@ -167,11 +168,21 @@ namespace Inshapardaz.Api.Controllers
             return Ok();
         }
 
-        [HttpPut("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}/assign", Name = nameof(BookPageController.AssignPage))]
-        [Authorize]
-        public async Task<IActionResult> AssignPage(int libraryId, int bookId, int sequenceNumber, int? userId, CancellationToken token = default(CancellationToken))
+        [HttpPost("library/{libraryId}/books/{bookId}/pages/{sequenceNumber}/assign", Name = nameof(BookPageController.AssignPage))]
+        public async Task<IActionResult> AssignPage(int libraryId, int bookId, int sequenceNumber, [FromBody]BookPageAssignmentView assignment, CancellationToken token = default(CancellationToken))
         {
-            throw new NotImplementedException();
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
+            var request = new AssignBookPageRequest(_userHelper.Claims, libraryId, bookId, sequenceNumber, assignment.Status, assignment.UserId);
+
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            var renderResult = _bookPageRenderer.Render(request.Result, libraryId);
+
+            return Ok(renderResult);
         }
     }
 }

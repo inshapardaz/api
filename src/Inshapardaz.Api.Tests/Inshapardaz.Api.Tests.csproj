@@ -34,8 +34,4 @@
     <ProjectReference Include="..\Inshapardaz.Api\Inshapardaz.Api.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Category\" />
-  </ItemGroup>
-
 </Project>

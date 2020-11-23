@@ -8,7 +8,6 @@ import LocaleService from './services/LocaleService';
 import LibraryService from './services/LibraryService';
 import Loading from './components/Loading.jsx';
 import Router from './Routes';
-import './custom.css'
 
 const App = () =>
 {

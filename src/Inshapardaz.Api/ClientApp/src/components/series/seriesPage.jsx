@@ -46,7 +46,7 @@ const SeriesPage = () =>
 	const [isLoading, setLoading] = useState(true);
 	const [isError, setError] = useState(false);
 
-	const loadData = async () =>
+	const loadData = useCallback(async () =>
 	{
 		const values = queryString.parse(location.search);
 
@@ -65,12 +65,12 @@ const SeriesPage = () =>
 		{
 			setLoading(false);
 		}
-	};
+	}, [location.search]);
 
 	useEffect(() =>
 	{
 		loadData();
-	}, [location]);
+	}, [location, loadData]);
 
 	const handleClose = () =>
 	{
@@ -79,17 +79,17 @@ const SeriesPage = () =>
 		setShowDelete(false);
 	};
 
-	const onDeleteClicked = useCallback(serie =>
+	const onDeleteClicked = serie =>
 	{
 		setSelectedSeries(serie);
 		setShowDelete(true);
-	}, [location]);
+	};
 
-	const onEditClicked = useCallback(serie =>
+	const onEditClicked = serie =>
 	{
 		setSelectedSeries(serie);
 		setShowEditor(true);
-	}, [location]);
+	};
 
 	const handleDataChanged = () =>
 	{

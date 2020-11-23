@@ -31,7 +31,9 @@ export default function Header ()
 	return (<AppBar position="relative">
 		<Toolbar>
 			<Link to="/">
-				<img  className={classes.icon} height="24" width="24" src="/images/logo.png" style={{ margin : '4px' }} />
+				<img className={classes.icon} alt="logo"
+					height="24" width="24"
+					src="/images/logo.png" style={{ margin: '4px' }} />
 			</Link>
 			<div className={classes.sectionDesktop} >
 				<Typography variant="h6" color="inherit" noWrap>

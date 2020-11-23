@@ -32,7 +32,7 @@ const SeriesDropDown = (props) =>
 				setLoading(false);
 			}
 		})();
-	}, [text]);
+	}, [text, open]);
 
 	React.useEffect(() =>
 	{

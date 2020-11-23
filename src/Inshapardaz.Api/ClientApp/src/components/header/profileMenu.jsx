@@ -18,7 +18,6 @@ import { ApplicationPaths } from '../api-authorization/ApiAuthorizationConstants
 
 const ProfileMenu = () =>
 {
-	let subscription = null;
 	const anchorRef = useRef(null);
 	const [open, setOpen] = useState(false);
 	const [profile, setProfile] = useState(null);
@@ -33,12 +32,9 @@ const ProfileMenu = () =>
 	};
 
 	useEffect(() =>
-    {
-        if (subscription == null)
-        {
-            subscription = AuthService.subscribe(() => populateState());
-            populateState();
-        }
+	{
+		let subscription = AuthService.subscribe(() => populateState());
+		populateState();
 
 		return () =>
 		{

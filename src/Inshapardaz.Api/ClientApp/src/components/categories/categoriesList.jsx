@@ -45,7 +45,7 @@ const CategoriesList = () =>
 			}
 		};
 		fetchData();
-	}, []);
+	}, [location]);
 
 	const renderCategories = () =>
 	{

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -11,7 +11,7 @@ const AuthorDropDown = (props) =>
 	const [text, setText] = React.useState('');
 	const [loading, setLoading] = React.useState(false);
 
-	React.useEffect(() =>
+	useEffect(() =>
 	{
 		if (!open)
 		{
@@ -32,9 +32,9 @@ const AuthorDropDown = (props) =>
 				setLoading(false);
 			}
 		})();
-	}, [text]);
+	}, [text, open]);
 
-	React.useEffect(() =>
+	useEffect(() =>
 	{
 		if (!open)
 		{

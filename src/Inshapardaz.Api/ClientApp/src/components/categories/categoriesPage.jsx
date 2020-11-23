@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
@@ -56,17 +56,17 @@ const CategoriesPage = () =>
 		setShowDelete(false);
 	};
 
-	const onDeleteClicked = useCallback(category =>
+	const onDeleteClicked = category =>
 	{
 		setSelectedCategory(category);
 		setShowDelete(true);
-	}, [categories]);
+	};
 
-	const onEditClicked = useCallback(category =>
+	const onEditClicked = category =>
 	{
 		setSelectedCategory(category);
 		setShowEditor(true);
-	}, [categories]);
+	};
 
 	const handleDataChanged = () =>
 	{

@@ -66,7 +66,7 @@ const BooksPage = () =>
 		};
 
 		loadData();
-	}, [location]);
+	}, [location, authorId, categoryId, seriesId]);
 
 	let headerContent = intl.formatMessage({ id : 'header.books' });
 	if (author)

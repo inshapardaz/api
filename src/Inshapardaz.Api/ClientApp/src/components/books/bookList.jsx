@@ -60,7 +60,7 @@ const BookList = () =>
 	const [isLoading, setLoading] = useState(true);
 	const [isError, setError] = useState(false);
 
-	const loadData = async () =>
+	const loadData = useCallback (async () =>
 	{
 		const values = queryString.parse(location.search);
 		const page = values.page;
@@ -93,12 +93,12 @@ const BookList = () =>
 		{
 			setLoading(false);
 		}
-	};
+	}, [location.search]);
 
 	useEffect(() =>
 	{
 		loadData();
-	}, [location]);
+	}, [location, loadData]);
 
 	const handleClose = () =>
 	{
@@ -107,17 +107,17 @@ const BookList = () =>
 		setShowDelete(false);
 	};
 
-	const onDeleteClicked = useCallback(book =>
+	const onDeleteClicked = book =>
 	{
 		setSelectedBook(book);
 		setShowDelete(true);
-	}, [books]);
+	};
 
-	const onEditClicked = useCallback(book =>
+	const onEditClicked = book =>
 	{
 		setSelectedBook(book);
 		setShowEditor(true);
-	}, [books]);
+	};
 
 	const handleDataChanged = () =>
 	{

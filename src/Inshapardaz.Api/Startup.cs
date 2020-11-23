@@ -18,6 +18,7 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
 using Inshapradaz.Database.SqlServer.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace Inshapardaz.Api
 {
@@ -38,10 +39,10 @@ namespace Inshapardaz.Api
             services.AddSingleton(settings);
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(settings.DefaultConnection));
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer()
@@ -85,6 +86,16 @@ namespace Inshapardaz.Api
 
             AddCustomServices(services);
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                                  {
+                                      builder.WithOrigins(settings.AllowedOrigins)
+                                             .AllowAnyHeader()
+                                             .AllowAnyMethod();
+                                  });
+            });
+
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -108,6 +119,7 @@ namespace Inshapardaz.Api
             }
 
             app.UseHttpsRedirection();
+            app.UseCors();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 

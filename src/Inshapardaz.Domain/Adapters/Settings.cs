@@ -13,5 +13,6 @@ namespace Inshapardaz.Domain.Adapters
         public Uri ApiRoot { get; set; }
 
         public FileStoreTypes FileStoreType { get; set; }
+        public string[] AllowedOrigins { get; set; }
     }
 }

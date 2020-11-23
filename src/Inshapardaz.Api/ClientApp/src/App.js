@@ -1,26 +1,94 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import { Home } from './components/Home';
-import { FetchData } from './components/FetchData';
-import { Counter } from './components/Counter';
-import AuthorizeRoute from './components/api-authorization/AuthorizeRoute';
-import ApiAuthorizationRoutes from './components/api-authorization/ApiAuthorizationRoutes';
-import { ApplicationPaths } from './components/api-authorization/ApiAuthorizationConstants';
+import React, { Fragment, useState, useEffect } from 'react';
+import { IntlProvider } from 'react-intl';
+import { createMuiTheme, StylesProvider, ThemeProvider, jssPreset } from '@material-ui/core/styles';
+import { create } from 'jss';
+import rtl from 'jss-rtl';
 
+import LocaleService from './services/LocaleService';
+import LibraryService from './services/LibraryService';
+import Loading from './components/Loading.jsx';
+import Router from './Routes';
 import './custom.css'
 
-export default class App extends Component {
-  static displayName = App.name;
+const App = () =>
+{
+  const [isLoading, setIsLoading] = useState(true);
 
-  render () {
-    return (
-      <Layout>
-        <Route exact path='/' component={Home} />
-        <Route path='/counter' component={Counter} />
-        <AuthorizeRoute path='/fetch-data' component={FetchData} />
-        <Route path={ApplicationPaths.ApiAuthorizationPrefix} component={ApiAuthorizationRoutes} />
-      </Layout>
-    );
+	useEffect(() =>
+	{
+		const fetchEntry = async () =>
+		{
+			setIsLoading(true);
+
+			try
+			{
+				await LibraryService.getEntry();
+			}
+			catch (e)
+			{
+				console.error('error', e);
+				//this.props.push('/error');
+			}
+			finally
+			{
+			  setIsLoading(false);
+			}
+		};
+
+		const fetchData = async () =>
+		{
+			fetchEntry();
+		};
+
+		fetchData();
+  }, []);
+  
+  const { messages, locale } = LocaleService.initLocale();
+
+	const isRtl = LocaleService.isRtl();
+
+	const direction = isRtl ? 'rtl' : 'ltr';
+
+	const theme = createMuiTheme({
+		direction,
+		typography : {
+			fontFamily : [
+				'Mehr-Nastaleeq',
+				'Roboto',
+				'"Helvetica Neue"',
+				'Arial',
+				'sans-serif',
+				'"Apple Color Emoji"',
+				'"Segoe UI Emoji"',
+				'"Segoe UI Symbol"'
+			].join(',')
+		},
+		palette : {
+			primary : {
+				main : '#373837',
+				light : '#848484'
+			}
+		}
+	  });
+
+	document.body.dir = direction;
+
+  const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
+  
+  if (isLoading)
+	{
+		return (<Loading />);
   }
-}
+  
+  return (
+    <IntlProvider locale={locale} messages={messages} textComponent={Fragment}>
+		<StylesProvider jss={jss}>
+        	<ThemeProvider theme={theme}>
+        		<Router />
+    		</ThemeProvider>
+		</StylesProvider>
+	</IntlProvider>
+  );
+};
+
+export default App;

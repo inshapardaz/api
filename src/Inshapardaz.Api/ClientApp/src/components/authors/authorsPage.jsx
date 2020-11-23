@@ -47,7 +47,7 @@ const AuthorsPage = () =>
 	const [isLoading, setLoading] = useState(true);
 	const [isError, setError] = useState(false);
 
-	const loadData = async () =>
+	const loadData = useCallback(async () =>
 	{
 		const values = queryString.parse(location.search);
 
@@ -66,12 +66,12 @@ const AuthorsPage = () =>
 		{
 			setLoading(false);
 		}
-	};
+	}, [location.search]);
 
 	useEffect(() =>
 	{
 	    loadData();
-	}, [location]);
+	}, [location, loadData]);
 
 	const handleClose = () =>
 	{
@@ -80,17 +80,17 @@ const AuthorsPage = () =>
 		setShowDelete(false);
 	};
 
-	const onDeleteClicked = useCallback(author =>
+	const onDeleteClicked = author =>
 	{
 		setSelectedAuthor(author);
 		setShowDelete(true);
-	}, [location]);
+	};
 
-	const onEditClicked = useCallback(author =>
+	const onEditClicked = author =>
 	{
 		setSelectedAuthor(author);
 		setShowEditor(true);
-	}, [location]);
+	};
 
 	const handleDataChanged = () =>
 	{

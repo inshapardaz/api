@@ -43,6 +43,7 @@ const CategoriesDropDown = (props) =>
 		value={props.value}
 		onChange={props.onChange}
 		input={<Input />}
+		loading={loading}
 		MenuProps={MenuProps}>
 		{options.map((cat) => (
 			<MenuItem key={cat.id} value={cat.id} >

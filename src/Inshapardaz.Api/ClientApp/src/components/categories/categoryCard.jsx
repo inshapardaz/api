@@ -12,7 +12,7 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import { makeStyles } from '@material-ui/core/styles';
 
-const defaultCategoryImage = '/resources/img/auhtor_placeholder.png';
+// const defaultCategoryImage = '/resources/img/auhtor_placeholder.png';
 
 const CategoryCard = ({ category, onEdit, onDelete }) =>
 {

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import authService from './AuthorizeService';
+import authService from '../../services/AuthorizeService';
 import { ApplicationPaths } from './ApiAuthorizationConstants';
 
 export class LoginMenu extends Component {
@@ -53,7 +53,6 @@ export class LoginMenu extends Component {
                 <NavLink tag={Link} className="text-dark" to={logoutPath}>Logout</NavLink>
             </NavItem>
         </Fragment>);
-
     }
 
     anonymousView(registerPath, loginPath) {

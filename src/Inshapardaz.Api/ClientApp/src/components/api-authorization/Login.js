@@ -1,7 +1,7 @@
 import React from 'react'
 import { Component } from 'react';
-import authService from './AuthorizeService';
-import { AuthenticationResultStatus } from './AuthorizeService';
+import authService from '../../services/AuthorizeService';
+import { AuthenticationResultStatus } from '../../services/AuthorizeService';
 import { LoginActions, QueryParameterNames, ApplicationPaths } from './ApiAuthorizationConstants';
 
 // The main responsibility of this component is to handle the user's login process.

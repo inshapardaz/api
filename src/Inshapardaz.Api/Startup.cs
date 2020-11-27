@@ -1,58 +1,50 @@
-using Microsoft.AspNetCore.Authentication;
+﻿using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
-using Inshapardaz.Api.Data;
-using Inshapardaz.Api.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Middleware;
+using Inshapardaz.Api.Services;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Api.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Inshapardaz.Api.Converters;
-using Inshapardaz.Api.Infrastructure;
-using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
 using Inshapradaz.Database.SqlServer.Repositories;
-using Microsoft.AspNetCore.Identity;
+using Inshapardaz.Api.Infrastructure;
 
 namespace Inshapardaz.Api
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // add services to the DI container
         public void ConfigureServices(IServiceCollection services)
         {
             var settings = new Settings();
-            Configuration.Bind("Application", settings);
+            Configuration.Bind("AppSettings", settings);
             services.AddSingleton(settings);
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(settings.DefaultConnection));
+            services.AddDbContext<DataContext>();
+            services.AddCors();
+            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddSwaggerGen();
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
-
-            services.AddControllersWithViews().AddNewtonsoftJson();
-            services.AddRazorPages();
+            // configure DI for application services
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddBrighterCommand();
             services.AddDarkerQuery();
@@ -85,67 +77,36 @@ namespace Inshapardaz.Api
             }
 
             AddCustomServices(services);
-
-            services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder =>
-                                  {
-                                      builder.WithOrigins(settings.AllowedOrigins)
-                                             .AllowAnyHeader()
-                                             .AllowAnyMethod();
-                                  });
-            });
-
-            // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        // configure the HTTP request pipeline
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext context)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+            // migrate database changes on startup (includes initial db creation)
+            context.Database.Migrate();
 
-            app.UseHttpsRedirection();
-            app.UseCors();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
+            // generated swagger json and swagger ui middleware
+            app.UseSwagger();
+            app.UseSwaggerUI(x => x.SwaggerEndpoint("/swagger/v1/swagger.json", "ASP.NET Core Sign-up and Verification API"));
 
             app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseIdentityServer();
-            app.UseAuthorization();
+            // global cors policy
+            app.UseCors(x => x
+                .SetIsOriginAllowed(origin => true)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+
+            app.UseStaticFiles();
+
+            // global error handler
+            app.UseMiddleware<ErrorHandlerMiddleware>();
             app.UseStatusCodeMiddleWare();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
-            });
+            // custom jwt auth middleware
+            app.UseMiddleware<JwtMiddleware>();
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
-
-                if (env.IsDevelopment())
-                {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
-            });
+            app.UseEndpoints(x => x.MapControllers());
         }
 
         protected virtual IServiceCollection AddDatabaseConnection(IServiceCollection services)

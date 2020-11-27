@@ -9,7 +9,6 @@ using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -64,7 +63,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles", Name = nameof(ArticleController.CreateArticle))]
-        [Authorize]
+        [Microsoft.AspNetCore.Authorization.Authorize]
         public async Task<IActionResult> CreateArticle(int libraryId, int periodicalId, int issueId, ArticleView article, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)

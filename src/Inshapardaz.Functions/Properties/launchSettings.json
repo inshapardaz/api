@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Inshapardaz.Functions": {
-      "commandName": "Project",
-      "commandLineArgs": "host start --cors http://localhost:4200 --cors-credentials"
-    }
-  }
-}

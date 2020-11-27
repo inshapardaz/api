@@ -91,7 +91,7 @@ namespace Inshapardaz.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext context)
         {
             // migrate database changes on startup (includes initial db creation)
-            context.Database.Migrate();
+            //context.Database.Migrate();
 
             // generated swagger json and swagger ui middleware
             app.UseSwagger();

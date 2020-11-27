@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Adapters;
@@ -16,10 +15,10 @@ namespace Inshapardaz.Api.Middleware
         private readonly RequestDelegate _next;
         private readonly Settings _appSettings;
 
-        public JwtMiddleware(RequestDelegate next, IOptions<Settings> appSettings)
+        public JwtMiddleware(RequestDelegate next, Settings appSettings)
         {
             _next = next;
-            _appSettings = appSettings.Value;
+            _appSettings = appSettings;
         }
 
         public async Task Invoke(HttpContext context, DataContext dataContext)

@@ -16,9 +16,9 @@ namespace Inshapardaz.Api.Services
     {
         private readonly Settings _appSettings;
 
-        public EmailService(IOptions<Settings> appSettings)
+        public EmailService(Settings appSettings)
         {
-            _appSettings = appSettings.Value;
+            _appSettings = appSettings;
         }
 
         public void Send(string to, string subject, string html, string from = null)

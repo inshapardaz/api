@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Inshapardaz.Api.Entities;
 using Inshapardaz.Api.Helpers;
@@ -55,12 +54,12 @@ namespace Inshapardaz.Api.Services
         public AccountService(
             DataContext context,
             IMapper mapper,
-            IOptions<Settings> appSettings,
+            Settings appSettings,
             IEmailService emailService)
         {
             _context = context;
             _mapper = mapper;
-            _appSettings = appSettings.Value;
+            _appSettings = appSettings;
             _emailService = emailService;
         }
 

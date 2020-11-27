@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
+using Inshapardaz.Api.Entities;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
@@ -12,7 +11,6 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -108,7 +106,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}", Name = nameof(IssueController.DeleteIssue))]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize(Role.Admin, Role.Writer)]
         public async Task<IActionResult> DeleteIssue(int libraryId, int periodicalId, int issueId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteIssueRequest(_userHelper.Claims, libraryId, periodicalId, issueId);
@@ -117,7 +115,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/image", Name = nameof(IssueController.UpdateIssueImage))]
-        [Authorize(Roles = "Admin, Writer")]
+        [Authorize(Role.Admin, Role.Writer)]
         public async Task<IActionResult> UpdateIssueImage(int libraryId, int periodicalId, int issueId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];

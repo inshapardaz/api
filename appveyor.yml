@@ -30,11 +30,11 @@ artifacts:
 # Deployment
 deploy:
 - provider: WebDeploy
-  server: https://nawishta.scm.azurewebsites.net:443/msdeploy.axd?site=nawishta
-  website: library
-  username: $nawishta
+  server: https://api-nawishta.scm.azurewebsites.net:443/msdeploy.axd?site=api-nawishta
+  website: api-library
+  username: $api-nawishta
   password:
-    secure: 9AMkJoCBbrTV1B3GCtLAXBQAugY9tEpHcRDK3AsS5GsIvutnGBkuyjpqgsMhY2oM/dNsY7aIFeZh6JD8Hnbdug==
+    secure: lBdR5hKd5QzhZfAakenkg3/E6ES59+8ueaWLFhPfFoGATilxS4jfjKiKr8EbcBJqroAq1Lj5qtkLHT/pXlMYhQ==
   artifact: APIPackage
   on:
     branch: master

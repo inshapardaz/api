@@ -37,7 +37,15 @@ namespace Inshapardaz.Api
             services.AddSingleton(settings);
 
             services.AddDbContext<DataContext>();
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(settings.AllowedOrigins)
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
+            });
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSwaggerGen();

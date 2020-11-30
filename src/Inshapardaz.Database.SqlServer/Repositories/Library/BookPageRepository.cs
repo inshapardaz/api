@@ -141,7 +141,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<BookPageModel> UpdatePageAssignment(int libraryId, int bookId, int sequenceNumber, PageStatuses status, Guid? assignedUserId, CancellationToken cancellationToken)
+        public async Task<BookPageModel> UpdatePageAssignment(int libraryId, int bookId, int sequenceNumber, PageStatuses status, int? assignedUserId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {

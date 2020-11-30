@@ -12,7 +12,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteArticleContentRequest : LibraryAuthorisedCommand
     {
-        public DeleteArticleContentRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId, int articleId, string language, string mimeType, Guid? userId)
+        public DeleteArticleContentRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId, int articleId, string language, string mimeType, int? userId)
             : base(claims, libraryId)
         {
             MimeType = mimeType;

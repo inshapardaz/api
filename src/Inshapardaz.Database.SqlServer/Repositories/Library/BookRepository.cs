@@ -19,7 +19,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             _connectionProvider = connectionProvider;
         }
 
-        public async Task<BookModel> AddBook(int libraryId, BookModel book, Guid? userId, CancellationToken cancellationToken)
+        public async Task<BookModel> AddBook(int libraryId, BookModel book, int? userId, CancellationToken cancellationToken)
         {
             int bookId;
             using (var connection = _connectionProvider.GetConnection())
@@ -79,7 +79,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, Guid? userId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, int? userId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -165,7 +165,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<Page<BookModel>> SearchBooks(int libraryId, string searchText, int pageNumber, int pageSize, Guid? userId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> SearchBooks(int libraryId, string searchText, int pageNumber, int pageSize, int? userId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -242,7 +242,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<Page<BookModel>> GetLatestBooks(int libraryId, int pageNumber, int pageSize, Guid? userId, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetLatestBooks(int libraryId, int pageNumber, int pageSize, int? userId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -287,7 +287,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<BookModel> GetBookById(int libraryId, int bookId, Guid? userId, CancellationToken cancellationToken)
+        public async Task<BookModel> GetBookById(int libraryId, int bookId, int? userId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -314,13 +314,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                         book.Categories.Add(c);
                     }
                     return book;
-                }, new { LibraryId = libraryId, Id = bookId, UserId = userId == Guid.Empty ? null : userId });
+                }, new { LibraryId = libraryId, Id = bookId, UserId = userId });
 
                 return book;
             }
         }
 
-        public async Task AddRecentBook(int libraryId, Guid userId, int bookId, CancellationToken cancellationToken)
+        public async Task AddRecentBook(int libraryId, int userId, int bookId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -332,7 +332,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task DeleteBookFromRecent(int libraryId, Guid userId, int bookId, CancellationToken cancellationToken)
+        public async Task DeleteBookFromRecent(int libraryId, int userId, int bookId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -342,7 +342,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task AddBookToFavorites(int libraryId, Guid? userId, int bookId, CancellationToken cancellationToken)
+        public async Task AddBookToFavorites(int libraryId, int? userId, int bookId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -358,7 +358,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task DeleteBookFromFavorites(int libraryId, Guid userId, int bookId, CancellationToken cancellationToken)
+        public async Task DeleteBookFromFavorites(int libraryId, int userId, int bookId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {

@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddBookToFavoriteRequest : LibraryAuthorisedCommand
     {
-        public AddBookToFavoriteRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid? user)
+        public AddBookToFavoriteRequest(ClaimsPrincipal claims, int libraryId, int bookId, int? user)
             : base(claims, libraryId)
         {
             BookId = bookId;
@@ -21,7 +21,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int BookId { get; }
 
-        public Guid? User { get; }
+        public int? User { get; }
     }
 
     public class AddBookToFavoriteRequestHandler : RequestHandlerAsync<AddBookToFavoriteRequest>

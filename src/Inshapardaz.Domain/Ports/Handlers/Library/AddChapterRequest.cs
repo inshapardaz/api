@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddChapterRequest : BookRequest
     {
-        public AddChapterRequest(ClaimsPrincipal claims, int libraryId, int bookId, ChapterModel chapter, Guid? userId)
+        public AddChapterRequest(ClaimsPrincipal claims, int libraryId, int bookId, ChapterModel chapter, int? userId)
             : base(claims, libraryId, bookId, userId)
         {
             Chapter = chapter;

@@ -9,7 +9,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetLatestBooksQuery : LibraryAuthorisedQuery<Page<BookModel>>
     {
-        public GetLatestBooksQuery(int libraryId, Guid? userId)
+        public GetLatestBooksQuery(int libraryId, int? userId)
             : base(libraryId, userId)
         {
         }

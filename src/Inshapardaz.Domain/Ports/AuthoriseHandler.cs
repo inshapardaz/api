@@ -30,10 +30,10 @@ namespace Inshapardaz.Domain.Models
                 throw new UnauthorizedException();
             }
 
-            if (!_userHelper.CheckPermissions(_permissions))
-            {
-                throw new ForbiddenException("Bearer");
-            }
+            //if (!_userHelper.CheckPermissions(_permissions))
+            //{
+            //    throw new ForbiddenException("Bearer");
+            //}
 
             return await base.HandleAsync(command, cancellationToken);
         }

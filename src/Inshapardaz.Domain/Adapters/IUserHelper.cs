@@ -13,9 +13,7 @@ namespace Inshapardaz.Domain.Adapters
         bool IsReader { get; }
         ClaimsPrincipal Claims { get; }
 
-        Guid? GetUserId();
-
-        bool CheckPermissions(Permission[] permissions);
+        int? GetUserId();
     }
 
     public enum Permission

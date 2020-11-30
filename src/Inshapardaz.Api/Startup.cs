@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
-using Inshapradaz.Database.SqlServer.Repositories;
+using Inshapardaz.Database.SqlServer.Repositories;
 using Inshapardaz.Api.Infrastructure;
 
 namespace Inshapardaz.Api

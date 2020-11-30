@@ -7,7 +7,7 @@ using Inshapardaz.Database.SqlServer;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
-using Inshapradaz.Database.SqlServer.Repositories;
+using Inshapardaz.Database.SqlServer.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

@@ -10,7 +10,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteBookToFavoriteRequest : BookRequest
     {
-        public DeleteBookToFavoriteRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid? userId)
+        public DeleteBookToFavoriteRequest(ClaimsPrincipal claims, int libraryId, int bookId, int? userId)
             : base(claims, libraryId, bookId, userId)
         {
         }

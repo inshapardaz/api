@@ -1,9 +1,8 @@
-﻿using Inshapardaz.Api.Extensions;
-using Inshapardaz.Domain.Adapters;
+﻿using Inshapardaz.Domain.Adapters;
 using Microsoft.AspNetCore.Http;
-using System;
 using System.Linq;
 using System.Security.Claims;
+using Inshapardaz.Api.Entities;
 
 namespace Inshapardaz.Api.Helpers
 {
@@ -18,36 +17,25 @@ namespace Inshapardaz.Api.Helpers
 
         public bool IsAuthenticated => GetUserId() != null;
 
-        public bool IsAdmin => IsAuthenticated && IsUserInRole("admin");
-        public bool IsLibraryAdmin => IsAuthenticated && IsUserInRole("libraryAdmin");
+        public bool IsAdmin => IsAuthenticated && IsUserInRole(Role.Admin);
+        public bool IsLibraryAdmin => IsAuthenticated && IsUserInRole(Role.LibraryAdmin);
 
-        public bool IsWriter => IsAuthenticated && (IsLibraryAdmin || IsUserInRole("writer"));
+        public bool IsWriter => IsAuthenticated && (IsLibraryAdmin || IsUserInRole(Role.Writer));
 
         public bool IsReader => IsAuthenticated;
 
         public ClaimsPrincipal Claims => _contextAccessor.HttpContext.User;
 
-        public bool CheckPermissions(Permission[] permissions)
+        public int? GetUserId()
         {
-            return permissions.Any(p => IsUserInRole(p));
+            var account = (Account)_contextAccessor.HttpContext.Items["Account"];
+            return account?.Id;
         }
 
-        public Guid? GetUserId()
+        private bool IsUserInRole(Role role)
         {
-            var nameIdentifier = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-            if (nameIdentifier != null)
-            {
-                return Guid.Parse(nameIdentifier.Replace("auth0|", "00000000"));
-            }
-
-            return null;
+            var account = (Account)_contextAccessor.HttpContext.Items["Account"];
+            return account.Role == role;
         }
-
-        private bool IsUserInRole(string role)
-        {
-            return Claims.HasClaim("permissions", role);
-        }
-
-        private bool IsUserInRole(Permission permission) => IsUserInRole(permission.ToDescription());
     }
 }

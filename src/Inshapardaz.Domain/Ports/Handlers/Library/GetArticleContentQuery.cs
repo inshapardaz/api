@@ -13,7 +13,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetArticleContentQuery : LibraryBaseQuery<ArticleContentModel>
     {
-        public GetArticleContentQuery(int libraryId, int periodicalId, int issueId, int articleId, string language, string mimeType, Guid? userId)
+        public GetArticleContentQuery(int libraryId, int periodicalId, int issueId, int articleId, string language, string mimeType, int? userId)
             : base(libraryId)
         {
             MimeType = mimeType;
@@ -25,7 +25,7 @@ namespace Inshapardaz.Domain.Models.Library
         }
 
         public string MimeType { get; set; }
-        public Guid? UserId { get; }
+        public int? UserId { get; }
         public int PeriodicalId { get; }
         public int IssueId { get; }
         public int ArticleId { get; }

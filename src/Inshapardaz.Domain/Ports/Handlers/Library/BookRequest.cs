@@ -6,7 +6,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public abstract class BookRequest : LibraryAuthorisedCommand
     {
-        protected BookRequest(ClaimsPrincipal claims, int libraryId, int bookId, Guid? userId)
+        protected BookRequest(ClaimsPrincipal claims, int libraryId, int bookId, int? userId)
             : base(claims, libraryId)
         {
             BookId = bookId;

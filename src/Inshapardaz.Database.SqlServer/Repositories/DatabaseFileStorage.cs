@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapradaz.Database.SqlServer.Repositories
+namespace Inshapardaz.Database.SqlServer.Repositories
 {
     public class DatabaseFileStorage : IFileStorage
     {

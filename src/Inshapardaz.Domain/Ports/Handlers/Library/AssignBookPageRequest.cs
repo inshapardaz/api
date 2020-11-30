@@ -13,7 +13,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AssignBookPageRequest : LibraryAuthorisedCommand
     {
-        public AssignBookPageRequest(ClaimsPrincipal claims, int libraryId, int bookId, int sequenceNumber, PageStatuses status, Guid? userId)
+        public AssignBookPageRequest(ClaimsPrincipal claims, int libraryId, int bookId, int sequenceNumber, PageStatuses status, int? userId)
         : base(claims, libraryId)
         {
             BookId = bookId;
@@ -26,7 +26,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int BookId { get; set; }
         public int SequenceNumber { get; set; }
         public PageStatuses Status { get; set; }
-        public Guid? AssignedUserId { get; set; }
+        public int? AssignedUserId { get; set; }
     }
 
     public class AssignBookPageRequestHandler : RequestHandlerAsync<AssignBookPageRequest>

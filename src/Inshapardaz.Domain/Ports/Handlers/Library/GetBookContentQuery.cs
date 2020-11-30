@@ -13,7 +13,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetBookContentQuery : LibraryAuthorisedQuery<BookContentModel>
     {
-        public GetBookContentQuery(int libraryId, int bookId, string language, string mimeType, Guid? userId)
+        public GetBookContentQuery(int libraryId, int bookId, string language, string mimeType, int? userId)
             : base(libraryId, userId)
         {
             BookId = bookId;

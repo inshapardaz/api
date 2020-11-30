@@ -12,7 +12,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddArticleRequest : LibraryAuthorisedCommand
     {
-        public AddArticleRequest(ClaimsPrincipal claims, int libraryId, int peridicalId, int issueId, ArticleModel article, Guid? userId)
+        public AddArticleRequest(ClaimsPrincipal claims, int libraryId, int peridicalId, int issueId, ArticleModel article, int? userId)
             : base(claims, libraryId)
         {
             PeridicalId = peridicalId;

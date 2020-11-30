@@ -12,7 +12,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetBooksQuery : LibraryAuthorisedQuery<Page<BookModel>>
     {
-        public GetBooksQuery(int libraryId, int pageNumber, int pageSize, Guid? userId)
+        public GetBooksQuery(int libraryId, int pageNumber, int pageSize, int? userId)
             : base(libraryId, userId)
         {
             PageNumber = pageNumber;

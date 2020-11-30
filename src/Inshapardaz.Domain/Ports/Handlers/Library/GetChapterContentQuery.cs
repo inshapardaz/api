@@ -13,7 +13,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetChapterContentQuery : LibraryBaseQuery<ChapterContentModel>
     {
-        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string language, string mimeType, Guid? userId)
+        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string language, string mimeType, int? userId)
             : base(libraryId)
         {
             UserId = userId;
@@ -27,7 +27,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int ChapterId { get; }
 
-        public Guid? UserId { get; set; }
+        public int? UserId { get; set; }
 
         public string MimeType { get; set; }
         public string Language { get; set; }

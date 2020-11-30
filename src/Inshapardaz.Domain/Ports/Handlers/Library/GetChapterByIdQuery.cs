@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetChapterByIdQuery : LibraryBaseQuery<ChapterModel>
     {
-        public GetChapterByIdQuery(int libraryId, int bookId, int chapterId, Guid? userId)
+        public GetChapterByIdQuery(int libraryId, int bookId, int chapterId, int? userId)
             : base(libraryId)
         {
             UserId = userId;
@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int ChapterId { get; }
 
-        public Guid? UserId { get; set; }
+        public int? UserId { get; set; }
     }
 
     public class GetChapterByIdQueryHandler : QueryHandlerAsync<GetChapterByIdQuery, ChapterModel>

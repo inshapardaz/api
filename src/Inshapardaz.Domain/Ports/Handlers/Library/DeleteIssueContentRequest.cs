@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteIssueContentRequest : LibraryAuthorisedCommand
     {
-        public DeleteIssueContentRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId, string language, string mimeType, Guid? userId)
+        public DeleteIssueContentRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId, string language, string mimeType, int? userId)
             : base(claims, libraryId)
         {
             PeriodicalId = periodicalId;

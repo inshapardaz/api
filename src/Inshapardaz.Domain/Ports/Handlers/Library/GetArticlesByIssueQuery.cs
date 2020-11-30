@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetArticlesByIssueQuery : LibraryAuthorisedQuery<IEnumerable<ArticleModel>>
     {
-        public GetArticlesByIssueQuery(int libraryId, int periodicalId, int issueId, Guid? userId)
+        public GetArticlesByIssueQuery(int libraryId, int periodicalId, int issueId, int? userId)
             : base(libraryId, userId)
         {
             PeriodicalId = periodicalId;

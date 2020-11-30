@@ -12,7 +12,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetChaptersByBookQuery : LibraryAuthorisedQuery<IEnumerable<ChapterModel>>
     {
-        public GetChaptersByBookQuery(int libraryId, int bookId, Guid? userId)
+        public GetChaptersByBookQuery(int libraryId, int bookId, int? userId)
             : base(libraryId, userId)
         {
             BookId = bookId;

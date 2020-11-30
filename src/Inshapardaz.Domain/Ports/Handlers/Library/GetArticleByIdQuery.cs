@@ -10,7 +10,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetArticleByIdQuery : LibraryBaseQuery<ArticleModel>
     {
-        public GetArticleByIdQuery(int libraryId, int periodicalId, int issueId, int articleId, Guid? userId)
+        public GetArticleByIdQuery(int libraryId, int periodicalId, int issueId, int articleId, int? userId)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
@@ -22,7 +22,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int PeriodicalId { get; }
         public int IssueId { get; }
         public int ArticleId { get; }
-        public Guid? UserId { get; set; }
+        public int? UserId { get; set; }
     }
 
     public class GetArticleByIdQueryHandler : QueryHandlerAsync<GetArticleByIdQuery, ArticleModel>

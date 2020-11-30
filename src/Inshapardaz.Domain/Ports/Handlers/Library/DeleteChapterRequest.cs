@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteChapterRequest : BookRequest
     {
-        public DeleteChapterRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, Guid? userId)
+        public DeleteChapterRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, int? userId)
             : base(claims, libraryId, bookId, userId)
         {
             ChapterId = chapterId;

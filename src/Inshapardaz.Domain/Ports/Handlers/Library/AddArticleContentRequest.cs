@@ -14,7 +14,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddArticleContentRequest : LibraryAuthorisedCommand
     {
-        public AddArticleContentRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId, int articleId, string contents, string language, string mimeType, Guid? userId)
+        public AddArticleContentRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId, int articleId, string contents, string language, string mimeType, int? userId)
             : base(claims, libraryId)
         {
             PeriodicalId = periodicalId;

@@ -28,12 +28,12 @@ namespace Inshapardaz.Api.Tests.Helpers
             return permissions.Any(p => IsUserInRole(p.ToDescription()));
         }
 
-        public Guid? GetUserId()
+        public int? GetUserId()
         {
             var nameIdentifier = _claimsProvider.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
             if (nameIdentifier != null)
             {
-                return Guid.Parse(nameIdentifier);
+                return int.Parse(nameIdentifier);
             }
 
             return null;

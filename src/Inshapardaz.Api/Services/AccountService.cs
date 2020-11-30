@@ -139,7 +139,7 @@ namespace Inshapardaz.Api.Services
 
             // first registered account is an admin
             var isFirstAccount = _context.Accounts.Count() == 0;
-            account.Role = isFirstAccount ? Role.Admin : Role.User;
+            account.Role = isFirstAccount ? Role.Admin : Role.Reader;
             account.Created = DateTime.UtcNow;
             account.VerificationToken = randomTokenString();
 

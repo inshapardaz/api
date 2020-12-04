@@ -10,7 +10,7 @@ namespace Inshapardaz.Api.Views.Library
         public string Text { get; set; }
         public int BookId { get; set; }
         public PageStatuses Status { get; set; }
-        public Guid? UserId { get; set; }
+        public Guid? AccountId { get; set; }
         public DateTime? AssignTimeStamp { get; set; }
     }
 }

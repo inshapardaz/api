@@ -1,28 +1,29 @@
-﻿using Inshapardaz.Domain.Helpers;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class GetBooksQuery : LibraryAuthorisedQuery<Page<BookModel>>
+    public class GetBooksQuery : LibraryBaseQuery<Page<BookModel>>
     {
-        public GetBooksQuery(int libraryId, int pageNumber, int pageSize, int? userId)
-            : base(libraryId, userId)
+        public GetBooksQuery(int libraryId, int pageNumber, int pageSize, int? accountId)
+            : base(libraryId)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
+            AccountId = accountId;
         }
 
         public int PageNumber { get; private set; }
 
         public int PageSize { get; private set; }
-
+        public int? AccountId { get; }
         public string Query { get; set; }
 
         public BookSortByType SortBy { get; set; }
@@ -45,8 +46,8 @@ namespace Inshapardaz.Domain.Models.Library
         public override async Task<Page<BookModel>> ExecuteAsync(GetBooksQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             var books = string.IsNullOrWhiteSpace(command.Query)
-             ? await _bookRepository.GetBooks(command.LibraryId, command.PageNumber, command.PageSize, command.UserId, command.Filter, command.SortBy, command.SortDirection, cancellationToken)
-             : await _bookRepository.SearchBooks(command.LibraryId, command.Query, command.PageNumber, command.PageSize, command.UserId, command.Filter, command.SortBy, command.SortDirection, cancellationToken);
+             ? await _bookRepository.GetBooks(command.LibraryId, command.PageNumber, command.PageSize, command.AccountId, command.Filter, command.SortBy, command.SortDirection, cancellationToken)
+             : await _bookRepository.SearchBooks(command.LibraryId, command.Query, command.PageNumber, command.PageSize, command.AccountId, command.Filter, command.SortBy, command.SortDirection, cancellationToken);
 
             foreach (var book in books.Data)
             {

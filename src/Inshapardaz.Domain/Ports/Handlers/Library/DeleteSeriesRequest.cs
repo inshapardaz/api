@@ -1,17 +1,15 @@
-﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class DeleteSeriesRequest : LibraryAuthorisedCommand
+    public class DeleteSeriesRequest : LibraryBaseCommand
     {
-        public DeleteSeriesRequest(ClaimsPrincipal claims, int libraryId, int seriesId)
-            : base(claims, libraryId)
+        public DeleteSeriesRequest(int libraryId, int seriesId)
+            : base(libraryId)
         {
             SeriesId = seriesId;
         }
@@ -28,7 +26,6 @@ namespace Inshapardaz.Domain.Models.Library
             _seriesRepository = seriesRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<DeleteSeriesRequest> HandleAsync(DeleteSeriesRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             await _seriesRepository.DeleteSeries(command.LibraryId, command.SeriesId, cancellationToken);

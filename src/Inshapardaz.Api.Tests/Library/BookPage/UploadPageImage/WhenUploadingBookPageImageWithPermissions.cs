@@ -1,18 +1,16 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.UploadPageImage
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenUploadingBookPageImageWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
@@ -20,8 +18,8 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UploadPageImage
         private int _bookId;
         private byte[] _newImage = Random.Bytes;
 
-        public WhenUploadingBookPageImageWithPermissions(Permission permission)
-            : base(permission)
+        public WhenUploadingBookPageImageWithPermissions(Role role)
+            : base(role)
         {
         }
 

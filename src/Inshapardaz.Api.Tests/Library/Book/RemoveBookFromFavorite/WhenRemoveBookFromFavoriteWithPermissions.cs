@@ -3,21 +3,21 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
-    [TestFixture(Permission.Reader)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
+    [TestFixture(Role.Reader)]
     public class WhenRemoveBookFromFavoriteWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
         private BookDto _book;
 
-        public WhenRemoveBookFromFavoriteWithPermissions(Permission permission) : base(permission)
+        public WhenRemoveBookFromFavoriteWithPermissions(Role role) : base(role)
         {
         }
 
@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
             var books = BookBuilder.WithLibrary(LibraryId)
                                     .WithCategories(1)
                                     .HavingSeries()
-                                    .AddToFavorites(UserId)
+                                    .AddToFavorites(AccountId)
                                     .Build(2);
 
             _book = books.PickRandom();
@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
         [Test]
         public void ShouldBeRemovedFromFavorites()
         {
-            BookAssert.ShouldNotBeInFavorites(_book.Id, UserId, DatabaseConnection);
+            BookAssert.ShouldNotBeInFavorites(_book.Id, AccountId, DatabaseConnection);
         }
     }
 }

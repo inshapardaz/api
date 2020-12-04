@@ -1,16 +1,15 @@
 ﻿using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class AddIssueRequest : LibraryAuthorisedCommand
+    public class AddIssueRequest : LibraryBaseCommand
     {
-        public AddIssueRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, IssueModel issue)
-            : base(claims, libraryId)
+        public AddIssueRequest(int libraryId, int periodicalId, IssueModel issue)
+            : base(libraryId)
         {
             PeriodicalId = periodicalId;
             Issue = issue;
@@ -32,7 +31,6 @@ namespace Inshapardaz.Domain.Models.Library
             _issueRepository = issueRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<AddIssueRequest> HandleAsync(AddIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             command.Result = await _issueRepository.AddIssue(command.LibraryId, command.PeriodicalId, command.Issue, cancellationToken);

@@ -5,17 +5,15 @@ using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class UpdateArticleContentRequest : LibraryAuthorisedCommand
+    public class UpdateArticleContentRequest : LibraryBaseCommand
     {
-        public UpdateArticleContentRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId, int articleId, string contents, string language, string mimetype, int? userId)
-            : base(claims, libraryId)
+        public UpdateArticleContentRequest(int libraryId, int periodicalId, int issueId, int articleId, string contents, string language, string mimetype)
+            : base(libraryId)
         {
             PeriodicalId = periodicalId;
             IssueId = issueId;
@@ -60,7 +58,6 @@ namespace Inshapardaz.Domain.Models.Library
             _libraryRepository = libraryRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateArticleContentRequest> HandleAsync(UpdateArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var issue = await _issueRepository.GetIssueById(command.LibraryId, command.PeriodicalId, command.IssueId, cancellationToken);

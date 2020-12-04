@@ -1,28 +1,26 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenAssigningBookPageToSomeoneElse : TestBase
     {
         private HttpResponseMessage _response;
         private BookPageAssert _assert;
         private BookPageDto _page;
         private BookPageDto _exptectedPage;
-        private Guid _secondUserId = Guid.NewGuid();
+        private int _secondAccountId = Helpers.Random.Number;
 
-        public WhenAssigningBookPageToSomeoneElse(Permission permission)
-            : base(permission)
+        public WhenAssigningBookPageToSomeoneElse(Role role)
+            : base(role)
         {
         }
 
@@ -35,13 +33,13 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
             var assignment = new
             {
                 Status = PageStatuses.AssignedToReview,
-                UserId = _secondUserId
+                AccountId = _secondAccountId
             };
 
             _exptectedPage = new BookPageDto(_page)
             {
                 Status = assignment.Status,
-                UserId = assignment.UserId
+                AccountId = assignment.AccountId
             };
 
             _response = await Client.PostObject($"/library/{LibraryId}/books/{book.Id}/pages/{_page.SequenceNumber}/assign", assignment);

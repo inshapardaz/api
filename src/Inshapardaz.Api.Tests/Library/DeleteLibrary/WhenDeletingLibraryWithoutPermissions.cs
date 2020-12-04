@@ -1,20 +1,20 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.DeleteLibrary
 {
-    [TestFixture(Permission.Reader)]
-    [TestFixture(Permission.Writer)]
-    [TestFixture(Permission.LibraryAdmin)]
+    [TestFixture(Role.Reader)]
+    [TestFixture(Role.Writer)]
+    [TestFixture(Role.LibraryAdmin)]
     public class WhenDeletingLibraryWithoutPermissions : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenDeletingLibraryWithoutPermissions(Permission permission)
-            : base(permission)
+        public WhenDeletingLibraryWithoutPermissions(Role role)
+            : base(role)
         {
         }
 

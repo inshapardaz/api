@@ -5,9 +5,8 @@ using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -19,17 +18,14 @@ namespace Inshapardaz.Api.Controllers
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderCategory _categoryRenderer;
-        private readonly IUserHelper _userHelper;
 
         public CategoryController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
-            IRenderCategory categoryRenderer,
-            IUserHelper userHelper)
+            IRenderCategory categoryRenderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _categoryRenderer = categoryRenderer;
-            _userHelper = userHelper;
         }
 
         [HttpGet("library/{libraryId}/categories", Name = nameof(CategoryController.GetCategories))]
@@ -56,6 +52,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/categories", Name = nameof(CategoryController.CreateCategory))]
+        [Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> CreateCategory(int libraryId, [FromBody]CategoryView category, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -63,7 +60,7 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new AddCategoryRequest(_userHelper.Claims, libraryId, category.Map());
+            var request = new AddCategoryRequest(libraryId, category.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _categoryRenderer.Render(request.Result, libraryId);
@@ -71,6 +68,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/categories/{categoryId}", Name = nameof(CategoryController.UpdateCategory))]
+        [Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> UpdateCategory(int libraryId, int categoryId, [FromBody]CategoryView category, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -79,7 +77,7 @@ namespace Inshapardaz.Api.Controllers
             }
 
             category.Id = categoryId;
-            var request = new UpdateCategoryRequest(_userHelper.Claims, libraryId, category.Map());
+            var request = new UpdateCategoryRequest(libraryId, category.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _categoryRenderer.Render(request.Result.Category, libraryId);
@@ -95,9 +93,10 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/categories/{categoryId}", Name = nameof(CategoryController.DeleteCategory))]
+        [Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> DeleteCategory(int libraryId, int categoryId, CancellationToken token = default(CancellationToken))
         {
-            var request = new DeleteCategoryRequest(_userHelper.Claims, libraryId, categoryId);
+            var request = new DeleteCategoryRequest(libraryId, categoryId);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

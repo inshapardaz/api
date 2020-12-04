@@ -1,17 +1,15 @@
-﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class UpdateCategoryRequest : LibraryAuthorisedCommand
+    public class UpdateCategoryRequest : LibraryBaseCommand
     {
-        public UpdateCategoryRequest(ClaimsPrincipal claims, int libraryId, CategoryModel category)
-            : base(claims, libraryId)
+        public UpdateCategoryRequest(int libraryId, CategoryModel category)
+            : base(libraryId)
         {
             Category = category;
         }
@@ -37,7 +35,6 @@ namespace Inshapardaz.Domain.Models.Library
             _categoryRepository = categoryRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin)]
         public override async Task<UpdateCategoryRequest> HandleAsync(UpdateCategoryRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await _categoryRepository.GetCategoryById(command.LibraryId, command.Category.Id, cancellationToken);

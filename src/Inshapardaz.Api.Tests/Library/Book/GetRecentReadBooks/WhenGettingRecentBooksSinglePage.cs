@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         private IEnumerable<BookDto> _books;
 
         public WhenGettingRecentBooksSinglePage()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 
@@ -27,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         {
             _books = BookBuilder.WithLibrary(LibraryId)
                                        .IsPublic()
-                                       .AddToRecentReads(UserId, 10)
+                                       .AddToRecentReads(AccountId, 10)
                                        .Build(25);
 
             _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=1&pageSize=10&read=true");

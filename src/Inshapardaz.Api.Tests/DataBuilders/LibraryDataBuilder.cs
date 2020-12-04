@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
@@ -10,7 +12,10 @@ namespace Inshapardaz.Api.Tests.DataBuilders
     {
         private IDbConnection _connection;
         private bool _enablePeriodicals;
-        public LibraryDto Library { get; private set; }
+        private int? _accountId;
+
+        public LibraryDto Library => Libraries.FirstOrDefault();
+        public IEnumerable<LibraryDto> Libraries { get; private set; }
 
         public LibraryDataBuilder(IProvideConnection connectionProvider)
         {
@@ -23,24 +28,35 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
-        public LibraryDto Build()
+        internal LibraryDataBuilder AssignToUser(int? accountId)
         {
-            var fixture = new Fixture();
+            _accountId = accountId;
+            return this;
+        }
 
-            Library = fixture.Build<LibraryDto>()
+        public LibraryDto Build(int count = 1)
+        {
+            // TODO Add
+            var fixture = new Fixture();
+            Libraries = fixture.Build<LibraryDto>()
                                  .With(l => l.Language, "en")
                                  .With(l => l.SupportsPeriodicals, _enablePeriodicals)
-                                 .Create();
+                                 .CreateMany(count);
 
-            _connection.AddLibrary(Library);
+            _connection.AddLibraries(Libraries);
+
+            if (_accountId.HasValue)
+            {
+                _connection.AssignLibrariesToUser(Libraries, _accountId);
+            }
 
             return Library;
         }
 
         public void CleanUp()
         {
-            if (Library != null)
-                _connection.DeleteLibrary(Library.Id);
+            if (Libraries != null)
+                _connection.DeleteLibraries(Libraries.Select(l => l.Id));
         }
     }
 }

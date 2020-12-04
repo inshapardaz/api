@@ -2,22 +2,22 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenUploadingSeriesImageWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
         private int _seriesId;
         private byte[] _newImage;
 
-        public WhenUploadingSeriesImageWithPermissions(Permission permission)
-            : base(permission)
+        public WhenUploadingSeriesImageWithPermissions(Role role)
+            : base(role)
         {
         }
 

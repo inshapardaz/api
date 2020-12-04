@@ -1,15 +1,15 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
     public class WhenUpdatingLibraryWithPermission : TestBase
     {
         private HttpResponseMessage _response;
@@ -17,8 +17,8 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
         private LibraryView _expectedLibrary;
         private LibraryAssert _assert;
 
-        public WhenUpdatingLibraryWithPermission(Permission permission)
-            : base(permission)
+        public WhenUpdatingLibraryWithPermission(Role role)
+            : base(role)
         {
         }
 

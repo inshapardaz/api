@@ -2,27 +2,26 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
     public class WhenGettingCategoriesWithWritePermissions : TestBase
     {
         private HttpResponseMessage _response;
         private IEnumerable<CategoryDto> _categories;
         private ListView<CategoryView> _view;
 
-        public WhenGettingCategoriesWithWritePermissions(Permission permission)
-            : base(permission)
+        public WhenGettingCategoriesWithWritePermissions(Role role)
+            : base(role)
         {
         }
 

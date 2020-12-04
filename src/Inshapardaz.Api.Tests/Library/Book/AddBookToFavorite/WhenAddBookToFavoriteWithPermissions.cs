@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
-using Bogus;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
-    [TestFixture(Permission.Reader)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
+    [TestFixture(Role.Reader)]
     public class WhenAddBookToFavoriteWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
         private BookDto _book;
 
-        public WhenAddBookToFavoriteWithPermissions(Permission permission) : base(permission)
+        public WhenAddBookToFavoriteWithPermissions(Role role) : base(role)
         {
         }
 
@@ -54,7 +49,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
         [Test]
         public void ShouldBeAddedToFavorites()
         {
-            BookAssert.ShouldBeAddedToFavorite(_book.Id, UserId, DatabaseConnection);
+            BookAssert.ShouldBeAddedToFavorite(_book.Id, AccountId, DatabaseConnection);
         }
     }
 }

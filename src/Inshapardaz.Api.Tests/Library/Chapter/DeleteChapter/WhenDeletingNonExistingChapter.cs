@@ -1,6 +1,6 @@
-﻿using Inshapardaz.Api.Tests;
-using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
         private HttpResponseMessage _response;
 
         public WhenDeletingNonExistingChapter()
-            : base(Domain.Adapters.Permission.Writer)
+            : base(Role.Writer)
         {
         }
 

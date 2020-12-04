@@ -1,12 +1,9 @@
-﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,8 +11,8 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddChapterContentRequest : BookRequest
     {
-        public AddChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string contents, string language, string mimeType, int? userId)
-            : base(claims, libraryId, bookId, userId)
+        public AddChapterContentRequest(int libraryId, int bookId, int chapterId, string contents, string language, string mimeType)
+            : base(libraryId, bookId)
         {
             ChapterId = chapterId;
             Contents = contents;
@@ -51,7 +48,6 @@ namespace Inshapardaz.Domain.Models.Library
             _fileRepository = fileRepository;
         }
 
-        [Authorise(step: 0, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<AddChapterContentRequest> HandleAsync(AddChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             if (string.IsNullOrWhiteSpace(command.Language))

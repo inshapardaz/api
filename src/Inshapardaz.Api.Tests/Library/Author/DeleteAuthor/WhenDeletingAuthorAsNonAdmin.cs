@@ -2,19 +2,19 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Author.DeleteAuthor
 {
-    [TestFixture(Permission.Reader)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Reader)]
+    [TestFixture(Role.Writer)]
     public class WhenDeletingAuthorAsNonAdmin : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenDeletingAuthorAsNonAdmin(Permission Permission)
-            : base(Permission)
+        public WhenDeletingAuthorAsNonAdmin(Role Role)
+            : base(Role)
         {
         }
 

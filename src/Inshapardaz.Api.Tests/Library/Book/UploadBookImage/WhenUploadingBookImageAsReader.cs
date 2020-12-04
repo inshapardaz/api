@@ -1,7 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading;
@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
         private byte[] _oldImage;
 
         public WhenUploadingBookImageAsReader()
-            : base(Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

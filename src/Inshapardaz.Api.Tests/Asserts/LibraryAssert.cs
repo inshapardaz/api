@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.DataHelpers;
+using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
-using System;
 using System.Data;
 using System.Net.Http;
 
@@ -13,12 +13,18 @@ namespace Inshapardaz.Api.Tests.Asserts
         private HttpResponseMessage _response;
         private LibraryView _view;
         private int _libraryId;
+        private LibraryView view;
 
         public LibraryAssert(HttpResponseMessage response, int libraryId)
         {
             _response = response;
             _view = _response.GetContent<LibraryView>().Result;
             _libraryId = libraryId;
+        }
+
+        public LibraryAssert(LibraryView view)
+        {
+            this.view = view;
         }
 
         public static LibraryAssert FromResponse(HttpResponseMessage response, IDbConnection databaseConnection)
@@ -55,6 +61,12 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+        internal LibraryAssert WithWritableLinks()
+        {
+            return ShouldHaveUpdateLink()
+                .ShouldHaveDeleteLink();
+        }
+
         internal void ShouldHaveUpdatedLibrary(IDbConnection databaseConnection)
         {
             var dbLibrary = databaseConnection.GetLibraryById(_libraryId);
@@ -63,11 +75,20 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.SupportsPeriodicals.Should().Be(dbLibrary.SupportsPeriodicals);
         }
 
-        internal void ShouldBeSameAs(LibraryView expectedLibrary)
+        public void ShouldBeSameAs(LibraryView expectedLibrary)
         {
             _view.Name.Should().Be(expectedLibrary.Name);
             _view.Language.Should().Be(expectedLibrary.Language);
             _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
+        }
+
+        public LibraryAssert ShouldBeSameAs(LibraryDto expectedLibrary)
+        {
+            _view.Name.Should().Be(expectedLibrary.Name);
+            _view.Language.Should().Be(expectedLibrary.Language);
+            _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
+
+            return this;
         }
 
         public LibraryAssert ShouldHaveSelfLink()
@@ -168,7 +189,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        public LibraryAssert ShouldHaveUpdatLlink()
+        public LibraryAssert ShouldHaveUpdateLink()
         {
             _view.Links.AssertLink("update")
                 .ShouldBePut()
@@ -225,6 +246,20 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.Links.AssertLinkNotPresent("delete");
 
             return this;
+        }
+
+        internal static LibraryAssert FromObject(LibraryView view)
+        {
+            return new LibraryAssert(view);
+        }
+    }
+
+    internal static class LibraryAssertionExtensions
+    {
+        internal static LibraryAssert ShouldMatch(this LibraryView view, LibraryDto dto)
+        {
+            return LibraryAssert.FromObject(view)
+                               .ShouldBeSameAs(dto);
         }
     }
 }

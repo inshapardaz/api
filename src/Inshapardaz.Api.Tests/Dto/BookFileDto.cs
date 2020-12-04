@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Dto
     {
         public int BookId { get; set; }
 
-        public Guid UserId { get; set; }
+        public int AccountId { get; set; }
 
         public DateTime DateRead { get; set; }
 
@@ -43,7 +43,7 @@ namespace Inshapardaz.Api.Tests.Dto
     {
         public int BookId { get; set; }
 
-        public Guid UserId { get; set; }
+        public Guid AccountId { get; set; }
 
         public DateTime DateAdded { get; set; }
 

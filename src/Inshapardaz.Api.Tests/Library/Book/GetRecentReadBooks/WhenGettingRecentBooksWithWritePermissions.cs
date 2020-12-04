@@ -1,7 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingRecentBooksWithWritePermissions
         : TestBase
     {
@@ -20,8 +20,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         private PagingAssert<BookView> _assert;
         private IEnumerable<BookDto> _books;
 
-        public WhenGettingRecentBooksWithWritePermissions(Permission permission)
-            : base(permission)
+        public WhenGettingRecentBooksWithWritePermissions(Role role)
+            : base(role)
         {
         }
 
@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         {
             _books = BookBuilder.WithLibrary(LibraryId)
                                        .IsPublic()
-                                       .AddToRecentReads(UserId, 10)
+                                       .AddToRecentReads(AccountId, 10)
                                        .Build(25);
 
             _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=1&pageSize=10&read=true");

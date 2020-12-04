@@ -1,12 +1,9 @@
-﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,8 +11,8 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class UpdateChapterContentRequest : BookRequest
     {
-        public UpdateChapterContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, int chapterId, string contents, string language, string mimetype, int? userId)
-            : base(claims, libraryId, bookId, userId)
+        public UpdateChapterContentRequest(int libraryId, int bookId, int chapterId, string contents, string language, string mimetype)
+            : base(libraryId, bookId)
         {
             ChapterId = chapterId;
             Contents = contents;
@@ -58,7 +55,6 @@ namespace Inshapardaz.Domain.Models.Library
             _libraryRepository = libraryRepository;
         }
 
-        [Authorise(step: 0, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<UpdateChapterContentRequest> HandleAsync(UpdateChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);

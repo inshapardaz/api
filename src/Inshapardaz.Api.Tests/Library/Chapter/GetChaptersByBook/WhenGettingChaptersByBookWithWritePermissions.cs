@@ -4,7 +4,7 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingChaptersByBookWithWritePermissions
         : TestBase
     {
@@ -22,8 +22,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
         private ListView<ChapterView> _view;
         private BookDto _book;
 
-        public WhenGettingChaptersByBookWithWritePermissions(Permission permission)
-            : base(permission)
+        public WhenGettingChaptersByBookWithWritePermissions(Role role)
+            : base(role)
         {
         }
 

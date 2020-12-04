@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
 {
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         private HttpResponseMessage _response;
 
         public WhenGettingChapterContentLanguageNotExisting()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

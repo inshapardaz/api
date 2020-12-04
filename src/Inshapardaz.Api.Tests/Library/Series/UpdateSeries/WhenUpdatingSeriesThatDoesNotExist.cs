@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
         private SeriesAssert _assert;
 
         public WhenUpdatingSeriesThatDoesNotExist()
-            : base(Domain.Adapters.Permission.LibraryAdmin)
+            : base(Role.LibraryAdmin)
         {
         }
 

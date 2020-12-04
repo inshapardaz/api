@@ -5,26 +5,27 @@ using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
 using System.IO;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class AddBookContentRequest : LibraryAuthorisedCommand
+    public class AddBookContentRequest : LibraryBaseCommand
     {
-        public AddBookContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, string language, string mimeType)
-            : base(claims, libraryId)
+        public AddBookContentRequest(int libraryId, int bookId, string language, string mimeType, int? accountId)
+            : base(libraryId)
         {
             BookId = bookId;
             Language = language;
             MimeType = mimeType;
+            AccountId = accountId;
         }
 
         public int BookId { get; }
 
         public string Language { get; }
         public string MimeType { get; }
+        public int? AccountId { get; }
         public FileModel Content { get; set; }
 
         public BookContentModel Result { get; set; }
@@ -43,10 +44,9 @@ namespace Inshapardaz.Domain.Models.Library
             _fileStorage = fileStorage;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<AddBookContentRequest> HandleAsync(AddBookContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.AccountId, cancellationToken);
 
             if (book != null)
             {

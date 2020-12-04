@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
@@ -11,7 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
     {
         private HttpResponseMessage _response;
 
-        public WhenDeletingNonExistingCategory() : base(Domain.Adapters.Permission.Admin)
+        public WhenDeletingNonExistingCategory() : base(Role.Admin)
         {
         }
 

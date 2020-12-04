@@ -2,16 +2,15 @@
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class DeletePeriodicalRequest : LibraryAuthorisedCommand
+    public class DeletePeriodicalRequest : LibraryBaseCommand
     {
-        public DeletePeriodicalRequest(ClaimsPrincipal claims, int libraryId, int periodicalId)
-            : base(claims, libraryId)
+        public DeletePeriodicalRequest(int libraryId, int periodicalId)
+            : base(libraryId)
         {
             PeriodicalId = periodicalId;
         }
@@ -32,7 +31,6 @@ namespace Inshapardaz.Domain.Models.Library
             _fileStorage = fileStorage;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<DeletePeriodicalRequest> HandleAsync(DeletePeriodicalRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var periodical = await _periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);

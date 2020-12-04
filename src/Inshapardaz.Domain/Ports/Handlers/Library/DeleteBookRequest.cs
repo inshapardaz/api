@@ -2,8 +2,6 @@
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,10 +9,13 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteBookRequest : BookRequest
     {
-        public DeleteBookRequest(ClaimsPrincipal claims, int libraryId, int bookId, int? userId)
-            : base(claims, libraryId, bookId, userId)
+        public DeleteBookRequest(int libraryId, int bookId, int? accountId)
+            : base(libraryId, bookId)
         {
+            AccountId = accountId;
         }
+
+        public int? AccountId { get; }
     }
 
     public class DeleteBookRequestHandler : RequestHandlerAsync<DeleteBookRequest>
@@ -30,10 +31,9 @@ namespace Inshapardaz.Domain.Models.Library
             _fileStorage = fileStorage;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<DeleteBookRequest> HandleAsync(DeleteBookRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.AccountId, cancellationToken);
             if (book != null)
             {
                 if (book.ImageId.HasValue)

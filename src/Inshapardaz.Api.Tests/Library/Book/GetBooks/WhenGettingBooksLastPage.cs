@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
         private PagingAssert<BookView> _assert;
 
         public WhenGettingBooksLastPage()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

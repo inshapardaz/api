@@ -1,21 +1,21 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
 {
-    [TestFixture(Permission.Reader)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Reader)]
+    [TestFixture(Role.Writer)]
     public class WhenUpdatingLibraryWithoutPermission : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenUpdatingLibraryWithoutPermission(Permission permission)
-            : base(permission)
+        public WhenUpdatingLibraryWithoutPermission(Role role)
+            : base(role)
         {
         }
 

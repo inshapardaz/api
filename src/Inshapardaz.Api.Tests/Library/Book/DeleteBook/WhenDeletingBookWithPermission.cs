@@ -1,25 +1,24 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenDeletingBookWithPermission : TestBase
     {
         private HttpResponseMessage _response;
 
         private BookDto _expected;
 
-        public WhenDeletingBookWithPermission(Permission permission) : base(permission)
+        public WhenDeletingBookWithPermission(Role role) : base(role)
         {
         }
 
@@ -29,8 +28,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
             var books = BookBuilder.WithLibrary(LibraryId)
                                     .WithCategories(1)
                                     .HavingSeries()
-                                    .AddToFavorites(Guid.NewGuid())
-                                    .AddToRecentReads(Guid.NewGuid())
+                                    .AddToFavorites(Helpers.Random.Number)
+                                    .AddToRecentReads(Helpers.Random.Number)
                                     .Build(1);
             _expected = books.PickRandom();
 
@@ -83,7 +82,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         [Test]
         public void ShouldBeDeletedFromTheFavoritesOfAllUsers()
         {
-            BookAssert.ShouldNotBeInFavorites(_expected.Id, UserId, DatabaseConnection);
+            BookAssert.ShouldNotBeInFavorites(_expected.Id, AccountId, DatabaseConnection);
         }
 
         [Test]

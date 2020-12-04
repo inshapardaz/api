@@ -1,25 +1,24 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenUploadingBookImageWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
         private int _bookId;
         private byte[] _newImage = Random.Bytes;
 
-        public WhenUploadingBookImageWithPermissions(Permission permission)
-            : base(permission)
+        public WhenUploadingBookImageWithPermissions(Role role)
+            : base(role)
         {
         }
 

@@ -1,18 +1,16 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Handlers.Library;
-using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class GetArticlesByIssueQuery : LibraryAuthorisedQuery<IEnumerable<ArticleModel>>
+    public class GetArticlesByIssueQuery : LibraryBaseQuery<IEnumerable<ArticleModel>>
     {
-        public GetArticlesByIssueQuery(int libraryId, int periodicalId, int issueId, int? userId)
-            : base(libraryId, userId)
+        public GetArticlesByIssueQuery(int libraryId, int periodicalId, int issueId)
+            : base(libraryId)
         {
             PeriodicalId = periodicalId;
             IssueId = issueId;

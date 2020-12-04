@@ -1,15 +1,15 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenAddingBookContentWithPermission
         : TestBase
     {
@@ -19,8 +19,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
         private BookContentAssert _assert;
         private byte[] _contents;
 
-        public WhenAddingBookContentWithPermission(Permission permission)
-            : base(permission)
+        public WhenAddingBookContentWithPermission(Role role)
+            : base(role)
         {
         }
 

@@ -5,20 +5,21 @@ using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class UpdateBookRequest : LibraryAuthorisedCommand
+    public class UpdateBookRequest : LibraryBaseCommand
     {
-        public UpdateBookRequest(ClaimsPrincipal claims, int libraryId, BookModel book)
-            : base(claims, libraryId)
+        public UpdateBookRequest(int libraryId, int? accountId, BookModel book)
+            : base(libraryId)
         {
+            AccountId = accountId;
             Book = book;
         }
 
+        public int? AccountId { get; }
         public BookModel Book { get; }
 
         public RequestResult Result { get; set; } = new RequestResult();
@@ -47,7 +48,6 @@ namespace Inshapardaz.Domain.Models.Library
             _categoryRepository = categoryRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<UpdateBookRequest> HandleAsync(UpdateBookRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var author = await _authorRepository.GetAuthorById(command.LibraryId, command.Book.AuthorId, cancellationToken);
@@ -76,13 +76,13 @@ namespace Inshapardaz.Domain.Models.Library
                 }
             }
 
-            var result = await _bookRepository.GetBookById(command.LibraryId, command.Book.Id, command.UserId, cancellationToken);
+            var result = await _bookRepository.GetBookById(command.LibraryId, command.Book.Id, command.AccountId, cancellationToken);
 
             if (result == null)
             {
                 var book = command.Book;
                 book.Id = default(int);
-                command.Result.Book = await _bookRepository.AddBook(command.LibraryId, book, command.UserId, cancellationToken);
+                command.Result.Book = await _bookRepository.AddBook(command.LibraryId, book, command.AccountId, cancellationToken);
                 command.Result.Book.AuthorName = author.Name;
                 command.Result.Book.SeriesName = series?.Name;
                 command.Result.Book.Categories = categories?.ToList();

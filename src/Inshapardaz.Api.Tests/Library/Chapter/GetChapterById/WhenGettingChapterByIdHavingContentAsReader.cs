@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -16,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         private ChapterAssert _assert;
 
         public WhenGettingChapterByIdHavingContentAsReader()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

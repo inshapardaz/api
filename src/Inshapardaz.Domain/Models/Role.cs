@@ -1,4 +1,4 @@
-namespace Inshapardaz.Api.Entities
+namespace Inshapardaz.Domain.Models
 {
     public enum Role
     {

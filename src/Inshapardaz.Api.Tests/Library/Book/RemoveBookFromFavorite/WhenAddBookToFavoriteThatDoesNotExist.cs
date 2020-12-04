@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
         private int _bookId = -Random.Number;
 
         public WhenAddBookToFavoriteThatDoesNotExist()
-            : base(Domain.Adapters.Permission.Writer)
+            : base(Role.Writer)
         {
         }
 
@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
         [Test]
         public void ShouldNotBeInFavorites()
         {
-            BookAssert.ShouldNotBeInFavorites(_bookId, UserId, DatabaseConnection);
+            BookAssert.ShouldNotBeInFavorites(_bookId, AccountId, DatabaseConnection);
         }
     }
 }

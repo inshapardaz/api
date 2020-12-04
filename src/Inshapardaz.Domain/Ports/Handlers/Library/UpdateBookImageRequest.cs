@@ -6,22 +6,22 @@ using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
 using System.IO;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class UpdateBookImageRequest : LibraryAuthorisedCommand
+    public class UpdateBookImageRequest : LibraryBaseCommand
     {
-        public UpdateBookImageRequest(ClaimsPrincipal claims, int libraryId, int bookId)
-            : base(claims, libraryId)
+        public UpdateBookImageRequest(int libraryId, int bookId, int? accountId)
+            : base(libraryId)
         {
             BookId = bookId;
+            AccountId = accountId;
         }
 
         public int BookId { get; }
-
+        public int? AccountId { get; }
         public FileModel Image { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();
@@ -47,10 +47,9 @@ namespace Inshapardaz.Domain.Models.Library
             _fileStorage = fileStorage;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<UpdateBookImageRequest> HandleAsync(UpdateBookImageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.AccountId, cancellationToken);
 
             if (book == null)
             {

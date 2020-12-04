@@ -4,54 +4,115 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Database.SqlServer;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
 using Inshapardaz.Database.SqlServer.Repositories;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
+using Inshapardaz.Domain.Models;
+using Microsoft.AspNetCore.TestHost;
+using System;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Tests
 {
-    public class TestBase : WebApplicationFactory<Startup>
+    public class TestBase
     {
         protected readonly bool _periodicalsEnabled;
-        protected readonly Permission _authenticationLevel;
+        protected readonly Role? _role;
+        private WebApplicationFactory<Startup> _factory;
+        private AccountDto _account;
 
-        public TestBase(Permission Permission = Permission.Unauthorised, bool periodicalsEnabled = false, bool createLibrary = true)
+        public TestBase(Role? role = null, bool periodicalsEnabled = false, bool createLibrary = true)
         {
             _periodicalsEnabled = periodicalsEnabled;
-            _authenticationLevel = Permission;
-            Client = CreateClient();
+            _role = role;
+
+            _factory = new WebApplicationFactory<Startup>()
+            .WithWebHostBuilder(builder => builder.ConfigureTestServices(services => ConfigureServices(services)));
+
+            AccountBuilder = _factory.Services.GetService<AccountDataBuilder>();
+
+            if (role.HasValue)
+            {
+                AccountBuilder = AccountBuilder.As(_role.Value);
+                _account = AccountBuilder.Build();
+            }
+
             if (createLibrary)
             {
-                LibraryBuilder.WithPeriodicalsEnabled(_periodicalsEnabled).Build();
+                var builder = LibraryBuilder.WithPeriodicalsEnabled(_periodicalsEnabled);
+                if (_account != null) builder.AssignToUser(AccountId);
+                Library = builder.Build();
+            }
+
+            Client = _factory.CreateClient();
+
+            if (_account != null)
+            {
+                var settings = Services.GetService<Settings>();
+                var token = TokenBuilder.GenerateToken(settings, _account.Id);
+                Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
         }
 
-        public HttpClient Client { get; private set; }
-        public readonly Guid UserId = Guid.NewGuid();
+        private void ConfigureServices(IServiceCollection services)
+        {
+            if (services.Any(x => x.ServiceType == typeof(IFileStorage)))
+            {
+                services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(DatabaseFileStorage), ServiceLifetime.Transient));
+                services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(AzureFileStorage), ServiceLifetime.Transient));
+                services.AddSingleton<IFileStorage>(new FakeFileStorage());
+            }
+
+            services.AddTransient<LibraryDataBuilder>()
+                .AddTransient<CategoriesDataBuilder>()
+                .AddTransient<SeriesDataBuilder>()
+                .AddTransient<AuthorsDataBuilder>()
+                .AddTransient<BooksDataBuilder>()
+                .AddTransient<ChapterDataBuilder>()
+                .AddTransient<AccountDataBuilder>();
+
+            /*services.AddAuthentication("Test")
+                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", op => { });*/
+
+            //services.AddScoped<TestClaimsProvider>(svc => svc.GetService<TestClaimsProvider>().WithAccount(_account?.Id));
+
+            /*if (services.Any(x => x.ServiceType == typeof(IUserHelper)))
+             {
+                 services.Remove(new ServiceDescriptor(typeof(IUserHelper), typeof(UserHelper), ServiceLifetime.Transient));
+                 services.AddScoped<IUserHelper, TestUserHelper>();
+             }
+             */
+        }
+
+        public HttpClient Client { get; }
+
+        public int AccountId => _account?.Id ?? 0;
 
         protected int LibraryId => _libraryBuilder.Library.Id;
-        protected LibraryDto Library => _libraryBuilder.Library;
 
-        protected IDbConnection DatabaseConnection => Services.GetService<IProvideConnection>().GetConnection();
+        protected IServiceProvider Services => _factory.Services;
 
-        protected FakeFileStorage FileStore => Services.GetService<IFileStorage>() as FakeFileStorage;
+        protected LibraryDto Library { get; }
 
+        protected IDbConnection DatabaseConnection => _factory.Services.GetService<IProvideConnection>().GetConnection();
+
+        protected FakeFileStorage FileStore => _factory.Services.GetService<IFileStorage>() as FakeFileStorage;
+
+        protected AccountDataBuilder _accountBuilder;
         protected LibraryDataBuilder _libraryBuilder;
         protected AuthorsDataBuilder _authorBuilder;
         protected SeriesDataBuilder _seriesDataBuilder;
         protected CategoriesDataBuilder _categoriesDataBuilder;
         protected BooksDataBuilder _booksDataBuilder;
         protected ChapterDataBuilder _chapterDataBuilder;
-        protected Permission CurrentAuthenticationLevel => _authenticationLevel;
+        protected Role? CurrentAuthenticationLevel => _role;
+
+        protected AccountDataBuilder AccountBuilder { get; }
 
         protected LibraryDataBuilder LibraryBuilder
         {
@@ -59,7 +120,7 @@ namespace Inshapardaz.Api.Tests
             {
                 if (_libraryBuilder == null)
                 {
-                    _libraryBuilder = Services.GetService<LibraryDataBuilder>();
+                    _libraryBuilder = _factory.Services.GetService<LibraryDataBuilder>();
                 }
 
                 return _libraryBuilder;
@@ -72,7 +133,7 @@ namespace Inshapardaz.Api.Tests
             {
                 if (_authorBuilder == null)
                 {
-                    _authorBuilder = Services.GetService<AuthorsDataBuilder>();
+                    _authorBuilder = _factory.Services.GetService<AuthorsDataBuilder>();
                 }
 
                 return _authorBuilder;
@@ -85,7 +146,7 @@ namespace Inshapardaz.Api.Tests
             {
                 if (_seriesDataBuilder == null)
                 {
-                    _seriesDataBuilder = Services.GetService<SeriesDataBuilder>();
+                    _seriesDataBuilder = _factory.Services.GetService<SeriesDataBuilder>();
                 }
 
                 return _seriesDataBuilder;
@@ -98,7 +159,7 @@ namespace Inshapardaz.Api.Tests
             {
                 if (_categoriesDataBuilder == null)
                 {
-                    _categoriesDataBuilder = Services.GetService<CategoriesDataBuilder>();
+                    _categoriesDataBuilder = _factory.Services.GetService<CategoriesDataBuilder>();
                 }
 
                 return _categoriesDataBuilder;
@@ -111,7 +172,7 @@ namespace Inshapardaz.Api.Tests
             {
                 if (_booksDataBuilder == null)
                 {
-                    _booksDataBuilder = Services.GetService<BooksDataBuilder>();
+                    _booksDataBuilder = _factory.Services.GetService<BooksDataBuilder>();
                 }
 
                 return _booksDataBuilder;
@@ -124,47 +185,17 @@ namespace Inshapardaz.Api.Tests
             {
                 if (_chapterDataBuilder == null)
                 {
-                    _chapterDataBuilder = Services.GetService<ChapterDataBuilder>();
+                    _chapterDataBuilder = _factory.Services.GetService<ChapterDataBuilder>();
                 }
 
                 return _chapterDataBuilder;
             }
         }
 
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {
-            builder.ConfigureServices(services =>
-            {
-                if (services.Any(x => x.ServiceType == typeof(IFileStorage)))
-                {
-                    services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(DatabaseFileStorage), ServiceLifetime.Transient));
-                    services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(AzureFileStorage), ServiceLifetime.Transient));
-                    services.AddSingleton<IFileStorage>(new FakeFileStorage());
-                }
-
-                services.AddTransient<LibraryDataBuilder>()
-                    .AddTransient<CategoriesDataBuilder>()
-                    .AddTransient<SeriesDataBuilder>()
-                    .AddTransient<AuthorsDataBuilder>()
-                    .AddTransient<BooksDataBuilder>()
-                    .AddTransient<ChapterDataBuilder>();
-
-                services.AddAuthentication("Test")
-                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", op => { });
-
-                services.AddScoped<TestClaimsProvider>(_ => TestClaimsProvider.WithAuthLevel(_authenticationLevel, UserId));
-
-                if (services.Any(x => x.ServiceType == typeof(IUserHelper)))
-                {
-                    services.Remove(new ServiceDescriptor(typeof(IUserHelper), typeof(UserHelper), ServiceLifetime.Transient));
-                    services.AddScoped<IUserHelper, TestUserHelper>();
-                }
-            });
-        }
-
         protected virtual void Cleanup()
         {
-            _libraryBuilder.CleanUp();
+            _accountBuilder?.CleanUp();
+            _libraryBuilder?.CleanUp();
             _authorBuilder?.CleanUp();
             _seriesDataBuilder?.CleanUp();
             _categoriesDataBuilder?.CleanUp();

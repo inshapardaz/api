@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
@@ -13,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
 
-        public WhenGettingBooksSinglePage() : base(Domain.Adapters.Permission.Reader)
+        public WhenGettingBooksSinglePage() : base(Role.Reader)
         {
         }
 

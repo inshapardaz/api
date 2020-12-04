@@ -1,17 +1,15 @@
-﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class AddAuthorRequest : LibraryAuthorisedCommand
+    public class AddAuthorRequest : LibraryBaseCommand
     {
-        public AddAuthorRequest(ClaimsPrincipal claims, int libraryId, AuthorModel author)
-            : base(claims, libraryId)
+        public AddAuthorRequest(int libraryId, AuthorModel author)
+            : base(libraryId)
         {
             Author = author;
         }
@@ -30,7 +28,6 @@ namespace Inshapardaz.Domain.Models.Library
             _authorRepository = authorRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<AddAuthorRequest> HandleAsync(AddAuthorRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             command.Result = await _authorRepository.AddAuthor(command.LibraryId, command.Author, cancellationToken);

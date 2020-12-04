@@ -2,25 +2,24 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingBooksWithWritePermissions : TestBase
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
         private IEnumerable<CategoryDto> _categories;
 
-        public WhenGettingBooksWithWritePermissions(Permission permission) : base(permission)
+        public WhenGettingBooksWithWritePermissions(Role role) : base(role)
         {
         }
 

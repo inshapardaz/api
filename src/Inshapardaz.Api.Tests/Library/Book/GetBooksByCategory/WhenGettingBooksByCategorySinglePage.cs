@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
         private CategoryDto _category;
         private IEnumerable<BookDto> _categoryBooks;
 
-        public WhenGettingBooksByCategorySinglePage() : base(Domain.Adapters.Permission.Reader)
+        public WhenGettingBooksByCategorySinglePage() : base(Role.Reader)
         {
         }
 

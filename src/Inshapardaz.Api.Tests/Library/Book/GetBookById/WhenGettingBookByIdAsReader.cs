@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
@@ -16,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
         private BookAssert _assert;
         private IEnumerable<CategoryDto> _categories;
 
-        public WhenGettingBookByIdAsReader() : base(Domain.Adapters.Permission.Reader)
+        public WhenGettingBookByIdAsReader() : base(Role.Reader)
         {
         }
 

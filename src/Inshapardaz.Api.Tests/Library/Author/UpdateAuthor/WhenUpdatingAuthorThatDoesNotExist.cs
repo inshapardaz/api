@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Author.UpdateAuthor
@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Author.UpdateAuthor
         private AuthorView _author;
         private AuthorAssert _assert;
 
-        public WhenUpdatingAuthorThatDoesNotExist() : base(Permission.Writer)
+        public WhenUpdatingAuthorThatDoesNotExist() : base(Role.Writer)
         {
         }
 

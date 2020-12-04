@@ -1,9 +1,7 @@
 using Inshapardaz.Api.Views;
-using Inshapardaz.Domain.Adapters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace Inshapardaz.Api.Extensions
 {

@@ -13,7 +13,7 @@ namespace Inshapardaz.Api.Mappings
                 Text = view.Text,
                 SequenceNumber = view.SequenceNumber,
                 Status = view.Status,
-                UserId = view.UserId,
+                AccountId = view.AccountId,
                 AssignTimeStamp = view.AssignTimeStamp
             };
         }
@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Mappings
                 Text = model.Text,
                 SequenceNumber = model.SequenceNumber,
                 Status = model.Status,
-                UserId = model.UserId,
+                AccountId = model.AccountId,
                 AssignTimeStamp = model.AssignTimeStamp
             };
         }

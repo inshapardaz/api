@@ -1,7 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
@@ -16,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
         private BookPageDto _page;
 
         public WhenAssigningBookPageAsReader()
-            : base(Permission.Reader)
+            : base(Role.Reader)
         {
         }
 
@@ -28,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
             var assignment = new
             {
                 Status = PageStatuses.AssignedToReview,
-                UserId = UserId
+                AccountId = AccountId
             };
 
             _response = await Client.PostObject($"/library/{LibraryId}/books/{book.Id}/pages/{_page.SequenceNumber}/assign", assignment);

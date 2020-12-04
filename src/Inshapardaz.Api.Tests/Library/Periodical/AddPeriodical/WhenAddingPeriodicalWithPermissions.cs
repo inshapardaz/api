@@ -1,24 +1,24 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenAddingPeriodicalWithPermissions
         : TestBase
     {
         private PeriodicalAssert _assert;
         private HttpResponseMessage _response;
 
-        public WhenAddingPeriodicalWithPermissions(Permission permission)
-            : base(permission, true)
+        public WhenAddingPeriodicalWithPermissions(Role role)
+            : base(role, true)
         {
         }
 

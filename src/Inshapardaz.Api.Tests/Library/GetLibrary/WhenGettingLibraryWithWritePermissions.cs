@@ -1,23 +1,23 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.GetLibrary
 {
-    [TestFixture(Permission.Admin, true)]
-    [TestFixture(Permission.Admin, false)]
-    [TestFixture(Permission.LibraryAdmin, true)]
-    [TestFixture(Permission.LibraryAdmin, false)]
-    [TestFixture(Permission.Writer, true)]
-    [TestFixture(Permission.Writer, false)]
+    [TestFixture(Role.Admin, true)]
+    [TestFixture(Role.Admin, false)]
+    [TestFixture(Role.LibraryAdmin, true)]
+    [TestFixture(Role.LibraryAdmin, false)]
+    [TestFixture(Role.Writer, true)]
+    [TestFixture(Role.Writer, false)]
     public class WhenGettingLibraryWithWritePermissions : TestBase
     {
         private HttpResponseMessage _response;
         private LibraryAssert _assert;
 
-        public WhenGettingLibraryWithWritePermissions(Permission authLevel, bool periodicalsEnabled)
+        public WhenGettingLibraryWithWritePermissions(Role authLevel, bool periodicalsEnabled)
             : base(authLevel, periodicalsEnabled)
         {
         }
@@ -25,8 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var client = CreateClient();
-            _response = await client.GetAsync($"/library/{LibraryId}");
+            _response = await Client.GetAsync($"/library/{LibraryId}");
 
             _assert = LibraryAssert.FromResponse(_response, LibraryId);
         }
@@ -89,17 +88,17 @@ namespace Inshapardaz.Api.Tests.Library.GetLibrary
         [Test]
         public void ShouldHaveWritableLinks()
         {
-            if (_authenticationLevel == Permission.Admin)
+            if (_role == Role.Admin)
             {
                 _assert.ShouldHaveCreateCategorylink()
                     .ShouldHaveCreatelink()
-                    .ShouldHaveUpdatLlink()
+                    .ShouldHaveUpdateLink()
                     .ShouldHaveDeleteLink();
             }
-            else if (_authenticationLevel == Permission.LibraryAdmin)
+            else if (_role == Role.LibraryAdmin)
             {
                 _assert.ShouldHaveCreateCategorylink()
-                       .ShouldHaveUpdatLlink();
+                       .ShouldHaveUpdateLink();
             }
             else
             {

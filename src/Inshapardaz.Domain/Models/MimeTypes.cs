@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Inshapardaz.Domain.Models
+﻿namespace Inshapardaz.Domain.Models
 {
     public static class MimeTypes
     {

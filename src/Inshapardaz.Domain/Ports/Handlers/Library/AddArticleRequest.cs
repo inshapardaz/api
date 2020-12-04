@@ -3,17 +3,15 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class AddArticleRequest : LibraryAuthorisedCommand
+    public class AddArticleRequest : LibraryBaseCommand
     {
-        public AddArticleRequest(ClaimsPrincipal claims, int libraryId, int peridicalId, int issueId, ArticleModel article, int? userId)
-            : base(claims, libraryId)
+        public AddArticleRequest(int libraryId, int peridicalId, int issueId, ArticleModel article)
+            : base(libraryId)
         {
             PeridicalId = peridicalId;
             IssueId = issueId;
@@ -37,7 +35,6 @@ namespace Inshapardaz.Domain.Models.Library
             _articleRepository = articleRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<AddArticleRequest> HandleAsync(AddArticleRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var issue = await _issueRepository.GetIssueById(command.LibraryId, command.PeridicalId, command.IssueId, cancellationToken);

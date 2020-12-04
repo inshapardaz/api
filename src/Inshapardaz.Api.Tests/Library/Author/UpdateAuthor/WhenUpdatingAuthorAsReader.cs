@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Author.UpdateAuthor
@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.Tests.Author.UpdateAuthor
     {
         private HttpResponseMessage _response;
 
-        public WhenUpdatingAuthorAsReader() : base(Permission.Reader)
+        public WhenUpdatingAuthorAsReader() : base(Role.Reader)
         {
         }
 

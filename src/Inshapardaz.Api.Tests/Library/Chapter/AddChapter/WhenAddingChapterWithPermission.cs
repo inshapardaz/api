@@ -1,8 +1,7 @@
-﻿using Inshapardaz.Api.Tests;
-using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Security.Claims;
@@ -10,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenAddingChapterWithPermission
         : TestBase
     {
@@ -21,8 +20,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         private ChapterAssert _assert;
         private ClaimsPrincipal _claim;
 
-        public WhenAddingChapterWithPermission(Permission permission)
-            : base(permission)
+        public WhenAddingChapterWithPermission(Role role)
+            : base(role)
         {
         }
 

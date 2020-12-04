@@ -1,11 +1,10 @@
 ﻿using Inshapardaz.Domain.Models;
-using System;
 
 namespace Inshapardaz.Api.Views.Library
 {
     public class BookPageAssignmentView : ViewWithLinks
     {
         public PageStatuses Status { get; set; }
-        public int? UserId { get; set; }
+        public int? AccountId { get; set; }
     }
 }

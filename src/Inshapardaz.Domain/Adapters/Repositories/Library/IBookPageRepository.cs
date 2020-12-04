@@ -1,6 +1,5 @@
 ﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,6 +21,6 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
-        Task<BookPageModel> UpdatePageAssignment(int libraryId, int bookId, int sequenceNumber, PageStatuses status, int? assignedUserId, CancellationToken cancellationToken);
+        Task<BookPageModel> UpdatePageAssignment(int libraryId, int bookId, int sequenceNumber, PageStatuses status, int? assignedAccountId, CancellationToken cancellationToken);
     }
 }

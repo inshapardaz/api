@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         private BookContentAssert _assert;
 
         public WhenUpdatingBookContentWithDifferentLanguage()
-            : base(Domain.Adapters.Permission.Writer)
+            : base(Role.Writer)
         {
         }
 

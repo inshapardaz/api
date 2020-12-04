@@ -1,0 +1,40 @@
+using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Models.Library;
+using Paramore.Darker;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Inshapardaz.Domain.Models.Handlers
+{
+    public class GetLibrariesQuery : IQuery<Page<LibraryModel>>
+    {
+        public GetLibrariesQuery(int pageNumber, int pageSize)
+        {
+            PageNumber = pageNumber;
+            PageSize = pageSize;
+        }
+
+        public int PageNumber { get; private set; }
+
+        public int PageSize { get; private set; }
+
+        public string Query { get; set; }
+    }
+
+    public class GetLibrariesQueryHandler : QueryHandlerAsync<GetLibrariesQuery, Page<LibraryModel>>
+    {
+        private readonly ILibraryRepository _libraryRepository;
+
+        public GetLibrariesQueryHandler(ILibraryRepository libraryRepository)
+        {
+            _libraryRepository = libraryRepository;
+        }
+
+        public override async Task<Page<LibraryModel>> ExecuteAsync(GetLibrariesQuery query, CancellationToken cancellationToken = default)
+        {
+            return (string.IsNullOrWhiteSpace(query.Query))
+             ? await _libraryRepository.GetLibraries(query.PageNumber, query.PageSize, cancellationToken)
+             : await _libraryRepository.FindLibraries(query.Query, query.PageNumber, query.PageSize, cancellationToken);
+        }
+    }
+}

@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         private LibraryAssert _assert;
 
         public WhenAddingLibraryWithPermissions()
-            : base(Domain.Adapters.Permission.Admin)
+            : base(Role.Admin)
         {
         }
 
@@ -106,7 +107,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         {
             _assert.ShouldHaveCreateCategorylink()
                     .ShouldHaveCreatelink()
-                    .ShouldHaveUpdatLlink()
+                    .ShouldHaveUpdateLink()
                     .ShouldHaveDeleteLink();
         }
     }

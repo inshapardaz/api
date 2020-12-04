@@ -1,24 +1,24 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePage
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenDeletingBookPageWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
         private BookPageDto _page;
         private int _bookId;
 
-        public WhenDeletingBookPageWithPermissions(Permission permission)
-            : base(permission)
+        public WhenDeletingBookPageWithPermissions(Role role)
+            : base(role)
         {
         }
 

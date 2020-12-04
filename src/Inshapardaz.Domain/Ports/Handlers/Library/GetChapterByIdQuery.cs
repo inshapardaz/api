@@ -1,9 +1,6 @@
-﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
-using Paramore.Brighter;
 using Paramore.Darker;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,10 +8,9 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetChapterByIdQuery : LibraryBaseQuery<ChapterModel>
     {
-        public GetChapterByIdQuery(int libraryId, int bookId, int chapterId, int? userId)
+        public GetChapterByIdQuery(int libraryId, int bookId, int chapterId)
             : base(libraryId)
         {
-            UserId = userId;
             BookId = bookId;
             ChapterId = chapterId;
         }
@@ -22,8 +18,6 @@ namespace Inshapardaz.Domain.Models.Library
         public int BookId { get; set; }
 
         public int ChapterId { get; }
-
-        public int? UserId { get; set; }
     }
 
     public class GetChapterByIdQueryHandler : QueryHandlerAsync<GetChapterByIdQuery, ChapterModel>

@@ -1,12 +1,12 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Domain.Adapters;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
 {
@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         private ChapterContentDto _content;
 
         public WhenGettingPrivateChapterContentAsReader()
-            : base(Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

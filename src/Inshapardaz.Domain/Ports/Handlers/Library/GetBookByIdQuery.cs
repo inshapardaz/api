@@ -1,24 +1,26 @@
-﻿using Inshapardaz.Domain.Helpers;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class GetBookByIdQuery : LibraryAuthorisedQuery<BookModel>
+    public class GetBookByIdQuery : LibraryBaseQuery<BookModel>
     {
-        public GetBookByIdQuery(int libraryId, int bookId, int? userId)
-            : base(libraryId, userId)
+        public GetBookByIdQuery(int libraryId, int bookId, int? accountId)
+            : base(libraryId)
         {
             BookId = bookId;
+            AccountId = accountId;
         }
 
         public int BookId { get; private set; }
+        public int? AccountId { get; }
     }
 
     public class GetBookByIdQueryHandler : QueryHandlerAsync<GetBookByIdQuery, BookModel>
@@ -34,7 +36,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<BookModel> ExecuteAsync(GetBookByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.AccountId, cancellationToken);
             if (book != null)
             {
                 if (book.ImageId.HasValue)

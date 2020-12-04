@@ -4,22 +4,22 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingBookPagesAsWithPermission : TestBase
     {
         private BookDto _book;
         private HttpResponseMessage _response;
         private PagingAssert<BookPageView> _assert;
 
-        public WhenGettingBookPagesAsWithPermission(Permission permission)
-            : base(permission)
+        public WhenGettingBookPagesAsWithPermission(Role role)
+            : base(role)
         {
         }
 

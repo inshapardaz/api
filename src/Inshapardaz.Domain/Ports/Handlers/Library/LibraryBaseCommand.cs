@@ -1,7 +1,4 @@
-﻿using System;
-using System.Security.Claims;
-
-namespace Inshapardaz.Domain.Models.Handlers.Library
+﻿namespace Inshapardaz.Domain.Models.Handlers.Library
 {
     public abstract class LibraryBaseCommand : RequestBase
     {
@@ -11,18 +8,5 @@ namespace Inshapardaz.Domain.Models.Handlers.Library
         }
 
         public int LibraryId { get; private set; }
-    }
-
-    public abstract class LibraryAuthorisedCommand : AuthoriseRequestBase
-    {
-        public LibraryAuthorisedCommand(ClaimsPrincipal claims, int libraryId)
-            : base(claims)
-        {
-            LibraryId = libraryId;
-        }
-
-        public int LibraryId { get; private set; }
-
-        public int? UserId { get; set; }
     }
 }

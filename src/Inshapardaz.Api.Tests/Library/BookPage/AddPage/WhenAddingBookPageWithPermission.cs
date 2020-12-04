@@ -1,16 +1,16 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenAddingBookPageWithPermission
         : TestBase
     {
@@ -18,8 +18,8 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
         private HttpResponseMessage _response;
         private BookPageAssert _assert;
 
-        public WhenAddingBookPageWithPermission(Permission permission)
-            : base(permission)
+        public WhenAddingBookPageWithPermission(Role role)
+            : base(role)
         {
         }
 

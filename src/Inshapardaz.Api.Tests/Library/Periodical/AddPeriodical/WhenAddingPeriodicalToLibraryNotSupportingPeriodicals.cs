@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
         private HttpResponseMessage _response;
 
         public WhenAddingPeriodicalToLibraryNotSupportingPeriodicals()
-            : base(Domain.Adapters.Permission.LibraryAdmin, false)
+            : base(Role.LibraryAdmin, false)
         {
         }
 

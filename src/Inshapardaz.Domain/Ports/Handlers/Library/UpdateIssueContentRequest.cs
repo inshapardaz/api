@@ -4,16 +4,15 @@ using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
 using System.IO;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class UpdateIssueContentRequest : LibraryAuthorisedCommand
+    public class UpdateIssueContentRequest : LibraryBaseCommand
     {
-        public UpdateIssueContentRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId, string language, string mimeType)
-            : base(claims, libraryId)
+        public UpdateIssueContentRequest(int libraryId, int periodicalId, int issueId, string language, string mimeType)
+            : base(libraryId)
         {
             PeriodicalId = periodicalId;
             IssueId = issueId;
@@ -51,7 +50,6 @@ namespace Inshapardaz.Domain.Models.Library
             _fileStorage = fileStorage;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdateIssueContentRequest> HandleAsync(UpdateIssueContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var issue = await _issueRepository.GetIssueById(command.LibraryId, command.PeriodicalId, command.IssueId, cancellationToken);

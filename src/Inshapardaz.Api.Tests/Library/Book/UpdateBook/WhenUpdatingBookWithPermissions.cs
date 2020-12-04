@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,14 +7,14 @@ using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenUpdatingBookWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
@@ -23,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         private BookAssert _bookAssert;
         private IEnumerable<CategoryDto> _otherCategories;
 
-        public WhenUpdatingBookWithPermissions(Permission permission) : base(permission)
+        public WhenUpdatingBookWithPermissions(Role role) : base(role)
         {
         }
 
@@ -36,8 +35,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             var books = BookBuilder.WithLibrary(LibraryId)
                                     .WithCategories(1)
                                     .HavingSeries()
-                                    .AddToFavorites(Guid.NewGuid())
-                                    .AddToRecentReads(Guid.NewGuid())
+                                    .AddToFavorites(Helpers.Random.Number)
+                                    .AddToRecentReads(Helpers.Random.Number)
                                     .Build(1);
 
             var selectedBook = books.PickRandom();

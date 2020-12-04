@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -20,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
         private ListView<ChapterView> _view;
 
         public WhenGettingChaptersByBookAsReader()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

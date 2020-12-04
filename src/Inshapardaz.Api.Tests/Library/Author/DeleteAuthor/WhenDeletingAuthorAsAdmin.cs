@@ -3,21 +3,21 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Author.DeleteAuthor
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
     public class WhenDeletingAuthorAsAdmin : TestBase
     {
         private HttpResponseMessage _response;
 
         private AuthorDto _expected;
 
-        public WhenDeletingAuthorAsAdmin(Permission Permission)
-            : base(Permission)
+        public WhenDeletingAuthorAsAdmin(Role role)
+            : base(role)
         {
         }
 

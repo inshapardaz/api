@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
@@ -13,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
         private int _seriesId;
 
         public WhenUploadingSeriesImageWhenNoExistingImage()
-            : base(Domain.Adapters.Permission.Writer)
+            : base(Role.Writer)
         {
         }
 

@@ -5,7 +5,7 @@ using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataBuilders;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -19,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
         {
             private HttpResponseMessage _response;
 
-            public AndUsingNonExistingLibrary() : base(Permission.Writer)
+            public AndUsingNonExistingLibrary() : base(Role.Writer)
             {
             }
 
@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
         {
             private HttpResponseMessage _response;
 
-            public AndUsingNonExistingAuthor() : base(Permission.Writer)
+            public AndUsingNonExistingAuthor() : base(Role.Writer)
             {
             }
 
@@ -81,7 +81,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             private HttpResponseMessage _response;
             private LibraryDataBuilder _library2Builder;
 
-            public AndUsingAuthorFromOtherLibrary() : base(Permission.Writer)
+            public AndUsingAuthorFromOtherLibrary() : base(Role.Writer)
             {
             }
 
@@ -116,7 +116,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
         {
             private HttpResponseMessage _response;
 
-            public AndUsingNonExistingSeries() : base(Permission.Writer)
+            public AndUsingNonExistingSeries() : base(Role.Writer)
             {
             }
 
@@ -148,7 +148,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             private HttpResponseMessage _response;
             private LibraryDataBuilder _library2Builder;
 
-            public AndUsingSeriesFromOtherLibrary() : base(Permission.Writer)
+            public AndUsingSeriesFromOtherLibrary() : base(Role.Writer)
             {
             }
 
@@ -184,7 +184,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
         {
             private HttpResponseMessage _response;
 
-            public AndUsingNonExistingCategory() : base(Permission.Writer)
+            public AndUsingNonExistingCategory() : base(Role.Writer)
             {
             }
 
@@ -221,7 +221,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             private HttpResponseMessage _response;
             private LibraryDataBuilder _library2Builder;
 
-            public AndUsingCategorysFromOtherLibrary() : base(Permission.Writer)
+            public AndUsingCategorysFromOtherLibrary() : base(Role.Writer)
             {
             }
 

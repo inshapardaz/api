@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
         private BookDto _book;
 
         public WhenAddBookToFavoriteAlreadyInFavorite()
-            : base(Permission.Reader)
+            : base(Role.Reader)
         {
         }
 
@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
             var books = BookBuilder.WithLibrary(LibraryId)
                                     .WithCategories(1)
                                     .HavingSeries()
-                                    .AddToFavorites(UserId)
+                                    .AddToFavorites(AccountId)
                                     .Build(2);
 
             _book = books.PickRandom();
@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
         [Test]
         public void ShouldBeAddedToFavorites()
         {
-            BookAssert.ShouldBeAddedToFavorite(_book.Id, UserId, DatabaseConnection);
+            BookAssert.ShouldBeAddedToFavorite(_book.Id, AccountId, DatabaseConnection);
         }
     }
 }

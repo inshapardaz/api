@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Inshapardaz.Api.Entities;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Models.Accounts
 {

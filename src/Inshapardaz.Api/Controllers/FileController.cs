@@ -1,6 +1,6 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
@@ -35,6 +35,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("files/{fileId}", Name = nameof(FileController.DeleteFile))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteFile(int fileId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteFileRequest(fileId);

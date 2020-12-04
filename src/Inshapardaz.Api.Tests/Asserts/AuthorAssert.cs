@@ -44,7 +44,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _author.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/authors/{_author.Id}");
+                  .EndingWith($"libraries/{_libraryId}/authors/{_author.Id}");
 
             return this;
         }
@@ -53,7 +53,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _author.Link("books")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books")
+                  .EndingWith($"libraries/{_libraryId}/books")
                   .ShouldHaveQueryParameter("authorId", _author.Id);
 
             return this;
@@ -63,7 +63,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _author.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/authors/{_author.Id}");
+                  .EndingWith($"libraries/{_libraryId}/authors/{_author.Id}");
 
             return this;
         }
@@ -90,7 +90,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _author.Link("image-upload")
                    .ShouldBePut()
-                   .EndingWith($"library/{_libraryId}/authors/{_author.Id}/image");
+                   .EndingWith($"libraries/{_libraryId}/authors/{_author.Id}/image");
             return this;
         }
 
@@ -112,7 +112,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _author.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/authors/{_author.Id}");
+                  .EndingWith($"libraries/{_libraryId}/authors/{_author.Id}");
             return this;
         }
 
@@ -223,7 +223,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _author.Link("image-upload")
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/authors/{_author.Id}/image");
+                  .EndingWith($"libraries/{_libraryId}/authors/{_author.Id}/image");
 
             return this;
         }
@@ -239,7 +239,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var location = _response.Headers.Location;
             location.Should().NotBeNull();
-            location.AbsoluteUri.Should().EndWith($"library/{_libraryId}/authors/{_author.Id}");
+            location.AbsoluteUri.Should().EndWith($"libraries/{_libraryId}/authors/{_author.Id}");
             return this;
         }
 

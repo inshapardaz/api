@@ -57,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 Categories = _otherCategories.Select(c => new CategoryView { Id = c.Id })
             };
 
-            _response = await Client.PutObject($"/library/{LibraryId}/books/{selectedBook.Id}", _expected);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{selectedBook.Id}", _expected);
             _bookAssert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

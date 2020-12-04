@@ -18,8 +18,8 @@ namespace Inshapardaz.Api.Tests.Author.GetAuthors
         {
             AuthorBuilder.WithLibrary(LibraryId).WithBooks(3).WithNamePattern("SearchAuthor").Build(50);
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/authors?query=SearchAuthor&pageNumber={5}&pageSize={10}");
-            _assert = new PagingAssert<AuthorView>(_response, Library);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/authors?query=SearchAuthor&pageNumber={5}&pageSize={10}");
+            _assert = new PagingAssert<AuthorView>(_response);
         }
 
         [OneTimeTearDown]
@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Tests.Author.GetAuthors
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/authors", "query", "SearchAuthor");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/authors", "query", "SearchAuthor");
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.Tests.Author.GetAuthors
         [Test]
         public void ShouldHavePreviousLinks()
         {
-            _assert.ShouldHavePreviousLink($"/library/{LibraryId}/authors", 4, 10, "query", "SearchAuthor");
+            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/authors", 4, 10, "query", "SearchAuthor");
         }
 
         [Test]

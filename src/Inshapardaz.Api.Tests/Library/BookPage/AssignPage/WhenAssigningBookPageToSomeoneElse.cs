@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
                 AccountId = assignment.AccountId
             };
 
-            _response = await Client.PostObject($"/library/{LibraryId}/books/{book.Id}/pages/{_page.SequenceNumber}/assign", assignment);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/books/{book.Id}/pages/{_page.SequenceNumber}/assign", assignment);
             _assert = BookPageAssert.FromResponse(_response, LibraryId);
         }
 

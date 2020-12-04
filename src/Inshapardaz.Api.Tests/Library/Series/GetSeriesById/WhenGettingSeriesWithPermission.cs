@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
             var series = SeriesBuilder.WithLibrary(LibraryId).Build(4);
             _expected = series.PickRandom();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/series/{_expected.Id}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/series/{_expected.Id}");
             _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

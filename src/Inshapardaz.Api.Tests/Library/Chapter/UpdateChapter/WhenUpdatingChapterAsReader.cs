@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
 
             var chapter2 = new ChapterView { Title = Random.Name };
 
-            _response = await Client.PutObject($"/library/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.Id}", chapter2);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.Id}", chapter2);
         }
 
         [OneTimeTearDown]

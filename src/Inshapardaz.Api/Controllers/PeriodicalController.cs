@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Controllers
             _fileRenderer = fileRenderer;
         }
 
-        [HttpGet("library/{libraryId}/periodicals", Name = nameof(PeriodicalController.GetPeriodicals))]
+        [HttpGet("libraries/{libraryId}/periodicals", Name = nameof(PeriodicalController.GetPeriodicals))]
         public async Task<IActionResult> GetPeriodicals(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
             var periodicalsQuery = new GetPeriodicalsQuery(libraryId, pageNumber, pageSize) { Query = query };
@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_periodicalRenderer.Render(args, libraryId));
         }
 
-        [HttpGet("library/{libraryId}/periodicals/{periodicalId}", Name = nameof(PeriodicalController.GetPeriodicalById))]
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}", Name = nameof(PeriodicalController.GetPeriodicalById))]
         public async Task<IActionResult> GetPeriodicalById(int libraryId, int periodicalId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetPeriodicalByIdQuery(libraryId, periodicalId);
@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpPost("library/{libraryId}/periodicals", Name = nameof(PeriodicalController.CreatePeriodical))]
+        [HttpPost("libraries/{libraryId}/periodicals", Name = nameof(PeriodicalController.CreatePeriodical))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreatePeriodical(int libraryId, [FromBody]PeriodicalView periodical, CancellationToken token = default(CancellationToken))
         {
@@ -78,7 +78,7 @@ namespace Inshapardaz.Api.Controllers
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
-        [HttpPut("library/{libraryId}/periodicals/{periodicalId}", Name = nameof(PeriodicalController.UpdatePeriodical))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}", Name = nameof(PeriodicalController.UpdatePeriodical))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdatePeriodical(int libraryId, int periodicalId, [FromBody]PeriodicalView periodical, CancellationToken token = default(CancellationToken))
         {
@@ -101,7 +101,7 @@ namespace Inshapardaz.Api.Controllers
             }
         }
 
-        [HttpDelete("library/{libraryId}/periodicals/{periodicalId}", Name = nameof(PeriodicalController.DeletePeriodical))]
+        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}", Name = nameof(PeriodicalController.DeletePeriodical))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeletePeriodical(int libraryId, int periodicalId, CancellationToken token = default(CancellationToken))
         {
@@ -110,7 +110,7 @@ namespace Inshapardaz.Api.Controllers
             return new NoContentResult();
         }
 
-        [HttpPut("library/{libraryId}/periodicals/{periodicalId}/image", Name = nameof(PeriodicalController.UpdatePeriodicalImage))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/image", Name = nameof(PeriodicalController.UpdatePeriodicalImage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdatePeriodicalImage(int libraryId, int periodicalId, IFormFile file, CancellationToken token = default(CancellationToken))
         {

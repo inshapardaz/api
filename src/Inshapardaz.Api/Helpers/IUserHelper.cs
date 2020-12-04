@@ -1,5 +1,4 @@
-﻿using Inshapardaz.Domain.Models;
-using System.Security.Claims;
+﻿using Inshapardaz.Api.Entities;
 
 namespace Inshapardaz.Api.Helpers
 {
@@ -10,10 +9,7 @@ namespace Inshapardaz.Api.Helpers
         bool IsLibraryAdmin { get; }
         bool IsWriter { get; }
         bool IsReader { get; }
-        ClaimsPrincipal Claims { get; }
 
-        bool IsUserInRole(Role role);
-
-        int? GetAccountId();
+        Account Account { get; }
     }
 }

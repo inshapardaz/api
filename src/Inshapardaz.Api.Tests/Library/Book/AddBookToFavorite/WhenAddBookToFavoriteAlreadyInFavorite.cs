@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
 
             _book = books.PickRandom();
 
-            _response = await Client.PostObject<object>($"/library/{LibraryId}/favorites/books/{_book.Id}", new object());
+            _response = await Client.PostObject<object>($"/libraries/{LibraryId}/favorites/books/{_book.Id}", new object());
         }
 
         [OneTimeTearDown]

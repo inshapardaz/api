@@ -3,7 +3,6 @@ using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Microsoft.AspNetCore.Http;
@@ -35,10 +34,10 @@ namespace Inshapardaz.Api.Controllers
             _userHelper = userHelper;
         }
 
-        [HttpGet("library/{libraryId}/books/{bookId}/chapters", Name = nameof(ChapterController.GetChaptersByBook))]
+        [HttpGet("libraries/{libraryId}/books/{bookId}/chapters", Name = nameof(ChapterController.GetChaptersByBook))]
         public async Task<IActionResult> GetChaptersByBook(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
-            var query = new GetChaptersByBookQuery(libraryId, bookId, _userHelper.GetAccountId());
+            var query = new GetChaptersByBookQuery(libraryId, bookId, _userHelper.Account?.Id);
             var chapters = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             if (chapters != null)
@@ -49,7 +48,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpGet("library/{libraryId}/books/{bookId}/chapters/{chapterId}", Name = nameof(ChapterController.GetChapterById))]
+        [HttpGet("libraries/{libraryId}/books/{bookId}/chapters/{chapterId}", Name = nameof(ChapterController.GetChapterById))]
         public async Task<IActionResult> GetChapterById(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetChapterByIdQuery(libraryId, bookId, chapterId);
@@ -63,7 +62,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpPost("library/{libraryId}/books/{bookId}/chapters", Name = nameof(ChapterController.CreateChapter))]
+        [HttpPost("libraries/{libraryId}/books/{bookId}/chapters", Name = nameof(ChapterController.CreateChapter))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateChapter(int libraryId, int bookId, [FromBody]ChapterView chapter, CancellationToken token = default(CancellationToken))
         {
@@ -72,7 +71,7 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new AddChapterRequest(libraryId, bookId, _userHelper.GetAccountId(), chapter.Map());
+            var request = new AddChapterRequest(libraryId, bookId, _userHelper.Account?.Id, chapter.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)
@@ -84,7 +83,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("library/{libraryId}/books/{bookId}/chapters/{chapterId}", Name = nameof(ChapterController.UpdateChapter))]
+        [HttpPut("libraries/{libraryId}/books/{bookId}/chapters/{chapterId}", Name = nameof(ChapterController.UpdateChapter))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateChapter(int libraryId, int bookId, int chapterId, [FromBody]ChapterView chapter, CancellationToken token = default(CancellationToken))
         {
@@ -106,7 +105,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(renderResult);
         }
 
-        [HttpDelete("library/{libraryId}/books/{bookId}/chapters/{chapterId}", Name = nameof(ChapterController.DeleteChapter))]
+        [HttpDelete("libraries/{libraryId}/books/{bookId}/chapters/{chapterId}", Name = nameof(ChapterController.DeleteChapter))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteChapter(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {
@@ -115,14 +114,14 @@ namespace Inshapardaz.Api.Controllers
             return new NoContentResult();
         }
 
-        [HttpGet("library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.GetChapterContent))]
+        [HttpGet("libraries/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.GetChapterContent))]
         [Authorize()]
         public async Task<IActionResult> GetChapterContent(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {
             var contentType = Request.Headers["Accept"]; // default to "text/markdown"
             var language = Request.Headers["Accept-Language"]; // default to  ""
 
-            var query = new GetChapterContentQuery(libraryId, bookId, chapterId, language, contentType, _userHelper.GetAccountId());
+            var query = new GetChapterContentQuery(libraryId, bookId, chapterId, language, contentType, _userHelper.Account?.Id);
 
             var chapterContents = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
@@ -134,7 +133,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpPost("library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.CreateChapterContent))]
+        [HttpPost("libraries/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.CreateChapterContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
@@ -157,7 +156,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.UpdateChapterContent))]
+        [HttpPut("libraries/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.UpdateChapterContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateChapterContent(int libraryId, int bookId, int chapterId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
@@ -182,7 +181,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(renderResult);
         }
 
-        [HttpDelete("library/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.DeleteChapterContent))]
+        [HttpDelete("libraries/{libraryId}/books/{bookId}/chapters/{chapterId}/contents", Name = nameof(ChapterController.DeleteChapterContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteChapterContent(int libraryId, int bookId, int chapterId, CancellationToken token = default(CancellationToken))
         {

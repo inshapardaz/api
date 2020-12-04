@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
 
                 var book = new BookView { Title = Random.Name, AuthorId = author.Id };
 
-                _response = await Client.PutObject($"/library/{-Random.Number}/books/{book.Id}", book);
+                _response = await Client.PutObject($"/libraries/{-Random.Number}/books/{book.Id}", book);
             }
 
             [OneTimeTearDown]
@@ -70,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
 
                 var book = new BookView { Title = Random.Text, AuthorId = -Random.Number };
 
-                _response = await Client.PutObject($"/library/{LibraryId}/books/{_bookToUpdate.Id}", book);
+                _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
 
             [OneTimeTearDown]
@@ -119,7 +119,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
 
                 var book = new BookView { Title = Random.Text, AuthorId = author2.Id };
 
-                _response = await Client.PutObject($"/library/{LibraryId}/books/{_bookToUpdate.Id}", book);
+                _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
 
             [OneTimeTearDown]
@@ -164,7 +164,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
 
                 var book = new BookView { Title = Random.Text, SeriesId = -Random.Number };
 
-                _response = await Client.PutObject($"/library/{LibraryId}/books/{_bookToUpdate.Id}", book);
+                _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
 
             [OneTimeTearDown]
@@ -212,7 +212,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 _bookToUpdate = books.PickRandom();
 
                 var book = new BookView { Title = Random.Text, SeriesId = series2.Id };
-                _response = await Client.PutObject($"/library/{LibraryId}/books/{_bookToUpdate.Id}", book);
+                _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
 
             [OneTimeTearDown]
@@ -257,7 +257,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
 
                 var book = new BookView { Title = Random.Text, Categories = new[] { new CategoryView { Id = -Random.Number } } };
 
-                _response = await Client.PutObject($"/library/{LibraryId}/books/{_bookToUpdate.Id}", book);
+                _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
 
             [OneTimeTearDown]
@@ -307,7 +307,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
 
                 var book = new BookView { Title = Random.Text, Categories = new[] { new CategoryView { Id = _category.Id } } };
 
-                _response = await Client.PutObject($"/library/{LibraryId}/books/{_bookToUpdate.Id}", book);
+                _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
 
             [OneTimeTearDown]

@@ -27,8 +27,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
                                        .AddToRecentReads(AccountId, 10)
                                        .Build(25);
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=3&pageSize=10&read=true");
-            _assert = new PagingAssert<BookView>(_response, Library);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=3&pageSize=10&read=true");
+            _assert = new PagingAssert<BookView>(_response);
         }
 
         [OneTimeTearDown]
@@ -46,9 +46,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/books", "pageNumber", "3");
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/books", "pageSize", "10");
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/books", "read", bool.TrueString);
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", "pageNumber", "3");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", "pageSize", "10");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", "read", bool.TrueString);
         }
 
         [Test]

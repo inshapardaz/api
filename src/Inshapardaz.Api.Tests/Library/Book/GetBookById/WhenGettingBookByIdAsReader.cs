@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
                                         .Build(4);
             _expected = books.PickRandom();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books/{_expected.Id}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_expected.Id}");
             _assert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

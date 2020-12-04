@@ -32,9 +32,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
             _categoryBooks = BookBuilder.WithLibrary(LibraryId).WithCategory(_category).IsPublic().Build(23);
             CategoryBuilder.WithLibrary(LibraryId).WithBooks(3).Build();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=1&pageSize=10&categoryid={_category.Id}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&categoryid={_category.Id}");
 
-            _assert = new PagingAssert<BookView>(_response, Library);
+            _assert = new PagingAssert<BookView>(_response);
         }
 
         [OneTimeTearDown]
@@ -52,7 +52,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/books", 1, parameterName: "categoryid", parameterValue: _category.Id.ToString());
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", 1, parameterName: "categoryid", parameterValue: _category.Id.ToString());
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
         [Test]
         public void ShouldHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/library/{LibraryId}/books", 2, parameterName: "categoryid", parameterValue: _category.Id.ToString());
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, parameterName: "categoryid", parameterValue: _category.Id.ToString());
         }
 
         [Test]

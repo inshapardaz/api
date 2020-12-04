@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
         {
             var periodical = new PeriodicalView { Title = Random.Name, Description = Random.Words(20) };
 
-            _response = await Client.PostObject($"/library/{LibraryId}/periodicals", periodical);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals", periodical);
 
             _assert = PeriodicalAssert.WithResponse(_response).InLibrary(LibraryId);
         }

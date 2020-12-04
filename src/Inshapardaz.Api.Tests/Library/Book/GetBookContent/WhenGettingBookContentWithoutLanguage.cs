@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
             _book = BookBuilder.WithLibrary(LibraryId).WithContents(1).WithContentLanguage(Library.Language).Build();
             _expected = BookBuilder.Contents.PickRandom();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books/{_book.Id}/contents", null, _expected.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/contents", null, _expected.MimeType);
             _assert = new BookContentAssert(_response, LibraryId);
         }
 

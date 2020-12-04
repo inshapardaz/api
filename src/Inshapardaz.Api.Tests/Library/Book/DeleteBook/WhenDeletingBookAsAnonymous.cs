@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
             var books = BookBuilder.WithLibrary(LibraryId).Build(4);
             var expected = books.PickRandom();
 
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/books/{expected.Id}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{expected.Id}");
         }
 
         [OneTimeTearDown]

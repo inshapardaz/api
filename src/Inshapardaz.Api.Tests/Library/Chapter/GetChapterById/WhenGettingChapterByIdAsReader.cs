@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         {
             _expected = ChapterBuilder.WithLibrary(LibraryId).Build(4).First();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books/{_expected.BookId}/chapters/{_expected.Id}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_expected.BookId}/chapters/{_expected.Id}");
             _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }
 

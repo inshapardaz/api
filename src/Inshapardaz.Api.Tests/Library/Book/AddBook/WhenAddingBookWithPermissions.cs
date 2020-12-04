@@ -38,7 +38,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 Categories = Random.PickRandom(categories, 2).Select(c => new CategoryView { Id = c.Id })
             };
 
-            _response = await Client.PostObject($"/library/{LibraryId}/books", book);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             _bookAssert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

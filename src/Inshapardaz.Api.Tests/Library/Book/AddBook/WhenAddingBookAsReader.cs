@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             var author = AuthorBuilder.WithLibrary(LibraryId).Build();
             var book = new BookView { Title = Random.Name, AuthorId = author.Id };
 
-            _response = await Client.PostObject($"/library/{LibraryId}/books", book);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
         }
 
         [OneTimeTearDown]

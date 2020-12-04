@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
             };
             _bookId = book.Id;
 
-            _response = await Client.PutObject($"/library/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}", _page);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}", _page);
             _assert = BookPageAssert.FromResponse(_response, LibraryId);
         }
 

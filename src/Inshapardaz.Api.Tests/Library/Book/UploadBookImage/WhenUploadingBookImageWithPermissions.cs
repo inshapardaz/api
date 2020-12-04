@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
 
             var imageUrl = DatabaseConnection.GetBookImageUrl(_bookId);
 
-            _response = await Client.PutFile($"/library/{LibraryId}/books/{_bookId}/image", _newImage);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_bookId}/image", _newImage);
         }
 
         [OneTimeTearDown]

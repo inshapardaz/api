@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.AddCategory
         {
             _category = new CategoryView { Name = Random.Name };
 
-            _response = await Client.PostObject($"/library/{LibraryId}/categories", _category);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/categories", _category);
             _assert = CategoryAssert.FromResponse(_response).InLibrary(LibraryId);
         }
 

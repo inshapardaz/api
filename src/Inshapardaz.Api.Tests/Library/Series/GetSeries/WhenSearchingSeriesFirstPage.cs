@@ -18,8 +18,8 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
         {
             SeriesBuilder.WithLibrary(LibraryId).WithBooks(3).WithNamePattern("SearchSeries").Build(20);
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/series?query=SearchSeries&pageNumber=1&pageSize=10");
-            _assert = new PagingAssert<SeriesView>(_response, Library);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/series?query=SearchSeries&pageNumber=1&pageSize=10");
+            _assert = new PagingAssert<SeriesView>(_response);
         }
 
         [OneTimeTearDown]
@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/series", "query", "SearchSeries");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/series", "query", "SearchSeries");
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
         [Test]
         public void ShouldHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/library/{LibraryId}/series", 2, 10, "query", "SearchSeries");
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/series", 2, 10, "query", "SearchSeries");
         }
 
         [Test]

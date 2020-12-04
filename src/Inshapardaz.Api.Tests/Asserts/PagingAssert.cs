@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using System.Collections.Generic;
@@ -11,15 +10,13 @@ namespace Inshapardaz.Api.Tests.Asserts
     internal class PagingAssert<T>
     {
         private HttpResponseMessage _response;
-        private readonly LibraryDto _library;
         private PageView<T> _page;
 
         public IEnumerable<T> Data => _page.Data;
 
-        public PagingAssert(HttpResponseMessage response, LibraryDto library)
+        public PagingAssert(HttpResponseMessage response)
         {
             _response = response;
-            _library = library;
             _page = response.GetContent<PageView<T>>().Result;
         }
 

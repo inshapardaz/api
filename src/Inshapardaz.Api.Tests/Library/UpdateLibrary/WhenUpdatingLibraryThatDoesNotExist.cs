@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
         {
             _expectedLibrary = new LibraryView { Name = Random.Name, Language = Random.Locale, SupportsPeriodicals = Random.Bool };
 
-            _response = await Client.PutObject($"/library/{-Random.Number}", _expectedLibrary);
+            _response = await Client.PutObject($"/libraries/{-Random.Number}", _expectedLibrary);
             _assert = LibraryAssert.FromResponse(_response, DatabaseConnection);
         }
 

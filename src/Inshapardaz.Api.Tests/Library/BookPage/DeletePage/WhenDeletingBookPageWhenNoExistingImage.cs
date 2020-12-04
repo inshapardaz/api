@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePage
             var book = BookBuilder.WithLibrary(LibraryId).WithPages(3).Build();
             _page = BookBuilder.GetPages(book.Id).PickRandom();
             _bookId = book.Id;
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}");
         }
 
         [OneTimeTearDown]

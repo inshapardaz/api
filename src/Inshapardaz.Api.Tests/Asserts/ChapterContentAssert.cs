@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents")
+                  .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents")
                   .ShouldHaveAcceptLanguage(_chapterContent.Language)
                   .ShouldHaveAccept(_chapterContent.MimeType);
 
@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.UpdateLink()
                  .ShouldBePut()
-                 .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents")
+                 .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents")
                  .ShouldHaveAcceptLanguage(_chapterContent.Language)
                  .ShouldHaveAccept(_chapterContent.MimeType);
 
@@ -85,7 +85,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
-            location.Should().EndWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents");
+            location.Should().EndWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents");
             return this;
         }
 
@@ -149,7 +149,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.DeleteLink()
                  .ShouldBeDelete()
-                 .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents");
+                 .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents");
 
             return this;
         }
@@ -164,7 +164,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.Link("chapter")
                 .ShouldBeGet()
-                .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}");
+                .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}");
 
             return this;
         }
@@ -173,7 +173,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.Link("book")
                 .ShouldBeGet()
-                .EndingWith($"library/{_libraryId}/books/{_chapterContent.BookId}");
+                .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}");
 
             return this;
         }
@@ -212,7 +212,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var response = result as RedirectResult;
             response.Url.Should().NotBeNull();
-            response.Url.Should().EndWith($"library/{libraryId}/books/{bookId}/chapters/{content.ChapterId}/contents/{content.Id}");
+            response.Url.Should().EndWith($"libraries/{libraryId}/books/{bookId}/chapters/{content.ChapterId}/contents/{content.Id}");
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (_userHelper.IsWriter || _userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
+            if (_userHelper.IsAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -210,13 +210,6 @@ namespace Inshapardaz.Api.Converters
 
             if (_userHelper.IsAdmin)
             {
-                links.Add(_linkRenderer.Render(new Link
-                {
-                    ActionName = nameof(LibraryController.CreateLibrary),
-                    Method = HttpMethod.Post,
-                    Rel = RelTypes.Create
-                }));
-
                 links.Add(_linkRenderer.Render(new Link
                 {
                     ActionName = nameof(LibraryController.DeleteLibrary),

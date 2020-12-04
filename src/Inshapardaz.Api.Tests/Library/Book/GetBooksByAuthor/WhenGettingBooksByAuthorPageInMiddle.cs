@@ -30,9 +30,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
             _authorBooks = BookBuilder.WithLibrary(LibraryId).WithAuthor(_author).IsPublic().Build(25);
             AuthorBuilder.WithLibrary(LibraryId).WithBooks(3).Build();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=2&pageSize=9&authorId={_author.Id}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=2&pageSize=9&authorId={_author.Id}");
 
-            _assert = new PagingAssert<BookView>(_response, Library);
+            _assert = new PagingAssert<BookView>(_response);
         }
 
         [OneTimeTearDown]
@@ -50,19 +50,19 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/books");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books");
         }
 
         [Test]
         public void ShouldHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/library/{LibraryId}/books", 3, parameterName: "authorid", pageSize: 9, parameterValue: _author.Id.ToString());
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3, parameterName: "authorid", pageSize: 9, parameterValue: _author.Id.ToString());
         }
 
         [Test]
         public void ShouldHavePreviousLink()
         {
-            _assert.ShouldHavePreviousLink($"/library/{LibraryId}/books", 1, parameterName: "authorid", pageSize: 9, parameterValue: _author.Id.ToString());
+            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1, parameterName: "authorid", pageSize: 9, parameterValue: _author.Id.ToString());
         }
 
         [Test]

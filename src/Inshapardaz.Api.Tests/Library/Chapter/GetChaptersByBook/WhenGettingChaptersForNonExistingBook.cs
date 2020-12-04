@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
         {
             ChapterBuilder.WithLibrary(LibraryId).Build(4);
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books/{-Random.Number}/chapters");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{-Random.Number}/chapters");
         }
 
         [OneTimeTearDown]

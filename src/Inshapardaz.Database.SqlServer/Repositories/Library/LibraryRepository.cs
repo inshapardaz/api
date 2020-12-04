@@ -73,6 +73,74 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<Page<LibraryModel>> GetUserLibraries(int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT  l.*
+                            FROM Library l
+                            INNER JOIN LibraryUser lu ON lu.LibraryId = l.Id
+                            WHERE lu.AccountId = @AccountId
+                            Order By l.Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { AccountId = accountId, PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<LibraryModel>(command);
+
+                var sqlAuthorCount = @"SELECT COUNT(*)
+                                       FROM Library l
+                                       INNER JOIN LibraryUser lu ON lu.LibraryId = l.Id
+                                       WHERE lu.AccountId = @AccountId";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount,
+                    new { AccountId = accountId },
+                    cancellationToken: cancellationToken));
+
+                return new Page<LibraryModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
+        }
+
+        public async Task<Page<LibraryModel>> FindUserLibraries(string query, int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT  l.*
+                            FROM Library l
+                            INNER JOIN LibraryUser lu ON lu.LibraryId = l.Id
+                            WHERE lu.AccountId = @AccountId AND Name LIKE @Query
+                            Order By l.Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { Query = $"%{query}%", AccountId = accountId, PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<LibraryModel>(command);
+
+                var sqlAuthorCount = @"SELECT COUNT(*)
+                            FROM Library l
+                            INNER JOIN LibraryUser lu ON lu.LibraryId = l.Id
+                            WHERE lu.AccountId = @AccountId AND Name LIKE @Query";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { Query = $"%{query}%", AccountId = accountId }, cancellationToken: cancellationToken));
+
+                return new Page<LibraryModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
+        }
+
         public async Task<LibraryModel> AddLibrary(LibraryModel library, CancellationToken cancellationToken)
         {
             int libraryId;

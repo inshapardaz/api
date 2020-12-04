@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.DeleteLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.DeleteAsync($"/library/{LibraryId}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}");
         }
 
         [OneTimeTearDown]

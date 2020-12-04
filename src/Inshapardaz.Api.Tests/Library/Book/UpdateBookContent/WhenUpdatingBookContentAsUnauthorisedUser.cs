@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
 
             _expected = Random.Bytes;
 
-            _response = await Client.PutFile($"/library/{LibraryId}/books/{_book.Id}/contents", _expected, file.Language, file.MimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents", _expected, file.Language, file.MimeType);
         }
 
         [OneTimeTearDown]

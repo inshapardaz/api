@@ -8,16 +8,19 @@ namespace Inshapardaz.Domain.Models.Handlers
 {
     public class GetLibrariesQuery : IQuery<Page<LibraryModel>>
     {
-        public GetLibrariesQuery(int pageNumber, int pageSize)
+        public GetLibrariesQuery(int pageNumber, int pageSize, int? accountId = null, Role? role = null)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
+            AccountId = accountId;
+            Role = role;
         }
 
         public int PageNumber { get; private set; }
 
         public int PageSize { get; private set; }
-
+        public int? AccountId { get; }
+        public Role? Role { get; }
         public string Query { get; set; }
     }
 
@@ -32,9 +35,16 @@ namespace Inshapardaz.Domain.Models.Handlers
 
         public override async Task<Page<LibraryModel>> ExecuteAsync(GetLibrariesQuery query, CancellationToken cancellationToken = default)
         {
+            if ((query.Role.HasValue && query.Role == Role.Admin) || !query.AccountId.HasValue)
+            {
+                return (string.IsNullOrWhiteSpace(query.Query))
+                ? await _libraryRepository.GetLibraries(query.PageNumber, query.PageSize, cancellationToken)
+                : await _libraryRepository.FindLibraries(query.Query, query.PageNumber, query.PageSize, cancellationToken);
+            }
+
             return (string.IsNullOrWhiteSpace(query.Query))
-             ? await _libraryRepository.GetLibraries(query.PageNumber, query.PageSize, cancellationToken)
-             : await _libraryRepository.FindLibraries(query.Query, query.PageNumber, query.PageSize, cancellationToken);
+                ? await _libraryRepository.GetUserLibraries(query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken)
+                : await _libraryRepository.FindUserLibraries(query.Query, query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken);
         }
     }
 }

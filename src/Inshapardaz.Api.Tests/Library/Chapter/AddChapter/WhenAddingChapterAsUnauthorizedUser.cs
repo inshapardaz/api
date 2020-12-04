@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
             var book = BookBuilder.WithLibrary(LibraryId).Build();
 
             var chapter = new ChapterView { Title = new Faker().Random.String(), ChapterNumber = 1 };
-            _response = await Client.PostObject($"/library/{LibraryId}/books/{book.Id}/chapters", chapter);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/books/{book.Id}/chapters", chapter);
         }
 
         [OneTimeTearDown]

@@ -43,7 +43,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _series.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/series/{_series.Id}");
+                  .EndingWith($"libraries/{_libraryId}/series/{_series.Id}");
 
             return this;
         }
@@ -52,7 +52,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _series.Link("books")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books")
+                  .EndingWith($"libraries/{_libraryId}/books")
                   .ShouldHaveQueryParameter("seriesid", _series.Id);
 
             return this;
@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _series.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/series/{_series.Id}");
+                  .EndingWith($"libraries/{_libraryId}/series/{_series.Id}");
 
             return this;
         }
@@ -77,7 +77,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _series.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/series/{_series.Id}");
+                  .EndingWith($"libraries/{_libraryId}/series/{_series.Id}");
             return this;
         }
 
@@ -104,7 +104,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _series.Link("image-upload")
                    .ShouldBePut()
-                   .EndingWith($"library/{_libraryId}/series/{_series.Id}/image");
+                   .EndingWith($"libraries/{_libraryId}/series/{_series.Id}/image");
             return this;
         }
 
@@ -120,7 +120,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _series.Link("image-upload")
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/series/{_series.Id}/image");
+                  .EndingWith($"libraries/{_libraryId}/series/{_series.Id}/image");
 
             return this;
         }
@@ -194,7 +194,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         internal SeriesAssert ShouldHaveCorrectLocationHeader()
         {
             _response.Headers.Location.Should().NotBeNull();
-            _response.Headers.Location.AbsolutePath.Should().EndWith($"library/{_libraryId}/series/{_series.Id}");
+            _response.Headers.Location.AbsolutePath.Should().EndWith($"libraries/{_libraryId}/series/{_series.Id}");
             return this;
         }
 

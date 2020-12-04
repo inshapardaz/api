@@ -25,9 +25,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         {
             BookBuilder.WithLibrary(LibraryId).IsPublic().AddToFavorites(AccountId).Build(25);
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=3&pageSize=10&favorite=true");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=3&pageSize=10&favorite=true");
 
-            _assert = new PagingAssert<BookView>(_response, Library);
+            _assert = new PagingAssert<BookView>(_response);
         }
 
         [OneTimeTearDown]
@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/books");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books");
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         [Test]
         public void ShouldHavePreviousLink()
         {
-            _assert.ShouldHavePreviousLink($"/library/{LibraryId}/books", 2);
+            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 2);
         }
 
         [Test]

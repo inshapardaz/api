@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
                                     .Build(1);
             _expected = books.PickRandom();
 
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/books/{_expected.Id}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{_expected.Id}");
         }
 
         [OneTimeTearDown]

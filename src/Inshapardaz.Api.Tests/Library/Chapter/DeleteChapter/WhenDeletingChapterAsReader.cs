@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
         {
             var chapter = ChapterBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.Id}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.Id}");
         }
 
         [OneTimeTearDown]

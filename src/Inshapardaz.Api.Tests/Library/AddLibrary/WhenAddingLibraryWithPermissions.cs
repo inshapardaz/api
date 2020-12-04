@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         {
             _library = new LibraryView { Name = Random.Name, Language = Random.Locale, SupportsPeriodicals = _periodicalsEnabled };
 
-            _response = await Client.PostObject($"/library", _library);
+            _response = await Client.PostObject($"/libraries", _library);
             _assert = LibraryAssert.FromResponse(_response, DatabaseConnection);
         }
 
@@ -103,10 +103,9 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         }
 
         [Test]
-        public void ShouldHaveCreateCategoryLinks()
+        public void ShouldHaveEditLinks()
         {
             _assert.ShouldHaveCreateCategorylink()
-                    .ShouldHaveCreatelink()
                     .ShouldHaveUpdateLink()
                     .ShouldHaveDeleteLink();
         }

@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
         public async Task Setup()
         {
             var page = new BookPageView { Text = Random.Text, SequenceNumber = 1 };
-            _response = await Client.PostObject($"/library/{LibraryId}/books/{-Random.Number}/pages", page);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/books/{-Random.Number}/pages", page);
         }
 
         [OneTimeTearDown]

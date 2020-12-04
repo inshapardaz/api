@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
 
             _contents = Random.Bytes;
 
-            _response = await Client.PutFile($"/library/{LibraryId}/books/{_book.Id}/contents", _contents, _file.Language, _newMimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents", _contents, _file.Language, _newMimeType);
             _assert = new BookContentAssert(_response, LibraryId);
         }
 

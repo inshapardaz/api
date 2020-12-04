@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Views;
@@ -22,10 +21,10 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            LibraryBuilder.Build(4);
+            LibraryBuilder.AssignToUser(AccountId).Build(1);
 
             _response = await Client.GetAsync($"/libraries");
-            _assert = new PagingAssert<LibraryView>(_response, Library);
+            _assert = new PagingAssert<LibraryView>(_response);
         }
 
         [OneTimeTearDown]
@@ -50,25 +49,6 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         public void ShouldHaveCreateLink()
         {
             _assert.ShouldHaveCreateLink("/libraries");
-        }
-
-        [Test]
-        public void ShouldNotHaveNavigationLinks()
-        {
-            _assert.ShouldNotHaveNextLink();
-            _assert.ShouldNotHavePreviousLink();
-        }
-
-        [Test]
-        public void ShouldReturnExpectedLibraries()
-        {
-            var expectedItems = LibraryBuilder.Libraries.OrderBy(a => a.Name).Take(10);
-            foreach (var item in expectedItems)
-            {
-                var actual = _assert.Data.FirstOrDefault(x => x.Name == item.Name);
-                actual.ShouldMatch(item)
-                     .WithWritableLinks();
-            }
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/periodicals/{_view.Id}");
+                  .EndingWith($"libraries/{_libraryId}/periodicals/{_view.Id}");
 
             return this;
         }
@@ -43,7 +43,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Link("issues")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/periodicals/{_view.Id}/issues");
+                  .EndingWith($"libraries/{_libraryId}/periodicals/{_view.Id}/issues");
 
             return this;
         }
@@ -52,7 +52,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/periodicals/{_view.Id}");
+                  .EndingWith($"libraries/{_libraryId}/periodicals/{_view.Id}");
 
             return this;
         }
@@ -61,7 +61,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/periodicals/{_view.Id}");
+                  .EndingWith($"libraries/{_libraryId}/periodicals/{_view.Id}");
 
             return this;
         }
@@ -70,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Link("image-upload")
                    .ShouldBePut()
-                   .EndingWith($"library/{_libraryId}/periodicals/{_view.Id}/image");
+                   .EndingWith($"libraries/{_libraryId}/periodicals/{_view.Id}/image");
             return this;
         }
 
@@ -78,7 +78,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var location = _response.Headers.Location;
             location.Should().NotBeNull();
-            location.AbsoluteUri.Should().EndWith($"library/{_libraryId}/periodicals/{_view.Id}");
+            location.AbsoluteUri.Should().EndWith($"libraries/{_libraryId}/periodicals/{_view.Id}");
             return this;
         }
 

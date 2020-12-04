@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
 
             _book = books.PickRandom();
 
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/favorites/books/{_book.Id}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/favorites/books/{_book.Id}");
         }
 
         [OneTimeTearDown]

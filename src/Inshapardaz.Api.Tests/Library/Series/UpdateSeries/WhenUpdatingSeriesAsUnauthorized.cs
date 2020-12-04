@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
             var series = SeriesBuilder.WithLibrary(LibraryId).Build();
             series.Name = Random.Name;
 
-            _response = await Client.PutObject($"/library/{LibraryId}/series/{series.Id}", series);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/series/{series.Id}", series);
         }
 
         [OneTimeTearDown]

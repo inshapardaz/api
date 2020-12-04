@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Controllers
             _articleRenderer = articleRenderer;
         }
 
-        [HttpGet("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles", Name = nameof(ArticleController.GetArticlesByIssue))]
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles", Name = nameof(ArticleController.GetArticlesByIssue))]
         public async Task<IActionResult> GetArticlesByIssue(int libraryId, int periodicalId, int issueId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetArticlesByIssueQuery(libraryId, periodicalId, issueId);
@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpGet("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}", Name = nameof(ArticleController.GetArticleById))]
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}", Name = nameof(ArticleController.GetArticleById))]
         public async Task<IActionResult> GetArticleById(int libraryId, int periodicalId, int issueId, int articleId, int chapterId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetArticleByIdQuery(libraryId, periodicalId, issueId, articleId);
@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpPost("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles", Name = nameof(ArticleController.CreateArticle))]
+        [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles", Name = nameof(ArticleController.CreateArticle))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateArticle(int libraryId, int periodicalId, int issueId, ArticleView article, CancellationToken token = default(CancellationToken))
         {
@@ -80,7 +80,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}", Name = nameof(ArticleController.UpdateArticle))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}", Name = nameof(ArticleController.UpdateArticle))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateArticle(int libraryId, int periodicalId, int issueId, int articleId, ArticleView chapter, CancellationToken token = default(CancellationToken))
         {
@@ -102,7 +102,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(renderResult);
         }
 
-        [HttpDelete("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}", Name = nameof(ArticleController.DeleteArticle))]
+        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}", Name = nameof(ArticleController.DeleteArticle))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteArticle(int libraryId, int periodicalId, int issueId, int articleId, CancellationToken token = default(CancellationToken))
         {
@@ -111,7 +111,7 @@ namespace Inshapardaz.Api.Controllers
             return new NoContentResult();
         }
 
-        [HttpGet("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}/contents", Name = nameof(ArticleController.GetArticleContent))]
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}/contents", Name = nameof(ArticleController.GetArticleContent))]
         public async Task<IActionResult> GetArticleContent(int libraryId, int periodicalId, int issueId, int articleId, CancellationToken token = default(CancellationToken))
         {
             var contentType = Request.Headers["Accept"]; // default to "text/markdown"
@@ -129,7 +129,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpPost("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}/content", Name = nameof(ArticleController.CreateArticleContent))]
+        [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}/content", Name = nameof(ArticleController.CreateArticleContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateArticleContent(int libraryId, int periodicalId, int issueId, int articleId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
@@ -152,7 +152,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}/content", Name = nameof(ArticleController.UpdateArticleContent))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}/content", Name = nameof(ArticleController.UpdateArticleContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateArticleContent(int libraryId, int periodicalId, int issueId, int articleId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
@@ -176,7 +176,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpDelete("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}/content", Name = nameof(ArticleController.DeleteArticleContent))]
+        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles/{articleId}/content", Name = nameof(ArticleController.DeleteArticleContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteArticleContent(int libraryId, int periodicalId, int issueId, int articleId, CancellationToken token = default(CancellationToken))
         {

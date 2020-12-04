@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
             var chapters = ChapterBuilder.WithLibrary(LibraryId).WithContents(2).Build(4);
             _expected = chapters.PickRandom();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books/{_expected.BookId}/chapters/{_expected.Id}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_expected.BookId}/chapters/{_expected.Id}");
             _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }
 

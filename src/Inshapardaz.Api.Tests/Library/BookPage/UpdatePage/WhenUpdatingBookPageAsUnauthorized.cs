@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
                 SequenceNumber = Random.Number
             };
 
-            _response = await Client.PutObject($"/library/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}", changesPage);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}", changesPage);
         }
 
         [OneTimeTearDown]

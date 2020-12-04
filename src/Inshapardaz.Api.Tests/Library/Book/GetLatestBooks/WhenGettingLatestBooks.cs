@@ -28,8 +28,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetLatestBooks
         {
             _books = BookBuilder.WithLibrary(LibraryId).IsPublic().Build(12);
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=1&pageSize=10&sortby=DateCreated&sort=Ascending");
-            _assert = new PagingAssert<BookView>(_response, Library);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&sortby=DateCreated&sort=Ascending");
+            _assert = new PagingAssert<BookView>(_response);
         }
 
         [OneTimeTearDown]
@@ -47,13 +47,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetLatestBooks
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/books", "sortby", "DateCreated");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", "sortby", "DateCreated");
         }
 
         [Test]
         public void ShouldNotHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/library/{LibraryId}/books", 2, 10, "sortby", "DateCreated");
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, 10, "sortby", "DateCreated");
         }
 
         [Test]

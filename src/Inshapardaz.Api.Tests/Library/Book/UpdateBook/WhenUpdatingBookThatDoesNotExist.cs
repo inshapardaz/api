@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 Language = Random.Locale
             };
 
-            _response = await Client.PutObject($"/library/{LibraryId}/books/{_expected.Id}", _expected);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_expected.Id}", _expected);
             _bookAssert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

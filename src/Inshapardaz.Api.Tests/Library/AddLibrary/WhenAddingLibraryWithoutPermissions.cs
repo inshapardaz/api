@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         {
             var library = new LibraryView { Name = Random.Name, Language = Random.Locale, SupportsPeriodicals = Random.Bool };
 
-            _response = await Client.PostObject($"/library", library);
+            _response = await Client.PostObject($"/libraries", library);
         }
 
         [OneTimeTearDown]

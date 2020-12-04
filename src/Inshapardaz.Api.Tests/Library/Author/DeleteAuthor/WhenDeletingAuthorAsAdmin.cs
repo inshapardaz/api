@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Author.DeleteAuthor
             var authors = AuthorBuilder.WithLibrary(LibraryId).WithBooks(0).Build(4);
             _expected = authors.PickRandom();
 
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/authors/{_expected.Id}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/authors/{_expected.Id}");
         }
 
         [OneTimeTearDown]

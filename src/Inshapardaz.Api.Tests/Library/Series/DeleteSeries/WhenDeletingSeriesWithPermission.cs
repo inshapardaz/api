@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
             var series = SeriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
             _expected = series.PickRandom();
 
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/series/{_expected.Id}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/series/{_expected.Id}");
         }
 
         [OneTimeTearDown]

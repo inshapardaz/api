@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             var book = BookBuilder.WithLibrary(LibraryId).Build();
             book.Title = Random.Name;
 
-            _response = await Client.PutObject($"/library/{LibraryId}/books/{book.Id}", book);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{book.Id}", book);
         }
 
         [OneTimeTearDown]

@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
             _chapters = ChapterBuilder.WithLibrary(LibraryId).WithContents().Build(4);
             _book = DatabaseConnection.GetBookById(_chapters.PickRandom().BookId);
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books/{_book.Id}/chapters");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/chapters");
             _view = _response.GetContent<ListView<ChapterView>>().Result;
         }
 
@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
         {
             _view.SelfLink()
                 .ShouldBeGet()
-                .EndingWith($"library/{LibraryId}/books/{_book.Id}/chapters");
+                .EndingWith($"libraries/{LibraryId}/books/{_book.Id}/chapters");
         }
 
         [Test]

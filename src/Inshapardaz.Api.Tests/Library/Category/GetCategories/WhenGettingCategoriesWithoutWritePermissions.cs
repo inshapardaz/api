@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
         {
             _categories = CategoryBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/categories");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/categories");
 
             _view = await _response.GetContent<ListView<CategoryView>>();
         }
@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
         {
             _view.SelfLink()
                 .ShouldBeGet()
-                .EndingWith($"/library/{LibraryId}/categories");
+                .EndingWith($"/libraries/{LibraryId}/categories");
         }
 
         [Test]

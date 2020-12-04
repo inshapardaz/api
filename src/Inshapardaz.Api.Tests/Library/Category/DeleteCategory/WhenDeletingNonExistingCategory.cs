@@ -19,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/categories/{-Random.Number}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/categories/{-Random.Number}");
         }
 
         [OneTimeTearDown]

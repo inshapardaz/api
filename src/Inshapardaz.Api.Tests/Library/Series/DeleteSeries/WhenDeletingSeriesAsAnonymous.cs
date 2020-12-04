@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
             var series = SeriesBuilder.WithLibrary(LibraryId).Build(4);
             var expected = series.PickRandom();
 
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/series/{expected.Id}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/series/{expected.Id}");
         }
 
         [OneTimeTearDown]

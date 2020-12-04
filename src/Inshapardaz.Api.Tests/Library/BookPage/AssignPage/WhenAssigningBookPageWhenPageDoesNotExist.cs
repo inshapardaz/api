@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
                 AccountId = AccountId
             };
 
-            _response = await Client.PostObject($"/library/{LibraryId}/books/{book.Id}/pages/{-Random.Number}/assign", assignment);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/books/{book.Id}/pages/{-Random.Number}/assign", assignment);
         }
 
         [OneTimeTearDown]

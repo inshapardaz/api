@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.GetAsync($"/library/{LibraryId}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}");
 
             _assert = LibraryAssert.FromResponse(_response, LibraryId);
         }
@@ -93,12 +93,11 @@ namespace Inshapardaz.Api.Tests.Library.GetLibrary
         [Test]
         public void ShouldNotHaveWritableLinks()
         {
-            _assert.ShouldNotHaveCreateCategorylink()
-                    .ShouldNotHaveCreatelink()
+            _assert.ShouldNotHaveCreateCategoryLink()
                     .ShouldNotHaveUpdatelink()
                     .ShouldNotHaveDeletelink()
                     .ShouldNotHaveCreateBookLink()
-                    .ShouldNotHaveSerieslink()
+                    .ShouldNotHaveCreateSeriesLink()
                     .ShouldNotHaveCreateAuthorLink();
         }
     }

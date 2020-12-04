@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.AddSeries
         {
             var series = new SeriesView { Name = Random.Name };
 
-            _response = await Client.PostObject($"/library/{LibraryId}/series", series);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/series", series);
         }
 
         [OneTimeTearDown]

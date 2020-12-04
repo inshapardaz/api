@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
 
             _expectedCategory = new CategoryView { Id = _selectedCategory.Id, Name = Random.Name };
 
-            _response = await Client.PutObject($"/library/{LibraryId}/categories/{_selectedCategory.Id}", _expectedCategory);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/categories/{_selectedCategory.Id}", _expectedCategory);
             _assert = CategoryAssert.FromResponse(_response).InLibrary(LibraryId);
         }
 

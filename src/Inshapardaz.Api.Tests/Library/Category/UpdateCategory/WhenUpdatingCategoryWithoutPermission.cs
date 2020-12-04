@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
         {
             var category = new CategoryView { Id = Random.Number, Name = Random.Name };
 
-            _response = await Client.PutObject($"/library/{LibraryId}/categories/{category.Id}", category);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/categories/{category.Id}", category);
         }
 
         [OneTimeTearDown]

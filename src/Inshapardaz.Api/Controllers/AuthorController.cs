@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Controllers
             _fileRenderer = fileRenderer;
         }
 
-        [HttpGet("library/{libraryId}/authors", Name = nameof(AuthorController.GetAuthors))]
+        [HttpGet("libraries/{libraryId}/authors", Name = nameof(AuthorController.GetAuthors))]
         public async Task<IActionResult> GetAuthors(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
             var authorsQuery = new GetAuthorsQuery(libraryId, pageNumber, pageSize) { Query = query };
@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_authorRenderer.Render(args, libraryId));
         }
 
-        [HttpGet("library/{libraryId}/authors/{authorId}", Name = nameof(AuthorController.GetAuthorById))]
+        [HttpGet("libraries/{libraryId}/authors/{authorId}", Name = nameof(AuthorController.GetAuthorById))]
         public async Task<IActionResult> GetAuthorById(int libraryId, int authorId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetAuthorByIdQuery(libraryId, authorId);
@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpPost("library/{libraryId}/authors", Name = nameof(AuthorController.CreateAuthor))]
+        [HttpPost("libraries/{libraryId}/authors", Name = nameof(AuthorController.CreateAuthor))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateAuthor(int libraryId, [FromBody]AuthorView author, CancellationToken token = default(CancellationToken))
         {
@@ -78,7 +78,7 @@ namespace Inshapardaz.Api.Controllers
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
-        [HttpPut("library/{libraryId}/authors/{authorId}", Name = nameof(AuthorController.UpdateAuthor))]
+        [HttpPut("libraries/{libraryId}/authors/{authorId}", Name = nameof(AuthorController.UpdateAuthor))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateAuthor(int libraryId, int authorId, [FromBody]AuthorView author, CancellationToken token = default(CancellationToken))
         {
@@ -101,7 +101,7 @@ namespace Inshapardaz.Api.Controllers
             }
         }
 
-        [HttpDelete("library/{libraryId}/authors/{authorId}", Name = nameof(AuthorController.DeleteAuthor))]
+        [HttpDelete("libraries/{libraryId}/authors/{authorId}", Name = nameof(AuthorController.DeleteAuthor))]
         [Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> DeleteAuthor(int libraryId, int authorId, CancellationToken token = default(CancellationToken))
         {
@@ -110,7 +110,7 @@ namespace Inshapardaz.Api.Controllers
             return new NoContentResult();
         }
 
-        [HttpPut("library/{libraryId}/authors/{authorId}/image", Name = nameof(AuthorController.UpdateAuthorImage))]
+        [HttpPut("libraries/{libraryId}/authors/{authorId}/image", Name = nameof(AuthorController.UpdateAuthorImage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateAuthorImage(int libraryId, int authorId, IFormFile file, CancellationToken token = default(CancellationToken))
         {

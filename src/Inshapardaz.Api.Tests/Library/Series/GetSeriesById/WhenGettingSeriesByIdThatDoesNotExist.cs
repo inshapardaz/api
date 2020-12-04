@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.GetAsync($"/library/{LibraryId}/series/{-Random.Number}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/series/{-Random.Number}");
         }
 
         [OneTimeTearDown]

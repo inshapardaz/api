@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 var author = AuthorBuilder.WithLibrary(LibraryId).Build();
                 var book = new BookView { Title = Random.Name, AuthorId = author.Id };
 
-                _response = await Client.PostObject($"/library/{-Random.Number}/books", book);
+                _response = await Client.PostObject($"/libraries/{-Random.Number}/books", book);
             }
 
             [OneTimeTearDown]
@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             {
                 var book = new BookView { Title = Random.Name, AuthorId = -Random.Number };
 
-                _response = await Client.PostObject($"/library/{LibraryId}/books", book);
+                _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
 
             [OneTimeTearDown]
@@ -94,7 +94,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
 
                 var book = new BookView { Title = Random.Name, AuthorId = author.Id };
 
-                _response = await Client.PostObject($"/library/{LibraryId}/books", book);
+                _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
 
             [OneTimeTearDown]
@@ -126,7 +126,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 var author = AuthorBuilder.WithLibrary(LibraryId).Build();
                 var book = new BookView { Title = new Faker().Random.String(), AuthorId = author.Id, SeriesId = -Random.Number };
 
-                _response = await Client.PostObject($"/library/{LibraryId}/books", book);
+                _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
 
             [OneTimeTearDown]
@@ -162,7 +162,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
 
                 var book = new BookView { Title = new Faker().Random.String(), AuthorId = author.Id, SeriesId = series.Id };
 
-                _response = await Client.PostObject($"/library/{LibraryId}/books", book);
+                _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
 
             [OneTimeTearDown]
@@ -199,7 +199,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                     Categories = new CategoryView[] { new CategoryView { Id = -Random.Number } }
                 };
 
-                _response = await Client.PostObject($"/library/{LibraryId}/books", book);
+                _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
 
             [OneTimeTearDown]
@@ -240,7 +240,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                     Categories = new CategoryView[] { new CategoryView { Id = category.Id } }
                 };
 
-                _response = await Client.PostObject($"/library/{LibraryId}/books", book);
+                _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
 
             [OneTimeTearDown]

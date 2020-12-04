@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         internal CategoryAssert ShouldHaveCorrectLocationHeader()
         {
             _response.Headers.Location.Should().NotBeNull();
-            _response.Headers.Location.AbsolutePath.Should().EndWith($"library/{_libraryId}/categories/{_category.Id}");
+            _response.Headers.Location.AbsolutePath.Should().EndWith($"libraries/{_libraryId}/categories/{_category.Id}");
             return this;
         }
 
@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _category.Link("books")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books")
+                  .EndingWith($"libraries/{_libraryId}/books")
                   .ShouldHaveQueryParameter("categoryid", _category.Id);
 
             return this;
@@ -74,7 +74,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _category.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/categories/{_category.Id}");
+                  .EndingWith($"libraries/{_libraryId}/categories/{_category.Id}");
             return this;
         }
 
@@ -117,7 +117,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _category.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/categories/{_category.Id}");
+                  .EndingWith($"libraries/{_libraryId}/categories/{_category.Id}");
 
             return this;
         }
@@ -135,7 +135,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _category.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/categories/{_category.Id}");
+                  .EndingWith($"libraries/{_libraryId}/categories/{_category.Id}");
 
             return this;
         }

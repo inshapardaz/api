@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
             var book = BookBuilder.WithLibrary(LibraryId).Build();
             book.Title = Random.Name;
 
-            _response = await Client.PostObject<object>($"/library/{LibraryId}/favorites/books/{book.Id}", new object());
+            _response = await Client.PostObject<object>($"/libraries/{LibraryId}/favorites/books/{book.Id}", new object());
         }
 
         [OneTimeTearDown]

@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
         {
             var book = BookBuilder.WithLibrary(LibraryId).WithPages(3).Build();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books/{book.Id}/pages/{-Random.Number}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{book.Id}/pages/{-Random.Number}");
         }
 
         [OneTimeTearDown]

@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
         public async Task Setup()
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
-            _response = await Client.GetAsync($"/library/{LibraryId}/books/{book.Id}/content", Random.Locale, MimeTypes.Pdf);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{book.Id}/content", Random.Locale, MimeTypes.Pdf);
         }
 
         [OneTimeTearDown]

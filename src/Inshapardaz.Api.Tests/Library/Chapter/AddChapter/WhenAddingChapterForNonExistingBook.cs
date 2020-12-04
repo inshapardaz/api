@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         {
             var chapter = new ChapterView { Title = Random.Name, ChapterNumber = 1 };
 
-            _response = await Client.PostObject($"/library/{LibraryId}/books/{-Random.Number}/chapters", chapter);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/books/{-Random.Number}/chapters", chapter);
         }
 
         [OneTimeTearDown]

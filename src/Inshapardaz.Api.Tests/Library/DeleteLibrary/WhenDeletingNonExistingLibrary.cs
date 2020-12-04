@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.DeleteLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.DeleteAsync($"/library/{-Random.Number}");
+            _response = await Client.DeleteAsync($"/libraries/{-Random.Number}");
         }
 
         [OneTimeTearDown]

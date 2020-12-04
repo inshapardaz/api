@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             string location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeEmpty();
-            location.Should().EndWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
+            location.Should().EndWith($"libraries/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
             return this;
         }
 
@@ -135,7 +135,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookPage.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
+                  .EndingWith($"libraries/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
             return this;
         }
 
@@ -143,7 +143,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookPage.Link("book")
                 .ShouldBeGet()
-                .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}");
+                .EndingWith($"libraries/{_libraryId}/books/{_bookPage.BookId}");
 
             return this;
         }
@@ -152,7 +152,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookPage.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
+                  .EndingWith($"libraries/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
             return this;
         }
 
@@ -166,7 +166,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookPage.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
+                  .EndingWith($"libraries/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}");
             return this;
         }
 
@@ -194,7 +194,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookPage.Link("image-upload")
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}/image");
+                  .EndingWith($"libraries/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}/image");
             return this;
         }
 
@@ -208,7 +208,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookPage.Link("image-delete")
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}/image");
+                  .EndingWith($"libraries/{_libraryId}/books/{_bookPage.BookId}/pages/{_bookPage.SequenceNumber}/image");
             return this;
         }
 

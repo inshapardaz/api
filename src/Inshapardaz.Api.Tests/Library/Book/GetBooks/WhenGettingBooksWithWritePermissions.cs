@@ -30,9 +30,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
 
             BookBuilder.WithLibrary(LibraryId).WithCategories(_categories).HavingSeries().WithContents(2).Build(4);
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books");
 
-            _assert = new PagingAssert<BookView>(_response, Library);
+            _assert = new PagingAssert<BookView>(_response);
         }
 
         [OneTimeTearDown]
@@ -50,13 +50,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/books");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books");
         }
 
         [Test]
         public void ShouldHaveCreateLink()
         {
-            _assert.ShouldHaveCreateLink($"/library/{LibraryId}/books");
+            _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/books");
         }
 
         [Test]

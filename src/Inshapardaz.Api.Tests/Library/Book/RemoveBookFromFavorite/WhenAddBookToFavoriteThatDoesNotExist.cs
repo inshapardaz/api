@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/favorites/books/{_bookId}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/favorites/books/{_bookId}");
         }
 
         [OneTimeTearDown]

@@ -2,24 +2,30 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.GetLibraries
 {
     [TestFixture]
-    public class WhenGettingSeriesSinglePage : TestBase
+    public class WhenGettingLibrariesAsLibraryAdmin : TestBase
     {
         private HttpResponseMessage _response;
-        private PagingAssert<SeriesView> _assert;
+        private PagingAssert<LibraryView> _assert;
+
+        public WhenGettingLibrariesAsLibraryAdmin()
+            : base(Role.LibraryAdmin, createLibrary: false)
+        {
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            SeriesBuilder.WithLibrary(LibraryId).WithBooks(3).WithoutImage().Build(4);
+            LibraryBuilder.AssignToUser(AccountId).Build(4);
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/series");
-            _assert = new PagingAssert<SeriesView>(_response, Library);
+            _response = await Client.GetAsync($"/libraries");
+            _assert = new PagingAssert<LibraryView>(_response);
         }
 
         [OneTimeTearDown]
@@ -37,7 +43,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/series");
+            _assert.ShouldHaveSelfLink("/libraries");
         }
 
         [Test]
@@ -47,29 +53,22 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         }
 
         [Test]
-        public void ShouldNotHaveNextLink()
+        public void ShouldNotHaveNavigationLinks()
         {
             _assert.ShouldNotHaveNextLink();
-        }
-
-        [Test]
-        public void ShouldNotHavePreviousLink()
-        {
             _assert.ShouldNotHavePreviousLink();
         }
 
         [Test]
-        public void ShouldReturnExpectedSeries()
+        public void ShouldReturnExpectedLibraries()
         {
-            var expectedItems = SeriesBuilder.Series;
+            var expectedItems = LibraryBuilder.Libraries.OrderBy(a => a.Name).Take(10);
             foreach (var item in expectedItems)
             {
-                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
+                var actual = _assert.Data.FirstOrDefault(x => x.Name == item.Name);
                 actual.ShouldMatch(item)
-                      .InLibrary(LibraryId)
-                      .WithBookCount(3)
-                      .WithReadOnlyLinks()
-                      .ShouldNotHaveImageLink();
+                     .ShouldHaveUpdateLink()
+                     .ShouldNotHaveDeletelink();
             }
         }
     }

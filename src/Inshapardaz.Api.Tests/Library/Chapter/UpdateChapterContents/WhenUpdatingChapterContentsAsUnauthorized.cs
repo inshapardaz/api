@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
 
             _newContents = Random.Bytes;
 
-            _response = await Client.PutContent($"/library/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents", _newContents, _content.Language, file.MimeType);
+            _response = await Client.PutContent($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents", _newContents, _content.Language, file.MimeType);
         }
 
         [OneTimeTearDown]

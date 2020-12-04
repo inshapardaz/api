@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Author.UploadAuthorImage
         {
             var newimage = Random.Bytes;
 
-            _response = await Client.PutFile($"/library/{LibraryId}/authors/{-Random.Number}/image", newimage);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/authors/{-Random.Number}/image", newimage);
         }
 
         [OneTimeTearDown]

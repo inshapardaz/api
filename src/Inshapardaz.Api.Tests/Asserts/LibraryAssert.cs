@@ -13,7 +13,6 @@ namespace Inshapardaz.Api.Tests.Asserts
         private HttpResponseMessage _response;
         private LibraryView _view;
         private int _libraryId;
-        private LibraryView view;
 
         public LibraryAssert(HttpResponseMessage response, int libraryId)
         {
@@ -22,9 +21,10 @@ namespace Inshapardaz.Api.Tests.Asserts
             _libraryId = libraryId;
         }
 
-        public LibraryAssert(LibraryView view)
+        public LibraryAssert(LibraryView view, int libraryId)
         {
-            this.view = view;
+            _libraryId = libraryId;
+            _view = view;
         }
 
         public static LibraryAssert FromResponse(HttpResponseMessage response, IDbConnection databaseConnection)
@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
-            location.Should().EndWith($"library/{_libraryId}");
+            location.Should().EndWith($"libraries/{_libraryId}");
             return this;
         }
 
@@ -95,7 +95,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Links.AssertLink("self")
                        .ShouldBeGet()
-                       .EndingWith($"/library/{_libraryId}");
+                       .EndingWith($"/libraries/{_libraryId}");
             return this;
         }
 
@@ -103,7 +103,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Links.AssertLink("books")
                        .ShouldBeGet()
-                       .EndingWith($"/library/{_libraryId}/books");
+                       .EndingWith($"/libraries/{_libraryId}/books");
             return this;
         }
 
@@ -111,7 +111,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Links.AssertLink("authors")
                        .ShouldBeGet()
-                       .EndingWith($"/library/{_libraryId}/authors");
+                       .EndingWith($"/libraries/{_libraryId}/authors");
             return this;
         }
 
@@ -119,7 +119,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Links.AssertLink("categories")
                        .ShouldBeGet()
-                       .EndingWith($"/library/{_libraryId}/categories");
+                       .EndingWith($"/libraries/{_libraryId}/categories");
             return this;
         }
 
@@ -127,7 +127,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Links.AssertLink("series")
                        .ShouldBeGet()
-                       .EndingWith($"/library/{_libraryId}/series");
+                       .EndingWith($"/libraries/{_libraryId}/series");
             return this;
         }
 
@@ -135,7 +135,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Links.AssertLink("periodicals")
                    .ShouldBeGet()
-                   .EndingWith($"/library/{_libraryId}/periodicals");
+                   .EndingWith($"/libraries/{_libraryId}/periodicals");
             return this;
         }
 
@@ -149,7 +149,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Links.AssertLink("recents")
                 .ShouldBeGet()
-                .EndingWith($"/library/{_libraryId}/books")
+                .EndingWith($"/libraries/{_libraryId}/books")
                 .ShouldHaveQueryParameter("read", bool.TrueString);
             return this;
         }
@@ -165,27 +165,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Links.AssertLink("create-category")
                       .ShouldBePost()
-                      .EndingWith($"/library/{_libraryId}/categories");
-            return this;
-        }
-
-        public LibraryAssert ShouldNotHaveCreateCategorylink()
-        {
-            _view.Links.AssertLinkNotPresent("create-category");
-            return this;
-        }
-
-        public LibraryAssert ShouldHaveCreatelink()
-        {
-            _view.Links.AssertLink("create")
-                        .ShouldBePost()
-                        .EndingWith($"/library");
-            return this;
-        }
-
-        public LibraryAssert ShouldNotHaveCreatelink()
-        {
-            _view.Links.AssertLinkNotPresent("create");
+                      .EndingWith($"/libraries/{_libraryId}/categories");
             return this;
         }
 
@@ -193,7 +173,39 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Links.AssertLink("update")
                 .ShouldBePut()
-                .EndingWith($"/library/{_libraryId}");
+                .EndingWith($"/libraries/{_libraryId}");
+            return this;
+        }
+
+        public LibraryAssert ShouldHaveCreateBookLink()
+        {
+            _view.Links.AssertLink("create-book")
+                .ShouldBePost()
+                .EndingWith($"/libraries/{_libraryId}/books");
+            return this;
+        }
+
+        public LibraryAssert ShouldHaveCreateSeriesLink()
+        {
+            _view.Links.AssertLink("create-series")
+                .ShouldBePost()
+                .EndingWith($"/libraries/{_libraryId}/series");
+            return this;
+        }
+
+        public LibraryAssert ShouldHaveCreateAuthorLink()
+        {
+            _view.Links.AssertLink("create-author")
+                .ShouldBePost()
+                .EndingWith($"/libraries/{_libraryId}/authors");
+            return this;
+        }
+
+        public LibraryAssert ShouldHaveCreateCategoryLink()
+        {
+            _view.Links.AssertLink("create-category")
+                .ShouldBePost()
+                .EndingWith($"/libraries/{_libraryId}/categories");
             return this;
         }
 
@@ -207,7 +219,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Links.AssertLink("delete")
                         .ShouldBeDelete()
-                        .EndingWith($"/library/{_libraryId}");
+                        .EndingWith($"/libraries/{_libraryId}");
             return this;
         }
 
@@ -223,34 +235,37 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        public LibraryAssert ShouldNotHaveSerieslink()
-        {
-            _view.Links.AssertLinkNotPresent("create-series");
-            return this;
-        }
-
         public LibraryAssert ShouldNotHaveCreateAuthorLink()
         {
             _view.Links.AssertLinkNotPresent("create-author");
             return this;
         }
 
+        public LibraryAssert ShouldNotHaveCreateSeriesLink()
+        {
+            _view.Links.AssertLinkNotPresent("create-series");
+
+            return this;
+        }
+
+        public LibraryAssert ShouldNotHaveCreateCategoryLink()
+        {
+            _view.Links.AssertLinkNotPresent("create-category");
+
+            return this;
+        }
+
         public LibraryAssert ShouldNotHaveEditLinks()
         {
-            _view.Links.AssertLinkNotPresent("create-book");
-            _view.Links.AssertLinkNotPresent("create-category");
-            _view.Links.AssertLinkNotPresent("create-series");
-            _view.Links.AssertLinkNotPresent("create-author");
-            _view.Links.AssertLinkNotPresent("create");
             _view.Links.AssertLinkNotPresent("update");
             _view.Links.AssertLinkNotPresent("delete");
 
             return this;
         }
 
-        internal static LibraryAssert FromObject(LibraryView view)
+        internal static LibraryAssert FromObject(LibraryView view, int libraryId)
         {
-            return new LibraryAssert(view);
+            return new LibraryAssert(view, libraryId);
         }
     }
 
@@ -258,7 +273,7 @@ namespace Inshapardaz.Api.Tests.Asserts
     {
         internal static LibraryAssert ShouldMatch(this LibraryView view, LibraryDto dto)
         {
-            return LibraryAssert.FromObject(view)
+            return LibraryAssert.FromObject(view, dto.Id)
                                .ShouldBeSameAs(dto);
         }
     }

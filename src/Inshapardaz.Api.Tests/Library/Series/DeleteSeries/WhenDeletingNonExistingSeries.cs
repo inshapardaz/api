@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/series/{-Random.Number}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/series/{-Random.Number}");
         }
 
         [OneTimeTearDown]

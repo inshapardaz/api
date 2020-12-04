@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
             _categories = CategoryBuilder.WithLibrary(LibraryId).Build(4);
             _selectedCategory = _categories.PickRandom();
 
-            _response = await Client.DeleteAsync($"/library/{LibraryId}/categories/{_selectedCategory.Id}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/categories/{_selectedCategory.Id}");
         }
 
         [OneTimeTearDown]

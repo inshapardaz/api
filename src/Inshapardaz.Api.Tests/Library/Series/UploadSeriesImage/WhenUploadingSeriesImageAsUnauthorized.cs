@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
             _seriesId = series.Id;
             _newImage = Random.Bytes;
 
-            _response = await Client.PutFile($"/library/{LibraryId}/series/{_seriesId}/image", _newImage);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/series/{_seriesId}/image", _newImage);
         }
 
         [OneTimeTearDown]

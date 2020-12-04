@@ -37,8 +37,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
                                        .Build(5);
             SeriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=1&pageSize=10&favorite=true");
-            _assert = new PagingAssert<BookView>(_response, Library);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&favorite=true");
+            _assert = new PagingAssert<BookView>(_response);
         }
 
         [OneTimeTearDown]
@@ -56,13 +56,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/books", 1, 10, "favorite", bool.TrueString);
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", 1, 10, "favorite", bool.TrueString);
         }
 
         [Test]
         public void ShouldHaveCreateLink()
         {
-            _assert.ShouldHaveCreateLink($"/library/{LibraryId}/books");
+            _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/books");
         }
 
         [Test]

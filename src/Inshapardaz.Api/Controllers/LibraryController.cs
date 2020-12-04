@@ -19,18 +19,20 @@ namespace Inshapardaz.Api.Controllers
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderLibrary _libraryRenderer;
+        private readonly IUserHelper _userHelper;
 
-        public LibraryController(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor, IRenderLibrary libraryRenderer)
+        public LibraryController(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor, IRenderLibrary libraryRenderer, IUserHelper userHelper)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _libraryRenderer = libraryRenderer;
+            _userHelper = userHelper;
         }
 
         [HttpGet("libraries", Name = nameof(LibraryController.GetLibraries))]
         public async Task<IActionResult> GetLibraries(string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var libQuery = new GetLibrariesQuery(pageNumber, pageSize) { Query = query };
+            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.Account?.Id, _userHelper.Account?.Role) { Query = query };
             var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
 
             var args = new PageRendererArgs<LibraryModel>
@@ -42,7 +44,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_libraryRenderer.Render(args));
         }
 
-        [HttpGet("library/{libraryId}", Name = nameof(LibraryController.GetLibraryById))]
+        [HttpGet("libraries/{libraryId}", Name = nameof(LibraryController.GetLibraryById))]
         public async Task<IActionResult> GetLibraryById(int libraryId, CancellationToken cancellationToken)
         {
             var query = new GetLibraryQuery(libraryId);
@@ -56,7 +58,7 @@ namespace Inshapardaz.Api.Controllers
             return NotFound();
         }
 
-        [HttpPost("library", Name = nameof(LibraryController.CreateLibrary))]
+        [HttpPost("libraries", Name = nameof(LibraryController.CreateLibrary))]
         [Authorize(Role.Admin)]
         public async Task<IActionResult> CreateLibrary([FromBody]LibraryView library, CancellationToken token)
         {
@@ -72,7 +74,7 @@ namespace Inshapardaz.Api.Controllers
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
-        [HttpPut("library/{libraryId}", Name = nameof(LibraryController.UpdateLibrary))]
+        [HttpPut("libraries/{libraryId}", Name = nameof(LibraryController.UpdateLibrary))]
         [Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> UpdateLibrary(int libraryId, [FromBody]LibraryView library, CancellationToken token = default(CancellationToken))
         {
@@ -95,7 +97,7 @@ namespace Inshapardaz.Api.Controllers
             }
         }
 
-        [HttpDelete("library/{libraryId}", Name = nameof(LibraryController.DeleteLibrary))]
+        [HttpDelete("libraries/{libraryId}", Name = nameof(LibraryController.DeleteLibrary))]
         [Authorize(Role.Admin)]
         public async Task<IActionResult> DeleteLibrary(int libraryId, CancellationToken token = default(CancellationToken))
         {

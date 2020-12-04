@@ -23,8 +23,8 @@ namespace Inshapardaz.Api.Tests.Author.GetAuthors
 
             _searchedAuthor = authors.PickRandom();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/authors?query={_searchedAuthor.Name}");
-            _assert = new PagingAssert<AuthorView>(_response, Library);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/authors?query={_searchedAuthor.Name}");
+            _assert = new PagingAssert<AuthorView>(_response);
         }
 
         [OneTimeTearDown]
@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Tests.Author.GetAuthors
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/authors", "query", _searchedAuthor.Name);
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/authors", "query", _searchedAuthor.Name);
         }
 
         [Test]

@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
             var book = BookBuilder.WithLibrary(LibraryId).Build();
             var chapter = ChapterBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.PostContent($"/library/{-Random.Number}/books/{book.Id}/chapters/{chapter.Id}/contents", Random.Bytes, Random.Locale, Random.MimeType);
+            _response = await Client.PostContent($"/libraries/{-Random.Number}/books/{book.Id}/chapters/{chapter.Id}/contents", Random.Bytes, Random.Locale, Random.MimeType);
         }
 
         [OneTimeTearDown]

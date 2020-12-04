@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Controllers
             _fileRenderer = fileRenderer;
         }
 
-        [HttpGet("library/{libraryId}/series", Name = nameof(SeriesController.GetSereies))]
+        [HttpGet("libraries/{libraryId}/series", Name = nameof(SeriesController.GetSereies))]
         public async Task<IActionResult> GetSereies(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
             var seriesQuery = new GetSeriesQuery(libraryId, pageNumber, pageSize) { Query = query };
@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_seriesRenderer.Render(args, libraryId));
         }
 
-        [HttpGet("library/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.GetSeriesById))]
+        [HttpGet("libraries/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.GetSeriesById))]
         public async Task<IActionResult> GetSeriesById(int libraryId, int seriesId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetSeriesByIdQuery(libraryId, seriesId);
@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_seriesRenderer.Render(Series, libraryId));
         }
 
-        [HttpPost("library/{libraryId}/series", Name = nameof(SeriesController.CreateSeries))]
+        [HttpPost("libraries/{libraryId}/series", Name = nameof(SeriesController.CreateSeries))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateSeries(int libraryId, [FromBody]SeriesView series, CancellationToken token = default(CancellationToken))
         {
@@ -78,7 +78,7 @@ namespace Inshapardaz.Api.Controllers
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
-        [HttpPut("library/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.UpdateSeries))]
+        [HttpPut("libraries/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.UpdateSeries))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateSeries(int libraryId, int seriesId, [FromBody]SeriesView series, CancellationToken token = default(CancellationToken))
         {
@@ -103,7 +103,7 @@ namespace Inshapardaz.Api.Controllers
             }
         }
 
-        [HttpDelete("library/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.DeleteSeries))]
+        [HttpDelete("libraries/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.DeleteSeries))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteSeries(int libraryId, int seriesId, CancellationToken token = default(CancellationToken))
         {
@@ -112,7 +112,7 @@ namespace Inshapardaz.Api.Controllers
             return new NoContentResult();
         }
 
-        [HttpPut("library/{libraryId}/series/{seriesId}/image", Name = nameof(SeriesController.UpdateSeriesImage))]
+        [HttpPut("libraries/{libraryId}/series/{seriesId}/image", Name = nameof(SeriesController.UpdateSeriesImage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateSeriesImage(int libraryId, int seriesId, IFormFile file, CancellationToken token = default(CancellationToken))
         {

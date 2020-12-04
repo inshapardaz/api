@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
         {
             _series = new SeriesView { Name = Random.Name };
 
-            _response = await Client.PutObject($"/library/{LibraryId}/series/{-Random.Number}", _series);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/series/{-Random.Number}", _series);
             _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

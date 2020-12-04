@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -5,6 +6,7 @@ using AutoFixture;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Database.SqlServer;
+using Random = Inshapardaz.Api.Tests.Helpers.Random;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -13,6 +15,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private IDbConnection _connection;
         private bool _enablePeriodicals;
         private int? _accountId;
+        private string _startWith;
 
         public LibraryDto Library => Libraries.FirstOrDefault();
         public IEnumerable<LibraryDto> Libraries { get; private set; }
@@ -20,6 +23,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         public LibraryDataBuilder(IProvideConnection connectionProvider)
         {
             _connection = connectionProvider.GetConnection();
+        }
+
+        internal LibraryDataBuilder StartingWith(string startWith)
+        {
+            _startWith = startWith;
+            return this;
         }
 
         public LibraryDataBuilder WithPeriodicalsEnabled(bool periodicalsEnabled = true)
@@ -41,6 +50,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             Libraries = fixture.Build<LibraryDto>()
                                  .With(l => l.Language, "en")
                                  .With(l => l.SupportsPeriodicals, _enablePeriodicals)
+                                 .With(l => l.Name, _startWith ?? Random.Name)
                                  .CreateMany(count);
 
             _connection.AddLibraries(Libraries);

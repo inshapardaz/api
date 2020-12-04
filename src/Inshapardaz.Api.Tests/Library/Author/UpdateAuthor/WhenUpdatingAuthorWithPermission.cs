@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Tests.Author.UpdateAuthor
 
             _expected = new AuthorView { Name = Random.Name };
 
-            _response = await Client.PutObject($"/library/{LibraryId}/authors/{author.Id}", author);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/authors/{author.Id}", author);
             _assert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

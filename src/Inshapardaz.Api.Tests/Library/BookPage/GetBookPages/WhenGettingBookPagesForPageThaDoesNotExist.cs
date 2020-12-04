@@ -26,9 +26,9 @@ namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
         {
             _book = BookBuilder.WithLibrary(LibraryId).WithPages(19).Build();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books/{_book.Id}/pages?pageSize=10&pageNumber=3");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/pages?pageSize=10&pageNumber=3");
 
-            _assert = new PagingAssert<BookPageView>(_response, Library);
+            _assert = new PagingAssert<BookPageView>(_response);
         }
 
         [OneTimeTearDown]
@@ -46,7 +46,7 @@ namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/library/{LibraryId}/books/{_book.Id}/pages");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books/{_book.Id}/pages");
         }
 
         [Test]

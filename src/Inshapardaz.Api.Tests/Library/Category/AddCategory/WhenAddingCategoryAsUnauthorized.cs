@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.AddCategory
         {
             var category = new CategoryView { Name = Random.Name };
 
-            _response = await Client.PostObject($"/library/{LibraryId}/categories", category);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/categories", category);
         }
 
         [OneTimeTearDown]

@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookContent.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}/contents");
+                  .EndingWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents");
 
             return this;
         }
@@ -82,7 +82,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookContent.UpdateLink()
                  .ShouldBePut()
-                 .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}/contents");
+                 .EndingWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents");
 
             return this;
         }
@@ -115,7 +115,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
-            location.Should().EndWith($"library/{_libraryId}/books/{_bookContent.BookId}/contents");
+            location.Should().EndWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents");
             return this;
         }
 
@@ -175,7 +175,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookContent.DeleteLink()
                  .ShouldBeDelete()
-                 .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}/contents");
+                 .EndingWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents");
 
             return this;
         }
@@ -190,7 +190,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookContent.Link("book")
                 .ShouldBeGet()
-                .EndingWith($"library/{_libraryId}/books/{_bookContent.BookId}");
+                .EndingWith($"libraries/{_libraryId}/books/{_bookContent.BookId}");
 
             return this;
         }
@@ -228,7 +228,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var response = result as RedirectResult;
             response.Url.Should().NotBeNull();
-            response.Url.Should().EndWith($"library/{libraryId}/books/{bookId}/files");
+            response.Url.Should().EndWith($"libraries/{libraryId}/books/{bookId}/files");
         }
     }
 }

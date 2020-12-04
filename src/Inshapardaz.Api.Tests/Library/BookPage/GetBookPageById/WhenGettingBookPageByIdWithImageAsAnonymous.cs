@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
             var book = BookBuilder.WithLibrary(LibraryId).WithPages(3, true).Build();
             _expected = BookBuilder.GetPages(book.Id).PickRandom();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/books/{_expected.BookId}/pages/{_expected.SequenceNumber}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_expected.BookId}/pages/{_expected.SequenceNumber}");
             _assert = BookPageAssert.FromResponse(_response, LibraryId);
         }
 

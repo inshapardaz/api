@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
             var book = BookBuilder.WithLibrary(LibraryId).Build();
             _contents = Random.Bytes;
 
-            _response = await Client.PostContent($"/library/{LibraryId}/books/{book.Id}/contents", _contents, _locale, _mimeType);
+            _response = await Client.PostContent($"/libraries/{LibraryId}/books/{book.Id}/contents", _contents, _locale, _mimeType);
 
             _assert = new BookContentAssert(_response, LibraryId);
         }

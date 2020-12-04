@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
             _categories = CategoryBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
             _selectedCategory = _categories.First();
 
-            _response = await Client.GetAsync($"/library/{LibraryId}/categories/{_selectedCategory.Id}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/categories/{_selectedCategory.Id}");
 
             _assert = CategoryAssert.FromResponse(_response).InLibrary(LibraryId);
         }

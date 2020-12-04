@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
-            location.Should().EndWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}");
+            location.Should().EndWith($"libraries/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}");
             return this;
         }
 
@@ -74,7 +74,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapter.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}");
+                  .EndingWith($"libraries/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}");
 
             return this;
         }
@@ -112,7 +112,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapter.Link("book")
                   .ShouldBeGet()
-                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}");
+                  .EndingWith($"libraries/{_libraryId}/books/{_chapter.BookId}");
 
             return this;
         }
@@ -133,7 +133,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapter.UpdateLink()
                  .ShouldBePut()
-                 .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}");
+                 .EndingWith($"libraries/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}");
 
             return this;
         }
@@ -148,7 +148,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapter.DeleteLink()
                  .ShouldBeDelete()
-                 .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}");
+                 .EndingWith($"libraries/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}");
 
             return this;
         }
@@ -163,7 +163,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapter.Link("add-content")
                  .ShouldBePost()
-                 .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
+                 .EndingWith($"libraries/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents");
 
             return this;
         }
@@ -179,7 +179,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             var actual = _chapter.Contents.Single(x => x.Id == content.Id);
             actual.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents")
+                  .EndingWith($"libraries/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents")
                   .ShouldHaveAcceptLanguage(content.Language);
 
             return this;
@@ -190,7 +190,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             var actual = _chapter.Contents.Single(x => x.Id == content.Id);
             actual.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"library/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents")
+                  .EndingWith($"libraries/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents")
                   .ShouldHaveAcceptLanguage(actual.Language)
                   .ShouldHaveAccept(actual.MimeType);
 

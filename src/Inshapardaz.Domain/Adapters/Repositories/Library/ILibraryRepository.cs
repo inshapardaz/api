@@ -11,6 +11,10 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task<Page<LibraryModel>> FindLibraries(string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
+        Task<Page<LibraryModel>> GetUserLibraries(int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+        Task<Page<LibraryModel>> FindUserLibraries(string query, int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
         Task<LibraryModel> GetLibraryById(int libraryId, CancellationToken cancellationToken);
 
         Task<LibraryModel> AddLibrary(LibraryModel library, CancellationToken cancellationToken);

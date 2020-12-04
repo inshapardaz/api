@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Controllers
             _fileRenderer = fileRenderer;
         }
 
-        [HttpGet("library/{libraryId}/periodicals/{periodicalId}/issues", Name = nameof(IssueController.GetIssues))]
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues", Name = nameof(IssueController.GetIssues))]
         public async Task<IActionResult> GetIssues(int libraryId, int periodicalId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
             var issuesQuery = new GetIssuesQuery(libraryId, periodicalId, pageNumber, pageSize) { Query = query };
@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_issueRenderer.Render(args, libraryId));
         }
 
-        [HttpGet("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}", Name = nameof(IssueController.GetIssueById))]
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}", Name = nameof(IssueController.GetIssueById))]
         public async Task<IActionResult> GetIssueById(int libraryId, int periodicalId, int issueId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetIssueByIdQuery(libraryId, periodicalId, issueId);
@@ -63,7 +63,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpPost("library/{libraryId}/periodicals{periodicalId}/issues", Name = nameof(IssueController.CreateIssue))]
+        [HttpPost("libraries/{libraryId}/periodicals{periodicalId}/issues", Name = nameof(IssueController.CreateIssue))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateIssue(int libraryId, int periodicalId, IssueView issue, CancellationToken token = default(CancellationToken))
         {
@@ -79,7 +79,7 @@ namespace Inshapardaz.Api.Controllers
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
-        [HttpPut("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}", Name = nameof(IssueController.UpdateIssue))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}", Name = nameof(IssueController.UpdateIssue))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateIssue(int libraryId, int periodicalId, int issueId, IssueView issue, CancellationToken token = default(CancellationToken))
         {
@@ -102,7 +102,7 @@ namespace Inshapardaz.Api.Controllers
             }
         }
 
-        [HttpDelete("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}", Name = nameof(IssueController.DeleteIssue))]
+        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}", Name = nameof(IssueController.DeleteIssue))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteIssue(int libraryId, int periodicalId, int issueId, CancellationToken token = default(CancellationToken))
         {
@@ -111,7 +111,7 @@ namespace Inshapardaz.Api.Controllers
             return new NoContentResult();
         }
 
-        [HttpPut("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/image", Name = nameof(IssueController.UpdateIssueImage))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/image", Name = nameof(IssueController.UpdateIssueImage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateIssueImage(int libraryId, int periodicalId, int issueId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
@@ -142,7 +142,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkResult();
         }
 
-        [HttpPost("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/content", Name = nameof(IssueController.CreateIssueContent))]
+        [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/content", Name = nameof(IssueController.CreateIssueContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateIssueContent(int libraryId, int periodicalId, int issueId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
@@ -176,7 +176,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/content", Name = nameof(IssueController.UpdateIssueContent))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/content", Name = nameof(IssueController.UpdateIssueContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateIssueContent(int libraryId, int periodicalId, int issueId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
@@ -218,7 +218,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpDelete("library/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/content", Name = nameof(IssueController.DeleteIssueContent))]
+        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/content", Name = nameof(IssueController.DeleteIssueContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteIssueContent(int libraryId, int periodicalId, int issueId, CancellationToken token = default(CancellationToken))
         {

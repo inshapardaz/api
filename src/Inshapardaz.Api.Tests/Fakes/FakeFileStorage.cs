@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 
 namespace Inshapardaz.Api.Tests.Fakes

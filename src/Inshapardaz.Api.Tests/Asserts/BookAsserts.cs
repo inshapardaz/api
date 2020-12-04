@@ -5,7 +5,6 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Repositories;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -301,14 +300,14 @@ namespace Inshapardaz.Api.Tests.Asserts
             return ShouldBeSameAs(dbbook, dbConnection);
         }
 
-        public static void ShouldBeAddedToFavorite(int bookId, Guid userId, IDbConnection dbConnection)
+        public static void ShouldBeAddedToFavorite(int bookId, int accountId, IDbConnection dbConnection)
         {
-            dbConnection.DoesBookExistsInFavorites(bookId, userId).Should().BeTrue();
+            dbConnection.DoesBookExistsInFavorites(bookId, accountId).Should().BeTrue();
         }
 
-        public static void ShouldNotBeInFavorites(int bookId, Guid userId, IDbConnection dbConnection)
+        public static void ShouldNotBeInFavorites(int bookId, int accountId, IDbConnection dbConnection)
         {
-            dbConnection.DoesBookExistsInFavorites(bookId, userId).Should().BeFalse();
+            dbConnection.DoesBookExistsInFavorites(bookId, accountId).Should().BeFalse();
         }
 
         internal static void ShouldHaveDeletedBookFromRecentReads(int bookId, IDbConnection dbConnection)

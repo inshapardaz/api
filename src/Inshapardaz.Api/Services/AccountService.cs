@@ -12,6 +12,7 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Models.Accounts;
 using BC = BCrypt.Net.BCrypt;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Services
 {
@@ -289,7 +290,7 @@ namespace Inshapardaz.Api.Services
             var account = _context.Accounts.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
             if (account == null) throw new AppException("Invalid token");
             var refreshToken = account.RefreshTokens.Single(x => x.Token == token);
-            if (!refreshToken.IsActive) throw new AppException("Invalid token");
+            if (!refreshToken.IsActive) throw new AppException("Invalid token. Token not active");
             return (refreshToken, account);
         }
 

@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingBookByIdWithPermission : TestBase
     {
         private HttpResponseMessage _response;
@@ -19,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
         private BookAssert _assert;
         private IEnumerable<CategoryDto> _categories;
 
-        public WhenGettingBookByIdWithPermission(Permission permission) : base(permission)
+        public WhenGettingBookByIdWithPermission(Role role) : base(role)
         {
         }
 

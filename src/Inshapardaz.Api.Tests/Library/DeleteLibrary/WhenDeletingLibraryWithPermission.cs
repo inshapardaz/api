@@ -1,5 +1,5 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.DeleteLibrary
         private HttpResponseMessage _response;
 
         public WhenDeletingLibraryWithPermission()
-            : base(Permission.Admin)
+            : base(Role.Admin)
         {
         }
 

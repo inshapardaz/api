@@ -1,16 +1,15 @@
 ﻿using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class DeleteIssueRequest : LibraryAuthorisedCommand
+    public class DeleteIssueRequest : LibraryBaseCommand
     {
-        public DeleteIssueRequest(ClaimsPrincipal claims, int libraryId, int periodicalId, int issueId)
-            : base(claims, libraryId)
+        public DeleteIssueRequest(int libraryId, int periodicalId, int issueId)
+            : base(libraryId)
         {
             PeriodicalId = periodicalId;
             IssueId = issueId;
@@ -30,7 +29,6 @@ namespace Inshapardaz.Domain.Models.Library
             _issueRepository = issueRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<DeleteIssueRequest> HandleAsync(DeleteIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             await _issueRepository.DeleteIssue(command.PeriodicalId, command.IssueId, cancellationToken);

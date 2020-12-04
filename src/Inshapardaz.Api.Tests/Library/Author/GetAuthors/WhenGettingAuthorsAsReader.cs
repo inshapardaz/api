@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Author.GetAuthors
@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Author.GetAuthors
         private PagingAssert<AuthorView> _assert;
 
         public WhenGettingAuthorsAsReader()
-            : base(Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

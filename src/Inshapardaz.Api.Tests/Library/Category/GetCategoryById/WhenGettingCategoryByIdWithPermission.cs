@@ -2,16 +2,15 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
     public class WhenGettingCategoryWithWritePermissions : TestBase
     {
         private HttpResponseMessage _response;
@@ -19,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
         private CategoryDto _selectedCategory;
         private CategoryAssert _assert;
 
-        public WhenGettingCategoryWithWritePermissions(Permission permission) : base(permission)
+        public WhenGettingCategoryWithWritePermissions(Role role) : base(role)
         {
         }
 

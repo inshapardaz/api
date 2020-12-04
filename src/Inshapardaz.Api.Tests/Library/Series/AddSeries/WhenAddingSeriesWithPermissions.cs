@@ -1,19 +1,17 @@
 ﻿using System.Net.Http;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
-using Microsoft.AspNetCore.Mvc;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.AddSeries
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenAddingSeriesWithPermissions
         : TestBase
     {
@@ -21,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.AddSeries
         private SeriesAssert _assert;
         private HttpResponseMessage _response;
 
-        public WhenAddingSeriesWithPermissions(Permission permission) : base(permission)
+        public WhenAddingSeriesWithPermissions(Role role) : base(role)
         {
         }
 

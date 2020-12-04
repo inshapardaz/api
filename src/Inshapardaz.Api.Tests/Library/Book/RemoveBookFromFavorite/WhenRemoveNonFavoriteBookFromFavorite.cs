@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
         private BookDto _book;
 
         public WhenRemoveNonFavoriteBookFromFavorite()
-            : base(Permission.Reader)
+            : base(Role.Reader)
         {
         }
 
@@ -47,7 +47,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
         [Test]
         public void ShouldBeRemovedFromFavorites()
         {
-            BookAssert.ShouldNotBeInFavorites(_book.Id, UserId, DatabaseConnection);
+            BookAssert.ShouldNotBeInFavorites(_book.Id, AccountId, DatabaseConnection);
         }
     }
 }

@@ -37,33 +37,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldReturnUnauthorised()
         {
-            _response.ShouldBeOk();
-        }
-
-        [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
-
-        [Test]
-        public void ShouldHaveBookLink()
-        {
-            _assert.ShouldHaveBookLink();
-        }
-
-        [Test]
-        public void ShouldHaveChapterLink()
-        {
-            _assert.ShouldHaveChapterLink();
-        }
-
-        [Test]
-        public void ShouldReturnCorrectChapterData()
-        {
-            _assert.ShouldMatch(_content, _chapter.BookId, DatabaseConnection);
+            _response.ShouldBeUnauthorized();
         }
     }
 }

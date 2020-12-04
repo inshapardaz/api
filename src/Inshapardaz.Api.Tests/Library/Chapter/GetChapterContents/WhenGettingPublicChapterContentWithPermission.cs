@@ -1,19 +1,19 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Domain.Adapters;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingPublicChapterContentWithPermission
         : TestBase
     {
@@ -23,8 +23,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         private ChapterContentDto _content;
         private ClaimsPrincipal _claim;
 
-        public WhenGettingPublicChapterContentWithPermission(Permission permission)
-        : base(permission)
+        public WhenGettingPublicChapterContentWithPermission(Role role)
+        : base(role)
         {
         }
 

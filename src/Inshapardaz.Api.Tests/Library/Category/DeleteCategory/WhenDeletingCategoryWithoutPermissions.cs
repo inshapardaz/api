@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
 {
-    [TestFixture(Permission.Reader)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Reader)]
+    [TestFixture(Role.Writer)]
     public class WhenDeletingCategoryWithoutPermissions : TestBase
     {
         private HttpResponseMessage _response;
@@ -20,8 +20,8 @@ namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
         private CategoryDto _selectedCategory;
         private readonly ClaimsPrincipal _claim;
 
-        public WhenDeletingCategoryWithoutPermissions(Permission permission)
-            : base(permission)
+        public WhenDeletingCategoryWithoutPermissions(Role role)
+            : base(role)
         {
         }
 

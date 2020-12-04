@@ -1,6 +1,7 @@
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetLatestBooks
         private IEnumerable<BookDto> _books;
 
         public WhenGettingLatestBooks()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

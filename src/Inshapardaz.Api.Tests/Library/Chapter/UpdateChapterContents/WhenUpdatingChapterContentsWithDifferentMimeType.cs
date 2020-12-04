@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         private byte[] _newContents;
 
         public WhenUpdatingChapterContentsWithDifferentMimeType()
-            : base(Domain.Adapters.Permission.Writer)
+            : base(Role.Writer)
         {
         }
 

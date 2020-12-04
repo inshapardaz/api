@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Views
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Accept { get; set; }
 
-        [JsonProperty(PropertyName = "accept-language", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string AcceptLanguage { get; set; }
     }
 }

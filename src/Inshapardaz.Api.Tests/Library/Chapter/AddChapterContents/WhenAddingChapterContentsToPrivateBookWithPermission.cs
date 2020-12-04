@@ -1,17 +1,16 @@
-﻿using Inshapardaz.Api.Tests;
-using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenAddingChapterContentsToPrivateBookWithPermission
         : TestBase
     {
@@ -20,8 +19,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         private ChapterDto _chapter;
         private ChapterContentAssert _assert;
 
-        public WhenAddingChapterContentsToPrivateBookWithPermission(Permission permission)
-            : base(permission)
+        public WhenAddingChapterContentsToPrivateBookWithPermission(Role role)
+            : base(role)
         {
         }
 

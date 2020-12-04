@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
     {
         private HttpResponseMessage _response;
 
-        public WhenDeletingBookAsReader() : base(Permission.Reader)
+        public WhenDeletingBookAsReader() : base(Role.Reader)
         {
         }
 

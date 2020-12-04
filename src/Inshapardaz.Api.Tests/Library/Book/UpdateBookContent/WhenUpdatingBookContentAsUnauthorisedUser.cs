@@ -1,5 +1,4 @@
-﻿using Bogus;
-using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using NUnit.Framework;

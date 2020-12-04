@@ -1,7 +1,5 @@
-﻿using Inshapardaz.Api.Views;
-using Inshapardaz.Domain.Models;
+﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System;
 
 namespace Inshapardaz.Api.Converters
 {

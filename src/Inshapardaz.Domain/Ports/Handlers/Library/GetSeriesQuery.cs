@@ -37,11 +37,11 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<Page<SeriesModel>> ExecuteAsync(GetSeriesQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            var authors = (string.IsNullOrWhiteSpace(query.Query))
+            var series = (string.IsNullOrWhiteSpace(query.Query))
              ? await _seriesRepository.GetSeries(query.LibraryId, query.PageNumber, query.PageSize, cancellationToken)
              : await _seriesRepository.FindSeries(query.LibraryId, query.Query, query.PageNumber, query.PageSize, cancellationToken);
 
-            foreach (var author in authors.Data)
+            foreach (var author in series.Data)
             {
                 if (author != null && author.ImageId.HasValue)
                 {
@@ -49,7 +49,7 @@ namespace Inshapardaz.Domain.Models.Library
                 }
             }
 
-            return authors;
+            return series;
         }
     }
 }

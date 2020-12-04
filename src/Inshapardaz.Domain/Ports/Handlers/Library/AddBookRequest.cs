@@ -5,20 +5,21 @@ using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class AddBookRequest : LibraryAuthorisedCommand
+    public class AddBookRequest : LibraryBaseCommand
     {
-        public AddBookRequest(ClaimsPrincipal claims, int libraryId, BookModel book)
-        : base(claims, libraryId)
+        public AddBookRequest(int libraryId, int? accountId, BookModel book)
+        : base(libraryId)
         {
+            AccountId = accountId;
             Book = book;
         }
 
+        public int? AccountId { get; }
         public BookModel Book { get; }
 
         public BookModel Result { get; set; }
@@ -40,7 +41,6 @@ namespace Inshapardaz.Domain.Models.Library
             _categoryRepository = categoryRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<AddBookRequest> HandleAsync(AddBookRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var author = await _authorRepository.GetAuthorById(command.LibraryId, command.Book.AuthorId, cancellationToken);
@@ -69,7 +69,7 @@ namespace Inshapardaz.Domain.Models.Library
                 }
             }
 
-            command.Result = await _bookRepository.AddBook(command.LibraryId, command.Book, command.UserId, cancellationToken);
+            command.Result = await _bookRepository.AddBook(command.LibraryId, command.Book, command.AccountId, cancellationToken);
 
             command.Result.AuthorName = author.Name;
             command.Result.SeriesName = series?.Name;

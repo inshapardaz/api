@@ -5,26 +5,26 @@ using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class GetBookContentQuery : LibraryAuthorisedQuery<BookContentModel>
+    public class GetBookContentQuery : LibraryBaseQuery<BookContentModel>
     {
-        public GetBookContentQuery(int libraryId, int bookId, string language, string mimeType, int? userId)
-            : base(libraryId, userId)
+        public GetBookContentQuery(int libraryId, int bookId, string language, string mimeType, int? accountId)
+            : base(libraryId)
         {
             BookId = bookId;
             MimeType = mimeType;
+            AccountId = accountId;
             Language = language;
         }
 
         public int BookId { get; set; }
 
         public string MimeType { get; set; }
-
+        public int? AccountId { get; }
         public string Language { get; set; }
     }
 
@@ -49,7 +49,7 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new NotFoundException();
             }
 
-            if (!book.IsPublic && command.UserId == null)
+            if (!book.IsPublic && !command.AccountId.HasValue)
             {
                 throw new UnauthorizedException();
             }
@@ -68,9 +68,9 @@ namespace Inshapardaz.Domain.Models.Library
             var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);
             if (bookContent != null)
             {
-                if (command.UserId != null)
+                if (command.AccountId.HasValue)
                 {
-                    await _bookRepository.AddRecentBook(command.LibraryId, command.UserId.Value, command.BookId, cancellationToken);
+                    await _bookRepository.AddRecentBook(command.LibraryId, command.AccountId.Value, command.BookId, cancellationToken);
                 }
 
                 if (book.IsPublic)

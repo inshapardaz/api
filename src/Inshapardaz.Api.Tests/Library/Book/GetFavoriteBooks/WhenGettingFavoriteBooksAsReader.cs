@@ -1,6 +1,7 @@
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         private IEnumerable<BookDto> _books;
 
         public WhenGettingFavoriteBooksAsReader()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
             BookBuilder.WithLibrary(LibraryId).Build(3);
             _books = BookBuilder.WithLibrary(LibraryId)
                                        .IsPublic()
-                                       .AddToFavorites(UserId)
+                                       .AddToFavorites(AccountId)
                                        .Build(5);
 
             _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=1&pageSize=10&favorite=true");

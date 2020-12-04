@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,63 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         public LibraryRepository(IProvideConnection connectionProvider)
         {
             _connectionProvider = connectionProvider;
+        }
+
+        public async Task<Page<LibraryModel>> GetLibraries(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT  *
+                            FROM Library
+                            Order By Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<LibraryModel>(command);
+
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Library";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, cancellationToken: cancellationToken));
+
+                return new Page<LibraryModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
+        }
+
+        public async Task<Page<LibraryModel>> FindLibraries(string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT  *
+                            FROM Library
+                            WHERE Name LIKE @Query
+                            Order By Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { Query = $"%{query}%", PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<LibraryModel>(command);
+
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Library WHERE Name LIKE @Query";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { Query = $"%{query}%" }, cancellationToken: cancellationToken));
+
+                return new Page<LibraryModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
         }
 
         public async Task<LibraryModel> AddLibrary(LibraryModel library, CancellationToken cancellationToken)

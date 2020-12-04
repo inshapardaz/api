@@ -1,12 +1,22 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Inshapardaz.Api.Tests.DataHelpers
 {
     public static class LibraryDataHelper
     {
+        public static void AddLibraries(this IDbConnection connection, IEnumerable<LibraryDto> libraries)
+        {
+            foreach (var library in libraries)
+            {
+                AddLibrary(connection, library);
+            }
+        }
+
         public static void AddLibrary(this IDbConnection connection, LibraryDto library)
         {
             var id = connection.ExecuteScalar<int>("Insert Into Library (Name, Language, SupportsPeriodicals) OUTPUT Inserted.Id VALUES (@Name, @Language, @SupportsPeriodicals)", library);
@@ -25,9 +35,24 @@ namespace Inshapardaz.Api.Tests.DataHelpers
                 new { Id = libraryId });
         }
 
+        public static void DeleteLibraries(this IDbConnection connection, IEnumerable<int> libraryIds)
+        {
+            connection.Execute("Delete Library Where Id IN @LibraryIds", new { LibraryIds = libraryIds });
+        }
+
         public static void DeleteLibrary(this IDbConnection connection, int libraryId)
         {
             connection.Execute("Delete Library Where Id = @LibraryId", new { LibraryId = libraryId });
+            connection.Execute("Delete LibraryUser Where LibraryId = @LibraryId", new { LibraryId = libraryId });
+        }
+
+        public static void AssignLibrariesToUser(this IDbConnection connection, IEnumerable<LibraryDto> libraries, int? accountId)
+        {
+            if (accountId.HasValue)
+            {
+                connection.Execute("INSERT INTO LibraryUser VALUES (@LibraryId, @AccountId)",
+                libraries.Select(l => new { LibraryId = l.Id, AccountId = accountId }));
+            }
         }
     }
 }

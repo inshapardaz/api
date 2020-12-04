@@ -1,5 +1,3 @@
-using System;
-
 namespace Inshapardaz.Domain.Adapters
 {
     public class Settings

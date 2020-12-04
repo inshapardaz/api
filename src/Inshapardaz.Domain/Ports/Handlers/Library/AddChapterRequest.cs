@@ -2,8 +2,6 @@
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,12 +9,14 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddChapterRequest : BookRequest
     {
-        public AddChapterRequest(ClaimsPrincipal claims, int libraryId, int bookId, ChapterModel chapter, int? userId)
-            : base(claims, libraryId, bookId, userId)
+        public AddChapterRequest(int libraryId, int bookId, int? accountId, ChapterModel chapter)
+            : base(libraryId, bookId)
         {
+            AccountId = accountId;
             Chapter = chapter;
         }
 
+        public int? AccountId { get; }
         public ChapterModel Chapter { get; }
 
         public ChapterModel Result { get; set; }
@@ -33,10 +33,9 @@ namespace Inshapardaz.Domain.Models.Library
             _bookRepository = bookRepository;
         }
 
-        [Authorise(step: 0, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<AddChapterRequest> HandleAsync(AddChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.UserId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.AccountId, cancellationToken);
             if (book == null)
             {
                 throw new BadRequestException();

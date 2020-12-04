@@ -3,20 +3,21 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.AddCategory
 {
-    [TestFixture(Domain.Adapters.Permission.Admin)]
-    [TestFixture(Domain.Adapters.Permission.LibraryAdmin)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
     public class WhenAddingCategoryWithPermissions : TestBase
     {
         private CategoryView _category;
         private HttpResponseMessage _response;
         private CategoryAssert _assert;
 
-        public WhenAddingCategoryWithPermissions(Domain.Adapters.Permission permission)
-            : base(permission)
+        public WhenAddingCategoryWithPermissions(Role role)
+            : base(role)
         {
         }
 

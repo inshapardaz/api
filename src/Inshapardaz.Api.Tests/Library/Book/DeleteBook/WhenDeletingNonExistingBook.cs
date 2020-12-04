@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
@@ -11,7 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
     {
         private HttpResponseMessage _response;
 
-        public WhenDeletingNonExistingBook() : base(Domain.Adapters.Permission.Writer)
+        public WhenDeletingNonExistingBook() : base(Role.Writer)
         {
         }
 

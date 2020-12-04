@@ -2,7 +2,6 @@
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System;
 using System.Data;
 using System.Net.Http;
 

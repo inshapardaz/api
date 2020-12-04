@@ -1,6 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingChapterByIdWithWritePermissions
         : TestBase
     {
@@ -18,8 +18,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         private ChapterDto _expected;
         private ChapterAssert _assert;
 
-        public WhenGettingChapterByIdWithWritePermissions(Permission permission)
-            : base(permission)
+        public WhenGettingChapterByIdWithWritePermissions(Role role)
+            : base(role)
         {
         }
 

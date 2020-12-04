@@ -1,21 +1,19 @@
-﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Exception;
+﻿using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
 using System.IO;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class UpdateAuthorImageRequest : LibraryAuthorisedCommand
+    public class UpdateAuthorImageRequest : LibraryBaseCommand
     {
-        public UpdateAuthorImageRequest(ClaimsPrincipal claims, int libraryId, int authorId)
-            : base(claims, libraryId)
+        public UpdateAuthorImageRequest(int libraryId, int authorId)
+            : base(libraryId)
         {
             AuthorId = authorId;
         }
@@ -47,7 +45,6 @@ namespace Inshapardaz.Domain.Models.Library
             _fileStorage = fileStorage;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<UpdateAuthorImageRequest> HandleAsync(UpdateAuthorImageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var author = await _authorRepository.GetAuthorById(command.LibraryId, command.AuthorId, cancellationToken);

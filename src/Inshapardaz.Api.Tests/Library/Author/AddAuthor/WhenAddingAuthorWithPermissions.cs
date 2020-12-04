@@ -3,21 +3,21 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Author.AddAuthor
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenAddingAuthorWithPermissions : TestBase
     {
         private AuthorAssert _authorAssert;
         private HttpResponseMessage _response;
 
-        public WhenAddingAuthorWithPermissions(Permission Permission)
-            : base(Permission)
+        public WhenAddingAuthorWithPermissions(Role role)
+            : base(role)
         {
         }
 
@@ -63,8 +63,8 @@ namespace Inshapardaz.Api.Tests.Author.AddAuthor
                          .ShouldHaveUpdateLink()
                          .ShouldHaveImageUpdateLink();
 
-            if (CurrentAuthenticationLevel == Permission.Admin ||
-                CurrentAuthenticationLevel == Permission.LibraryAdmin)
+            if (CurrentAuthenticationLevel == Role.Admin ||
+                CurrentAuthenticationLevel == Role.LibraryAdmin)
             {
                 _authorAssert.ShouldHaveDeleteLink();
             }

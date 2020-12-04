@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.DataBuilders;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
@@ -17,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
         private LibraryDataBuilder _libBuilder;
 
         public WhenAddingBookPageForBookInOtherLibrary()
-            : base(Domain.Adapters.Permission.Writer)
+            : base(Role.Writer)
         {
         }
 

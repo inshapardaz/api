@@ -2,7 +2,6 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,7 +36,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.UserId, p.AssignTimeStamp, f.Id As ImageId
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.AccountId, p.AssignTimeStamp, f.Id As ImageId
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             INNER JOIN Book b ON b.Id = p.BookId
@@ -112,7 +111,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.UserId, p.AssignTimeStamp,f.Id As ImageId
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.AccountId, p.AssignTimeStamp,f.Id As ImageId
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             INNER JOIN Book b ON b.Id = p.BookId
@@ -141,16 +140,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<BookPageModel> UpdatePageAssignment(int libraryId, int bookId, int sequenceNumber, PageStatuses status, int? assignedUserId, CancellationToken cancellationToken)
+        public async Task<BookPageModel> UpdatePageAssignment(int libraryId, int bookId, int sequenceNumber, PageStatuses status, int? assignedAccountId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Update p
-                            SET p.Status = @Status, p.UserId = @UserId, p.AssignTimeStamp = GETUTCDATE()
+                            SET p.Status = @Status, p.AccountId = @AccountId, p.AssignTimeStamp = GETUTCDATE()
                             FROM BookPage p
                             INNER JOIN Book b ON b.Id = p.BookId
                             Where b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Status = status, UserId = assignedUserId, BookId = bookId, SequenceNumber = sequenceNumber }, cancellationToken: cancellationToken);
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Status = status, AccountId = assignedAccountId, BookId = bookId, SequenceNumber = sequenceNumber }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
 
                 return await GetPageBySequenceNumber(libraryId, bookId, sequenceNumber, cancellationToken);

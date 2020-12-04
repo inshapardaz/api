@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
         private LibraryAssert _assert;
 
         public WhenUpdatingLibraryThatDoesNotExist()
-            : base(Domain.Adapters.Permission.Admin, createLibrary: false)
+            : base(Role.Admin, createLibrary: false)
         {
         }
 
@@ -57,7 +58,7 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
         {
             _assert.ShouldHaveSelfLink()
                     .ShouldHaveBooksLink()
-                    .ShouldHaveUpdatLlink()
+                    .ShouldHaveUpdateLink()
                     .ShouldHaveDeleteLink();
         }
     }

@@ -1,7 +1,4 @@
 ﻿using Inshapardaz.Domain.Models;
-using Microsoft.AspNetCore.Diagnostics;
-using SixLabors.ImageSharp;
-using System;
 
 namespace Inshapardaz.Api.Tests.Dto
 {
@@ -19,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Dto
             SequenceNumber = source.SequenceNumber;
             ImageId = source.ImageId;
             Status = source.Status;
-            UserId = source.UserId;
+            AccountId = source.AccountId;
         }
 
         public long Id { get; set; }
@@ -33,6 +30,6 @@ namespace Inshapardaz.Api.Tests.Dto
         public int? ImageId { get; set; }
 
         public PageStatuses Status { get; set; }
-        public Guid? UserId { get; set; }
+        public int? AccountId { get; set; }
     }
 }

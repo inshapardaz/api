@@ -3,21 +3,21 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Author.GetAuthors
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingAuthorsWithPermission : TestBase
     {
         private HttpResponseMessage _response;
         private PagingAssert<AuthorView> _assert;
 
-        public WhenGettingAuthorsWithPermission(Permission Permission)
-            : base(Permission)
+        public WhenGettingAuthorsWithPermission(Role Role)
+            : base(Role)
         {
         }
 
@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Author.GetAuthors
                 actual.ShouldMatch(item)
                       .InLibrary(LibraryId)
                       .WithBookCount(3)
-                      .WithEditableLinks(CurrentAuthenticationLevel)
+                      .WithEditableLinks(CurrentAuthenticationLevel.Value)
                       .ShouldHavePublicImageLink();
             }
         }

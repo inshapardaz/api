@@ -4,21 +4,22 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class AddBookPageRequest : LibraryAuthorisedCommand
+    public class AddBookPageRequest : LibraryBaseCommand
     {
-        public AddBookPageRequest(ClaimsPrincipal claims, int libraryId, int bookId, BookPageModel book)
-        : base(claims, libraryId)
+        public AddBookPageRequest(int libraryId, int bookId, int? accountId, BookPageModel book)
+        : base(libraryId)
         {
+            AccountId = accountId;
             BookPage = book;
             BookPage.BookId = bookId;
         }
 
+        public int? AccountId { get; }
         public BookPageModel BookPage { get; }
 
         public BookPageModel Result { get; set; }
@@ -38,10 +39,9 @@ namespace Inshapardaz.Domain.Models.Library
             _bookPageRepository = bookPageRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<AddBookPageRequest> HandleAsync(AddBookPageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookPage.BookId, command.UserId, cancellationToken);
+            var book = await _bookRepository.GetBookById(command.LibraryId, command.BookPage.BookId, command.AccountId, cancellationToken);
             if (book == null)
             {
                 throw new BadRequestException();

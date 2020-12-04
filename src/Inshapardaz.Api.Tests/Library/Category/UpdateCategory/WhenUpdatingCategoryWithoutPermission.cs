@@ -1,21 +1,20 @@
 ﻿using System.Net.Http;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
 {
-    [TestFixture(Permission.Reader)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Reader)]
+    [TestFixture(Role.Writer)]
     public class WhenUpdatingCategoryWithoutPermission : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenUpdatingCategoryWithoutPermission(Permission permission) : base(permission)
+        public WhenUpdatingCategoryWithoutPermission(Role role) : base(role)
         {
         }
 

@@ -3,7 +3,7 @@ using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
 using System.Data;
 using System.Net.Http;
@@ -140,12 +140,12 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal AuthorAssert WithEditableLinks(Permission Permission)
+        internal AuthorAssert WithEditableLinks(Role role)
         {
             ShouldHaveSelfLink();
             ShouldHaveBooksLink();
             ShouldHaveUpdateLink();
-            if (Permission == Permission.Admin || Permission == Permission.LibraryAdmin)
+            if (role == Role.Admin || role == Role.LibraryAdmin)
             {
                 ShouldHaveDeleteLink();
             }

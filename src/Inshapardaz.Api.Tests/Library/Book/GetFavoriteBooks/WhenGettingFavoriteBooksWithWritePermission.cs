@@ -1,7 +1,7 @@
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingFavoriteBooksWithWritePermission
         : TestBase
     {
@@ -21,8 +21,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         private SeriesDto _series;
         private IEnumerable<BookDto> _seriesBooks;
 
-        public WhenGettingFavoriteBooksWithWritePermission(Permission permission)
-            : base(permission)
+        public WhenGettingFavoriteBooksWithWritePermission(Role role)
+            : base(role)
         {
         }
 
@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
             _seriesBooks = BookBuilder.WithLibrary(LibraryId)
                                        .WithSeries(_series)
                                        .IsPublic()
-                                       .AddToFavorites(UserId)
+                                       .AddToFavorites(AccountId)
                                        .Build(5);
             SeriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build();
 

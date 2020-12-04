@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
@@ -13,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
         private HttpResponseMessage _response;
 
         public WhenAddingPeriodicalAsReader()
-            : base(Domain.Adapters.Permission.Reader, true)
+            : base(Role.Reader, true)
         {
         }
 

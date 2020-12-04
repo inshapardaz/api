@@ -1,22 +1,24 @@
-﻿using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class GetLatestBooksQuery : LibraryAuthorisedQuery<Page<BookModel>>
+    public class GetLatestBooksQuery : LibraryBaseQuery<Page<BookModel>>
     {
-        public GetLatestBooksQuery(int libraryId, int? userId)
-            : base(libraryId, userId)
+        public GetLatestBooksQuery(int libraryId, int? accountId)
+            : base(libraryId)
         {
+            AccountId = accountId;
         }
 
         public int PageNumber { get; private set; }
 
         public int PageSize { get; private set; }
+        public int? AccountId { get; }
     }
 
     public class GetLatestBooksQueryHandler : QueryHandlerAsync<GetLatestBooksQuery, Page<BookModel>>
@@ -30,7 +32,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<Page<BookModel>> ExecuteAsync(GetLatestBooksQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _bookRepository.GetLatestBooks(command.LibraryId, command.PageNumber, command.PageSize, command.UserId, cancellationToken);
+            return await _bookRepository.GetLatestBooks(command.LibraryId, command.PageNumber, command.PageSize, command.AccountId, cancellationToken);
         }
     }
 }

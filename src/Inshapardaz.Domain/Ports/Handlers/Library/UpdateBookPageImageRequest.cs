@@ -1,21 +1,19 @@
-﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 using System;
 using System.IO;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class UpdateBookPageImageRequest : LibraryAuthorisedCommand
+    public class UpdateBookPageImageRequest : LibraryBaseCommand
     {
-        public UpdateBookPageImageRequest(ClaimsPrincipal claims, int libraryId, int bookId, int sequenceNumber)
-            : base(claims, libraryId)
+        public UpdateBookPageImageRequest(int libraryId, int bookId, int sequenceNumber)
+            : base(libraryId)
         {
             BookId = bookId;
             SequenceNumber = sequenceNumber;
@@ -50,7 +48,6 @@ namespace Inshapardaz.Domain.Models.Library
             _fileStorage = fileStorage;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<UpdateBookPageImageRequest> HandleAsync(UpdateBookPageImageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var bookPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);

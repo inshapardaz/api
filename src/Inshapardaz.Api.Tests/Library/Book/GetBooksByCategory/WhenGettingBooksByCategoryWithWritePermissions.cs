@@ -1,7 +1,7 @@
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingBooksByCategoryWithWritePermissions
         : TestBase
 
@@ -22,8 +22,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
         private CategoryDto _category;
         private IEnumerable<BookDto> _categoryBooks;
 
-        public WhenGettingBooksByCategoryWithWritePermissions(Permission permission)
-            : base(permission)
+        public WhenGettingBooksByCategoryWithWritePermissions(Role role)
+            : base(role)
         {
         }
 

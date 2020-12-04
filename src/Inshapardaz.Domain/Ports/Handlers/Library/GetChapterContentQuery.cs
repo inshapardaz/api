@@ -4,22 +4,22 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Domain.Models.Library
 {
     public class GetChapterContentQuery : LibraryBaseQuery<ChapterContentModel>
     {
-        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string language, string mimeType, int? userId)
+        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string language, string mimeType, int? accountId)
             : base(libraryId)
         {
-            UserId = userId;
             BookId = bookId;
             ChapterId = chapterId;
             MimeType = mimeType;
+            AccountId = accountId;
             Language = language;
         }
 
@@ -27,9 +27,8 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int ChapterId { get; }
 
-        public int? UserId { get; set; }
-
         public string MimeType { get; set; }
+        public int? AccountId { get; }
         public string Language { get; set; }
     }
 
@@ -56,7 +55,7 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new NotFoundException();
             }
 
-            if (!book.IsPublic && command.UserId == null)
+            if (!book.IsPublic && !command.AccountId.HasValue)
             {
                 throw new UnauthorizedException();
             }
@@ -75,9 +74,9 @@ namespace Inshapardaz.Domain.Models.Library
             var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
             if (chapterContent != null)
             {
-                if (command.UserId != null)
+                if (command.AccountId.HasValue)
                 {
-                    await _bookRepository.AddRecentBook(command.LibraryId, command.UserId.Value, command.BookId, cancellationToken);
+                    await _bookRepository.AddRecentBook(command.LibraryId, command.AccountId.Value, command.BookId, cancellationToken);
                 }
 
                 if (book.IsPublic)

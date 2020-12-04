@@ -1,8 +1,7 @@
-using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingBooksByAuthorWithWritePermissions
         : TestBase
     {
@@ -24,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
         private IEnumerable<BookDto> _authorBooks;
         private ClaimsPrincipal _claim;
 
-        public WhenGettingBooksByAuthorWithWritePermissions(Permission permission) : base(permission)
+        public WhenGettingBooksByAuthorWithWritePermissions(Role role) : base(role)
         {
         }
 

@@ -1,7 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Security.Claims;
@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingBookContentWithPermissions
         : TestBase
     {
@@ -21,8 +21,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
         private BookContentDto _expected;
         private ClaimsPrincipal _claim;
 
-        public WhenGettingBookContentWithPermissions(Permission permission)
-            : base(permission)
+        public WhenGettingBookContentWithPermissions(Role role)
+            : base(role)
         {
         }
 

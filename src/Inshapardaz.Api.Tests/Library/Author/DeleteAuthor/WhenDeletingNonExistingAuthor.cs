@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Author.DeleteAuthor
@@ -12,7 +13,7 @@ namespace Inshapardaz.Api.Tests.Author.DeleteAuthor
         private HttpResponseMessage _response;
 
         public WhenDeletingNonExistingAuthor()
-            : base(Domain.Adapters.Permission.LibraryAdmin)
+            : base(Role.LibraryAdmin)
         {
         }
 

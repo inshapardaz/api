@@ -5,13 +5,13 @@ using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
     public class WhenUpdatingCategoryWithPermission : TestBase
     {
         private HttpResponseMessage _response;
@@ -20,8 +20,8 @@ namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
         private CategoryView _expectedCategory;
         private CategoryAssert _assert;
 
-        public WhenUpdatingCategoryWithPermission(Permission permission)
-            : base(permission)
+        public WhenUpdatingCategoryWithPermission(Role role)
+            : base(role)
         {
         }
 

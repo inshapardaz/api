@@ -1,23 +1,22 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Bogus;
-using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.AddCategory
 {
-    [TestFixture(Permission.Reader)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Reader)]
+    [TestFixture(Role.Writer)]
     public class WhenAddingCategoryWithoutPermissions : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenAddingCategoryWithoutPermissions(Permission permission)
-            : base(permission)
+        public WhenAddingCategoryWithoutPermissions(Role role)
+            : base(role)
         {
         }
 

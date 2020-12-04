@@ -1,9 +1,8 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
-using Microsoft.AspNetCore.Mvc;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
@@ -14,7 +13,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
     {
         private HttpResponseMessage _response;
 
-        public WhenUpdatingBookContentForNonExistingBook() : base(Domain.Adapters.Permission.Writer)
+        public WhenUpdatingBookContentForNonExistingBook() : base(Role.Writer)
         {
         }
 

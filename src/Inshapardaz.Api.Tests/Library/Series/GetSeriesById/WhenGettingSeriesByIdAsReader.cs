@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
         private SeriesAssert _assert;
 
         public WhenGettingSeriesByIdAsReader()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

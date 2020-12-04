@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
         private IEnumerable<CategoryDto> _categories;
 
         public WhenGettingFavoriteBookByIdAsReader()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 
@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
                                         .HavingSeries()
                                         .WithCategories(_categories)
                                         .WithContents(2)
-                                        .AddToFavorites(UserId)
+                                        .AddToFavorites(AccountId)
                                         .Build(4);
             _expected = books.PickRandom();
 

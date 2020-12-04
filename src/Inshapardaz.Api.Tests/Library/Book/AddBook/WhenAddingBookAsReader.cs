@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.AddBook
@@ -12,7 +13,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
     {
         private HttpResponseMessage _response;
 
-        public WhenAddingBookAsReader() : base(Domain.Adapters.Permission.Reader)
+        public WhenAddingBookAsReader() : base(Role.Reader)
         {
         }
 

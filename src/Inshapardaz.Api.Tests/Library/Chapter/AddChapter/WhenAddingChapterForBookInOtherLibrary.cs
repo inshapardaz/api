@@ -1,8 +1,8 @@
-﻿using Inshapardaz.Api.Tests;
-using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataBuilders;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         private LibraryDataBuilder _libBuilder;
 
         public WhenAddingChapterForBookInOtherLibrary()
-            : base(Domain.Adapters.Permission.Writer)
+            : base(Role.Writer)
         {
         }
 

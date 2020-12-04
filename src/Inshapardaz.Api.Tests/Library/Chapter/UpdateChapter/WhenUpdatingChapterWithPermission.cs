@@ -1,16 +1,16 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenUpdatingChapterWithPermission
         : TestBase
     {
@@ -18,8 +18,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         private ChapterView newChapter;
         private ChapterAssert _assert;
 
-        public WhenUpdatingChapterWithPermission(Permission permission)
-            : base(permission)
+        public WhenUpdatingChapterWithPermission(Role role)
+            : base(role)
         {
         }
 

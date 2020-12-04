@@ -3,21 +3,21 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingSeriesWithPermission : TestBase
     {
         private HttpResponseMessage _response;
         private PagingAssert<SeriesView> _assert;
 
-        public WhenGettingSeriesWithPermission(Permission permission)
-            : base(permission)
+        public WhenGettingSeriesWithPermission(Role role)
+            : base(role)
         {
         }
 

@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
         private BookContentDto _expected;
 
         public WhenGettingBookContentAsReader()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

@@ -3,9 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,19 +21,16 @@ namespace Inshapardaz.Api.Controllers
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderSeries _seriesRenderer;
         private readonly IRenderFile _fileRenderer;
-        private readonly IUserHelper _userHelper;
 
         public SeriesController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
             IRenderSeries SeriesRenderer,
-            IRenderFile fileRenderer,
-            IUserHelper userHelper)
+            IRenderFile fileRenderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _seriesRenderer = SeriesRenderer;
             _fileRenderer = fileRenderer;
-            _userHelper = userHelper;
         }
 
         [HttpGet("library/{libraryId}/series", Name = nameof(SeriesController.GetSereies))]
@@ -65,6 +63,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/series", Name = nameof(SeriesController.CreateSeries))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateSeries(int libraryId, [FromBody]SeriesView series, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -72,7 +71,7 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new AddSeriesRequest(_userHelper.Claims, libraryId, series.Map());
+            var request = new AddSeriesRequest(libraryId, series.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _seriesRenderer.Render(request.Result, libraryId);
@@ -80,6 +79,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.UpdateSeries))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateSeries(int libraryId, int seriesId, [FromBody]SeriesView series, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -88,7 +88,7 @@ namespace Inshapardaz.Api.Controllers
             }
 
             series.Id = seriesId;
-            var request = new UpdateSeriesRequest(_userHelper.Claims, libraryId, series.Map());
+            var request = new UpdateSeriesRequest(libraryId, series.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _seriesRenderer.Render(request.Result.Series, libraryId);
@@ -104,14 +104,16 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.DeleteSeries))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteSeries(int libraryId, int seriesId, CancellationToken token = default(CancellationToken))
         {
-            var request = new DeleteSeriesRequest(_userHelper.Claims, libraryId, seriesId);
+            var request = new DeleteSeriesRequest(libraryId, seriesId);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }
 
         [HttpPut("library/{libraryId}/series/{seriesId}/image", Name = nameof(SeriesController.UpdateSeriesImage))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateSeriesImage(int libraryId, int seriesId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -120,7 +122,7 @@ namespace Inshapardaz.Api.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            var request = new UpdateSeriesImageRequest(_userHelper.Claims, libraryId, seriesId)
+            var request = new UpdateSeriesImageRequest(libraryId, seriesId)
             {
                 Image = new Domain.Models.FileModel
                 {

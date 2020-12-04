@@ -27,34 +27,34 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             }
         }
 
-        public static void AddBookToFavorites(this IDbConnection connection, int libraryId, int bookId, Guid userId)
+        public static void AddBookToFavorites(this IDbConnection connection, int libraryId, int bookId, int accountId)
         {
-            var sql = @"Insert into FavoriteBooks (LibraryId, BookId, UserId, DateAdded)
-                        Values (@LibraryId, @BookId, @UserId, GETDATE())";
-            connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, userId });
+            var sql = @"Insert into FavoriteBooks (LibraryId, BookId, AccountId, DateAdded)
+                        Values (@LibraryId, @BookId, @AccountId, GETDATE())";
+            connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, accountId });
         }
 
-        public static void AddBooksToFavorites(this IDbConnection connection, int libraryId, IEnumerable<int> bookIds, Guid userId)
+        public static void AddBooksToFavorites(this IDbConnection connection, int libraryId, IEnumerable<int> bookIds, int accountId)
         {
-            bookIds.ForEach(id => connection.AddBookToFavorites(libraryId, id, userId));
+            bookIds.ForEach(id => connection.AddBookToFavorites(libraryId, id, accountId));
         }
 
-        public static void AddBooksToRecentReads(this IDbConnection connection, int libraryId, IEnumerable<int> bookIds, Guid userId)
+        public static void AddBooksToRecentReads(this IDbConnection connection, int libraryId, IEnumerable<int> bookIds, int accountId)
         {
-            bookIds.ForEach(id => connection.AddBookToRecentReads(libraryId, id, userId));
+            bookIds.ForEach(id => connection.AddBookToRecentReads(libraryId, id, accountId));
         }
 
-        public static void AddBookToRecentReads(this IDbConnection connection, int libraryId, int bookId, Guid userId, DateTime? timestamp = null)
+        public static void AddBookToRecentReads(this IDbConnection connection, int libraryId, int bookId, int accountId, DateTime? timestamp = null)
         {
-            var sql = @"Insert into RecentBooks (LibraryId, BookId, UserId, DateRead)
-                        Values (@LibraryId, @BookId, @UserId, @DateRead)";
-            connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, userId, DateRead = timestamp ?? DateTime.Now });
+            var sql = @"Insert into RecentBooks (LibraryId, BookId, AccountId, DateRead)
+                        Values (@LibraryId, @BookId, @AccountId, @DateRead)";
+            connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, bookId, accountId, DateRead = timestamp ?? DateTime.Now });
         }
 
         public static void AddBookToRecentReads(this IDbConnection connection, RecentBookDto dto)
         {
-            var sql = @"Insert into RecentBooks (LibraryId, BookId, UserId, DateRead)
-                        Values (@LibraryId, @BookId, @UserId, @DateRead)";
+            var sql = @"Insert into RecentBooks (LibraryId, BookId, AccountId, DateRead)
+                        Values (@LibraryId, @BookId, @AccountId, @DateRead)";
             connection.ExecuteScalar<int>(sql, dto);
         }
 
@@ -125,11 +125,11 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             throw new NotImplementedException();
         }
 
-        public static bool DoesBookExistsInFavorites(this IDbConnection connection, int bookId, Guid userId) =>
-            connection.QuerySingle<bool>(@"Select Count(1) From FavoriteBooks Where BookId = @BookId And UserId = @UserId", new
+        public static bool DoesBookExistsInFavorites(this IDbConnection connection, int bookId, int accountId) =>
+            connection.QuerySingle<bool>(@"Select Count(1) From FavoriteBooks Where BookId = @BookId And AccountId = @AccountId", new
             {
                 BookId = bookId,
-                UserId = userId
+                AccountId = accountId
             });
 
         //TODO : Add user id.

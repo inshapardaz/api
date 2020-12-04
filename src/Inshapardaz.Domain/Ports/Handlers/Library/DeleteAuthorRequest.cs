@@ -1,18 +1,16 @@
-﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class DeleteAuthorRequest : LibraryAuthorisedCommand
+    public class DeleteAuthorRequest : LibraryBaseCommand
     {
-        public DeleteAuthorRequest(ClaimsPrincipal claims, int libraryId, int authorId)
-            : base(claims, libraryId)
+        public DeleteAuthorRequest(int libraryId, int authorId)
+            : base(libraryId)
         {
             AuthorId = authorId;
         }
@@ -33,7 +31,6 @@ namespace Inshapardaz.Domain.Models.Library
             _fileStore = fileStore;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin)]
         public override async Task<DeleteAuthorRequest> HandleAsync(DeleteAuthorRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var author = await _authorRepository.GetAuthorById(command.LibraryId, command.AuthorId, cancellationToken);

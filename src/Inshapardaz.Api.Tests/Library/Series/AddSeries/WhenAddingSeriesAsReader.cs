@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.AddSeries
@@ -13,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.AddSeries
         private HttpResponseMessage _response;
 
         public WhenAddingSeriesAsReader()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

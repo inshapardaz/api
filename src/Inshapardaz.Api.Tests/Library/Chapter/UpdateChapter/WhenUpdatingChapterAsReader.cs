@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         private HttpResponseMessage _response;
 
         public WhenUpdatingChapterAsReader()
-            : base(Domain.Adapters.Permission.Reader)
+            : base(Role.Reader)
         {
         }
 

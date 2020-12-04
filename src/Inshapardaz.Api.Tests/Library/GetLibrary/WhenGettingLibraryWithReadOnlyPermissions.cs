@@ -1,24 +1,21 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Api.Views;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.GetLibrary
 {
-    [TestFixture(Permission.Unauthorised, true)]
-    [TestFixture(Permission.Unauthorised, false)]
-    [TestFixture(Permission.Reader, true)]
-    [TestFixture(Permission.Reader, false)]
+    [TestFixture(null, true)]
+    [TestFixture(null, false)]
+    [TestFixture(Role.Reader, true)]
+    [TestFixture(Role.Reader, false)]
     public class WhenGettingLibraryWithReadOnlyPermissions : TestBase
     {
         private HttpResponseMessage _response;
         private LibraryAssert _assert;
 
-        public WhenGettingLibraryWithReadOnlyPermissions(Permission authLevel, bool periodicalsEnabled)
+        public WhenGettingLibraryWithReadOnlyPermissions(Role authLevel, bool periodicalsEnabled)
             : base(authLevel, periodicalsEnabled)
         {
         }
@@ -26,8 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var client = CreateClient();
-            _response = await client.GetAsync($"/library/{LibraryId}");
+            _response = await Client.GetAsync($"/library/{LibraryId}");
 
             _assert = LibraryAssert.FromResponse(_response, LibraryId);
         }
@@ -84,7 +80,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibrary
         [Test]
         public void ShouldNotHavePersonalLinks()
         {
-            if (_authenticationLevel == Permission.Unauthorised)
+            if (_role == null)
             {
                 _assert.ShouldNotHaveRecentLinks();
             }

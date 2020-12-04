@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         {
             BookBuilder.WithLibrary(LibraryId)
                                        .IsPublic()
-                                       .AddToRecentReads(UserId, 2)
+                                       .AddToRecentReads(AccountId, 2)
                                        .Build(2);
 
             _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=1&pageSize=10&read=true");

@@ -1,9 +1,6 @@
-﻿using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Repositories;
+﻿using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,8 +8,8 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteBookContentRequest : BookRequest
     {
-        public DeleteBookContentRequest(ClaimsPrincipal claims, int libraryId, int bookId, string language, string mimeType, int? userId)
-            : base(claims, libraryId, bookId, userId)
+        public DeleteBookContentRequest(int libraryId, int bookId, string language, string mimeType)
+            : base(libraryId, bookId)
         {
             Language = language;
             MimeType = mimeType;
@@ -35,7 +32,6 @@ namespace Inshapardaz.Domain.Models.Library
             _fileStorage = fileStorage;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before, Permission.Admin, Permission.LibraryAdmin, Permission.Writer)]
         public override async Task<DeleteBookContentRequest> HandleAsync(DeleteBookContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);

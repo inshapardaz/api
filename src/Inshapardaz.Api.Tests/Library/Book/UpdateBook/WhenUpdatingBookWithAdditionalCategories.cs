@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
@@ -22,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         private BookAssert _bookAssert;
         private List<CategoryDto> _categoriesToUpdate;
 
-        public WhenUpdatingBookWithAdditionalCategories() : base(Permission.Writer)
+        public WhenUpdatingBookWithAdditionalCategories() : base(Role.Writer)
         {
         }
 
@@ -35,8 +34,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             var books = BookBuilder.WithLibrary(LibraryId)
                                     .WithCategories(3)
                                     .HavingSeries()
-                                    .AddToFavorites(Guid.NewGuid())
-                                    .AddToRecentReads(Guid.NewGuid())
+                                    .AddToFavorites(Helpers.Random.Number)
+                                    .AddToRecentReads(Helpers.Random.Number)
                                     .Build(1);
 
             var selectedBook = books.PickRandom();

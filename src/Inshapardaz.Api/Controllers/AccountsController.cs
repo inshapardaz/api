@@ -7,6 +7,7 @@ using Inshapardaz.Api.Entities;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Models.Accounts;
 using Inshapardaz.Api.Services;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Controllers
 {

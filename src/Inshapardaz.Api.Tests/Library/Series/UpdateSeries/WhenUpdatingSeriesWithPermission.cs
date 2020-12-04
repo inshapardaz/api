@@ -3,22 +3,22 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenUpdatingSeriesWithPermission : TestBase
     {
         private HttpResponseMessage _response;
         private SeriesView _expected;
         private SeriesAssert _assert;
 
-        public WhenUpdatingSeriesWithPermission(Permission permission)
-            : base(permission)
+        public WhenUpdatingSeriesWithPermission(Role role)
+            : base(role)
         {
         }
 

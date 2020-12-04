@@ -8,22 +8,22 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
 {
-    [TestFixture(Permission.Unauthorised)]
-    [TestFixture(Permission.Reader)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(null)]
+    [TestFixture(Role.Reader)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingCategoriesWithoutWritePermissions : TestBase
     {
         private HttpResponseMessage _response;
         private IEnumerable<CategoryDto> _categories;
         private ListView<CategoryView> _view;
 
-        public WhenGettingCategoriesWithoutWritePermissions(Permission permission)
-            : base(permission)
+        public WhenGettingCategoriesWithoutWritePermissions(Role role)
+            : base(role)
         {
         }
 

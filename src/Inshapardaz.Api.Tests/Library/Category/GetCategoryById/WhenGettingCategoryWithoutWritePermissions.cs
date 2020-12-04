@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
 {
-    [TestFixture(Permission.Unauthorised)]
-    [TestFixture(Permission.Reader)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(null)]
+    [TestFixture(Role.Reader)]
+    [TestFixture(Role.Writer)]
     public class WhenGettingCategoryWithoutWritePermissions : TestBase
     {
         private HttpResponseMessage _response;
@@ -19,8 +19,8 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
         private CategoryDto _selectedCategory;
         private CategoryAssert _assert;
 
-        public WhenGettingCategoryWithoutWritePermissions(Permission permission)
-            : base(permission)
+        public WhenGettingCategoryWithoutWritePermissions(Role role)
+            : base(role)
         {
         }
 

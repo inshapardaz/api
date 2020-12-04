@@ -1,23 +1,18 @@
-﻿using Inshapardaz.Api.Tests;
-using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Repositories;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenUpdatingChapterContentsWithPermission
         : TestBase
     {
@@ -28,8 +23,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
 
         private byte[] _newContents;
 
-        public WhenUpdatingChapterContentsWithPermission(Permission permission)
-            : base(permission)
+        public WhenUpdatingChapterContentsWithPermission(Role role)
+            : base(role)
         {
         }
 

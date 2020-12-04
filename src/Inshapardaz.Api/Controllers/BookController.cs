@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters;
@@ -59,7 +60,7 @@ namespace Inshapardaz.Api.Controllers
                 Favorite = favorite,
                 Read = read
             };
-            var request = new GetBooksQuery(libraryId, pageNumber, pageSize, _userHelper.GetUserId())
+            var request = new GetBooksQuery(libraryId, pageNumber, pageSize, _userHelper.GetAccountId())
             {
                 Query = query,
                 Filter = filter,
@@ -89,7 +90,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpGet("library/{libraryId}/books/{bookId}", Name = nameof(BookController.GetBookById))]
         public async Task<IActionResult> GetBookById(int libraryId, int bookId, CancellationToken token)
         {
-            var request = new GetBookByIdQuery(libraryId, bookId, _userHelper.GetUserId());
+            var request = new GetBookByIdQuery(libraryId, bookId, _userHelper.GetAccountId());
             var book = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
 
             if (book != null)
@@ -101,6 +102,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/books", Name = nameof(BookController.CreateBook))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateBook(int libraryId, [FromBody]BookView book, CancellationToken token)
         {
             if (!ModelState.IsValid)
@@ -108,7 +110,7 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new AddBookRequest(_userHelper.Claims, libraryId, book.Map());
+            var request = new AddBookRequest(libraryId, _userHelper.GetAccountId(), book.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _bookRenderer.Render(request.Result, libraryId);
@@ -116,6 +118,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/books/{bookId}", Name = nameof(BookController.UpdateBook))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateBook(int libraryId, int bookId, [FromBody]BookView book, CancellationToken token)
         {
             if (!ModelState.IsValid)
@@ -125,7 +128,7 @@ namespace Inshapardaz.Api.Controllers
 
             book.Id = bookId;
 
-            var request = new UpdateBookRequest(_userHelper.Claims, libraryId, book.Map());
+            var request = new UpdateBookRequest(libraryId, _userHelper.GetAccountId(), book.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _bookRenderer.Render(request.Result.Book, libraryId);
@@ -141,14 +144,16 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/books/{bookId}", Name = nameof(BookController.DeleteBook))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteBook(int libraryId, int bookId, CancellationToken token)
         {
-            var request = new DeleteBookRequest(_userHelper.Claims, libraryId, bookId, _userHelper.GetUserId());
+            var request = new DeleteBookRequest(libraryId, bookId, _userHelper.GetAccountId());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }
 
         [HttpPut("library/{libraryId}/books/{bookId}/image", Name = nameof(BookController.UpdateBookImage))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateBookImage(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -157,7 +162,7 @@ namespace Inshapardaz.Api.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            var request = new UpdateBookImageRequest(_userHelper.Claims, libraryId, bookId)
+            var request = new UpdateBookImageRequest(libraryId, bookId, _userHelper.GetAccountId())
             {
                 Image = new FileModel
                 {
@@ -185,7 +190,7 @@ namespace Inshapardaz.Api.Controllers
             var mimeType = Request.Headers["Accept"];
             var language = Request.Headers["Accept-Language"];
 
-            var request = new GetBookContentQuery(libraryId, bookId, language, mimeType, _userHelper.GetUserId());
+            var request = new GetBookContentQuery(libraryId, bookId, language, mimeType, _userHelper.GetAccountId());
             var content = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
             if (content != null)
             {
@@ -196,6 +201,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("library/{libraryId}/books/{bookId}/contents", Name = nameof(BookController.CreateBookContent))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateBookContent(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -206,7 +212,7 @@ namespace Inshapardaz.Api.Controllers
             var language = Request.Headers["Accept-Language"];
             var mimeType = file.ContentType;
 
-            var request = new AddBookContentRequest(_userHelper.Claims, libraryId, bookId, language, mimeType)
+            var request = new AddBookContentRequest(libraryId, bookId, language, mimeType, _userHelper.GetAccountId())
             {
                 Content = new FileModel
                 {
@@ -229,6 +235,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("library/{libraryId}/books/{bookId}/contents", Name = nameof(BookController.UpdateBookContent))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateBookContent(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -239,7 +246,7 @@ namespace Inshapardaz.Api.Controllers
             var language = Request.Headers["Accept-Language"];
             var mimeType = file.ContentType;
 
-            var request = new UpdateBookContentRequest(_userHelper.Claims, libraryId, bookId, language, mimeType)
+            var request = new UpdateBookContentRequest(libraryId, bookId, language, mimeType, _userHelper.GetAccountId())
             {
                 Content = new FileModel
                 {
@@ -270,29 +277,32 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("library/{libraryId}/books/{bookId}/contents", Name = nameof(BookController.DeleteBookContent))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteBookContent(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
             var mimeType = Request.Headers["Accept"];
             var language = Request.Headers["Accept-Language"];
 
-            var request = new DeleteBookContentRequest(_userHelper.Claims, libraryId, bookId, language, mimeType, _userHelper.GetUserId());
+            var request = new DeleteBookContentRequest(libraryId, bookId, language, mimeType);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }
 
         [HttpPost("library/{libraryId}/favorites/books/{bookId}", Name = nameof(BookController.AddBookToFavorites))]
+        [Authorize]
         public async Task<IActionResult> AddBookToFavorites(int libraryId, int bookId, CancellationToken token)
         {
-            var request = new AddBookToFavoriteRequest(_userHelper.Claims, libraryId, bookId, _userHelper.GetUserId());
+            var request = new AddBookToFavoriteRequest(libraryId, bookId, _userHelper.GetAccountId());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             return new OkResult();
         }
 
         [HttpDelete("library/{libraryId}/favorites/books/{bookId}", Name = nameof(BookController.RemoveBookFromFavorites))]
+        [Authorize]
         public async Task<IActionResult> RemoveBookFromFavorites(int libraryId, int bookId, CancellationToken token)
         {
-            var request = new DeleteBookToFavoriteRequest(_userHelper.Claims, libraryId, bookId, _userHelper.GetUserId());
+            var request = new DeleteBookToFavoriteRequest(libraryId, bookId, _userHelper.GetAccountId());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             return new OkResult();

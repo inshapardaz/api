@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
             var assignment = new
             {
                 Status = PageStatuses.AssignedToReview,
-                UserId = UserId
+                AccountId = AccountId
             };
 
             _response = await Client.PostObject($"/library/{LibraryId}/books/{book.Id}/pages/{_page.SequenceNumber}/assign", assignment);

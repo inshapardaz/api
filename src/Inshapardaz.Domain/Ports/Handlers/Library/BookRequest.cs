@@ -1,16 +1,13 @@
 ﻿using Inshapardaz.Domain.Models.Handlers.Library;
-using System;
-using System.Security.Claims;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public abstract class BookRequest : LibraryAuthorisedCommand
+    public abstract class BookRequest : LibraryBaseCommand
     {
-        protected BookRequest(ClaimsPrincipal claims, int libraryId, int bookId, int? userId)
-            : base(claims, libraryId)
+        protected BookRequest(int libraryId, int bookId)
+            : base(libraryId)
         {
             BookId = bookId;
-            UserId = userId;
         }
 
         public int BookId { get; set; }

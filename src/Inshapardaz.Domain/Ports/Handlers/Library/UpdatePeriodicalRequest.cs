@@ -1,16 +1,15 @@
 ﻿using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class UpdatePeriodicalRequest : LibraryAuthorisedCommand
+    public class UpdatePeriodicalRequest : LibraryBaseCommand
     {
-        public UpdatePeriodicalRequest(ClaimsPrincipal claims, int libraryId, PeriodicalModel periodical)
-            : base(claims, libraryId)
+        public UpdatePeriodicalRequest(int libraryId, PeriodicalModel periodical)
+            : base(libraryId)
         {
             Periodical = periodical;
         }
@@ -36,7 +35,6 @@ namespace Inshapardaz.Domain.Models.Library
             _periodicalRepository = periodicalRepository;
         }
 
-        [Authorise(step: 1, HandlerTiming.Before)]
         public override async Task<UpdatePeriodicalRequest> HandleAsync(UpdatePeriodicalRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await _periodicalRepository.GetPeriodicalById(command.LibraryId, command.Periodical.Id, cancellationToken);

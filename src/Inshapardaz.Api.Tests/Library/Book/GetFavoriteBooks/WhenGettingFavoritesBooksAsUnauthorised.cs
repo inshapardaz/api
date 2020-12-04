@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         {
             _favoriteBooks = BookBuilder.WithLibrary(LibraryId)
                                        .IsPublic()
-                                       .AddToFavorites(UserId)
+                                       .AddToFavorites(AccountId)
                                        .Build(5);
             BookBuilder.WithLibrary(LibraryId).IsPublic().Build(3);
 

@@ -1,23 +1,23 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenDeletingChapterWithPermission
         : TestBase
     {
         private HttpResponseMessage _response;
         private ChapterDto _expected;
 
-        public WhenDeletingChapterWithPermission(Permission permission)
-            : base(permission)
+        public WhenDeletingChapterWithPermission(Role role)
+            : base(role)
         {
         }
 

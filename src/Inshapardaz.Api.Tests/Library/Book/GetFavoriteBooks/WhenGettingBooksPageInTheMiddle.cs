@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -15,14 +16,14 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         private PagingAssert<BookView> _assert;
 
         public WhenGettingBooksPageInTheMiddle()
-        : base(Domain.Adapters.Permission.Reader)
+        : base(Role.Reader)
         {
         }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            BookBuilder.WithLibrary(LibraryId).IsPublic().AddToFavorites(UserId).Build(25);
+            BookBuilder.WithLibrary(LibraryId).IsPublic().AddToFavorites(AccountId).Build(25);
             _response = await Client.GetAsync($"/library/{LibraryId}/books?pageNumber=2&pageSize=10&favorite=true");
 
             _assert = new PagingAssert<BookView>(_response, Library);

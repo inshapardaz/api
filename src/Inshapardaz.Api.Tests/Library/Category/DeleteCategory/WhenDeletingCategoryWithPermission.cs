@@ -4,20 +4,20 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
     public class WhenDeletingCategoryWithPermission : TestBase
     {
         private HttpResponseMessage _response;
         private IEnumerable<CategoryDto> _categories;
         private CategoryDto _selectedCategory;
 
-        public WhenDeletingCategoryWithPermission(Permission permission) : base(permission)
+        public WhenDeletingCategoryWithPermission(Role role) : base(role)
         {
         }
 

@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using Inshapardaz.Api.Controllers;
 using Inshapardaz.Domain.Adapters;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+using System.Linq;
 using Inshapardaz.Api.Helpers;
-using System.Media;
 
 namespace Inshapardaz.Api.Converters
 {
     public interface IRenderLibrary
     {
+        PageView<LibraryView> Render(PageRendererArgs<LibraryModel> source);
+
         LibraryView Render(LibraryModel model);
     }
 
@@ -23,6 +25,76 @@ namespace Inshapardaz.Api.Converters
         {
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
+        }
+
+        public PageView<LibraryView> Render(PageRendererArgs<LibraryModel> source)
+        {
+            var page = new PageView<LibraryView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
+            {
+                Data = source.Page.Data?.Select(x => Render(x))
+            };
+
+            var links = new List<LinkView>
+            {
+                _linkRenderer.Render(new Link {
+                    ActionName = nameof(LibraryController.GetLibraries),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Self,
+                    Parameters = new object(),
+                    QueryString = new Dictionary<string, string>()
+                    {
+                        { "pageNumber" , page.CurrentPageIndex.ToString() },
+                        { "pageSize", page.PageSize.ToString() },
+                        { "query", source.RouteArguments.Query }
+                    }
+                })
+            };
+
+            if (_userHelper.IsWriter || _userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(LibraryController.CreateLibrary),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.Create
+                }));
+            }
+
+            if (page.CurrentPageIndex < page.PageCount)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(LibraryController.GetLibraries),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Next,
+                    Parameters = new object(),
+                    QueryString = new Dictionary<string, string>()
+                    {
+                        { "pageNumber" , (page.CurrentPageIndex + 1).ToString() },
+                        { "pageSize", page.PageSize.ToString() },
+                        { "query", source.RouteArguments.Query }
+                    }
+                }));
+            }
+
+            if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(LibraryController.GetLibraries),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Previous,
+                    QueryString = new Dictionary<string, string>()
+                    {
+                        { "pageNumber" , (page.CurrentPageIndex - 1).ToString() },
+                        { "pageSize", page.PageSize.ToString() },
+                        { "query", source.RouteArguments.Query }
+                    }
+                }));
+            }
+
+            page.Links = links;
+            return page;
         }
 
         public LibraryView Render(LibraryModel model)

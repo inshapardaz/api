@@ -1,9 +1,9 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
-using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
         private CategoryAssert _assert;
 
         public WhenUpdatingCategoryThatDoesNotExist()
-            : base(Domain.Adapters.Permission.LibraryAdmin)
+            : base(Role.LibraryAdmin)
         {
         }
 

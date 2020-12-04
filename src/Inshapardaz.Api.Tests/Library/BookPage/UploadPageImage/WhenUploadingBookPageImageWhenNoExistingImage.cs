@@ -1,8 +1,8 @@
-﻿using FluentAssertions;
-using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UploadPageImage
         private int _bookId;
 
         public WhenUploadingBookPageImageWhenNoExistingImage()
-            : base(Domain.Adapters.Permission.Writer)
+            : base(Role.Writer)
         {
         }
 

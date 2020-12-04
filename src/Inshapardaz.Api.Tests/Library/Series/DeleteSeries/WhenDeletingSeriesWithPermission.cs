@@ -7,14 +7,14 @@ using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
 {
-    [TestFixture(Permission.Admin)]
-    [TestFixture(Permission.LibraryAdmin)]
-    [TestFixture(Permission.Writer)]
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
     public class WhenDeletingSeriesWithPermission : TestBase
     {
         private HttpResponseMessage _response;
@@ -22,8 +22,8 @@ namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
         private SeriesDto _expected;
         private readonly ClaimsPrincipal _claim;
 
-        public WhenDeletingSeriesWithPermission(Permission permission)
-            : base(permission)
+        public WhenDeletingSeriesWithPermission(Role role)
+            : base(role)
         {
         }
 

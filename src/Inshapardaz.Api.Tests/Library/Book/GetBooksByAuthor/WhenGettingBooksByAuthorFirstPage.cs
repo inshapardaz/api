@@ -1,7 +1,7 @@
-using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
         private AuthorDto _author;
         private IEnumerable<BookDto> _authorBooks;
 
-        public WhenGettingBooksByAuthorFirstPage() : base(Domain.Adapters.Permission.Reader)
+        public WhenGettingBooksByAuthorFirstPage() : base(Role.Reader)
         {
         }
 

@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
-using Bogus;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataBuilders;
@@ -10,8 +8,7 @@ using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
-using Microsoft.AspNetCore.Mvc;
+using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -25,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         {
             private HttpResponseMessage _response;
 
-            public AndUsingNonExistingLibrary() : base(Permission.Writer)
+            public AndUsingNonExistingLibrary() : base(Role.Writer)
             {
             }
 
@@ -59,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             private BookDto _bookToUpdate;
             private AuthorDto _author;
 
-            public AndUpdatingWithNonExistingAuthor() : base(Permission.Writer)
+            public AndUpdatingWithNonExistingAuthor() : base(Role.Writer)
             {
             }
 
@@ -104,7 +101,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             private AuthorDto _author;
             private LibraryDataBuilder _library2Builder;
 
-            public AndUpdatingWithAuthorFromOtherLibrary() : base(Permission.Writer)
+            public AndUpdatingWithAuthorFromOtherLibrary() : base(Role.Writer)
             {
             }
 
@@ -153,7 +150,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             private BookDto _bookToUpdate;
             private SeriesDto _series;
 
-            public AndUpdatingWithNonExistingSeries() : base(Permission.Writer)
+            public AndUpdatingWithNonExistingSeries() : base(Role.Writer)
             {
             }
 
@@ -198,7 +195,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             private SeriesDto _series;
             private LibraryDataBuilder _library2Builder;
 
-            public AndUpdatingWithSeriesFromOtherLibrary() : base(Permission.Writer)
+            public AndUpdatingWithSeriesFromOtherLibrary() : base(Role.Writer)
             {
             }
 
@@ -246,7 +243,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             private BookDto _bookToUpdate;
             private CategoryDto _category;
 
-            public AndUpdatingWithNonExistingCategory() : base(Permission.Writer)
+            public AndUpdatingWithNonExistingCategory() : base(Role.Writer)
             {
             }
 
@@ -292,7 +289,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             private CategoryDto _category;
             private LibraryDataBuilder _library2Builder;
 
-            public AndUpdatingWithCategoryFromOtherLibrary() : base(Permission.Writer)
+            public AndUpdatingWithCategoryFromOtherLibrary() : base(Role.Writer)
             {
             }
 

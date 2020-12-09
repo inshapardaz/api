@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Mappings
             => new CategoryModel
             {
                 Id = source.Id,
-                Name = source.Name
+                Name = source?.Name
             };
     }
 }

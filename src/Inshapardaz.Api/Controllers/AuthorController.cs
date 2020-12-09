@@ -112,7 +112,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}/authors/{authorId}/image", Name = nameof(AuthorController.UpdateAuthorImage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateAuthorImage(int libraryId, int authorId, IFormFile file, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateAuthorImage(int libraryId, int authorId, [FromForm] IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
             using (var stream = new MemoryStream(content))

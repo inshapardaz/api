@@ -19,7 +19,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void AddLibrary(this IDbConnection connection, LibraryDto library)
         {
-            var id = connection.ExecuteScalar<int>("Insert Into Library (Name, Language, SupportsPeriodicals) OUTPUT Inserted.Id VALUES (@Name, @Language, @SupportsPeriodicals)", library);
+            var id = connection.ExecuteScalar<int>("Insert Into Library (Name, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor) OUTPUT Inserted.Id VALUES (@Name, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor)", library);
             library.Id = id;
         }
 

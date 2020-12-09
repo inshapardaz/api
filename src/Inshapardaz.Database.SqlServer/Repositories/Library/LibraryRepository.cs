@@ -146,8 +146,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             int libraryId;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Library(Name, Language, SupportsPeriodicals) OUTPUT Inserted.Id VALUES(@Name, @Language, @SupportsPeriodicals);";
-                var command = new CommandDefinition(sql, new { Name = library.Name, Language = library.Language, SupportsPeriodicals = library.SupportsPeriodicals }, cancellationToken: cancellationToken);
+                var sql = @"Insert Into Library(Name, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor) OUTPUT Inserted.Id VALUES(@Name, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor);";
+                var command = new CommandDefinition(sql, new
+                {
+                    Name = library.Name,
+                    Language = library.Language,
+                    SupportsPeriodicals = library.SupportsPeriodicals,
+                    PrimaryColor = library.PrimaryColor,
+                    SecondaryColor = library.SecondaryColor
+                },
+                cancellationToken: cancellationToken);
                 libraryId = await connection.ExecuteScalarAsync<int>(command);
             }
 
@@ -171,8 +179,21 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Library Set Name = @Name, Language = @Language, SupportsPeriodicals = @SupportsPeriodicals Where Id = @Id";
-                var command = new CommandDefinition(sql, new { Id = library.Id, Name = library.Name, Language = library.Language, SupportsPeriodicals = library.SupportsPeriodicals }, cancellationToken: cancellationToken);
+                var sql = @"Update Library Set Name = @Name,
+                            Language = @Language,
+                            SupportsPeriodicals = @SupportsPeriodicals,
+                            PrimaryColor = @PrimaryColor,
+                            SecondaryColor = @SecondaryColor
+                            Where Id = @Id";
+                var command = new CommandDefinition(sql, new
+                {
+                    Id = library.Id,
+                    Name = library.Name,
+                    Language = library.Language,
+                    SupportsPeriodicals = library.SupportsPeriodicals,
+                    PrimaryColor = library.PrimaryColor,
+                    SecondaryColor = library.SecondaryColor
+                }, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
             }
         }

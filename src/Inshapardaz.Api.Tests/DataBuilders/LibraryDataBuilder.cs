@@ -51,6 +51,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                                  .With(l => l.Language, "en")
                                  .With(l => l.SupportsPeriodicals, _enablePeriodicals)
                                  .With(l => l.Name, _startWith ?? Random.Name)
+                                 .With(l => l.PrimaryColor, Random.String)
+                                 .With(l => l.SecondaryColor, Random.String)
                                  .CreateMany(count);
 
             _connection.AddLibraries(Libraries);

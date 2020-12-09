@@ -70,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
             var expectedItems = LibraryBuilder.Libraries.OrderBy(a => a.Name).Take(5);
             foreach (var item in expectedItems)
             {
-                var actual = _assert.Data.FirstOrDefault(x => x.Name == item.Name);
+                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
                 actual.ShouldMatch(item)
                      .ShouldNotHaveEditLinks()
                      .ShouldNotHaveCreateCategoryLink()

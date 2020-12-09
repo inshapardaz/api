@@ -221,9 +221,12 @@ namespace Inshapardaz.Api.Converters
 
             return new LibraryView
             {
+                Id = model.Id,
                 Name = model.Name,
                 Language = model.Language,
                 SupportsPeriodicals = model.SupportsPeriodicals,
+                PrimaryColor = model.PrimaryColor,
+                SecondaryColor = model.SecondaryColor,
                 Links = links
             };
         }

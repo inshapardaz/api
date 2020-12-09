@@ -58,6 +58,8 @@ namespace Inshapardaz.Api.Tests.Asserts
             library.Name.Should().Be(_view.Name);
             library.Language.Should().Be(_view.Language);
             library.SupportsPeriodicals.Should().Be(_view.SupportsPeriodicals);
+            library.PrimaryColor.Should().Be(_view.PrimaryColor);
+            library.SecondaryColor.Should().Be(_view.SecondaryColor);
             return this;
         }
 
@@ -73,6 +75,8 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.Name.Should().Be(dbLibrary.Name);
             _view.Language.Should().Be(dbLibrary.Language);
             _view.SupportsPeriodicals.Should().Be(dbLibrary.SupportsPeriodicals);
+            _view.PrimaryColor.Should().Be(dbLibrary.PrimaryColor);
+            _view.SecondaryColor.Should().Be(dbLibrary.SecondaryColor);
         }
 
         public void ShouldBeSameAs(LibraryView expectedLibrary)
@@ -80,6 +84,8 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.Name.Should().Be(expectedLibrary.Name);
             _view.Language.Should().Be(expectedLibrary.Language);
             _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
+            _view.PrimaryColor.Should().Be(expectedLibrary.PrimaryColor);
+            _view.SecondaryColor.Should().Be(expectedLibrary.SecondaryColor);
         }
 
         public LibraryAssert ShouldBeSameAs(LibraryDto expectedLibrary)
@@ -87,6 +93,8 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.Name.Should().Be(expectedLibrary.Name);
             _view.Language.Should().Be(expectedLibrary.Language);
             _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
+            _view.PrimaryColor.Should().Be(expectedLibrary.PrimaryColor);
+            _view.SecondaryColor.Should().Be(expectedLibrary.SecondaryColor);
 
             return this;
         }

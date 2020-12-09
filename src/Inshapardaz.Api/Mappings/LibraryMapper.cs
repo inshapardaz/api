@@ -10,7 +10,9 @@ namespace Inshapardaz.Api.Mappings
             {
                 Name = source.Name,
                 Language = source.Language,
-                SupportsPeriodicals = source.SupportsPeriodicals
+                SupportsPeriodicals = source.SupportsPeriodicals,
+                PrimaryColor = source.PrimaryColor,
+                SecondaryColor = source.SecondaryColor
             };
 
         public static LibraryModel Map(this LibraryView source)
@@ -18,7 +20,9 @@ namespace Inshapardaz.Api.Mappings
             {
                 Name = source.Name,
                 Language = source.Language,
-                SupportsPeriodicals = source.SupportsPeriodicals
+                SupportsPeriodicals = source.SupportsPeriodicals,
+                PrimaryColor = source.PrimaryColor,
+                SecondaryColor = source.SecondaryColor
             };
     }
 }

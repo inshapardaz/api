@@ -1,8 +1,8 @@
 using System;
 
-namespace Inshapardaz.Api.Models.Accounts
+namespace Inshapardaz.Api.Views.Accounts
 {
-    public class AccountResponse
+    public class AccountView : ViewWithLinks
     {
         public int Id { get; set; }
         public string Title { get; set; }

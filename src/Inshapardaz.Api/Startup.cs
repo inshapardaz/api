@@ -61,6 +61,7 @@ namespace Inshapardaz.Api
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddTransient<IUserHelper, UserHelper>();
+            services.AddTransient<IRenderAccount, AccountRenderer>();
             services.AddTransient<IRenderAuthor, AuthorRenderer>();
             services.AddTransient<IRenderBook, BookRenderer>();
             services.AddTransient<IRenderCategory, CategoryRenderer>();

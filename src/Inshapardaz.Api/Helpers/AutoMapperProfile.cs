@@ -1,6 +1,7 @@
 using AutoMapper;
 using Inshapardaz.Api.Entities;
 using Inshapardaz.Api.Models.Accounts;
+using Inshapardaz.Api.Views.Accounts;
 
 namespace Inshapardaz.Api.Helpers
 {
@@ -9,7 +10,7 @@ namespace Inshapardaz.Api.Helpers
         // mappings between model and entity objects
         public AutoMapperProfile()
         {
-            CreateMap<Account, AccountResponse>();
+            CreateMap<Account, AccountView>();
 
             CreateMap<Account, AuthenticateResponse>();
 

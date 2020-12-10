@@ -5,6 +5,7 @@ using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Database.SqlServer;
 using Inshapardaz.Domain.Models;
 
@@ -33,6 +34,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             var fixture = new Fixture();
             Accounts = fixture.Build<AccountDto>()
                                  .With(a => a.Title, "Mr")
+                                 .With(a => a.Email, Helpers.Random.Email)
                                  .With(a => a.Role, _role)
                                  .With(a => a.AcceptTerms, true)
                                  .With(a => a.Created, DateTime.Now)

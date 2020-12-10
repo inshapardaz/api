@@ -8,6 +8,12 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Models.Accounts;
 using Inshapardaz.Api.Services;
 using Inshapardaz.Domain.Models;
+using System.Threading;
+using Inshapardaz.Domain.Ports.Handlers.Account;
+using System.Threading.Tasks;
+using Paramore.Darker;
+using Inshapardaz.Api.Converters;
+using Inshapardaz.Api.Views.Accounts;
 
 namespace Inshapardaz.Api.Controllers
 {
@@ -17,12 +23,18 @@ namespace Inshapardaz.Api.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
+        private readonly IQueryProcessor _queryProcessor;
+        private readonly IRenderAccount _accountRenderer;
 
         public AccountsController(
             IAccountService accountService,
-            IMapper mapper)
+            IQueryProcessor queryProcessor,
+            IMapper mapper,
+            IRenderAccount accountRenderer)
         {
             _accountService = accountService;
+            _queryProcessor = queryProcessor;
+            _accountRenderer = accountRenderer;
             _mapper = mapper;
         }
 
@@ -97,16 +109,24 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [Authorize(Role.Admin)]
-        [HttpGet]
-        public ActionResult<IEnumerable<AccountResponse>> GetAll()
+        [HttpGet(Name = nameof(AccountsController.GetAll))]
+        public async Task<IActionResult> GetAll(string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
-            var accounts = _accountService.GetAll();
-            return Ok(accounts);
+            var seriesQuery = new GetAccountsQuery(pageNumber, pageSize) { Query = query };
+            var series = await _queryProcessor.ExecuteAsync(seriesQuery, cancellationToken: token);
+
+            var args = new PageRendererArgs<AccountModel>
+            {
+                Page = series,
+                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
+            };
+
+            return new OkObjectResult(_accountRenderer.Render(args));
         }
 
         [Authorize]
-        [HttpGet("{id:int}")]
-        public ActionResult<AccountResponse> GetById(int id)
+        [HttpGet("{id:int}", Name = nameof(AccountsController.GetById))]
+        public ActionResult<AccountView> GetById(int id)
         {
             // users can get their own account and admins can get any account
             if (id != Account.Id && Account.Role != Role.Admin)
@@ -117,16 +137,16 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [Authorize(Role.Admin)]
-        [HttpPost]
-        public ActionResult<AccountResponse> Create(CreateRequest model)
+        [HttpPost(Name = nameof(AccountsController.Create))]
+        public ActionResult<AccountView> Create(CreateRequest model)
         {
             var account = _accountService.Create(model);
             return Ok(account);
         }
 
         [Authorize]
-        [HttpPut("{id:int}")]
-        public ActionResult<AccountResponse> Update(int id, UpdateRequest model)
+        [HttpPut("{id:int}", Name = nameof(AccountsController.Update))]
+        public ActionResult<AccountView> Update(int id, UpdateRequest model)
         {
             // users can update their own account and admins can update any account
             if (id != Account.Id && Account.Role != Role.Admin)
@@ -141,7 +161,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name = nameof(AccountsController.Delete))]
         public IActionResult Delete(int id)
         {
             // users can delete their own account and admins can delete any account

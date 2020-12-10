@@ -13,6 +13,7 @@ using Inshapardaz.Api.Models.Accounts;
 using BC = BCrypt.Net.BCrypt;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Api.Views.Accounts;
 
 namespace Inshapardaz.Api.Services
 {
@@ -34,13 +35,13 @@ namespace Inshapardaz.Api.Services
 
         void ResetPassword(ResetPasswordRequest model);
 
-        IEnumerable<AccountResponse> GetAll();
+        IEnumerable<AccountView> GetAll();
 
-        AccountResponse GetById(int id);
+        AccountView GetById(int id);
 
-        AccountResponse Create(CreateRequest model);
+        AccountView Create(CreateRequest model);
 
-        AccountResponse Update(int id, UpdateRequest model);
+        AccountView Update(int id, UpdateRequest model);
 
         void Delete(int id);
     }
@@ -215,19 +216,19 @@ namespace Inshapardaz.Api.Services
             _context.SaveChanges();
         }
 
-        public IEnumerable<AccountResponse> GetAll()
+        public IEnumerable<AccountView> GetAll()
         {
             var accounts = _context.Accounts;
-            return _mapper.Map<IList<AccountResponse>>(accounts);
+            return _mapper.Map<IList<AccountView>>(accounts);
         }
 
-        public AccountResponse GetById(int id)
+        public AccountView GetById(int id)
         {
             var account = getAccount(id);
-            return _mapper.Map<AccountResponse>(account);
+            return _mapper.Map<AccountView>(account);
         }
 
-        public AccountResponse Create(CreateRequest model)
+        public AccountView Create(CreateRequest model)
         {
             // validate
             if (_context.Accounts.Any(x => x.Email == model.Email))
@@ -245,10 +246,10 @@ namespace Inshapardaz.Api.Services
             _context.Accounts.Add(account);
             _context.SaveChanges();
 
-            return _mapper.Map<AccountResponse>(account);
+            return _mapper.Map<AccountView>(account);
         }
 
-        public AccountResponse Update(int id, UpdateRequest model)
+        public AccountView Update(int id, UpdateRequest model)
         {
             var account = getAccount(id);
 
@@ -266,7 +267,7 @@ namespace Inshapardaz.Api.Services
             _context.Accounts.Update(account);
             _context.SaveChanges();
 
-            return _mapper.Map<AccountResponse>(account);
+            return _mapper.Map<AccountView>(account);
         }
 
         public void Delete(int id)

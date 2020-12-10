@@ -14,6 +14,7 @@ namespace Inshapardaz.Api.Tests.Helpers
 
         public static bool Bool => new Faker().Random.Bool();
 
+        public static string Email => new Faker().Internet.Email();
         public static string Name => new Faker().Name.FullName();
         public static byte[] Bytes => new Faker().Random.Bytes(10);
 

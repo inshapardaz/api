@@ -80,7 +80,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Inner Join Book b On b.Id = c.BookId
                             Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
                             Left Outer Join [File] f On f.Id = cc.FileId
-                            Where b.Id = @BookId AND b.LibraryId = @LibraryId";
+                            Where b.Id = @BookId AND b.LibraryId = @LibraryId
+                            Order By c.ChapterNumber";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
                 await connection.QueryAsync<ChapterModel, ChapterContentModel, FileModel, ChapterModel>(command, (c, cc, f) =>
                 {
@@ -96,6 +97,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                         var content = chapter.Contents.SingleOrDefault(x => x.Id == cc.Id);
                         if (content == null)
                         {
+                            // TODO: remove contents as contents should be returned later
                             chapter.Contents.Add(cc);
                         }
                     }

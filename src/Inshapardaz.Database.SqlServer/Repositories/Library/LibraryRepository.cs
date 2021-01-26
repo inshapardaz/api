@@ -207,5 +207,25 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 await connection.ExecuteAsync(command);
             }
         }
+
+        public async Task AddLibraryToAccount(int libraryId, int accountId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"INSERT INTO LibraryUser VALUES (@LibraryId, @AccountId)";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task RemoveLibraryFromAccount(int libraryId, int accountId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Delete From LibraryUser Where LibraryId = @LibraryId AND AccountId = @AccountId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
     }
 }

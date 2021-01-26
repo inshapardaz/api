@@ -21,5 +21,6 @@ namespace Inshapardaz.Api.Converters
         public BookFilter BookFilter { get; set; }
         public BookSortByType SortBy { get; internal set; }
         public SortDirection SortDirection { get; internal set; }
+        public int? AccountId { get; set; }
     }
 }

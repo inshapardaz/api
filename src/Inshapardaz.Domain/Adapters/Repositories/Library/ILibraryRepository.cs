@@ -22,5 +22,9 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
         Task UpdateLibrary(LibraryModel library, CancellationToken cancellationToken);
 
         Task DeleteLibrary(int libraryId, CancellationToken cancellationToken);
+
+        Task AddLibraryToAccount(int libraryId, int accountId, CancellationToken cancellationToken);
+
+        Task RemoveLibraryFromAccount(int libraryId, int accountId, CancellationToken cancellationToken);
     }
 }

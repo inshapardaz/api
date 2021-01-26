@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
@@ -102,6 +103,40 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> DeleteLibrary(int libraryId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteLibraryRequest(libraryId);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+            return new NoContentResult();
+        }
+
+        [Authorize(Role.Admin)]
+        [HttpGet("/accounts/{accountId}/libraries", Name = nameof(LibraryController.GetLibrariesByAccount))]
+        public async Task<IActionResult> GetLibrariesByAccount(int accountId, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, accountId, _userHelper.Account?.Role);
+            var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
+
+            var args = new PageRendererArgs<LibraryModel>
+            {
+                Page = libraries,
+                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, AccountId = accountId },
+            };
+
+            return new OkObjectResult(_libraryRenderer.Render(args));
+        }
+
+        [Authorize(Role.Admin)]
+        [HttpPost("/accounts/{accountId}/libraries/{libraryId}", Name = nameof(LibraryController.AddLibraryToAccount))]
+        public async Task<IActionResult> AddLibraryToAccount(int accountId, int libraryId, CancellationToken token = default)
+        {
+            var request = new AddLibraryToAccountRequest(libraryId, accountId);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+            return new NoContentResult();
+        }
+
+        [Authorize(Role.Admin)]
+        [HttpDelete("/accounts/{accountId}/libraries/{libraryId}", Name = nameof(LibraryController.RemoveLibraryFromAccount))]
+        public async Task<IActionResult> RemoveLibraryFromAccount(int accountId, int libraryId, CancellationToken token = default)
+        {
+            var request = new RemoveLibraryFromAccountRequest(libraryId, accountId);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

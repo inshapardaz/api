@@ -6,6 +6,8 @@ using Inshapardaz.Domain.Adapters;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using System.Linq;
 using Inshapardaz.Api.Helpers;
+using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.InteropServices;
 
 namespace Inshapardaz.Api.Converters
 {
@@ -34,6 +36,18 @@ namespace Inshapardaz.Api.Converters
                 Data = source.Page.Data?.Select(x => Render(x))
             };
 
+            var queryString = new Dictionary<string, string>()
+            {
+                { "pageNumber" , page.CurrentPageIndex.ToString() },
+                { "pageSize", page.PageSize.ToString() },
+                { "query", source.RouteArguments.Query }
+            };
+
+            if (source.RouteArguments.AccountId.HasValue)
+            {
+                queryString.Add("accountId", source.RouteArguments.AccountId.Value.ToString());
+            }
+
             var links = new List<LinkView>
             {
                 _linkRenderer.Render(new Link {
@@ -41,12 +55,7 @@ namespace Inshapardaz.Api.Converters
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
                     Parameters = new object(),
-                    QueryString = new Dictionary<string, string>()
-                    {
-                        { "pageNumber" , page.CurrentPageIndex.ToString() },
-                        { "pageSize", page.PageSize.ToString() },
-                        { "query", source.RouteArguments.Query }
-                    }
+                    QueryString = queryString
                 })
             };
 
@@ -62,34 +71,48 @@ namespace Inshapardaz.Api.Converters
 
             if (page.CurrentPageIndex < page.PageCount)
             {
+                var queryStringNext = new Dictionary<string, string>()
+                {
+                    { "pageNumber" , (page.CurrentPageIndex + 1).ToString() },
+                    { "pageSize", page.PageSize.ToString() },
+                    { "query", source.RouteArguments.Query }
+                };
+
+                if (source.RouteArguments.AccountId.HasValue)
+                {
+                    queryStringNext.Add("accountId", source.RouteArguments.AccountId.Value.ToString());
+                }
+
                 links.Add(_linkRenderer.Render(new Link
                 {
                     ActionName = nameof(LibraryController.GetLibraries),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Next,
                     Parameters = new object(),
-                    QueryString = new Dictionary<string, string>()
-                    {
-                        { "pageNumber" , (page.CurrentPageIndex + 1).ToString() },
-                        { "pageSize", page.PageSize.ToString() },
-                        { "query", source.RouteArguments.Query }
-                    }
+                    QueryString = queryStringNext
                 }));
             }
 
             if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
             {
+                var queryStringPrev = new Dictionary<string, string>()
+                {
+                    { "pageNumber" , (page.CurrentPageIndex - 1).ToString() },
+                    { "pageSize", page.PageSize.ToString() },
+                    { "query", source.RouteArguments.Query }
+                };
+
+                if (source.RouteArguments.AccountId.HasValue)
+                {
+                    queryStringPrev.Add("accountId", source.RouteArguments.AccountId.Value.ToString());
+                }
+
                 links.Add(_linkRenderer.Render(new Link
                 {
                     ActionName = nameof(LibraryController.GetLibraries),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Previous,
-                    QueryString = new Dictionary<string, string>()
-                    {
-                        { "pageNumber" , (page.CurrentPageIndex - 1).ToString() },
-                        { "pageSize", page.PageSize.ToString() },
-                        { "query", source.RouteArguments.Query }
-                    }
+                    QueryString = queryStringPrev
                 }));
             }
 

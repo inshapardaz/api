@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents")
+                  .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterNumber}/contents")
                   .ShouldHaveAcceptLanguage(_chapterContent.Language)
                   .ShouldHaveAccept(_chapterContent.MimeType);
 
@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.UpdateLink()
                  .ShouldBePut()
-                 .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents")
+                 .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterNumber}/contents")
                  .ShouldHaveAcceptLanguage(_chapterContent.Language)
                  .ShouldHaveAccept(_chapterContent.MimeType);
 
@@ -85,7 +85,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
-            location.Should().EndWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents");
+            location.Should().EndWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterNumber}/contents");
             return this;
         }
 
@@ -149,7 +149,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.DeleteLink()
                  .ShouldBeDelete()
-                 .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}/contents");
+                 .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterNumber}/contents");
 
             return this;
         }
@@ -164,7 +164,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapterContent.Link("chapter")
                 .ShouldBeGet()
-                .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterId}");
+                .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterNumber}");
 
             return this;
         }

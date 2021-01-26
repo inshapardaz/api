@@ -68,7 +68,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ChapterController.GetChapterById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
-                    Parameters = new { libraryId = libraryId, bookId = bookId, chapterId = source.Id }
+                    Parameters = new { libraryId = libraryId, bookId = bookId, chapterNumber = source.ChapterNumber }
                 }),
                 _linkRenderer.Render(new Link
                 {
@@ -86,7 +86,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ChapterController.UpdateChapter),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
-                    Parameters = new { libraryId = libraryId, bookId = bookId, chapterId = source.Id }
+                    Parameters = new { libraryId = libraryId, bookId = bookId, chapterNumber = source.ChapterNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -94,7 +94,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ChapterController.DeleteChapter),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
-                    Parameters = new { libraryId = libraryId, bookId = bookId, chapterId = source.Id }
+                    Parameters = new { libraryId = libraryId, bookId = bookId, chapterNumber = source.ChapterNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -102,7 +102,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ChapterController.CreateChapterContent),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.AddContent,
-                    Parameters = new { libraryId = libraryId, bookId = bookId, chapterId = source.Id }
+                    Parameters = new { libraryId = libraryId, bookId = bookId, chapterNumber = source.ChapterNumber }
                 }));
             }
 
@@ -134,14 +134,14 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Self,
                     MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterId = source.ChapterId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
                 }),
                 _linkRenderer.Render(new Link
                 {
                     ActionName = nameof(ChapterController.GetChapterById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Chapter,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterId = source.ChapterId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
                 }),
                 _linkRenderer.Render(new Link
                 {
@@ -178,7 +178,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Update,
                     MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterId = source.ChapterId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -188,7 +188,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Delete,
                     MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterId = source.ChapterId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
                 }));
             }
 

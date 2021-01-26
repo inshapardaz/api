@@ -8,13 +8,13 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteChapterRequest : BookRequest
     {
-        public DeleteChapterRequest(int libraryId, int bookId, int chapterId)
+        public DeleteChapterRequest(int libraryId, int bookId, int chapterNumber)
             : base(libraryId, bookId)
         {
-            ChapterId = chapterId;
+            ChapterNumber = chapterNumber;
         }
 
-        public int ChapterId { get; }
+        public int ChapterNumber { get; }
     }
 
     public class DeleteChapterRequestHandler : RequestHandlerAsync<DeleteChapterRequest>
@@ -31,9 +31,9 @@ namespace Inshapardaz.Domain.Models.Library
         public override async Task<DeleteChapterRequest> HandleAsync(DeleteChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             //TODO:  support multiple
-            var filePath = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterId, "", "", cancellationToken);
+            var filePath = await _chapterRepository.GetChapterContentUrl(command.LibraryId, command.BookId, command.ChapterNumber, "", "", cancellationToken);
 
-            await _chapterRepository.DeleteChapter(command.LibraryId, command.BookId, command.ChapterId, cancellationToken);
+            await _chapterRepository.DeleteChapter(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(filePath))
                 await _fileStorage.TryDeleteFile(filePath, cancellationToken);

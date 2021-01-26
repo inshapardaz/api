@@ -13,11 +13,11 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetChapterContentQuery : LibraryBaseQuery<ChapterContentModel>
     {
-        public GetChapterContentQuery(int libraryId, int bookId, int chapterId, string language, string mimeType, int? accountId)
+        public GetChapterContentQuery(int libraryId, int bookId, int chapterNumber, string language, string mimeType, int? accountId)
             : base(libraryId)
         {
             BookId = bookId;
-            ChapterId = chapterId;
+            this.ChapterNumber = chapterNumber;
             MimeType = mimeType;
             AccountId = accountId;
             Language = language;
@@ -25,7 +25,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int BookId { get; set; }
 
-        public int ChapterId { get; }
+        public int ChapterNumber { get; }
 
         public string MimeType { get; set; }
         public int? AccountId { get; }
@@ -71,7 +71,7 @@ namespace Inshapardaz.Domain.Models.Library
                 command.Language = library.Language;
             }
 
-            var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
+            var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, command.MimeType, cancellationToken);
             if (chapterContent != null)
             {
                 if (command.AccountId.HasValue)

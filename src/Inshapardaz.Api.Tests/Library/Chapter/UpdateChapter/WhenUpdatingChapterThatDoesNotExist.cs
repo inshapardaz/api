@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
 
             _newChapter = new ChapterView { Title = Random.Name, BookId = book.Id, ChapterNumber = Random.Number };
 
-            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{book.Id}/chapters/{_newChapter.Id}", _newChapter);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{book.Id}/chapters/{_newChapter.ChapterNumber}", _newChapter);
 
             _chapterAssert = ChapterAssert.FromResponse(_response, LibraryId);
         }

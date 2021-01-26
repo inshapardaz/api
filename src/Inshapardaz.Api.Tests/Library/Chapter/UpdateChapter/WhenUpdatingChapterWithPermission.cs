@@ -29,9 +29,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
             var chapters = ChapterBuilder.WithLibrary(LibraryId).Build(4);
             var chapter = chapters.PickRandom();
 
-            newChapter = new ChapterView { Title = Random.Name, ChapterNumber = Random.Number, BookId = chapter.BookId };
+            newChapter = new ChapterView { Title = Random.Name, ChapterNumber = chapter.ChapterNumber, BookId = chapter.BookId };
 
-            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.Id}", newChapter);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.ChapterNumber}", newChapter);
             _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }
 

@@ -8,15 +8,15 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteChapterContentRequest : BookRequest
     {
-        public DeleteChapterContentRequest(int libraryId, int bookId, int chapterId, string language, string mimeType)
+        public DeleteChapterContentRequest(int libraryId, int bookId, int chapterNumber, string language, string mimeType)
             : base(libraryId, bookId)
         {
-            ChapterId = chapterId;
+            ChapterNumber = chapterNumber;
             MimeType = mimeType;
             Language = language;
         }
 
-        public int ChapterId { get; }
+        public int ChapterNumber { get; }
 
         public string MimeType { get; }
         public string Language { get; }
@@ -37,7 +37,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<DeleteChapterContentRequest> HandleAsync(DeleteChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var content = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
+            var content = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, command.MimeType, cancellationToken);
 
             if (content != null)
             {
@@ -47,7 +47,7 @@ namespace Inshapardaz.Domain.Models.Library
                 }
 
                 await _fileRepository.DeleteFile(content.FileId, cancellationToken);
-                await _chapterRepository.DeleteChapterContentById(command.LibraryId, command.BookId, command.ChapterId, command.Language, command.MimeType, cancellationToken);
+                await _chapterRepository.DeleteChapterContentById(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, command.MimeType, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

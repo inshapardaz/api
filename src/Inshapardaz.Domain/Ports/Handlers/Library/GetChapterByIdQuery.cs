@@ -8,16 +8,16 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetChapterByIdQuery : LibraryBaseQuery<ChapterModel>
     {
-        public GetChapterByIdQuery(int libraryId, int bookId, int chapterId)
+        public GetChapterByIdQuery(int libraryId, int bookId, int chapterNumber)
             : base(libraryId)
         {
             BookId = bookId;
-            ChapterId = chapterId;
+            ChapterNumber = chapterNumber;
         }
 
         public int BookId { get; set; }
 
-        public int ChapterId { get; }
+        public int ChapterNumber { get; }
     }
 
     public class GetChapterByIdQueryHandler : QueryHandlerAsync<GetChapterByIdQuery, ChapterModel>
@@ -31,7 +31,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<ChapterModel> ExecuteAsync(GetChapterByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterId, cancellationToken);
+            return await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
         }
     }
 }

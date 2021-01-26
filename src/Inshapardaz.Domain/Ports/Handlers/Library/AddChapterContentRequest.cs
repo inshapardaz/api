@@ -11,16 +11,16 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddChapterContentRequest : BookRequest
     {
-        public AddChapterContentRequest(int libraryId, int bookId, int chapterId, string contents, string language, string mimeType)
+        public AddChapterContentRequest(int libraryId, int bookId, int chapterNumber, string contents, string language, string mimeType)
             : base(libraryId, bookId)
         {
-            ChapterId = chapterId;
+            ChapterNumber = chapterNumber;
             Contents = contents;
             MimeType = mimeType;
             Language = language;
         }
 
-        public int ChapterId { get; set; }
+        public int ChapterNumber { get; set; }
 
         public string Contents { get; }
 
@@ -63,10 +63,10 @@ namespace Inshapardaz.Domain.Models.Library
 
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
 
-            var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterId, cancellationToken);
+            var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
             if (chapter != null)
             {
-                var name = GenerateChapterContentUrl(command.BookId, command.ChapterId, command.Language, command.MimeType);
+                var name = GenerateChapterContentUrl(command.BookId, command.ChapterNumber, command.Language, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
 
                 var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = book.IsPublic, FileName = name };
@@ -74,7 +74,8 @@ namespace Inshapardaz.Domain.Models.Library
                 var chapterContent = new ChapterContentModel
                 {
                     BookId = command.BookId,
-                    ChapterId = command.ChapterId,
+                    ChapterId = chapter.Id,
+                    ChapterNumber = chapter.ChapterNumber,
                     Language = command.Language,
                     MimeType = command.MimeType,
                     FileId = file.Id

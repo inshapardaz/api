@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.DeleteChapterContents
             var _newContents = Random.Words(12);
             var chapter = ChapterBuilder.WithLibrary(LibraryId).WithoutContents().Build();
 
-            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.Id}/contents", Random.Locale, Random.MimeType);
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.ChapterNumber}/contents", Random.Locale, Random.MimeType);
         }
 
         [OneTimeTearDown]

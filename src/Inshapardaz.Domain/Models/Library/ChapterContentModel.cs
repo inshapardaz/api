@@ -8,6 +8,8 @@
 
         public int ChapterId { get; set; }
 
+        public int ChapterNumber { get; set; }
+
         public string ContentUrl { get; set; }
 
         public string MimeType { get; set; }

@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
             var file = ChapterBuilder.Files.Single(x => x.Id == _content.FileId);
             var contents = FileStore.GetFile(file.FilePath, CancellationToken.None).Result;
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents", _content.Language, file.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents", _content.Language, file.MimeType);
             _assert = new ChapterContentAssert(_response, LibraryId);
         }
 

@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
             _chapter = ChapterBuilder.WithLibrary(LibraryId).Public().Build();
             _contents = Random.Bytes;
 
-            _response = await Client.PostContent($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents", Random.Bytes, Random.Locale, Random.MimeType);
+            _response = await Client.PostContent($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents", Random.Bytes, Random.Locale, Random.MimeType);
             _assert = new ChapterContentAssert(_response, LibraryId);
         }
 

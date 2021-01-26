@@ -9,7 +9,7 @@ namespace Inshapardaz.Domain.Repositories.Library
     {
         Task<ChapterModel> AddChapter(int libraryId, int bookId, ChapterModel chapter, CancellationToken cancellationToken);
 
-        Task UpdateChapter(int libraryId, int bookId, ChapterModel chapter, CancellationToken cancellationToken);
+        Task UpdateChapter(int libraryId, int bookId, int oldChapterNumber, ChapterModel chapter, CancellationToken cancellationToken);
 
         Task DeleteChapter(int libraryId, int bookId, int chapterNumber, CancellationToken cancellationToken);
 

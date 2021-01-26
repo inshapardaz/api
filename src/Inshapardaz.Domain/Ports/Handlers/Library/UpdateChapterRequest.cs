@@ -10,11 +10,12 @@ namespace Inshapardaz.Domain.Models.Library
         public UpdateChapterRequest(int libraryId, int bookId, int chapterNumber, ChapterModel chapter)
             : base(libraryId, bookId)
         {
+            ChapterNumber = chapterNumber;
             Chapter = chapter;
             Chapter.BookId = bookId;
-            Chapter.ChapterNumber = chapterNumber;
         }
 
+        public int ChapterNumber { get; }
         public ChapterModel Chapter { get; }
 
         public RequestResult Result { get; set; } = new RequestResult();
@@ -38,7 +39,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<UpdateChapterRequest> HandleAsync(UpdateChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.Chapter.ChapterNumber, cancellationToken);
+            var result = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
 
             if (result == null)
             {
@@ -50,7 +51,7 @@ namespace Inshapardaz.Domain.Models.Library
             else
             {
                 command.Chapter.Id = result.Id;
-                await _chapterRepository.UpdateChapter(command.LibraryId, command.BookId, command.Chapter, cancellationToken);
+                await _chapterRepository.UpdateChapter(command.LibraryId, command.BookId, command.ChapterNumber, command.Chapter, cancellationToken);
                 command.Result.Chapter = command.Chapter;
             }
 

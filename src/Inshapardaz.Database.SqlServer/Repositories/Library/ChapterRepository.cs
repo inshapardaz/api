@@ -31,14 +31,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             return await GetChapterById(libraryId, bookId, chapter.ChapterNumber, cancellationToken);
         }
 
-        public async Task UpdateChapter(int libraryId, int bookId, ChapterModel chapter, CancellationToken cancellationToken)
+        public async Task UpdateChapter(int libraryId, int bookId, int oldChapterNumber, ChapterModel chapter, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Update C Set C.Title = @Title, C.BookId = @BookId, C.ChapterNumber = @ChapterNumber
                             From Chapter C
                             Inner Join Book b On b.Id = C.BookId
-                            Where C.chapterNumber = @ChapterNumber AND C.BookId = @OldBookId And b.LibraryId = @LibraryId";
+                            Where C.chapterNumber = @OldChapterNumber AND C.BookId = @OldBookId And b.LibraryId = @LibraryId";
                 var args = new
                 {
                     LibraryId = libraryId,
@@ -46,6 +46,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     ChapterId = chapter.Id,
                     Title = chapter.Title,
                     BookId = chapter.BookId,
+                    OldChapterNumber = oldChapterNumber,
                     ChapterNumber = chapter.ChapterNumber
                 };
                 var command = new CommandDefinition(sql, args, cancellationToken: cancellationToken);

@@ -180,8 +180,12 @@ namespace Inshapardaz.Api.Controllers
             {
                 HttpOnly = true,
                 Expires = DateTime.UtcNow.AddDays(7),
+#if DEBUG
+                SameSite = SameSiteMode.Lax
+#else
                 SameSite = SameSiteMode.None,
                 Secure = true
+#endif
             };
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }

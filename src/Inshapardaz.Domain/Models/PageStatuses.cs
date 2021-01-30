@@ -2,9 +2,10 @@
 {
     public enum PageStatuses
     {
-        None = 0,
-        AssignedToType = 1,
-        AssignedToReview = 2,
-        Completed = 3
+        Available = 0,
+        Typing = 1,
+        Typed = 2,
+        InReview = 3,
+        Completed = 4
     }
 }

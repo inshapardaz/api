@@ -62,6 +62,22 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Create,
                     Parameters = new { libraryId = libraryId, bookId = bookId }
                 }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.UploadMultiplePages),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.MultiCreate,
+                    Parameters = new { libraryId = libraryId, bookId = bookId }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.UploadBulkPages),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.BulkUpload,
+                    Parameters = new { libraryId = libraryId, bookId = bookId }
+                }));
             }
 
             if (page.CurrentPageIndex < page.PageCount)
@@ -157,6 +173,16 @@ namespace Inshapardaz.Api.Converters
                         ActionName = nameof(BookPageController.DeletePageImage),
                         Method = HttpMethod.Delete,
                         Rel = RelTypes.ImageDelete,
+                        Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
+                    }));
+                }
+                else
+                {
+                    links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(BookPageController.UpdatePageImage),
+                        Method = HttpMethod.Put,
+                        Rel = RelTypes.ImageUpload,
                         Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                     }));
                 }

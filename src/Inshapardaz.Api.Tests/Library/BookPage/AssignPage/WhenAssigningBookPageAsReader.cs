@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
             _page = BookBuilder.GetPages(book.Id).PickRandom();
             var assignment = new
             {
-                Status = PageStatuses.AssignedToReview,
+                Status = PageStatuses.InReview,
                 AccountId = AccountId
             };
 

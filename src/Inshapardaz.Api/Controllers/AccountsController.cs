@@ -124,6 +124,16 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_accountRenderer.Render(args));
         }
 
+        [Authorize(Role.Admin, Role.LibraryAdmin)]
+        [HttpGet("/libraries/{libraryId}/writers", Name = nameof(AccountsController.GetWriters))]
+        public async Task<IActionResult> GetWriters(int libraryId, CancellationToken token = default(CancellationToken))
+        {
+            var writersQuery = new GetWritersQuery(libraryId);
+            var writers = await _queryProcessor.ExecuteAsync(writersQuery, cancellationToken: token);
+
+            return new OkObjectResult(_accountRenderer.RenderLookup(writers));
+        }
+
         [Authorize]
         [HttpGet("{id:int}", Name = nameof(AccountsController.GetById))]
         public ActionResult<AccountView> GetById(int id)

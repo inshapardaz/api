@@ -36,10 +36,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.AccountId, p.AssignTimeStamp, f.Id As ImageId
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.AccountId, a.FirstName + ' ' + a.LastName As AccountName, p.AssignTimeStamp, f.Id As ImageId
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             INNER JOIN Book b ON b.Id = p.BookId
+                            LEFT OUTER JOIN [Accounts] a ON a.Id = p.AccountId
                             Where b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.SequenceNumber = @SequenceNumber";
                 var command = new CommandDefinition(sql,
                                                     new { LibraryId = libraryId, BookId = bookId, SequenceNumber = sequenceNumber },
@@ -61,16 +62,25 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, CancellationToken cancellationToken)
+        public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, PageStatuses status, int? accountId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Update p
-                            SET p.Text = @Text, p.ImageId = @ImageId
+                            SET p.Text = @Text, p.ImageId = @ImageId, Status = @Status, AccountId = @AccountId
                             FROM BookPage p
                             INNER JOIN Book b ON b.Id = p.BookId
                             WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Text = text, ImageId = imageId, BookId = bookId, SequenceNumber = sequenceNumber }, cancellationToken: cancellationToken);
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    Text = text,
+                    ImageId = imageId,
+                    BookId = bookId,
+                    SequenceNumber = sequenceNumber,
+                    Status = status,
+                    AccountId = accountId
+                }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
 
                 return await GetPageBySequenceNumber(libraryId, bookId, sequenceNumber, cancellationToken);
@@ -111,10 +121,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.AccountId, p.AssignTimeStamp,f.Id As ImageId
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.AccountId, a.FirstName + ' ' + a.LastName As AccountName, p.AssignTimeStamp,f.Id As ImageId
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             INNER JOIN Book b ON b.Id = p.BookId
+                            LEFT OUTER JOIN [Accounts] a ON a.Id = p.AccountId
                             WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId
                             ORDER BY p.SequenceNumber
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -153,6 +164,22 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 await connection.ExecuteAsync(command);
 
                 return await GetPageBySequenceNumber(libraryId, bookId, sequenceNumber, cancellationToken);
+            }
+        }
+
+        public async Task<int> GetLastPageNumberForBook(int libraryId, int bookId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT Max(p.SequenceNumber)
+                            FROM BookPage AS p
+                            INNER JOIN Book b ON b.Id = p.BookId
+                            WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, BookId = bookId },
+                                                    cancellationToken: cancellationToken);
+
+                return await connection.ExecuteScalarAsync<int>(command);
             }
         }
     }

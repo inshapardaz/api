@@ -14,6 +14,7 @@ namespace Inshapardaz.Api.Mappings
                 SequenceNumber = view.SequenceNumber,
                 Status = view.Status,
                 AccountId = view.AccountId,
+                AccountName = view.AccountName,
                 AssignTimeStamp = view.AssignTimeStamp
             };
         }
@@ -27,6 +28,7 @@ namespace Inshapardaz.Api.Mappings
                 SequenceNumber = model.SequenceNumber,
                 Status = model.Status,
                 AccountId = model.AccountId,
+                AccountName = model.AccountName,
                 AssignTimeStamp = model.AssignTimeStamp
             };
         }

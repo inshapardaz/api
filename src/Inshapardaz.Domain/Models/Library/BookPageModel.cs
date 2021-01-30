@@ -9,7 +9,8 @@ namespace Inshapardaz.Domain.Models.Library
         public int BookId { get; set; }
         public int? ImageId { get; set; }
         public PageStatuses Status { get; set; }
-        public Guid? AccountId { get; set; }
+        public int? AccountId { get; set; }
+        public string AccountName { get; set; }
         public DateTime? AssignTimeStamp { get; set; }
     }
 }

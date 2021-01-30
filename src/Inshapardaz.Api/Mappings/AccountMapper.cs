@@ -32,5 +32,13 @@ namespace Inshapardaz.Api.Mappings
                 Role = source.Role,
                 Updated = source.Updated
             };
+
+        public static AccountLookupView MapToLookup(this AccountModel source)
+            => new AccountLookupView
+            {
+                Id = source.Id,
+                FirstName = source.FirstName,
+                LastName = source.LastName
+            };
     }
 }

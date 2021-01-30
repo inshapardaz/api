@@ -66,5 +66,7 @@ namespace Inshapardaz.Api.Views
         public static string Article = "article";
         public static string AddPages = "add-pages";
         public static string Pages = "pages";
+        public static string BulkUpload = "bulk-upload";
+        public static string MultiCreate = "create-multiple";
     }
 }

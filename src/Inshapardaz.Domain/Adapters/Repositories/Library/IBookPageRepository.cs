@@ -9,9 +9,11 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
     {
         Task<BookPageModel> GetPageBySequenceNumber(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken);
 
+        Task<int> GetLastPageNumberForBook(int libraryId, int bookId, CancellationToken cancellationToken);
+
         Task<BookPageModel> AddPage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, CancellationToken cancellationToken);
 
-        Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, CancellationToken cancellationToken);
+        Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, PageStatuses status, int? accountId, CancellationToken cancellationToken);
 
         Task DeletePage(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken);
 

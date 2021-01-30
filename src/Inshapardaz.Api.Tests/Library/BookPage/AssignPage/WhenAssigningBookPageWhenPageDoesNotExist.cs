@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
 
             var assignment = new
             {
-                Status = PageStatuses.AssignedToReview,
+                Status = PageStatuses.Typing,
                 AccountId = AccountId
             };
 

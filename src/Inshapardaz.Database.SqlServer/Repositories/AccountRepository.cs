@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -70,6 +71,19 @@ namespace Inshapardaz.Database.SqlServer.Repositories
                     TotalCount = seriesCount,
                     Data = series
                 };
+            }
+        }
+
+        public async Task<IEnumerable<AccountModel>> GetWriters(int libraryId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select a.* from LibraryUser as lu
+                            INNER JOIN Accounts as a on a.Id = lu.AccountId
+                            WHERE lu.LibraryId = @LibraryId AND a.Role IN (0, 1, 2)";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId }, cancellationToken: cancellationToken);
+
+                return await connection.QueryAsync<AccountModel>(command);
             }
         }
     }

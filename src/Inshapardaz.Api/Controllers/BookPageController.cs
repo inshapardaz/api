@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
@@ -92,6 +94,63 @@ namespace Inshapardaz.Api.Controllers
             }
 
             return Ok(renderResult);
+        }
+
+        [HttpPost("libraries/{libraryId}/books/{bookId}/pages/zip", Name = nameof(BookPageController.UploadBulkPages))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        public async Task<IActionResult> UploadBulkPages(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
+        {
+            var content = new byte[file.Length];
+            using (var stream = new MemoryStream(content))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var request = new AddBookPageBulkRequest(libraryId, bookId)
+            {
+                ZipFile = new FileModel
+                {
+                    FileName = file.FileName,
+                    MimeType = file.ContentType,
+                    Contents = content
+                }
+            };
+
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return new OkResult();
+        }
+
+        [HttpPost("libraries/{libraryId}/books/{bookId}/pages/upload", Name = nameof(BookPageController.UploadMultiplePages))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        public async Task<IActionResult> UploadMultiplePages(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
+        {
+            List<IFormFile> files = Request.Form.Files.ToList();
+            var fileModels = new List<FileModel>();
+            foreach (var file in files)
+            {
+                var content = new byte[file.Length];
+                using (var stream = new MemoryStream(content))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                fileModels.Add(new FileModel
+                {
+                    FileName = file.FileName,
+                    MimeType = file.ContentType,
+                    Contents = content
+                });
+            }
+
+            var request = new AddMultipleBookPageBulk(libraryId, bookId)
+            {
+                Files = fileModels
+            };
+
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return new OkResult();
         }
 
         [HttpPut("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}", Name = nameof(BookPageController.UpdatePage))]

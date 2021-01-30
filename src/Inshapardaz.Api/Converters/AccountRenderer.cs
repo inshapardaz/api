@@ -15,6 +15,8 @@ namespace Inshapardaz.Api.Converters
         PageView<AccountView> Render(PageRendererArgs<AccountModel> source);
 
         AccountView Render(AccountModel series);
+
+        IEnumerable<AccountLookupView> RenderLookup(IEnumerable<AccountModel> writers);
     }
 
     public class AccountRenderer : IRenderAccount
@@ -163,6 +165,11 @@ namespace Inshapardaz.Api.Converters
             }
 
             return view;
+        }
+
+        public IEnumerable<AccountLookupView> RenderLookup(IEnumerable<AccountModel> writers)
+        {
+            return writers.Select(w => w.MapToLookup());
         }
     }
 }

@@ -62,6 +62,12 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         }
 
         [Test]
+        public void ShouldHaveTextReturened()
+        {
+            _assert.ShouldHaveText(_newContents);
+        }
+
+        [Test]
         public void ShouldHaveUpdatedContents()
         {
             _assert.ShouldHaveMatechingTextForLanguage(_newContents, _content.Language + "1", DatabaseConnection);

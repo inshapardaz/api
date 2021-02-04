@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void AddChapterContent(this IDbConnection connection, ChapterContentDto content)
         {
-            var sql = "Insert Into ChapterContent (ChapterId, FileId, Language) OUTPUT Inserted.Id VALUES (@ChapterId, @FileId, @Language)";
+            var sql = "Insert Into ChapterContent (ChapterId, Language, Text) OUTPUT Inserted.Id VALUES (@ChapterId, @Language, @Text)";
             var id = connection.ExecuteScalar<int>(sql, content);
             content.Id = id;
         }

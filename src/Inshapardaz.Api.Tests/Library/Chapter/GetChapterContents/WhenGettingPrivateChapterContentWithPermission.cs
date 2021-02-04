@@ -73,6 +73,12 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         }
 
         [Test]
+        public void ShouldHaveTextReturened()
+        {
+            _assert.ShouldHaveText(_content.Text);
+        }
+
+        [Test]
         public void ShouldHaveEditLinks()
         {
             _assert.ShouldHaveUpdateLink();

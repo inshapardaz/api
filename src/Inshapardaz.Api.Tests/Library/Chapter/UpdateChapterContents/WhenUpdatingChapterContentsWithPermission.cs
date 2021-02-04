@@ -63,9 +63,15 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         }
 
         [Test]
+        public void ShouldHaveTextReturened()
+        {
+            _assert.ShouldHaveText(_newContents);
+        }
+
+        [Test]
         public void ShouldHaveUpdatedContents()
         {
-            _assert.ShouldHaveMatchingText(_newContents, DatabaseConnection);
+            _assert.ShouldHaveSavedCorrectText(_newContents, DatabaseConnection);
         }
     }
 }

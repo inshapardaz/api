@@ -58,16 +58,16 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
             _assert.ShouldHaveSavedChapterContent(DatabaseConnection);
         }
 
-        //[Test]
-        //public void ShouldHaveCorrectObjectReturened()
-        //{
-        //    _assert.ShouldMatch(_request, _chapter);
-        //}
+        [Test]
+        public void ShouldHaveTextReturened()
+        {
+            _assert.ShouldHaveText(_contents);
+        }
 
         [Test]
-        public void ShouldHaveCorrectContentSaved()
+        public void ShouldHaveCorrectTextSaved()
         {
-            _assert.ShouldHaveMatchingText(_contents, DatabaseConnection);
+            _assert.ShouldHaveSavedCorrectText(_contents, DatabaseConnection);
         }
 
         [Test]

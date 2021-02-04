@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         : TestBase
     {
         private HttpResponseMessage _response;
-        private byte[] _contents;
+        private string _contents;
         private ChapterDto _chapter;
         private ChapterContentAssert _assert;
 
@@ -27,10 +27,11 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _chapter = ChapterBuilder.WithLibrary(LibraryId).Private().Build();
-            _contents = Random.Bytes;
+            var locale = Random.Locale;
+            _chapter = ChapterBuilder.WithLibrary(LibraryId).Private().WithContentLanguage(locale).Build();
+            _contents = Random.String;
 
-            _response = await Client.PostContent($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents", Random.Bytes, Random.Locale, Random.MimeType);
+            _response = await Client.PostString($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents?language={locale}", _contents);
             _assert = new ChapterContentAssert(_response, LibraryId);
         }
 
@@ -61,7 +62,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         [Test]
         public void ShouldHaveCorrectContentSaved()
         {
-            _assert.ShouldHaveCorrectContents(_contents, FileStore, DatabaseConnection);
+            _assert.ShouldHaveMatchingText(_contents, DatabaseConnection);
         }
 
         [Test]
@@ -70,7 +71,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
             _assert.ShouldHaveSelfLink()
                    .ShouldHaveBookLink()
                    .ShouldHaveChapterLink()
-                   .ShouldHavePrivateDownloadLink()
+                   .ShouldHaveContentLink()
                    .ShouldHaveUpdateLink()
                    .ShouldHaveDeleteLink();
         }

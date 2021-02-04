@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{book.Id}/chapters/{-Random.Number}/contents", Random.Locale, Random.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{book.Id}/chapters/{-Random.Number}/contents?language={Random.Locale}");
         }
 
         [OneTimeTearDown]

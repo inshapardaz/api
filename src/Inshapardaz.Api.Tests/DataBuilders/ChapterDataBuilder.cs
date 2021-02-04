@@ -2,41 +2,32 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using AutoFixture;
-using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Database.SqlServer;
+using Inshapardaz.Api.Tests.Helpers;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
     public class ChapterDataBuilder
     {
         private readonly List<ChapterDto> _chapters = new List<ChapterDto>();
-        private readonly List<FileDto> _files = new List<FileDto>();
         private readonly List<ChapterContentDto> _contents = new List<ChapterContentDto>();
-        private readonly FakeFileStorage _fileStorage;
         private readonly IDbConnection _connection;
         private readonly BooksDataBuilder _booksBuilder;
         private int _contentCount;
         private int _libraryId;
         private bool _public;
-        private string _mimeType = MimeTypes.Pdf;
         private string _language;
 
         public IEnumerable<ChapterContentDto> Contents => _contents;
         public IEnumerable<ChapterDto> Chapters => _chapters;
 
-        public IEnumerable<FileDto> Files => _files;
-
         public ChapterDataBuilder(IProvideConnection connectionProvider,
-                                    BooksDataBuilder booksBuilder,
-                                    IFileStorage fileStorage)
+                                    BooksDataBuilder booksBuilder)
         {
             _connection = connectionProvider.GetConnection();
             _booksBuilder = booksBuilder;
-            _fileStorage = fileStorage as FakeFileStorage;
         }
 
         internal ChapterDataBuilder Public()
@@ -69,12 +60,6 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
-        public ChapterDataBuilder WithMimeType(string mimeType)
-        {
-            _mimeType = mimeType;
-            return this;
-        }
-
         internal ChapterDataBuilder WithLibrary(int libraryId)
         {
             _libraryId = libraryId;
@@ -99,18 +84,9 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
                 for (int j = 0; j < _contentCount; j++)
                 {
-                    var file = fixture.Build<FileDto>()
-                                                    .With(a => a.FilePath, Helpers.Random.BlobUrl)
-                                                    .With(c => c.MimeType, _mimeType)
-                                                    .With(a => a.IsPublic, true)
-                                                    .Create();
-                    _fileStorage.SetupFileContents(file.FilePath, Helpers.Random.Bytes);
-                    _connection.AddFile(file);
-                    _files.Add(file);
-
                     var content = fixture.Build<ChapterContentDto>()
                         .With(c => c.ChapterId, chapter.Id)
-                        .With(c => c.FileId, file.Id)
+                        .With(c => c.Text, Random.String)
                         .With(c => c.Language, _language ?? Helpers.Random.Locale)
                         .Create();
 

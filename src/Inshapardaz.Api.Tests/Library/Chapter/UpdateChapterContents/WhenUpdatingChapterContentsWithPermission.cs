@@ -5,7 +5,6 @@ using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
@@ -21,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         private ChapterContentDto _content;
         private ChapterContentAssert _assert;
 
-        private byte[] _newContents;
+        private string _newContents;
 
         public WhenUpdatingChapterContentsWithPermission(Role role)
             : base(role)
@@ -33,12 +32,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         {
             _chapter = ChapterBuilder.WithLibrary(LibraryId).Public().WithContents().Build();
             _content = ChapterBuilder.Contents.Single(x => x.ChapterId == _chapter.Id);
-            var file = ChapterBuilder.Files.Single(x => x.Id == _content.FileId);
-            var contents = FileStore.GetFile(file.FilePath, CancellationToken.None).Result;
 
-            _newContents = Random.Bytes;
+            _newContents = Random.String;
 
-            _response = await Client.PutContent($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents", _newContents, _content.Language, file.MimeType);
+            _response = await Client.PutString($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents?language={_content.Language}", _newContents);
             _assert = new ChapterContentAssert(_response, LibraryId);
         }
 
@@ -61,14 +58,14 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
                    .ShouldHaveBookLink()
                    .ShouldHaveChapterLink()
                    .ShouldHaveUpdateLink()
-                   .ShouldHavePublicDownloadLink()
+                   .ShouldHaveContentLink()
                    .ShouldHaveDeleteLink();
         }
 
         [Test]
         public void ShouldHaveUpdatedContents()
         {
-            _assert.ShouldHaveCorrectContents(_newContents, FileStore, DatabaseConnection);
+            _assert.ShouldHaveMatchingText(_newContents, DatabaseConnection);
         }
     }
 }

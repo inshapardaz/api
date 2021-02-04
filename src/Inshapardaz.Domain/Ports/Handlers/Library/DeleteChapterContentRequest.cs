@@ -1,5 +1,4 @@
-﻿using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Domain.Repositories.Library;
+﻿using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,47 +7,30 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteChapterContentRequest : BookRequest
     {
-        public DeleteChapterContentRequest(int libraryId, int bookId, int chapterNumber, string language, string mimeType)
+        public DeleteChapterContentRequest(int libraryId, int bookId, int chapterNumber, string language)
             : base(libraryId, bookId)
         {
             ChapterNumber = chapterNumber;
-            MimeType = mimeType;
             Language = language;
         }
 
         public int ChapterNumber { get; }
 
-        public string MimeType { get; }
         public string Language { get; }
     }
 
     public class DeleteChapterContentRequestHandler : RequestHandlerAsync<DeleteChapterContentRequest>
     {
         private readonly IChapterRepository _chapterRepository;
-        private readonly IFileRepository _fileRepository;
-        private readonly IFileStorage _fileStorage;
 
-        public DeleteChapterContentRequestHandler(IChapterRepository chapterRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+        public DeleteChapterContentRequestHandler(IChapterRepository chapterRepository)
         {
             _chapterRepository = chapterRepository;
-            _fileRepository = fileRepository;
-            _fileStorage = fileStorage;
         }
 
         public override async Task<DeleteChapterContentRequest> HandleAsync(DeleteChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var content = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, command.MimeType, cancellationToken);
-
-            if (content != null)
-            {
-                if (!string.IsNullOrWhiteSpace(content.ContentUrl))
-                {
-                    await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
-                }
-
-                await _fileRepository.DeleteFile(content.FileId, cancellationToken);
-                await _chapterRepository.DeleteChapterContentById(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, command.MimeType, cancellationToken);
-            }
+            await _chapterRepository.DeleteChapterContentById(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

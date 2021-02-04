@@ -29,10 +29,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         {
             _chapter = ChapterBuilder.WithLibrary(LibraryId).Public().WithContents().Build();
             _content = ChapterBuilder.Contents.Single(x => x.ChapterId == _chapter.Id);
-            var file = ChapterBuilder.Files.Single(x => x.Id == _content.FileId);
-            var contents = FileStore.GetFile(file.FilePath, CancellationToken.None).Result;
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents", _content.Language, file.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents?language={_content.Language}");
             _assert = new ChapterContentAssert(_response, LibraryId);
         }
 
@@ -67,9 +65,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         }
 
         [Test]
-        public void ShouldHavePublicDownloadLink()
+        public void ShouldHaveContentLink()
         {
-            _assert.ShouldHavePublicDownloadLink();
+            _assert.ShouldHaveContentLink();
         }
 
         [Test]

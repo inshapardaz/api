@@ -10,10 +10,8 @@
 
         public int ChapterNumber { get; set; }
 
-        public string ContentUrl { get; set; }
-
-        public string MimeType { get; set; }
         public string Language { get; set; }
-        public int FileId { get; internal set; }
+
+        public string Text { get; set; }
     }
 }

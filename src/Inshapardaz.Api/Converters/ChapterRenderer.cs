@@ -3,7 +3,6 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using System.Collections.Generic;
@@ -111,7 +110,7 @@ namespace Inshapardaz.Api.Converters
                 var contents = new List<ChapterContentView>();
                 foreach (var content in source.Contents)
                 {
-                    contents.Add(Render(content, libraryId));
+                    contents.Add(Render(content, libraryId, false));
                 }
 
                 result.Contents = contents;
@@ -123,7 +122,17 @@ namespace Inshapardaz.Api.Converters
 
         public ChapterContentView Render(ChapterContentModel source, int libraryId)
         {
+            return Render(source, libraryId, false);
+        }
+
+        private ChapterContentView Render(ChapterContentModel source, int libraryId, bool addText = true)
+        {
             var result = source.Map();
+
+            if (!addText)
+            {
+                result.Text = null;
+            }
 
             var links = new List<LinkView>
             {
@@ -132,7 +141,6 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ChapterController.GetChapterContent),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
-                    MimeType = source.MimeType,
                     Language = source.Language,
                     Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
                 }),
@@ -152,33 +160,30 @@ namespace Inshapardaz.Api.Converters
                 })
         };
 
-            if (!string.IsNullOrWhiteSpace(source.ContentUrl))
+            links.Add(_linkRenderer.Render(new Link
             {
-                links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = source.MimeType, AcceptLanguage = source.Language });
-            }
-            else
-            {
-                links.Add(_linkRenderer.Render(new Link
-                {
-                    ActionName = nameof(FileController.GetFile),
-                    Method = HttpMethod.Get,
-                    Rel = RelTypes.Download,
-                    MimeType = source.MimeType,
-                    Language = source.Language,
-                    Parameters = new { fileId = source.FileId }
-                }));
-            }
+                ActionName = nameof(ChapterController.GetChapterContent),
+                Method = HttpMethod.Get,
+                Rel = RelTypes.Content,
+                Language = source.Language,
+                Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
+            }));
 
             if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
                     ActionName = nameof(ChapterController.UpdateChapterContent),
+
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
-                    MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
+                    Parameters = new
+                    {
+                        libraryId = libraryId,
+                        bookId = source.BookId,
+                        chapterNumber = source.ChapterNumber
+                    }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -186,7 +191,6 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ChapterController.DeleteChapterContent),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
-                    MimeType = source.MimeType,
                     Language = source.Language,
                     Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
                 }));

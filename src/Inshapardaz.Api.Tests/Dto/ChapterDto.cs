@@ -20,5 +20,7 @@
         public int FileId { get; set; }
 
         public string Language { get; set; }
+
+        public string Text { get; set; }
     }
 }

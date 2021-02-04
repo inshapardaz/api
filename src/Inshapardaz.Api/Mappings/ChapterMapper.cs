@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Mappings
                 BookId = source.BookId,
                 ChapterNumber = source.ChapterNumber,
                 Language = source.Language,
-                MimeType = source.MimeType
+                Text = source.Text
             };
 
         public static ChapterContentModel Map(this ChapterContentView source)
@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Mappings
                 ChapterNumber = source.ChapterNumber,
                 BookId = source.BookId,
                 Language = source.Language,
-                MimeType = source.MimeType
+                Text = source.Text
             };
     }
 }

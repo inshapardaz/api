@@ -1,24 +1,20 @@
 ﻿using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Handlers.Library;
-using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
-using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Domain.Models.Library
 {
     public class GetChapterContentQuery : LibraryBaseQuery<ChapterContentModel>
     {
-        public GetChapterContentQuery(int libraryId, int bookId, int chapterNumber, string language, string mimeType, int? accountId)
+        public GetChapterContentQuery(int libraryId, int bookId, int chapterNumber, string language, int? accountId)
             : base(libraryId)
         {
             BookId = bookId;
-            this.ChapterNumber = chapterNumber;
-            MimeType = mimeType;
+            ChapterNumber = chapterNumber;
             AccountId = accountId;
             Language = language;
         }
@@ -27,8 +23,8 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int ChapterNumber { get; }
 
-        public string MimeType { get; set; }
         public int? AccountId { get; }
+
         public string Language { get; set; }
     }
 
@@ -37,14 +33,12 @@ namespace Inshapardaz.Domain.Models.Library
         private readonly ILibraryRepository _libraryRepository;
         private readonly IBookRepository _bookRepository;
         private readonly IChapterRepository _chapterRepository;
-        private readonly IFileRepository _fileRepository;
 
-        public GetChapterContentQueryHandler(ILibraryRepository libraryRepository, IBookRepository bookRepository, IChapterRepository chapterRepository, IFileRepository fileRepository)
+        public GetChapterContentQueryHandler(ILibraryRepository libraryRepository, IBookRepository bookRepository, IChapterRepository chapterRepository)
         {
             _libraryRepository = libraryRepository;
             _bookRepository = bookRepository;
             _chapterRepository = chapterRepository;
-            _fileRepository = fileRepository;
         }
 
         public override async Task<ChapterContentModel> ExecuteAsync(GetChapterContentQuery command, CancellationToken cancellationToken = new CancellationToken())
@@ -71,17 +65,12 @@ namespace Inshapardaz.Domain.Models.Library
                 command.Language = library.Language;
             }
 
-            var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, command.MimeType, cancellationToken);
+            var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, cancellationToken);
             if (chapterContent != null)
             {
                 if (command.AccountId.HasValue)
                 {
                     await _bookRepository.AddRecentBook(command.LibraryId, command.AccountId.Value, command.BookId, cancellationToken);
-                }
-
-                if (book.IsPublic)
-                {
-                    chapterContent.ContentUrl = await ImageHelper.TryConvertToPublicFile(chapterContent.FileId, _fileRepository, cancellationToken);
                 }
             }
 

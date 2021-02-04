@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Inshapardaz.Api.Views.Library
 {
     public class ChapterContentView : ViewWithLinks
@@ -12,6 +14,7 @@ namespace Inshapardaz.Api.Views.Library
 
         public string Language { get; set; }
 
-        public string MimeType { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Text { get; internal set; }
     }
 }

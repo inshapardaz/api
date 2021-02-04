@@ -31,6 +31,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries", Name = nameof(LibraryController.GetLibraries))]
+        [Produces(typeof(PageView<LibraryView>))]
         public async Task<IActionResult> GetLibraries(string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
         {
             var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.Account?.Id, _userHelper.Account?.Role) { Query = query };
@@ -46,6 +47,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}", Name = nameof(LibraryController.GetLibraryById))]
+        [Produces(typeof(LibraryView))]
         public async Task<IActionResult> GetLibraryById(int libraryId, CancellationToken cancellationToken)
         {
             var query = new GetLibraryQuery(libraryId);

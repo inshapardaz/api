@@ -29,9 +29,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.DeleteChapterContents
             var _newContents = Random.Words(12);
             var chapter = ChapterBuilder.WithLibrary(LibraryId).WithContents().Build();
             _content = ChapterBuilder.Contents.Single(x => x.ChapterId == chapter.Id);
-            var file = ChapterBuilder.Files.Single(x => x.Id == _content.FileId);
 
-            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.ChapterNumber}/contents", _content.Language, file.MimeType);
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.ChapterNumber}/contents?language={_content.Language}");
         }
 
         [OneTimeTearDown]

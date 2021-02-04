@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             return JsonConvert.DeserializeObject<T>(body);
         }
 
-        public static async Task<HttpResponseMessage> GetAsync(this HttpClient client, string url, string language, string mimetype)
+        public static async Task<HttpResponseMessage> GetAsync(this HttpClient client, string url, string language, string mimetype = null)
         {
             if (!string.IsNullOrWhiteSpace(language))
             {
@@ -33,6 +34,16 @@ namespace Inshapardaz.Api.Tests.Helpers
         public static async Task<HttpResponseMessage> PostObject<T>(this HttpClient client, string url, T payload)
         {
             var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.Default, "application/json");
+            return await client.PostAsync(url, content);
+        }
+
+        public static async Task<HttpResponseMessage> PostString(this HttpClient client, string url, string payload, string language = null)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            if (!string.IsNullOrWhiteSpace(language))
+            {
+                content.Headers.ContentLanguage.Add(language);
+            }
             return await client.PostAsync(url, content);
         }
 
@@ -54,24 +65,6 @@ namespace Inshapardaz.Api.Tests.Helpers
             }
         }
 
-        public static async Task<HttpResponseMessage> PutObject<T>(this HttpClient client, string url, T payload)
-        {
-            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-            return await client.PutAsync(url, content);
-        }
-
-        public static async Task<HttpResponseMessage> PutFile(this HttpClient client, string url, byte[] payload, string fileName = "image.jpg")
-        {
-            using (var stream = new MemoryStream(payload))
-            using (var content = new StreamContent(stream))
-            using (var formData = new MultipartFormDataContent())
-            {
-                formData.Add(content, "file", $"{Random.Name}.jpg");
-
-                return await client.PutAsync(url, formData);
-            }
-        }
-
         public static async Task<HttpResponseMessage> PostObjectWithFile<T>(this HttpClient client, string url, T data, byte[] payload, string fileName = "image.jpg")
         {
             using (var stream = new MemoryStream(payload))
@@ -84,6 +77,34 @@ namespace Inshapardaz.Api.Tests.Helpers
                 formData.Add(content, "image", $"{Random.Name}.jpg");
 
                 return await client.PostAsync(url, formData);
+            }
+        }
+
+        public static async Task<HttpResponseMessage> PutObject<T>(this HttpClient client, string url, T payload)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            return await client.PutAsync(url, content);
+        }
+
+        public static async Task<HttpResponseMessage> PutString(this HttpClient client, string url, string payload, string language = null, string mimetype = null)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            if (!string.IsNullOrWhiteSpace(language))
+            {
+                content.Headers.ContentLanguage.Add(language);
+            }
+            return await client.PutAsync(url, content);
+        }
+
+        public static async Task<HttpResponseMessage> PutFile(this HttpClient client, string url, byte[] payload, string fileName = "image.jpg")
+        {
+            using (var stream = new MemoryStream(payload))
+            using (var content = new StreamContent(stream))
+            using (var formData = new MultipartFormDataContent())
+            {
+                formData.Add(content, "file", $"{Random.Name}.jpg");
+
+                return await client.PutAsync(url, formData);
             }
         }
 
@@ -120,7 +141,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             }
         }
 
-        public static async Task<HttpResponseMessage> DeleteAsync(this HttpClient client, string url, string language, string mimetype)
+        public static async Task<HttpResponseMessage> DeleteAsync(this HttpClient client, string url, string language, string mimetype = null)
         {
             if (!string.IsNullOrWhiteSpace(language))
             {

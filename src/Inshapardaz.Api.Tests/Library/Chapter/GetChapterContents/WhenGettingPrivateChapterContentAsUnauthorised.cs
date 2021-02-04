@@ -21,10 +21,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         {
             _chapter = ChapterBuilder.WithLibrary(LibraryId).Private().WithContents().Build();
             var content = ChapterBuilder.Contents.Single(x => x.ChapterId == _chapter.Id);
-            var file = ChapterBuilder.Files.Single(x => x.Id == content.FileId);
-            var contents = FileStore.GetFile(file.FilePath, CancellationToken.None).Result;
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents", content.Language, file.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents?language={content.Language}");
         }
 
         [OneTimeTearDown]

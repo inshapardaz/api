@@ -77,14 +77,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var chapters = new Dictionary<int, ChapterModel>();
 
-                var sql = @"Select c.*, cc.*, f.*  From Chapter c
+                var sql = @"Select c.*, cc.* From Chapter c
                             Inner Join Book b On b.Id = c.BookId
                             Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
-                            Left Outer Join [File] f On f.Id = cc.FileId
                             Where b.Id = @BookId AND b.LibraryId = @LibraryId
                             Order By c.ChapterNumber";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ChapterModel, ChapterContentModel, FileModel, ChapterModel>(command, (c, cc, f) =>
+                await connection.QueryAsync<ChapterModel, ChapterContentModel, ChapterModel>(command, (c, cc) =>
                 {
                     if (!chapters.TryGetValue(c.Id, out ChapterModel chapter))
                     {
@@ -104,16 +103,6 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                         }
                     }
 
-                    if (f != null)
-                    {
-                        var content = chapter.Contents.SingleOrDefault(x => x.Id == cc.Id);
-                        if (content != null)
-                        {
-                            content.MimeType = f.MimeType;
-                            content.ContentUrl = f.FilePath;
-                        }
-                    }
-
                     return chapter;
                 });
 
@@ -126,14 +115,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 ChapterModel chapter = null;
-                var sql = @"Select c.*, cc.*, f.*
+                var sql = @"Select c.*, cc.*
                             From Chapter c
                             Inner Join Book b On b.Id = c.BookId
                             Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
-                            Left Outer Join [File] f On f.Id = cc.FileId
                             Where c.chapterNumber = @ChapterNumber AND b.Id = @BookId AND b.LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterNumber = chapterNumber }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ChapterModel, ChapterContentModel, FileModel, ChapterModel>(command, (c, cc, f) =>
+                await connection.QueryAsync<ChapterModel, ChapterContentModel, ChapterModel>(command, (c, cc) =>
                 {
                     if (chapter == null)
                     {
@@ -150,16 +138,6 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                         }
                     }
 
-                    if (f != null)
-                    {
-                        var content = chapter.Contents.SingleOrDefault(x => x.Id == cc.Id);
-                        if (content != null)
-                        {
-                            content.MimeType = f.MimeType;
-                            content.ContentUrl = f.FilePath;
-                        }
-                    }
-
                     return chapter;
                 });
 
@@ -167,31 +145,17 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<ChapterContentModel> GetChapterContent(int libraryId, int bookId, int chapterNumber, string language, string mimeType, CancellationToken cancellationToken)
+        public async Task<ChapterContentModel> GetChapterContent(int libraryId, int bookId, int chapterNumber, string language, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Select cc.*, c.chapterNumber, b.Id As BookId, f.Id As FileId, f.FilePath As ContentUrl, f.MimeType as MimeType From Chapter c
+                var sql = @"Select cc.*, c.chapterNumber, b.Id As BookId From Chapter c
                             Inner Join Book b On b.Id = c.BookId
                             Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
                             Left Outer Join [File] f On f.Id = cc.FileId
-                            Where c.chapterNumber = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId AND f.MimeType = @MimeType AND cc.Language = @Language";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterNumber, MimeType = mimeType, Language = language }, cancellationToken: cancellationToken);
+                            Where c.chapterNumber = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId AND cc.Language = @Language";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterNumber, Language = language }, cancellationToken: cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<ChapterContentModel>(command);
-            }
-        }
-
-        public async Task<string> GetChapterContentUrl(int libraryId, int bookId, int chapterNumber, string language, string mimeType, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetConnection())
-            {
-                var sql = @"Select f.FilePath From Chapter c
-                            Inner Join Book b On b.Id = c.BookId
-                            Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
-                            Left Outer Join [File] f On f.Id = cc.FileId
-                            Where c.chapterNumber = @ChapterNumber AND b.Id = @BookId AND b.LibraryId = @LibraryId And f.MimeType = @MimeType AND cc.Language = @Language";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterNumber = chapterNumber, MimeType = mimeType, Language = language }, cancellationToken: cancellationToken);
-                return await connection.QuerySingleOrDefaultAsync<string>(command);
             }
         }
 
@@ -199,39 +163,37 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into ChapterContent (ChapterId, Language, FileId)
-                            Values (@ChapterId, @Language, @FileId)";
-                var command = new CommandDefinition(sql, new { ChapterId = content.ChapterId, Language = content.Language, FileId = content.FileId }, cancellationToken: cancellationToken);
+                var sql = @"Insert Into ChapterContent (ChapterId, Language, Text)
+                            Values (@ChapterId, @Language, @Text)";
+                var command = new CommandDefinition(sql, new { ChapterId = content.ChapterId, Language = content.Language, Text = content.Text }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
 
-                return await GetChapterContent(libraryId, content.BookId, content.ChapterNumber, content.Language, content.MimeType, cancellationToken);
+                return await GetChapterContent(libraryId, content.BookId, content.ChapterNumber, content.Language, cancellationToken);
             }
         }
 
-        public async Task UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, string mimeType, string contentUrl, CancellationToken cancellationToken)
+        public async Task UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, string text, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update f SET FilePath = @ContentUrl
-                            From  [File] f
-                            Inner Join ChapterContent cc On cc.FileId = f.Id
+                var sql = @"Update cc SET Text = @Text
+                            FROM ChapterContent cc
                             Inner Join Chapter c On c.Id = cc.ChapterId
                             Inner Join Book b On b.Id = c.BookId
-                            Where c.chapterNumber = @ChapterId And b.LibraryId = @LibraryId and b.Id = @BookId And f.MimeType  = @MimeType AND cc.Language = @Language";
+                            Where c.chapterNumber = @ChapterId And b.LibraryId = @LibraryId and b.Id = @BookId AND cc.Language = @Language";
                 var command = new CommandDefinition(sql, new
                 {
                     LibraryId = libraryId,
                     BookId = bookId,
                     ChapterId = chapterNumber,
                     Language = language,
-                    MimeType = mimeType,
-                    ContentUrl = contentUrl
+                    Text = text
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
 
-        public async Task DeleteChapterContentById(int libraryId, int bookId, int chapterNumber, string language, string mimeType, CancellationToken cancellationToken)
+        public async Task DeleteChapterContentById(int libraryId, int bookId, int chapterNumber, string language, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -239,14 +201,12 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             From ChapterContent cc
                             Inner Join Chapter c On c.Id = cc.ChapterId
                             Inner Join Book b On b.Id = C.BookId
-                            Left Outer Join [File] f On f.Id = cc.FileId
-                            Where c.chapterNumber = @ChapterNumber And b.LibraryId = @LibraryId and b.Id = @BookId And f.MimeType = @MimeType AND cc.Language = @Language";
+                            Where c.chapterNumber = @ChapterNumber And b.LibraryId = @LibraryId and b.Id = @BookId AND cc.Language = @Language";
                 var command = new CommandDefinition(sql, new
                 {
                     LibraryId = libraryId,
                     BookId = bookId,
                     ChapterNumber = chapterNumber,
-                    MimeType = mimeType,
                     Language = language
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);

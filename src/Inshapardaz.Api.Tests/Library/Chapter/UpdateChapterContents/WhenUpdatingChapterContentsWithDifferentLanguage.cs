@@ -19,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         private ChapterContentDto _content;
         private ChapterContentAssert _assert;
 
-        private byte[] _newContents;
+        private string _newContents;
 
         public WhenUpdatingChapterContentsWithDifferentLanguage()
             : base(Role.Writer)
@@ -31,12 +31,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         {
             _chapter = ChapterBuilder.WithLibrary(LibraryId).Public().WithContents().Build();
             _content = ChapterBuilder.Contents.Single(x => x.ChapterId == _chapter.Id);
-            var file = ChapterBuilder.Files.Single(x => x.Id == _content.FileId);
-            var contents = FileStore.GetFile(file.FilePath, CancellationToken.None).Result;
 
-            _newContents = Random.Bytes;
+            _newContents = Random.String;
 
-            _response = await Client.PutContent($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents", _newContents, _content.Language + "1", file.MimeType);
+            _response = await Client.PutString($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents?language={_content.Language}1", _newContents);
             _assert = new ChapterContentAssert(_response, LibraryId);
         }
 
@@ -59,14 +57,14 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
                    .ShouldHaveBookLink()
                    .ShouldHaveChapterLink()
                    .ShouldHaveUpdateLink()
-                   .ShouldHavePublicDownloadLink()
+                   .ShouldHaveContentLink()
                    .ShouldHaveDeleteLink();
         }
 
         [Test]
         public void ShouldHaveUpdatedContents()
         {
-            _assert.ShouldHaveCorrectContentsForLanguage(_newContents, _content.Language + "1", FileStore, DatabaseConnection);
+            _assert.ShouldHaveMatechingTextForLanguage(_newContents, _content.Language + "1", DatabaseConnection);
         }
     }
 }

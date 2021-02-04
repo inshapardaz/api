@@ -191,8 +191,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             actual.DeleteLink()
                   .ShouldBeDelete()
                   .EndingWith($"libraries/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents")
-                  .ShouldHaveAcceptLanguage(actual.Language)
-                  .ShouldHaveAccept(actual.MimeType);
+                  .ShouldHaveAcceptLanguage(actual.Language);
 
             return this;
         }

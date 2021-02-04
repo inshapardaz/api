@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         private ChapterDto _chapter;
         private ChapterContentDto _content;
 
-        private byte[] _newContents;
+        private string _newContents;
 
         public WhenUpdatingChapterContentsAsReader()
             : base(Role.Reader)
@@ -30,12 +30,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         {
             _chapter = ChapterBuilder.WithLibrary(LibraryId).Public().WithContents().Build();
             _content = ChapterBuilder.Contents.Single(x => x.ChapterId == _chapter.Id);
-            var file = ChapterBuilder.Files.Single(x => x.Id == _content.FileId);
-            var contents = FileStore.GetFile(file.FilePath, CancellationToken.None).Result;
 
-            _newContents = Random.Bytes;
+            _newContents = Random.String;
 
-            _response = await Client.PutContent($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents", _newContents, _content.Language, file.MimeType);
+            _response = await Client.PutString($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents?language={_content.Language}", _newContents);
         }
 
         [OneTimeTearDown]

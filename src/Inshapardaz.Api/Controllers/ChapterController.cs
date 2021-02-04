@@ -2,15 +2,13 @@
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
+using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
-using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,6 +33,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/books/{bookId}/chapters", Name = nameof(ChapterController.GetChaptersByBook))]
+        [Produces(typeof(ListView<ChapterView>))]
         public async Task<IActionResult> GetChaptersByBook(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetChaptersByBookQuery(libraryId, bookId, _userHelper.Account?.Id);
@@ -49,6 +48,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}", Name = nameof(ChapterController.GetChapterById))]
+        [Produces(typeof(ChapterView))]
         public async Task<IActionResult> GetChapterById(int libraryId, int bookId, int chapterNumber, CancellationToken token = default(CancellationToken))
         {
             var query = new GetChapterByIdQuery(libraryId, bookId, chapterNumber);
@@ -116,12 +116,12 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpGet("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.GetChapterContent))]
         [Authorize()]
-        public async Task<IActionResult> GetChapterContent(int libraryId, int bookId, int chapterNumber, CancellationToken token = default(CancellationToken))
+        [Produces(typeof(ChapterContentView))]
+        public async Task<IActionResult> GetChapterContent(int libraryId, int bookId, int chapterNumber, string language, CancellationToken token = default(CancellationToken))
         {
-            var contentType = Request.Headers["Accept"]; // default to "text/markdown"
-            var language = Request.Headers["Accept-Language"]; // default to  ""
+            //var language = Request.Headers["Accept-Language"];
 
-            var query = new GetChapterContentQuery(libraryId, bookId, chapterNumber, language, contentType, _userHelper.Account?.Id);
+            var query = new GetChapterContentQuery(libraryId, bookId, chapterNumber, language, _userHelper.Account?.Id);
 
             var chapterContents = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
@@ -135,16 +135,11 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.CreateChapterContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterNumber, IFormFile file, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterNumber, string language, [FromBody]string content, CancellationToken token = default(CancellationToken))
         {
-            var content = new byte[file.Length];
-            using (var stream = new MemoryStream(content))
-            {
-                await file.CopyToAsync(stream);
-            }
-            var language = Request.Headers["Accept-Language"];
+            //var language = Request.Headers["Content-Language"];
 
-            var request = new AddChapterContentRequest(libraryId, bookId, chapterNumber, Encoding.Default.GetString(content), language, file.ContentType);
+            var request = new AddChapterContentRequest(libraryId, bookId, chapterNumber, content, language);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)
@@ -158,17 +153,11 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.UpdateChapterContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateChapterContent(int libraryId, int bookId, int chapterNumber, IFormFile file, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, [FromBody]string content, CancellationToken token = default(CancellationToken))
         {
-            var content = new byte[file.Length];
-            using (var stream = new MemoryStream(content))
-            {
-                await file.CopyToAsync(stream);
-            }
+            //var language = Request.Headers["Content-Language"];
 
-            var language = Request.Headers["Accept-Language"];
-
-            var request = new UpdateChapterContentRequest(libraryId, bookId, chapterNumber, Encoding.Default.GetString(content), language, file.ContentType);
+            var request = new UpdateChapterContentRequest(libraryId, bookId, chapterNumber, content, language);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _chapterRenderer.Render(request.Result.ChapterContent, libraryId);
@@ -183,12 +172,11 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpDelete("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.DeleteChapterContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> DeleteChapterContent(int libraryId, int bookId, int chapterNumber, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> DeleteChapterContent(int libraryId, int bookId, int chapterNumber, string language, CancellationToken token = default(CancellationToken))
         {
-            var contentType = Request.Headers["Accept"];
-            var language = Request.Headers["Accept-Language"];
+            //var language = Request.Headers["Accept-Language"];
 
-            var request = new DeleteChapterContentRequest(libraryId, bookId, chapterNumber, language, contentType);
+            var request = new DeleteChapterContentRequest(libraryId, bookId, chapterNumber, language);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

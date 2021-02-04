@@ -3,11 +3,9 @@ using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Asserts
 {
@@ -38,8 +36,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _chapterContent.SelfLink()
                   .ShouldBeGet()
                   .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterNumber}/contents")
-                  .ShouldHaveAcceptLanguage(_chapterContent.Language)
-                  .ShouldHaveAccept(_chapterContent.MimeType);
+                  .ShouldHaveAcceptLanguage(_chapterContent.Language);
 
             return this;
         }
@@ -63,8 +60,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _chapterContent.UpdateLink()
                  .ShouldBePut()
                  .EndingWith($"libraries/{_libraryId}/books/{_chapterContent.BookId}/chapters/{_chapterContent.ChapterNumber}/contents")
-                 .ShouldHaveAcceptLanguage(_chapterContent.Language)
-                 .ShouldHaveAccept(_chapterContent.MimeType);
+                 .ShouldHaveAcceptLanguage(_chapterContent.Language);
 
             return this;
         }
@@ -89,46 +85,25 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ChapterContentAssert ShouldHaveCorrectContents(byte[] expected, IFileStorage fileStorage, IDbConnection dbConnection)
+        internal ChapterContentAssert ShouldHaveMatchingText(string expected, IDbConnection dbConnection)
         {
-            var file = dbConnection.GetFileByChapter(_chapterContent.ChapterId, _chapterContent.Language, _chapterContent.MimeType);
-            var content = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
-            content.Should().NotBeNull().And.NotEqual(expected);
+            var content = dbConnection.GetChapterContentById(_chapterContent.Id);
+            content.Text.Should().NotBeNull().And.Be(expected);
             return this;
         }
 
-        internal ChapterContentAssert ShouldHaveCorrectContentsForMimeType(byte[] expected, string mimeType, IFileStorage fileStorage, IDbConnection dbConnection)
+        internal ChapterContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, IDbConnection dbConnection)
         {
-            var file = dbConnection.GetFileByChapter(_chapterContent.ChapterId, _chapterContent.Language, mimeType);
-            var content = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
-            content.Should().NotBeNull().And.NotEqual(expected);
+            var content = dbConnection.GetChapterContentById(_chapterContent.Id);
+            content.Text.Should().NotBeNull().And.Should().NotBe(expected);
+            content.Language.Should().Be(language);
             return this;
         }
 
-        internal ChapterContentAssert ShouldHaveCorrectContentsForLanguage(byte[] expected, string language, IFileStorage fileStorage, IDbConnection dbConnection)
+        internal ChapterContentAssert ShouldHaveContentLink()
         {
-            var file = dbConnection.GetFileByChapter(_chapterContent.ChapterId, language, _chapterContent.MimeType);
-            var content = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
-            content.Should().NotBeNull().And.NotEqual(expected);
-            return this;
-        }
-
-        internal ChapterContentAssert ShouldHavePrivateDownloadLink()
-        {
-            _chapterContent.Link("download")
+            _chapterContent.Link("content")
                            .ShouldBeGet();
-            //.Href.Should()
-            //.StartWith(Settings.BlobRoot);
-
-            return this;
-        }
-
-        internal ChapterContentAssert ShouldHavePublicDownloadLink()
-        {
-            _chapterContent.Link("download")
-                           .ShouldBeGet();
-            //.Href.Should()
-            //.StartWith(Settings.CDNAddress);
 
             return this;
         }
@@ -137,10 +112,8 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var dbContent = dbConnection.GetChapterContentById(_chapterContent.Id);
             dbContent.Should().NotBeNull();
-            var dbFile = dbConnection.GetFileById(dbContent.FileId);
             _chapterContent.ChapterId.Should().Be(dbContent.ChapterId);
             _chapterContent.Language.Should().Be(dbContent.Language);
-            _chapterContent.MimeType.Should().Be(dbFile.MimeType);
 
             return this;
         }
@@ -178,23 +151,11 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        //internal ChapterContentAssert ShouldMatch(DefaultHttpRequest request, ChapterDto chapterDto)
-        //{
-        //    _chapterContent.ChapterId.Should().Be(chapterDto.Id);
-        //    _chapterContent.BookId.Should().Be(chapterDto.BookId);
-        //    _chapterContent.MimeType.Should().Be(request.MimeType());
-        //    _chapterContent.Language.Should().Be(request.Language());
-        //    return this;
-        //}
-
         internal ChapterContentAssert ShouldMatch(ChapterContentDto content, int bookId, IDbConnection dbConnection)
         {
             _chapterContent.ChapterId.Should().Be(content.ChapterId);
             _chapterContent.BookId.Should().Be(bookId);
             _chapterContent.Language.Should().Be(content.Language);
-
-            var dbFile = dbConnection.GetFileById(content.FileId);
-            _chapterContent.MimeType.Should().Be(dbFile.MimeType);
 
             return this;
         }
@@ -203,9 +164,6 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var dbContent = dbConnection.GetChapterContentById(content.Id);
             dbContent.Should().BeNull("Chapter contnet should be deleted");
-
-            var dbFile = dbConnection.GetFileById(content.FileId);
-            dbFile.Should().BeNull("Files for content should be deleted");
         }
 
         internal static void ShouldHaveLocationHeader(RedirectResult result, int libraryId, int bookId, ChapterContentDto content)

@@ -122,7 +122,7 @@ namespace Inshapardaz.Api.Converters
 
         public ChapterContentView Render(ChapterContentModel source, int libraryId)
         {
-            return Render(source, libraryId, false);
+            return Render(source, libraryId, true);
         }
 
         private ChapterContentView Render(ChapterContentModel source, int libraryId, bool addText = true)

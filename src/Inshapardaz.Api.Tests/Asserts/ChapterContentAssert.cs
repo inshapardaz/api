@@ -65,6 +65,12 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+        internal ChapterContentAssert ShouldHaveText(string contents)
+        {
+            _chapterContent.Text.Should().Be(contents);
+            return this;
+        }
+
         internal ChapterContentAssert ShouldNotHaveUpdateLink()
         {
             _chapterContent.UpdateLink().Should().BeNull();
@@ -85,7 +91,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ChapterContentAssert ShouldHaveMatchingText(string expected, IDbConnection dbConnection)
+        internal ChapterContentAssert ShouldHaveSavedCorrectText(string expected, IDbConnection dbConnection)
         {
             var content = dbConnection.GetChapterContentById(_chapterContent.Id);
             content.Text.Should().NotBeNull().And.Be(expected);

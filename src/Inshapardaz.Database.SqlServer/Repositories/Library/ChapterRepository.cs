@@ -134,6 +134,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                         if (content == null)
                         {
                             cc.ChapterNumber = c.ChapterNumber;
+                            cc.BookId = c.BookId;
                             chapter.Contents.Add(cc);
                         }
                     }
@@ -152,7 +153,6 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"Select cc.*, c.chapterNumber, b.Id As BookId From Chapter c
                             Inner Join Book b On b.Id = c.BookId
                             Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
-                            Left Outer Join [File] f On f.Id = cc.FileId
                             Where c.chapterNumber = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId AND cc.Language = @Language";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterNumber, Language = language }, cancellationToken: cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<ChapterContentModel>(command);

@@ -84,7 +84,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var books = new Dictionary<int, BookModel>();
-                var sortByQuery = sortBy == BookSortByType.DateCreated ? "b.DateAdded" : "b.Title";
+                var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
                 var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
 
                 if (filter.Read.HasValue && filter.Read.Value)
@@ -165,12 +165,27 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        private static string GetSortByQuery(BookSortByType sortBy)
+        {
+            switch (sortBy)
+            {
+                case BookSortByType.DateCreated:
+                    return "DateAdded";
+
+                case BookSortByType.seriesIndex:
+                    return "seriesIndex";
+
+                default:
+                    return "Title";
+            }
+        }
+
         public async Task<Page<BookModel>> SearchBooks(int libraryId, string searchText, int pageNumber, int pageSize, int? AccountId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 var books = new Dictionary<int, BookModel>();
-                var sortByQuery = sortBy == BookSortByType.DateCreated ? "b.DateAdded" : "b.Title";
+                var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
                 var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
                 var param = new
                 {

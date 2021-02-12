@@ -3,6 +3,7 @@
     public enum BookSortByType
     {
         Title,
-        DateCreated
+        DateCreated,
+        seriesIndex
     }
 }

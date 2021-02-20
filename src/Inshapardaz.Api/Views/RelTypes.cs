@@ -60,6 +60,8 @@ namespace Inshapardaz.Api.Views
         public const string CreateCategory = "create-category";
         public const string CreateSeries = "create-series";
         public const string CreateAuthor = "create-author";
+        public static string AssignToMe = "assign-to-me";
+        public static string Assign = "assign";
         public static string Articles = "articles";
         public static string Issue = "issue";
         public static string Periodical = "periodical";

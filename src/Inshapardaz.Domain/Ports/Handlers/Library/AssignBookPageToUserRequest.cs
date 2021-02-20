@@ -8,32 +8,37 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class AssignBookPageToUserRequest : LibraryBaseCommand
+    public class AssignBookPageRequest : LibraryBaseCommand
     {
-        public AssignBookPageToUserRequest(int libraryId, int bookId, int sequenceNumber, int? accountId)
+        public AssignBookPageRequest(int libraryId, int bookId, int sequenceNumber, PageStatuses status, int? accountId)
         : base(libraryId)
         {
             BookId = bookId;
             SequenceNumber = sequenceNumber;
+            Status = status;
             AccountId = accountId;
         }
 
         public BookPageModel Result { get; set; }
         public int BookId { get; set; }
         public int SequenceNumber { get; set; }
+        public PageStatuses Status { get; set; }
         public int? AccountId { get; private set; }
     }
 
-    public class AssignBookPageToUserRequestHandler : RequestHandlerAsync<AssignBookPageToUserRequest>
+    public class AssignBookPageRequestHandler : RequestHandlerAsync<AssignBookPageRequest>
     {
+        private readonly IBookRepository _bookRepository;
         private readonly IBookPageRepository _bookPageRepository;
 
-        public AssignBookPageToUserRequestHandler(IBookPageRepository bookPageRepository)
+        public AssignBookPageRequestHandler(IBookRepository bookRepository,
+                                         IBookPageRepository bookPageRepository)
         {
+            _bookRepository = bookRepository;
             _bookPageRepository = bookPageRepository;
         }
 
-        public override async Task<AssignBookPageToUserRequest> HandleAsync(AssignBookPageToUserRequest command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<AssignBookPageRequest> HandleAsync(AssignBookPageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var page = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
             if (page == null)
@@ -41,7 +46,7 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new BadRequestException();
             }
 
-            command.Result = await _bookPageRepository.UpdatePageAssignment(command.LibraryId, command.BookId, command.SequenceNumber, page.Status, command.AccountId, cancellationToken);
+            command.Result = await _bookPageRepository.UpdatePageAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.Status, command.AccountId, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

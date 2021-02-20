@@ -159,6 +159,25 @@ namespace Inshapardaz.Api.Converters
                     Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                 }));
 
+                if (_userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
+                {
+                    links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(BookPageController.AssignPage),
+                        Method = HttpMethod.Post,
+                        Rel = RelTypes.Assign,
+                        Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
+                    }));
+                }
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.AssignPageToUser),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.AssignToMe,
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
+                }));
+
                 if (source.ImageId.HasValue)
                 {
                     links.Add(_linkRenderer.Render(new Link

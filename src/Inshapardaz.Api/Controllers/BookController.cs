@@ -47,6 +47,7 @@ namespace Inshapardaz.Api.Controllers
             [FromQuery]int? seriesId = null,
             [FromQuery]bool? favorite = null,
             [FromQuery]bool? read = null,
+            [FromQuery]BookStatuses status = BookStatuses.Published,
             [FromQuery]BookSortByType sortBy = BookSortByType.Title,
             [FromQuery]SortDirection sortDirection = SortDirection.Ascending,
             CancellationToken token = default(CancellationToken))
@@ -57,7 +58,8 @@ namespace Inshapardaz.Api.Controllers
                 CategoryId = categoryId,
                 SeriesId = seriesId,
                 Favorite = favorite,
-                Read = read
+                Read = read,
+                Status = status
             };
             var request = new GetBooksQuery(libraryId, pageNumber, pageSize, _userHelper.Account?.Id)
             {

@@ -220,6 +220,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                           .With(b => b.SeriesIndex, _hasSeries ? Random.Number : (int?)null)
                           .With(b => b.DateAdded, Random.Date)
                           .With(b => b.DateUpdated, Random.Date)
+                          .With(b => b.Status, Domain.Models.BookStatuses.Published)
                           .CreateMany(numberOfBooks)
                           .ToList();
 

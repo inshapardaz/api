@@ -11,5 +11,7 @@
         public bool? Favorite { get; set; }
 
         public bool? Read { get; set; }
+
+        public BookStatuses Status { get; set; }
     }
 }

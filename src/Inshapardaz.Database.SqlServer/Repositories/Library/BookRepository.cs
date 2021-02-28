@@ -102,7 +102,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     SeriesFilter = filter.SeriesId,
                     CategoryFilter = filter.CategoryId,
                     FavoriteFilter = filter.Favorite,
-                    RecentFilter = filter.Read
+                    RecentFilter = filter.Read,
+                    StatusFilter = filter.Status
                 };
                 var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite, c.*
@@ -114,12 +115,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Left Outer Join Category c ON bc.CategoryId = c.Id
                             Left Outer Join FavoriteBooks fb On fb.BookId = b.Id
                             Left Outer Join RecentBooks r On b.Id = r.BookId
-                            Where b.LibraryId = @LibraryId AND (@AccountId Is not Null OR b.IsPublic = 1)
-                            AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
-                            AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
-                            AND (f.AccountId = @AccountId OR @FavoriteFilter Is Null)
-                            AND (r.AccountId = @AccountId OR @RecentFilter Is Null)
-                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null) " +
+                            Where b.LibraryId = @LibraryId
+                            AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
+                            AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
+                            AND (a.Id = @AuthorFilter OR @AuthorFilter IS NULL)
+                            AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
+                            AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
+                            AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL) " +
                             $" ORDER BY {sortByQuery} {sortDirection} " +
                             @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -147,12 +150,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Left Outer Join Category c ON bc.CategoryId = c.Id
                             Left Outer Join FavoriteBooks fb On fb.BookId = b.Id
                             Left Outer Join RecentBooks r On b.Id = r.BookId
-                            Where b.LibraryId = @LibraryId AND (@AccountId Is not Null OR b.IsPublic = 1)
-                            AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
-                            AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
-                            AND (f.AccountId = @AccountId OR @FavoriteFilter Is Null)
-                            AND (r.AccountId = @AccountId OR @RecentFilter Is Null)
-                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null) ";
+                            Where b.LibraryId = @LibraryId
+                            AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
+                            AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
+                            AND (a.Id = @AuthorFilter OR @AuthorFilter IS NULL)
+                            AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
+                            AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
+                            AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL) ";
                 var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
                 return new Page<BookModel>

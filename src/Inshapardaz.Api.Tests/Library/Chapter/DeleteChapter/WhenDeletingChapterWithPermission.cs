@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
         [Test]
         public void ShouldHaveDeletedTheChapterContents()
         {
-            ChapterAssert.ThatFilesAreDeletedForChapter(_expected.Id, DatabaseConnection);
+            ChapterAssert.ThatContentsAreDeletedForChapter(_expected.Id, DatabaseConnection);
         }
     }
 }

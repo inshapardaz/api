@@ -2,8 +2,10 @@
 {
     public enum BookStatuses
     {
-        Ready = 0,
-        Scanned,
+        Published = 0,
+        AvailableForTyping,
+        BeingTyped,
+        ReadyForProofRead,
         ProofRead,
     }
 }

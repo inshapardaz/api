@@ -126,6 +126,9 @@ namespace Inshapardaz.Api.Converters
 
                 if (source.RouteArguments.BookFilter.Read.HasValue)
                     queryString.Add("read", bool.TrueString);
+
+                if (source.RouteArguments.BookFilter.Status != Domain.Models.BookStatuses.Published)
+                    queryString.Add("status", source.RouteArguments.BookFilter.Status.ToDescription());
             }
 
             if (source.RouteArguments.SortBy != BookSortByType.Title)

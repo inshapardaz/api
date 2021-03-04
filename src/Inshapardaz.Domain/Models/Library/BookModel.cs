@@ -48,5 +48,9 @@ namespace Inshapardaz.Domain.Models.Library
         public bool IsFavorite { get; set; }
 
         public int LibraryId { get; set; }
+
+        public decimal Progress { get; set; }
+
+        public IEnumerable<PageSummaryModel> PageStatus { get; set; }
     }
 }

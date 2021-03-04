@@ -2,6 +2,7 @@
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Api.Views.Library;
 using System.Linq;
+using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Mappings
 {
@@ -22,11 +23,13 @@ namespace Inshapardaz.Api.Mappings
                 SeriesId = source.SeriesId,
                 SeriesName = source.SeriesName,
                 SeriesIndex = source.SeriesIndex,
-                Copyrights = (int)source.Copyrights,
-                Status = (int)source.Status,
+                Copyrights = source.Copyrights.ToDescription(),
+                Status = source.Status.ToDescription(),
                 YearPublished = source.YearPublished,
                 IsPublished = source.IsPublished,
-                Categories = source.Categories?.Select(c => c.Map())
+                Progress = source.Progress,
+                Categories = source.Categories?.Select(c => c.Map()),
+                PageStatus = source.PageStatus?.Select(ps => ps.Map())
             };
 
         public static BookModel Map(this BookView source)
@@ -42,11 +45,13 @@ namespace Inshapardaz.Api.Mappings
                 DateUpdated = source.DateUpdated,
                 SeriesId = source.SeriesId,
                 SeriesIndex = source.SeriesIndex,
-                Copyrights = (CopyrightStatuses)source.Copyrights,
-                Status = (BookStatuses)source.Status,
+                Copyrights = source.Copyrights.ToEnum(CopyrightStatuses.Copyright),
+                Status = source.Status.ToEnum(BookStatuses.AvailableForTyping),
                 YearPublished = source.YearPublished,
                 IsPublished = source.IsPublished,
-                Categories = source.Categories?.Select(c => c.Map()).ToList()
+                Progress = source.Progress,
+                Categories = source.Categories?.Select(c => c.Map()).ToList(),
+                PageStatus = source.PageStatus?.Select(ps => ps.Map())
             };
 
         public static BookContentView Map(this BookContentModel source)
@@ -65,6 +70,20 @@ namespace Inshapardaz.Api.Mappings
                 BookId = source.BookId,
                 Language = source.Language,
                 MimeType = source.MimeType
+            };
+
+        public static PageSummaryView Map(this PageSummaryModel source)
+            => new PageSummaryView
+            {
+                Status = source.Status.ToDescription(),
+                Count = source.Count
+            };
+
+        public static PageSummaryModel Map(this PageSummaryView source)
+            => new PageSummaryModel
+            {
+                Status = source.Status.ToEnum(PageStatuses.Available),
+                Count = source.Count
             };
     }
 }

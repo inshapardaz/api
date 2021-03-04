@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Inshapardaz.Api.Views.Library
@@ -35,10 +36,16 @@ namespace Inshapardaz.Api.Views.Library
 
         public int? YearPublished { get; set; }
 
-        public int Copyrights { get; set; }
+        public string Copyrights { get; set; }
 
-        public int Status { get; set; }
+        public string Status { get; set; }
 
         public bool IsPublished { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public decimal Progress { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public IEnumerable<PageSummaryView> PageStatus { get; set; }
     }
 }

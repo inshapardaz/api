@@ -41,5 +41,7 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task UpdateBookImage(int libraryId, int bookId, int fileId, CancellationToken cancellationToken);
 
         Task UpdateBookContentUrl(int libraryId, int bookId, string language, string mimeType, string url, CancellationToken cancellationToken);
+
+        Task<IEnumerable<BookPageSummaryModel>> GetBookPageSummary(int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken);
     }
 }

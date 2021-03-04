@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bogus;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
@@ -46,10 +47,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             {
                 Title = fake.Name.FullName(),
                 Description = fake.Random.Words(5),
-                Copyrights = fake.Random.Int(0, 3),
+                Copyrights = fake.PickRandom<CopyrightStatuses>().ToDescription(),
                 Language = Helpers.Random.Locale,
                 YearPublished = fake.Date.Past().Year,
-                Status = fake.Random.Int(0, 2),
+                Status = fake.PickRandom<BookStatuses>().ToDescription(),
                 IsPublic = fake.Random.Bool(),
                 AuthorId = otherAuthor.Id,
                 SeriesId = otherSeries.Id,

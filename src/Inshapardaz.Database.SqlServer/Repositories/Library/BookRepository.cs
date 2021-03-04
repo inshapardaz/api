@@ -2,6 +2,7 @@
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
+using Lucene.Net.Search;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -471,6 +472,42 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Where Id = @BookId And LibraryId = @LibraryId;";
                 var command = new CommandDefinition(sql, new { ImageId = imageId, BookId = bookId, LibraryId = libraryId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task<IEnumerable<BookPageSummaryModel>> GetBookPageSummary(int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var bookSummaries = new Dictionary<int, BookPageSummaryModel>();
+                const string sql = @"Select bp.BookId, bp.[Status], Count(*) from BookPage bp
+                                INNER Join Book b ON b.id = bp.BookId
+                                Where b.LibraryId = @LibraryId
+                                AND b.Id IN @BookIds
+                                AND b.Status <> 0
+                                GROUP By bp.BookId, bp.[Status]";
+
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookIds = bookIds }, cancellationToken: cancellationToken);
+                var results = await connection.QueryAsync<(int BookId, PageStatuses Status, int Count)>(command);
+
+                foreach (var result in results)
+                {
+                    var pageSummary = new PageSummaryModel { Status = result.Status, Count = result.Count };
+                    if (!bookSummaries.TryGetValue(result.BookId, out BookPageSummaryModel bookSummary))
+                    {
+                        bookSummaries.Add(result.BookId, new BookPageSummaryModel
+                        {
+                            BookId = result.BookId,
+                            Statuses = new List<PageSummaryModel> { pageSummary }
+                        });
+                    }
+                    else
+                    {
+                        bookSummary.Statuses.Add(pageSummary);
+                    }
+                }
+
+                return bookSummaries.Values;
             }
         }
     }

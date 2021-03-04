@@ -5,6 +5,7 @@ using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,6 +51,23 @@ namespace Inshapardaz.Domain.Models.Library
 
             if (book != null)
             {
+                var status = (await _bookRepository.GetBookPageSummary(command.LibraryId, new[] { book.Id }, cancellationToken)).FirstOrDefault();
+
+                if (status != null)
+                {
+                    book.PageStatus = status.Statuses;
+                    if (status.Statuses.Any(s => s.Status == PageStatuses.Completed))
+                    {
+                        decimal completedPages = (decimal)status.Statuses.Single(s => s.Status == PageStatuses.Completed).Count;
+                        decimal totalPages = (decimal)status.Statuses.Sum(s => s.Count);
+                        book.Progress = (completedPages / totalPages) * 100;
+                    }
+                    else
+                    {
+                        book.Progress = 0.0M;
+                    }
+                }
+
                 var url = await StoreFile(book.Id, command.Content.FileName, command.Content.Contents, cancellationToken);
                 command.Content.FilePath = url;
                 command.Content.IsPublic = true;

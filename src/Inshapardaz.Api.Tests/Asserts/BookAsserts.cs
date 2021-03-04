@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
@@ -324,10 +325,10 @@ namespace Inshapardaz.Api.Tests.Asserts
 
             _book.IsPublic.Should().Be(expected.IsPublic);
             _book.IsPublished.Should().Be(expected.IsPublished);
-            _book.Copyrights.Should().Be((int)expected.Copyrights);
+            _book.Copyrights.Should().Be(expected.Copyrights.ToDescription());
             _book.DateAdded.Should().BeCloseTo(expected.DateAdded);
             _book.DateUpdated.Should().BeCloseTo(expected.DateUpdated);
-            _book.Status.Should().Be((int)expected.Status);
+            _book.Status.Should().Be(expected.Status.ToDescription());
             _book.YearPublished.Should().Be(expected.YearPublished);
             _book.AuthorId.Should().Be(expected.AuthorId);
             _book.AuthorName.Should().Be(db.GetAuthorById(expected.AuthorId).Name);

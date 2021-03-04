@@ -49,6 +49,27 @@ namespace Inshapardaz.Domain.Models.Library
              ? await _bookRepository.GetBooks(command.LibraryId, command.PageNumber, command.PageSize, command.AccountId, command.Filter, command.SortBy, command.SortDirection, cancellationToken)
              : await _bookRepository.SearchBooks(command.LibraryId, command.Query, command.PageNumber, command.PageSize, command.AccountId, command.Filter, command.SortBy, command.SortDirection, cancellationToken);
 
+            var statuses = await _bookRepository.GetBookPageSummary(command.LibraryId, books.Data.Select(b => b.Id).ToList(), cancellationToken);
+
+            foreach (var status in statuses)
+            {
+                var book = books.Data.SingleOrDefault(b => b.Id == status.BookId);
+                if (book != null)
+                {
+                    book.PageStatus = status.Statuses;
+                    if (status.Statuses.Any(s => s.Status == PageStatuses.Completed))
+                    {
+                        decimal completedPages = (decimal)status.Statuses.Single(s => s.Status == PageStatuses.Completed).Count;
+                        decimal totalPages = (decimal)status.Statuses.Sum(s => s.Count);
+                        book.Progress = (completedPages / totalPages) * 100;
+                    }
+                    else
+                    {
+                        book.Progress = 0.0M;
+                    }
+                }
+            }
+
             foreach (var book in books.Data)
             {
                 if (book != null && book.ImageId.HasValue)

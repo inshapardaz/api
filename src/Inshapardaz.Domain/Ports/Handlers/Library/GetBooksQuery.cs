@@ -60,8 +60,7 @@ namespace Inshapardaz.Domain.Models.Library
                     if (status.Statuses.Any(s => s.Status == PageStatuses.Completed))
                     {
                         decimal completedPages = (decimal)status.Statuses.Single(s => s.Status == PageStatuses.Completed).Count;
-                        decimal totalPages = (decimal)status.Statuses.Sum(s => s.Count);
-                        book.Progress = (completedPages / totalPages) * 100;
+                        book.Progress = (completedPages / book.PageCount);
                     }
                     else
                     {

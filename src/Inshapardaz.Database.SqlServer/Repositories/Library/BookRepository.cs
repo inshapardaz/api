@@ -107,7 +107,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     StatusFilter = filter.Status
                 };
                 var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName,
-                            CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite, c.*
+                            CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
+                            (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
+                            c.*
                             From Book b
                             Inner Join Author a On b.AuthorId = a.Id
                             Left Outer Join Series s On b.SeriesId = s.id
@@ -206,7 +208,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     FavoriteFilter = filter.Favorite
                 };
                 var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName,
-                            CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite, c.*
+                            CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
+                            (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
+                            c.*
                             From Book b
                             Inner Join Author a On b.AuthorId = a.Id
                             Left Outer Join Series s On b.SeriesId = s.id
@@ -314,7 +318,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 BookModel book = null;
                 var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName,
-                            CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite, c.*
+                            CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
+                            (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
+                            c.*
                             from Book b
                             Inner Join Author a On b.AuthorId = a.Id
                             Left Outer Join Series s On b.SeriesId = s.id
@@ -480,7 +486,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var bookSummaries = new Dictionary<int, BookPageSummaryModel>();
-                const string sql = @"Select bp.BookId, bp.[Status], Count(*) from BookPage bp
+                const string sql = @"Select bp.BookId, bp.[Status], Count(*),
+                                (Count(bp.Status)* 100 / (Select Count(*) From BookPage WHERE BookPage.BookId = bp.BookId)) as Percentage
+                                FROM BookPage bp
                                 INNER Join Book b ON b.id = bp.BookId
                                 Where b.LibraryId = @LibraryId
                                 AND b.Id IN @BookIds
@@ -488,11 +496,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                 GROUP By bp.BookId, bp.[Status]";
 
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookIds = bookIds }, cancellationToken: cancellationToken);
-                var results = await connection.QueryAsync<(int BookId, PageStatuses Status, int Count)>(command);
+                var results = await connection.QueryAsync<(int BookId, PageStatuses Status, int Count, decimal Percentage)>(command);
 
                 foreach (var result in results)
                 {
-                    var pageSummary = new PageSummaryModel { Status = result.Status, Count = result.Count };
+                    var pageSummary = new PageSummaryModel { Status = result.Status, Count = result.Count, Percentage = result.Percentage};
                     if (!bookSummaries.TryGetValue(result.BookId, out BookPageSummaryModel bookSummary))
                     {
                         bookSummaries.Add(result.BookId, new BookPageSummaryModel

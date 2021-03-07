@@ -51,6 +51,8 @@ namespace Inshapardaz.Domain.Models.Library
 
         public decimal Progress { get; set; }
 
+        public int PageCount { get; set; }
+
         public IEnumerable<PageSummaryModel> PageStatus { get; set; }
     }
 }

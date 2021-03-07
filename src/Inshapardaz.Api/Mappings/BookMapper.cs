@@ -29,6 +29,7 @@ namespace Inshapardaz.Api.Mappings
                 IsPublished = source.IsPublished,
                 Progress = source.Progress,
                 Categories = source.Categories?.Select(c => c.Map()),
+                PageCount = source.PageCount,
                 PageStatus = source.PageStatus?.Select(ps => ps.Map())
             };
 
@@ -51,6 +52,7 @@ namespace Inshapardaz.Api.Mappings
                 IsPublished = source.IsPublished,
                 Progress = source.Progress,
                 Categories = source.Categories?.Select(c => c.Map()).ToList(),
+                PageCount = source.PageCount,
                 PageStatus = source.PageStatus?.Select(ps => ps.Map())
             };
 
@@ -76,14 +78,16 @@ namespace Inshapardaz.Api.Mappings
             => new PageSummaryView
             {
                 Status = source.Status.ToDescription(),
-                Count = source.Count
+                Count = source.Count,
+                Percentage = source.Percentage
             };
 
         public static PageSummaryModel Map(this PageSummaryView source)
             => new PageSummaryModel
             {
                 Status = source.Status.ToEnum(PageStatuses.Available),
-                Count = source.Count
+                Count = source.Count,
+                Percentage = source.Percentage
             };
     }
 }

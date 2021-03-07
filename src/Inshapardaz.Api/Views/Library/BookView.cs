@@ -45,6 +45,9 @@ namespace Inshapardaz.Api.Views.Library
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public decimal Progress { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int PageCount { get; set; }
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public IEnumerable<PageSummaryView> PageStatus { get; set; }
     }

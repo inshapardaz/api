@@ -205,7 +205,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     AuthorFilter = filter.AuthorId,
                     SeriesFilter = filter.SeriesId,
                     CategoryFilter = filter.CategoryId,
-                    FavoriteFilter = filter.Favorite
+                    FavoriteFilter = filter.Favorite,
+                    StatusFilter = filter.Status
                 };
                 var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
@@ -219,6 +220,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Left Outer Join Category c ON bc.CategoryId = c.Id
                             Left Outer Join FavoriteBooks fb On fb.BookId = b.Id
                             Where b.LibraryId = @LibraryId And b.Title Like @Query AND (@AccountId Is not Null OR b.IsPublic = 1)
+                            AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
                             AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
                             AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter Is Null)
@@ -251,6 +253,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                 Left Outer Join Category c ON bc.CategoryId = c.Id
                                 Left Outer Join FavoriteBooks fb On fb.BookId = b.Id
                                 Where b.LibraryId = @LibraryId And b.Title Like @Query AND(@AccountId Is not Null OR b.IsPublic = 1)
+                                AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
                                 AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
                                 AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
                                 AND (f.AccountId = @AccountId OR @FavoriteFilter Is Null)
@@ -500,7 +503,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 foreach (var result in results)
                 {
-                    var pageSummary = new PageSummaryModel { Status = result.Status, Count = result.Count, Percentage = result.Percentage};
+                    var pageSummary = new PageSummaryModel { Status = result.Status, Count = result.Count, Percentage = result.Percentage };
                     if (!bookSummaries.TryGetValue(result.BookId, out BookPageSummaryModel bookSummary))
                     {
                         bookSummaries.Add(result.BookId, new BookPageSummaryModel

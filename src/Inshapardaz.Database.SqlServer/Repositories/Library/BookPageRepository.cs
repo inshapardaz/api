@@ -117,7 +117,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, PageStatuses status, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -126,18 +126,20 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             INNER JOIN Book b ON b.Id = p.BookId
                             LEFT OUTER JOIN [Accounts] a ON a.Id = p.AccountId
-                            WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId
+                            WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.Status = @Status
                             ORDER BY p.SequenceNumber
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql,
-                                                    new { LibraryId = libraryId, BookId = bookId, PageSize = pageSize, PageNumber = pageNumber },
+                                                    new { LibraryId = libraryId, BookId = bookId, Status = status, PageSize = pageSize, PageNumber = pageNumber },
                                                     cancellationToken: cancellationToken);
 
                 var pages = await connection.QueryAsync<BookPageModel>(command);
 
-                var sqlCount = @"SELECT Count(*) FROM BookPage p INNER JOIN Book b ON b.Id = p.BookId WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId";
-                var commandCount = new CommandDefinition(sqlCount, new { LibraryId = libraryId, BookId = bookId },
+                var sqlCount = @"SELECT Count(*)
+                                FROM BookPage p INNER JOIN Book b ON b.Id = p.BookId
+                                WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.Status = @Status ";
+                var commandCount = new CommandDefinition(sqlCount, new { LibraryId = libraryId, BookId = bookId, Status = status },
                                                     cancellationToken: cancellationToken);
 
                 var pagesCount = await connection.QuerySingleAsync<int>(commandCount);

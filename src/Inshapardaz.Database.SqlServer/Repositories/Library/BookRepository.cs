@@ -61,12 +61,20 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
 
-                var sqlCategory = @"Delete From BookCategory Where BookId = @BookId AND CategoryId = @CategoryId;
-                           Insert Into BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
 
-                var bookCategories = book.Categories.Select(c => new { BookId = book.Id, CategoryId = c.Id });
-                var commandCategory = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(commandCategory);
+                var sqlCategoryDelete = @"Delete From BookCategory Where BookId = @BookId;";
+
+                var commandCategoryDelete = new CommandDefinition(sqlCategoryDelete, new { BookId = book.Id }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(commandCategoryDelete);
+
+                if (book.Categories != null && book.Categories.Any())
+                {
+                    var sqlCategory = @"Insert Into BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
+
+                    var bookCategories = book.Categories.Select(c => new { BookId = book.Id, CategoryId = c.Id });
+                    var commandCategory = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
+                    await connection.ExecuteAsync(commandCategory);
+                }
             }
         }
 

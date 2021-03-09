@@ -39,10 +39,14 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/books/{bookId}/pages", Name = nameof(BookPageController.GetPagesByBook))]
-        public async Task<IActionResult> GetPagesByBook(int libraryId, int bookId, int pageNumber = 1,
-            int pageSize = 10, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> GetPagesByBook(int libraryId,
+            int bookId,
+            int pageNumber = 1,
+            int pageSize = 10,
+            [FromQuery]PageStatuses status = PageStatuses.Available,
+            CancellationToken token = default(CancellationToken))
         {
-            var authorsQuery = new GetBookPagesQuery(libraryId, bookId, pageNumber, pageSize);
+            var authorsQuery = new GetBookPagesQuery(libraryId, bookId, pageNumber, pageSize) { StatusFilter = status };
             var result = await _queryProcessor.ExecuteAsync(authorsQuery, token);
 
             var args = new PageRendererArgs<BookPageModel>

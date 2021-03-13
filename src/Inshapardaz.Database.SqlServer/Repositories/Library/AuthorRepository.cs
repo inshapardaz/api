@@ -63,7 +63,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id) AS BookCount
+                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id AND b.Status = 0) AS BookCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
@@ -93,7 +93,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id) AS BookCount
+                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id  AND b.Status = 0) AS BookCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
@@ -110,7 +110,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id) AS BookCount
+                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id AND b.Status = 0) AS BookCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId AND

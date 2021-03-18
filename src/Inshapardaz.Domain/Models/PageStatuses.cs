@@ -4,6 +4,9 @@ namespace Inshapardaz.Domain.Models
 {
     public enum PageStatuses
     {
+        [Description("All")]
+        All = -1,
+
         [Description("Available")]
         Available = 0,
 

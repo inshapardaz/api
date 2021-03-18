@@ -1,4 +1,6 @@
-﻿using Inshapardaz.Api.Views.Library;
+﻿using Inshapardaz.Api.Extensions;
+using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Api.Mappings
@@ -12,7 +14,7 @@ namespace Inshapardaz.Api.Mappings
                 BookId = view.BookId,
                 Text = view.Text,
                 SequenceNumber = view.SequenceNumber,
-                Status = view.Status,
+                Status = view.Status.ToEnum(PageStatuses.Available),
                 AccountId = view.AccountId,
                 AccountName = view.AccountName,
                 AssignTimeStamp = view.AssignTimeStamp
@@ -26,7 +28,7 @@ namespace Inshapardaz.Api.Mappings
                 BookId = model.BookId,
                 Text = model.Text,
                 SequenceNumber = model.SequenceNumber,
-                Status = model.Status,
+                Status = model.Status.ToDescription(),
                 AccountId = model.AccountId,
                 AccountName = model.AccountName,
                 AssignTimeStamp = model.AssignTimeStamp

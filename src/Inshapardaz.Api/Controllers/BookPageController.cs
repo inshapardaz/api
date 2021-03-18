@@ -43,10 +43,11 @@ namespace Inshapardaz.Api.Controllers
             int bookId,
             int pageNumber = 1,
             int pageSize = 10,
-            [FromQuery]PageStatuses status = PageStatuses.Available,
+            [FromQuery]PageStatuses status = PageStatuses.All,
+            [FromQuery]string assignedTo = null,
             CancellationToken token = default(CancellationToken))
         {
-            var authorsQuery = new GetBookPagesQuery(libraryId, bookId, pageNumber, pageSize) { StatusFilter = status };
+            var authorsQuery = new GetBookPagesQuery(libraryId, bookId, pageNumber, pageSize) { StatusFilter = status, AssignedTo = assignedTo };
             var result = await _queryProcessor.ExecuteAsync(authorsQuery, token);
 
             var args = new PageRendererArgs<BookPageModel>

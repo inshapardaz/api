@@ -98,6 +98,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                                    .With(b => b.LibraryId, _libraryId)
                                    .With(b => b.AuthorId, author.Id)
                                    .With(b => b.Language, Random.Locale)
+                                   .With(b => b.Status, Domain.Models.BookStatuses.Published)
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);

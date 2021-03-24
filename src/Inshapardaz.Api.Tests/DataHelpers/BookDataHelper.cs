@@ -72,7 +72,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static int GetBookCountByAuthor(this IDbConnection connection, int id)
         {
-            return connection.ExecuteScalar<int>("Select Count(*) From Book Where AuthorId = @Id", new { Id = id });
+            return connection.ExecuteScalar<int>("Select Count(*) From Book Where AuthorId = @Id AND status = 0", new { Id = id });
         }
 
         public static BookDto GetBookById(this IDbConnection connection, int bookId)

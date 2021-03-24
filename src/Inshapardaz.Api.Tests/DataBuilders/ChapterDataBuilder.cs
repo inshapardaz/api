@@ -87,7 +87,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     var content = fixture.Build<ChapterContentDto>()
                         .With(c => c.ChapterId, chapter.Id)
                         .With(c => c.Text, Random.String)
-                        .With(c => c.Language, _language ?? Helpers.Random.Locale)
+                        .With(c => c.Language, _language ?? $"locale-{j}")
                         .Create();
 
                     _contents.Add(content);

@@ -24,7 +24,8 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int PageSize { get; private set; }
         public PageStatuses StatusFilter { get; set; }
-        public string AssignedTo { get; set; }
+        public AssignmentFilter AssignmentFilter { get; set; }
+        public int? AccountId { get; set; }
     }
 
     public class GetBookPagesQueryHandler : QueryHandlerAsync<GetBookPagesQuery, Page<BookPageModel>>
@@ -40,12 +41,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<Page<BookPageModel>> ExecuteAsync(GetBookPagesQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (!string.IsNullOrEmpty(query.AssignedTo))
-            {
-                //var accountId = _accountRepository.GetAccountByEmailAddress
-                // TODO: find the user and try to get the user pages. if the user is not found, return nothing.
-            }
-            var authors = await _bookPageRepository.GetPagesByBook(query.LibraryId, query.BookId, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignedTo, cancellationToken);
+            var authors = await _bookPageRepository.GetPagesByBook(query.LibraryId, query.BookId, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.AccountId, cancellationToken);
 
             return authors;
         }

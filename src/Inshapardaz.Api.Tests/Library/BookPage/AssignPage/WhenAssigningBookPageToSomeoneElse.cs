@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
         private BookPageAssert _assert;
         private BookPageDto _page;
         private BookPageDto _exptectedPage;
-        private int _secondAccountId = Helpers.Random.Number;
+        private int _secondAccountId = Random.Number;
 
         public WhenAssigningBookPageToSomeoneElse(Role role)
             : base(role)
@@ -27,6 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
         [OneTimeSetUp]
         public async Task Setup()
         {
+            _secondAccountId = AccountBuilder.Build().Id;
             var book = BookBuilder.WithLibrary(LibraryId).WithPages(3, true).Build();
             _page = BookBuilder.GetPages(book.Id).PickRandom();
 

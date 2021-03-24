@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
@@ -9,24 +10,31 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
 {
-    [TestFixture]
-    public class WhenGettingBookPagesFirstPage : TestBase
+    [TestFixture(PageStatuses.InReview)]
+    [TestFixture(PageStatuses.Completed)]
+    [TestFixture(PageStatuses.Typed)]
+    [TestFixture(PageStatuses.Typing)]
+    [TestFixture(PageStatuses.Available)]
+    public class WhenGettingBookPagesInStatus : TestBase
     {
         private BookDto _book;
         private HttpResponseMessage _response;
         private PagingAssert<BookPageView> _assert;
+        private readonly PageStatuses _status;
 
-        public WhenGettingBookPagesFirstPage()
+        public WhenGettingBookPagesInStatus(PageStatuses status)
             : base(Role.Reader)
         {
+            _status = status;
         }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _book = BookBuilder.WithLibrary(LibraryId).WithPages(13).Build();
+            var account = AccountBuilder.Build();
+            _book = BookBuilder.WithLibrary(LibraryId).WithPages(20).WithStatus(_status, 15).Build();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/pages?pageSize=10&pageNumber=1");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/pages?pageSize=10&pageNumber=1&status={_status.ToDescription()}");
 
             _assert = new PagingAssert<BookPageView>(_response);
         }
@@ -46,7 +54,7 @@ namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books/{_book.Id}/pages");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books/{_book.Id}/pages", "status", _status.ToDescription());
         }
 
         [Test]
@@ -70,7 +78,12 @@ namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
         [Test]
         public void ShouldReturExpectedBookPages()
         {
-            var expectedItems = BookBuilder.GetPages(_book.Id).OrderBy(p => p.SequenceNumber).Take(10);
+            var expectedItems = BookBuilder.GetPages(_book.Id).Where(p => p.Status == _status).OrderBy(p => p.SequenceNumber).Take(10);
+
+            _assert.ShouldHaveTotalCount(15)
+                   .ShouldHavePage(1)
+                   .ShouldHavePageSize(10);
+
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.SequenceNumber == item.SequenceNumber);

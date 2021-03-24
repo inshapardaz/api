@@ -10,13 +10,14 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
 {
     [TestFixture]
-    public class WhenGettingBookPagesFirstPage : TestBase
+    public class WhenGettingBookPagesAssignedToMe : TestBase
     {
         private BookDto _book;
         private HttpResponseMessage _response;
         private PagingAssert<BookPageView> _assert;
+        private AccountDto _account;
 
-        public WhenGettingBookPagesFirstPage()
+        public WhenGettingBookPagesAssignedToMe()
             : base(Role.Reader)
         {
         }
@@ -24,9 +25,13 @@ namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _book = BookBuilder.WithLibrary(LibraryId).WithPages(13).Build();
+            _account = AccountBuilder.Build();
+            _book = BookBuilder.WithLibrary(LibraryId).WithPages(20)
+                .AssignPagesTo(_account.Id, 7)
+                .AssignPagesTo(AccountId, 11)
+                .Build();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/pages?pageSize=10&pageNumber=1");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/pages?pageSize=10&pageNumber=1&assignmentFilter=assignedtome");
 
             _assert = new PagingAssert<BookPageView>(_response);
         }
@@ -70,7 +75,11 @@ namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
         [Test]
         public void ShouldReturExpectedBookPages()
         {
-            var expectedItems = BookBuilder.GetPages(_book.Id).OrderBy(p => p.SequenceNumber).Take(10);
+            var expectedItems = BookBuilder.GetPages(_book.Id).Where(p => p.AccountId == AccountId).OrderBy(p => p.SequenceNumber).Take(10);
+            _assert.ShouldHaveTotalCount(11)
+                   .ShouldHavePage(1)
+                   .ShouldHavePageSize(10);
+
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.SequenceNumber == item.SequenceNumber);

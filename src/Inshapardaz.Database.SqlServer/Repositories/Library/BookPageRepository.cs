@@ -117,7 +117,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, PageStatuses status, string assignmentFilter, CancellationToken cancellationToken)
+        public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, PageStatuses status, AssignmentFilter assignmentFilter, int? assignedTo, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -128,6 +128,12 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             LEFT OUTER JOIN [Accounts] a ON a.Id = p.AccountId
                             WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId
                             AND (@Status = -1 OR p.Status = @Status )
+                            AND (
+                                ( @AssignmentFilter = 0 ) OR
+                                ( @AssignmentFilter = 1 AND p.AccountId IS NOT NULL) OR
+                                ( @AssignmentFilter = 2 AND p.AccountId IS NULL) OR
+                                ( (@AssignmentFilter = 3  OR @AssignmentFilter = 4) AND p.AccountId = @AccountId )
+                            )
                             ORDER BY p.SequenceNumber
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -138,7 +144,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                                         BookId = bookId,
                                                         Status = status,
                                                         PageSize = pageSize,
-                                                        PageNumber = pageNumber
+                                                        PageNumber = pageNumber,
+                                                        AssignmentFilter = assignmentFilter,
+                                                        AccountId = assignedTo
                                                     },
                                                     cancellationToken: cancellationToken);
 
@@ -146,9 +154,23 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var sqlCount = @"SELECT Count(*)
                                 FROM BookPage p INNER JOIN Book b ON b.Id = p.BookId
-                                WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.Status = @Status ";
-                var commandCount = new CommandDefinition(sqlCount, new { LibraryId = libraryId, BookId = bookId, Status = status },
-                                                    cancellationToken: cancellationToken);
+                                WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId
+                                AND (@Status = -1 OR p.Status = @Status )
+                                AND (
+                                    ( @AssignmentFilter = 0 ) OR
+                                    ( @AssignmentFilter = 1 AND p.AccountId IS NOT NULL) OR
+                                    ( @AssignmentFilter = 2 AND p.AccountId IS NULL) OR
+                                    ( (@AssignmentFilter = 3  OR @AssignmentFilter = 4) AND p.AccountId = @AccountId )
+                                )";
+                var commandCount = new CommandDefinition(sqlCount, new
+                {
+                    LibraryId = libraryId,
+                    BookId = bookId,
+                    Status = status,
+                    AssignmentFilter = assignmentFilter,
+                    AccountId = assignedTo
+                },
+                    cancellationToken: cancellationToken);
 
                 var pagesCount = await connection.QuerySingleAsync<int>(commandCount);
                 return new Page<BookPageModel>

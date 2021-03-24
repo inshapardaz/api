@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books/{_book.Id}/pages", "status", _status.ToDescription());
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books/{_book.Id}/pages");
         }
 
         [Test]

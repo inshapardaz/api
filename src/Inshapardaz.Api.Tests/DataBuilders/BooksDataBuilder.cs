@@ -11,6 +11,7 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Database.SqlServer;
 using Random = Inshapardaz.Api.Tests.Helpers.Random;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -20,6 +21,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private readonly AuthorsDataBuilder _authorBuilder;
         private readonly SeriesDataBuilder _seriesBuilder;
         private readonly CategoriesDataBuilder _categoriesBuilder;
+
         private readonly FakeFileStorage _fileStorage;
 
         private List<BookDto> _books;
@@ -48,6 +50,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private List<RecentBookDto> _recentBooks = new List<RecentBookDto>();
         private int _pageCount;
         private bool _addPageImage;
+        private Dictionary<int, int> _assignments = new Dictionary<int, int>();
+        private Dictionary<PageStatuses, int> _pageStatuses = new Dictionary<PageStatuses, int>();
 
         public IEnumerable<AuthorDto> Authors => _authors;
         public IEnumerable<BookDto> Books => _books;
@@ -148,6 +152,18 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         {
             _pageCount = count;
             _addPageImage = addImage;
+            return this;
+        }
+
+        public BooksDataBuilder AssignPagesTo(int accountId, int count)
+        {
+            _assignments.TryAdd(accountId, count);
+            return this;
+        }
+
+        public BooksDataBuilder WithStatus(PageStatuses statuses, int count)
+        {
+            _pageStatuses.TryAdd(statuses, count);
             return this;
         }
 
@@ -327,7 +343,33 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                             .With(p => p.SequenceNumber, i + 1)
                             .With(p => p.Text, Random.Text)
                             .With(p => p.ImageId, pageImage?.Id)
+                            .With(p => p.AccountId, (int?)null)
+                            .With(p => p.Status, PageStatuses.All)
                             .Create());
+                    }
+
+                    if (_assignments.Any())
+                    {
+                        foreach (var assignment in _assignments)
+                        {
+                            var pagesToAssign = Random.PickRandom(pages.Where(p => p.AccountId == null), assignment.Value);
+                            foreach (var pageToAssign in pagesToAssign)
+                            {
+                                pageToAssign.AccountId = assignment.Key;
+                            }
+                        }
+                    }
+
+                    if (_pageStatuses.Any())
+                    {
+                        foreach (var pageStatus in _pageStatuses)
+                        {
+                            var pagesToSetStatus = Random.PickRandom(pages.Where(p => p.Status == PageStatuses.All), pageStatus.Value);
+                            foreach (var pageToSetStatus in pagesToSetStatus)
+                            {
+                                pageToSetStatus.Status = pageStatus.Key;
+                            }
+                        }
                     }
 
                     _connection.AddBookPages(pages);

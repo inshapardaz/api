@@ -55,7 +55,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
         [Test]
         public void ShouldHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, parameterName: "authorid", pageSize: 7, parameterValue: _author.Id.ToString());
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, 7,
+                new KeyValuePair<string, string>("authorid", _author.Id.ToString()));
         }
 
         [Test]

@@ -47,13 +47,15 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetLatestBooks
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", "sortby", "DateCreated");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books",
+                new KeyValuePair<string, string>("sortby", "DateCreated"));
         }
 
         [Test]
         public void ShouldNotHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, 10, "sortby", "DateCreated");
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, 10,
+                new KeyValuePair<string, string>("sortby", "DateCreated"));
         }
 
         [Test]

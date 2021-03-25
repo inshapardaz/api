@@ -50,9 +50,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", "pageNumber", "1");
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", "pageSize", "10");
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", "read", bool.TrueString);
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", 1, 10,
+                new KeyValuePair<string, string>("read", bool.TrueString));
         }
 
         [Test]

@@ -42,14 +42,14 @@ namespace Inshapardaz.Api.Controllers
             string query,
             int pageNumber = 1,
             int pageSize = 10,
-            [FromQuery]int? authorId = null,
-            [FromQuery]int? categoryId = null,
-            [FromQuery]int? seriesId = null,
-            [FromQuery]bool? favorite = null,
-            [FromQuery]bool? read = null,
-            [FromQuery]BookStatuses status = BookStatuses.Published,
-            [FromQuery]BookSortByType sortBy = BookSortByType.Title,
-            [FromQuery]SortDirection sortDirection = SortDirection.Ascending,
+            [FromQuery] int? authorId = null,
+            [FromQuery] int? categoryId = null,
+            [FromQuery] int? seriesId = null,
+            [FromQuery] bool? favorite = null,
+            [FromQuery] bool? read = null,
+            [FromQuery] BookStatuses status = BookStatuses.Published,
+            [FromQuery] BookSortByType sortBy = BookSortByType.Title,
+            [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
             CancellationToken token = default(CancellationToken))
         {
             var filter = new BookFilter
@@ -71,18 +71,18 @@ namespace Inshapardaz.Api.Controllers
 
             var books = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
 
-            var args = new PageRendererArgs<BookModel>
+            var args = new PageRendererArgs<BookModel, BookFilter>
             {
                 Page = books,
                 RouteArguments = new PagedRouteArgs
                 {
                     PageNumber = pageNumber,
                     PageSize = pageSize,
-                    BookFilter = filter,
                     Query = query,
                     SortBy = sortBy,
                     SortDirection = sortDirection
-                }
+                },
+                Filters = filter,
             };
 
             return new OkObjectResult(_bookRenderer.Render(args, libraryId));
@@ -104,7 +104,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/books", Name = nameof(BookController.CreateBook))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> CreateBook(int libraryId, [FromBody]BookView book, CancellationToken token)
+        public async Task<IActionResult> CreateBook(int libraryId, [FromBody] BookView book, CancellationToken token)
         {
             if (!ModelState.IsValid)
             {
@@ -120,7 +120,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}/books/{bookId}", Name = nameof(BookController.UpdateBook))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateBook(int libraryId, int bookId, [FromBody]BookView book, CancellationToken token)
+        public async Task<IActionResult> UpdateBook(int libraryId, int bookId, [FromBody] BookView book, CancellationToken token)
         {
             if (!ModelState.IsValid)
             {

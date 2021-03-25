@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
@@ -37,7 +38,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/series", "query", "SearchSeries");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/series", new KeyValuePair<string, string>("query", "SearchSeries"));
         }
 
         [Test]
@@ -49,13 +50,13 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
         [Test]
         public void ShouldHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/series", 4, 10, "query", "SearchSeries");
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/series", 4, 10, new KeyValuePair<string, string>("query", "SearchSeries"));
         }
 
         [Test]
         public void ShouldHavePreviousLinks()
         {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/series", 2, 10, "query", "SearchSeries");
+            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/series", 2, 10, new KeyValuePair<string, string>("query", "SearchSeries"));
         }
 
         [Test]

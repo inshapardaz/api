@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Views.Library;
@@ -36,7 +37,7 @@ namespace Inshapardaz.Api.Tests.Author.GetAuthors
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/authors", "query", "SearchAuthor");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/authors", new KeyValuePair<string, string>("query", "SearchAuthor"));
         }
 
         [Test]

@@ -62,7 +62,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
         [Test]
         public void ShouldHavePreviousLink()
         {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 2, parameterName: "authorid", parameterValue: _author.Id.ToString());
+            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 2, 10,
+                new KeyValuePair<string, string>("authorid", _author.Id.ToString()));
         }
 
         [Test]

@@ -56,10 +56,11 @@ namespace Inshapardaz.Api.Controllers
             };
             var result = await _queryProcessor.ExecuteAsync(authorsQuery, token);
 
-            var args = new PageRendererArgs<BookPageModel>
+            var args = new PageRendererArgs<BookPageModel, BookPageFilter>
             {
                 Page = result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
+                Filters = new BookPageFilter { Status = status, AssignmentFilter = assignmentFilter, AccountId = assignmentTo }
             };
 
             return new OkObjectResult(_bookPageRenderer.Render(args, libraryId, bookId));

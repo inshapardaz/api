@@ -51,7 +51,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", 1, 10, "favorite", bool.TrueString);
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", 1, 10,
+                new KeyValuePair<string, string>("favorite", bool.TrueString));
         }
 
         [Test]

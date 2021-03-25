@@ -56,13 +56,15 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
         [Test]
         public void ShouldHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3, parameterName: "authorid", pageSize: 9, parameterValue: _author.Id.ToString());
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3, 9,
+                new KeyValuePair<string, string>("authorid", _author.Id.ToString()));
         }
 
         [Test]
         public void ShouldHavePreviousLink()
         {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1, parameterName: "authorid", pageSize: 9, parameterValue: _author.Id.ToString());
+            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1, 9,
+                new KeyValuePair<string, string>("authorid", _author.Id.ToString()));
         }
 
         [Test]

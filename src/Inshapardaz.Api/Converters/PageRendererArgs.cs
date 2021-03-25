@@ -10,6 +10,15 @@ namespace Inshapardaz.Api.Converters
         public PagedRouteArgs RouteArguments { get; set; }
     }
 
+    public class PageRendererArgs<T, TFilters>
+    {
+        public Page<T> Page { get; set; }
+
+        public PagedRouteArgs RouteArguments { get; set; }
+
+        public TFilters Filters { get; set; }
+    }
+
     public class PagedRouteArgs
     {
         public int PageNumber { get; set; }
@@ -18,8 +27,8 @@ namespace Inshapardaz.Api.Converters
 
         public string Query { get; set; }
 
-        public BookFilter BookFilter { get; set; }
         public BookSortByType SortBy { get; internal set; }
+
         public SortDirection SortDirection { get; internal set; }
         public int? AccountId { get; set; }
     }

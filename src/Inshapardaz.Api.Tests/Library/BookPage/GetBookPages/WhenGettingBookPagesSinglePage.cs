@@ -7,7 +7,7 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
+namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
 {
     [TestFixture]
     public class WhenGettingBookPagesSinglePage : TestBase

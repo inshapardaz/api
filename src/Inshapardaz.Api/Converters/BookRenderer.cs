@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.Converters
 
         BookView Render(BookModel source, int libraryId);
 
-        PageView<BookView> Render(PageRendererArgs<BookModel> source, int id);
+        PageView<BookView> Render(PageRendererArgs<BookModel, BookFilter> source, int id);
     }
 
     public class BookRenderer : IRenderBook
@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Converters
             _userHelper = userHelper;
         }
 
-        public PageView<BookView> Render(PageRendererArgs<BookModel> source, int libraryId)
+        public PageView<BookView> Render(PageRendererArgs<BookModel, BookFilter> source, int libraryId)
         {
             var page = new PageView<BookView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
@@ -99,7 +99,7 @@ namespace Inshapardaz.Api.Converters
             return page;
         }
 
-        private static Dictionary<string, string> CreateQueryString(PageRendererArgs<BookModel> source, PageView<BookView> page)
+        private static Dictionary<string, string> CreateQueryString(PageRendererArgs<BookModel, BookFilter> source, PageView<BookView> page)
         {
             Dictionary<string, string> queryString = new Dictionary<string, string> {
                     { "pageSize", page.PageSize.ToString() }
@@ -110,25 +110,25 @@ namespace Inshapardaz.Api.Converters
                 queryString.Add("query", source.RouteArguments.Query);
             }
 
-            if (source.RouteArguments.BookFilter != null)
+            if (source.Filters != null)
             {
-                if (source.RouteArguments.BookFilter.AuthorId.HasValue)
-                    queryString.Add("authorid", source.RouteArguments.BookFilter.AuthorId.Value.ToString());
+                if (source.Filters.AuthorId.HasValue)
+                    queryString.Add("authorid", source.Filters.AuthorId.Value.ToString());
 
-                if (source.RouteArguments.BookFilter.SeriesId.HasValue)
-                    queryString.Add("seriesid", source.RouteArguments.BookFilter.SeriesId.Value.ToString());
+                if (source.Filters.SeriesId.HasValue)
+                    queryString.Add("seriesid", source.Filters.SeriesId.Value.ToString());
 
-                if (source.RouteArguments.BookFilter.CategoryId.HasValue)
-                    queryString.Add("categoryid", source.RouteArguments.BookFilter.CategoryId.Value.ToString());
+                if (source.Filters.CategoryId.HasValue)
+                    queryString.Add("categoryid", source.Filters.CategoryId.Value.ToString());
 
-                if (source.RouteArguments.BookFilter.Favorite.HasValue)
+                if (source.Filters.Favorite.HasValue)
                     queryString.Add("favorite", bool.TrueString);
 
-                if (source.RouteArguments.BookFilter.Read.HasValue)
+                if (source.Filters.Read.HasValue)
                     queryString.Add("read", bool.TrueString);
 
-                if (source.RouteArguments.BookFilter.Status != Domain.Models.BookStatuses.Published)
-                    queryString.Add("status", source.RouteArguments.BookFilter.Status.ToDescription());
+                if (source.Filters.Status != Domain.Models.BookStatuses.Published)
+                    queryString.Add("status", source.Filters.Status.ToDescription());
             }
 
             if (source.RouteArguments.SortBy != BookSortByType.Title)

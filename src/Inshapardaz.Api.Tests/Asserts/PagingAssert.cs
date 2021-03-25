@@ -20,17 +20,19 @@ namespace Inshapardaz.Api.Tests.Asserts
             _page = response.GetContent<PageView<T>>().Result;
         }
 
-        internal void ShouldHaveSelfLink(string endingWith, string parameterName = null, string parameterValue = null)
+        internal void ShouldHaveSelfLink(string endingWith, params KeyValuePair<string, string>[] parameters)
         {
             _page.SelfLink()
                   .ShouldBeGet()
                   .ShouldHaveUrl(endingWith);
 
-            if (parameterName != null)
-                _page.SelfLink().ShouldHaveQueryParameter<string>(parameterName, parameterValue);
+            foreach (var param in parameters)
+            {
+                _page.SelfLink().ShouldHaveQueryParameter<string>(param.Key, param.Value);
+            }
         }
 
-        internal void ShouldHaveSelfLink(string format, int pageNumber, int pageSize = 10, string parameterName = null, string parameterValue = null)
+        internal void ShouldHaveSelfLink(string format, int pageNumber, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
         {
             var link = _page.SelfLink();
             link.ShouldBeGet()
@@ -38,8 +40,10 @@ namespace Inshapardaz.Api.Tests.Asserts
                 .ShouldHaveQueryParameter("pageSize", pageSize)
                 .ShouldHaveQueryParameter("pageNumber", pageNumber);
 
-            if (parameterName != null)
-                link.ShouldHaveQueryParameter<string>(parameterName, parameterValue);
+            foreach (var param in parameters)
+            {
+                link.ShouldHaveQueryParameter<string>(param.Key, param.Value);
+            }
         }
 
         internal void ShouldNotHaveNextLink()
@@ -57,7 +61,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _page.Links.AssertLinkNotPresent("create");
         }
 
-        internal void ShouldHaveNextLink(string format, int pageNumber, int pageSize = 10, string parameterName = null, string parameterValue = null)
+        internal void ShouldHaveNextLink(string format, int pageNumber, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
         {
             var link = _page.Links.AssertLink("next");
             link.ShouldBeGet()
@@ -65,11 +69,13 @@ namespace Inshapardaz.Api.Tests.Asserts
                 .ShouldHaveQueryParameter("pageSize", pageSize)
                 .ShouldHaveQueryParameter("pageNumber", pageNumber);
 
-            if (parameterName != null)
-                link.ShouldHaveQueryParameter<string>(parameterName, parameterValue);
+            foreach (var param in parameters)
+            {
+                link.ShouldHaveQueryParameter<string>(param.Key, param.Value);
+            }
         }
 
-        internal void ShouldHavePreviousLink(string format, int pageNumber, int pageSize = 10, string parameterName = null, string parameterValue = null)
+        internal void ShouldHavePreviousLink(string format, int pageNumber, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
         {
             var link = _page.Links.AssertLink("previous");
             link.ShouldBeGet()
@@ -77,8 +83,10 @@ namespace Inshapardaz.Api.Tests.Asserts
                 .ShouldHaveQueryParameter("pageSize", pageSize)
                 .ShouldHaveQueryParameter("pageNumber", pageNumber);
 
-            if (parameterName != null)
-                link.ShouldHaveQueryParameter<string>(parameterName, parameterValue);
+            foreach (var param in parameters)
+            {
+                link.ShouldHaveQueryParameter<string>(param.Key, param.Value);
+            }
         }
 
         internal PagingAssert<T> ShouldHaveTotalCount(int totalCount)

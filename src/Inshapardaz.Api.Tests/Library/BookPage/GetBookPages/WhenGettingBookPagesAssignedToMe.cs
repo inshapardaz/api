@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
@@ -7,7 +8,7 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
+namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
 {
     [TestFixture]
     public class WhenGettingBookPagesAssignedToMe : TestBase
@@ -51,7 +52,8 @@ namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books/{_book.Id}/pages");
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books/{_book.Id}/pages",
+                new KeyValuePair<string, string>("assignmentFilter", "AssignedToMe"));
         }
 
         [Test]
@@ -63,7 +65,8 @@ namespace Inshapardaz.Api.Tests.BookPage.GetBookPages
         [Test]
         public void ShouldHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books/{_book.Id}/pages", 2, 10);
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books/{_book.Id}/pages", 2, 10,
+                new KeyValuePair<string, string>("assignmentFilter", "AssignedToMe"));
         }
 
         [Test]

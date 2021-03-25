@@ -50,7 +50,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksBySeries
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", 3, 10, "seriesid", _series.Id.ToString());
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", 3, 10,
+                new KeyValuePair<string, string>("seriesId", _series.Id.ToString()));
         }
 
         [Test]
@@ -68,7 +69,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksBySeries
         [Test]
         public void ShouldHavePreviousLink()
         {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 2, 10, "seriesId", _series.Id.ToString());
+            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 2, 10,
+                new KeyValuePair<string, string>("seriesId", _series.Id.ToString()));
         }
 
         [Test]

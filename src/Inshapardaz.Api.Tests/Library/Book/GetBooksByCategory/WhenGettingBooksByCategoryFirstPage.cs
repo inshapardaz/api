@@ -52,7 +52,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", 1, parameterName: "categoryid", parameterValue: _category.Id.ToString());
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", 1, 10,
+                new KeyValuePair<string, string>("categoryid", _category.Id.ToString()));
         }
 
         [Test]
@@ -64,7 +65,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
         [Test]
         public void ShouldHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, parameterName: "categoryid", parameterValue: _category.Id.ToString());
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, 10,
+                new KeyValuePair<string, string>("categoryid", _category.Id.ToString()));
         }
 
         [Test]

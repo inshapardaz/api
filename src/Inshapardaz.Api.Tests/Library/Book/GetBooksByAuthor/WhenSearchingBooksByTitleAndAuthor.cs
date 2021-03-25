@@ -49,22 +49,22 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", "query", "itle");
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", "authorid", _author.Id.ToString());
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", new KeyValuePair<string, string>("query", "itle"));
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", new KeyValuePair<string, string>("authorid", _author.Id.ToString()));
         }
 
         [Test]
         public void ShouldHaveNextLink()
         {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3, 10, "query", "itle");
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3, 10, "authorid", _author.Id.ToString());
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3, 10, new KeyValuePair<string, string>("query", "itle"));
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3, 10, new KeyValuePair<string, string>("authorid", _author.Id.ToString()));
         }
 
         [Test]
         public void ShouldHavePreviousLink()
         {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1, 10, "query", "itle");
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1, 10, "authorid", _author.Id.ToString());
+            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1, 10, new KeyValuePair<string, string>("query", "itle"));
+            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1, 10, new KeyValuePair<string, string>("authorid", _author.Id.ToString()));
         }
 
         [Test]

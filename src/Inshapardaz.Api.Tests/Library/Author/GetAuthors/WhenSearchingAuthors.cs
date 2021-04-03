@@ -8,7 +8,7 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Author.GetAuthors
+namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
 {
     [TestFixture]
     public class WhenSearchingAuthors : TestBase

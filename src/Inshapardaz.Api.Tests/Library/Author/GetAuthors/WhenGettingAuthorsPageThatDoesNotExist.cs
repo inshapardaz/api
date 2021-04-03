@@ -4,7 +4,7 @@ using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Author.GetAuthors
+namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
 {
     [TestFixture]
     public class WhenGettingAuthorsPageThatDoesNotExist : TestBase

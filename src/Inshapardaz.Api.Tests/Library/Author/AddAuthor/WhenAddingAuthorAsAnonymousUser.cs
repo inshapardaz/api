@@ -5,7 +5,7 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Author.AddAuthor
+namespace Inshapardaz.Api.Tests.Library.Author.AddAuthor
 {
     [TestFixture]
     public class WhenAddingAuthorAsAnonymousUser : TestBase

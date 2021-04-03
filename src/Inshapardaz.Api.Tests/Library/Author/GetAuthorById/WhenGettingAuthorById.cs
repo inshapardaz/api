@@ -5,7 +5,7 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Author.GetAuthorById
+namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
 {
     [TestFixture]
     public class WhenGettingAuthorById : TestBase

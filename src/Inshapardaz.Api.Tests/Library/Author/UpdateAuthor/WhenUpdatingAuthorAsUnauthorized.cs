@@ -4,7 +4,7 @@ using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Author.UpdateAuthor
+namespace Inshapardaz.Api.Tests.Library.Author.UpdateAuthor
 {
     [TestFixture]
     public class WhenUpdatingAuthorAsUnauthorized : TestBase

@@ -5,7 +5,7 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Author.UploadAuthorImage
+namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]

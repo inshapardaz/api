@@ -4,7 +4,7 @@ using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Author.DeleteAuthor
+namespace Inshapardaz.Api.Tests.Library.Author.DeleteAuthor
 {
     [TestFixture]
     public class WhenDeletingAuthorAsAnonymous : TestBase

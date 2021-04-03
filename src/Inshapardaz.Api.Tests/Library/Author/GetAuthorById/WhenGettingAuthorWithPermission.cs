@@ -6,7 +6,7 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Author.GetAuthorById
+namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]

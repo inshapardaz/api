@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Domain.Models;
+using Newtonsoft.Json;
 using System;
 
 namespace Inshapardaz.Api.Views.Library
@@ -7,7 +8,9 @@ namespace Inshapardaz.Api.Views.Library
     {
         public int SequenceNumber { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Text { get; set; }
+
         public int BookId { get; set; }
         public string Status { get; set; }
         public int? AccountId { get; set; }

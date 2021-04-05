@@ -86,5 +86,18 @@ namespace Inshapardaz.Database.SqlServer.Repositories
                 return await connection.QueryAsync<AccountModel>(command);
             }
         }
+
+        public async Task<IEnumerable<AccountModel>> FindWriters(int libraryId, string query, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select a.* from LibraryUser as lu
+                            INNER JOIN Accounts as a on a.Id = lu.AccountId
+                            WHERE lu.LibraryId = @LibraryId AND a.Role IN (0, 1, 2) AND (a.FirstName LIKE @Query OR a.LastName LIKE @Query)";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Query = query }, cancellationToken: cancellationToken);
+
+                return await connection.QueryAsync<AccountModel>(command);
+            }
+        }
     }
 }

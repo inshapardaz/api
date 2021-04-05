@@ -155,13 +155,13 @@ namespace Inshapardaz.Api.Converters
                     Parameters = new { id = model.Id }
                 }));
 
-                //view.Links.Add(_linkRenderer.Render(new Link
-                //{
-                //    ActionName = nameof(SeriesController.UpdateSeriesImage),
-                //    Method = HttpMethod.Put,
-                //    Rel = RelTypes.ImageUpload,
-                //    Parameters = new { libraryId = libraryId, seriesId = model.Id }
-                //}));
+                view.Links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(LibraryController.AddLibraryToAccount),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.AddToLibrary,
+                    Parameters = new { accountId = model.Id }
+                }));
             }
 
             return view;

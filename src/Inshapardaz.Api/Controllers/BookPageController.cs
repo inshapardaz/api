@@ -222,10 +222,10 @@ namespace Inshapardaz.Api.Controllers
 
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
+            var imageLink = _bookPageRenderer.RenderImageLink(request.Result.File.Id);
+
             if (request.Result.HasAddedNew)
             {
-                var imageLink = _bookPageRenderer.RenderImageLink(request.Result.File.Id);
-
                 return new CreatedResult(imageLink.Href, null);
             }
 

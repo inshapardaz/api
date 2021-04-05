@@ -22,6 +22,7 @@ namespace Inshapardaz.Domain.Models.Handlers
         public int? AccountId { get; }
         public Role? Role { get; }
         public string Query { get; set; }
+        public bool UnassignedOnly { get; set; }
     }
 
     public class GetLibrariesQueryHandler : QueryHandlerAsync<GetLibrariesQuery, Page<LibraryModel>>
@@ -35,6 +36,7 @@ namespace Inshapardaz.Domain.Models.Handlers
 
         public override async Task<Page<LibraryModel>> ExecuteAsync(GetLibrariesQuery query, CancellationToken cancellationToken = default)
         {
+            // TODO: filter records by excluding assigned libraries
             if ((query.Role.HasValue && query.Role == Role.Admin) || !query.AccountId.HasValue)
             {
                 return (string.IsNullOrWhiteSpace(query.Query))

@@ -11,10 +11,13 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 {
     public class GetWritersQuery : LibraryBaseQuery<IEnumerable<AccountModel>>
     {
-        public GetWritersQuery(int libraryId)
+        public GetWritersQuery(int libraryId, string query)
             : base(libraryId)
         {
+            Query = query;
         }
+
+        public string Query { get; }
     }
 
     public class GetWritersQueryHandler : QueryHandlerAsync<GetWritersQuery, IEnumerable<AccountModel>>
@@ -28,7 +31,12 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 
         public override async Task<IEnumerable<AccountModel>> ExecuteAsync(GetWritersQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _accountRepository.GetWriters(query.LibraryId, cancellationToken);
+            if (string.IsNullOrWhiteSpace(query.Query))
+            {
+                return await _accountRepository.GetWriters(query.LibraryId, cancellationToken);
+            }
+
+            return await _accountRepository.FindWriters(query.LibraryId, query.Query, cancellationToken);
         }
     }
 }

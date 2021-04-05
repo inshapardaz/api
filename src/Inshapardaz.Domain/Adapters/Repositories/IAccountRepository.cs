@@ -12,5 +12,7 @@ namespace Inshapardaz.Domain.Repositories
         Task<Page<AccountModel>> FindAccounts(string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<IEnumerable<AccountModel>> GetWriters(int libraryId, CancellationToken cancellationToken);
+
+        Task<IEnumerable<AccountModel>> FindWriters(int libraryId, string query, CancellationToken cancellationToken);
     }
 }

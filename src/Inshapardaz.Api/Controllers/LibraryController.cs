@@ -9,6 +9,7 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -22,7 +23,10 @@ namespace Inshapardaz.Api.Controllers
         private readonly IRenderLibrary _libraryRenderer;
         private readonly IUserHelper _userHelper;
 
-        public LibraryController(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor, IRenderLibrary libraryRenderer, IUserHelper userHelper)
+        public LibraryController(IAmACommandProcessor commandProcessor,
+            IQueryProcessor queryProcessor,
+            IRenderLibrary libraryRenderer,
+            IUserHelper userHelper)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
@@ -32,9 +36,9 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpGet("libraries", Name = nameof(LibraryController.GetLibraries))]
         [Produces(typeof(PageView<LibraryView>))]
-        public async Task<IActionResult> GetLibraries(string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetLibraries(string query, int pageNumber = 1, bool unassignedOnly = false, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.Account?.Id, _userHelper.Account?.Role) { Query = query };
+            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.Account?.Id, _userHelper.Account?.Role) { Query = query, UnassignedOnly = unassignedOnly };
             var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
 
             var args = new PageRendererArgs<LibraryModel>
@@ -63,7 +67,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries", Name = nameof(LibraryController.CreateLibrary))]
         [Authorize(Role.Admin)]
-        public async Task<IActionResult> CreateLibrary([FromBody]LibraryView library, CancellationToken token)
+        public async Task<IActionResult> CreateLibrary([FromBody] LibraryView library, CancellationToken token)
         {
             if (!ModelState.IsValid)
             {
@@ -79,7 +83,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}", Name = nameof(LibraryController.UpdateLibrary))]
         [Authorize(Role.Admin, Role.LibraryAdmin)]
-        public async Task<IActionResult> UpdateLibrary(int libraryId, [FromBody]LibraryView library, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateLibrary(int libraryId, [FromBody] LibraryView library, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {
@@ -113,7 +117,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpGet("/accounts/{accountId}/libraries", Name = nameof(LibraryController.GetLibrariesByAccount))]
         public async Task<IActionResult> GetLibrariesByAccount(int accountId, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, accountId, _userHelper.Account?.Role);
+            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, accountId, _userHelper.Account.Id == accountId ? _userHelper.Account?.Role : null);
             var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
 
             var args = new PageRendererArgs<LibraryModel>
@@ -126,8 +130,8 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [Authorize(Role.Admin)]
-        [HttpPost("/accounts/{accountId}/libraries/{libraryId}", Name = nameof(LibraryController.AddLibraryToAccount))]
-        public async Task<IActionResult> AddLibraryToAccount(int accountId, int libraryId, CancellationToken token = default)
+        [HttpPost("/accounts/{accountId}/libraries", Name = nameof(LibraryController.AddLibraryToAccount))]
+        public async Task<IActionResult> AddLibraryToAccount(int accountId, [FromBody] int libraryId, CancellationToken token = default)
         {
             var request = new AddLibraryToAccountRequest(libraryId, accountId);
             await _commandProcessor.SendAsync(request, cancellationToken: token);

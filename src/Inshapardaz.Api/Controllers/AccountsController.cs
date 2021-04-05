@@ -126,9 +126,9 @@ namespace Inshapardaz.Api.Controllers
 
         [Authorize(Role.Admin, Role.LibraryAdmin)]
         [HttpGet("/libraries/{libraryId}/writers", Name = nameof(AccountsController.GetWriters))]
-        public async Task<IActionResult> GetWriters(int libraryId, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> GetWriters(int libraryId, string query, CancellationToken token = default(CancellationToken))
         {
-            var writersQuery = new GetWritersQuery(libraryId);
+            var writersQuery = new GetWritersQuery(libraryId, query);
             var writers = await _queryProcessor.ExecuteAsync(writersQuery, cancellationToken: token);
 
             return new OkObjectResult(_accountRenderer.RenderLookup(writers));

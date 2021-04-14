@@ -74,7 +74,8 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderIssue, IssueRenderer>();
             services.AddTransient<IRenderArticle, ArticleRenderer>();
             services.AddTransient<IRenderBookPage, BookPageRenderer>();
-
+            services.AddTransient<IConvertPdf, PdfConverter>();
+            services.AddTransient<IOpenZip, ZipReader>();
             if (settings.FileStoreType == FileStoreTypes.AzureBlobStorage)
             {
                 services.AddTransient<IFileStorage, AzureFileStorage>();

@@ -108,34 +108,9 @@ namespace Inshapardaz.Api.Controllers
             return Ok(renderResult);
         }
 
-        [HttpPost("libraries/{libraryId}/books/{bookId}/pages/zip", Name = nameof(BookPageController.UploadBulkPages))]
+        [HttpPost("libraries/{libraryId}/books/{bookId}/pages/upload", Name = nameof(BookPageController.UploadPages))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UploadBulkPages(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
-        {
-            var content = new byte[file.Length];
-            using (var stream = new MemoryStream(content))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            var request = new AddBookPageBulkRequest(libraryId, bookId)
-            {
-                ZipFile = new FileModel
-                {
-                    FileName = file.FileName,
-                    MimeType = file.ContentType,
-                    Contents = content
-                }
-            };
-
-            await _commandProcessor.SendAsync(request, cancellationToken: token);
-
-            return new OkResult();
-        }
-
-        [HttpPost("libraries/{libraryId}/books/{bookId}/pages/upload", Name = nameof(BookPageController.UploadMultiplePages))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UploadMultiplePages(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UploadPages(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
             List<IFormFile> files = Request.Form.Files.ToList();
             var fileModels = new List<FileModel>();
@@ -155,7 +130,7 @@ namespace Inshapardaz.Api.Controllers
                 });
             }
 
-            var request = new AddMultipleBookPageBulk(libraryId, bookId)
+            var request = new UploadBookPages(libraryId, bookId)
             {
                 Files = fileModels
             };

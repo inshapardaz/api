@@ -64,17 +64,9 @@ namespace Inshapardaz.Api.Converters
 
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(BookPageController.UploadMultiplePages),
+                    ActionName = nameof(BookPageController.UploadPages),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.MultiCreate,
-                    Parameters = new { libraryId = libraryId, bookId = bookId }
-                }));
-
-                links.Add(_linkRenderer.Render(new Link
-                {
-                    ActionName = nameof(BookPageController.UploadBulkPages),
-                    Method = HttpMethod.Post,
-                    Rel = RelTypes.BulkUpload,
                     Parameters = new { libraryId = libraryId, bookId = bookId }
                 }));
             }

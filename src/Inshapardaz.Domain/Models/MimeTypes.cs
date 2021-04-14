@@ -17,5 +17,9 @@
         public const string MsWord = "application/msword";
 
         public const string Epub = "application/epub+zip";
+
+        public const string Zip = "application/zip";
+
+        public const string CompressedFile = "application/x-zip-compressed";
     }
 }

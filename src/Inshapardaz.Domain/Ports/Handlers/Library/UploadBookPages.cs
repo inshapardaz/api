@@ -1,18 +1,20 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class AddMultipleBookPageBulk : LibraryBaseCommand
+    public class UploadBookPages : LibraryBaseCommand
     {
-        public AddMultipleBookPageBulk(int libraryId, int bookId)
+        public UploadBookPages(int libraryId, int bookId)
             : base(libraryId)
         {
             BookId = bookId;
@@ -23,24 +25,49 @@ namespace Inshapardaz.Domain.Models.Library
         public IEnumerable<FileModel> Files { get; set; }
     }
 
-    public class AddMultipleBookPageBulkHandler : RequestHandlerAsync<AddMultipleBookPageBulk>
+    public class UploadBookPagesHandler : RequestHandlerAsync<UploadBookPages>
     {
         private readonly IBookPageRepository _bookPageRepository;
         private readonly IFileRepository _fileRepository;
         private readonly IFileStorage _fileStorage;
+        private readonly IConvertPdf _pdfConverter;
+        private readonly IOpenZip _zipOpener;
 
-        public AddMultipleBookPageBulkHandler(IBookPageRepository bookPageRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+        public UploadBookPagesHandler(IBookPageRepository bookPageRepository, IFileRepository fileRepository,
+            IFileStorage fileStorage, IConvertPdf pdfConverter, IOpenZip zipOpener)
         {
             _bookPageRepository = bookPageRepository;
             _fileRepository = fileRepository;
             _fileStorage = fileStorage;
+            _pdfConverter = pdfConverter;
+            _zipOpener = zipOpener;
         }
 
-        public override async Task<AddMultipleBookPageBulk> HandleAsync(AddMultipleBookPageBulk command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<UploadBookPages> HandleAsync(UploadBookPages command, CancellationToken cancellationToken = new CancellationToken())
         {
             var pageNumber = await _bookPageRepository.GetLastPageNumberForBook(command.LibraryId, command.BookId, cancellationToken);
 
-            foreach (var file in command.Files)
+            IEnumerable<FileModel> files = new List<FileModel>();
+            if (command.Files.Count() == 1 && command.Files.Single().MimeType == MimeTypes.Pdf)
+            {
+                var pages = _pdfConverter.ExtractImagePages(command.Files.Single().Contents);
+                files = pages.Select(p => new FileModel()
+                {
+                    Contents = p.Value,
+                    FileName = p.Key,
+                    MimeType = MimeTypes.Jpg
+                });
+            }
+            else if (command.Files.Count() == 1 && (command.Files.Single().MimeType == MimeTypes.Zip || command.Files.Single().MimeType == MimeTypes.CompressedFile))
+            {
+                files = _zipOpener.ExtractImages(command.Files.Single().Contents);
+            }
+            else
+            {
+                files = command.Files;
+            }
+
+            foreach (var file in files)
             {
                 var extension = Path.GetExtension(file.FileName).Trim('.');
                 var sequenceNumber = ++pageNumber;

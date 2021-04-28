@@ -15,6 +15,10 @@ namespace Inshapardaz.Api
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
+                        .UseKestrel(options =>
+                        {
+                            options.Limits.MaxRequestBodySize = long.MaxValue;
+                        })
                         .UseUrls("http://localhost:4000");
                 });
     }

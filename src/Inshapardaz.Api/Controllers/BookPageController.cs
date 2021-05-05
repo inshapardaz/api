@@ -110,6 +110,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/books/{bookId}/pages/upload", Name = nameof(BookPageController.UploadPages))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        [RequestSizeLimit(long.MaxValue)]
         public async Task<IActionResult> UploadPages(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
         {
             List<IFormFile> files = Request.Form.Files.ToList();

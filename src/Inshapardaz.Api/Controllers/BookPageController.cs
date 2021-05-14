@@ -48,13 +48,13 @@ namespace Inshapardaz.Api.Controllers
             [FromQuery] int? assignmentTo = null,
             CancellationToken token = default(CancellationToken))
         {
-            var authorsQuery = new GetBookPagesQuery(libraryId, bookId, pageNumber, pageSize)
+            var getBookPagesQuery = new GetBookPagesQuery(libraryId, bookId, pageNumber, pageSize)
             {
                 StatusFilter = status,
                 AssignmentFilter = assignmentFilter,
                 AccountId = assignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.Account?.Id : assignmentTo
             };
-            var result = await _queryProcessor.ExecuteAsync(authorsQuery, token);
+            var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
 
             var args = new PageRendererArgs<BookPageModel, BookPageFilter>
             {

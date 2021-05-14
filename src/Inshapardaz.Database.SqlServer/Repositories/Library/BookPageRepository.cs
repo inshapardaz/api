@@ -121,7 +121,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.AccountId, a.FirstName + ' ' + a.LastName As AccountName, p.AssignTimeStamp,f.Id As ImageId
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.AccountId, a.FirstName + ' ' + a.LastName As AccountName, p.AssignTimeStamp,f.Id As ImageId, p.Text
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             INNER JOIN Book b ON b.Id = p.BookId

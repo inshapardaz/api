@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.GetLibrary
 {
-    [TestFixture(null, true)]
-    [TestFixture(null, false)]
     [TestFixture(Role.Reader, true)]
     [TestFixture(Role.Reader, false)]
     public class WhenGettingLibraryWithReadOnlyPermissions : TestBase

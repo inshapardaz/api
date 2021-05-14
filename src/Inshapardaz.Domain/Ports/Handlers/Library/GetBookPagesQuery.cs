@@ -1,7 +1,6 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Repositories;
-using Lucene.Net.Search;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,19 +30,15 @@ namespace Inshapardaz.Domain.Models.Library
     public class GetBookPagesQueryHandler : QueryHandlerAsync<GetBookPagesQuery, Page<BookPageModel>>
     {
         private readonly IBookPageRepository _bookPageRepository;
-        private readonly IAccountRepository _accountRepository;
 
-        public GetBookPagesQueryHandler(IBookPageRepository bookPageRepository, IAccountRepository accountRepository)
+        public GetBookPagesQueryHandler(IBookPageRepository bookPageRepository)
         {
             _bookPageRepository = bookPageRepository;
-            _accountRepository = accountRepository;
         }
 
         public override async Task<Page<BookPageModel>> ExecuteAsync(GetBookPagesQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            var authors = await _bookPageRepository.GetPagesByBook(query.LibraryId, query.BookId, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.AccountId, cancellationToken);
-
-            return authors;
+            return  await _bookPageRepository.GetPagesByBook(query.LibraryId, query.BookId, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.AccountId, cancellationToken);
         }
     }
 }

@@ -13,7 +13,6 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
 {
-    [TestFixture(null)]
     [TestFixture(Role.Reader)]
     [TestFixture(Role.Writer)]
     public class WhenGettingCategoriesWithoutWritePermissions : TestBase

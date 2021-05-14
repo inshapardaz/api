@@ -1,6 +1,6 @@
 using Inshapardaz.Domain;
 using Microsoft.Extensions.DependencyInjection;
-using Paramore.Brighter.AspNetCore;
+using Paramore.Brighter.Extensions.DependencyInjection;
 using Paramore.Darker.AspNetCore;
 
 namespace Inshapardaz.Api.Configuration
@@ -10,8 +10,7 @@ namespace Inshapardaz.Api.Configuration
         public static IServiceCollection AddBrighterCommand(this IServiceCollection services)
         {
             services.AddBrighter()
-                    .AsyncHandlersFromAssemblies(typeof(Startup).Assembly)
-                    .AsyncHandlersFromAssemblies(typeof(DomainModule).Assembly);
+                    .AutoFromAssemblies(typeof(Startup).Assembly, typeof(DomainModule).Assembly);
             return services;
         }
 

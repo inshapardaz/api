@@ -174,7 +174,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             var parameters = System.Web.HttpUtility.ParseQueryString(uri.Query);
             var param = parameters[name];
             param.Should().NotBeNull($"Query parameter '{name}' not found.");
-            param.Should().Be(value.ToString(), $"Query parameter '{name}' has unexpected value.");
+            param.Should().BeEquivalentTo(value.ToString(), $"Query parameter '{name}' has unexpected value.");
             return view;
         }
 

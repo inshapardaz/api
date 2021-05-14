@@ -9,7 +9,6 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
 {
-    [TestFixture(null)]
     [TestFixture(Role.Reader)]
     [TestFixture(Role.Writer)]
     public class WhenGettingCategoryWithoutWritePermissions : TestBase

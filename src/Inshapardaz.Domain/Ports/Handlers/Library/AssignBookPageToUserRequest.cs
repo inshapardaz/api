@@ -10,19 +10,17 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AssignBookPageRequest : LibraryBaseCommand
     {
-        public AssignBookPageRequest(int libraryId, int bookId, int sequenceNumber, PageStatuses status, int? accountId)
+        public AssignBookPageRequest(int libraryId, int bookId, int sequenceNumber, int? accountId)
         : base(libraryId)
         {
             BookId = bookId;
             SequenceNumber = sequenceNumber;
-            Status = status;
             AccountId = accountId;
         }
 
         public BookPageModel Result { get; set; }
         public int BookId { get; set; }
         public int SequenceNumber { get; set; }
-        public PageStatuses Status { get; set; }
         public int? AccountId { get; private set; }
     }
 
@@ -46,7 +44,7 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new BadRequestException();
             }
 
-            command.Result = await _bookPageRepository.UpdatePageAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.Status, command.AccountId, cancellationToken);
+            command.Result = await _bookPageRepository.UpdatePageAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

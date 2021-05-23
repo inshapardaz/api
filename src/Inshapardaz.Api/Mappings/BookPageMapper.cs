@@ -17,7 +17,8 @@ namespace Inshapardaz.Api.Mappings
                 Status = view.Status.ToEnum(PageStatuses.Available),
                 AccountId = view.AccountId,
                 AccountName = view.AccountName,
-                AssignTimeStamp = view.AssignTimeStamp
+                AssignTimeStamp = view.AssignTimeStamp,
+                ChapterId = view.ChapterId
             };
         }
 
@@ -31,7 +32,9 @@ namespace Inshapardaz.Api.Mappings
                 Status = model.Status.ToDescription(),
                 AccountId = model.AccountId,
                 AccountName = model.AccountName,
-                AssignTimeStamp = model.AssignTimeStamp
+                AssignTimeStamp = model.AssignTimeStamp,
+                ChapterId = model.ChapterId,
+                ChapterTitle = model.ChapterTitle
             };
         }
     }

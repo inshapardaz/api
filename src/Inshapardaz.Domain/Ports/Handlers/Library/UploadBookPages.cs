@@ -80,7 +80,7 @@ namespace Inshapardaz.Domain.Models.Library
                     FileName = file.FileName,
                     MimeType = file.MimeType
                 }, cancellationToken);
-                var bookPage = await _bookPageRepository.AddPage(command.LibraryId, command.BookId, pageNumber, string.Empty, fileModel.Id, cancellationToken);
+                var bookPage = await _bookPageRepository.AddPage(command.LibraryId, command.BookId, pageNumber, string.Empty, fileModel.Id, null, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

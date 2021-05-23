@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
+using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
@@ -39,6 +41,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/books/{bookId}/pages", Name = nameof(BookPageController.GetPagesByBook))]
+        [Produces(typeof(PageView<BookPageView>))]
         public async Task<IActionResult> GetPagesByBook(int libraryId,
             int bookId,
             int pageNumber = 1,
@@ -66,8 +69,9 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_bookPageRenderer.Render(args, libraryId, bookId));
         }
 
-        [HttpGet("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}", Name = nameof(BookPageController.GetPagesByIndex))]
-        public async Task<IActionResult> GetPagesByIndex(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))
+        [HttpGet("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}", Name = nameof(BookPageController.GetPageByIndex))]
+        [Produces(typeof(BookPageView))]
+        public async Task<IActionResult> GetPageByIndex(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))
         {
             var request = new GetBookPageByNumberQuery(libraryId, bookId, sequenceNumber);
 
@@ -84,6 +88,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/books/{bookId}/pages", Name = nameof(BookPageController.CreatePage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        [Produces(typeof(BookPageView))]
         public async Task<IActionResult> CreatePage(int libraryId, int bookId, [FromBody] BookPageView page, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -143,6 +148,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}", Name = nameof(BookPageController.UpdatePage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        [Produces(typeof(BookPageView))]
         public async Task<IActionResult> UpdatePage(int libraryId, int bookId, int sequenceNumber, [FromBody] BookPageView page, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -178,6 +184,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}/image", Name = nameof(BookPageController.UpdatePageImage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        [Produces(typeof(BookPageView))]
         public async Task<IActionResult> UpdatePageImage(int libraryId, int bookId, int sequenceNumber, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -220,6 +227,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}/assign/me", Name = nameof(BookPageController.AssignPageToUser))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        [Produces(typeof(BookPageView))]
         public async Task<IActionResult> AssignPageToUser(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -238,6 +246,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}/assign", Name = nameof(BookPageController.AssignPage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        [Produces(typeof(BookPageView))]
         public async Task<IActionResult> AssignPage(int libraryId, int bookId, int sequenceNumber, [FromBody] BookPageAssignmentView assignment, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -245,7 +254,7 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new AssignBookPageRequest(libraryId, bookId, sequenceNumber, assignment.Status, assignment.AccountId);
+            var request = new AssignBookPageRequest(libraryId, bookId, sequenceNumber, assignment.AccountId);
 
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 

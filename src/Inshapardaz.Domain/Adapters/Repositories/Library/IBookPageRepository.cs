@@ -11,9 +11,9 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task<int> GetLastPageNumberForBook(int libraryId, int bookId, CancellationToken cancellationToken);
 
-        Task<BookPageModel> AddPage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, CancellationToken cancellationToken);
+        Task<BookPageModel> AddPage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, int? chapterId, CancellationToken cancellationToken);
 
-        Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, PageStatuses status, int? accountId, CancellationToken cancellationToken);
+        Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, PageStatuses status, int? chapterId, int? accountId, CancellationToken cancellationToken);
 
         Task DeletePage(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken);
 
@@ -23,6 +23,6 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, PageStatuses status, AssignmentFilter assignmentFilter, int? assignedTo, CancellationToken cancellationToken);
 
-        Task<BookPageModel> UpdatePageAssignment(int libraryId, int bookId, int sequenceNumber, PageStatuses status, int? assignedAccountId, CancellationToken cancellationToken);
+        Task<BookPageModel> UpdatePageAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken);
     }
 }

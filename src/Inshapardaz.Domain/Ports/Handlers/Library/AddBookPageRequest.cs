@@ -51,12 +51,12 @@ namespace Inshapardaz.Domain.Models.Library
 
             if (existingBookPage == null)
             {
-                command.Result = await _bookPageRepository.AddPage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, 0, cancellationToken);
+                command.Result = await _bookPageRepository.AddPage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, 0, command.BookPage.ChapterId, cancellationToken);
                 command.IsAdded = true;
             }
             else
             {
-                command.Result = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, 0, command.BookPage.Status, command.BookPage.AccountId, cancellationToken);
+                command.Result = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, 0, command.BookPage.Status, command.BookPage.ChapterId, command.BookPage.AccountId, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

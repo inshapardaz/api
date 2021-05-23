@@ -111,7 +111,7 @@ namespace Inshapardaz.Api.Converters
                     {
                         _linkRenderer.Render(new Link
                         {
-                            ActionName = nameof(BookPageController.GetPagesByIndex),
+                            ActionName = nameof(BookPageController.GetPageByIndex),
                             Method = HttpMethod.Get,
                             Rel = RelTypes.Self,
                             Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }

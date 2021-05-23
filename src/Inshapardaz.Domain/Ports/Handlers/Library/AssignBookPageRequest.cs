@@ -41,7 +41,7 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new BadRequestException();
             }
 
-            command.Result = await _bookPageRepository.UpdatePageAssignment(command.LibraryId, command.BookId, command.SequenceNumber, page.Status, command.AccountId, cancellationToken);
+            command.Result = await _bookPageRepository.UpdatePageAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

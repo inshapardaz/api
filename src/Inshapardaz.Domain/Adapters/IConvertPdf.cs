@@ -20,7 +20,7 @@ namespace Inshapardaz.Domain.Adapters
                 int i = 0;
                 foreach (var page in doc.Pages)
                 {
-                    using (var bitmap = new PDFiumBitmap((int)page.Width, (int)page.Height, true))
+                    using (var bitmap = new PDFiumBitmap((int)page.Width, (int)page.Height, false))
                     {
                         page.Render(bitmap);
                         var bmp = Image.FromStream(bitmap.AsBmpStream());

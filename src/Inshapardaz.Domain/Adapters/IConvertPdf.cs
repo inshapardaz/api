@@ -22,6 +22,7 @@ namespace Inshapardaz.Domain.Adapters
                 {
                     using (var bitmap = new PDFiumBitmap((int)page.Width, (int)page.Height, false))
                     {
+                        bitmap.Fill(new PDFiumSharp.Types.FPDF_COLOR(255, 255, 255, 0));
                         page.Render(bitmap);
                         var bmp = Image.FromStream(bitmap.AsBmpStream());
                         using (var ms = new MemoryStream())

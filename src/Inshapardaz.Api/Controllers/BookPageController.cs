@@ -182,6 +182,16 @@ namespace Inshapardaz.Api.Controllers
             return Ok();
         }
 
+        [HttpPost("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}/ocr", Name = nameof(BookPageController.OcrPage))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        public async Task<IActionResult> OcrPage(int libraryId, int bookId, int sequenceNumber, [FromBody] string apiKey, CancellationToken token = default(CancellationToken))
+        {
+            var request = new BookPageOcrRequest(libraryId, bookId, sequenceNumber, apiKey);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return Ok();
+        }
+
         [HttpPut("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}/image", Name = nameof(BookPageController.UpdatePageImage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [Produces(typeof(BookPageView))]

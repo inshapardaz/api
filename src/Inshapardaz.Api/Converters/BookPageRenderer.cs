@@ -182,6 +182,13 @@ namespace Inshapardaz.Api.Converters
                         Rel = RelTypes.ImageDelete,
                         Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                     }));
+                    links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(BookPageController.OcrPage),
+                        Method = HttpMethod.Post,
+                        Rel = RelTypes.Ocr,
+                        Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
+                    }));
                 }
                 else
                 {

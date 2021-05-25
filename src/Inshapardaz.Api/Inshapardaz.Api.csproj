@@ -21,6 +21,7 @@
     <PackageReference Include="Paramore.Darker.AspNetCore" Version="2.0.78" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Inshapardaz.Adapter.Ocr.Google\Inshapardaz.Adapter.Ocr.Google.csproj" />
     <ProjectReference Include="..\Inshapardaz.Database.SqlServer\Inshapardaz.Database.SqlServer.csproj" />
     <ProjectReference Include="..\Inshapardaz.Domain\Inshapardaz.Domain.csproj" />
     <ProjectReference Include="..\Inshapardaz.Storage.Azure\Inshapardaz.Storage.Azure.csproj" />

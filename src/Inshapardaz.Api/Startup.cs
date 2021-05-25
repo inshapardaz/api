@@ -16,6 +16,7 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
 using Inshapardaz.Database.SqlServer.Repositories;
 using Inshapardaz.Api.Infrastructure;
+using Inshapardaz.Adapter.Ocr.Google;
 
 namespace Inshapardaz.Api
 {
@@ -76,6 +77,7 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderBookPage, BookPageRenderer>();
             services.AddTransient<IConvertPdf, PdfConverter>();
             services.AddTransient<IOpenZip, ZipReader>();
+            services.AddTransient<IProvideOcr, GoogleOcr>();
             if (settings.FileStoreType == FileStoreTypes.AzureBlobStorage)
             {
                 services.AddTransient<IFileStorage, AzureFileStorage>();

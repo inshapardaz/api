@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Mappings
             => new AccountLookupView
             {
                 Id = source.Id,
-                AccountName = source.FirstName
+                AccountName = $"{source.FirstName} {source.LastName}"
             };
     }
 }

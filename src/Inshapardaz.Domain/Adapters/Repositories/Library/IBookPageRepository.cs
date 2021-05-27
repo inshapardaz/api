@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +19,8 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
         Task DeletePage(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken);
 
         Task<BookPageModel> UpdatePageImage(int libraryId, int bookId, int sequenceNumber, int imageId, CancellationToken cancellationToken);
+
+        Task<IEnumerable<BookPageModel>> GetAllPagesByBook(int libraryId, int bookId, CancellationToken cancellationToken);
 
         Task DeletePageImage(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken);
 

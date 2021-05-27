@@ -4,7 +4,6 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using System.Collections.Generic;
@@ -240,6 +239,17 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(BookPageController.CreatePage),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.AddPages,
+                    Parameters = new { libraryId = libraryId, bookId = source.Id }
+                }));
+            }
+
+            if (_userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookController.BindBook),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Download,
                     Parameters = new { libraryId = libraryId, bookId = source.Id }
                 }));
             }

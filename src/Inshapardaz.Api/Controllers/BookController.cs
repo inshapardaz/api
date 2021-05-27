@@ -308,5 +308,15 @@ namespace Inshapardaz.Api.Controllers
 
             return new OkResult();
         }
+
+        [HttpGet("libraries/{libraryId}/favorites/books/{bookId}/bind", Name = nameof(BindBook))]
+        [Authorize(Role.Admin, Role.LibraryAdmin)]
+        public async Task<IActionResult> BindBook(int libraryId, int bookId, CancellationToken token)
+        {
+            var request = new BindBookRequest(libraryId, bookId);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return File(System.Text.Encoding.UTF8.GetBytes(request.Result), MimeTypes.Text);
+        }
     }
 }

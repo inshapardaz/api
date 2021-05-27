@@ -147,7 +147,7 @@ namespace Inshapardaz.Api.Converters
                     Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                 }));
 
-                if (_userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
+                if (_userHelper.IsLibraryAdmin || _userHelper.IsAdmin && source.AccountId != _userHelper.Account.Id)
                 {
                     links.Add(_linkRenderer.Render(new Link
                     {

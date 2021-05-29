@@ -1,6 +1,7 @@
 ﻿using PDFiumSharp;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 
 namespace Inshapardaz.Domain.Adapters
@@ -27,7 +28,7 @@ namespace Inshapardaz.Domain.Adapters
                         var bmp = Image.FromStream(bitmap.AsBmpStream());
                         using (var ms = new MemoryStream())
                         {
-                            bmp.Save(ms, bmp.RawFormat);
+                            bmp.Save(ms, ImageFormat.Jpeg);
                             pageImages.Add($"{i++.ToString("000")}.jpg", ms.ToArray());
                         }
                     }

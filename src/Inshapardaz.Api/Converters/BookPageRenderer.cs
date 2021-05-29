@@ -147,7 +147,7 @@ namespace Inshapardaz.Api.Converters
                     Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                 }));
 
-                if (_userHelper.IsLibraryAdmin || _userHelper.IsAdmin && source.AccountId != _userHelper.Account.Id)
+                if (_userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
                 {
                     links.Add(_linkRenderer.Render(new Link
                     {
@@ -158,13 +158,16 @@ namespace Inshapardaz.Api.Converters
                     }));
                 }
 
-                links.Add(_linkRenderer.Render(new Link
+                if (source.AccountId != _userHelper.Account.Id)
                 {
-                    ActionName = nameof(BookPageController.AssignPageToUser),
-                    Method = HttpMethod.Post,
-                    Rel = RelTypes.AssignToMe,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
-                }));
+                    links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(BookPageController.AssignPageToUser),
+                        Method = HttpMethod.Post,
+                        Rel = RelTypes.AssignToMe,
+                        Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
+                    }));
+                }
 
                 if (source.ImageId.HasValue)
                 {

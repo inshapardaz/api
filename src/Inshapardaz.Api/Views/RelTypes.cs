@@ -72,5 +72,6 @@ namespace Inshapardaz.Api.Views
         public static string MultiCreate = "create-multiple";
         public static string AddToLibrary = "add-to-library";
         public static string Ocr = "ocr";
+        public static string Publish = "publish";
     }
 }

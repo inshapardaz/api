@@ -318,5 +318,15 @@ namespace Inshapardaz.Api.Controllers
 
             return File(System.Text.Encoding.UTF8.GetBytes(request.Result), MimeTypes.Text);
         }
+
+        [HttpPost("libraries/{libraryId}/favorites/books/{bookId}/publish", Name = nameof(PublishBook))]
+        [Authorize(Role.Admin, Role.LibraryAdmin)]
+        public async Task<IActionResult> PublishBook(int libraryId, int bookId, CancellationToken token)
+        {
+            var request = new PublishBookRequest(libraryId, bookId);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return Ok();
+        }
     }
 }

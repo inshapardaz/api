@@ -26,6 +26,8 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, PageStatuses status, AssignmentFilter assignmentFilter, int? assignedTo, CancellationToken cancellationToken);
 
+        Task<IEnumerable<BookPageModel>> GetPagesByBookChapter(int libraryId, int bookId, int chapterId, CancellationToken cancellationToken);
+
         Task<BookPageModel> UpdatePageAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken);
     }
 }

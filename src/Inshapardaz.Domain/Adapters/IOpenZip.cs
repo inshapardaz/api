@@ -38,7 +38,7 @@ namespace Inshapardaz.Domain.Adapters
 
                         pageImages.Add(new FileModel
                         {
-                            FileName = $"{i++.ToString("000")}{extention}",
+                            FileName = entry.Name,
                             MimeType = extention == ".png" ? "image/png" : "image/jpeg",
                             Contents = fileContents
                         });

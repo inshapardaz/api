@@ -235,5 +235,22 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 return await connection.QueryAsync<BookPageModel>(command);
             }
         }
+
+        public async Task<IEnumerable<BookPageModel>> GetPagesByBookChapter(int libraryId, int bookId, int chapterId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.AccountId, p.AssignTimeStamp, f.Id As ImageId, p.Text, p.ChapterId, c.Title As ChapterTitle
+                            FROM BookPage AS p
+                            LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
+                            LEFT OUTER JOIN [Chapter] c ON c.Id = p.ChapterId
+                            INNER JOIN Book b ON b.Id = p.BookId
+                            WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId And c.Id = @ChapterId
+                            ORDER BY p.SequenceNumber";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterId }, cancellationToken: cancellationToken);
+
+                return await connection.QueryAsync<BookPageModel>(command);
+            }
+        }
     }
 }

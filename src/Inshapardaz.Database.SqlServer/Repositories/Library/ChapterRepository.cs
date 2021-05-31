@@ -180,12 +180,12 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             FROM ChapterContent cc
                             Inner Join Chapter c On c.Id = cc.ChapterId
                             Inner Join Book b On b.Id = c.BookId
-                            Where c.chapterNumber = @ChapterId And b.LibraryId = @LibraryId and b.Id = @BookId AND cc.Language = @Language";
+                            Where c.ChapterNumber = @ChapterNumber And b.LibraryId = @LibraryId and b.Id = @BookId AND cc.Language = @Language";
                 var command = new CommandDefinition(sql, new
                 {
                     LibraryId = libraryId,
                     BookId = bookId,
-                    ChapterId = chapterNumber,
+                    ChapterNumber = chapterNumber,
                     Language = language,
                     Text = text
                 }, cancellationToken: cancellationToken);

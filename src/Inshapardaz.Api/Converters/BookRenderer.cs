@@ -252,6 +252,14 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Download,
                     Parameters = new { libraryId = libraryId, bookId = source.Id }
                 }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookController.PublishBook),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.Publish,
+                    Parameters = new { libraryId = libraryId, bookId = source.Id }
+                }));
             }
 
             if (_userHelper.IsAuthenticated)

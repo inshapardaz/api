@@ -33,7 +33,6 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         {
             var fixture = new Fixture();
             Accounts = fixture.Build<AccountDto>()
-                                 .With(a => a.Title, "Mr")
                                  .With(a => a.Email, Helpers.Random.Email)
                                  .With(a => a.Role, _role)
                                  .With(a => a.AcceptTerms, true)

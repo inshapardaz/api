@@ -9,7 +9,6 @@ namespace Inshapardaz.Api.Mappings
             => new AccountView
             {
                 Id = source.Id,
-                Title = source.Title,
                 AccountName = source.FirstName,
                 Email = source.Email,
                 IsVerified = source.IsVerified,
@@ -22,7 +21,6 @@ namespace Inshapardaz.Api.Mappings
             => new AccountModel
             {
                 Id = source.Id,
-                Title = source.Title,
                 FirstName = source.AccountName,
                 Email = source.Email,
                 IsVerified = source.IsVerified,

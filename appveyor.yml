@@ -6,17 +6,16 @@ environment:
   DefaultDatabase:
     secure: xRPJOkFVcWlOPF0wlbbRsjmPXiDSnTjd03Q4aM6bI1hjzjjUsH4wxNSJRnuH3DT9Z3x+fGXmdVdgexKx/ghFpC6znjlEgoE8gL00q86zZ+xcE3piP/6IfH8YutYJ5+OdgOS027eYbt2Ao+LmoZyjy1bGEr3af8wr1NwJrhsHshuzlNrUIpLZ4rbjuMqfiNofNLACeTJ5pif6Z00v2pSRLyEz9QnemZdtwM+zKV9IURTB9UHJFPf36DeaaVU6LCCDMMUCbgVcr1R8rxTnl2UgXZKqX7Q33/Gb2A6VEf/bm7OaqWmr/xAKRzgvInnEcftT
   EmailFrom:
-    secure: 8pCeg6NHrvNFuBThc5Z5R1/W0RwvlUjOAz0XmYP/LCs=
+    secure: 3FKyS0RrrvieTzdM120Mt29HUFnRBXfh7z/GaQCtrlE=
   EmailFromName: "Nawishta"
   SmtpHost: 
-    secure: +yitqKfrkC79ZokFsVTdug==
+    secure: GSjWEmuz4hSceaDZYEb+zkUFOR0s/79VecjrlafkxTY=
   SmtpPort:
     secure: TLW9xueDYxnKSi4/tK0d4g==
   SmtpUser: 
-    secure: 8pCeg6NHrvNFuBThc5Z5R1/W0RwvlUjOAz0XmYP/LCs=
+    secure: ljFRLdBctBbhD6Rii6PCDNoPF8zBJ7JynK8y5c0xv7A=
   SmtpPass: 
-    secure: bbeXc28zrVkacOTrk8m2xg==
-
+    secure: t+p0vg9vXtGs3AdEWTmAd3M6nFsdr3mOFZN+o4GVQtY=
     
 skip_tags: true
 skip_branch_with_pr: true

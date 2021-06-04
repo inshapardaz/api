@@ -25,11 +25,10 @@ namespace Inshapardaz.Api.Services
 
             using var smtp = new SmtpClient()
             {
-                Host = "smtp.gmail.com",
+                Host = _appSettings.SmtpHost,
                 Port = _appSettings.SmtpPort,
                 EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
+                Timeout = 5 * 1000,
                 Credentials = new NetworkCredential(_appSettings.SmtpUser, _appSettings.SmtpPass)
             };
 

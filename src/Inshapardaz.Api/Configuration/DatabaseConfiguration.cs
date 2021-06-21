@@ -7,6 +7,7 @@ using Inshapardaz.Database.SqlServer.Repositories;
 using Inshapardaz.Database.SqlServer.Repositories.Library;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Configuration
 {
@@ -32,6 +33,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IIssueRepository, IssueRepository>();
             services.AddTransient<IArticleRepository, ArticleRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<ICorrectionRepository, CorrectionRepository>();
             return services;
         }
 

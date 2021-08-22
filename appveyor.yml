@@ -11,7 +11,7 @@ environment:
   SmtpHost: 
     secure: H5AOjEOr8eaZiqYsK/4RUDiJebjsn5BPB4W5JLWdeDA=
   SmtpPort:
-    secure: TLW9xueDYxnKSi4/tK0d4g==
+    secure: 2yZeZjV9OpoP+muF5RfW0w==
   SmtpUser: 
     secure: REi8f7in30iqJiCZ0sTVa76mo+RBH7JbFH/98INkbmz1XytxhVJg5ASaZVCId24E
   SmtpPass: 

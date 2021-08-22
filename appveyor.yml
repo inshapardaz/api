@@ -9,13 +9,13 @@ environment:
     secure: 3FKyS0RrrvieTzdM120Mt29HUFnRBXfh7z/GaQCtrlE=
   EmailFromName: "Nawishta"
   SmtpHost: 
-    secure: GSjWEmuz4hSceaDZYEb+zkUFOR0s/79VecjrlafkxTY=
+    secure: H5AOjEOr8eaZiqYsK/4RUDiJebjsn5BPB4W5JLWdeDA=
   SmtpPort:
     secure: TLW9xueDYxnKSi4/tK0d4g==
   SmtpUser: 
-    secure: ljFRLdBctBbhD6Rii6PCDNoPF8zBJ7JynK8y5c0xv7A=
+    secure: REi8f7in30iqJiCZ0sTVa76mo+RBH7JbFH/98INkbmz1XytxhVJg5ASaZVCId24E
   SmtpPass: 
-    secure: t+p0vg9vXtGs3AdEWTmAd3M6nFsdr3mOFZN+o4GVQtY=
+    secure: qJv2I2x4hS7Vf4qiyW1/1gFSS0vi5xHLVv8iFodoU5PPFd3KxEF36xJK8d4t65r+
     
 skip_tags: true
 skip_branch_with_pr: true

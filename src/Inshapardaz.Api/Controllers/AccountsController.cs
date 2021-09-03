@@ -44,6 +44,8 @@ namespace Inshapardaz.Api.Controllers
         {
             var command = new AuthenticateCommand(model.Email, model.Password);
             await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            setTokenCookie(command.Response.RefreshToken);
+
             return Ok(_accountRenderer.Render(command.Response));
         }
 
@@ -56,6 +58,7 @@ namespace Inshapardaz.Api.Controllers
         {
             var command = new RefreshTokenCommand(model.RefreshToken);
             await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            setTokenCookie(command.Response.RefreshToken);
             return Ok(_accountRenderer.Render(command.Response));
         }
 
@@ -264,6 +267,22 @@ namespace Inshapardaz.Api.Controllers
             //_accountService.Delete(id);
             //return Ok(new { message = "Account deleted successfully" });
             return NotFound();
+        }
+
+        private void setTokenCookie(string token)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(7),
+#if DEBUG
+                SameSite = SameSiteMode.Lax
+#else
+                SameSite = SameSiteMode.None,
+                Secure = true
+#endif
+            };
+            Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
     }
 }

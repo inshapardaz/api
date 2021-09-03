@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
@@ -40,7 +41,16 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 
         public override async Task<RefreshTokenCommand> HandleAsync(RefreshTokenCommand command, CancellationToken cancellationToken = default)
         {
+            if (command.Token == null)
+            {
+                throw new BadRequestException();
+            }
             var refreshToken = await _accountRepository.GetRefreshToken(command.Token, cancellationToken);
+            if (refreshToken == null)
+            {
+                throw new NotFoundException();
+            }
+
             var account = await _accountRepository.GetAccountById(refreshToken.AccountId, cancellationToken);
             var ipAddress = _ipAddressGetter.GetIPAddressFromRequest();
 

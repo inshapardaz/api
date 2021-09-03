@@ -56,7 +56,8 @@ namespace Inshapardaz.Api.Controllers
         //TODO : Can be POST /token
         public async Task<ActionResult<AuthenticateResponse>> RefreshToken(RefreshTokenRequest model, CancellationToken cancellationToken)
         {
-            var command = new RefreshTokenCommand(model.RefreshToken);
+            var refreshToken = model.RefreshToken ?? Request.Cookies["refreshToken"];
+            var command = new RefreshTokenCommand(refreshToken);
             await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
             setTokenCookie(command.Response.RefreshToken);
             return Ok(_accountRenderer.Render(command.Response));
@@ -71,6 +72,7 @@ namespace Inshapardaz.Api.Controllers
         //TODO : Can be DELETE /token
         public async Task<IActionResult> RevokeToken(RevokeTokenRequest model, CancellationToken cancellationToken)
         {
+            var token = model.Token ?? Request.Cookies["refreshToken"];
             var command = new RevokeTokenCommand(model.Token) { Revoker = Account };
             await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
             return Ok();

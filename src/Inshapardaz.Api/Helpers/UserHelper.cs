@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Helpers
 
         public bool IsAdmin => IsAuthenticated && IsUserInRole(Role.Admin);
 
-        public bool IsLibraryAdmin(int libraryId) => IsAuthenticated && IsUserInRole(Role.LibraryAdmin, libraryId);
+        public bool IsLibraryAdmin(int libraryId) => IsAuthenticated && (IsAdmin || IsUserInRole(Role.LibraryAdmin, libraryId));
 
         public bool IsWriter(int libraryId) => IsAuthenticated && (IsLibraryAdmin(libraryId) || IsUserInRole(Role.Writer, libraryId));
 

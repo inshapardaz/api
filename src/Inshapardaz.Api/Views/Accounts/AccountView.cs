@@ -12,5 +12,6 @@ namespace Inshapardaz.Api.Views.Accounts
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
         public bool IsVerified { get; set; }
+        public bool IsSuperAdmin { get; internal set; }
     }
 }

@@ -7,10 +7,6 @@ namespace Inshapardaz.Domain.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-
-        // TODO : Remove
-        public Role Role { get; set; }
-
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
         public bool AcceptTerms { get; set; }
@@ -20,7 +16,6 @@ namespace Inshapardaz.Domain.Models
         public string InvitationCode { get; internal set; }
         public DateTime? InvitationCodeExpiry { get; set; }
         public string PasswordHash { get; internal set; }
-
         public string ResetToken { get; set; }
         public DateTime? ResetTokenExpires { get; set; }
         public DateTime? PasswordReset { get; set; }

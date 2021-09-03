@@ -183,6 +183,7 @@ namespace Inshapardaz.Api.Converters
                 Email = model.Account.Email,
                 Name = model.Account.Name,
                 Created = model.Account.Created,
+                IsSuperAdmin = model.Account.IsSuperAdmin,
                 IsVerified = model.Account.IsVerified,
                 JwtToken = model.JwtToken,
                 RefreshToken = model.RefreshToken,

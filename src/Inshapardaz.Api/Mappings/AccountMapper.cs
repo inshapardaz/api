@@ -13,7 +13,7 @@ namespace Inshapardaz.Api.Mappings
                 Email = source.Email,
                 IsVerified = source.IsVerified,
                 Created = source.Created,
-                Role = source.Role,
+                IsSuperAdmin = source.IsSuperAdmin,
                 Updated = source.Updated
             };
 
@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Mappings
                 Name = source.Name,
                 Email = source.Email,
                 Created = source.Created,
-                Role = source.Role,
+                IsSuperAdmin = source.IsSuperAdmin,
                 Updated = source.Updated
             };
 

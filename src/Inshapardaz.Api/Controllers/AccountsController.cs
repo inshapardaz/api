@@ -224,7 +224,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<ActionResult<AccountView>> GetById(int id, CancellationToken cancellationToken)
         {
             // users can get their own account and admins can get any account
-            if (id != Account.Id && Account.Role != Role.Admin)
+            if (id != Account.Id && Account.IsSuperAdmin)
                 return Unauthorized(new { message = "Unauthorized" });
 
             var account = await _queryProcessor.ExecuteAsync(new GetAccountByIdQuery(id), cancellationToken);

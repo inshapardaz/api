@@ -38,7 +38,8 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(PageView<LibraryView>))]
         public async Task<IActionResult> GetLibraries(string query, int pageNumber = 1, bool unassignedOnly = false, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.Account?.Id, _userHelper.Account?.Role) { Query = query, UnassignedOnly = unassignedOnly };
+            Role? role = _userHelper.Account != null && _userHelper.Account.IsSuperAdmin ? Role.Admin : null;
+            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.Account?.Id, role) { Query = query, UnassignedOnly = unassignedOnly };
             var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
 
             var args = new PageRendererArgs<LibraryModel>
@@ -117,7 +118,8 @@ namespace Inshapardaz.Api.Controllers
         [HttpGet("/accounts/{accountId}/libraries", Name = nameof(LibraryController.GetLibrariesByAccount))]
         public async Task<IActionResult> GetLibrariesByAccount(int accountId, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, accountId, _userHelper.Account.Id == accountId ? _userHelper.Account?.Role : null);
+            Role? role = _userHelper.Account != null && _userHelper.Account.IsSuperAdmin ? Role.Admin : null;
+            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, accountId, role);
             var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
 
             var args = new PageRendererArgs<LibraryModel>

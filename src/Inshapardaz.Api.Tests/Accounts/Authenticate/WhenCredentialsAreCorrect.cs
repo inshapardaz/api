@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Accounts.Authenticate
             var password = RandomData.String;
             _account = AccountBuilder.WithPassword(password).Verified().Build();
 
-            _response = await Client.PostObject("/api/accounts/authenticate", new AuthenticateRequest { Email = _account.Email, Password = password });
+            _response = await Client.PostObject("/accounts/authenticate", new AuthenticateRequest { Email = _account.Email, Password = password });
             _authenticateResponse = await _response.GetContent<AuthenticateResponse>();
         }
 

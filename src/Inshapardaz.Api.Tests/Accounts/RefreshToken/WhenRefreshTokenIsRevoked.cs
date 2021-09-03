@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
             var auth = await AccountBuilder.Authenticate(Client);
             var _oldToken = auth.RefreshToken;
             DatabaseConnection.RevokeRefreshToken(_oldToken);
-            _response = await Client.PostObject("/api/accounts/refresh-token", new RefreshTokenRequest { RefreshToken = RandomData.String });
+            _response = await Client.PostObject("/accounts/refresh-token", new RefreshTokenRequest { RefreshToken = RandomData.String });
         }
 
         [Test]

@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Accounts.CheckInvitationCode
             var account = AccountBuilder.Verified()
                 .AsInvitation().ExpiringInvitation(DateTime.Today.AddDays(-1))
                 .Build();
-            _response = await Client.GetAsync($"/api/accounts/invitation/{account.InvitationCode}");
+            _response = await Client.GetAsync($"/accounts/invitation/{account.InvitationCode}");
         }
 
         [Test]

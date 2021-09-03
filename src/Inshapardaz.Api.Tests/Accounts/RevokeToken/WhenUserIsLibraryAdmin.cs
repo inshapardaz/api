@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
             var account = AccountBuilder.Verified().InLibrary(Library.Id).Build();
             var authResponse = await AccountBuilder.Authenticate(Client, account.Email);
 
-            _response = await Client.PostObject("/api/accounts/revoke-token", new RevokeTokenRequest() { Token = authResponse.RefreshToken });
+            _response = await Client.PostObject("/accounts/revoke-token", new RevokeTokenRequest() { Token = authResponse.RefreshToken });
         }
 
         [Test]

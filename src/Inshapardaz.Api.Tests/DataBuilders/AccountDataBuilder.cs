@@ -120,7 +120,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         {
             if (Account != null)
             {
-                var response = await client.PostObject("/api/accounts/authenticate", new AuthenticateRequest { Email = email ?? Account.Email, Password = _password });
+                var response = await client.PostObject("/accounts/authenticate", new AuthenticateRequest { Email = email ?? Account.Email, Password = _password });
                 return await response.GetContent<AuthenticateResponse>();
             }
 

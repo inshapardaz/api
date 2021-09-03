@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ResetPassword
                 .WithResetTokenExpiry(DateTime.UtcNow.AddDays(3))
                 .Build();
 
-            _response = await Client.PostObject("/api/accounts/reset-password",
+            _response = await Client.PostObject("/accounts/reset-password",
                 new ResetPasswordRequest()
                 {
                     Token = _account.ResetToken,
@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ResetPassword
         [Test]
         public async Task ShouldBeAbleToAuthenticateWithNewToken()
         {
-            var response = await Client.PostObject("/api/accounts/authenticate", new AuthenticateRequest { Email = _account.Email, Password = _password });
+            var response = await Client.PostObject("/accounts/authenticate", new AuthenticateRequest { Email = _account.Email, Password = _password });
             response.ShouldBeOk();
         }
     }

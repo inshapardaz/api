@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Accounts.Register
             _account = AccountBuilder.InLibrary(_library.Id)
                 .AsInvitation().ExpiringInvitation(DateTime.UtcNow.AddDays(-1)).Build();
 
-            _response = await Client.PostObject($"/api/accounts/register/{_account.InvitationCode}",
+            _response = await Client.PostObject($"/accounts/register/{_account.InvitationCode}",
                 new RegisterRequest
                 {
                     Name = name,

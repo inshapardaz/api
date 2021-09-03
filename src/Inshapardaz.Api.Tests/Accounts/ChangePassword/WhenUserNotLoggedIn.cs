@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ChangePassword
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostObject("/api/accounts/change-password",
+            _response = await Client.PostObject("/accounts/change-password",
                 new ChangePasswordRequest()
                 {
                     OldPassword = RandomData.String,

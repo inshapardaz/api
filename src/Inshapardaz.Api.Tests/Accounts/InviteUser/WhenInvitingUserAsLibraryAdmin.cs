@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostObject($"/api/accounts/invite/library/{Library.Id}",
+            _response = await Client.PostObject($"/accounts/invite/library/{Library.Id}",
                 new InviteUserRequest
                 {
                     Name = _name,

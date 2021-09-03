@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Accounts.CheckInvitationCode
         public async Task Setup()
         {
             _account = AccountBuilder.Verified().AsInvitation().Build();
-            _response = await Client.GetAsync($"/api/accounts/invitation/{_account.InvitationCode}");
+            _response = await Client.GetAsync($"/accounts/invitation/{_account.InvitationCode}");
         }
 
         [Test]

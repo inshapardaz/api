@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostObject("/api/accounts/revoke-token", new RevokeTokenRequest() { Token = RandomData.String });
+            _response = await Client.PostObject("/accounts/revoke-token", new RevokeTokenRequest() { Token = RandomData.String });
         }
 
         [Test]

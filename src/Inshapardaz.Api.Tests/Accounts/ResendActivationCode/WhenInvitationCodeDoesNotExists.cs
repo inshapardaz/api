@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ResendActivationCode
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostObject($"/api/accounts/invitations", new ResendInvitationCodeRequest() { Email = RandomData.Email });
+            _response = await Client.PostObject($"/accounts/invitations", new ResendInvitationCodeRequest() { Email = RandomData.Email });
         }
 
         [Test]

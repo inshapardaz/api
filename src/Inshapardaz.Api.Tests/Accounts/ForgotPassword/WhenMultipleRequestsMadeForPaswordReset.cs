@@ -22,11 +22,11 @@ namespace Inshapardaz.Api.Tests.Accounts.ForgotPassword
         {
             _account = AccountBuilder.Verified().Build();
 
-            _response = await Client.PostObject("/api/accounts/forgot-password", new ForgotPasswordRequest() { Email = _account.Email });
+            _response = await Client.PostObject("/accounts/forgot-password", new ForgotPasswordRequest() { Email = _account.Email });
 
             _firstResetToken = DatabaseConnection.GetAccountById(_account.Id).ResetToken;
 
-            _response = await Client.PostObject("/api/accounts/forgot-password", new ForgotPasswordRequest() { Email = _account.Email });
+            _response = await Client.PostObject("/accounts/forgot-password", new ForgotPasswordRequest() { Email = _account.Email });
         }
 
         [Test]

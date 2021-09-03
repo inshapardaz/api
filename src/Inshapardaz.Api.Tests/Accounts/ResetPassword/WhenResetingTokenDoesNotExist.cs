@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ResetPassword
         {
             _password = RandomData.String;
 
-            _response = await Client.PostObject("/api/accounts/reset-password",
+            _response = await Client.PostObject("/accounts/reset-password",
                 new ResetPasswordRequest()
                 {
                     Token = RandomData.String,

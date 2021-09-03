@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ForgotPassword
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostObject("/api/accounts/forgot-password", new ForgotPasswordRequest() { Email = RandomData.Email });
+            _response = await Client.PostObject("/accounts/forgot-password", new ForgotPasswordRequest() { Email = RandomData.Email });
         }
 
         [Test]

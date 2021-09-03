@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
         {
             _library = LibraryBuilder.Build();
 
-            _response = await Client.PostObject($"/api/accounts/invite",
+            _response = await Client.PostObject($"/accounts/invite",
                 new InviteUserRequest
                 {
                     Name = _name,

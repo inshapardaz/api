@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Accounts.Register
             _library = LibraryBuilder.Build();
             _account = AccountBuilder.InLibrary(_library.Id).AsInvitation().Build();
 
-            _response = await Client.PostObject($"/api/accounts/register/{Guid.NewGuid().ToString("N")}",
+            _response = await Client.PostObject($"/accounts/register/{Guid.NewGuid().ToString("N")}",
                 new RegisterRequest
                 {
                     Name = name,

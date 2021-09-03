@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Accounts.CheckInvitationCode
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.GetAsync($"/api/accounts/invitation/{RandomData.String}");
+            _response = await Client.GetAsync($"/accounts/invitation/{RandomData.String}");
         }
 
         [Test]

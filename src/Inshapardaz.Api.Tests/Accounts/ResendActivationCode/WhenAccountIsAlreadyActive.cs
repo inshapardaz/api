@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ResendActivationCode
         {
             _library = LibraryBuilder.Build();
             _account = AccountBuilder.InLibrary(_library.Id).Verified().Build();
-            _response = await Client.PostObject($"/api/accounts/invitations", new ResendInvitationCodeRequest() { Email = _account.Email });
+            _response = await Client.PostObject($"/accounts/invitations", new ResendInvitationCodeRequest() { Email = _account.Email });
         }
 
         [Test]

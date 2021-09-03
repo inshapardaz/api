@@ -16,7 +16,7 @@ using Paramore.Brighter;
 namespace Inshapardaz.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class AccountsController : BaseController
     {
         private readonly IAmACommandProcessor _commandProcessor;

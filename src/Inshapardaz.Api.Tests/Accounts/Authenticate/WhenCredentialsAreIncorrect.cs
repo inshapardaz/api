@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Accounts.Authenticate
             var password = RandomData.String;
             var account = AccountBuilder.WithPassword(password).Verified().Build();
 
-            _response = await Client.PostObject("/api/accounts/authenticate", new AuthenticateRequest { Email = account.Email, Password = RandomData.String });
+            _response = await Client.PostObject("/accounts/authenticate", new AuthenticateRequest { Email = account.Email, Password = RandomData.String });
         }
 
         [Test]

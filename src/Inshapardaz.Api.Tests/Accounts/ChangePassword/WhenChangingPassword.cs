@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ChangePassword
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostObject("/api/accounts/change-password",
+            _response = await Client.PostObject("/accounts/change-password",
                 new ChangePasswordRequest()
                 {
                     OldPassword = AccountBuilder._password,
@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ChangePassword
         [Test]
         public async Task ShouldBeAbleToAuthenticateWithNewPassword()
         {
-            var response = await Client.PostObject("/api/accounts/authenticate", new AuthenticateRequest { Email = Account.Email, Password = _password });
+            var response = await Client.PostObject("/accounts/authenticate", new AuthenticateRequest { Email = Account.Email, Password = _password });
             response.ShouldBeOk();
         }
     }

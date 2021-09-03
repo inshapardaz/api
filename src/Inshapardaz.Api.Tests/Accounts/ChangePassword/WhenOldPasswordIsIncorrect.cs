@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ChangePassword
         {
             _password = RandomData.String;
 
-            _response = await Client.PostObject("/api/accounts/change-password",
+            _response = await Client.PostObject("/accounts/change-password",
                 new ChangePasswordRequest()
                 {
                     OldPassword = RandomData.String,
@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ChangePassword
         [Test]
         public async Task ShouldNotBeAbleToAuthenticateWithNewPassword()
         {
-            var response = await Client.PostObject("/api/accounts/authenticate", new AuthenticateRequest { Email = Account.Email, Password = _password });
+            var response = await Client.PostObject("/accounts/authenticate", new AuthenticateRequest { Email = Account.Email, Password = _password });
             response.ShouldBeUnauthorized();
         }
     }

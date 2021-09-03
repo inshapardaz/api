@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Accounts.Authenticate
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostObject("/api/accounts/authenticate", new AuthenticateRequest { Email = RandomData.Email, Password = RandomData.String });
+            _response = await Client.PostObject("/accounts/authenticate", new AuthenticateRequest { Email = RandomData.Email, Password = RandomData.String });
         }
 
         [Test]

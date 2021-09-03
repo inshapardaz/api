@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
                 .Verified()
                 .Build();
 
-            _response = await Client.PostObject($"/api/accounts/invite/library/{-RandomData.Number}",
+            _response = await Client.PostObject($"/accounts/invite/library/{-RandomData.Number}",
                 new InviteUserRequest
                 {
                     Email = account.Email,

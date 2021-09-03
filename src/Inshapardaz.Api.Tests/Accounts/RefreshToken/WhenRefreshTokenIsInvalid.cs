@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostObject("/api/accounts/refresh-token", new RefreshTokenRequest { RefreshToken = RandomData.String });
+            _response = await Client.PostObject("/accounts/refresh-token", new RefreshTokenRequest { RefreshToken = RandomData.String });
         }
 
         [Test]

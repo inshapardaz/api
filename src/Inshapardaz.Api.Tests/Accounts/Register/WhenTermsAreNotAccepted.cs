@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Accounts.Register
             _library = LibraryBuilder.Build();
             _account = AccountBuilder.InLibrary(_library.Id).AsInvitation().Build();
 
-            _response = await Client.PostObject($"/api/accounts/register/{_account.InvitationCode}",
+            _response = await Client.PostObject($"/accounts/register/{_account.InvitationCode}",
                 new RegisterRequest
                 {
                     Name = name,

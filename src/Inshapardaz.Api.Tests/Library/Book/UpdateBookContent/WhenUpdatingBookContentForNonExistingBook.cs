@@ -20,9 +20,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var newContents = Random.Bytes;
+            var newContents = RandomData.Bytes;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{-Random.Number}/contents", newContents, Random.Locale, Random.MimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{-RandomData.Number}/contents", newContents, RandomData.Locale, RandomData.MimeType);
         }
 
         [OneTimeTearDown]

@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UploadPageImage
         private HttpResponseMessage _response;
         private BookPageDto _page;
         private int _bookId;
-        private byte[] _newImage = Random.Bytes;
+        private byte[] _newImage = RandomData.Bytes;
 
         public WhenUploadingBookPageImageWithPermissions(Role role)
             : base(role)

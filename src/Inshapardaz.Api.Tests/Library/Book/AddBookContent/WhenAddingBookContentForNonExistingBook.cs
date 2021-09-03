@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostContent($"/libraries/{LibraryId}/books/{-Random.Number}/contents", Random.Bytes, "hi", "text/plain");
+            _response = await Client.PostContent($"/libraries/{LibraryId}/books/{-RandomData.Number}/contents", RandomData.Bytes, "hi", "text/plain");
         }
 
         [OneTimeTearDown]

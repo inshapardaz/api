@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.DeleteAuthor
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/authors/{-Random.Number}");
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/authors/{-RandomData.Number}");
         }
 
         [OneTimeTearDown]

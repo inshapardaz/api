@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
         public async Task Setup()
         {
             var series = SeriesBuilder.WithLibrary(LibraryId).Build();
-            series.Name = Random.Name;
+            series.Name = RandomData.Name;
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/series/{series.Id}", series);
         }

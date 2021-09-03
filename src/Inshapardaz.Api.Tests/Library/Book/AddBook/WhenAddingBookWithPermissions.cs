@@ -29,13 +29,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             var categories = CategoryBuilder.WithLibrary(LibraryId).Build(3);
             var book = new BookView
             {
-                Title = Random.Name,
+                Title = RandomData.Name,
                 AuthorId = author.Id,
                 SeriesId = series.Id,
                 SeriesIndex = 1,
                 SeriesName = series.Name,
-                Language = Random.Locale,
-                Categories = Random.PickRandom(categories, 2).Select(c => new CategoryView { Id = c.Id })
+                Language = RandomData.Locale,
+                Categories = RandomData.PickRandom(categories, 2).Select(c => new CategoryView { Id = c.Id })
             };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);

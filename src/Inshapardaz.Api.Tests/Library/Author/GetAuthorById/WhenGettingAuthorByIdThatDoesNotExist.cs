@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/authors/{-Random.Number}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/authors/{-RandomData.Number}");
         }
 
         [OneTimeTearDown]

@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
         private BookPageAssert _assert;
         private BookPageDto _page;
         private BookPageDto _exptectedPage;
-        private int _secondAccountId = Random.Number;
+        private int _secondAccountId = RandomData.Number;
 
         public WhenAssigningBookPageToSomeoneElse(Role role)
             : base(role)

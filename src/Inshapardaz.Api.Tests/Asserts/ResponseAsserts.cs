@@ -9,7 +9,8 @@ namespace Inshapardaz.Api.Tests.Asserts
         public static void ShouldBeOk(this HttpResponseMessage result)
         {
             result.Should().NotBeNull();
-            result.StatusCode.Should().Be(HttpStatusCode.OK);
+            var body = result.Content.ReadAsStringAsync().Result;
+            result.StatusCode.Should().Be(HttpStatusCode.OK, body);
         }
 
         public static void ShouldBeRedirect(this HttpResponseMessage result)
@@ -49,6 +50,21 @@ namespace Inshapardaz.Api.Tests.Asserts
         public static void ShouldBeBadRequest(this HttpResponseMessage result)
         {
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+
+        public static void ShouldBeGone(this HttpResponseMessage result)
+        {
+            result.StatusCode.Should().Be(HttpStatusCode.Gone);
+        }
+
+        public static void ShouldBeInternalServerError(this HttpResponseMessage result)
+        {
+            result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        }
+
+        public static void ShouldBeConflict(this HttpResponseMessage result)
+        {
+            result.StatusCode.Should().Be(HttpStatusCode.Conflict);
         }
     }
 }

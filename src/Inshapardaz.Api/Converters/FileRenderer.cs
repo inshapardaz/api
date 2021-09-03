@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (_userHelper.IsWriter || _userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
+            if (_userHelper.IsAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {

@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            LibraryBuilder.AssignToUser(AccountId).Build(10);
+            LibraryBuilder.AssignToUser(AccountId, Role.Writer).Build(10);
 
             _response = await Client.GetAsync($"/libraries?pageNumber=1&pageSize=5");
             _assert = new PagingAssert<LibraryView>(_response);

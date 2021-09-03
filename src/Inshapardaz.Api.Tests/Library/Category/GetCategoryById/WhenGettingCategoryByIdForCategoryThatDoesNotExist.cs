@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/categories/{-Random.Number}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/categories/{-RandomData.Number}");
         }
 
         [OneTimeTearDown]

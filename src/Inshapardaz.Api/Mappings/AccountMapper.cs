@@ -9,7 +9,7 @@ namespace Inshapardaz.Api.Mappings
             => new AccountView
             {
                 Id = source.Id,
-                AccountName = source.FirstName,
+                Name = source.Name,
                 Email = source.Email,
                 IsVerified = source.IsVerified,
                 Created = source.Created,
@@ -21,9 +21,8 @@ namespace Inshapardaz.Api.Mappings
             => new AccountModel
             {
                 Id = source.Id,
-                FirstName = source.AccountName,
+                Name = source.Name,
                 Email = source.Email,
-                IsVerified = source.IsVerified,
                 Created = source.Created,
                 Role = source.Role,
                 Updated = source.Updated
@@ -33,7 +32,7 @@ namespace Inshapardaz.Api.Mappings
             => new AccountLookupView
             {
                 Id = source.Id,
-                AccountName = $"{source.FirstName} {source.LastName}"
+                Name = source.Name
             };
     }
 }

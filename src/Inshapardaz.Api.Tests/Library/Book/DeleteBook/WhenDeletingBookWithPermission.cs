@@ -28,8 +28,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
             var books = BookBuilder.WithLibrary(LibraryId)
                                     .WithCategories(1)
                                     .HavingSeries()
-                                    .AddToFavorites(Helpers.Random.Number)
-                                    .AddToRecentReads(Helpers.Random.Number)
+                                    .AddToFavorites(AccountId)
+                                    .AddToRecentReads(AccountId)
                                     .Build(1);
             _expected = books.PickRandom();
 

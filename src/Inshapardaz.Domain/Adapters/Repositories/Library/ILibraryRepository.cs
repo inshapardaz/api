@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,8 +24,10 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task DeleteLibrary(int libraryId, CancellationToken cancellationToken);
 
-        Task AddLibraryToAccount(int libraryId, int accountId, CancellationToken cancellationToken);
+        Task AddAccountToLibrary(int libraryId, int accountId, Role role, CancellationToken cancellationToken);
 
         Task RemoveLibraryFromAccount(int libraryId, int accountId, CancellationToken cancellationToken);
+
+        Task<IEnumerable<LibraryModel>> GetLibrariesByAccountId(int accountId, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

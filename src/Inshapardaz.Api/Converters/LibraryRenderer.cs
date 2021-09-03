@@ -185,7 +185,7 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
+            if (_userHelper.IsWriter(model.Id) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(model.Id))
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -212,7 +212,7 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            if (_userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
+            if (_userHelper.IsLibraryAdmin(model.Id) || _userHelper.IsAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {

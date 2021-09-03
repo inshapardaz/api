@@ -17,6 +17,9 @@ using Inshapardaz.Storage.Azure;
 using Inshapardaz.Database.SqlServer.Repositories;
 using Inshapardaz.Api.Infrastructure;
 using Inshapardaz.Adapter.Ocr.Google;
+using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Authorization;
+using static Inshapardaz.Api.Helpers.AuthorizeAttribute;
 
 namespace Inshapardaz.Api
 {
@@ -36,7 +39,6 @@ namespace Inshapardaz.Api
             Configuration.Bind("AppSettings", settings);
             services.AddSingleton(settings);
 
-            services.AddDbContext<DataContext>();
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
@@ -51,8 +53,10 @@ namespace Inshapardaz.Api
             services.AddSwaggerGen();
 
             // configure DI for application services
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IEmailService, EmailService>();
+            services.AddTransient<ISmtpClient, SmtpClient>();
+            services.AddSingleton<IEmailService, EmailService>();
+            services.AddSingleton<IGetIPAddress, HttpIPAddressGetter>();
+            services.AddTransient<IGenerateToken, TokenGenerator>();
 
             services.AddBrighterCommand();
             services.AddDarkerQuery();
@@ -78,6 +82,7 @@ namespace Inshapardaz.Api
             services.AddTransient<IConvertPdf, PdfConverter>();
             services.AddTransient<IOpenZip, ZipReader>();
             services.AddTransient<IProvideOcr, GoogleOcr>();
+
             if (settings.FileStoreType == FileStoreTypes.AzureBlobStorage)
             {
                 services.AddTransient<IFileStorage, AzureFileStorage>();
@@ -91,11 +96,8 @@ namespace Inshapardaz.Api
         }
 
         // configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // migrate database changes on startup (includes initial db creation)
-            //context.Database.Migrate();
-
             // generated swagger json and swagger ui middleware
             app.UseSwagger();
             app.UseSwaggerUI(x => x.SwaggerEndpoint("/swagger/v1/swagger.json", "Inshapardaz API"));

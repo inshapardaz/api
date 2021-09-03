@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         public async Task Setup()
         {
             var expected = ChapterBuilder.WithLibrary(LibraryId).Build();
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{expected.BookId}/chapters/{-Random.Number}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{expected.BookId}/chapters/{-RandomData.Number}");
         }
 
         [OneTimeTearDown]

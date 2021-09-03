@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
+using Inshapardaz.Api.Models.Accounts;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Accounts;
 using Inshapardaz.Domain.Models;
@@ -14,9 +15,11 @@ namespace Inshapardaz.Api.Converters
     {
         PageView<AccountView> Render(PageRendererArgs<AccountModel> source);
 
-        AccountView Render(AccountModel series);
+        AccountView Render(AccountModel account);
 
         IEnumerable<AccountLookupView> RenderLookup(IEnumerable<AccountModel> writers);
+
+        AuthenticateResponse Render(TokenResponse model);
     }
 
     public class AccountRenderer : IRenderAccount
@@ -52,7 +55,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (_userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
+            if (_userHelper.IsAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -137,7 +140,7 @@ namespace Inshapardaz.Api.Converters
             //    }));
             //}
 
-            if (_userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
+            if (_userHelper.IsAdmin)
             {
                 view.Links.Add(_linkRenderer.Render(new Link
                 {
@@ -170,6 +173,21 @@ namespace Inshapardaz.Api.Converters
         public IEnumerable<AccountLookupView> RenderLookup(IEnumerable<AccountModel> writers)
         {
             return writers.Select(w => w.MapToLookup());
+        }
+
+        public AuthenticateResponse Render(TokenResponse model)
+        {
+            return new AuthenticateResponse
+            {
+                Id = model.Account.Id,
+                Email = model.Account.Email,
+                Name = model.Account.Name,
+                Created = model.Account.Created,
+                IsVerified = model.Account.IsVerified,
+                JwtToken = model.JwtToken,
+                RefreshToken = model.RefreshToken,
+                Updated = model.Account.Updated
+            };
         }
     }
 }

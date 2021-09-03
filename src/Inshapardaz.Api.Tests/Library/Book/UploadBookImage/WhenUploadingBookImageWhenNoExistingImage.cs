@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
             var book = BookBuilder.WithLibrary(LibraryId).WithNoImage().Build();
             _bookId = book.Id;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_bookId}/image", Random.Bytes);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_bookId}/image", RandomData.Bytes);
             _bookAssert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

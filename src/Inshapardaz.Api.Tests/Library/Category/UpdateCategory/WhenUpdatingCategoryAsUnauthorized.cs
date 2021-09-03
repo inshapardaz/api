@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var category = new CategoryView { Id = Random.Number, Name = Random.Name };
+            var category = new CategoryView { Id = RandomData.Number, Name = RandomData.Name };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/categories/{category.Id}", category);
         }

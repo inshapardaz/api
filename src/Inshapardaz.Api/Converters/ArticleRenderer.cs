@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Converters
                 Parameters = new { libraryId = libraryId, periodicalId = periodicalId, issueId = issueId }
             }));
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter(libraryId))
             {
                 view.Links.Add(_linkRenderer.Render(new Link
                 {
@@ -87,7 +87,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter(libraryId))
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -165,7 +165,7 @@ namespace Inshapardaz.Api.Converters
                 links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = MimeTypes.Jpg });
             }
 
-            if (_userHelper.IsWriter)
+            if (_userHelper.IsWriter(libraryId))
             {
                 links.Add(_linkRenderer.Render(new Link
                 {

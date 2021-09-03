@@ -7,14 +7,16 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddLibraryToAccountRequest : RequestBase
     {
-        public AddLibraryToAccountRequest(int libraryId, int accountId)
+        public AddLibraryToAccountRequest(int libraryId, int accountId, Role role)
         {
             LibraryId = libraryId;
             AccountId = accountId;
+            Role = role;
         }
 
         public int LibraryId { get; }
         public int AccountId { get; }
+        public Role Role { get; }
     }
 
     public class AddLibraryToAccountRequestHandler : RequestHandlerAsync<AddLibraryToAccountRequest>
@@ -28,7 +30,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<AddLibraryToAccountRequest> HandleAsync(AddLibraryToAccountRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            await _libraryRepository.AddLibraryToAccount(command.LibraryId, command.AccountId, cancellationToken);
+            await _libraryRepository.AddAccountToLibrary(command.LibraryId, command.AccountId, command.Role, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Api.Entities;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Helpers
 {
@@ -6,10 +7,13 @@ namespace Inshapardaz.Api.Helpers
     {
         bool IsAuthenticated { get; }
         bool IsAdmin { get; }
-        bool IsLibraryAdmin { get; }
-        bool IsWriter { get; }
-        bool IsReader { get; }
 
-        Account Account { get; }
+        bool IsLibraryAdmin(int libraryId);
+
+        bool IsWriter(int libraryId);
+
+        bool IsReader(int libraryId);
+
+        AccountModel Account { get; }
     }
 }

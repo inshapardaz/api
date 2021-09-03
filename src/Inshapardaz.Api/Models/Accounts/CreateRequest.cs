@@ -6,13 +6,7 @@ namespace Inshapardaz.Api.Models.Accounts
     public class CreateRequest
     {
         [Required]
-        public string Title { get; set; }
-
-        [Required]
-        public string FirstName { get; set; }
-
-        [Required]
-        public string LastName { get; set; }
+        public string Name { get; set; }
 
         [Required]
         [EnumDataType(typeof(Role))]

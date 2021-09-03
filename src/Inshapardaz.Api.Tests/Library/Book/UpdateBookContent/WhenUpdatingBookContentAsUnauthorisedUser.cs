@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
             _book = BookBuilder.WithLibrary(LibraryId).WithContent().Build();
             var file = BookBuilder.Contents.PickRandom();
 
-            _expected = Random.Bytes;
+            _expected = RandomData.Bytes;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents", _expected, file.Language, file.MimeType);
         }

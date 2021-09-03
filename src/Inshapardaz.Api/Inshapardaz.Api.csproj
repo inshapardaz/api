@@ -6,6 +6,7 @@
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
+    <PackageReference Include="MailKit" Version="2.15.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Paramore.Brighter.Extensions.DependencyInjection" Version="9.0.1-beta.1" />
     <PackageReference Include="Paramore.Brighter.MessagingGateway.RMQ" Version="9.0.1-beta.1" />

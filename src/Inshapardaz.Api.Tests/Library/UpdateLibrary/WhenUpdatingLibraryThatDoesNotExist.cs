@@ -23,9 +23,9 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _expectedLibrary = new LibraryView { Name = Random.Name, Language = Random.Locale, SupportsPeriodicals = Random.Bool };
+            _expectedLibrary = new LibraryView { Name = RandomData.Name, Language = RandomData.Locale, SupportsPeriodicals = RandomData.Bool };
 
-            _response = await Client.PutObject($"/libraries/{-Random.Number}", _expectedLibrary);
+            _response = await Client.PutObject($"/libraries/{-RandomData.Number}", _expectedLibrary);
             _assert = LibraryAssert.FromResponse(_response, DatabaseConnection);
         }
 

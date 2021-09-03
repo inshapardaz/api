@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
             _updatedPage = new BookPageView
             {
                 BookId = book.Id,
-                Text = Random.Text,
+                Text = RandomData.Text,
                 SequenceNumber = _page.SequenceNumber
             };
 

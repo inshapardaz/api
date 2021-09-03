@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
+using System.Threading;
 
 namespace Inshapardaz.Api.Middleware
 {
@@ -21,17 +23,17 @@ namespace Inshapardaz.Api.Middleware
             _appSettings = appSettings;
         }
 
-        public async Task Invoke(HttpContext context, DataContext dataContext)
+        public async Task Invoke(HttpContext context, ILibraryRepository libraryRepository, IAccountRepository accountRepository)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                await attachAccountToContext(context, dataContext, token);
+                await AttachAccountToContext(context, token, libraryRepository, accountRepository);
 
             await _next(context);
         }
 
-        private async Task attachAccountToContext(HttpContext context, DataContext dataContext, string token)
+        private async Task AttachAccountToContext(HttpContext context, string token, ILibraryRepository libraryRepository, IAccountRepository accountRepository)
         {
             try
             {
@@ -44,19 +46,17 @@ namespace Inshapardaz.Api.Middleware
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
-                // attach account to context on successful jwt validation
-                context.Items["Account"] = await dataContext.Accounts.FindAsync(accountId);
+                context.Items["Account"] = await accountRepository.GetAccountById(accountId, CancellationToken.None);
+                context.Items["Libraries"] = await libraryRepository.GetLibrariesByAccountId(accountId, CancellationToken.None);
             }
             catch
             {
-                // do nothing if jwt validation fails
-                // account is not attached to context so request won't have access to secure routes
             }
         }
     }

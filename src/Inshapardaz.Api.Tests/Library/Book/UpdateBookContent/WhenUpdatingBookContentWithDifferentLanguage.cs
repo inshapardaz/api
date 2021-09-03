@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _newLanguage = Random.Locale;
+            _newLanguage = RandomData.Locale;
 
             _book = BookBuilder.WithLibrary(LibraryId).WithContents(2).WithContentLanguage($"{_newLanguage}_old").Build();
             _file = BookBuilder.Contents.PickRandom();

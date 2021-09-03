@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         public async Task Setup()
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
-            book.Title = Random.Name;
+            book.Title = RandomData.Name;
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/books/{book.Id}", book);
         }

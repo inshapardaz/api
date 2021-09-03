@@ -26,10 +26,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
 
             _expected = new BookView
             {
-                Title = Random.Name,
-                Description = Random.Words(10),
+                Title = RandomData.Name,
+                Description = RandomData.Words(10),
                 AuthorId = author.Id,
-                Language = Random.Locale
+                Language = RandomData.Locale
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_expected.Id}", _expected);

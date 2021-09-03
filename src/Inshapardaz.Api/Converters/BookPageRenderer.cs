@@ -52,7 +52,7 @@ namespace Inshapardaz.Api.Converters
                 QueryString = query
             }));
 
-            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
+            if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -129,7 +129,7 @@ namespace Inshapardaz.Api.Converters
                 links.Add(RenderImageLink(source.ImageId.Value));
             }
 
-            if (_userHelper.IsWriter || _userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
+            if (_userHelper.IsWriter(libraryId) || _userHelper.IsLibraryAdmin(libraryId) || _userHelper.IsAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -147,7 +147,7 @@ namespace Inshapardaz.Api.Converters
                     Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                 }));
 
-                if (_userHelper.IsLibraryAdmin || _userHelper.IsAdmin)
+                if (_userHelper.IsLibraryAdmin(libraryId) || _userHelper.IsAdmin)
                 {
                     links.Add(_linkRenderer.Render(new Link
                     {

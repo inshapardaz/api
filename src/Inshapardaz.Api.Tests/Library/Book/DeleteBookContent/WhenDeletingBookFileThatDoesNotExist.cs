@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{book.Id}/contents", Random.Locale, Random.MimeType);
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{book.Id}/contents", RandomData.Locale, RandomData.MimeType);
         }
 
         [OneTimeTearDown]

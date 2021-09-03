@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             using (var formData = new MultipartFormDataContent())
             {
                 content.Headers.ContentType = new MediaTypeHeaderValue(mimetype);
-                formData.Add(content, "file", $"{Random.Name}.jpg");
+                formData.Add(content, "file", $"{RandomData.Name}.jpg");
 
                 return await client.PostAsync(url, formData);
             }
@@ -74,7 +74,7 @@ namespace Inshapardaz.Api.Tests.Helpers
                 var jsonContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
 
                 formData.Add(jsonContent, "json");
-                formData.Add(content, "image", $"{Random.Name}.jpg");
+                formData.Add(content, "image", $"{RandomData.Name}.jpg");
 
                 return await client.PostAsync(url, formData);
             }
@@ -102,7 +102,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             using (var content = new StreamContent(stream))
             using (var formData = new MultipartFormDataContent())
             {
-                formData.Add(content, "file", $"{Random.Name}.jpg");
+                formData.Add(content, "file", $"{RandomData.Name}.jpg");
 
                 return await client.PutAsync(url, formData);
             }
@@ -117,7 +117,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             using (var formData = new MultipartFormDataContent())
             {
                 content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-                formData.Add(content, "file", $"{Random.Name}.jpg");
+                formData.Add(content, "file", $"{RandomData.Name}.jpg");
 
                 return await client.PutAsync(url, formData);
             }
@@ -135,7 +135,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             using (var formData = new MultipartFormDataContent())
             {
                 content.Headers.ContentType = new MediaTypeHeaderValue(mimetype);
-                formData.Add(content, "file", $"{Random.Name}.jpg");
+                formData.Add(content, "file", $"{RandomData.Name}.jpg");
 
                 return await client.PutAsync(url, formData);
             }

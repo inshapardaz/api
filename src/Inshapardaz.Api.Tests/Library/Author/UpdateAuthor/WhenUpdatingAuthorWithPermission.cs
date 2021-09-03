@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.UpdateAuthor
 
             var author = authors.PickRandom();
 
-            _expected = new AuthorView { Name = Random.Name };
+            _expected = new AuthorView { Name = RandomData.Name };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/authors/{author.Id}", author);
             _assert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);

@@ -15,6 +15,10 @@ using Inshapardaz.Domain.Models;
 using Microsoft.AspNetCore.TestHost;
 using System;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Api.Tests.Asserts;
+using MailKit.Net.Smtp;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace Inshapardaz.Api.Tests
 {
@@ -25,26 +29,47 @@ namespace Inshapardaz.Api.Tests
         private WebApplicationFactory<Startup> _factory;
         private AccountDto _account;
 
+        protected AccountAssert AccountAssert => Services.GetService<AccountAssert>();
+        public FakeSmtpClient SmtpClient => Services.GetService<ISmtpClient>() as FakeSmtpClient;
+
         public TestBase(Role? role = null, bool periodicalsEnabled = false, bool createLibrary = true)
         {
             _periodicalsEnabled = periodicalsEnabled;
             _role = role;
 
-            _factory = new WebApplicationFactory<Startup>()
-            .WithWebHostBuilder(builder => builder.ConfigureTestServices(services => ConfigureServices(services)));
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var projectDir = Directory.GetCurrentDirectory();
+            var configPath = Path.Combine(projectDir, "appsettings.json");
 
+            _factory = new WebApplicationFactory<Startup>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureAppConfiguration((context, conf) =>
+                {
+                    conf.AddJsonFile(configPath);
+
+                    if (!string.IsNullOrWhiteSpace(environment))
+                    {
+                        conf.AddJsonFile(Path.Combine(projectDir, $"appsettings.json"), true);
+                        //conf.AddJsonFile(Path.Combine(projectDir, $"appsettings.{environment}.json"), true);
+                    }
+                });
+                builder.ConfigureTestServices(services => ConfigureServices(services));
+            });
+
+            var settings = Services.GetService<Settings>();
             AccountBuilder = _factory.Services.GetService<AccountDataBuilder>();
 
             if (role.HasValue)
             {
-                AccountBuilder = AccountBuilder.As(_role.Value);
+                AccountBuilder = AccountBuilder.As(_role.Value).Verified();
                 _account = AccountBuilder.Build();
             }
 
             if (createLibrary)
             {
                 var builder = LibraryBuilder.WithPeriodicalsEnabled(_periodicalsEnabled);
-                if (_account != null) builder.AssignToUser(AccountId);
+                if (_account != null && role.HasValue) builder.AssignToUser(AccountId, _role.Value);
                 Library = builder.Build();
             }
 
@@ -52,7 +77,6 @@ namespace Inshapardaz.Api.Tests
 
             if (_account != null)
             {
-                var settings = Services.GetService<Settings>();
                 var token = TokenBuilder.GenerateToken(settings, _account.Id);
                 Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
@@ -64,8 +88,14 @@ namespace Inshapardaz.Api.Tests
             {
                 services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(DatabaseFileStorage), ServiceLifetime.Transient));
                 services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(AzureFileStorage), ServiceLifetime.Transient));
-                services.AddSingleton<IFileStorage>(new FakeFileStorage());
             }
+            services.AddSingleton<IFileStorage>(new FakeFileStorage());
+
+            if (services.Any(x => x.ServiceType == typeof(ISmtpClient)))
+            {
+                services.Remove(new ServiceDescriptor(typeof(ISmtpClient), typeof(SmtpClient), ServiceLifetime.Transient));
+            }
+            services.AddSingleton<ISmtpClient>(new FakeSmtpClient());
 
             services.AddTransient<LibraryDataBuilder>()
                 .AddTransient<CategoriesDataBuilder>()
@@ -73,24 +103,15 @@ namespace Inshapardaz.Api.Tests
                 .AddTransient<AuthorsDataBuilder>()
                 .AddTransient<BooksDataBuilder>()
                 .AddTransient<ChapterDataBuilder>()
-                .AddTransient<AccountDataBuilder>();
-
-            /*services.AddAuthentication("Test")
-                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", op => { });*/
-
-            //services.AddScoped<TestClaimsProvider>(svc => svc.GetService<TestClaimsProvider>().WithAccount(_account?.Id));
-
-            /*if (services.Any(x => x.ServiceType == typeof(IUserHelper)))
-             {
-                 services.Remove(new ServiceDescriptor(typeof(IUserHelper), typeof(UserHelper), ServiceLifetime.Transient));
-                 services.AddScoped<IUserHelper, TestUserHelper>();
-             }
-             */
+                .AddTransient<AccountDataBuilder>()
+                .AddTransient<AccountAssert>();
         }
 
         public HttpClient Client { get; }
 
         public int AccountId => _account?.Id ?? 0;
+
+        protected AccountDto Account => _account;
 
         protected int LibraryId => _libraryBuilder.Library.Id;
 

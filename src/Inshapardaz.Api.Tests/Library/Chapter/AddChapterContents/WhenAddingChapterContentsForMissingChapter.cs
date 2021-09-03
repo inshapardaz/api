@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         public async Task Setup()
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
-            _response = await Client.PostString($"/libraries/{LibraryId}/books/{book.Id}/chapters/{Random.Number}/contents?language={Random.Locale}", Random.String, Random.Locale);
+            _response = await Client.PostString($"/libraries/{LibraryId}/books/{book.Id}/chapters/{RandomData.Number}/contents?language={RandomData.Locale}", RandomData.String, RandomData.Locale);
         }
 
         [OneTimeTearDown]

@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
     {
         private HttpResponseMessage _response;
         private PagingAssert<LibraryView> _assert;
-        private string _startWith = Random.String;
+        private string _startWith = RandomData.String;
 
         public WhenSearchingLibraries()
             : base(Role.Writer, createLibrary: false)
@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            LibraryBuilder.AssignToUser(AccountId).StartingWith(_startWith).Build(4);
+            LibraryBuilder.AssignToUser(AccountId, Role.Writer).StartingWith(_startWith).Build(4);
 
             _response = await Client.GetAsync($"/libraries?query={_startWith}");
             _assert = new PagingAssert<LibraryView>(_response);

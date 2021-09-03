@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Inshapardaz.Api.Entities;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Inshapardaz.Api.Helpers
 {
@@ -16,18 +19,22 @@ namespace Inshapardaz.Api.Helpers
         public bool IsAuthenticated => Account != null;
 
         public bool IsAdmin => IsAuthenticated && IsUserInRole(Role.Admin);
-        public bool IsLibraryAdmin => IsAuthenticated && IsUserInRole(Role.LibraryAdmin);
 
-        public bool IsWriter => IsAuthenticated && (IsLibraryAdmin || IsUserInRole(Role.Writer));
+        public bool IsLibraryAdmin(int libraryId) => IsAuthenticated && IsUserInRole(Role.LibraryAdmin, libraryId);
 
-        public bool IsReader => IsAuthenticated && (IsWriter || IsUserInRole(Role.Reader));
+        public bool IsWriter(int libraryId) => IsAuthenticated && (IsLibraryAdmin(libraryId) || IsUserInRole(Role.Writer, libraryId));
 
-        public Account Account => (Account)_contextAccessor.HttpContext.Items["Account"];
+        public bool IsReader(int libraryId) => IsAuthenticated && (IsWriter(libraryId) || IsUserInRole(Role.Reader, libraryId));
 
-        public bool IsUserInRole(Role role)
+        public AccountModel Account => (AccountModel)_contextAccessor.HttpContext.Items["Account"];
+
+        public bool IsUserInRole(Role role, int? libraryId = null)
         {
-            var account = (Account)_contextAccessor.HttpContext.Items["Account"];
-            return account.Role == role;
+            var account = (AccountModel)_contextAccessor.HttpContext.Items["Account"];
+            if (role == Role.Admin && account.IsSuperAdmin) return true;
+
+            var libraries = (IEnumerable<LibraryModel>)_contextAccessor.HttpContext.Items["Libraries"];
+            return libraries.Any(l => l.Id == libraryId && l.Role == role);
         }
     }
 }

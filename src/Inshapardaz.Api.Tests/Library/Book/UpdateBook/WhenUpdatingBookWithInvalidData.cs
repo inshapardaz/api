@@ -31,9 +31,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             {
                 var author = AuthorBuilder.WithLibrary(LibraryId).Build();
 
-                var book = new BookView { Title = Random.Name, AuthorId = author.Id };
+                var book = new BookView { Title = RandomData.Name, AuthorId = author.Id };
 
-                _response = await Client.PutObject($"/libraries/{-Random.Number}/books/{book.Id}", book);
+                _response = await Client.PutObject($"/libraries/{-RandomData.Number}/books/{book.Id}", book);
             }
 
             [OneTimeTearDown]
@@ -43,9 +43,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             }
 
             [Test]
-            public void ShouldHaveBadReqestResult()
+            public void ShouldHaveForbiddenResult()
             {
-                _response.ShouldBeBadRequest();
+                _response.ShouldBeForbidden();
             }
         }
 
@@ -68,7 +68,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 var books = BookBuilder.WithLibrary(LibraryId).WithAuthor(_author).Build(1);
                 _bookToUpdate = books.PickRandom();
 
-                var book = new BookView { Title = Random.Text, AuthorId = -Random.Number };
+                var book = new BookView { Title = RandomData.Text, AuthorId = -RandomData.Number };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
@@ -117,7 +117,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 var books = BookBuilder.WithLibrary(LibraryId).WithAuthor(_author).Build(1);
                 _bookToUpdate = books.PickRandom();
 
-                var book = new BookView { Title = Random.Text, AuthorId = author2.Id };
+                var book = new BookView { Title = RandomData.Text, AuthorId = author2.Id };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
@@ -162,7 +162,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 var books = BookBuilder.WithLibrary(LibraryId).WithSeries(_series).Build(1);
                 _bookToUpdate = books.PickRandom();
 
-                var book = new BookView { Title = Random.Text, SeriesId = -Random.Number };
+                var book = new BookView { Title = RandomData.Text, SeriesId = -RandomData.Number };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
@@ -211,7 +211,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 var books = BookBuilder.WithLibrary(LibraryId).WithSeries(_series).Build(1);
                 _bookToUpdate = books.PickRandom();
 
-                var book = new BookView { Title = Random.Text, SeriesId = series2.Id };
+                var book = new BookView { Title = RandomData.Text, SeriesId = series2.Id };
                 _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
 
@@ -255,7 +255,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 var books = BookBuilder.WithLibrary(LibraryId).WithCategory(_category).Build(1);
                 _bookToUpdate = books.PickRandom();
 
-                var book = new BookView { Title = Random.Text, Categories = new[] { new CategoryView { Id = -Random.Number } } };
+                var book = new BookView { Title = RandomData.Text, Categories = new[] { new CategoryView { Id = -RandomData.Number } } };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
@@ -305,7 +305,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 var books = BookBuilder.WithLibrary(LibraryId).WithCategory(_category).Build(1);
                 _bookToUpdate = books.PickRandom();
 
-                var book = new BookView { Title = Random.Text, Categories = new[] { new CategoryView { Id = _category.Id } } };
+                var book = new BookView { Title = RandomData.Text, Categories = new[] { new CategoryView { Id = _category.Id } } };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }

@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var library = new LibraryView { Name = Random.Name, Language = Random.Locale, SupportsPeriodicals = Random.Bool };
+            var library = new LibraryView { Name = RandomData.Name, Language = RandomData.Locale, SupportsPeriodicals = RandomData.Bool };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}", library);
         }

@@ -23,9 +23,9 @@ namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _series = new SeriesView { Name = Random.Name };
+            _series = new SeriesView { Name = RandomData.Name };
 
-            _response = await Client.PutObject($"/libraries/{LibraryId}/series/{-Random.Number}", _series);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/series/{-RandomData.Number}", _series);
             _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 

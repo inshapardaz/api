@@ -24,9 +24,9 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
             {
                 Id = _page.Id,
                 BookId = _page.BookId,
-                ImageId = Random.Number,
-                Text = Random.Text,
-                SequenceNumber = Random.Number
+                ImageId = RandomData.Number,
+                Text = RandomData.Text,
+                SequenceNumber = RandomData.Number
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}", changesPage);

@@ -53,7 +53,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
+            if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -150,7 +150,7 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            if (_userHelper.IsWriter || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
+            if (_userHelper.IsAdmin || _userHelper.IsWriter(libraryId) || _userHelper.IsLibraryAdmin(libraryId))
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -160,7 +160,7 @@ namespace Inshapardaz.Api.Converters
                     Parameters = new { libraryId = libraryId, authorId = source.Id }
                 }));
 
-                if (_userHelper.IsAdmin || _userHelper.IsLibraryAdmin)
+                if (_userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
                 {
                     links.Add(_linkRenderer.Render(new Link
                     {

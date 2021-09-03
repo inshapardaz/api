@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Models;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -43,16 +44,13 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         public static void DeleteLibrary(this IDbConnection connection, int libraryId)
         {
             connection.Execute("Delete Library Where Id = @LibraryId", new { LibraryId = libraryId });
-            connection.Execute("Delete LibraryUser Where LibraryId = @LibraryId", new { LibraryId = libraryId });
+            connection.Execute("Delete AccountLibrary Where LibraryId = @LibraryId", new { LibraryId = libraryId });
         }
 
-        public static void AssignLibrariesToUser(this IDbConnection connection, IEnumerable<LibraryDto> libraries, int? accountId)
+        public static void AssignLibrariesToUser(this IDbConnection connection, IEnumerable<LibraryDto> libraries, int accountId, Role role)
         {
-            if (accountId.HasValue)
-            {
-                connection.Execute("INSERT INTO LibraryUser VALUES (@LibraryId, @AccountId)",
-                libraries.Select(l => new { LibraryId = l.Id, AccountId = accountId }));
-            }
+            connection.Execute("INSERT INTO AccountLibrary (LibraryId, AccountId, Role) VALUES (@LibraryId, @AccountId, @Role)",
+            libraries.Select(l => new { LibraryId = l.Id, AccountId = accountId, Role = role }));
         }
     }
 }

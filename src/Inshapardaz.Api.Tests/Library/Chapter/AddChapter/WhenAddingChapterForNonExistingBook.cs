@@ -22,9 +22,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var chapter = new ChapterView { Title = Random.Name, ChapterNumber = 1 };
+            var chapter = new ChapterView { Title = RandomData.Name, ChapterNumber = 1 };
 
-            _response = await Client.PostObject($"/libraries/{LibraryId}/books/{-Random.Number}/chapters", chapter);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/books/{-RandomData.Number}/chapters", chapter);
         }
 
         [OneTimeTearDown]

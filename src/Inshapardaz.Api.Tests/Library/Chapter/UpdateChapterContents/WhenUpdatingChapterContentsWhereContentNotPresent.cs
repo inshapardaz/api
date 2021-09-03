@@ -27,9 +27,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         {
             _chapter = ChapterBuilder.WithLibrary(LibraryId).Public().WithContents().Build();
 
-            _newContents = Random.String;
+            _newContents = RandomData.String;
 
-            _response = await Client.PutString($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents?language={Random.Locale}", _newContents);
+            _response = await Client.PutString($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents?language={RandomData.Locale}", _newContents);
             _assert = new ChapterContentAssert(_response, LibraryId);
         }
 

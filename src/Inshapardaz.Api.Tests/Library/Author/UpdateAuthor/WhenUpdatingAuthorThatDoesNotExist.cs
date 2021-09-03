@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.UpdateAuthor
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _author = new AuthorView { Name = Random.Name };
+            _author = new AuthorView { Name = RandomData.Name };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/authors/{_author.Id}", _author);
             _assert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);

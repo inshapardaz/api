@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
             var imageUrl = DatabaseConnection.GetBookImageUrl(_bookId);
             _oldImage = await FileStore.GetFile(imageUrl, CancellationToken.None);
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_bookId}/image", Random.Bytes);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_bookId}/image", RandomData.Bytes);
         }
 
         [OneTimeTearDown]

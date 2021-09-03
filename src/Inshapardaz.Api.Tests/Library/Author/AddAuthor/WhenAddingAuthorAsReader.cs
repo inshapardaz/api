@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.AddAuthor
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var author = new AuthorView { Name = Random.Name };
+            var author = new AuthorView { Name = RandomData.Name };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/authors", author);
         }

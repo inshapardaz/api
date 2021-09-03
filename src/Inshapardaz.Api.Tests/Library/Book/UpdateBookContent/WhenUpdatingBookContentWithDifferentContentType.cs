@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
             _book = BookBuilder.WithLibrary(LibraryId).WithContents(2, "application/pdf").Build();
             _file = BookBuilder.Contents.PickRandom();
 
-            _contents = Random.Bytes;
+            _contents = RandomData.Bytes;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents", _contents, _file.Language, _newMimeType);
             _assert = new BookContentAssert(_response, LibraryId);

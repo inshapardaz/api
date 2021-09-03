@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Book.AddBook
 {
     [TestFixture]
-    public class WhenAddingBookWithInvalidData
+    public partial class WhenAddingBookWithInvalidData
     {
         [TestFixture]
         public class AndUsingNonExistingLibrary : TestBase
@@ -27,14 +27,50 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             public async Task Setup()
             {
                 var author = AuthorBuilder.WithLibrary(LibraryId).Build();
-                var book = new BookView { Title = Random.Name, AuthorId = author.Id };
+                var book = new BookView { Title = RandomData.Name, AuthorId = author.Id };
 
-                _response = await Client.PostObject($"/libraries/{-Random.Number}/books", book);
+                _response = await Client.PostObject($"/libraries/{-RandomData.Number}/books", book);
             }
 
             [OneTimeTearDown]
             public void Teardown()
             {
+                Cleanup();
+            }
+
+            [Test]
+            public void ShouldHaveForbiddenResult()
+            {
+                _response.ShouldBeForbidden();
+            }
+        }
+
+        [TestFixture]
+        public class AndUsingAuthorFromOtherLibrary : TestBase
+        {
+            private HttpResponseMessage _response;
+            private LibraryDataBuilder _library2Builder;
+
+            public AndUsingAuthorFromOtherLibrary() : base(Role.Writer)
+            {
+            }
+
+            [OneTimeSetUp]
+            public async Task Setup()
+            {
+                _library2Builder = Services.GetService<LibraryDataBuilder>();
+                var library2 = _library2Builder.Build();
+                var author = AuthorBuilder.WithLibrary(library2.Id).Build();
+
+                var book = new BookView { Title = RandomData.Name, AuthorId = author.Id };
+
+                _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
+            }
+
+            [OneTimeTearDown]
+            public void Teardown()
+            {
+                _library2Builder.CleanUp();
                 Cleanup();
             }
 
@@ -57,7 +93,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             [OneTimeSetUp]
             public async Task Setup()
             {
-                var book = new BookView { Title = Random.Name, AuthorId = -Random.Number };
+                var book = new BookView { Title = RandomData.Name, AuthorId = -RandomData.Number };
 
                 _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
@@ -65,42 +101,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             [OneTimeTearDown]
             public void Teardown()
             {
-                Cleanup();
-            }
-
-            [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
-        }
-
-        [TestFixture]
-        public class AndUsingAuthorFromOtherLibrary : TestBase
-        {
-            private HttpResponseMessage _response;
-            private LibraryDataBuilder _library2Builder;
-
-            public AndUsingAuthorFromOtherLibrary() : base(Role.Writer)
-            {
-            }
-
-            [OneTimeSetUp]
-            public async Task Setup()
-            {
-                _library2Builder = Services.GetService<LibraryDataBuilder>();
-                var library2 = _library2Builder.Build();
-                var author = AuthorBuilder.WithLibrary(library2.Id).Build();
-
-                var book = new BookView { Title = Random.Name, AuthorId = author.Id };
-
-                _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
-            }
-
-            [OneTimeTearDown]
-            public void Teardown()
-            {
-                _library2Builder.CleanUp();
                 Cleanup();
             }
 
@@ -124,7 +124,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             public async Task Setup()
             {
                 var author = AuthorBuilder.WithLibrary(LibraryId).Build();
-                var book = new BookView { Title = new Faker().Random.String(), AuthorId = author.Id, SeriesId = -Random.Number };
+                var book = new BookView { Title = new Faker().Random.String(), AuthorId = author.Id, SeriesId = -RandomData.Number };
 
                 _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
@@ -196,7 +196,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 {
                     Title = new Faker().Random.String(),
                     AuthorId = author.Id,
-                    Categories = new CategoryView[] { new CategoryView { Id = -Random.Number } }
+                    Categories = new CategoryView[] { new CategoryView { Id = -RandomData.Number } }
                 };
 
                 _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);

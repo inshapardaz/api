@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
 
-            _chapter = new ChapterView { Title = Random.Name, ChapterNumber = 1, BookId = book.Id };
+            _chapter = new ChapterView { Title = RandomData.Name, ChapterNumber = 1, BookId = book.Id };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{book.Id}/chapters", _chapter);
 

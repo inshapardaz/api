@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
         public async Task Setup()
         {
             var book = BookBuilder.WithLibrary(LibraryId).AddToFavorites(AccountId).Build();
-            book.Title = Random.Name;
+            book.Title = RandomData.Name;
 
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/favorites/books/{book.Id}");
         }

@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 namespace Inshapardaz.Api.Tests.Helpers
 {
-    public static class Random
+    public static class RandomData
     {
         public static int Number => new Faker().Random.Number(1);
 
         public static string Text => new Faker().Random.Words(3);
-        public static string String => new Faker().Random.String2(5);
+        public static string String => new Faker().Random.String2(10);
 
         public static bool Bool => new Faker().Random.Bool();
 

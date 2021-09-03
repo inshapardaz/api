@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
             var series = SeriesBuilder.WithLibrary(LibraryId).WithoutImage().Build();
             _seriesId = series.Id;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/series/{series.Id}/image", Random.Bytes);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/series/{series.Id}/image", RandomData.Bytes);
         }
 
         [OneTimeTearDown]

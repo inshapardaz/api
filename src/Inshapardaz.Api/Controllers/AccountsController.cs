@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Inshapardaz.Api.Entities;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Models.Accounts;
-using Inshapardaz.Api.Services;
 using Inshapardaz.Domain.Models;
 using System.Threading;
 using Inshapardaz.Domain.Ports.Handlers.Account;
@@ -14,98 +11,181 @@ using System.Threading.Tasks;
 using Paramore.Darker;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Views.Accounts;
+using Paramore.Brighter;
 
 namespace Inshapardaz.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AccountsController : BaseController
     {
-        private readonly IAccountService _accountService;
+        private readonly IAmACommandProcessor _commandProcessor;
         private readonly IMapper _mapper;
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderAccount _accountRenderer;
 
         public AccountsController(
-            IAccountService accountService,
+            IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
             IMapper mapper,
             IRenderAccount accountRenderer)
         {
-            _accountService = accountService;
+            _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _accountRenderer = accountRenderer;
             _mapper = mapper;
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthenticateResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(void))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(void))]
         [HttpPost("authenticate")]
-        public ActionResult<AuthenticateResponse> Authenticate(AuthenticateRequest model)
+        public async Task<ActionResult<AuthenticateResponse>> Authenticate(AuthenticateRequest model, CancellationToken cancellationToken)
         {
-            var response = _accountService.Authenticate(model, ipAddress());
-            setTokenCookie(response.RefreshToken);
-            return Ok(response);
+            var command = new AuthenticateCommand(model.Email, model.Password);
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok(_accountRenderer.Render(command.Response));
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthenticateResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("refresh-token")]
-        public ActionResult<AuthenticateResponse> RefreshToken()
+        //TODO : Can be POST /token
+        public async Task<ActionResult<AuthenticateResponse>> RefreshToken(RefreshTokenRequest model, CancellationToken cancellationToken)
         {
-            var refreshToken = Request.Cookies["refreshToken"];
-            var response = _accountService.RefreshToken(refreshToken, ipAddress());
-            setTokenCookie(response.RefreshToken);
-            return Ok(response);
+            var command = new RefreshTokenCommand(model.RefreshToken);
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok(_accountRenderer.Render(command.Response));
         }
 
-        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Role.Admin)]
         [HttpPost("revoke-token")]
-        public IActionResult RevokeToken(RevokeTokenRequest model)
+        //TODO : Can be DELETE /token
+        public async Task<IActionResult> RevokeToken(RevokeTokenRequest model, CancellationToken cancellationToken)
         {
-            // accept token from request body or cookie
-            var token = model.Token ?? Request.Cookies["refreshToken"];
-
-            if (string.IsNullOrEmpty(token))
-                return BadRequest(new { message = "Token is required" });
-
-            // users can revoke their own tokens and admins can revoke any tokens
-            if (!Account.OwnsToken(token) && Account.Role != Role.Admin)
-                return Unauthorized(new { message = "Unauthorized" });
-
-            _accountService.RevokeToken(token, ipAddress());
-            return Ok(new { message = "Token revoked" });
+            var command = new RevokeTokenCommand(model.Token) { Revoker = Account };
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok();
         }
 
-        [HttpPost("register")]
-        public IActionResult Register(RegisterRequest model)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status410Gone)]
+        [HttpGet("invitation/{id}", Name = nameof(CheckInvitationCode))]
+        public async Task<IActionResult> CheckInvitationCode(string id, CancellationToken cancellationToken)
         {
-            _accountService.Register(model, Request.Headers["origin"]);
-            return Ok(new { message = "Registration successful, please check your email for verification instructions" });
+            var validityStatus = await _queryProcessor.ExecuteAsync(new GetInvitationStatusQuery(id), cancellationToken: cancellationToken);
+
+            if (validityStatus == InvitationStatuses.NotFound)
+            {
+                return NotFound();
+            }
+
+            if (validityStatus == InvitationStatuses.Expired)
+            {
+                return StatusCode(410);
+            }
+
+            return Ok();
         }
 
-        [HttpPost("verify-email")]
-        public IActionResult VerifyEmail(VerifyEmailRequest model)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPost("invitations", Name = nameof(ResendInvitationCode))]
+        public async Task<IActionResult> ResendInvitationCode([FromBody] ResendInvitationCodeRequest request, CancellationToken cancellationToken)
         {
-            _accountService.VerifyEmail(model.Token);
-            return Ok(new { message = "Verification successful, you can now login" });
+            await _commandProcessor.SendAsync(new ResendInvitationCodeCommand(request.Email), cancellationToken: cancellationToken);
+
+            return Ok();
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [Authorize(Role.Admin, Role.LibraryAdmin)]
+        [HttpPost("invite")]
+        [HttpPost("invite/library/{libraryId}")]
+        public async Task<IActionResult> InviteUser(int libraryId, [FromBody] InviteUserRequest model, CancellationToken cancellationToken)
+        {
+            var command = new InviteUserCommand()
+            {
+                Email = model.Email,
+                Name = model.Name,
+                LibraryId = libraryId,
+                Role = model.Role
+            };
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+
+            return Ok();
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPost("register/{invitationCode}")]
+        public async Task<IActionResult> Register(string invitationCode, [FromBody] RegisterRequest model, CancellationToken cancellationToken)
+        {
+            var command = new RegisterCommand()
+            {
+                Name = model.Name,
+                Password = model.Password,
+                AcceptTerms = model.AcceptTerms,
+                InvitationCode = invitationCode
+            };
+
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok();
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("forgot-password")]
-        public IActionResult ForgotPassword(ForgotPasswordRequest model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model, CancellationToken cancellationToken)
         {
-            _accountService.ForgotPassword(model, Request.Headers["origin"]);
-            return Ok(new { message = "Please check your email for password reset instructions" });
+            var command = new PasswordResetCommand(model.Email);
+
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok();
         }
 
-        [HttpPost("validate-reset-token")]
-        public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
-        {
-            _accountService.ValidateResetToken(model);
-            return Ok(new { message = "Token is valid" });
-        }
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("reset-password")]
-        public IActionResult ResetPassword(ResetPasswordRequest model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest model, CancellationToken cancellationToken)
         {
-            _accountService.ResetPassword(model);
-            return Ok(new { message = "Password reset successful, you can now login" });
+            var command = new ResetPasswordCommand()
+            {
+                Token = model.Token,
+                Password = model.Password
+            };
+
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok();
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest model, CancellationToken cancellationToken)
+        {
+            var command = new ChangePasswordCommand()
+            {
+                Email = Account.Email,
+                Password = model.Password,
+                OldPassword = model.OldPassword
+            };
+
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok();
         }
 
         [Authorize(Role.Admin)]
@@ -136,13 +216,13 @@ namespace Inshapardaz.Api.Controllers
 
         [Authorize]
         [HttpGet("{id:int}", Name = nameof(AccountsController.GetById))]
-        public ActionResult<AccountView> GetById(int id)
+        public async Task<ActionResult<AccountView>> GetById(int id, CancellationToken cancellationToken)
         {
             // users can get their own account and admins can get any account
             if (id != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            var account = _accountService.GetById(id);
+            var account = await _queryProcessor.ExecuteAsync(new GetAccountByIdQuery(id), cancellationToken);
             return Ok(account);
         }
 
@@ -150,8 +230,10 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost(Name = nameof(AccountsController.Create))]
         public ActionResult<AccountView> Create(CreateRequest model)
         {
-            var account = _accountService.Create(model);
-            return Ok(account);
+            //TODO : Implement
+            //var account = _accountService.Create(model);
+            //return Ok(account);
+            return NotFound();
         }
 
         [Authorize]
@@ -159,15 +241,16 @@ namespace Inshapardaz.Api.Controllers
         public ActionResult<AccountView> Update(int id, UpdateRequest model)
         {
             // users can update their own account and admins can update any account
-            if (id != Account.Id && Account.Role != Role.Admin)
-                return Unauthorized(new { message = "Unauthorized" });
+            //if (id != Account.Id && Account.Role != Role.Admin)
+            //   return Unauthorized(new { message = "Unauthorized" });
 
             // only admins can update role
-            if (Account.Role != Role.Admin)
-                model.Role = null;
+            //if (Account.Role != Role.Admin)
+            //    model.Role = null;
 
-            var account = _accountService.Update(id, model);
-            return Ok(account);
+            //var account = _accountService.Update(id, model);
+            //return Ok(account);
+            return NotFound();
         }
 
         [Authorize]
@@ -175,37 +258,12 @@ namespace Inshapardaz.Api.Controllers
         public IActionResult Delete(int id)
         {
             // users can delete their own account and admins can delete any account
-            if (id != Account.Id && Account.Role != Role.Admin)
-                return Unauthorized(new { message = "Unauthorized" });
+            //if (id != Account.Id && Account.Role != Role.Admin)
+            //    return Unauthorized(new { message = "Unauthorized" });
 
-            _accountService.Delete(id);
-            return Ok(new { message = "Account deleted successfully" });
-        }
-
-        // helper methods
-
-        private void setTokenCookie(string token)
-        {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(7),
-#if DEBUG
-                SameSite = SameSiteMode.Lax
-#else
-                SameSite = SameSiteMode.None,
-                Secure = true
-#endif
-            };
-            Response.Cookies.Append("refreshToken", token, cookieOptions);
-        }
-
-        private string ipAddress()
-        {
-            if (Request.Headers.ContainsKey("X-Forwarded-For"))
-                return Request.Headers["X-Forwarded-For"];
-            else
-                return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            //_accountService.Delete(id);
+            //return Ok(new { message = "Account deleted successfully" });
+            return NotFound();
         }
     }
 }

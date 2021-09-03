@@ -10,9 +10,7 @@ namespace Inshapardaz.Api.Models.Accounts
         private string _role;
         private string _email;
 
-        public string Title { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Name { get; set; }
 
         [EnumDataType(typeof(Role))]
         public string Role

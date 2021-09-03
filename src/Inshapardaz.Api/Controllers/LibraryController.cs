@@ -131,9 +131,11 @@ namespace Inshapardaz.Api.Controllers
 
         [Authorize(Role.Admin)]
         [HttpPost("/accounts/{accountId}/libraries", Name = nameof(LibraryController.AddLibraryToAccount))]
+
+        // TODO : Add role to the body
         public async Task<IActionResult> AddLibraryToAccount(int accountId, [FromBody] int libraryId, CancellationToken token = default)
         {
-            var request = new AddLibraryToAccountRequest(libraryId, accountId);
+            var request = new AddLibraryToAccountRequest(libraryId, accountId, Role.Reader);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

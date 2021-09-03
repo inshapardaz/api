@@ -78,13 +78,13 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 if (_withImage)
                 {
                     seriesImage = fixture.Build<FileDto>()
-                                         .With(a => a.FilePath, Helpers.Random.BlobUrl)
+                                         .With(a => a.FilePath, Helpers.RandomData.BlobUrl)
                                          .With(a => a.IsPublic, true)
                                          .Create();
                     _connection.AddFile(seriesImage);
 
                     _files.Add(seriesImage);
-                    _fileStorage.SetupFileContents(seriesImage.FilePath, Helpers.Random.Bytes);
+                    _fileStorage.SetupFileContents(seriesImage.FilePath, Helpers.RandomData.Bytes);
                     _connection.AddFile(seriesImage);
                 }
 
@@ -100,7 +100,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 var books = fixture.Build<BookDto>()
                                    .With(b => b.AuthorId, author.Id)
                                    .With(b => b.LibraryId, _libraryId)
-                                   .With(b => b.Language, Random.Locale)
+                                   .With(b => b.Language, RandomData.Locale)
                                    .Without(b => b.ImageId)
                                    .With(b => b.SeriesId, series.Id)
                                    .CreateMany(_bookCount);

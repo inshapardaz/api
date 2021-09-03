@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.AddSeries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var series = new SeriesView { Name = Random.Name };
+            var series = new SeriesView { Name = RandomData.Name };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/series", series);
         }

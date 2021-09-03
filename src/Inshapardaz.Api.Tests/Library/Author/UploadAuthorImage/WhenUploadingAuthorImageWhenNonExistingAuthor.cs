@@ -20,9 +20,9 @@ namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var newimage = Random.Bytes;
+            var newimage = RandomData.Bytes;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/authors/{-Random.Number}/image", newimage);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/authors/{-RandomData.Number}/image", newimage);
         }
 
         [OneTimeTearDown]

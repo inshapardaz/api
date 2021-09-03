@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/books/{bookId}/chapters", Name = nameof(ChapterController.CreateChapter))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> CreateChapter(int libraryId, int bookId, [FromBody]ChapterView chapter, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateChapter(int libraryId, int bookId, [FromBody] ChapterView chapter, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {
@@ -85,7 +85,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}", Name = nameof(ChapterController.UpdateChapter))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateChapter(int libraryId, int bookId, int chapterNumber, [FromBody]ChapterView chapter, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateChapter(int libraryId, int bookId, int chapterNumber, [FromBody] ChapterView chapter, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {
@@ -135,7 +135,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.CreateChapterContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterNumber, string language, [FromBody]string content, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterNumber, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
         {
             //var language = Request.Headers["Content-Language"];
 
@@ -153,7 +153,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.UpdateChapterContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, [FromBody]string content, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
         {
             //var language = Request.Headers["Content-Language"];
 

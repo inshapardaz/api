@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _expectedCategory = new CategoryView { Id = Random.Number, Name = Random.Name };
+            _expectedCategory = new CategoryView { Id = RandomData.Number, Name = RandomData.Name };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/categories/{_expectedCategory.Id}", _expectedCategory);
             _assert = CategoryAssert.FromResponse(_response).InLibrary(LibraryId);

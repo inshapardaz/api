@@ -27,11 +27,11 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _mimeType = Random.MimeType;
-            _locale = Random.Locale;
+            _mimeType = RandomData.MimeType;
+            _locale = RandomData.Locale;
 
             _book = BookBuilder.WithLibrary(LibraryId).Build();
-            _contents = Random.Bytes;
+            _contents = RandomData.Bytes;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents", _contents, _locale, _mimeType);
             _assert = new BookContentAssert(_response, LibraryId);

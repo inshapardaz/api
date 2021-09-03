@@ -11,7 +11,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
     public class WhenAddBookToFavoriteThatDoesNotExist : TestBase
     {
         private HttpResponseMessage _response;
-        private int _bookId = -Random.Number;
+        private int _bookId = -RandomData.Number;
 
         public WhenAddBookToFavoriteThatDoesNotExist()
             : base(Role.Writer)

@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.DeleteChapterContents
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var _newContents = Random.Words(12);
+            var _newContents = RandomData.Words(12);
             var chapter = ChapterBuilder.WithLibrary(LibraryId).WithContents().Build();
             _content = ChapterBuilder.Contents.Single(x => x.ChapterId == chapter.Id);
 

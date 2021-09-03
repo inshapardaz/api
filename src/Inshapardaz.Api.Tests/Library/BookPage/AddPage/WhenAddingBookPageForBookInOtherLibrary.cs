@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
             var library2 = _libBuilder.Build();
             var book = BookBuilder.WithLibrary(library2.Id).Build();
 
-            var page = new BookPageView { Text = Random.Text, SequenceNumber = 1 };
+            var page = new BookPageView { Text = RandomData.Text, SequenceNumber = 1 };
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{book.Id}/pages", page);
         }
 

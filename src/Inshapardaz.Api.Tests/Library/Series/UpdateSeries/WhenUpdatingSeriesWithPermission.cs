@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
 
             var selectedSeries = series.PickRandom();
 
-            _expected = new SeriesView { Name = Random.Name };
+            _expected = new SeriesView { Name = RandomData.Name };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/series/{selectedSeries.Id}", _expected);
             _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);

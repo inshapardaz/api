@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
             var book = BookBuilder.WithLibrary(LibraryId).Build();
             var chapter = ChapterBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.PostString($"/libraries/{-Random.Number}/books/{book.Id}/chapters/{chapter.Id}/contents?language={Random.Locale}", Random.String, Random.Locale);
+            _response = await Client.PostString($"/libraries/{-RandomData.Number}/books/{book.Id}/chapters/{chapter.Id}/contents?language={RandomData.Locale}", RandomData.String, RandomData.Locale);
         }
 
         [OneTimeTearDown]
@@ -34,9 +34,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         }
 
         [Test]
-        public void ShouldHaveBadRequestResult()
+        public void ShouldHaveForbiddenResult()
         {
-            _response.ShouldBeBadRequest();
+            _response.ShouldBeForbidden();
         }
     }
 }

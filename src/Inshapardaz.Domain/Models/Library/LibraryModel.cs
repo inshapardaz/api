@@ -8,6 +8,8 @@
 
         public string Language { get; set; }
 
+        public Role Role { get; set; }
+
         public bool SupportsPeriodicals { get; set; }
 
         public string PrimaryColor { get; set; }

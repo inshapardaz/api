@@ -2,6 +2,7 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,9 +21,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  *
-                            FROM Library
-                            Order By Name
+                var sql = @"SELECT  l.*, al.Role
+                            FROM Library l
+                            INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            Order By l.Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql,
@@ -48,10 +50,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  *
-                            FROM Library
-                            WHERE Name LIKE @Query
-                            Order By Name
+                var sql = @"SELECT  l.*, al.Role
+                            FROM Library l
+                            INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            WHERE l.Name LIKE @Query
+                            Order By l.Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql,
@@ -77,10 +80,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  l.*
+                var sql = @"SELECT  l.*, al.Role
                             FROM Library l
-                            INNER JOIN LibraryUser lu ON lu.LibraryId = l.Id
-                            WHERE lu.AccountId = @AccountId
+                            INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            WHERE al.AccountId = @AccountId
                             Order By l.Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -92,8 +95,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var sqlAuthorCount = @"SELECT COUNT(*)
                                        FROM Library l
-                                       INNER JOIN LibraryUser lu ON lu.LibraryId = l.Id
-                                       WHERE lu.AccountId = @AccountId";
+                                       INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
+                                       WHERE al.AccountId = @AccountId";
                 var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount,
                     new { AccountId = accountId },
                     cancellationToken: cancellationToken));
@@ -112,10 +115,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  l.*
+                var sql = @"SELECT  l.*, al.Role
                             FROM Library l
-                            INNER JOIN LibraryUser lu ON lu.LibraryId = l.Id
-                            WHERE lu.AccountId = @AccountId AND Name LIKE @Query
+                            INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            WHERE al.AccountId = @AccountId AND Name LIKE @Query
                             Order By l.Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -127,8 +130,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var sqlAuthorCount = @"SELECT COUNT(*)
                             FROM Library l
-                            INNER JOIN LibraryUser lu ON lu.LibraryId = l.Id
-                            WHERE lu.AccountId = @AccountId AND Name LIKE @Query";
+                            INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            WHERE al.AccountId = @AccountId AND Name LIKE @Query";
                 var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { Query = $"%{query}%", AccountId = accountId }, cancellationToken: cancellationToken));
 
                 return new Page<LibraryModel>
@@ -166,7 +169,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT * FROM Library Where Id = @LibraryId";
+                var sql = @"SELECT l.*
+                            FROM Library l
+                            Where Id = @LibraryId";
                 var command = new CommandDefinition(sql,
                                                     new { LibraryId = libraryId },
                                                     cancellationToken: cancellationToken);
@@ -208,12 +213,12 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task AddLibraryToAccount(int libraryId, int accountId, CancellationToken cancellationToken)
+        public async Task AddAccountToLibrary(int accountId, int libraryId, Role role, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"INSERT INTO LibraryUser VALUES (@LibraryId, @AccountId)";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId }, cancellationToken: cancellationToken);
+                var sql = @"INSERT INTO AccountLibrary VALUES (@LibraryId, @AccountId, @Role)";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, Role = role }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
@@ -222,9 +227,26 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Delete From LibraryUser Where LibraryId = @LibraryId AND AccountId = @AccountId";
+                var sql = @"Delete From AccountLibrary Where LibraryId = @LibraryId AND AccountId = @AccountId";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task<IEnumerable<LibraryModel>> GetLibrariesByAccountId(int accountId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT  l.*, al.Role
+                            FROM Library l
+                            INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            WHERE al.AccountId = @AccountId
+                            Order By l.Name";
+                var command = new CommandDefinition(sql,
+                                                    new { AccountId = accountId },
+                                                    cancellationToken: cancellationToken);
+
+                return await connection.QueryAsync<LibraryModel>(command);
             }
         }
     }

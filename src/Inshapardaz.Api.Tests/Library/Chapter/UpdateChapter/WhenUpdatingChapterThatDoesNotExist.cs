@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         {
             var book = BookBuilder.WithLibrary(LibraryId).Build();
 
-            _newChapter = new ChapterView { Title = Random.Name, BookId = book.Id, ChapterNumber = Random.Number };
+            _newChapter = new ChapterView { Title = RandomData.Name, BookId = book.Id, ChapterNumber = RandomData.Number };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/books/{book.Id}/chapters/{_newChapter.ChapterNumber}", _newChapter);
 

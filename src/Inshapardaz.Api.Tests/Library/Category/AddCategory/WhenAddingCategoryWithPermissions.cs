@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.AddCategory
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _category = new CategoryView { Name = Random.Name };
+            _category = new CategoryView { Name = RandomData.Name };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/categories", _category);
             _assert = CategoryAssert.FromResponse(_response).InLibrary(LibraryId);

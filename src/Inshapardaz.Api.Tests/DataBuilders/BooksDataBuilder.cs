@@ -10,7 +10,7 @@ using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Database.SqlServer;
-using Random = Inshapardaz.Api.Tests.Helpers.Random;
+using RandomData = Inshapardaz.Api.Tests.Helpers.RandomData;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
@@ -205,9 +205,9 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return fixture.Build<BookView>()
                           .With(b => b.AuthorId, _author.Id)
                           .With(b => b.SeriesId, series.Id)
-                          .With(b => b.SeriesIndex, Random.Number)
+                          .With(b => b.SeriesIndex, RandomData.Number)
                           .With(b => b.Categories, _categories.Any() ? _categories.Select(c => c.ToView()) : new CategoryView[0])
-                          .With(b => b.Language, Random.Locale)
+                          .With(b => b.Language, RandomData.Locale)
                           .Create();
         }
 
@@ -225,17 +225,17 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 _authors = _authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : numberOfBooks).ToList();
             }
 
-            Func<bool> f = () => _isPublic ?? Random.Bool;
+            Func<bool> f = () => _isPublic ?? RandomData.Bool;
 
             _books = fixture.Build<BookDto>()
                           .With(b => b.LibraryId, _libraryId)
-                          .With(b => b.AuthorId, _author != null ? _author.Id : Random.PickRandom(_authors).Id)
-                          .With(b => b.ImageId, _hasImage ? Random.Number : 0)
+                          .With(b => b.AuthorId, _author != null ? _author.Id : RandomData.PickRandom(_authors).Id)
+                          .With(b => b.ImageId, _hasImage ? RandomData.Number : 0)
                           .With(b => b.IsPublic, f)
-                          .With(b => b.Language, Random.Locale)
-                          .With(b => b.SeriesIndex, _hasSeries ? Random.Number : (int?)null)
-                          .With(b => b.DateAdded, Random.Date)
-                          .With(b => b.DateUpdated, Random.Date)
+                          .With(b => b.Language, RandomData.Locale)
+                          .With(b => b.SeriesIndex, _hasSeries ? RandomData.Number : (int?)null)
+                          .With(b => b.DateAdded, RandomData.Date)
+                          .With(b => b.DateUpdated, RandomData.Date)
                           .With(b => b.Status, Domain.Models.BookStatuses.Published)
                           .CreateMany(numberOfBooks)
                           .ToList();
@@ -267,13 +267,13 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 if (_hasImage)
                 {
                     bookImage = fixture.Build<FileDto>()
-                                         .With(a => a.FilePath, Random.BlobUrl)
+                                         .With(a => a.FilePath, RandomData.BlobUrl)
                                          .With(a => a.IsPublic, true)
                                          .Create();
                     _connection.AddFile(bookImage);
 
                     _files.Add(bookImage);
-                    _fileStorage.SetupFileContents(bookImage.FilePath, Random.Bytes);
+                    _fileStorage.SetupFileContents(bookImage.FilePath, RandomData.Bytes);
                     _connection.AddFile(bookImage);
 
                     book.ImageId = bookImage.Id;
@@ -286,16 +286,16 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 List<FileDto> files = null;
                 if (_contentCount > 0)
                 {
-                    var mimeType = _contentMimeType ?? Random.MimeType;
+                    var mimeType = _contentMimeType ?? RandomData.MimeType;
                     files = fixture.Build<FileDto>()
-                                         .With(f => f.FilePath, Random.BlobUrl)
+                                         .With(f => f.FilePath, RandomData.BlobUrl)
                                          .With(f => f.IsPublic, false)
                                          .With(f => f.MimeType, mimeType)
-                                         .With(f => f.FilePath, Random.BlobUrl)
+                                         .With(f => f.FilePath, RandomData.BlobUrl)
                                          .CreateMany(_contentCount)
                                          .ToList();
                     _files.AddRange(files);
-                    files.ForEach(f => _fileStorage.SetupFileContents(f.FilePath, Random.Bytes));
+                    files.ForEach(f => _fileStorage.SetupFileContents(f.FilePath, RandomData.Bytes));
                     _connection.AddFiles(files);
                 }
 
@@ -309,7 +309,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     var contents = files.Select(f => new BookContentDto
                     {
                         BookId = book.Id,
-                        Language = _language ?? Random.NextLocale(),
+                        Language = _language ?? RandomData.NextLocale(),
                         FileId = f.Id,
                         MimeType = f.MimeType,
                         FilePath = f.FilePath
@@ -328,20 +328,20 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                         if (_addPageImage)
                         {
                             pageImage = fixture.Build<FileDto>()
-                                         .With(a => a.FilePath, Random.BlobUrl)
+                                         .With(a => a.FilePath, RandomData.BlobUrl)
                                          .With(a => a.IsPublic, true)
                                          .Create();
                             _connection.AddFile(pageImage);
 
                             _files.Add(pageImage);
-                            _fileStorage.SetupFileContents(pageImage.FilePath, Random.Bytes);
+                            _fileStorage.SetupFileContents(pageImage.FilePath, RandomData.Bytes);
                             _connection.AddFile(pageImage);
                         }
 
                         pages.Add(fixture.Build<BookPageDto>()
                             .With(p => p.BookId, book.Id)
                             .With(p => p.SequenceNumber, i + 1)
-                            .With(p => p.Text, Random.Text)
+                            .With(p => p.Text, RandomData.Text)
                             .With(p => p.ImageId, pageImage?.Id)
                             .With(p => p.AccountId, (int?)null)
                             .With(p => p.Status, PageStatuses.All)
@@ -352,7 +352,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     {
                         foreach (var assignment in _assignments)
                         {
-                            var pagesToAssign = Random.PickRandom(pages.Where(p => p.AccountId == null), assignment.Value);
+                            var pagesToAssign = RandomData.PickRandom(pages.Where(p => p.AccountId == null), assignment.Value);
                             foreach (var pageToAssign in pagesToAssign)
                             {
                                 pageToAssign.AccountId = assignment.Key;
@@ -364,7 +364,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     {
                         foreach (var pageStatus in _pageStatuses)
                         {
-                            var pagesToSetStatus = Random.PickRandom(pages.Where(p => p.Status == PageStatuses.All), pageStatus.Value);
+                            var pagesToSetStatus = RandomData.PickRandom(pages.Where(p => p.Status == PageStatuses.All), pageStatus.Value);
                             foreach (var pageToSetStatus in pagesToSetStatus)
                             {
                                 pageToSetStatus.Status = pageStatus.Key;
@@ -388,7 +388,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 var booksToAddToRecent = _bookCountToAddToRecent.HasValue ? _books.PickRandom(_bookCountToAddToRecent.Value) : _books;
                 foreach (var recentBook in booksToAddToRecent)
                 {
-                    RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, AccountId = _addToRecentReadsForUser, DateRead = Random.Date };
+                    RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, AccountId = _addToRecentReadsForUser, DateRead = RandomData.Date };
                     _connection.AddBookToRecentReads(recent);
                     _recentBooks.Add(recent);
                 }

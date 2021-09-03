@@ -28,8 +28,8 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
             _page = new BookPageView
             {
                 BookId = book.Id,
-                Text = Random.Text,
-                SequenceNumber = Random.Number
+                Text = RandomData.Text,
+                SequenceNumber = RandomData.Number
             };
             _bookId = book.Id;
 

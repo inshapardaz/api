@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.UpdateAuthor
         {
             var author = AuthorBuilder.WithLibrary(LibraryId).Build();
 
-            author.Name = Random.Name;
+            author.Name = RandomData.Name;
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/authors/{author.Id}", author);
         }

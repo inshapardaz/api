@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostObject<object>($"/libraries/{LibraryId}/favorites/books/{-Random.Number}", new object());
+            _response = await Client.PostObject<object>($"/libraries/{LibraryId}/favorites/books/{-RandomData.Number}", new object());
         }
 
         [OneTimeTearDown]

@@ -10,7 +10,6 @@ namespace Inshapardaz.Api.Tests.Library.Author.AddAuthor
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
-    [TestFixture(Role.Writer)]
     public class WhenAddingAuthorWithPermissions : TestBase
     {
         private AuthorAssert _authorAssert;
@@ -24,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.AddAuthor
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var author = new AuthorView { Name = Random.Name };
+            var author = new AuthorView { Name = RandomData.Name };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/authors", author);
 

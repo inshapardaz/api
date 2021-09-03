@@ -33,6 +33,10 @@ namespace Inshapardaz.Api.Infrastructure
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
             }
+            catch (ConflictException)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+            }
             catch (NotFoundException)
             {
                 if (context.Request.Method == "GET")

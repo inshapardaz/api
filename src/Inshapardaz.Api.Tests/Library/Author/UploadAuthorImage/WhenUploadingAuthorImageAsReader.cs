@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
         {
             var author = AuthorBuilder.WithLibrary(LibraryId).Build();
             _authorId = author.Id;
-            _newImage = Random.Bytes;
+            _newImage = RandomData.Bytes;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/authors/{_authorId}/image", _newImage);
         }

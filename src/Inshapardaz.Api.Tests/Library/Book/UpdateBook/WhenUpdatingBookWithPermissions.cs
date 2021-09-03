@@ -36,8 +36,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             var books = BookBuilder.WithLibrary(LibraryId)
                                     .WithCategories(1)
                                     .HavingSeries()
-                                    .AddToFavorites(Helpers.Random.Number)
-                                    .AddToRecentReads(Helpers.Random.Number)
+                                    .AddToFavorites(AccountId)
+                                    .AddToRecentReads(AccountId)
                                     .Build(1);
 
             var selectedBook = books.PickRandom();
@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 Title = fake.Name.FullName(),
                 Description = fake.Random.Words(5),
                 Copyrights = fake.PickRandom<CopyrightStatuses>().ToDescription(),
-                Language = Helpers.Random.Locale,
+                Language = Helpers.RandomData.Locale,
                 YearPublished = fake.Date.Past().Year,
                 Status = fake.PickRandom<BookStatuses>().ToDescription(),
                 IsPublic = fake.Random.Bool(),

@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
     {
         private HttpResponseMessage _response;
         private int _bookId;
-        private byte[] _newImage = Random.Bytes;
+        private byte[] _newImage = RandomData.Bytes;
 
         public WhenUploadingBookImageWithPermissions(Role role)
             : base(role)

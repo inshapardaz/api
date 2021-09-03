@@ -50,5 +50,11 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         {
             _assert.ShouldHaveCreateLink("/libraries");
         }
+
+        [Test]
+        public void ShouldReturnLibraries()
+        {
+            _assert.ShouldHaveSomeItems();
+        }
     }
 }

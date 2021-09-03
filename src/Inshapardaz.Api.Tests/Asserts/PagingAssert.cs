@@ -101,6 +101,12 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+        internal PagingAssert<T> ShouldHaveSomeItems()
+        {
+            _page.Data.Should().NotBeEmpty();
+            return this;
+        }
+
         internal PagingAssert<T> ShouldHavePageSize(int pageSize)
         {
             _page.PageSize.Should().Be(pageSize);

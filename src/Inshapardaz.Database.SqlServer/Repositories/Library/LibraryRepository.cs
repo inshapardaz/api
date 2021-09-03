@@ -23,7 +23,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"SELECT  l.*, al.Role
                             FROM Library l
-                            INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            LEFT OUTER JOIN AccountLibrary al ON al.LibraryId = l.Id
                             Order By l.Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -52,7 +52,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"SELECT  l.*, al.Role
                             FROM Library l
-                            INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            LEFT OUTER JOIN AccountLibrary al ON al.LibraryId = l.Id
                             WHERE l.Name LIKE @Query
                             Order By l.Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS

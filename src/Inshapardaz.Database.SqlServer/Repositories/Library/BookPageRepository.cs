@@ -37,7 +37,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.AccountId, a.FirstName + ' ' + a.LastName As AccountName, p.AssignTimeStamp, f.Id As ImageId, p.ChapterId, c.Title As ChapterTitle
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.AccountId, a.Name As AccountName, p.AssignTimeStamp, f.Id As ImageId, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN [Chapter] c ON c.Id = p.ChapterId
@@ -124,7 +124,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.AccountId, a.FirstName + ' ' + a.LastName As AccountName, p.AssignTimeStamp,f.Id As ImageId, p.Text, p.ChapterId, c.Title As ChapterTitle
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.AccountId, a.Name As AccountName, p.AssignTimeStamp,f.Id As ImageId, p.Text, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN [Chapter] c ON c.Id = p.ChapterId

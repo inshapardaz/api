@@ -19,9 +19,9 @@ namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
         }
 
         [Test]
-        public void ShouldReturnInternalServerError()
+        public void ShouldReturnBadRequest()
         {
-            _response.ShouldBeInternalServerError();
+            _response.ShouldBeBadRequest();
         }
     }
 }

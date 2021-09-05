@@ -22,8 +22,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             {
                 var sql = @"SELECT *
                             FROM Account
-                            WHERE s.FirstName LIKE @Query OR  s.LastName LIKE @Query OR s.Email LIKE @Query
-                            ORDER BY FirstName, LastName
+                            WHERE s.Name LIKE @Query OR  OR s.Email LIKE @Query
+                            ORDER BY Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql, new { Query = $"%{query}%", PageSize = pageSize, PageNumber = pageNumber },
@@ -33,7 +33,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
 
                 var sqlAuthorCount = @"SELECT *
                                        FROM Account
-                                       WHERE FirstName LIKE @Query OR  LastName LIKE @Query OR Email LIKE @Query
+                                       WHERE Name LIKE @Query OR Email LIKE @Query
                                        ORDER BY Name";
                 var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { Query = $"%{query}%" }, cancellationToken: cancellationToken));
 
@@ -53,7 +53,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             {
                 var sql = @"SELECT  *
                             FROM Accounts
-                            Order By FirstName, LastName
+                            Order By Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql, new { PageSize = pageSize, PageNumber = pageNumber },
@@ -93,7 +93,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             {
                 var sql = @"Select a.* from AccountLibrary as lu
                             INNER JOIN Accounts as a on a.Id = lu.AccountId
-                            WHERE lu.LibraryId = @LibraryId AND a.Role IN (0, 1, 2) AND (a.FirstName LIKE @Query OR a.LastName LIKE @Query)";
+                            WHERE lu.LibraryId = @LibraryId AND a.Role IN (0, 1, 2) AND a.Name LIKE @Query";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Query = query }, cancellationToken: cancellationToken);
 
                 return await connection.QueryAsync<AccountModel>(command);

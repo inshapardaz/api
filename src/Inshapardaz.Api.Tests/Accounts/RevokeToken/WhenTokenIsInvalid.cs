@@ -24,9 +24,9 @@ namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
         }
 
         [Test]
-        public void ShouldReturnBadRequest()
+        public void ShouldReturnOk()
         {
-            _response.ShouldBeBadRequest();
+            _response.ShouldBeOk();
         }
     }
 }

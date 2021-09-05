@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("refresh-token")]
         //TODO : Can be POST /token
-        public async Task<ActionResult<AuthenticateResponse>> RefreshToken(RefreshTokenRequest model, CancellationToken cancellationToken)
+        public async Task<ActionResult<AuthenticateResponse>> RefreshToken([FromBody] RefreshTokenRequest model, CancellationToken cancellationToken)
         {
             var refreshToken = model.RefreshToken ?? Request.Cookies["refreshToken"];
             var command = new RefreshTokenCommand(refreshToken);
@@ -70,10 +70,10 @@ namespace Inshapardaz.Api.Controllers
         [Authorize(Role.Admin)]
         [HttpPost("revoke-token")]
         //TODO : Can be DELETE /token
-        public async Task<IActionResult> RevokeToken(RevokeTokenRequest model, CancellationToken cancellationToken)
+        public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model, CancellationToken cancellationToken)
         {
             var token = model.Token ?? Request.Cookies["refreshToken"];
-            var command = new RevokeTokenCommand(model.Token) { Revoker = Account };
+            var command = new RevokeTokenCommand(token) { Revoker = Account };
             await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
             return Ok();
         }

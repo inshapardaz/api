@@ -16,6 +16,8 @@ environment:
     secure: REi8f7in30iqJiCZ0sTVa76mo+RBH7JbFH/98INkbmz1XytxhVJg5ASaZVCId24E
   SmtpPass: 
     secure: qJv2I2x4hS7Vf4qiyW1/1gFSS0vi5xHLVv8iFodoU5PPFd3KxEF36xJK8d4t65r+
+  Secret:
+    secure: fwzDxCo5A5oNaUE8Zs5IHftRI17nskUr0G5kTMd/UYyq1cKEDT+1SeJzSH5cGNwt
     
 skip_tags: true
 skip_branch_with_pr: true

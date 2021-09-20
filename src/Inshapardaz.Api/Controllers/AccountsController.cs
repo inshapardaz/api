@@ -231,16 +231,6 @@ namespace Inshapardaz.Api.Controllers
             return Ok(account);
         }
 
-        [Authorize(Role.Admin)]
-        [HttpPost(Name = nameof(AccountsController.Create))]
-        public ActionResult<AccountView> Create(CreateRequest model)
-        {
-            //TODO : Implement
-            //var account = _accountService.Create(model);
-            //return Ok(account);
-            return NotFound();
-        }
-
         [Authorize]
         [HttpPut("{id:int}", Name = nameof(AccountsController.Update))]
         public ActionResult<AccountView> Update(int id, UpdateRequest model)

@@ -29,12 +29,19 @@ namespace Inshapardaz.Api.Services
 
             // send email
             _smtpClient.Connect(_appSettings.SmtpHost, _appSettings.SmtpPort, _appSettings.SmtpTls ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto);
-            if (!string.IsNullOrWhiteSpace(_appSettings.SmtpUser))
+            try
             {
-                _smtpClient.Authenticate(_appSettings.SmtpUser, _appSettings.SmtpPass);
+                if (!string.IsNullOrWhiteSpace(_appSettings.SmtpUser))
+                {
+                    _smtpClient.Authenticate(_appSettings.SmtpUser, _appSettings.SmtpPass);
+                }
+                _smtpClient.Send(email);
             }
-            _smtpClient.Send(email);
-            _smtpClient.Disconnect(true);
+
+            finally
+            {
+                _smtpClient.Disconnect(true);
+            }
         }
 
         public async Task SendAsync(string to, string subject, string html, string from = null, CancellationToken cancellationToken = default(CancellationToken))

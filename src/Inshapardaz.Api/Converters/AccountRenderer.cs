@@ -57,12 +57,12 @@ namespace Inshapardaz.Api.Converters
 
             if (_userHelper.IsAdmin)
             {
-                links.Add(_linkRenderer.Render(new Link
-                {
-                    ActionName = nameof(AccountsController.Create),
-                    Method = HttpMethod.Post,
-                    Rel = RelTypes.Create
-                }));
+                //links.Add(_linkRenderer.Render(new Link
+                //{
+                //    ActionName = nameof(AccountsController.Create),
+                //    Method = HttpMethod.Post,
+                //    Rel = RelTypes.Create
+                //}));
             }
 
             if (page.CurrentPageIndex < page.PageCount)

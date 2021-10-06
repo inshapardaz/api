@@ -2,12 +2,10 @@
 using Inshapardaz.Api.Views;
 using System.Collections.Generic;
 using Inshapardaz.Api.Controllers;
-using Inshapardaz.Domain.Adapters;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using System.Linq;
 using Inshapardaz.Api.Helpers;
-using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.InteropServices;
+using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Converters
 {
@@ -246,6 +244,7 @@ namespace Inshapardaz.Api.Converters
             {
                 Id = model.Id,
                 Name = model.Name,
+                OwnerEmail = _userHelper.IsAdmin ? model.OwnerEmail : model.OwnerEmail.MaskEmail(),
                 Language = model.Language,
                 SupportsPeriodicals = model.SupportsPeriodicals,
                 PrimaryColor = model.PrimaryColor,

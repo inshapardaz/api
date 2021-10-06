@@ -60,6 +60,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             library.SupportsPeriodicals.Should().Be(_view.SupportsPeriodicals);
             library.PrimaryColor.Should().Be(_view.PrimaryColor);
             library.SecondaryColor.Should().Be(_view.SecondaryColor);
+            library.OwnerEmail.Should().Be(_view.OwnerEmail);
             return this;
         }
 

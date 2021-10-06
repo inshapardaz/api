@@ -62,7 +62,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 
                 await _emailService.SendAsync(account.Email,
                     $"Welcome to {libraryName}",
-                    EmailTemplateProvider.GetLibraryUserInvitationEmail(account.Name, libraryName, new Uri(new Uri(_settings.FrontEndUrl), _settings.ResetPasswordUrl).ToString()),
+                    EmailTemplateProvider.GetLibraryUserInvitationEmail(account.Name, libraryName, new Uri(new Uri(_settings.FrontEndUrl), _settings.ResetPasswordPagePath).ToString()),
                     _settings.EmailFrom,
                     cancellationToken);
             }

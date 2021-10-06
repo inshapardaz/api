@@ -77,7 +77,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
             {
                 await _emailService.SendAsync(command.Email,
                     $"Welcome to Dashboards",
-                    EmailTemplateProvider.GetSuperAdminInvitationEmail(command.Name, new Uri(new Uri(_settings.FrontEndUrl), _settings.ResetPasswordUrl).ToString()),
+                    EmailTemplateProvider.GetSuperAdminInvitationEmail(command.Name, new Uri(new Uri(_settings.FrontEndUrl), _settings.ResetPasswordPagePath).ToString()),
                     _settings.EmailFrom,
                     cancellationToken);
             }
@@ -85,7 +85,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
             {
                 await _emailService.SendAsync(command.Email,
                     $"Welcome to {library.Name}",
-                    EmailTemplateProvider.GetLibraryUserInvitationEmail(command.Name, library.Name, new Uri(new Uri(_settings.FrontEndUrl), _settings.ResetPasswordUrl).ToString()),
+                    EmailTemplateProvider.GetLibraryUserInvitationEmail(command.Name, library.Name, new Uri(new Uri(_settings.FrontEndUrl), _settings.ResetPasswordPagePath).ToString()),
                     _settings.EmailFrom,
                     cancellationToken);
             }

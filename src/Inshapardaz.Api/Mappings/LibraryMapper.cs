@@ -9,6 +9,7 @@ namespace Inshapardaz.Api.Mappings
             => source == null ? null : new LibraryView
             {
                 Name = source.Name,
+                OwnerEmail = source.OwnerEmail,
                 Language = source.Language,
                 SupportsPeriodicals = source.SupportsPeriodicals,
                 PrimaryColor = source.PrimaryColor,
@@ -19,6 +20,7 @@ namespace Inshapardaz.Api.Mappings
             => source == null ? null : new LibraryModel
             {
                 Name = source.Name,
+                OwnerEmail = source.OwnerEmail,
                 Language = source.Language,
                 SupportsPeriodicals = source.SupportsPeriodicals,
                 PrimaryColor = source.PrimaryColor,

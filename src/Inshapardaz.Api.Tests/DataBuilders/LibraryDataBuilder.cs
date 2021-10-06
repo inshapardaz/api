@@ -62,6 +62,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                                  .With(l => l.Name, _startWith ?? RandomData.Name)
                                  .With(l => l.PrimaryColor, RandomData.String)
                                  .With(l => l.SecondaryColor, RandomData.String)
+                                 .With(l => l.OwnerEmail, RandomData.Email)
                                  .CreateMany(count);
 
             _connection.AddLibraries(Libraries);

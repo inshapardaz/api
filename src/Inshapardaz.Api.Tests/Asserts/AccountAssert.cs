@@ -89,6 +89,12 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+        internal AccountAssert ShouldBeVerified()
+        {
+            _account.Verified.Should().NotBeNull();
+            return this;
+        }
+
         internal AccountAssert ShouldHaveInvitationExpiring(DateTime dateTime)
         {
             _account.InvitationCodeExpiry.Should().BeCloseTo(dateTime);

@@ -15,5 +15,6 @@
         public string PrimaryColor { get; set; }
 
         public string SecondaryColor { get; set; }
+        public string OwnerEmail { get; set; }
     }
 }

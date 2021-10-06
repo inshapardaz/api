@@ -149,14 +149,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             int libraryId;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Library(Name, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor) OUTPUT Inserted.Id VALUES(@Name, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor);";
+                var sql = @"Insert Into Library(Name, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor, OwnerEmail) OUTPUT Inserted.Id VALUES(@Name, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor, @OwnerEmail);";
                 var command = new CommandDefinition(sql, new
                 {
                     Name = library.Name,
                     Language = library.Language,
                     SupportsPeriodicals = library.SupportsPeriodicals,
                     PrimaryColor = library.PrimaryColor,
-                    SecondaryColor = library.SecondaryColor
+                    SecondaryColor = library.SecondaryColor,
+                    OwnerEmail = library.OwnerEmail
                 },
                 cancellationToken: cancellationToken);
                 libraryId = await connection.ExecuteScalarAsync<int>(command);
@@ -188,7 +189,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Language = @Language,
                             SupportsPeriodicals = @SupportsPeriodicals,
                             PrimaryColor = @PrimaryColor,
-                            SecondaryColor = @SecondaryColor
+                            SecondaryColor = @SecondaryColor,
+                            OwnerEmail = @OwnerEmail
                             Where Id = @Id";
                 var command = new CommandDefinition(sql, new
                 {
@@ -197,7 +199,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     Language = library.Language,
                     SupportsPeriodicals = library.SupportsPeriodicals,
                     PrimaryColor = library.PrimaryColor,
-                    SecondaryColor = library.SecondaryColor
+                    SecondaryColor = library.SecondaryColor,
+                    OwnerEmail = library.OwnerEmail
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
             }

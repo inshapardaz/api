@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 namespace Inshapardaz.Api.Tests.Library.AddLibrary
 {
     [TestFixture]
-    public class WhenAddingLibraryWithPermissions : TestBase
+    public class WhenAddingLibraryForUserAlreadyExisting : TestBase
     {
         private LibraryView _library;
         private HttpResponseMessage _response;
         private LibraryView _returnedView;
         private LibraryAssert _assert;
 
-        public WhenAddingLibraryWithPermissions()
+        public WhenAddingLibraryForUserAlreadyExisting()
             : base(Role.Admin)
         {
         }
@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _library = new LibraryView { OwnerEmail = RandomData.Email, Name = RandomData.Name, Language = RandomData.Locale, SupportsPeriodicals = _periodicalsEnabled };
+            _library = new LibraryView { OwnerEmail = Account.Email, Name = RandomData.Name, Language = RandomData.Locale, SupportsPeriodicals = _periodicalsEnabled };
 
             _response = await Client.PostObject($"/libraries", _library);
             _returnedView = await _response.GetContent<LibraryView>();
@@ -38,7 +38,6 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         {
             Cleanup();
             DatabaseConnection.DeleteLibrary(_returnedView.Id);
-            DatabaseConnection.DeleteAccountByEmail(_library.OwnerEmail);
         }
 
         [Test]
@@ -120,20 +119,15 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         public void ShouldHaveCreatedAccount()
         {
             AccountAssert.AssertAccountExistsWithEmail(_library.OwnerEmail)
-                .WithName(_library.Name)
-                .ShouldBeInvited()
-                .ShouldHaveInvitationExpiring(DateTime.Today.AddDays(7))
-                .ShouldNotBeVerified()
+                .ShouldBeVerified()
                 .ShouldBeInRole(Role.LibraryAdmin, _returnedView.Id)
                 .InLibrary(_returnedView.Id);
         }
 
         [Test]
-        public void ShouldHaveSentEmailToAdministrator()
+        public void ShouldNotSentEmailToAdministrator()
         {
-            SmtpClient.AssertEmailSentTo(_library.OwnerEmail)
-                .WithSubject($"Welcome to {_library.Name}")
-                .WithBodyContainting($"Hi, Welcome to your library {_library.Name}");
+            SmtpClient.AssertNoEmailSent();
         }
     }
 }

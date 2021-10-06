@@ -5,6 +5,7 @@ using MimeKit;
 using MimeKit.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 namespace Inshapardaz.Api.Services
 {
     public class EmailService : IEmailService
@@ -37,7 +38,6 @@ namespace Inshapardaz.Api.Services
                 }
                 _smtpClient.Send(email);
             }
-
             finally
             {
                 _smtpClient.Disconnect(true);

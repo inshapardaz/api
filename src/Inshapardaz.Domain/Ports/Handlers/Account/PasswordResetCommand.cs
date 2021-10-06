@@ -55,7 +55,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 
             await _emailService.SendAsync(account.Email,
                     $"Reset your Password",
-                    EmailTemplateProvider.GetResetPasswordEmail(account.Name, new Uri(new Uri(_settings.FrontEndUrl), _settings.ResetPasswordUrl).ToString()),
+                    EmailTemplateProvider.GetResetPasswordEmail(account.Name, new Uri(new Uri(_settings.FrontEndUrl), _settings.ResetPasswordPagePath).ToString()),
                     _settings.EmailFrom,
                     cancellationToken);
 

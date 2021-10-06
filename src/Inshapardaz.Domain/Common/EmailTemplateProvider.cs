@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Inshapardaz.Domain.Common
+﻿namespace Inshapardaz.Domain.Common
 {
     public static class EmailTemplateProvider
     {
+        public static string GetLibraryAdminInvitationEmail(string libraryName, string invitationLink)
+        {
+            return string.Format($"Hi, Welcome to your library {libraryName}. Please click on this <a href={invitationLink}>link to activate your account</a>.");
+        }
+
         public static string GetLibraryUserInvitationEmail(string name, string libraryName, string invitationLink)
         {
             return string.Format($"Hi {name}, You are invited to join {libraryName}. Please click on this <a href={invitationLink}>link to activate your account</a>.");

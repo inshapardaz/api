@@ -49,20 +49,20 @@ namespace Inshapardaz.Domain.Models.Library
                 return await base.HandleAsync(command, cancellationToken);
             }
 
-            var invitationCode = Guid.NewGuid();
+            var invitationCode = Guid.NewGuid().ToString("N");
 
             await _accountRepository.AddInvitedAccount(
                 command.Library.Name,
                 command.Library.OwnerEmail,
                 Role.LibraryAdmin,
-                invitationCode.ToString("N"),
+                invitationCode,
                 DateTime.Today.AddDays(7),
                 command.Result.Id,
                 cancellationToken);
 
             await _emailService.SendAsync(command.Library.OwnerEmail,
                     $"Welcome to {command.Result.Name}",
-                    EmailTemplateProvider.GetLibraryAdminInvitationEmail(command.Result.Name, new Uri(new Uri(_settings.FrontEndUrl), _settings.VerifyPagePath + invitationCode).ToString()),
+                    EmailTemplateProvider.GetLibraryAdminInvitationEmail(command.Result.Name, new Uri(new Uri(_settings.FrontEndUrl), _settings.RegisterPagePath + invitationCode).ToString()),
                     _settings.EmailFrom,
                     cancellationToken);
 

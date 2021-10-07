@@ -67,7 +67,6 @@ namespace Inshapardaz.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Reader, Role.Writer)]
         [HttpPost("revoke-token")]
         //TODO : Can be DELETE /token
         public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model, CancellationToken cancellationToken)

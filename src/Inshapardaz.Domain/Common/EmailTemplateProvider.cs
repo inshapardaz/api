@@ -4,7 +4,7 @@
     {
         public static string GetLibraryAdminInvitationEmail(string libraryName, string invitationLink)
         {
-            return string.Format($"Hi, Welcome to your library {libraryName}. Please click on this <a href={invitationLink}>link to activate your account</a>.");
+            return string.Format($"Hi, Welcome to your library {libraryName}. Please click on this <a href={invitationLink}>link to create your account</a>.");
         }
 
         public static string GetLibraryUserInvitationEmail(string name, string libraryName, string invitationLink)

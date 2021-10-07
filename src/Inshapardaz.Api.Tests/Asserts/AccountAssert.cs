@@ -41,6 +41,13 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+        internal void AccountShouldNotExist(string ownerEmail, IDbConnection databaseConnection)
+        {
+            ownerEmail.Should().NotBeNull();
+            var dbAccount = databaseConnection.GetAccountByEmail(ownerEmail);
+            dbAccount.Should().BeNull();
+        }
+
         internal AccountAssert AssertAccountHasResetToken(AccountDto account)
         {
             var dbAccount = _connection.GetAccountById(account.Id);

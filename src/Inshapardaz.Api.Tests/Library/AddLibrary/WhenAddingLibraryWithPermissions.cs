@@ -131,9 +131,11 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         [Test]
         public void ShouldHaveSentEmailToAdministrator()
         {
+            var dbAccount = DatabaseConnection.GetAccountByEmail(_library.OwnerEmail);
             SmtpClient.AssertEmailSentTo(_library.OwnerEmail)
                 .WithSubject($"Welcome to {_library.Name}")
-                .WithBodyContainting($"Hi, Welcome to your library {_library.Name}");
+                .WithBodyContainting($"Hi, Welcome to your library {_library.Name}")
+                .WithBodyContainting(dbAccount.InvitationCode);
         }
     }
 }

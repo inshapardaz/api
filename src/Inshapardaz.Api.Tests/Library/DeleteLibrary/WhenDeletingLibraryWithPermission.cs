@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
@@ -38,6 +39,12 @@ namespace Inshapardaz.Api.Tests.Library.DeleteLibrary
         public void ShouldHaveDeletedLibrary()
         {
             LibraryAssert.ShouldHaveDeletedLibrary(LibraryId, DatabaseConnection);
+        }
+
+        [Test]
+        public void ShouldDeleteUnVerifiedOwner()
+        {
+            AccountAssert.AccountShouldNotExist(Library.OwnerEmail, DatabaseConnection);
         }
     }
 }

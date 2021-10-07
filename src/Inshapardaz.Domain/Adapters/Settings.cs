@@ -22,7 +22,7 @@ namespace Inshapardaz.Domain.Adapters
         public string Secret { get; set; }
         public string FrontEndUrl { get; set; }
 
-        public string VerifyPagePath { get; set; }
+        public string RegisterPagePath { get; set; }
         public string ResetPasswordPagePath { get; set; }
         public int AccessTokenTTLInMinutes { get; internal set; } = 15;
         public double ResetTokenTTLInDays { get; internal set; } = 1;

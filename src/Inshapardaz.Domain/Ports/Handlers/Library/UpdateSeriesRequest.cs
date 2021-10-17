@@ -48,7 +48,9 @@ namespace Inshapardaz.Domain.Models.Library
             }
             else
             {
-                await _seriesRepository.UpdateSeries(command.LibraryId, command.Series, cancellationToken);
+                result.Name = command.Series.Name;
+                result.Description = command.Series.Description;
+                await _seriesRepository.UpdateSeries(command.LibraryId, result, cancellationToken);
                 command.Result.Series = command.Series;
             }
 

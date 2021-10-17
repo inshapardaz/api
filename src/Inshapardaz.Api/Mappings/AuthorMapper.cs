@@ -10,6 +10,7 @@ namespace Inshapardaz.Api.Mappings
             {
                 Id = source.Id,
                 Name = source.Name,
+                Description = source.Description,
                 BookCount = source.BookCount
             };
 
@@ -17,7 +18,8 @@ namespace Inshapardaz.Api.Mappings
             => source == null ? null : new AuthorModel
             {
                 Id = source.Id,
-                Name = source.Name
+                Name = source.Name,
+                Description = source.Description
             };
     }
 }

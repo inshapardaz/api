@@ -48,7 +48,9 @@ namespace Inshapardaz.Domain.Models.Library
             }
             else
             {
-                await _authorRepository.UpdateAuthor(command.LibraryId, command.Author, cancellationToken);
+                result.Name = command.Author.Name;
+                result.Description = command.Author.Description;
+                await _authorRepository.UpdateAuthor(command.LibraryId, result, cancellationToken);
                 command.Result.Author = command.Author;
             }
 

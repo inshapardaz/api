@@ -21,8 +21,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             int authorId;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Author(Name, ImageId, LibraryId) OUTPUT Inserted.Id VALUES(@Name, @ImageId, @LibraryId);";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Name = author.Name, ImageId = author.ImageId }, cancellationToken: cancellationToken);
+                var sql = @"Insert Into Author(Name, Description, ImageId, LibraryId) OUTPUT Inserted.Id VALUES(@Name, @Description, @ImageId, @LibraryId);";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Name = author.Name, Description = author.Description, ImageId = author.ImageId }, cancellationToken: cancellationToken);
                 authorId = await connection.ExecuteScalarAsync<int>(command);
             }
 
@@ -33,8 +33,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Author Set Name = @Name, ImageId = @ImageId Where Id = @Id AND LibraryId = @LibraryId";
-                var command = new CommandDefinition(sql, new { Id = author.Id, LibraryId = libraryId, Name = author.Name, ImageId = author.ImageId }, cancellationToken: cancellationToken);
+                var sql = @"Update Author Set Name = @Name, Description = @Description, ImageId = @ImageId Where Id = @Id AND LibraryId = @LibraryId";
+                var command = new CommandDefinition(sql, new { Id = author.Id, LibraryId = libraryId, Name = author.Name, Description = author.Description, ImageId = author.ImageId }, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
             }
         }
@@ -63,7 +63,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id AND b.Status = 0) AS BookCount
+                var sql = @"SELECT a.Id, a.Name, a.Description, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id AND b.Status = 0) AS BookCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
@@ -93,7 +93,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id  AND b.Status = 0) AS BookCount
+                var sql = @"SELECT a.Id, a.Name, a.Description, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id  AND b.Status = 0) AS BookCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
@@ -110,7 +110,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id AND b.Status = 0) AS BookCount
+                var sql = @"SELECT a.Id, a.Name, a.Description, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id AND b.Status = 0) AS BookCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId AND

@@ -24,13 +24,15 @@ namespace Inshapardaz.Api.Converters
     {
         private readonly IRenderLink _linkRenderer;
         private readonly IRenderCategory _categoryRenderer;
+        private readonly IRenderAuthor _authorRenderer;
         private readonly IUserHelper _userHelper;
 
-        public BookRenderer(IRenderLink linkRenderer, IRenderCategory categoryRenderer, IUserHelper userHelper)
+        public BookRenderer(IRenderLink linkRenderer, IRenderCategory categoryRenderer, IUserHelper userHelper, IRenderAuthor authorRenderer)
         {
             _linkRenderer = linkRenderer;
             _categoryRenderer = categoryRenderer;
             _userHelper = userHelper;
+            _authorRenderer = authorRenderer;
         }
 
         public PageView<BookView> Render(PageRendererArgs<BookModel, BookFilter> source, int libraryId)
@@ -153,7 +155,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(AuthorController.GetAuthorById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Author,
-                    Parameters = new { libraryId = libraryId, authorId = source.AuthorId }
+                    Parameters = new { libraryId = libraryId, authorId = source.Authors.First().Id }
                 }),
                 _linkRenderer.Render(new Link {
                     ActionName = nameof(ChapterController.GetChaptersByBook),
@@ -287,6 +289,17 @@ namespace Inshapardaz.Api.Converters
             }
 
             result.Links = links;
+
+            if (source.Authors.Any())
+            {
+                var authors = new List<AuthorView>();
+                foreach (var author in source.Authors)
+                {
+                    authors.Add(_authorRenderer.Render(author, source.LibraryId));
+                }
+
+                result.Authors = authors;
+            }
 
             if (source.Categories != null)
             {

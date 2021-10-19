@@ -9,16 +9,13 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.AddBook
 {
-    // TODO : change this test for multiple authors
-    [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
-    [TestFixture(Role.Writer)]
-    public class WhenAddingBookWithPermissions : TestBase
+    public class WhenAddingBookWithMultipleArtists : TestBase
     {
         private BookAssert _bookAssert;
         private HttpResponseMessage _response;
 
-        public WhenAddingBookWithPermissions(Role role) : base(role)
+        public WhenAddingBookWithMultipleArtists(Role role) : base(role)
         {
         }
 
@@ -35,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 SeriesIndex = 1,
                 SeriesName = series.Name,
                 Language = RandomData.Locale,
-                Authors = RandomData.PickRandom(authors, 1).Select(c => new AuthorView { Id = c.Id }),
+                Authors = RandomData.PickRandom(authors, 2).Select(c => new AuthorView { Id = c.Id }),
                 Categories = RandomData.PickRandom(categories, 2).Select(c => new CategoryView { Id = c.Id })
             };
 

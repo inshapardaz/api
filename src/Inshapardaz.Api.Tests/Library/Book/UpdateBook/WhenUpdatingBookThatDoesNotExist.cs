@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             {
                 Title = RandomData.Name,
                 Description = RandomData.Words(10),
-                AuthorId = author.Id,
+                Authors = new List<AuthorView> { new AuthorView { Id = author.Id } },
                 Language = RandomData.Locale
             };
 
@@ -64,7 +65,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         public void ShouldHaveLinks()
         {
             _bookAssert.ShouldHaveSelfLink()
-                        .ShouldHaveAuthorLink()
                         .ShouldHaveUpdateLink()
                         .ShouldHaveDeleteLink()
                         .ShouldHaveUpdateLink();

@@ -79,22 +79,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         public void ShouldReturnExpectedBooks()
         {
             _assert.ShouldHaveNoData();
-            //var expectedItems = _favoriteBooks.OrderBy(a => a.Title).Take(10);
-            //foreach (var item in expectedItems)
-            //{
-            //    var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-            //    actual.ShouldMatch(item, DatabaseConnection)
-            //                .InLibrary(LibraryId)
-            //                .ShouldHaveCorrectLinks()
-            //                .ShouldNotHaveSeriesLink()
-            //                .ShouldNotHaveEditLinks()
-            //                .ShouldNotHaveImageUpdateLink()
-            //                .ShouldNotHaveCreateChaptersLink()
-            //                .ShouldNotHaveAddContentLink()
-            //                .ShouldNotHaveAddFavoriteLink()
-            //                .ShouldNotHaveRemoveFavoriteLink()
-            //                .ShouldHaveChaptersLink()
-            //                .ShouldHavePublicImageLink();
         }
     }
 }

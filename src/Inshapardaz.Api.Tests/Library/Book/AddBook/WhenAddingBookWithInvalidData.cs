@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Api.Tests.Asserts;
@@ -27,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             public async Task Setup()
             {
                 var author = AuthorBuilder.WithLibrary(LibraryId).Build();
-                var book = new BookView { Title = RandomData.Name, AuthorId = author.Id };
+                var book = new BookView { Title = RandomData.Name, Authors = new List<AuthorView> { new AuthorView { Id = author.Id } } };
 
                 _response = await Client.PostObject($"/libraries/{-RandomData.Number}/books", book);
             }
@@ -62,7 +63,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 var library2 = _library2Builder.Build();
                 var author = AuthorBuilder.WithLibrary(library2.Id).Build();
 
-                var book = new BookView { Title = RandomData.Name, AuthorId = author.Id };
+                var book = new BookView { Title = RandomData.Name, Authors = new List<AuthorView> { new AuthorView { Id = author.Id } } };
 
                 _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
@@ -93,7 +94,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             [OneTimeSetUp]
             public async Task Setup()
             {
-                var book = new BookView { Title = RandomData.Name, AuthorId = -RandomData.Number };
+                var book = new BookView { Title = RandomData.Name, Authors = new List<AuthorView> { new AuthorView { Id = -RandomData.Number } } };
 
                 _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
@@ -124,7 +125,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             public async Task Setup()
             {
                 var author = AuthorBuilder.WithLibrary(LibraryId).Build();
-                var book = new BookView { Title = new Faker().Random.String(), AuthorId = author.Id, SeriesId = -RandomData.Number };
+                var book = new BookView { Title = new Faker().Random.String(), Authors = new List<AuthorView> { new AuthorView { Id = author.Id } }, SeriesId = -RandomData.Number };
 
                 _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
@@ -160,7 +161,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 var series = SeriesBuilder.WithLibrary(library2.Id).Build();
                 var author = AuthorBuilder.WithLibrary(LibraryId).Build();
 
-                var book = new BookView { Title = new Faker().Random.String(), AuthorId = author.Id, SeriesId = series.Id };
+                var book = new BookView { Title = new Faker().Random.String(), Authors = new List<AuthorView> { new AuthorView { Id = author.Id } }, SeriesId = series.Id };
 
                 _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
             }
@@ -195,7 +196,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 var book = new BookView
                 {
                     Title = new Faker().Random.String(),
-                    AuthorId = author.Id,
+                    Authors = new List<AuthorView> { new AuthorView { Id = author.Id } },
                     Categories = new CategoryView[] { new CategoryView { Id = -RandomData.Number } }
                 };
 
@@ -236,7 +237,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 var book = new BookView
                 {
                     Title = new Faker().Random.String(),
-                    AuthorId = author.Id,
+                    Authors = new List<AuthorView> { new AuthorView { Id = author.Id } },
                     Categories = new CategoryView[] { new CategoryView { Id = category.Id } }
                 };
 

@@ -83,7 +83,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item, DatabaseConnection)
+                actual.ShouldMatch(item, DatabaseConnection, LibraryId)
                             .InLibrary(LibraryId)
                             .ShouldHaveCorrectLinks()
                             .ShouldNotHaveEditLinks()

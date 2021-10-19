@@ -23,6 +23,11 @@ namespace Inshapardaz.Api.Helpers
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            if (!_roles.Any() && context.HttpContext.User.Identity.IsAuthenticated)
+            {
+                return;
+            }
+
             var account = (AccountModel)context.HttpContext.Items["Account"];
             if (!_roles.Any() && account != null) return;
 
@@ -50,6 +55,10 @@ namespace Inshapardaz.Api.Helpers
                             return;
                         }
                     }
+                }
+                else if (!_roles.Any() && context.HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return;
                 }
 
                 context.Result = new JsonResult(new { message = "Forbidden." }) { StatusCode = StatusCodes.Status403Forbidden };

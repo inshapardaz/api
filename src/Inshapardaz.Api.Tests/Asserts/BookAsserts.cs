@@ -52,15 +52,6 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        public BookAssert ShouldHaveAuthorLink()
-        {
-            _book.Link("author")
-                  .ShouldBeGet()
-                  .EndingWith($"libraries/{_libraryId}/authors/{_book.AuthorId}");
-
-            return this;
-        }
-
         public BookAssert ShouldHaveChaptersLink()
         {
             _book.Link("chapters")
@@ -158,7 +149,6 @@ namespace Inshapardaz.Api.Tests.Asserts
         internal BookAssert ShouldHaveCorrectLinks()
         {
             ShouldHaveSelfLink();
-            ShouldHaveAuthorLink();
             return this;
         }
 
@@ -330,14 +320,27 @@ namespace Inshapardaz.Api.Tests.Asserts
             _book.DateUpdated.Should().BeCloseTo(expected.DateUpdated);
             _book.Status.Should().Be(expected.Status.ToDescription());
             _book.YearPublished.Should().Be(expected.YearPublished);
-            _book.AuthorId.Should().Be(expected.AuthorId);
-            _book.AuthorName.Should().Be(db.GetAuthorById(expected.AuthorId).Name);
             _book.SeriesId.Should().Be(expected.SeriesId);
             if (_book.SeriesId.HasValue)
             {
                 _book.SeriesName.Should().Be(db.GetSeriesById(expected.SeriesId.Value).Name);
                 _book.SeriesIndex.Should().Be(expected.SeriesIndex);
             }
+
+            var authors = db.GetAuthorsByBook(expected.Id);
+            _book.Authors.Should().HaveSameCount(authors);
+            foreach (var author in authors)
+            {
+                var actual = _book.Authors.SingleOrDefault(a => a.Id == author.Id);
+                actual.Name.Should().Be(author.Name);
+
+                actual.Link("self")
+                      .ShouldBeGet()
+                      .EndingWith($"libraries/{_libraryId}/authors/{author.Id}");
+
+                return this;
+            }
+
             return this;
         }
 
@@ -355,11 +358,20 @@ namespace Inshapardaz.Api.Tests.Asserts
             _book.DateUpdated.Should().BeCloseTo(expected.DateUpdated);
             _book.Status.Should().Be(expected.Status);
             _book.YearPublished.Should().Be(expected.YearPublished);
-            _book.AuthorId.Should().Be(expected.AuthorId);
-            _book.AuthorName.Should().Be(db.GetAuthorById(expected.AuthorId).Name);
             _book.SeriesId.Should().Be(expected.SeriesId);
             _book.SeriesName.Should().Be(db.GetSeriesById(expected.SeriesId.Value).Name);
             _book.SeriesIndex.Should().Be(expected.SeriesIndex);
+
+            var authors = db.GetAuthorsByBook(expected.Id);
+            _book.Authors.Should().HaveSameCount(authors);
+            foreach (var author in authors)
+            {
+                var actual = _book.Authors.SingleOrDefault(a => a.Id == author.Id);
+                actual.Name.Should().Be(author.Name);
+                actual.Link("self")
+                      .ShouldBeGet()
+                      .EndingWith($"libraries/{_libraryId}/authors/{author.Id}");
+            }
 
             _book.Categories.Should().HaveSameCount(expected.Categories);
 
@@ -429,8 +441,14 @@ namespace Inshapardaz.Api.Tests.Asserts
 
     public static class BookAssertionExtensions
     {
-        public static BookAssert ShouldMatch(this BookView view, BookDto dto, IDbConnection dbConnection)
+        public static BookAssert ShouldMatch(this BookView view, BookDto dto, IDbConnection dbConnection, int? libraryId = null)
         {
+            if (libraryId.HasValue)
+            {
+                return new BookAssert(view)
+                            .InLibrary(libraryId.Value)
+                           .ShouldBeSameAs(dto, dbConnection);
+            }
             return new BookAssert(view)
                                .ShouldBeSameAs(dto, dbConnection);
         }

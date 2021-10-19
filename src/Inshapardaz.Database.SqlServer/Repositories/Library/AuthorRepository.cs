@@ -2,6 +2,7 @@
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -63,7 +64,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, a.Description, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id AND b.Status = 0) AS BookCount
+                var sql = @"SELECT a.Id, a.Name, a.Description, f.Id As ImageId, f.FilePath AS ImageUrl,
+                            (SELECT Count(*)
+                                FROM Book b
+                                INNER JOIN BookAuthor ba ON ba.BookId = b.Id
+                                WHERE ba.AuthorId = a.Id  AND b.Status = 0) AS BookCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
@@ -93,7 +98,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, a.Description, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id  AND b.Status = 0) AS BookCount
+                var sql = @"SELECT a.Id, a.Name, a.Description, f.Id As ImageId, f.FilePath AS ImageUrl,
+                            (SELECT Count(*)
+                                FROM Book b
+                                INNER JOIN BookAuthor ba ON ba.BookId = b.Id
+                                WHERE ba.AuthorId = a.Id  AND b.Status = 0) AS BookCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
@@ -110,7 +119,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT a.Id, a.Name, a.Description, f.Id As ImageId, f.FilePath AS ImageUrl, (SELECT Count(*) FROM Book b WHERE b.AuthorId = a.Id AND b.Status = 0) AS BookCount
+                var sql = @"SELECT a.Id, a.Name, a.Description, f.Id As ImageId, f.FilePath AS ImageUrl,
+                            (SELECT Count(*)
+                                FROM Book b
+                                INNER JOIN BookAuthor ba ON ba.BookId = b.Id
+                                WHERE ba.AuthorId = a.Id  AND b.Status = 0) AS BookCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId AND
@@ -134,6 +147,27 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     TotalCount = authorCount,
                     Data = authors
                 };
+            }
+        }
+
+        public async Task<IEnumerable<AuthorModel>> GetAuthorByIds(int libraryId, IEnumerable<int> authorIds, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT a.Id, a.Name, a.Description, f.Id As ImageId, f.FilePath AS ImageUrl,
+                            (SELECT Count(*)
+                                FROM Book b
+                                INNER JOIN BookAuthor ba ON ba.BookId = b.Id
+                                WHERE ba.AuthorId = a.Id  AND b.Status = 0) AS BookCount
+                            FROM Author AS a
+                            LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
+                            Where a.LibraryId = @LibraryId
+                            And a.Id IN @AuthorIds";
+                var command = new CommandDefinition(sql,
+                                                    new { LibraryId = libraryId, AuthorIds = authorIds },
+                                                    cancellationToken: cancellationToken);
+
+                return await connection.QueryAsync<AuthorModel>(command);
             }
         }
     }

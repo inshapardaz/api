@@ -12,6 +12,8 @@ namespace Inshapardaz.Api.Views.Library
 
         public string Description { get; set; }
 
+        public IEnumerable<AuthorView> Authors { get; set; }
+
         public IEnumerable<CategoryView> Categories { get; set; }
 
         public IEnumerable<BookContentView> Contents { get; set; }
@@ -19,10 +21,6 @@ namespace Inshapardaz.Api.Views.Library
         public string Language { get; set; }
 
         public bool IsPublic { get; set; }
-
-        public int AuthorId { get; set; }
-
-        public string AuthorName { get; set; }
 
         public int? SeriesId { get; set; }
 

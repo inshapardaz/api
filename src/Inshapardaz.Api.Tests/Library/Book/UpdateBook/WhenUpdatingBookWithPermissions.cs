@@ -7,6 +7,7 @@ using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
@@ -23,7 +24,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         private BookAssert _bookAssert;
         private IEnumerable<CategoryDto> _otherCategories;
 
-        public WhenUpdatingBookWithPermissions(Role role) : base(role)
+        public WhenUpdatingBookWithPermissions(Role role)
+            : base(role)
         {
         }
 
@@ -45,6 +47,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             var fake = new Faker();
             _expected = new BookView
             {
+                Id = selectedBook.Id,
                 Title = fake.Name.FullName(),
                 Description = fake.Random.Words(5),
                 Copyrights = fake.PickRandom<CopyrightStatuses>().ToDescription(),
@@ -52,7 +55,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 YearPublished = fake.Date.Past().Year,
                 Status = fake.PickRandom<BookStatuses>().ToDescription(),
                 IsPublic = fake.Random.Bool(),
-                AuthorId = otherAuthor.Id,
+                Authors = new List<AuthorView> { new AuthorView { Id = otherAuthor.Id, Name = otherAuthor.Name } },
                 SeriesId = otherSeries.Id,
                 IsPublished = fake.Random.Bool(),
                 Categories = _otherCategories.Select(c => new CategoryView { Id = c.Id })
@@ -77,6 +80,11 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         [Test]
         public void ShouldHaveUpdatedTheBook()
         {
+            _expected.Authors.ElementAt(0).Links = new List<Views.LinkView> { new Views.LinkView {
+            Rel = RelTypes.Self,
+            Method = "GET",
+            Href = $"http://localhost/libraries/{LibraryId}/authors/{_expected.Authors.ElementAt(0).Id}"
+            } };
             _bookAssert.ShouldBeSameAs(_expected, DatabaseConnection);
         }
 

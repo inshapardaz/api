@@ -51,12 +51,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
         }
 
         [Test]
-        public void ShouldHaveAuthorLink()
-        {
-            _assert.ShouldHaveAuthorLink();
-        }
-
-        [Test]
         public void ShouldHaveChaptersLink()
         {
             _assert.ShouldHaveChaptersLink();

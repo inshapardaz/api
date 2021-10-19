@@ -17,7 +17,8 @@ namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
         public async Task Setup()
         {
             var account = AccountBuilder.Verified().Build();
-            var auth = await AccountBuilder.Authenticate(Client);
+            var auth = await AccountBuilder.Authenticate(Client, account.Email);
+            AuthenticateClientWithToken(auth.JwtToken);
             var _oldToken = auth.RefreshToken;
             DatabaseConnection.RevokeRefreshToken(_oldToken);
             _response = await Client.PostObject("/accounts/refresh-token", new RefreshTokenRequest { RefreshToken = RandomData.String });

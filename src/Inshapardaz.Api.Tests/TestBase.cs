@@ -107,6 +107,11 @@ namespace Inshapardaz.Api.Tests
                 .AddTransient<AccountAssert>();
         }
 
+        protected void AuthenticateClientWithToken(string token)
+        {
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
+
         public HttpClient Client { get; }
 
         public int AccountId => _account?.Id ?? 0;

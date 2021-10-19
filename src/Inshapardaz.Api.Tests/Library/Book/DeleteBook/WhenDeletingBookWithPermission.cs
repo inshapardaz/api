@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataHelpers;
@@ -18,6 +19,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
 
         private BookDto _expected;
 
+        private int _authorId;
+
         public WhenDeletingBookWithPermission(Role role) : base(role)
         {
         }
@@ -31,6 +34,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
                                     .AddToFavorites(AccountId)
                                     .AddToRecentReads(AccountId)
                                     .Build(1);
+
+            _authorId = BookBuilder.Authors.First().Id;
             _expected = books.PickRandom();
 
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{_expected.Id}");
@@ -63,7 +68,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         [Test]
         public void ShouldNotHaveDeletedTheAuthor()
         {
-            AuthorAssert.ShouldNotHaveDeletedAuthor(_expected.AuthorId, DatabaseConnection);
+            AuthorAssert.ShouldNotHaveDeletedAuthor(_authorId, DatabaseConnection);
         }
 
         [Test]

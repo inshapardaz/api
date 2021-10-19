@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
@@ -9,33 +10,30 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.AddBook
 {
-    // TODO : change this test for multiple authors
-    [TestFixture(Role.Admin)]
-    [TestFixture(Role.LibraryAdmin)]
-    [TestFixture(Role.Writer)]
-    public class WhenAddingBookWithPermissions : TestBase
+    [TestFixture]
+    public class WhenAddingBookUsingAuthorProperties : TestBase
     {
         private BookAssert _bookAssert;
         private HttpResponseMessage _response;
 
-        public WhenAddingBookWithPermissions(Role role) : base(role)
+        public WhenAddingBookUsingAuthorProperties() : base(Role.LibraryAdmin)
         {
         }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var authors = AuthorBuilder.WithLibrary(LibraryId).Build(3);
+            var author = AuthorBuilder.WithLibrary(LibraryId).Build();
             var series = SeriesBuilder.WithLibrary(LibraryId).Build();
             var categories = CategoryBuilder.WithLibrary(LibraryId).Build(3);
             var book = new BookView
             {
                 Title = RandomData.Name,
+                Authors = new List<AuthorView> { new AuthorView { Id = author.Id } },
                 SeriesId = series.Id,
                 SeriesIndex = 1,
                 SeriesName = series.Name,
                 Language = RandomData.Locale,
-                Authors = RandomData.PickRandom(authors, 1).Select(c => new AuthorView { Id = c.Id }),
                 Categories = RandomData.PickRandom(categories, 2).Select(c => new CategoryView { Id = c.Id })
             };
 

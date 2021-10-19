@@ -16,8 +16,6 @@ namespace Inshapardaz.Api.Tests.Dto
         public string Language { get; set; }
         public BookStatuses Status { get; set; }
 
-        public int AuthorId { get; set; }
-
         public int LibraryId { get; set; }
 
         public int? ImageId { get; set; }

@@ -43,8 +43,17 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<AddBookRequest> HandleAsync(AddBookRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var author = await _authorRepository.GetAuthorById(command.LibraryId, command.Book.AuthorId, cancellationToken);
-            if (author == null)
+            IEnumerable<AuthorModel> authors = null;
+            if (command.Book.Authors != null && command.Book.Authors.Any())
+            {
+                authors = await _authorRepository.GetAuthorByIds(command.LibraryId, command.Book.Authors.Select(a => a.Id), cancellationToken);
+                if (authors.Count() != command.Book.Authors.Count())
+                {
+                    throw new BadRequestException();
+                }
+            }
+
+            if (authors == null || authors.FirstOrDefault() == null)
             {
                 throw new BadRequestException();
             }
@@ -71,8 +80,8 @@ namespace Inshapardaz.Domain.Models.Library
 
             command.Result = await _bookRepository.AddBook(command.LibraryId, command.Book, command.AccountId, cancellationToken);
 
-            command.Result.AuthorName = author.Name;
             command.Result.SeriesName = series?.Name;
+            command.Result.Authors = authors?.ToList();
             command.Result.Categories = categories?.ToList();
 
             return await base.HandleAsync(command, cancellationToken);

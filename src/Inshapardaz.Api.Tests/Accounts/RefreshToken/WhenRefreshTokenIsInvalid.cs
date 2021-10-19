@@ -12,6 +12,11 @@ namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
     {
         private HttpResponseMessage _response;
 
+        public WhenRefreshTokenIsInvalid()
+            : base(Domain.Models.Role.Reader)
+        {
+        }
+
         [OneTimeSetUp]
         public async Task Setup()
         {

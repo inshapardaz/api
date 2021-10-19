@@ -12,9 +12,9 @@ namespace Inshapardaz.Api.Tests.DataHelpers
     {
         public static void AddBook(this IDbConnection connection, BookDto book)
         {
-            var sql = @"Insert Into Book (Title, Description, AuthorId, ImageId, IsPublic, IsPublished, Language, Status, SeriesId, SeriesIndex, Copyrights, YearPublished, DateAdded, DateUpdated, LibraryId)
+            var sql = @"Insert Into Book (Title, Description, ImageId, IsPublic, IsPublished, Language, Status, SeriesId, SeriesIndex, Copyrights, YearPublished, DateAdded, DateUpdated, LibraryId)
                         Output Inserted.Id
-                        Values (@Title, @Description, @AuthorId, @ImageId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @Copyrights, @YearPublished, @DateAdded, @DateUpdated, @LibraryId)";
+                        Values (@Title, @Description, @ImageId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @Copyrights, @YearPublished, @DateAdded, @DateUpdated, @LibraryId)";
             var id = connection.ExecuteScalar<int>(sql, book);
             book.Id = id;
         }
@@ -72,36 +72,48 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static int GetBookCountByAuthor(this IDbConnection connection, int id)
         {
-            return connection.ExecuteScalar<int>("Select Count(*) From Book Where AuthorId = @Id AND status = 0", new { Id = id });
+            var sql = @"SELECT Count(*)
+                                FROM Book b
+                                INNER JOIN BookAuthor ba ON ba.BookId = b.Id
+                                WHERE ba.AuthorId = @Id  AND b.Status = 0";
+            return connection.ExecuteScalar<int>(sql, new { Id = id });
         }
 
         public static BookDto GetBookById(this IDbConnection connection, int bookId)
         {
-            return connection.QuerySingleOrDefault<BookDto>("Select * From Book Where Id = @Id", new { Id = bookId });
+            var sql = @"SELECT * FROM Book WHERE Id = @Id";
+            return connection.QuerySingleOrDefault<BookDto>(sql, new { Id = bookId });
         }
 
         public static IEnumerable<BookDto> GetBooksByAuthor(this IDbConnection connection, int id)
         {
-            return connection.Query<BookDto>("Select * From Book Where AuthorId = @Id", new { Id = id });
+            var sql = @"SELECT b.*
+                            from Book b
+                            Left Outer Join BookAuthor ba ON b.Id = ba.BookId
+                            Inner Join Author a On ba.AuthorId = a.Id
+                            Where a.AuthorId = @Id";
+            return connection.Query<BookDto>(sql, new { Id = id });
         }
 
         public static IEnumerable<BookDto> GetBooksByCategory(this IDbConnection connection, int categoryId)
         {
-            return connection.Query<BookDto>(@"Select b.* From Book b
-                Inner Join BookCategory bc ON b.Id = bc.BookId
-                Where bc.CategoryId = @CategoryId", new { CategoryId = categoryId });
+            var sql = @"SELECT b.* FROM Book b
+                            INNER JOIN BookCategory bc ON b.Id = bc.BookId
+                            WHERE bc.CategoryId = @CategoryId";
+            return connection.Query<BookDto>(sql, new { CategoryId = categoryId });
         }
 
         public static IEnumerable<BookDto> GetBooksBySeries(this IDbConnection connection, int seriesId)
         {
-            return connection.Query<BookDto>(@"Select * From Book Where SeriesId = @SeriesId ", new { SeriesId = seriesId });
+            var sql = @"SELECT b.* FROM Book b WHERE SeriesId = @SeriesId";
+            return connection.Query<BookDto>(sql, new { SeriesId = seriesId });
         }
 
         public static string GetBookImageUrl(this IDbConnection connection, int bookId)
         {
-            var sql = @"Select f.FilePath from [File] f
-                        Inner Join Book b ON f.Id = b.ImageId
-                        Where b.Id = @Id";
+            var sql = @"SELECT f.FilePath FROM [File] f
+                        INNER JOIN Book b ON f.Id = b.ImageId
+                        WHERE b.Id = @Id";
             return connection.QuerySingleOrDefault<string>(sql, new { Id = bookId });
         }
 
@@ -180,6 +192,20 @@ namespace Inshapardaz.Api.Tests.DataHelpers
                 Language = language,
                 MimeType = mimetype
             });
+        }
+
+        public static void AddBookAuthor(this IDbConnection connection, int bookId, int authorId)
+        {
+            var sql = "INSERT INTO BookAuthor (BookId, AuthorId) VALUES (@BookId, @AuthorId)";
+            connection.Execute(sql, new { BookId = bookId, AuthorId = authorId });
+        }
+
+        public static void AddBooksAuthor(this IDbConnection connection, IEnumerable<int> bookIds, int authorId)
+        {
+            foreach (var bookId in bookIds)
+            {
+                AddBookAuthor(connection, bookId, authorId);
+            }
         }
     }
 }

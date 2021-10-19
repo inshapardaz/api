@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -31,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             {
                 var author = AuthorBuilder.WithLibrary(LibraryId).Build();
 
-                var book = new BookView { Title = RandomData.Name, AuthorId = author.Id };
+                var book = new BookView { Title = RandomData.Name, Authors = new List<AuthorView> { new AuthorView { Id = author.Id } } };
 
                 _response = await Client.PutObject($"/libraries/{-RandomData.Number}/books/{book.Id}", book);
             }
@@ -68,7 +69,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 var books = BookBuilder.WithLibrary(LibraryId).WithAuthor(_author).Build(1);
                 _bookToUpdate = books.PickRandom();
 
-                var book = new BookView { Title = RandomData.Text, AuthorId = -RandomData.Number };
+                var book = new BookView { Title = RandomData.Text, Authors = new List<AuthorView> { new AuthorView { Id = -RandomData.Number } } };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
@@ -88,8 +89,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var book = DatabaseConnection.GetBookById(_bookToUpdate.Id);
-                book.AuthorId.Should().Be(_author.Id);
+                var authors = DatabaseConnection.GetAuthorsByBook(_bookToUpdate.Id);
+                authors.Should().Contain(a => a.Id == _author.Id);
             }
         }
 
@@ -117,7 +118,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 var books = BookBuilder.WithLibrary(LibraryId).WithAuthor(_author).Build(1);
                 _bookToUpdate = books.PickRandom();
 
-                var book = new BookView { Title = RandomData.Text, AuthorId = author2.Id };
+                var book = new BookView { Title = RandomData.Text, Authors = new List<AuthorView> { new AuthorView { Id = author2.Id } } };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookToUpdate.Id}", book);
             }
@@ -138,8 +139,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var book = DatabaseConnection.GetBookById(_bookToUpdate.Id);
-                book.AuthorId.Should().Be(_author.Id);
+                var authors = DatabaseConnection.GetAuthorsByBook(_bookToUpdate.Id);
+                authors.Should().Contain(a => a.Id == _author.Id);
             }
         }
 

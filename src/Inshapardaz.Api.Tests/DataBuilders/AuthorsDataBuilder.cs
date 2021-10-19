@@ -96,13 +96,14 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
                 var books = fixture.Build<BookDto>()
                                    .With(b => b.LibraryId, _libraryId)
-                                   .With(b => b.AuthorId, author.Id)
                                    .With(b => b.Language, RandomData.Locale)
                                    .With(b => b.Status, Domain.Models.BookStatuses.Published)
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);
                 _connection.AddBooks(books);
+
+                _connection.AddBooksAuthor(books.Select(b => b.Id), author.Id);
 
                 _books.AddRange(books);
 

@@ -83,7 +83,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.BookId);
                 var expected = _books.SingleOrDefault(b => b.Id == item.BookId);
-                actual.ShouldMatch(expected, DatabaseConnection)
+                actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
                             .InLibrary(LibraryId)
                             .ShouldHaveCorrectLinks()
                             .ShouldNotHaveEditLinks()

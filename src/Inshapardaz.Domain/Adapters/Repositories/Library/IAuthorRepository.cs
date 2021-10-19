@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,5 +21,7 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task<AuthorModel> GetAuthorById(int libraryId, int authorId, CancellationToken cancellationToken);
 
         Task<Page<AuthorModel>> FindAuthors(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+        Task<IEnumerable<AuthorModel>> GetAuthorByIds(int libraryId, IEnumerable<int> authorIds, CancellationToken cancellationToken);
     }
 }

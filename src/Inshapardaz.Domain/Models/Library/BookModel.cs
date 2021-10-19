@@ -11,6 +11,8 @@ namespace Inshapardaz.Domain.Models.Library
 
         public string Description { get; set; }
 
+        public List<AuthorModel> Authors { get; set; } = new List<AuthorModel>();
+
         public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
 
         public List<BookContentModel> Contents { get; set; } = new List<BookContentModel>();
@@ -18,10 +20,6 @@ namespace Inshapardaz.Domain.Models.Library
         public string Language { get; set; }
 
         public bool IsPublic { get; set; }
-
-        public int AuthorId { get; set; }
-
-        public string AuthorName { get; set; }
 
         public int? ImageId { get; set; }
 

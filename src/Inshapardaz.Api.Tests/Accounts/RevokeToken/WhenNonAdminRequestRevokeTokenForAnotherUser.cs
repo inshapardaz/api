@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
 {
-    [TestFixture]
-    public class WhenUserIsNotAdmin : TestBase
+    [TestFixture(Domain.Models.Role.LibraryAdmin)]
+    [TestFixture(Domain.Models.Role.Writer)]
+    [TestFixture(Domain.Models.Role.Reader)]
+    public class WhenNonAdminRequestRevokeTokenForAnotherUser : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenUserIsNotAdmin()
-            : base(Domain.Models.Role.Reader)
+        public WhenNonAdminRequestRevokeTokenForAnotherUser(Domain.Models.Role role)
+            : base(role)
         {
         }
 
@@ -21,15 +23,15 @@ namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
         public async Task Setup()
         {
             var account = AccountBuilder.Verified().Build();
-            var authResponse = await AccountBuilder.Authenticate(Client);
+            var authResponse = await AccountBuilder.Authenticate(Client, account.Email);
 
             _response = await Client.PostObject("/accounts/revoke-token", new RevokeTokenRequest() { Token = authResponse.RefreshToken });
         }
 
         [Test]
-        public void ShouldReturnForbidden()
+        public void ShouldReturnUnauthorised()
         {
-            _response.ShouldBeForbidden();
+            _response.ShouldBeUnauthorized();
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private int _chapterCount, _categoriesCount, _contentCount;
         private string _contentMimeType;
 
-        private AuthorDto _author;
+        public AuthorDto Author { get; set; }
         private List<CategoryDto> _categories = new List<CategoryDto>();
         private SeriesDto _series;
         private int _libraryId;
@@ -107,7 +107,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
         public BooksDataBuilder WithAuthor(AuthorDto author)
         {
-            _author = author;
+            Author = author;
             return this;
         }
 
@@ -191,9 +191,9 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         {
             var fixture = new Fixture();
 
-            if (_author == null)
+            if (Author == null)
             {
-                _author = _authorBuilder.WithLibrary(_libraryId).Build(1).Single();
+                Author = _authorBuilder.WithLibrary(_libraryId).Build(1).Single();
             }
 
             SeriesDto series = _series;
@@ -203,7 +203,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             }
 
             return fixture.Build<BookView>()
-                          .With(b => b.AuthorId, _author.Id)
+                          .With(b => b.Authors, new List<AuthorView> { new AuthorView { Id = Author.Id } })
                           .With(b => b.SeriesId, series.Id)
                           .With(b => b.SeriesIndex, RandomData.Number)
                           .With(b => b.Categories, _categories.Any() ? _categories.Select(c => c.ToView()) : new CategoryView[0])
@@ -220,7 +220,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         {
             var fixture = new Fixture();
 
-            if (_author == null)
+            if (Author == null)
             {
                 _authors = _authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : numberOfBooks).ToList();
             }
@@ -229,7 +229,6 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
             _books = fixture.Build<BookDto>()
                           .With(b => b.LibraryId, _libraryId)
-                          .With(b => b.AuthorId, _author != null ? _author.Id : RandomData.PickRandom(_authors).Id)
                           .With(b => b.ImageId, _hasImage ? RandomData.Number : 0)
                           .With(b => b.IsPublic, f)
                           .With(b => b.Language, RandomData.Locale)
@@ -300,6 +299,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 }
 
                 _connection.AddBook(book);
+
+                _connection.AddBookAuthor(book.Id, Author != null ? Author.Id : RandomData.PickRandom(_authors).Id);
 
                 if (categories != null && categories.Any())
                     _connection.AddBookToCategories(book.Id, categories);

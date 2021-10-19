@@ -8,28 +8,28 @@ using System.Threading.Tasks;
 namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
 {
     [TestFixture]
-    public class WhenUserIsLibraryAdmin : TestBase
+    public class WhenAdminRequestRevokeTokenForAnotherUser : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenUserIsLibraryAdmin()
-            : base(Domain.Models.Role.LibraryAdmin)
+        public WhenAdminRequestRevokeTokenForAnotherUser()
+            : base(Domain.Models.Role.Admin)
         {
         }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var account = AccountBuilder.Verified().InLibrary(Library.Id).Build();
+            var account = AccountBuilder.Verified().Build();
             var authResponse = await AccountBuilder.Authenticate(Client, account.Email);
 
             _response = await Client.PostObject("/accounts/revoke-token", new RevokeTokenRequest() { Token = authResponse.RefreshToken });
         }
 
         [Test]
-        public void ShouldReturnForbidden()
+        public void ShouldReturnOk()
         {
-            _response.ShouldBeForbidden();
+            _response.ShouldBeOk();
         }
     }
 }

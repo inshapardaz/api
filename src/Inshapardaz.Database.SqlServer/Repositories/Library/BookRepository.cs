@@ -27,13 +27,31 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 book.LibraryId = libraryId;
                 var sql = @"Insert Into Book
-                            (Title, [Description], AuthorId, ImageId, LibraryId, IsPublic, IsPublished, [Language], [Status], SeriesId, SeriesIndex, CopyRights, YearPublished, DateAdded, DateUpdated)
-                            OUTPUT Inserted.Id VALUES(@Title, @Description, @AuthorId, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, GETDATE(), GETDATE());";
+                            (Title, [Description], ImageId, LibraryId, IsPublic, IsPublished, [Language], [Status], SeriesId, SeriesIndex, CopyRights, YearPublished, DateAdded, DateUpdated)
+                            OUTPUT Inserted.Id VALUES(@Title, @Description, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, GETDATE(), GETDATE());";
                 var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
                 bookId = await connection.ExecuteScalarAsync<int>(command);
 
-                var sqlCategory = @"Delete From BookCategory Where BookId = @BookId;
-                           Insert Into BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
+                await connection.ExecuteAsync(new CommandDefinition(
+                    "Delete From BookCategory Where BookId = @BookId",
+                    new { BookId = book.Id },
+                    cancellationToken: cancellationToken));
+
+                var sqlAuthor = @"Insert Into BookAuthor (BookId, AuthorId) Values (@BookId, @AuthorId);";
+
+                if (book.Authors != null && book.Authors.Any())
+                {
+                    var bookAuthors = book.Authors.Select(a => new { BookId = bookId, AuthorId = a.Id });
+                    var commandCategory = new CommandDefinition(sqlAuthor, bookAuthors, cancellationToken: cancellationToken);
+                    await connection.ExecuteAsync(commandCategory);
+                }
+
+                await connection.ExecuteAsync(new CommandDefinition(
+                    "Delete From BookCategory Where BookId = @BookId",
+                    new { BookId = book.Id },
+                    cancellationToken: cancellationToken));
+
+                var sqlCategory = @"Insert Into BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
 
                 if (book.Categories != null && book.Categories.Any())
                 {
@@ -53,7 +71,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"Update Book SET
                             Title = @Title, [Description] = @Description,
-                            AuthorId = @AuthorId, IsPublic = @IsPublic, IsPublished = @IsPublished,
+                            IsPublic = @IsPublic, IsPublished = @IsPublished,
                             [Language] = @Language, [Status] = @Status, SeriesId = @SeriesId,
                             SeriesIndex = @SeriesIndex, CopyRights = @CopyRights,
                             YearPublished = @YearPublished, DateUpdated = GETDATE()
@@ -61,16 +79,29 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
 
+                await connection.ExecuteAsync(new CommandDefinition(
+                                    "Delete From BookAuthor Where BookId = @BookId",
+                                    new { BookId = book.Id },
+                                    cancellationToken: cancellationToken));
 
-                var sqlCategoryDelete = @"Delete From BookCategory Where BookId = @BookId;";
+                var sqlAuthor = @"Insert Into BookAuthor (BookId, AuthorId) Values (@BookId, @AuthorId);";
 
-                var commandCategoryDelete = new CommandDefinition(sqlCategoryDelete, new { BookId = book.Id }, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(commandCategoryDelete);
+                if (book.Authors != null && book.Authors.Any())
+                {
+                    var bookAuthors = book.Authors.Select(a => new { BookId = book.Id, AuthorId = a.Id });
+                    var commandCategory = new CommandDefinition(sqlAuthor, bookAuthors, cancellationToken: cancellationToken);
+                    await connection.ExecuteAsync(commandCategory);
+                }
+
+                await connection.ExecuteAsync(new CommandDefinition(
+                    "Delete From BookCategory Where BookId = @BookId",
+                    new { BookId = book.Id },
+                    cancellationToken: cancellationToken));
+
+                var sqlCategory = @"Insert Into BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
 
                 if (book.Categories != null && book.Categories.Any())
                 {
-                    var sqlCategory = @"Insert Into BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
-
                     var bookCategories = book.Categories.Select(c => new { BookId = book.Id, CategoryId = c.Id });
                     var commandCategory = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
                     await connection.ExecuteAsync(commandCategory);
@@ -114,14 +145,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     RecentFilter = filter.Read,
                     StatusFilter = filter.Status
                 };
-                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName,
+                var sql = @"Select b.*, s.Name As SeriesName,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                             (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
-                            c.*
+                            a.*, c.*
                             From Book b
-                            Inner Join Author a On b.AuthorId = a.Id
                             Left Outer Join Series s On b.SeriesId = s.id
                             Left Outer Join FavoriteBooks f On b.Id = f.BookId
+                            Left Outer Join BookAuthor ba ON b.Id = ba.BookId
+                            Left Outer Join Author a On ba.AuthorId = a.Id
                             Left Outer Join BookCategory bc ON b.Id = bc.BookId
                             Left Outer Join Category c ON bc.CategoryId = c.Id
                             Left Outer Join FavoriteBooks fb On fb.BookId = b.Id
@@ -129,7 +161,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Where b.LibraryId = @LibraryId
                             AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
                             AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
-                            AND (a.Id = @AuthorFilter OR @AuthorFilter IS NULL)
+                            AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                             AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
@@ -139,10 +171,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
 
-                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
+                await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(command, (b, a, c) =>
                 {
                     if (!books.TryGetValue(b.Id, out BookModel book))
                         books.Add(b.Id, book = b);
+
+                    if (!book.Authors.Any(x => x.Id == a.Id))
+                    {
+                        book.Authors.Add(a);
+                    }
 
                     if (c != null)
                     {
@@ -154,7 +191,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var sqlCount = @"Select Distinct Count(b.Id)
                             From Book b
-                            Inner Join Author a On b.AuthorId = a.Id
+                            Left Outer Join BookAuthor ba ON b.Id = ba.BookId
+                            Left Outer Join Author a On ba.AuthorId = a.Id
                             Left Outer Join Series s On b.SeriesId = s.id
                             Left Outer Join FavoriteBooks f On b.Id = f.BookId
                             Left Outer Join BookCategory bc ON b.Id = bc.BookId
@@ -164,7 +202,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Where b.LibraryId = @LibraryId
                             AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
                             AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
-                            AND (a.Id = @AuthorFilter OR @AuthorFilter IS NULL)
+                            AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                             AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
@@ -216,12 +254,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     FavoriteFilter = filter.Favorite,
                     StatusFilter = filter.Status
                 };
-                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName,
+                var sql = @"Select b.*, s.Name As SeriesName,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                             (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
-                            c.*
+                            a.*, c.*
                             From Book b
-                            Inner Join Author a On b.AuthorId = a.Id
+                            Left Outer Join BookAuthor ba ON b.Id = ba.BookId
+                            Left Outer Join Author a On ba.AuthorId = a.Id
                             Left Outer Join Series s On b.SeriesId = s.id
                             Left Outer Join FavoriteBooks f On b.Id = f.BookId
                             Left Outer Join BookCategory bc ON b.Id = bc.BookId
@@ -229,7 +268,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Left Outer Join FavoriteBooks fb On fb.BookId = b.Id
                             Where b.LibraryId = @LibraryId And b.Title Like @Query AND (@AccountId Is not Null OR b.IsPublic = 1)
                             AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
-                            AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
+                            AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                             AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter Is Null)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null) " +
@@ -239,10 +278,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
 
-                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
+                await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(command, (b, a, c) =>
                 {
                     if (!books.TryGetValue(b.Id, out BookModel book))
                         books.Add(b.Id, book = b);
+
+                    if (!book.Authors.Any(x => x.Id == a.Id))
+                    {
+                        book.Authors.Add(a);
+                    }
 
                     if (c != null)
                     {
@@ -254,7 +298,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var sqlCount = @"SELECT COUNT(*)
                                 From Book b
-                                Inner Join Author a On b.AuthorId = a.Id
+                                Left Outer Join BookAuthor ba ON b.Id = ba.BookId
+                                Left Outer Join Author a On ba.AuthorId = a.Id
                                 Left Outer Join Series s On b.SeriesId = s.id
                                 Left Outer Join FavoriteBooks f On b.Id = f.BookId
                                 Left Outer Join BookCategory bc ON b.Id = bc.BookId
@@ -262,7 +307,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                 Left Outer Join FavoriteBooks fb On fb.BookId = b.Id
                                 Where b.LibraryId = @LibraryId And b.Title Like @Query AND(@AccountId Is not Null OR b.IsPublic = 1)
                                 AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
-                                AND (a.Id = @AuthorFilter OR @AuthorFilter Is Null)
+                                AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                                 AND (s.Id = @SeriesFilter OR @SeriesFilter Is Null)
                                 AND (f.AccountId = @AccountId OR @FavoriteFilter Is Null)
                                 AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS Null) ";
@@ -284,9 +329,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var books = new Dictionary<int, BookModel>();
 
-                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName, c.*
+                var sql = @"Select b.*, s.Name As SeriesName, a.*, c.*
                             From Book b
-                            Inner Join Author a On b.AuthorId = a.Id
+                            Left Outer Join BookAuthor ba ON b.Id = ba.BookId
+                            Left Outer Join Author a On ba.AuthorId = a.Id
                             Inner Join Series s On b.SeriesId = s.id
                             Left Outer Join FavoriteBooks f On b.Id = f.BookId AND (f.AccountId = @AccountId OR @AccountId Is Null)
                             Left Outer Join BookCategory bc ON b.Id = bc.BookId
@@ -299,10 +345,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                                     new { LibraryId = libraryId, PageSize = pageSize, PageNumber = pageNumber, AccountId = AccountId },
                                                     cancellationToken: cancellationToken);
 
-                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(command, (b, c) =>
+                await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(command, (b, a, c) =>
                 {
                     if (!books.TryGetValue(b.Id, out BookModel book))
                         books.Add(b.Id, book = b);
+
+                    if (!book.Authors.Any(x => x.Id == a.Id))
+                    {
+                        book.Authors.Add(a);
+                    }
 
                     if (c != null)
                         book.Categories.Add(c);
@@ -328,23 +379,29 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 BookModel book = null;
-                var sql = @"Select b.*, a.Name As AuthorName, s.Name As SeriesName,
+                var sql = @"Select b.*, s.Name As SeriesName,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                             (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
-                            c.*
+                            a.*, c.*
                             from Book b
-                            Inner Join Author a On b.AuthorId = a.Id
+                            Left Outer Join BookAuthor ba ON b.Id = ba.BookId
+                            Left Outer Join Author a On ba.AuthorId = a.Id
                             Left Outer Join Series s On b.SeriesId = s.id
                             Left Outer Join FavoriteBooks f On b.Id = f.BookId AND (f.AccountId = @AccountId OR @AccountId Is Null)
                             Left Outer Join BookCategory bc ON b.Id = bc.BookId
                             Left Outer Join Category c ON bc.CategoryId = c.Id
                             Left Outer Join FavoriteBooks fb On fb.BookId = b.Id
                             Where b.LibraryId = @LibraryId AND b.Id = @Id";
-                await connection.QueryAsync<BookModel, CategoryModel, BookModel>(sql, (b, c) =>
+                await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(sql, (b, a, c) =>
                 {
                     if (book == null)
                     {
                         book = b;
+                    }
+
+                    if (!book.Authors.Any(x => x.Id == a.Id))
+                    {
+                        book.Authors.Add(a);
                     }
 
                     if (c != null)

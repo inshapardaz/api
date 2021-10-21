@@ -111,6 +111,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
+        public BooksDataBuilder WithAuthors(IEnumerable<AuthorDto> authors)
+        {
+            _authors = authors.ToList();
+            return this;
+        }
+
         public BooksDataBuilder WithAuthors(int numberOfAuthors)
         {
             _numberOfAuthors = numberOfAuthors;
@@ -220,7 +226,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         {
             var fixture = new Fixture();
 
-            if (Author == null)
+            if (Author == null && !_authors.Any())
             {
                 _authors = _authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : numberOfBooks).ToList();
             }
@@ -300,7 +306,17 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
                 _connection.AddBook(book);
 
-                _connection.AddBookAuthor(book.Id, Author != null ? Author.Id : RandomData.PickRandom(_authors).Id);
+                if (Author != null)
+                {
+                    _connection.AddBookAuthor(book.Id, Author.Id);
+                }
+                else
+                {
+                    foreach (var author in _authors)
+                    {
+                        _connection.AddBookAuthor(book.Id, author.Id);
+                    }
+                }
 
                 if (categories != null && categories.Any())
                     _connection.AddBookToCategories(book.Id, categories);

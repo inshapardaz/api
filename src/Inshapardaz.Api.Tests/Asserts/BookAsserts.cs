@@ -341,6 +341,20 @@ namespace Inshapardaz.Api.Tests.Asserts
                 return this;
             }
 
+            var catergories = db.GetCategoriesByBook(expected.Id);
+            _book.Categories.Should().HaveSameCount(catergories);
+            foreach (var catergory in catergories)
+            {
+                var actual = _book.Categories.SingleOrDefault(a => a.Id == catergory.Id);
+                actual.Name.Should().Be(catergory.Name);
+
+                actual.Link("self")
+                      .ShouldBeGet()
+                      .EndingWith($"libraries/{_libraryId}/categories/{catergory.Id}");
+
+                return this;
+            }
+
             return this;
         }
 

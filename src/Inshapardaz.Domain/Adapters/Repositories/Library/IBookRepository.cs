@@ -16,8 +16,6 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, int? accountId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
 
-        Task<Page<BookModel>> GetLatestBooks(int libraryId, int pageNumber, int pageSize, int? accountId, CancellationToken cancellationToken);
-
         Task<Page<BookModel>> SearchBooks(int libraryId, string searchText, int pageNumber, int pageSize, int? accountId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
 
         Task<BookModel> GetBookById(int libraryId, int bookId, int? accountId, CancellationToken cancellationToken);

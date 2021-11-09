@@ -19,9 +19,9 @@ namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
         }
 
         [Test]
-        public void ShouldReturnUnauthorised()
+        public void ShouldReturnOk()
         {
-            _response.ShouldBeUnauthorized();
+            _response.ShouldBeOk();
         }
     }
 }

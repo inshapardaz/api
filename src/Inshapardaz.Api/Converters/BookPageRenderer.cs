@@ -129,6 +129,28 @@ namespace Inshapardaz.Api.Converters
                 links.Add(RenderImageLink(source.ImageId.Value));
             }
 
+            if (source.PreviousPage != null)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.GetPageByIndex),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Previous,
+                    Parameters = new { libraryId = libraryId, bookId = source.PreviousPage.BookId, sequenceNumber = source.PreviousPage.SequenceNumber }
+                }));
+            }
+
+            if (source.NextPage != null)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.GetPageByIndex),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Next,
+                    Parameters = new { libraryId = libraryId, bookId = source.NextPage.BookId, sequenceNumber = source.NextPage.SequenceNumber }
+                }));
+            }
+
             if (_userHelper.IsWriter(libraryId) || _userHelper.IsLibraryAdmin(libraryId) || _userHelper.IsAdmin)
             {
                 links.Add(_linkRenderer.Render(new Link

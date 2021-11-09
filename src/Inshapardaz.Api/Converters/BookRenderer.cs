@@ -243,6 +243,14 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.AddPages,
                     Parameters = new { libraryId = libraryId, bookId = source.Id }
                 }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.UploadPages),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.MultiCreate,
+                    Parameters = new { libraryId = libraryId, bookId = source.Id }
+                }));
             }
 
             if (_userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))

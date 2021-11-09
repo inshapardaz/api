@@ -78,9 +78,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Select a.* from AccountLibrary as al
-                            INNER JOIN Accounts as a on a.Id = al.AccountId
-                            WHERE al.LibraryId = @LibraryId AND a.Role IN (0, 1, 2)";
+                var sql = @"Select a.* from Accounts as a
+                            INNER JOIN AccountLibrary as al on a.Id = al.AccountId
+                            WHERE al.LibraryId = @LibraryId AND al.Role IN (0, 1, 2)";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId }, cancellationToken: cancellationToken);
 
                 return await connection.QueryAsync<AccountModel>(command);
@@ -91,9 +91,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Select a.* from AccountLibrary as lu
-                            INNER JOIN Accounts as a on a.Id = lu.AccountId
-                            WHERE lu.LibraryId = @LibraryId AND a.Role IN (0, 1, 2) AND a.Name LIKE @Query";
+                var sql = @"Select a.* from Accounts as a
+                            INNER JOIN AccountLibrary as al on a.Id = al.AccountId
+                            WHERE al.LibraryId = @LibraryId AND al.Role IN (0, 1, 2) AND a.Name LIKE @Query";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Query = query }, cancellationToken: cancellationToken);
 
                 return await connection.QueryAsync<AccountModel>(command);

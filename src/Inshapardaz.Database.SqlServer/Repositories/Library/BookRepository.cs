@@ -145,7 +145,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     RecentFilter = filter.Read,
                     StatusFilter = filter.Status
                 };
-                var sql = @"Select b.Id, b.Title, b.seriesIndex, b.DateAdded
+                var sql = @"Select b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
                             From Book b
                             LEFT JOIN Series s On b.SeriesId = s.id
                             LEFT JOIN FavoriteBooks f On b.Id = f.BookId
@@ -163,7 +163,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
-                            GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded " +
+                            GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead " +
                             $" ORDER BY {sortByQuery} {sortDirection} " +
                             @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";

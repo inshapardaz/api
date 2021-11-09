@@ -15,5 +15,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int? ChapterId { get; set; }
 
         public string ChapterTitle { get; set; }
+        public BookPageModel PreviousPage { get; internal set; }
+        public BookPageModel NextPage { get; internal set; }
     }
 }

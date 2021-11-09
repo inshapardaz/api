@@ -30,7 +30,14 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<BookPageModel> ExecuteAsync(GetBookPageByNumberQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
+            var page = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
+            var previousPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber - 1, cancellationToken);
+            var nextPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber + 1, cancellationToken);
+
+            page.PreviousPage = previousPage;
+            page.NextPage = nextPage;
+
+            return page;
         }
     }
 }

@@ -30,6 +30,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 authorId = await connection.ExecuteScalarAsync<int>(command);
             }
 
+            await ReorderPages(libraryId, bookId, cancellationToken);
             return await GetPageBySequenceNumber(libraryId, bookId, sequenceNumber, cancellationToken);
         }
 
@@ -61,6 +62,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.SequenceNumber = @SequenceNumber";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, SequenceNumber = sequenceNumber }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
+                await ReorderPages(libraryId, bookId, cancellationToken);
             }
         }
 
@@ -86,6 +88,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
 
+                await ReorderPages(libraryId, bookId, cancellationToken);
                 return await GetPageBySequenceNumber(libraryId, bookId, sequenceNumber, cancellationToken);
             }
         }
@@ -250,6 +253,30 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterId }, cancellationToken: cancellationToken);
 
                 return await connection.QueryAsync<BookPageModel>(command);
+            }
+        }
+
+        public async Task ReorderPages(int libraryId, int bookId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT p.Id, row_number() OVER (ORDER BY p.SequenceNumber) as 'SequenceNumber'
+                            From BookPage p
+                            Inner Join Book b On b.Id = p.BookId
+                            Where p.BookId = @BookId And b.LibraryId = @LibraryId
+                            Order By p.SequenceNumber";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    BookId = bookId
+                }, cancellationToken: cancellationToken);
+                var newOrder = await connection.QueryAsync(command);
+
+                var sql2 = @"UPDATE BookPage
+                            SET SequenceNumber = @SequenceNumber
+                            Where Id = @Id";
+                var command2 = new CommandDefinition(sql2, newOrder, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command2);
             }
         }
     }

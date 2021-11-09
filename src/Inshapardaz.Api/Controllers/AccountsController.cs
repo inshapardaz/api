@@ -53,7 +53,6 @@ namespace Inshapardaz.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("refresh-token")]
-        [Authorize]
         //TODO : Can be POST /token
         public async Task<ActionResult<AuthenticateResponse>> RefreshToken([FromBody] RefreshTokenRequest model, CancellationToken cancellationToken)
         {
@@ -69,7 +68,6 @@ namespace Inshapardaz.Api.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("revoke-token")]
-        [Authorize]
         //TODO : Can be DELETE /token
         public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model, CancellationToken cancellationToken)
         {

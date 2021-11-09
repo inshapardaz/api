@@ -28,7 +28,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 id = await connection.ExecuteScalarAsync<int>(command);
             }
 
-            return await GetChapterById(libraryId, bookId, chapter.ChapterNumber, cancellationToken);
+            var retVal = await GetChapterById(libraryId, bookId, chapter.ChapterNumber, cancellationToken);
+            await ReorderChapters(libraryId, bookId, cancellationToken);
+            return retVal;
         }
 
         public async Task UpdateChapter(int libraryId, int bookId, int oldChapterNumber, ChapterModel chapter, CancellationToken cancellationToken)
@@ -52,6 +54,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var command = new CommandDefinition(sql, args, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
+
+            await ReorderChapters(libraryId, bookId, cancellationToken);
         }
 
         public async Task DeleteChapter(int libraryId, int bookId, int chapterNumber, CancellationToken cancellationToken)
@@ -69,6 +73,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
+
+            await ReorderChapters(libraryId, bookId, cancellationToken);
         }
 
         public async Task<IEnumerable<ChapterModel>> GetChaptersByBook(int libraryId, int bookId, CancellationToken cancellationToken)
@@ -210,6 +216,30 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     Language = language
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task ReorderChapters(int libraryId, int bookId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT c.Id, row_number() OVER (ORDER BY c.ChapterNumber) as 'ChapterNumber'
+                            From Chapter c
+                            Inner Join Book b On b.Id = c.BookId
+                            Where c.BookId = @BookId And b.LibraryId = @LibraryId
+                            Order By c.ChapterNumber";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    BookId = bookId
+                }, cancellationToken: cancellationToken);
+                var newOrder = await connection.QueryAsync(command);
+
+                var sql2 = @"UPDATE Chapter
+                            SET ChapterNumber = @ChapterNumber
+                            Where Id = @Id";
+                var command2 = new CommandDefinition(sql2, newOrder, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command2);
             }
         }
     }

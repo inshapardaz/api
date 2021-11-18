@@ -88,7 +88,6 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
 
-                await ReorderPages(libraryId, bookId, cancellationToken);
                 return await GetPageBySequenceNumber(libraryId, bookId, sequenceNumber, cancellationToken);
             }
         }

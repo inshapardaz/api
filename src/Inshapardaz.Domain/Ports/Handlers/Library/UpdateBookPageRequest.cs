@@ -66,6 +66,12 @@ namespace Inshapardaz.Domain.Models.Library
                 command.Result.BookPage = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, existingBookPage.ImageId ?? 0, command.BookPage.Status, command.BookPage.ChapterId, command.BookPage.AccountId, cancellationToken);
             }
 
+            var previousPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookPage.BookId, command.SequenceNumber - 1, cancellationToken);
+            var nextPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookPage.BookId, command.SequenceNumber + 1, cancellationToken);
+
+            command.Result.BookPage.PreviousPage = previousPage;
+            command.Result.BookPage.NextPage = nextPage;
+
             return await base.HandleAsync(command, cancellationToken);
         }
     }

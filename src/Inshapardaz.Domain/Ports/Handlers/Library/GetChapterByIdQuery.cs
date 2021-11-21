@@ -31,7 +31,11 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<ChapterModel> ExecuteAsync(GetChapterByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
+            var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
+
+            chapter.PreviousChapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber - 1, cancellationToken);
+            chapter.NextChapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber + 1, cancellationToken);
+            return chapter;
         }
     }
 }

@@ -78,6 +78,28 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
+            if (source.PreviousChapter != null)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ChapterController.GetChapterById),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Previous,
+                    Parameters = new { libraryId = libraryId, bookId = source.PreviousChapter.BookId, chapterNumber = source.PreviousChapter.ChapterNumber }
+                }));
+            }
+
+            if (source.NextChapter != null)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ChapterController.GetChapterById),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Next,
+                    Parameters = new { libraryId = libraryId, bookId = source.NextChapter.BookId, chapterNumber = source.NextChapter.ChapterNumber }
+                }));
+            }
+
             if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
             {
                 links.Add(_linkRenderer.Render(new Link

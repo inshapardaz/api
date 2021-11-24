@@ -8,10 +8,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Book.GetLatestBooks
+namespace Inshapardaz.Api.Tests.Library.Book.GetBooksSortedByDateAdded
 {
     [TestFixture]
-    public class WhenGettingLatestBooksWithMultipleAuthorsAndCategories
+    public class WhenGettingGetSortedByDateAddedWithMultipleAuthorsAndCategories
         : TestBase
     {
         private HttpResponseMessage _response;
@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetLatestBooks
         private IEnumerable<CategoryDto> _categories;
         private IEnumerable<AuthorDto> _authors;
 
-        public WhenGettingLatestBooksWithMultipleAuthorsAndCategories()
+        public WhenGettingGetSortedByDateAddedWithMultipleAuthorsAndCategories()
             : base(Role.Reader)
         {
         }

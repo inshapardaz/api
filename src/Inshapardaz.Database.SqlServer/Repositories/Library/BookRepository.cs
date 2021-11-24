@@ -192,7 +192,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             GROUP BY b.Id) AS bkcnt";
                 var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
-                var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id), cancellationToken);
+                var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
 
                 return new Page<BookModel>
                 {
@@ -276,7 +276,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
-                var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id), cancellationToken);
+                var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
 
                 return new Page<BookModel>
                 {
@@ -502,7 +502,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        private async Task<IEnumerable<BookModel>> GetBooks(IDbConnection connection, int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken)
+        private async Task<IEnumerable<BookModel>> GetBooks(IDbConnection connection, int libraryId, List<int> bookIds, CancellationToken cancellationToken)
         {
             var books = new Dictionary<int, BookModel>();
             var sql3 = @"Select b.*, s.Name As SeriesName,
@@ -540,7 +540,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 return book;
             });
 
-            return books.Values;
+            return books.Values.OrderBy(b => bookIds.IndexOf(b.Id)).ToList();
         }
 
         private static string GetSortByQuery(BookSortByType sortBy)

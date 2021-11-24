@@ -46,7 +46,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePage
         [Test]
         public void ShouldDeletePage()
         {
-            BookPageAssert.ShouldHaveNoBookPage(_bookId, _page.SequenceNumber, _page.ImageId, DatabaseConnection, FileStore);
+            BookPageAssert.ShouldHaveNoBookPage(_bookId, _page.Id, _page.ImageId, DatabaseConnection, FileStore);
         }
     }
 }

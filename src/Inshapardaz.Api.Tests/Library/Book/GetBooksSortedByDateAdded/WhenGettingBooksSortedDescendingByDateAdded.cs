@@ -8,17 +8,17 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Book.GetLatestBooks
+namespace Inshapardaz.Api.Tests.Library.Book.GetBooksSortedByDateAdded
 {
     [TestFixture]
-    public class WhenGettingLatestBooks
+    public class WhenGettingBooksSortedDescendingByDateAdded
         : TestBase
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
         private IEnumerable<BookDto> _books;
 
-        public WhenGettingLatestBooks()
+        public WhenGettingBooksSortedDescendingByDateAdded()
             : base(Role.Reader)
         {
         }
@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetLatestBooks
         {
             _books = BookBuilder.WithLibrary(LibraryId).IsPublic().Build(12);
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&sortby=DateCreated&sort=Ascending");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&sortby=DateCreated&sort=Descending");
             _assert = new PagingAssert<BookView>(_response);
         }
 
@@ -48,14 +48,16 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetLatestBooks
         public void ShouldHaveSelfLink()
         {
             _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books",
-                new KeyValuePair<string, string>("sortby", "DateCreated"));
+                new KeyValuePair<string, string>("sortby", "DateCreated"),
+                new KeyValuePair<string, string>("sort", "Descending"));
         }
 
         [Test]
         public void ShouldNotHaveNextLink()
         {
             _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, 10,
-                new KeyValuePair<string, string>("sortby", "DateCreated"));
+                new KeyValuePair<string, string>("sortby", "DateCreated"),
+                new KeyValuePair<string, string>("sort", "Descending"));
         }
 
         [Test]
@@ -82,11 +84,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetLatestBooks
         [Test]
         public void ShouldReturnExpectedBooks()
         {
-            var expectedItems = _books.OrderBy(a => a.DateAdded).Take(10);
-            foreach (var item in expectedItems)
+            var expectedItems = _books.OrderByDescending(a => a.DateAdded).Take(10).ToArray();
+
+            for (int i = 0; i < _assert.Data.Count(); i++)
             {
-                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item, DatabaseConnection, LibraryId)
+                var actual = _assert.Data.ElementAt(i);
+                var expected = expectedItems[i];
+                actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
                             .InLibrary(LibraryId)
                             .ShouldHaveCorrectLinks()
                             .ShouldNotHaveEditLinks()

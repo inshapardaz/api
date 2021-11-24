@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Controllers
             [FromQuery] bool? read = null,
             [FromQuery] BookStatuses status = BookStatuses.Published,
             [FromQuery] BookSortByType sortBy = BookSortByType.Title,
-            [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
+            [FromQuery] SortDirection sort = SortDirection.Ascending,
             CancellationToken token = default(CancellationToken))
         {
             var filter = new BookFilter
@@ -66,7 +66,7 @@ namespace Inshapardaz.Api.Controllers
                 Query = query,
                 Filter = filter,
                 SortBy = sortBy,
-                SortDirection = sortDirection
+                SortDirection = sort
             };
 
             var books = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
@@ -80,7 +80,7 @@ namespace Inshapardaz.Api.Controllers
                     PageSize = pageSize,
                     Query = query,
                     SortBy = sortBy,
-                    SortDirection = sortDirection
+                    SortDirection = sort
                 },
                 Filters = filter,
             };

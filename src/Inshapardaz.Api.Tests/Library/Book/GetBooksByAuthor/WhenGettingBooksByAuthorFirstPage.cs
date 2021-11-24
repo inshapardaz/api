@@ -83,11 +83,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
         [Test]
         public void ShouldReturnExpectedBooks()
         {
-            var expectedItems = _authorBooks.OrderBy(a => a.Title).Take(7);
-            foreach (var item in expectedItems)
+            var expectedItems = _authorBooks.OrderBy(a => a.Title).Take(7).ToArray();
+            for (int i = 0; i < _assert.Data.Count(); i++)
             {
-                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item, DatabaseConnection, LibraryId)
+                var actual = _assert.Data.ElementAt(i);
+                var expected = expectedItems[i];
+                actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
                             .InLibrary(LibraryId)
                             .ShouldHaveCorrectLinks()
                             .ShouldNotHaveEditLinks()

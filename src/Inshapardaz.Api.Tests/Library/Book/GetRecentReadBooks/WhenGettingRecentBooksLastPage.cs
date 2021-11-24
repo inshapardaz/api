@@ -79,11 +79,11 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         [Test]
         public void ShouldReturnExpectedBooks()
         {
-            var expectedItems = BookBuilder.RecentReads.OrderBy(a => a.DateRead).Skip(2 * 10).Take(10);
-            foreach (var item in expectedItems)
+            var expectedItems = BookBuilder.RecentReads.OrderBy(a => a.DateRead).Skip(2 * 10).Take(10).ToArray();
+            for (int i = 0; i < _assert.Data.Count(); i++)
             {
-                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.BookId);
-                var expected = _books.SingleOrDefault(b => b.Id == item.BookId);
+                var actual = _assert.Data.ElementAt(i);
+                var expected = _books.SingleOrDefault(b => b.Id == expectedItems[i].BookId);
                 actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
                             .InLibrary(LibraryId)
                             .ShouldHaveCorrectLinks()

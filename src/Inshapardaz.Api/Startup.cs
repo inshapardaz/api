@@ -20,6 +20,8 @@ using Inshapardaz.Adapter.Ocr.Google;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authorization;
 using static Inshapardaz.Api.Helpers.AuthorizeAttribute;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace Inshapardaz.Api
 {
@@ -48,7 +50,11 @@ namespace Inshapardaz.Api
                            .AllowAnyMethod();
                 });
             });
-            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
+            services.AddControllers().AddJsonOptions(j =>
+            {
+                j.JsonSerializerOptions.IgnoreNullValues = true;
+                j.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, false));
+            });
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSwaggerGen();
 

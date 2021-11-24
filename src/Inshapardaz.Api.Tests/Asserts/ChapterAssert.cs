@@ -48,11 +48,10 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal ChapterAssert ShouldHaveSavedChapter(IDbConnection dbConnection)
         {
-            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.ChapterNumber);
+            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.Should().NotBeNull();
             _chapter.Title.Should().Be(dbChapter.Title);
             _chapter.BookId.Should().Be(dbChapter.BookId);
-            _chapter.ChapterNumber.Should().Be(dbChapter.ChapterNumber);
             return this;
         }
 
@@ -197,6 +196,34 @@ namespace Inshapardaz.Api.Tests.Asserts
         internal ChapterAssert ShouldNotHaveContentsLink()
         {
             _chapter.Link("content").Should().BeNull();
+            return this;
+        }
+
+        internal ChapterAssert ShouldHaveNotNextLink()
+        {
+            _chapter.Link("next").Should().BeNull();
+            return this;
+        }
+
+        internal ChapterAssert ShouldHaveNextLink(int chapterNumber)
+        {
+            _chapter.Link("next")
+                    .ShouldBeGet()
+                    .EndingWith($"/chapters/{chapterNumber}");
+            return this;
+        }
+
+        internal ChapterAssert ShouldHaveNotPreviousLink()
+        {
+            _chapter.Link("previous").Should().BeNull();
+            return this;
+        }
+
+        internal ChapterAssert ShouldHavePreviousLink(int chapterNumber)
+        {
+            _chapter.Link("previous")
+                    .ShouldBeGet()
+                    .EndingWith($"/chapters/{chapterNumber}");
             return this;
         }
 

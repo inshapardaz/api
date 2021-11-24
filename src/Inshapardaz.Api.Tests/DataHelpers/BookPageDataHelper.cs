@@ -40,5 +40,15 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
             return connection.QuerySingleOrDefault<BookPageDto>(command);
         }
+
+        public static BookPageDto GetBookPageById(this IDbConnection connection, int bookId, long pageId)
+        {
+            var sql = @"SELECT *
+                        FROM BookPage
+                        Where BookId = @BookId AND Id = @Id";
+            var command = new CommandDefinition(sql, new { BookId = bookId, id = pageId });
+
+            return connection.QuerySingleOrDefault<BookPageDto>(command);
+        }
     }
 }

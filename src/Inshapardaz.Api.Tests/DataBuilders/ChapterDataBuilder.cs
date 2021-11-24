@@ -77,6 +77,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             {
                 var chapter = fixture.Build<ChapterDto>()
                                      .With(c => c.BookId, book.Id)
+                                     .With(c => c.ChapterNumber, i + 1)
                                      .Create();
 
                 _connection.AddChapter(chapter);

@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -8,19 +8,17 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
+namespace Inshapardaz.Api.Tests.Library.Book.GetBooksSortedByDateAdded
 {
     [TestFixture]
-    public class WhenGettingBooksByCategoryLastPage
+    public class WhenGettingBooksSortedAscendingByDateAdded
         : TestBase
-
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
-        private CategoryDto _category;
-        private IEnumerable<BookDto> _categoryBooks;
+        private IEnumerable<BookDto> _books;
 
-        public WhenGettingBooksByCategoryLastPage()
+        public WhenGettingBooksSortedAscendingByDateAdded()
             : base(Role.Reader)
         {
         }
@@ -28,12 +26,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _category = CategoryBuilder.WithLibrary(LibraryId).Build();
-            _categoryBooks = BookBuilder.WithLibrary(LibraryId).WithCategory(_category).IsPublic().Build(25);
-            CategoryBuilder.WithLibrary(LibraryId).WithBooks(3).Build();
+            _books = BookBuilder.WithLibrary(LibraryId).IsPublic().Build(12);
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=3&pageSize=10&categoryid={_category.Id}");
-
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&sortby=DateCreated&sort=Ascending");
             _assert = new PagingAssert<BookView>(_response);
         }
 
@@ -52,8 +47,21 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books", 3, 10,
-                new KeyValuePair<string, string>("categoryid", _category.Id.ToString()));
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books",
+                new KeyValuePair<string, string>("sortby", "DateCreated"));
+        }
+
+        [Test]
+        public void ShouldNotHaveNextLink()
+        {
+            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, 10,
+                new KeyValuePair<string, string>("sortby", "DateCreated"));
+        }
+
+        [Test]
+        public void ShouldNotHavePreviousLink()
+        {
+            _assert.ShouldNotHavePreviousLink();
         }
 
         [Test]
@@ -63,31 +71,19 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
         }
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
-
-        [Test]
-        public void ShouldHavePreviousLink()
-        {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 2, 10,
-                new KeyValuePair<string, string>("categoryid", _category.Id.ToString()));
-        }
-
-        [Test]
         public void ShouldReturnCorrectPage()
         {
-            _assert.ShouldHavePage(3)
+            _assert.ShouldHavePage(1)
                    .ShouldHavePageSize(10)
-                   .ShouldHaveTotalCount(_categoryBooks.Count())
-                   .ShouldHaveItems(5);
+                   .ShouldHaveTotalCount(_books.Count())
+                   .ShouldHaveItems(10);
         }
 
         [Test]
         public void ShouldReturnExpectedBooks()
         {
-            var expectedItems = _categoryBooks.OrderBy(a => a.Title).Skip(2 * 10).Take(10).ToArray();
+            var expectedItems = _books.OrderBy(a => a.DateAdded).Take(10).ToArray();
+
             for (int i = 0; i < _assert.Data.Count(); i++)
             {
                 var actual = _assert.Data.ElementAt(i);

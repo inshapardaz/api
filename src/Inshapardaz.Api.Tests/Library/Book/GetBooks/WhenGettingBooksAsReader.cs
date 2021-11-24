@@ -67,11 +67,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
         [Test]
         public void ShouldReturnExpectedBooks()
         {
-            var expectedItems = BookBuilder.Books.OrderBy(a => a.Title).Take(10);
-            foreach (var item in expectedItems)
+            var expectedItems = BookBuilder.Books.OrderBy(a => a.Title).Take(10).ToArray();
+            for (int i = 0; i < _assert.Data.Count(); i++)
             {
-                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item, DatabaseConnection, LibraryId)
+                var actual = _assert.Data.ElementAt(i);
+                var expected = expectedItems[i];
+                actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
                             .InLibrary(LibraryId)
                             .ShouldHaveCorrectLinks()
                             .ShouldNotHaveEditLinks()
@@ -84,7 +85,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
                             .ShouldHavePublicImageLink()
                             .ShouldHaveAddFavoriteLink()
                             .ShouldHaveContents(DatabaseConnection, false);
-            }
+            };
         }
     }
 }

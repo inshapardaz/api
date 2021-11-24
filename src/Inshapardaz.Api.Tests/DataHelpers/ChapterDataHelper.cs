@@ -47,9 +47,9 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             return connection.QuerySingleOrDefault<ChapterDto>("Select * From Chapter Where Id = @Id", new { Id = id });
         }
 
-        public static ChapterDto GetChapterByBookAndChapter(this IDbConnection connection, int bookId, int chapterNumber)
+        public static ChapterDto GetChapterByBookAndChapter(this IDbConnection connection, int bookId, int chapterId)
         {
-            return connection.QuerySingleOrDefault<ChapterDto>("Select * From Chapter Where BookId = @bookId AND chapterNumber = @chapterNumber", new { bookId, chapterNumber });
+            return connection.QuerySingleOrDefault<ChapterDto>("Select * From Chapter Where BookId = @bookId AND Id = @chapterId", new { bookId, chapterId });
         }
 
         public static IEnumerable<ChapterDto> GetChaptersByBook(this IDbConnection connection, int id)

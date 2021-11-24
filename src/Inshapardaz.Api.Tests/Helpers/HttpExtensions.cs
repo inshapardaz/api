@@ -33,13 +33,13 @@ namespace Inshapardaz.Api.Tests.Helpers
 
         public static async Task<HttpResponseMessage> PostObject<T>(this HttpClient client, string url, T payload)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.Default, "application/json");
+            var content = new StringContent(Serialize(payload), Encoding.Default, "application/json");
             return await client.PostAsync(url, content);
         }
 
         public static async Task<HttpResponseMessage> PostString(this HttpClient client, string url, string payload, string language = null)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            var content = new StringContent(Serialize(payload), Encoding.UTF8, "application/json");
             if (!string.IsNullOrWhiteSpace(language))
             {
                 content.Headers.ContentLanguage.Add(language);
@@ -71,7 +71,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             using (var content = new StreamContent(stream))
             using (var formData = new MultipartFormDataContent())
             {
-                var jsonContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+                var jsonContent = new StringContent(Serialize(data), Encoding.UTF8, "application/json");
 
                 formData.Add(jsonContent, "json");
                 formData.Add(content, "image", $"{RandomData.Name}.jpg");
@@ -82,13 +82,13 @@ namespace Inshapardaz.Api.Tests.Helpers
 
         public static async Task<HttpResponseMessage> PutObject<T>(this HttpClient client, string url, T payload)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            var content = new StringContent(Serialize(payload), Encoding.UTF8, "application/json");
             return await client.PutAsync(url, content);
         }
 
         public static async Task<HttpResponseMessage> PutString(this HttpClient client, string url, string payload, string language = null, string mimetype = null)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            var content = new StringContent(Serialize(payload), Encoding.UTF8, "application/json");
             if (!string.IsNullOrWhiteSpace(language))
             {
                 content.Headers.ContentLanguage.Add(language);
@@ -154,6 +154,11 @@ namespace Inshapardaz.Api.Tests.Helpers
             }
 
             return await client.DeleteAsync(url);
+        }
+
+        private static string Serialize(object objectToSerialize)
+        {
+            return JsonConvert.SerializeObject(objectToSerialize, new Newtonsoft.Json.Converters.StringEnumConverter());
         }
     }
 }

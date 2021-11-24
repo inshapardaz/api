@@ -52,9 +52,9 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal static void ShouldHaveNoBookPage(int bookId, int pageNumber, int? imageId, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        internal static void ShouldHaveNoBookPage(int bookId, long pageId, int? imageId, IDbConnection databaseConnection, FakeFileStorage fileStore)
         {
-            var page = databaseConnection.GetBookPageByNumber(bookId, pageNumber);
+            var page = databaseConnection.GetBookPageById(bookId, pageId);
             page.Should().BeNull();
 
             if (imageId != null)
@@ -173,6 +173,34 @@ namespace Inshapardaz.Api.Tests.Asserts
         public BookPageAssert ShouldNotHaveDeleteLink()
         {
             _bookPage.DeleteLink().Should().BeNull();
+            return this;
+        }
+
+        public BookPageAssert ShouldHaveNoNextLink()
+        {
+            _bookPage.Link("next").Should().BeNull();
+            return this;
+        }
+
+        public BookPageAssert ShouldHaveNextLinkForPageNumber(int pageNumber)
+        {
+            _bookPage.Link("next")
+                .ShouldBeGet()
+                .EndingWith($"/pages/{pageNumber}");
+            return this;
+        }
+
+        public BookPageAssert ShouldHaveNoPreviousLink()
+        {
+            _bookPage.Link("previous").Should().BeNull();
+            return this;
+        }
+
+        public BookPageAssert ShouldHavePreviousLinkForPageNumber(int pageNumber)
+        {
+            _bookPage.Link("previous")
+                .ShouldBeGet()
+                .EndingWith($"/pages/{pageNumber}");
             return this;
         }
 

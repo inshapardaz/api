@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksSortedByDateAdded
         {
             _books = BookBuilder.WithLibrary(LibraryId).IsPublic().Build(12);
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&sortby=DateCreated&sort=Descending");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&sortby=DateCreated&sortDirection=Descending");
             _assert = new PagingAssert<BookView>(_response);
         }
 
@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksSortedByDateAdded
         {
             _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books",
                 new KeyValuePair<string, string>("sortby", "DateCreated"),
-                new KeyValuePair<string, string>("sort", "Descending"));
+                new KeyValuePair<string, string>("sortDirection", "Descending"));
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksSortedByDateAdded
         {
             _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 2, 10,
                 new KeyValuePair<string, string>("sortby", "DateCreated"),
-                new KeyValuePair<string, string>("sort", "Descending"));
+                new KeyValuePair<string, string>("sortDirection", "Descending"));
         }
 
         [Test]

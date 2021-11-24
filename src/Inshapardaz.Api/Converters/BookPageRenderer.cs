@@ -274,7 +274,7 @@ namespace Inshapardaz.Api.Converters
                 queryString.Add("sortby", source.RouteArguments.SortBy.ToDescription());
 
             if (source.RouteArguments.SortDirection != SortDirection.Ascending)
-                queryString.Add("sort", source.RouteArguments.SortDirection.ToDescription());
+                queryString.Add("sortDirection", source.RouteArguments.SortDirection.ToDescription());
             return queryString;
         }
     }

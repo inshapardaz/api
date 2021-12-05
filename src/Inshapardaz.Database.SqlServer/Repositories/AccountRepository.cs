@@ -111,7 +111,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"SELECT a.*, al.Role AS Role
-                            FROM Account a
+                            FROM Accounts a
                             INNER JOIN AccountLibrary AS al ON a.Id = al.AccountId
                             WHERE al.LibraryId = @LibraryId
                             AND (a.Name LIKE @Query OR a.Email LIKE @Query)
@@ -123,8 +123,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories
 
                 var series = await connection.QueryAsync<AccountModel>(command);
 
-                var sqlAuthorCount = @"SELECT a.*
-                                        FROM Account a
+                var sqlAuthorCount = @"SELECT COUNT(*)
+                                        FROM Accounts a
                                         INNER JOIN AccountLibrary AS al ON a.Id = al.AccountId
                                         WHERE al.LibraryId = @LibraryId
                                         AND (a.Name LIKE @Query OR a.Email LIKE @Query)";

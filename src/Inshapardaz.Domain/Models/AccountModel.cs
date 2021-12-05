@@ -20,5 +20,7 @@ namespace Inshapardaz.Domain.Models
         public DateTime? ResetTokenExpires { get; set; }
         public DateTime? PasswordReset { get; set; }
         public bool IsVerified => Verified != null;
+
+        public Role Role {get; set;}
     }
 }

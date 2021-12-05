@@ -43,7 +43,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 
             if (command.Role != Role.Admin && library == null)
             {
-                throw new NotFoundException();
+                throw new UnauthorizedException();
             }
 
             var account = await _accountRepository.GetAccountByEmail(command.Email, cancellationToken);
@@ -53,7 +53,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
                 if (string.IsNullOrWhiteSpace(account.InvitationCode) &&
                     accountLibraries.Any(t => t.Id == command.LibraryId))
                 {
-                    throw new ConflictException("User Already Exists in library");
+                    return await base.HandleAsync(command, cancellationToken);
                 }
                 else
                 {

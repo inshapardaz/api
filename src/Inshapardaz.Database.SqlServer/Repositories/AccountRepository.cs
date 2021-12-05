@@ -22,7 +22,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             {
                 var sql = @"SELECT *
                             FROM Account
-                            WHERE s.Name LIKE @Query OR  OR s.Email LIKE @Query
+                            WHERE Name LIKE @Query OR  Email LIKE @Query
                             ORDER BY Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -63,6 +63,72 @@ namespace Inshapardaz.Database.SqlServer.Repositories
 
                 var sqlAuthorCount = "SELECT COUNT(*) FROM Accounts";
                 var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, cancellationToken: cancellationToken));
+
+                return new Page<AccountModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
+        }
+
+        public async Task<Page<AccountModel>> GetAccountsByLibrary(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT  a.*, al.Role AS Role
+                            FROM Accounts a
+                            INNER JOIN AccountLibrary as al on a.Id = al.AccountId
+                            WHERE al.LibraryId = @LibraryId
+                            Order By a.Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<AccountModel>(command);
+
+                var sqlAuthorCount = @"SELECT COUNT(*)
+                            FROM Accounts a
+                            INNER JOIN AccountLibrary as al on a.Id = al.AccountId
+                            WHERE al.LibraryId = @LibraryId";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
+
+                return new Page<AccountModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
+        }
+
+        public async Task<Page<AccountModel>> FindAccountsByLibrary(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT a.*, al.Role AS Role
+                            FROM Account a
+                            INNER JOIN AccountLibrary AS al ON a.Id = al.AccountId
+                            WHERE al.LibraryId = @LibraryId
+                            AND (a.Name LIKE @Query OR a.Email LIKE @Query)
+                            ORDER BY a.Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Query = $"%{query}%", PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<AccountModel>(command);
+
+                var sqlAuthorCount = @"SELECT a.*
+                                        FROM Account a
+                                        INNER JOIN AccountLibrary AS al ON a.Id = al.AccountId
+                                        WHERE al.LibraryId = @LibraryId
+                                        AND (a.Name LIKE @Query OR a.Email LIKE @Query)";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, Query = $"%{query}%" }, cancellationToken: cancellationToken));
 
                 return new Page<AccountModel>
                 {
@@ -187,6 +253,20 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             {
                 var sql = @"Select * from Accounts WHERE Id = @AccountId";
                 var command = new CommandDefinition(sql, new { AccountId = accountId }, cancellationToken: cancellationToken);
+
+                return await connection.QuerySingleOrDefaultAsync<AccountModel>(command);
+            }
+        }
+
+        public async Task<AccountModel> GetLibraryAccountById(int libraryId, int accountId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Select a.*, al.Role as Role
+                            FROM Accounts a
+                            INNER JOIN AccountLibrary as al on a.Id = al.AccountId
+                            WHERE Id = @AccountId AND al.LibraryId = @LibraryId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId }, cancellationToken: cancellationToken);
 
                 return await connection.QuerySingleOrDefaultAsync<AccountModel>(command);
             }

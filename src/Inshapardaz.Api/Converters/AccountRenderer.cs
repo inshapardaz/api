@@ -13,9 +13,9 @@ namespace Inshapardaz.Api.Converters
 {
     public interface IRenderAccount
     {
-        PageView<AccountView> Render(PageRendererArgs<AccountModel> source);
+        PageView<AccountView> Render(PageRendererArgs<AccountModel> source, int? libraryId = null);
 
-        AccountView Render(AccountModel account);
+        AccountView Render(AccountModel account, int? libraryId = null);
 
         IEnumerable<AccountLookupView> RenderLookup(IEnumerable<AccountModel> writers);
 
@@ -33,11 +33,11 @@ namespace Inshapardaz.Api.Converters
             _userHelper = userHelper;
         }
 
-        public PageView<AccountView> Render(PageRendererArgs<AccountModel> source)
+        public PageView<AccountView> Render(PageRendererArgs<AccountModel> source, int? libraryId = null)
         {
             var page = new PageView<AccountView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
-                Data = source.Page.Data?.Select(x => Render(x))
+                Data = source.Page.Data?.Select(x => Render(x, libraryId))
             };
 
             var links = new List<LinkView>
@@ -55,14 +55,15 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (_userHelper.IsAdmin)
+            if (_userHelper.IsAdmin && libraryId.HasValue)
             {
-                //links.Add(_linkRenderer.Render(new Link
-                //{
-                //    ActionName = nameof(AccountsController.Create),
-                //    Method = HttpMethod.Post,
-                //    Rel = RelTypes.Create
-                //}));
+                links.Add(_linkRenderer.Render(new Link
+                {
+                   ActionName = nameof(AccountsController.InviteUser),
+                   Method = HttpMethod.Post,
+                   Rel = RelTypes.Create,
+                   Parameters = new { libraryId = libraryId.Value }
+                }));
             }
 
             if (page.CurrentPageIndex < page.PageCount)
@@ -101,7 +102,7 @@ namespace Inshapardaz.Api.Converters
             return page;
         }
 
-        public AccountView Render(AccountModel model)
+        public AccountView Render(AccountModel model, int? libraryId = null)
         {
             var view = model.Map();
 
@@ -152,19 +153,50 @@ namespace Inshapardaz.Api.Converters
 
                 view.Links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(AccountsController.Delete),
-                    Method = HttpMethod.Delete,
-                    Rel = RelTypes.Delete,
-                    Parameters = new { id = model.Id }
-                }));
-
-                view.Links.Add(_linkRenderer.Render(new Link
-                {
                     ActionName = nameof(LibraryController.AddLibraryToAccount),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.AddToLibrary,
                     Parameters = new { accountId = model.Id }
                 }));
+            }
+
+            var isLibraryAdmin = libraryId.HasValue && _userHelper.IsLibraryAdmin(libraryId.Value);
+            if (isLibraryAdmin || _userHelper.IsAdmin)
+            {
+                if (libraryId.HasValue)
+                {
+                    view.Links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(AccountsController.UpdateLibraryUser),
+                        Method = HttpMethod.Post,
+                        Rel = RelTypes.UpdateUser,
+                        Parameters = new { libraryId = libraryId, id = model.Id }
+                    }));
+                    view.Links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(LibraryController.RemoveLibraryFromAccount),
+                        Method = HttpMethod.Delete,
+                        Rel = RelTypes.Delete,
+                        Parameters = new { libraryId = libraryId,  accountId = model.Id }
+                    }));
+                }
+                else if (_userHelper.IsAdmin)
+                {
+                    view.Links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(AccountsController.Update),
+                        Method = HttpMethod.Post,
+                        Rel = RelTypes.Update,
+                        Parameters = new { id = model.Id }
+                    }));
+                    view.Links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(AccountsController.Delete),
+                        Method = HttpMethod.Delete,
+                        Rel = RelTypes.Delete,
+                        Parameters = new { id = model.Id }
+                    }));
+                }
             }
 
             return view;

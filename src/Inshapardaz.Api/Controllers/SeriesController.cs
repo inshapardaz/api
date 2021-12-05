@@ -33,8 +33,8 @@ namespace Inshapardaz.Api.Controllers
             _fileRenderer = fileRenderer;
         }
 
-        [HttpGet("libraries/{libraryId}/series", Name = nameof(SeriesController.GetSereies))]
-        public async Task<IActionResult> GetSereies(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
+        [HttpGet("libraries/{libraryId}/series", Name = nameof(SeriesController.GetSeries))]
+        public async Task<IActionResult> GetSeries(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
             var seriesQuery = new GetSeriesQuery(libraryId, pageNumber, pageSize) { Query = query };
             var series = await _queryProcessor.ExecuteAsync(seriesQuery, cancellationToken: token);

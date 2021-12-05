@@ -14,7 +14,8 @@ namespace Inshapardaz.Api.Mappings
                 IsVerified = source.IsVerified,
                 Created = source.Created,
                 IsSuperAdmin = source.IsSuperAdmin,
-                Updated = source.Updated
+                Updated = source.Updated,
+                Role = source.Role
             };
 
         public static AccountModel Map(this AccountView source)

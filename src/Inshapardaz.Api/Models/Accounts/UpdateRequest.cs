@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Models.Accounts
@@ -7,17 +8,12 @@ namespace Inshapardaz.Api.Models.Accounts
     {
         private string _password;
         private string _confirmPassword;
-        private string _role;
         private string _email;
 
         public string Name { get; set; }
 
-        [EnumDataType(typeof(Role))]
-        public string Role
-        {
-            get => _role;
-            set => _role = replaceEmptyWithNull(value);
-        }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public Role Role {get; set;}
 
         [EmailAddress]
         public string Email

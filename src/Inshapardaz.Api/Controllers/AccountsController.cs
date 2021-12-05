@@ -12,6 +12,7 @@ using Paramore.Darker;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Views.Accounts;
 using Paramore.Brighter;
+using Inshapardaz.Api.Views;
 
 namespace Inshapardaz.Api.Controllers
 {
@@ -24,16 +25,20 @@ namespace Inshapardaz.Api.Controllers
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderAccount _accountRenderer;
 
+        private readonly IUserHelper _userHelper;
+
         public AccountsController(
             IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
             IMapper mapper,
-            IRenderAccount accountRenderer)
+            IRenderAccount accountRenderer,
+            IUserHelper userHelper)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _accountRenderer = accountRenderer;
             _mapper = mapper;
+            _userHelper = userHelper;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthenticateResponse))]
@@ -53,7 +58,6 @@ namespace Inshapardaz.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("refresh-token")]
-        //TODO : Can be POST /token
         public async Task<ActionResult<AuthenticateResponse>> RefreshToken([FromBody] RefreshTokenRequest model, CancellationToken cancellationToken)
         {
             var refreshToken = model.RefreshToken ?? Request.Cookies["refreshToken"];
@@ -68,7 +72,6 @@ namespace Inshapardaz.Api.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("revoke-token")]
-        //TODO : Can be DELETE /token
         public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model, CancellationToken cancellationToken)
         {
             var token = model.Token ?? Request.Cookies["refreshToken"];
@@ -116,7 +119,7 @@ namespace Inshapardaz.Api.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [Authorize(Role.Admin, Role.LibraryAdmin)]
         [HttpPost("invite")]
-        [HttpPost("invite/library/{libraryId}")]
+        [HttpPost("invite/library/{libraryId}", Name = nameof(AccountsController.InviteUser))]
         public async Task<IActionResult> InviteUser(int libraryId, [FromBody] InviteUserRequest model, CancellationToken cancellationToken)
         {
             var command = new InviteUserCommand()
@@ -196,16 +199,33 @@ namespace Inshapardaz.Api.Controllers
         [HttpGet(Name = nameof(AccountsController.GetAll))]
         public async Task<IActionResult> GetAll(string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
-            var seriesQuery = new GetAccountsQuery(pageNumber, pageSize) { Query = query };
-            var series = await _queryProcessor.ExecuteAsync(seriesQuery, cancellationToken: token);
+            var accountsQuery = new GetAccountsQuery(pageNumber, pageSize) { Query = query };
+            var accounts = await _queryProcessor.ExecuteAsync(accountsQuery, cancellationToken: token);
 
             var args = new PageRendererArgs<AccountModel>
             {
-                Page = series,
+                Page = accounts,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
             };
 
             return new OkObjectResult(_accountRenderer.Render(args));
+        }
+
+        [Authorize(Role.Admin, Role.LibraryAdmin)]
+        [HttpGet("libraries/{libraryId}/users", Name = nameof(AccountsController.GetLibraryUsers))]
+        [Produces(typeof(PageView<AccountView>))]
+        public async Task<IActionResult> GetLibraryUsers(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var accountsQuery = new GetAccountsByLibraryQuery(libraryId, pageNumber, pageSize) { Query = query };
+            var accounts = await _queryProcessor.ExecuteAsync(accountsQuery, cancellationToken: cancellationToken);
+
+            var args = new PageRendererArgs<AccountModel>
+            {
+                Page = accounts,
+                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
+            };
+
+            return new OkObjectResult(_accountRenderer.Render(args, libraryId));
         }
 
         [Authorize(Role.Admin, Role.LibraryAdmin)]
@@ -227,24 +247,55 @@ namespace Inshapardaz.Api.Controllers
                 return Unauthorized(new { message = "Unauthorized" });
 
             var account = await _queryProcessor.ExecuteAsync(new GetAccountByIdQuery(id), cancellationToken);
-            return Ok(account);
+            return Ok(_accountRenderer.Render(account));
+        }
+
+        [Authorize]
+        [HttpGet("/libraries/{libraryId}/users/{id:int}", Name = nameof(AccountsController.GetLibraryUserById))]
+        public async Task<ActionResult<AccountView>> GetLibraryUserById(int libraryId, int id, CancellationToken cancellationToken)
+        {
+            // users can get their own account and admins can get any account
+            if (!Account.IsSuperAdmin && !_userHelper.IsLibraryAdmin(libraryId) && id != Account.Id)
+                return Unauthorized(new { message = "Unauthorized" });
+
+            var account = await _queryProcessor.ExecuteAsync(new GetAccountByIdQuery(id) { LibraryId = libraryId }, cancellationToken);
+            return Ok(_accountRenderer.Render(account, libraryId));
         }
 
         [Authorize]
         [HttpPut("{id:int}", Name = nameof(AccountsController.Update))]
-        public ActionResult<AccountView> Update(int id, UpdateRequest model)
+        public async Task<ActionResult> Update(int id, UpdateRequest model, CancellationToken cancellationToken)
         {
-            // users can update their own account and admins can update any account
-            //if (id != Account.Id && Account.Role != Role.Admin)
-            //   return Unauthorized(new { message = "Unauthorized" });
+            if (!Account.IsSuperAdmin && id != Account.Id)
+                return Unauthorized(new { message = "Unauthorized" });
 
-            // only admins can update role
-            //if (Account.Role != Role.Admin)
-            //    model.Role = null;
+            var command = new UpdateUserCommand
+            {
+                Email = model.Email,
+                LibraryId = null,
+                Name = model.Name,
+                Role = model.Role,
+            };
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok(model);
+        }
 
-            //var account = _accountService.Update(id, model);
-            //return Ok(account);
-            return NotFound();
+        [Authorize]
+        [HttpPut("/libraries/{libraryId}/users/{id:int}", Name = nameof(AccountsController.UpdateLibraryUser))]
+        public async Task<ActionResult> UpdateLibraryUser(int libraryId, int id, UpdateRequest model, CancellationToken cancellationToken)
+        {
+            if (!Account.IsSuperAdmin && !_userHelper.IsLibraryAdmin(libraryId) && id != Account.Id)
+                return Unauthorized(new { message = "Unauthorized" });
+
+            var command = new UpdateUserCommand
+            {
+                Email = model.Email,
+                LibraryId = libraryId,
+                Name = model.Name,
+                Role = model.Role,
+            };
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok(model);
         }
 
         [Authorize]

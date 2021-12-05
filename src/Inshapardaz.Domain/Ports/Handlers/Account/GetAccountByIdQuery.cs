@@ -13,6 +13,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
             Id = id;
         }
 
+        public int? LibraryId { get; set; }
         public int Id { get; private set; }
     }
 
@@ -27,6 +28,9 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 
         public override async Task<AccountModel> ExecuteAsync(GetAccountByIdQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
+            if (query.LibraryId.HasValue) {
+                return await _accountRepository.GetLibraryAccountById(query.LibraryId.Value, query.Id, cancellationToken);    
+            }
             return await _accountRepository.GetAccountById(query.Id, cancellationToken);
         }
     }

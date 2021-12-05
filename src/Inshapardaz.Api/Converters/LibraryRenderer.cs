@@ -146,7 +146,7 @@ namespace Inshapardaz.Api.Converters
                 }),
                 _linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(SeriesController.GetSereies),
+                    ActionName = nameof(SeriesController.GetSeries),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Series,
                     Parameters = new { libraryId = model.Id }
@@ -225,6 +225,22 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(CategoryController.CreateCategory),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.CreateCategory,
+                    Parameters = new { libraryId = model.Id }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(AccountsController.GetLibraryUsers),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Users,
+                    Parameters = new { libraryId = model.Id }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(AccountsController.InviteUser),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.AddUser,
                     Parameters = new { libraryId = model.Id }
                 }));
             }

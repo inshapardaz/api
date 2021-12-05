@@ -21,10 +21,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  l.*, al.Role
-                            FROM Library l
-                            LEFT OUTER JOIN AccountLibrary al ON al.LibraryId = l.Id
-                            Order By l.Name
+                var sql = @"SELECT  *
+                            FROM Library
+                            Order By Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql,
@@ -50,11 +49,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  l.*, al.Role
-                            FROM Library l
-                            LEFT OUTER JOIN AccountLibrary al ON al.LibraryId = l.Id
-                            WHERE l.Name LIKE @Query
-                            Order By l.Name
+                var sql = @"SELECT  *
+                            FROM Library
+                            WHERE Name LIKE @Query
+                            Order By Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql,
@@ -222,6 +220,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"INSERT INTO AccountLibrary VALUES (@LibraryId, @AccountId, @Role)";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, Role = role }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task UpdateLibraryUser(LibraryUserModel model, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"UPDATE AccountLibrary SET Role = @Role WHERE LibraryId = @LibraryId AND AccountId = @AccountId";
+                var command = new CommandDefinition(sql, model, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }

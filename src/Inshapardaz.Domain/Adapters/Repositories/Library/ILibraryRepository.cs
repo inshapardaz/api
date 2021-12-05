@@ -26,6 +26,8 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task AddAccountToLibrary(int libraryId, int accountId, Role role, CancellationToken cancellationToken);
 
+        Task UpdateLibraryUser(LibraryUserModel model, CancellationToken cancellationToken);
+
         Task RemoveLibraryFromAccount(int libraryId, int accountId, CancellationToken cancellationToken);
 
         Task<IEnumerable<LibraryModel>> GetLibrariesByAccountId(int accountId, CancellationToken cancellationToken = default(CancellationToken));

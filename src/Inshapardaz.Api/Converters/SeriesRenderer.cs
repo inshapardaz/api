@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Converters
             var links = new List<LinkView>
             {
                 _linkRenderer.Render(new Link {
-                    ActionName = nameof(SeriesController.GetSereies),
+                    ActionName = nameof(SeriesController.GetSeries),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
                     Parameters = new { libraryId = libraryId },
@@ -68,7 +68,7 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(SeriesController.GetSereies),
+                    ActionName = nameof(SeriesController.GetSeries),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Next,
                     Parameters = new { libraryId = libraryId },
@@ -85,7 +85,7 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(SeriesController.GetSereies),
+                    ActionName = nameof(SeriesController.GetSeries),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Previous,
                     Parameters = new { libraryId = libraryId },

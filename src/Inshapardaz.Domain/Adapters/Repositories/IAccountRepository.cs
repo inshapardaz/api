@@ -14,6 +14,11 @@ namespace Inshapardaz.Domain.Repositories
 
         Task<Page<AccountModel>> FindAccounts(string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
+        
+        Task<Page<AccountModel>> GetAccountsByLibrary(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+        Task<Page<AccountModel>> FindAccountsByLibrary(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
+
         Task<IEnumerable<AccountModel>> GetWriters(int libraryId, CancellationToken cancellationToken);
 
         Task<IEnumerable<AccountModel>> FindWriters(int libraryId, string query, CancellationToken cancellationToken);
@@ -28,6 +33,8 @@ namespace Inshapardaz.Domain.Repositories
 
         Task<AccountModel> GetAccountById(int accountId, CancellationToken cancellationToken);
 
+        Task<AccountModel> GetLibraryAccountById(int libraryId, int accountId, CancellationToken cancellationToken);
+        
         Task<RefreshTokenModel> GetRefreshToken(string token, CancellationToken cancellationToken);
 
         Task AddRefreshToken(RefreshTokenModel refreshToken, int accountId, CancellationToken cancellationToken);
@@ -39,13 +46,5 @@ namespace Inshapardaz.Domain.Repositories
         Task<AccountModel> GetAccountByResetToken(string token, CancellationToken cancellationToken);
 
         Task UpdateAccount(AccountModel account, CancellationToken cancellationToken);
-
-        //Task<Page<AccountModel>> GetAccounts(int pageNumber, int pageSize, CancellationToken cancellationToken);
-
-        //Task<Page<AccountModel>> FindAccounts(string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
-
-        //Task<IEnumerable<AccountModel>> GetWriters(int libraryId, CancellationToken cancellationToken);
-
-        //Task<IEnumerable<AccountModel>> FindWriters(int libraryId, string query, CancellationToken cancellationToken);
     }
 }

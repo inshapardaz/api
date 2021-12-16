@@ -145,7 +145,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     RecentFilter = filter.Read,
                     StatusFilter = filter.Status
                 };
-                var sql = @"Select b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
+                var sql = @"Select b.Id
                             From Book b
                             LEFT JOIN Series s On b.SeriesId = s.id
                             LEFT JOIN FavoriteBooks f On b.Id = f.BookId
@@ -163,13 +163,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
-                            GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead " +
+                            GROUP BY b.Id, b.Title" +
                             $" ORDER BY {sortByQuery} {sortDirection} " +
                             @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
 
-                var bookIds = await connection.QueryAsync(command);
+                var bookIds = await connection.QueryAsync<int>(command);
 
                 var sqlCount = @"SELECT Count(*) FROM (Select b.Id
                             From Book b
@@ -192,7 +192,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             GROUP BY b.Id) AS bkcnt";
                 var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
-                var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
+                var books = await GetBooks(connection, libraryId, bookIds, cancellationToken);
 
                 return new Page<BookModel>
                 {
@@ -225,7 +225,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     StatusFilter = filter.Status
                 };
 
-                var sql = @"Select b.Id, b.Title, b.seriesIndex, b.DateAdded
+                var sql = @"Select b.Id
                             From Book b
                             LEFT JOIN Series s On b.SeriesId = s.id
                             LEFT JOIN FavoriteBooks f On b.Id = f.BookId
@@ -244,14 +244,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
-                            GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded " +
+                            GROUP BY b.Id, b.Title " +
                             $" ORDER BY {sortByQuery} {sortDirection} " +
                             @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
 
                 var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
 
-                var bookIds = await connection.QueryAsync(command);
+                var bookIds = await connection.QueryAsync<int>(command);
 
                 var sqlCount = @"SELECT Count(*) FROM (Select b.Id
                             From Book b
@@ -276,7 +276,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
-                var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
+                var books = await GetBooks(connection, libraryId, bookIds, cancellationToken);
 
                 return new Page<BookModel>
                 {
@@ -502,8 +502,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        private async Task<IEnumerable<BookModel>> GetBooks(IDbConnection connection, int libraryId, List<int> bookIds, CancellationToken cancellationToken)
+        private async Task<IEnumerable<BookModel>> GetBooks(IDbConnection connection, int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken)
         {
+            var bookIdList = bookIds.ToList();
             var books = new Dictionary<int, BookModel>();
             var sql3 = @"Select b.*, s.Name As SeriesName,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
@@ -540,7 +541,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 return book;
             });
 
-            return books.Values.OrderBy(b => bookIds.IndexOf(b.Id)).ToList();
+            return books.Values.OrderBy(b => bookIdList.IndexOf(b.Id)).ToList();
         }
 
         private static string GetSortByQuery(BookSortByType sortBy)

@@ -9,6 +9,8 @@ using Inshapardaz.Domain.Models.Library;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -112,6 +114,21 @@ namespace Inshapardaz.Api.Controllers
             var request = new DeleteChapterRequest(libraryId, bookId, chapterNumber);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
+        }
+
+        [HttpPost("libraries/{libraryId}/books/{bookId}/chapters/sequence", Name = nameof(ChapterController.UpdateChapterSequence))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        public async Task<IActionResult> UpdateChapterSequence(int libraryId, int bookId, [FromBody] IEnumerable<ChapterView> chapters, CancellationToken token = default(CancellationToken))
+        {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
+            var request = new UpdateChapterSequenceRequest(libraryId, bookId, chapters.Select(c => c.Map()));
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return new OkObjectResult(_chapterRenderer.Render(request.Result, libraryId, bookId));
         }
 
         [HttpGet("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.GetChapterContent))]

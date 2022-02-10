@@ -58,6 +58,26 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             await ReorderChapters(libraryId, bookId, cancellationToken);
         }
 
+        public async Task UpdateChaptersSequence(int libraryId, int bookId, IEnumerable<ChapterModel> chapters, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update C Set C.ChapterNumber = @ChapterNumber
+                            From Chapter C
+                            Inner Join Book b On b.Id = C.BookId
+                            Where C.Id = @Id AND C.BookId = @BookId And b.LibraryId = @LibraryId";
+                var args = chapters.Select(c => new
+                {
+                    LibraryId = libraryId,
+                    BookId = bookId,
+                    Id = c.Id,
+                    ChapterNumber = c.ChapterNumber
+                });
+                var command = new CommandDefinition(sql, args, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
         public async Task DeleteChapter(int libraryId, int bookId, int chapterNumber, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())

@@ -47,6 +47,14 @@ namespace Inshapardaz.Api.Converters
             {
                 view.Links.Add(_linkRenderer.Render(new Link
                 {
+                    ActionName = nameof(ChapterController.UpdateChapterSequence),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.ChapterSequence,
+                    Parameters = new { libraryId = libraryId, bookId = bookId }
+                }));
+
+                view.Links.Add(_linkRenderer.Render(new Link
+                {
                     ActionName = nameof(ChapterController.CreateChapter),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.Create,

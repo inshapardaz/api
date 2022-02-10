@@ -61,7 +61,7 @@ namespace Inshapardaz.Api.Views
         public const string CreateSeries = "create-series";
         public const string CreateAuthor = "create-author";
         public const string Users = "users";
-        public const string AddUser = "add-user" ;
+        public const string AddUser = "add-user";
         public static string AssignToMe = "assign-to-me";
         public static string Assign = "assign";
         public static string Articles = "articles";
@@ -76,5 +76,6 @@ namespace Inshapardaz.Api.Views
         public static string Ocr = "ocr";
         public static string Publish = "publish";
         public static string UpdateUser = "update-user";
+        public static string ChapterSequence = "chapter-sequence";
     }
 }

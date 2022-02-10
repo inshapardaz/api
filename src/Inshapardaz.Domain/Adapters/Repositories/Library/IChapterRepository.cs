@@ -11,6 +11,8 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task UpdateChapter(int libraryId, int bookId, int oldChapterNumber, ChapterModel chapter, CancellationToken cancellationToken);
 
+        Task UpdateChaptersSequence(int libraryId, int bookId, IEnumerable<ChapterModel> chapters, CancellationToken cancellationToken);
+
         Task DeleteChapter(int libraryId, int bookId, int chapterNumber, CancellationToken cancellationToken);
 
         Task<IEnumerable<ChapterModel>> GetChaptersByBook(int libraryId, int bookId, CancellationToken cancellationToken);

@@ -43,7 +43,7 @@ artifacts:
 # Deployment
 deploy:
 - provider: WebDeploy
-  server: discovery.websitelive.net:8172/msdeploy.axd?site=api-nawishta
+  server: discovery.websitelive.net:8172/msdeploy.axd?site=nawishta.co.uk
   website: nawishta.co.uk
   username: nawishta.co.uk_dploy
   password:

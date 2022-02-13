@@ -42,12 +42,15 @@ artifacts:
 
 # Deployment
 deploy:
-- provider: WebDeploy
-  server: discovery.websitelive.net:8172/msdeploy.axd?site=nawishta.co.uk
-  website: nawishta.co.uk
-  username: nawishta.co.uk_dploy
+  provider: FTP
+  protocol: ftps
+  host: 
+    secure: 9XmPNCCxuBSknqKc483l6xU1v2sfWMJDX3T6Qv5mvpw=
+  username: 
+    secure: 6sCrY7WyIaUYehUX47hVKw==
   password:
-    secure: jU+awrC8RsQPYFEau8nNrw==
+    secure: MmMtbZh+qdJlUuKR++Y1pQ==
+  folder: /nawishta.co.uk/public_html
   artifact: APIPackage
   on:
     branch: master

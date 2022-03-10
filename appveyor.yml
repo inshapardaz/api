@@ -2,23 +2,6 @@ version: 1.0.{build}
 max_jobs: 1
 image: Visual Studio 2019
 
-environment:
-  DefaultDatabase:
-    secure: xRPJOkFVcWlOPF0wlbbRsjmPXiDSnTjd03Q4aM6bI1hjzjjUsH4wxNSJRnuH3DT9Z3x+fGXmdVdgexKx/ghFpC6znjlEgoE8gL00q86zZ+xcE3piP/6IfH8YutYJ5+OdgOS027eYbt2Ao+LmoZyjy1bGEr3af8wr1NwJrhsHshuzlNrUIpLZ4rbjuMqfiNofNLACeTJ5pif6Z00v2pSRLyEz9QnemZdtwM+zKV9IURTB9UHJFPf36DeaaVU6LCCDMMUCbgVcr1R8rxTnl2UgXZKqX7Q33/Gb2A6VEf/bm7OaqWmr/xAKRzgvInnEcftT
-  EmailFrom:
-    secure: 3FKyS0RrrvieTzdM120Mt29HUFnRBXfh7z/GaQCtrlE=
-  EmailFromName: "Nawishta"
-  SmtpHost: 
-    secure: H5AOjEOr8eaZiqYsK/4RUDiJebjsn5BPB4W5JLWdeDA=
-  SmtpPort:
-    secure: 2yZeZjV9OpoP+muF5RfW0w==
-  SmtpUser: 
-    secure: REi8f7in30iqJiCZ0sTVa76mo+RBH7JbFH/98INkbmz1XytxhVJg5ASaZVCId24E
-  SmtpPass: 
-    secure: qJv2I2x4hS7Vf4qiyW1/1gFSS0vi5xHLVv8iFodoU5PPFd3KxEF36xJK8d4t65r+
-  Secret:
-    secure: fwzDxCo5A5oNaUE8Zs5IHftRI17nskUr0G5kTMd/UYyq1cKEDT+1SeJzSH5cGNwt
-    
 skip_tags: true
 skip_branch_with_pr: true
 
@@ -42,15 +25,16 @@ artifacts:
 
 # Deployment
 deploy:
-  provider: FTP
-  protocol: ftps
-  host: 
-    secure: 9XmPNCCxuBSknqKc483l6xU1v2sfWMJDX3T6Qv5mvpw=
-  username: 
-    secure: 6sCrY7WyIaUYehUX47hVKw==
-  password:
-    secure: MmMtbZh+qdJlUuKR++Y1pQ==
-  folder: /nawishta.co.uk/public_html
-  artifact: APIPackage
-  on:
-    branch: master
+  - provider: WebDeploy
+    server: 
+      secure: u8wIDIPypO+MQ0FwToHf6wj4cw+T7GL50YSxrj8K2P84R2iet2iBTYhQBQWJlqgWmy9nvWTjew97gc8H2/rFnI8TuBBZ/h/a93HAEZlhkKo=
+    website: 
+      secure: K2wVnSHPf9n6SLDp8chOmQ==
+    username: 
+      secure: BkN+6uQ3Cmoe1g+c60WFqPB8299X25/h1YH0oNzzFoA=
+    password: 
+      secure: jU+awrC8RsQPYFEau8nNrw==
+    remove_files: true
+    artifact: APIPackage
+    on:
+      branch: master

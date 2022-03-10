@@ -2,6 +2,23 @@ version: 1.0.{build}
 max_jobs: 1
 image: Visual Studio 2019
 
+environment:
+  Secret:
+    secure: SSWnzbDCIYrn97wLK7xRKG1XLBNHTitBoYy0p0HVkaJTP6qt+fvS/aAimigwDm0I
+  EmailFrom:
+    secure: 0KUaQyV3RXkLLfkDz/R4NHqXw4LbFaKr3w+FT/oSSWc=
+  EmailFromName: "Nawishta"
+  SmtpHost: 
+    secure: WZuKDTgs3/FfxnCUbBdnvNioVUUPs0ZovWC5zscDbtw=
+  SmtpPort:
+    secure: TLW9xueDYxnKSi4/tK0d4g==
+  SmtpUser: 
+    secure: 0KUaQyV3RXkLLfkDz/R4NHqXw4LbFaKr3w+FT/oSSWc=
+  SmtpPass: 
+    secure: MtFsvJ6Qnrg61aDPXEC272K+krIXBfIpBm3smsJmGzc=
+  DefaultConnection:
+    secure: /QAHrKVU6z5bQ9+vnbYAk6uITnSYQQZP85hnKJXpXAB46mqR2xDA5o8KU7Ooz6abxLOpR3f13j04wAvKVoGwKs6ZlMIkDnDEjrc07qp3W95zV3c3YqYpo6QUctPikMlNIqqvKTWVSx+AjrFKEY1RunP4yR4vXxBv+TWt3DLpLIs=
+    
 skip_tags: true
 skip_branch_with_pr: true
 

@@ -52,6 +52,7 @@ deploy:
     password: 
       secure: jU+awrC8RsQPYFEau8nNrw==
     remove_files: true
+    app_offline: true
     artifact: APIPackage
     on:
       branch: master

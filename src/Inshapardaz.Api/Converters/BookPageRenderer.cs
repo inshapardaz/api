@@ -180,7 +180,14 @@ namespace Inshapardaz.Api.Converters
                     }));
                 }
 
-                if (source.AccountId != _userHelper.Account.Id)
+                if (
+                    ((source.Status == Domain.Models.PageStatuses.Available ||
+                        source.Status == Domain.Models.PageStatuses.Typing) && 
+                        source.WriterAccountId != _userHelper.Account.Id) || 
+                    ((source.Status == Domain.Models.PageStatuses.Typed||
+                        source.Status == Domain.Models.PageStatuses.InReview) &&
+                        source.ReviewerAccountId != _userHelper.Account.Id)
+                    )
                 {
                     links.Add(_linkRenderer.Render(new Link
                     {

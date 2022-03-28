@@ -63,7 +63,7 @@ namespace Inshapardaz.Domain.Models.Library
             }
             else
             {
-                command.Result.BookPage = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, existingBookPage.ImageId ?? 0, command.BookPage.Status, command.BookPage.ChapterId, command.BookPage.AccountId, cancellationToken);
+                command.Result.BookPage = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, existingBookPage.ImageId ?? 0, command.BookPage.Status, command.BookPage.ChapterId,  cancellationToken);
             }
 
             var previousPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookPage.BookId, command.SequenceNumber - 1, cancellationToken);

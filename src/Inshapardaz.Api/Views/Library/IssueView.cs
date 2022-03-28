@@ -11,5 +11,6 @@ namespace Inshapardaz.Api.Views.Library
         public int VolumeNumber { get; set; }
 
         public DateTime IssueDate { get; set; }
+        public int PeriodicalId { get; internal set; }
     }
 }

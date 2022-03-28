@@ -20,11 +20,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.*, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
-                            FROM Periodical AS p
-                            INNER JOIN [File] f ON f.Id = p.ImageId
+                var sql = @"SELECT i.*
+                            FROM Issue as i
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             Where p.LibraryId = @LibraryId
-                            Order By p.Title
+                            Order By i.IssueDate
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql,
@@ -33,7 +33,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var periodicals = await connection.QueryAsync<IssueModel>(command);
 
-                var sqlAuthorCount = "SELECT COUNT(*) FROM Periodical WHERE LibraryId = @LibraryId";
+                var sqlAuthorCount = @"SELECT COUNT(*) FROM Issue as i
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId WHERE p.LibraryId = @LibraryId";
                 var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
 
                 return new Page<IssueModel>
@@ -50,12 +51,12 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.*, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
-                            FROM Periodical AS p
-                            INNER JOIN [File] f ON f.Id = p.ImageId
-                            Where p.LibraryId = @LibraryId
-                            And PeriodicalId = @PeriodicalId
-                            And IssueId = @IssueId";
+                var sql = @"SELECT i.*
+                            FROM Issue as i
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            WHERE p.LibraryId = @LibraryId
+                            AND p.Id = @PeriodicalId
+                            AND i.IssueNumber = @IssueId";
                 var parameter = new
                 {
                     LibraryId = libraryId,

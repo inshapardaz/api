@@ -38,12 +38,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.AccountId, a.Name As AccountName, p.AssignTimeStamp, f.Id As ImageId, p.ChapterId, c.Title As ChapterTitle
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
+                            p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
+                            f.Id As ImageId, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN [Chapter] c ON c.Id = p.ChapterId
                             INNER JOIN Book b ON b.Id = p.BookId
-                            LEFT OUTER JOIN [Accounts] a ON a.Id = p.AccountId
+                            LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId
+                            LEFT OUTER JOIN [Accounts] ar ON ar.Id = p.ReviewerAccountId
                             Where b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.SequenceNumber = @SequenceNumber";
                 var command = new CommandDefinition(sql,
                                                     new { LibraryId = libraryId, BookId = bookId, SequenceNumber = sequenceNumber },
@@ -66,12 +69,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, PageStatuses status, int? chapterId, int? accountId, CancellationToken cancellationToken)
+        public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, PageStatuses status, int? chapterId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Update p
-                            SET p.Text = @Text, p.ImageId = @ImageId, Status = @Status, AccountId = @AccountId, ChapterId = @ChapterId
+                            SET p.Text = @Text, 
+                                p.ImageId = @ImageId, 
+                                Status = @Status,
+                                ChapterId = @ChapterId
                             FROM BookPage p
                             INNER JOIN Book b ON b.Id = p.BookId
                             WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.SequenceNumber = @SequenceNumber";
@@ -83,7 +89,6 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     BookId = bookId,
                     SequenceNumber = sequenceNumber,
                     Status = status,
-                    AccountId = accountId,
                     ChapterId = chapterId
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
@@ -126,19 +131,23 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.AccountId, a.Name As AccountName, p.AssignTimeStamp,f.Id As ImageId, p.Text, p.ChapterId, c.Title As ChapterTitle
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
+                                   p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
+                                   p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
+                                   f.Id As ImageId, p.Text, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN [Chapter] c ON c.Id = p.ChapterId
                             INNER JOIN Book b ON b.Id = p.BookId
-                            LEFT OUTER JOIN [Accounts] a ON a.Id = p.AccountId
+                            LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId
+                            LEFT OUTER JOIN [Accounts] ar ON ar.Id = p.ReviewerAccountId
                             WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId
                             AND (@Status = -1 OR p.Status = @Status )
                             AND (
                                 ( @AssignmentFilter = 0 ) OR
-                                ( @AssignmentFilter = 1 AND p.AccountId IS NOT NULL) OR
-                                ( @AssignmentFilter = 2 AND p.AccountId IS NULL) OR
-                                ( (@AssignmentFilter = 3  OR @AssignmentFilter = 4) AND p.AccountId = @AccountId )
+                                ( @AssignmentFilter = 1 AND p.WriterAccountId IS NOT NULL) OR
+                                ( @AssignmentFilter = 2 AND p.WriterAccountId IS NULL) OR
+                                ( (@AssignmentFilter = 3  OR @AssignmentFilter = 4) AND p.WriterAccountId = @WriterAccountId )
                             )
                             ORDER BY p.SequenceNumber
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -152,7 +161,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                                         PageSize = pageSize,
                                                         PageNumber = pageNumber,
                                                         AssignmentFilter = assignmentFilter,
-                                                        AccountId = assignedTo
+                                                        WriterAccountId = assignedTo
                                                     },
                                                     cancellationToken: cancellationToken);
 
@@ -164,9 +173,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                 AND (@Status = -1 OR p.Status = @Status )
                                 AND (
                                     ( @AssignmentFilter = 0 ) OR
-                                    ( @AssignmentFilter = 1 AND p.AccountId IS NOT NULL) OR
-                                    ( @AssignmentFilter = 2 AND p.AccountId IS NULL) OR
-                                    ( (@AssignmentFilter = 3  OR @AssignmentFilter = 4) AND p.AccountId = @AccountId )
+                                    ( @AssignmentFilter = 1 AND p.WriterAccountId IS NOT NULL) OR
+                                    ( @AssignmentFilter = 2 AND p.WriterAccountId IS NULL) OR
+                                    ( (@AssignmentFilter = 3  OR @AssignmentFilter = 4) AND p.WriterAccountId = @WriterAccountId )
                                 )";
                 var commandCount = new CommandDefinition(sqlCount, new
                 {
@@ -174,7 +183,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     BookId = bookId,
                     Status = status,
                     AssignmentFilter = assignmentFilter,
-                    AccountId = assignedTo
+                    WriterAccountId = assignedTo
                 },
                     cancellationToken: cancellationToken);
 
@@ -189,16 +198,32 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<BookPageModel> UpdatePageAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
+        public async Task<BookPageModel> UpdateWriterAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Update p
-                            SET p.AccountId = @AccountId, p.AssignTimeStamp = GETUTCDATE()
+                            SET p.WriterAccountId = @WriterAccountId, p.WriterAssignTimeStamp = GETUTCDATE()
                             FROM BookPage p
                             INNER JOIN Book b ON b.Id = p.BookId
                             Where b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = assignedAccountId, BookId = bookId, SequenceNumber = sequenceNumber }, cancellationToken: cancellationToken);
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, WriterAccountId = assignedAccountId, BookId = bookId, SequenceNumber = sequenceNumber }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+
+                return await GetPageBySequenceNumber(libraryId, bookId, sequenceNumber, cancellationToken);
+            }
+        }
+
+        public async Task<BookPageModel> UpdateReviewerAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update p
+                            SET p.ReviewerAccountId = @ReviewerAccountId, p.ReviewerAssignTimeStamp = GETUTCDATE()
+                            FROM BookPage p
+                            INNER JOIN Book b ON b.Id = p.BookId
+                            Where b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.SequenceNumber = @SequenceNumber";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, ReviewerAccountId = assignedAccountId, BookId = bookId, SequenceNumber = sequenceNumber }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
 
                 return await GetPageBySequenceNumber(libraryId, bookId, sequenceNumber, cancellationToken);
@@ -225,7 +250,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.AccountId, p.AssignTimeStamp, f.Id As ImageId, p.Text, p.ChapterId, c.Title As ChapterTitle
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
+                            p.WriterAccountId, p.WriterAssignTimeStamp, 
+                            p.ReviewerAccountId, p.ReviewerAssignTimeStamp, 
+                            f.Id As ImageId, p.Text, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN [Chapter] c ON c.Id = p.ChapterId
@@ -242,7 +270,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.AccountId, p.AssignTimeStamp, f.Id As ImageId, p.Text, p.ChapterId, c.Title As ChapterTitle
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
+                            p.WriterAccountId, p.WriterAssignTimeStamp, 
+                            p.ReviewerAccountId, p.ReviewerAssignTimeStamp, 
+                            f.Id As ImageId, p.Text, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN [Chapter] c ON c.Id = p.ChapterId

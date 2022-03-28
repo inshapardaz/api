@@ -41,7 +41,19 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new BadRequestException();
             }
 
-            command.Result = await _bookPageRepository.UpdatePageAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
+            if (page.Status == PageStatuses.Available || page.Status == PageStatuses.Typing)
+            {
+                command.Result = await _bookPageRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
+            }
+            else if (page.Status == PageStatuses.Typed || page.Status == PageStatuses.InReview)
+            {
+                command.Result = await _bookPageRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
+            }
+            else
+            {
+                throw new BadRequestException("Page status does not allow it to be assigned");
+            }
+
 
             return await base.HandleAsync(command, cancellationToken);
         }

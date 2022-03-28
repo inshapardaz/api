@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Converters
 {
     public interface IRenderIssue
     {
-        PageView<IssueView> Render(PageRendererArgs<IssueModel> source, int libraryId);
+        PageView<IssueView> Render(PageRendererArgs<IssueModel> source, int libraryId, int periodicalId);
 
         IssueView Render(IssueModel source, int libraryId);
 
@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Converters
             _userHelper = userHelper;
         }
 
-        public PageView<IssueView> Render(PageRendererArgs<IssueModel> source, int libraryId)
+        public PageView<IssueView> Render(PageRendererArgs<IssueModel> source, int libraryId, int periodicalId)
         {
             var page = new PageView<IssueView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.GetIssues),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
-                    Parameters = new { libraryId = libraryId },
+                    Parameters = new { libraryId = libraryId, periodicalId },
                     QueryString = new Dictionary<string, string>()
                     {
                         { "pageNumber" , page.CurrentPageIndex.ToString() },
@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.CreateIssue),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.Create,
-                    Parameters = new { libraryId = libraryId }
+                    Parameters = new { libraryId = libraryId, periodicalId }
                 }));
             }
 
@@ -73,7 +73,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.GetIssues),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Next,
-                    Parameters = new { libraryId = libraryId },
+                    Parameters = new { libraryId = libraryId, periodicalId },
                     QueryString = new Dictionary<string, string>()
                     {
                         { "pageNumber" , (page.CurrentPageIndex + 1).ToString() },
@@ -115,18 +115,14 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.GetIssueById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
-                    Parameters = new { libraryId = libraryId, IssueId = source.Id }
+                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, IssueNumber = source.IssueNumber }
                 }),
                 _linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(IssueController.GetIssues),
+                    ActionName = nameof(ArticleController.GetArticlesByIssue),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Articles,
-                    Parameters = new { libraryId = libraryId, IssueId = source.Id },
-                    QueryString = new Dictionary<string, string>
-                    {
-                        { "authorid", source.Id.ToString() }
-                    }
+                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, IssueNumber = source.IssueNumber }
                 })
             };
 
@@ -159,7 +155,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.UpdateIssue),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
-                    Parameters = new { libraryId = libraryId, IssueId = source.Id }
+                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, IssueNumber = source.IssueNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -167,7 +163,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.DeleteIssue),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
-                    Parameters = new { libraryId = libraryId, IssueId = source.Id }
+                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, IssueNumber = source.IssueNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -175,7 +171,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.UpdateIssueImage),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.ImageUpload,
-                    Parameters = new { libraryId = libraryId, IssueId = source.Id }
+                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, IssueNumber = source.IssueNumber }
                 }));
             }
 
@@ -203,11 +199,12 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Periodical,
                     Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId }
                 }),
+                // TODO : Fix the issue number
                 _linkRenderer.Render(new Link {
                     ActionName = nameof(IssueController.GetIssueById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Issue,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueId = source.IssueId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, IssueNumber = source.IssueId }
                 })
             };
 

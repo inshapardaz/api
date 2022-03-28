@@ -15,9 +15,12 @@ namespace Inshapardaz.Api.Mappings
                 Text = view.Text,
                 SequenceNumber = view.SequenceNumber,
                 Status = view.Status.ToEnum(PageStatuses.Available),
-                AccountId = view.AccountId,
-                AccountName = view.AccountName,
-                AssignTimeStamp = view.AssignTimeStamp,
+                WriterAccountId = view.WriterAccountId,
+                WriterAccountName = view.WriterAccountName,
+                WriterAssignTimeStamp = view.WriterAssignTimeStamp,
+                ReviewerAccountId = view.ReviewerAccountId,
+                ReviewerAccountName = view.ReviewerAccountName,
+                ReviewerAssignTimeStamp = view.ReviewerAssignTimeStamp,
                 ChapterId = view.ChapterId
             };
         }
@@ -30,9 +33,12 @@ namespace Inshapardaz.Api.Mappings
                 Text = model.Text,
                 SequenceNumber = model.SequenceNumber,
                 Status = model.Status.ToDescription(),
-                AccountId = model.AccountId,
-                AccountName = model.AccountName,
-                AssignTimeStamp = model.AssignTimeStamp,
+                WriterAccountId = model.WriterAccountId,
+                WriterAccountName = model.WriterAccountName,
+                WriterAssignTimeStamp = model.WriterAssignTimeStamp,
+                ReviewerAccountId = model.ReviewerAccountId,
+                ReviewerAccountName = model.ReviewerAccountName,
+                ReviewerAssignTimeStamp = model.ReviewerAssignTimeStamp,
                 ChapterId = model.ChapterId,
                 ChapterTitle = model.ChapterTitle
             };

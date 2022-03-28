@@ -20,13 +20,14 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 Title = source.Title,
                 Description = source.Description,
-                IssueCount = source.IssueCount
+                IssueCount = source.IssueCount,
             };
 
         public static IssueView Map(this IssueModel source)
             => source == null ? null : new IssueView
             {
                 Id = source.Id,
+                PeriodicalId = source.PeriodicalId,
                 VolumeNumber = source.VolumeNumber,
                 IssueNumber = source.IssueNumber,
                 IssueDate = source.IssueDate
@@ -36,6 +37,7 @@ namespace Inshapardaz.Api.Mappings
             => source == null ? null : new IssueModel
             {
                 Id = source.Id,
+                PeriodicalId = source.PeriodicalId,
                 VolumeNumber = source.VolumeNumber,
                 IssueNumber = source.IssueNumber,
                 IssueDate = source.IssueDate

@@ -54,7 +54,11 @@ namespace Inshapardaz.Domain.Models.Library
             }
             else
             {
-                await _issueRepository.UpdateIssue(command.LibraryId, command.PeriodicalId, command.Issue, cancellationToken);
+                result.IssueNumber = command.Issue.IssueNumber;
+                result.VolumeNumber = command.Issue.VolumeNumber;
+                result.IssueDate = command.Issue.IssueDate;
+
+                await _issueRepository.UpdateIssue(command.LibraryId, command.PeriodicalId, result, cancellationToken);
                 command.Result.Issue = command.Issue;
             }
 

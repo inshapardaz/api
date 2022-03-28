@@ -31,15 +31,15 @@ namespace Inshapardaz.Api.Controllers
             _articleRenderer = articleRenderer;
         }
 
-        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueId}/articles", Name = nameof(ArticleController.GetArticlesByIssue))]
-        public async Task<IActionResult> GetArticlesByIssue(int libraryId, int periodicalId, int issueId, CancellationToken token = default(CancellationToken))
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueNumber}/articles", Name = nameof(ArticleController.GetArticlesByIssue))]
+        public async Task<IActionResult> GetArticlesByIssue(int libraryId, int periodicalId, int issueNumber, CancellationToken token = default(CancellationToken))
         {
-            var query = new GetArticlesByIssueQuery(libraryId, periodicalId, issueId);
+            var query = new GetArticlesByIssueQuery(libraryId, periodicalId, issueNumber);
             var articles = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             if (articles != null)
             {
-                return new OkObjectResult(_articleRenderer.Render(articles, libraryId, periodicalId, issueId));
+                return new OkObjectResult(_articleRenderer.Render(articles, libraryId, periodicalId, issueNumber));
             }
 
             return new NotFoundResult();

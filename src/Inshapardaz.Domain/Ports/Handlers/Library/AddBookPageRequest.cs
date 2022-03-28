@@ -56,7 +56,7 @@ namespace Inshapardaz.Domain.Models.Library
             }
             else
             {
-                command.Result = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, 0, command.BookPage.Status, command.BookPage.ChapterId, command.BookPage.AccountId, cancellationToken);
+                command.Result = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, 0, command.BookPage.Status, command.BookPage.ChapterId, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

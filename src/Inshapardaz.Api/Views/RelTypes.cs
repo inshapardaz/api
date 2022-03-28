@@ -62,20 +62,20 @@ namespace Inshapardaz.Api.Views
         public const string CreateAuthor = "create-author";
         public const string Users = "users";
         public const string AddUser = "add-user";
-        public static string AssignToMe = "assign-to-me";
-        public static string Assign = "assign";
-        public static string Articles = "articles";
-        public static string Issue = "issue";
-        public static string Periodical = "periodical";
-        public static string Article = "article";
-        public static string AddPages = "add-pages";
-        public static string Pages = "pages";
-        public static string BulkUpload = "bulk-upload";
-        public static string MultiCreate = "create-multiple";
-        public static string AddToLibrary = "add-to-library";
-        public static string Ocr = "ocr";
-        public static string Publish = "publish";
-        public static string UpdateUser = "update-user";
-        public static string ChapterSequence = "chapter-sequence";
+        public const string AssignToMe = "assign-to-me";
+        public const string Assign = "assign";
+        public const string Articles = "articles";
+        public const string Issue = "issue";
+        public const string Periodical = "periodical";
+        public const string Article = "article";
+        public const string AddPages = "add-pages";
+        public const string Pages = "pages";
+        public const string BulkUpload = "bulk-upload";
+        public const string MultiCreate = "create-multiple";
+        public const string AddToLibrary = "add-to-library";
+        public const string Ocr = "ocr";
+        public const string Publish = "publish";
+        public const string UpdateUser = "update-user";
+        public const string ChapterSequence = "chapter-sequence";
     }
 }

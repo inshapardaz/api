@@ -66,8 +66,8 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal BookPageAssert ShouldHaveAssignedRecently()
         {
-            _bookPage.AssignTimeStamp.Should().NotBeNull();
-            _bookPage.AssignTimeStamp.Value.Should().BeWithin(TimeSpan.FromMinutes(1));
+            _bookPage.WriterAssignTimeStamp.Should().NotBeNull();
+            _bookPage.WriterAssignTimeStamp.Value.Should().BeWithin(TimeSpan.FromMinutes(1));
             return this;
         }
 

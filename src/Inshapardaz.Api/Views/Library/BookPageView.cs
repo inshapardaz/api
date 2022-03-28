@@ -13,9 +13,12 @@ namespace Inshapardaz.Api.Views.Library
 
         public int BookId { get; set; }
         public string Status { get; set; }
-        public int? AccountId { get; set; }
-        public string AccountName { get; set; }
-        public DateTime? AssignTimeStamp { get; set; }
+        public int? WriterAccountId { get; set; }
+        public string WriterAccountName { get; set; }
+        public DateTime? WriterAssignTimeStamp { get; set; }
+        public int? ReviewerAccountId { get; set; }
+        public string ReviewerAccountName { get; set; }
+        public DateTime? ReviewerAssignTimeStamp { get; set; }
         public int? ChapterId { get; set; }
         public string ChapterTitle { get; set; }
     }

@@ -128,18 +128,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (!string.IsNullOrWhiteSpace(source.ImageUrl))
-
-            {
-                links.Add(new LinkView
-                {
-                    Href = source.ImageUrl,
-                    Method = "GET",
-                    Rel = RelTypes.Image,
-                    Accept = MimeTypes.Jpg
-                });
-            }
-            else if (source.ImageId.HasValue)
+            if (source.ImageId.HasValue)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {

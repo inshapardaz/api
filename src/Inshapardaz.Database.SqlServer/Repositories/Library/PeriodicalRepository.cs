@@ -22,7 +22,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
                             FROM Periodical AS p
-                            INNER JOIN [File] f ON f.Id = p.ImageId
+                            LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
                             Order By p.Title
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -52,7 +52,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
                             FROM Periodical AS p
-                            INNER JOIN [File] f ON f.Id = p.ImageId
+                            LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
                             And a.Title LIKE @Query
                             Order By p.Title

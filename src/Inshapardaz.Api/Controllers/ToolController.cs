@@ -15,10 +15,26 @@ namespace Inshapardaz.Api.Controllers
             _commandProcessor = commandProcessor;
         }
 
-        [HttpPost("/tools/autofix")]
-        public async Task<IActionResult> AutoFix([FromBody] string input, CancellationToken cancellationToken)
+        [HttpGet("/tools/{language}/spellchecker/punctuation")]
+        public async Task<IActionResult> GetPunctuationFixList(string language, CancellationToken cancellationToken)
         {
-            var command = new AutoCorrectTextCommand() { Language = "ur", TextToCorrect = input };
+            var command = new GetPunctuationListCommand() { Language = language };
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok(command.Result);
+        }
+
+        [HttpGet("/tools/{language}/spellchecker/autoFix")]
+        public async Task<IActionResult> GetAutoFixList(string language, CancellationToken cancellationToken)
+        {
+            var command = new GetAutoFixListCommand() { Language = language };
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            return Ok(command.Result);
+        }
+
+        [HttpGet("/tools/{language}/spellchecker/corrections")]
+        public async Task<IActionResult> GetCorrectionsList(string language, CancellationToken cancellationToken)
+        {
+            var command = new GetCorrectionsListCommand() { Language = language };
             await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
             return Ok(command.Result);
         }

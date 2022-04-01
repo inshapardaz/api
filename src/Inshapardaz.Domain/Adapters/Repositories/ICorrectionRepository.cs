@@ -7,6 +7,9 @@ namespace Inshapardaz.Domain.Adapters.Repositories
 {
     public interface ICorrectionRepository
     {
-        Task<IEnumerable<Correction>> GetCorrectionForLanguage(string language, CancellationToken cancellationToken);
+        Task<Dictionary<string, string>> GetAutoCorrectionList(string language, CancellationToken cancellationToken);
+
+        Task<Dictionary<string, string>> GetPunctuationList(string language,  CancellationToken cancellationToken);
+        Task<Dictionary<string, string>> GetCorrectionList(string language,  CancellationToken cancellationToken);
     }
 }

@@ -17,29 +17,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             _connectionProvider = connectionProvider;
         }
 
-        public async Task<Dictionary<string, string>> GetAutoCorrectionList(string language, CancellationToken cancellationToken)
+        public async Task<Dictionary<string, string>> GetAllCorrections(string language, string profile, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT IncorrectText, CorrectText FROM corrections WHERE language = @Language AND AutoCorrect = 1";
+                var sql = @"SELECT IncorrectText, CorrectText FROM corrections WHERE language = @Language AND [Profile] = @Profile";
                 var command = new CommandDefinition(sql, new
                 {
-                    Language = language
-                }, cancellationToken: cancellationToken);
-
-                var items = await connection.QueryAsync<(string key, string val)>(command);
-                return items.ToDictionary(t => t.key, t => t.val); 
-            }
-        }
-
-        public async Task<Dictionary<string, string>> GetPunctuationList(string language, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetConnection())
-            {
-                var sql = @"SELECT IncorrectText, CorrectText FROM corrections WHERE language = @Language AND Punctuation = 1";
-                var command = new CommandDefinition(sql, new
-                {
-                    Language = language
+                    Language = language,
+                    Profile = profile
                 }, cancellationToken: cancellationToken);
 
                 var items = await connection.QueryAsync<(string key, string val)>(command);
@@ -47,18 +33,89 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             }
         }
 
-        public async Task<Dictionary<string, string>> GetCorrectionList(string language, CancellationToken cancellationToken)
+        public async Task<Page<CorrectionModel>> GetCorrectionList(string language, string query, string profile, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT IncorrectText, CorrectText FROM corrections WHERE language = @Language AND Punctuation = 0 AND Punctuation = 0";
+                var sql = @"SELECT *
+                            FROM Corrections
+                            WHERE language = @Language 
+                            AND (IncorrectText LIKE @Query OR CorrectText LIKE @Query)
+                            AND Profile = @Profile
+                            ORDER BY [Language], Profile, IncorrectText
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { Language = language, Query = $"%{query}%", Profile = profile, PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var authors = await connection.QueryAsync<CorrectionModel>(command);
+
+                var sqlCorrectionCount = "SELECT COUNT(*) FROM Corrections WHERE Language = @Language AND IncorrectText LIKE @Query AND Profile = @Profile";
+                var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCorrectionCount, new { Language = language, Query = $"%{query}%", Profile = profile }, cancellationToken: cancellationToken));
+
+                return new Page<CorrectionModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = authorCount,
+                    Data = authors
+                };
+            }
+        }
+
+        public async Task<CorrectionModel> GetCorrection(string language, string profile, string incorrectText, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT * FROM corrections 
+                            WHERE language = @Language 
+                            AND [Profile] = @Profile
+                            AND IncorrectText = @IncorrectText";
                 var command = new CommandDefinition(sql, new
                 {
-                    Language = language
+                    Language = language,
+                    Profile = profile,
+                    IncorrectText = incorrectText,
                 }, cancellationToken: cancellationToken);
 
-                var items = await connection.QueryAsync<(string key, string val)>(command);
-                return items.ToDictionary(t => t.key, t => t.val);
+                return await connection.QuerySingleOrDefaultAsync<CorrectionModel>(command);
+            }
+        }
+
+        public async Task<CorrectionModel> AddCorrection(CorrectionModel correction, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Insert Into Corrections(Language, Profile, IncorrectText, CorrectText) 
+                            VALUES(@Language, @Profile, @IncorrectText, @CorrectText);";
+                var command = new CommandDefinition(sql, new { Language = correction.Language, Profile = correction.Profile, IncorrectText = correction.IncorrectText, CorrectText = correction.CorrectText }, cancellationToken: cancellationToken);
+                await connection.ExecuteScalarAsync<int>(command);
+            }
+
+            return await GetCorrection(correction.Language, correction.Profile, correction.IncorrectText, cancellationToken);
+
+        }
+
+        public async Task<CorrectionModel> UpdateCorrection(CorrectionModel correction, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update Corrections Set CorrectText = @correction Where Language = @Language AND Profile = @Profile AND IncorrectText = @IncorrectText";
+                var command = new CommandDefinition(sql, new { Language = correction.Language, Profile = correction.Profile, IncorrectText = correction.IncorrectText, Correction = correction.CorrectText }, cancellationToken: cancellationToken);
+                await connection.ExecuteScalarAsync<int>(command);
+
+                return await GetCorrection(correction.Language, correction.Profile, correction.IncorrectText, cancellationToken);
+            }
+        }
+
+        public async Task DeleteCorrection(string language, string profile, string incorrectText, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Delete From Corrections Where Language = @Language AND Profile = @Profile AND IncorrectText = @IncorrectText";
+                var command = new CommandDefinition(sql, new { Language = language, Profile = profile, IncorrectText = incorrectText }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
             }
         }
     }

@@ -111,7 +111,7 @@ namespace Inshapardaz.Api.Converters
                 ActionName = nameof(ToolController.GetCorrectionById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
-                Parameters = new { language = correction.Language, profile = correction.Profile, incorrectText = correction.IncorrectText }
+                Parameters = new { language = correction.Language, profile = correction.Profile, id = correction.Id }
             }));
 
 
@@ -122,7 +122,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ToolController.UpdateCorrection),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
-                    Parameters = new { language = correction.Language, profile = correction.Profile, incorrectText = correction.IncorrectText }
+                    Parameters = new { language = correction.Language, profile = correction.Profile, id = correction.Id}
                 }));
 
                 view.Links.Add(_linkRenderer.Render(new Link
@@ -130,7 +130,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ToolController.DeleteCorrection),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
-                    Parameters = new { language = correction.Language, profile = correction.Profile, incorrectText = correction.IncorrectText }
+                    Parameters = new { language = correction.Language, profile = correction.Profile, id = correction.Id }
                 }));
             }
 

@@ -7,16 +7,16 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteCorrectionRequest : RequestBase
     {
-        public DeleteCorrectionRequest(string language, string profile, string incorrectText)
+        public DeleteCorrectionRequest(string language, string profile, long id)
         {
             Language = language;
             Profile = profile;
-            IncorrectText = incorrectText;
+            Id = id;
         }
 
         public string Language { get; }
         public string Profile { get; }
-        public string IncorrectText { get; }
+        public long Id { get; }
     }
 
     public class DeleteCorrectionRequestHandler : RequestHandlerAsync<DeleteCorrectionRequest>
@@ -30,10 +30,10 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<DeleteCorrectionRequest> HandleAsync(DeleteCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var author = await _corretionRepository.GetCorrection(command.Language, command.Profile, command.IncorrectText, cancellationToken);
+            var author = await _corretionRepository.GetCorrection(command.Id, cancellationToken);
             if (author != null)
             {
-                await _corretionRepository.DeleteCorrection(command.Language, command.Profile, command.IncorrectText, cancellationToken);
+                await _corretionRepository.DeleteCorrection(command.Id, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

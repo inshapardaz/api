@@ -50,12 +50,17 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_correctionRenderer.Render(pageRenderArgs, language, profile));
         }
 
-        [HttpGet("/tools/{language}/corrections/{profile}/{incorrectText}", Name = nameof(ToolController.GetCorrectionById))]
+        [HttpGet("/tools/{language}/corrections/{profile}/{id}", Name = nameof(ToolController.GetCorrectionById))]
         [Authorize(Role.Admin)]
-        public async Task<IActionResult> GetCorrectionById(string language, string profile, string incorrectText, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IActionResult> GetCorrectionById(string language, string profile, long id, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var query = new GetCorrectionQuery() { Language = language, Profile = profile, IncorrectText = incorrectText };
+            var query = new GetCorrectionQuery() { Id = id };
             var result = await _queryProcessor.ExecuteAsync(query, cancellationToken: cancellationToken);
+            if (result == null)
+            {
+                return NotFound();
+            }
+
             return Ok(_correctionRenderer.Render(result));
         }
 
@@ -79,9 +84,9 @@ namespace Inshapardaz.Api.Controllers
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
          
-        [HttpPut("/tools/{language}/corrections/{profile}/{incorrectText}", Name = nameof(ToolController.UpdateCorrection))]
+        [HttpPut("/tools/{language}/corrections/{profile}/{id}", Name = nameof(ToolController.UpdateCorrection))]
         [Authorize(Role.Admin)]
-        public async Task<IActionResult> UpdateCorrection(string language, string profile, string incorrectText, [FromBody] CorrectionView correction, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IActionResult> UpdateCorrection(string language, string profile, long id, [FromBody] CorrectionView correction, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {
@@ -90,7 +95,7 @@ namespace Inshapardaz.Api.Controllers
 
             correction.Language = language;
             correction.Profile = profile;
-            correction.IncorrectText = incorrectText;
+            correction.Id = id;
             var request = new UpdateCorrectionRequest(correction.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
@@ -105,11 +110,11 @@ namespace Inshapardaz.Api.Controllers
             }
         }
 
-        [HttpDelete("/tools/{language}/corrections/{profile}/{incorrectText}", Name = nameof(ToolController.DeleteCorrection))]
+        [HttpDelete("/tools/{language}/corrections/{profile}/{id}", Name = nameof(ToolController.DeleteCorrection))]
         [Authorize(Role.Admin)]
-        public async Task<IActionResult> DeleteCorrection(string language, string profile, string incorrectText, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IActionResult> DeleteCorrection(string language, string profile, long id, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var request = new DeleteCorrectionRequest(language, profile, incorrectText);
+            var request = new DeleteCorrectionRequest(language, profile, id);
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
             return new NoContentResult();
         }

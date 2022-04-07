@@ -28,5 +28,7 @@
 oneui.min.js
 custom.css
 /src/Inshapardaz.Api/App_Data
+/src/Inshapardaz.Api/appsettings.Production.json
+/src/Inshapardaz.Api/Properties/PublishProfiles
 /src/_NCrunch_Inshapardaz.Api/StoredText
 *[C]coverage*

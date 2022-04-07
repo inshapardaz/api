@@ -4,7 +4,7 @@ image: Visual Studio 2019
 
 environment:
   Secret:
-    secure: SSWnzbDCIYrn97wLK7xRKG1XLBNHTitBoYy0p0HVkaJTP6qt+fvS/aAimigwDm0I
+    secure: 39An8kKFcEGarNaOjR6GujpfOMIaEB8FvykWr03ULAh2H9Zfgk/Avt7clWc0JSkd
   EmailFrom:
     secure: 0KUaQyV3RXkLLfkDz/R4NHqXw4LbFaKr3w+FT/oSSWc=
   EmailFromName: "Nawishta"
@@ -15,9 +15,9 @@ environment:
   SmtpUser: 
     secure: 0KUaQyV3RXkLLfkDz/R4NHqXw4LbFaKr3w+FT/oSSWc=
   SmtpPass: 
-    secure: MtFsvJ6Qnrg61aDPXEC272K+krIXBfIpBm3smsJmGzc=
+    secure: QHbuppDOx4icKiDHpOoEIA==
   DefaultConnection:
-    secure: /QAHrKVU6z5bQ9+vnbYAk6uITnSYQQZP85hnKJXpXAB46mqR2xDA5o8KU7Ooz6abxLOpR3f13j04wAvKVoGwKs6ZlMIkDnDEjrc07qp3W95zV3c3YqYpo6QUctPikMlNIqqvKTWVSx+AjrFKEY1RunP4yR4vXxBv+TWt3DLpLIs=
+    secure: /QAHrKVU6z5bQ9+vnbYAk6uITnSYQQZP85hnKJXpXAB46mqR2xDA5o8KU7Ooz6abxLOpR3f13j04wAvKVoGwKgqruyU+Jlzlx1V6rL9/gGWz7nj8a3EqprjSXks3JVWCThtmPrpppZj3hYzBfmGCiSPo43S3cbEdCejDBbhB/TY=
     
 skip_tags: true
 skip_branch_with_pr: true
@@ -50,7 +50,7 @@ deploy:
     username: 
       secure: BkN+6uQ3Cmoe1g+c60WFqPB8299X25/h1YH0oNzzFoA=
     password: 
-      secure: jU+awrC8RsQPYFEau8nNrw==
+      secure: ALS2iQsptYanrFZtGn1oWA==
     remove_files: true
     app_offline: true
     artifact: APIPackage

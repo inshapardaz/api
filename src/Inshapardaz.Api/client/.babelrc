@@ -1,0 +1,8 @@
+{
+    "presets": ["@babel/preset-env", "@babel/preset-react"],
+    "plugins": [
+        "react-css-modules", 
+        "@babel/plugin-transform-runtime",
+        "module-resolver"
+    ]
+}

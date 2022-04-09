@@ -208,6 +208,14 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.CreateSeries,
                     Parameters = new { libraryId = model.Id }
                 }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.GetPagesByUser),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.MyPages,
+                    Parameters = new { libraryId = model.Id }
+                }));
             }
 
             if (_userHelper.IsLibraryAdmin(model.Id) || _userHelper.IsAdmin)

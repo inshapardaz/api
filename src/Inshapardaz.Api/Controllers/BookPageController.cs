@@ -69,6 +69,33 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_bookPageRenderer.Render(args, libraryId, bookId));
         }
 
+        [HttpGet("libraries/{libraryId}/my/pages", Name = nameof(BookPageController.GetPagesByUser))]
+        [Produces(typeof(PageView<BookPageView>))]
+        public async Task<IActionResult> GetPagesByUser(int libraryId,
+            int pageNumber = 1,
+            int pageSize = 10,
+            [FromQuery] PageStatuses status = PageStatuses.All,
+            [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
+            [FromQuery] int? assignmentTo = null,
+            CancellationToken token = default(CancellationToken))
+        {
+            var accountId = _userHelper.Account.Id;
+            var getBookPagesQuery = new GetUserPagesQuery(libraryId, accountId, pageNumber, pageSize)
+            {
+                StatusFilter = status,
+            };
+            var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
+
+            var args = new PageRendererArgs<BookPageModel, BookPageFilter>
+            {
+                Page = result,
+                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
+                Filters = new BookPageFilter { Status = status, AccountId = assignmentTo }
+            };
+
+            return new OkObjectResult(_bookPageRenderer.RenderUserPages(args, libraryId));
+        }
+
         [HttpGet("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}", Name = nameof(BookPageController.GetPageByIndex))]
         [Produces(typeof(BookPageView))]
         public async Task<IActionResult> GetPageByIndex(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))

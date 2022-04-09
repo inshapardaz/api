@@ -25,7 +25,7 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
         Task DeletePageImage(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken);
 
         Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, PageStatuses status, AssignmentFilter assignmentFilter, int? assignedTo, CancellationToken cancellationToken);
-
+        Task<Page<BookPageModel>> GetPagesByUser(int libraryId, int assignedTo, PageStatuses statusFilter, int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<IEnumerable<BookPageModel>> GetPagesByBookChapter(int libraryId, int bookId, int chapterId, CancellationToken cancellationToken);
 
         Task<BookPageModel> UpdateWriterAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken);

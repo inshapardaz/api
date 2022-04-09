@@ -16,6 +16,7 @@ namespace Inshapardaz.Api.Converters
         BookPageView Render(BookPageModel source, int libraryId);
 
         PageView<BookPageView> Render(PageRendererArgs<BookPageModel, BookPageFilter> source, int libraryId, int bookId);
+        PageView<BookPageView> RenderUserPages(PageRendererArgs<BookPageModel, BookPageFilter> source, int libraryId);
 
         LinkView RenderImageLink(int imageId);
     }
@@ -96,6 +97,60 @@ namespace Inshapardaz.Api.Converters
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Previous,
                     Parameters = new { libraryId = libraryId, bookId = bookId },
+                    QueryString = pageQuery
+                }));
+            }
+
+            page.Links = links;
+            return page;
+        }
+
+        public PageView<BookPageView> RenderUserPages(PageRendererArgs<BookPageModel, BookPageFilter> source, int libraryId)
+        {
+            var page = new PageView<BookPageView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
+            {
+                Data = source.Page.Data?.Select(x => Render(x, libraryId))
+            };
+
+            Dictionary<string, string> query = CreateQueryString(source, page);
+            query.Add("pageNumber", (page.CurrentPageIndex).ToString());
+
+            var links = new List<LinkView>();
+
+            links.Add(_linkRenderer.Render(new Link
+            {
+                ActionName = nameof(BookPageController.GetPagesByUser),
+                Method = HttpMethod.Get,
+                Rel = RelTypes.Self,
+                Parameters = new { libraryId = libraryId },
+                QueryString = query
+            }));
+
+            if (page.CurrentPageIndex < page.PageCount)
+            {
+                var pageQuery = CreateQueryString(source, page);
+                pageQuery.Add("pageNumber", (page.CurrentPageIndex + 1).ToString());
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.GetPagesByUser),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Next,
+                    Parameters = new { libraryId = libraryId },
+                    QueryString = pageQuery
+                }));
+            }
+
+            if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
+            {
+                var pageQuery = CreateQueryString(source, page);
+                pageQuery.Add("pageNumber", (page.CurrentPageIndex - 1).ToString());
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.GetPagesByUser),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Previous,
+                    Parameters = new { libraryId = libraryId },
                     QueryString = pageQuery
                 }));
             }

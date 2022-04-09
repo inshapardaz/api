@@ -77,5 +77,6 @@ namespace Inshapardaz.Api.Views
         public const string Publish = "publish";
         public const string UpdateUser = "update-user";
         public const string ChapterSequence = "chapter-sequence";
+        public const string MyPages = "my-pages";
     }
 }

@@ -38,7 +38,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                             p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
                             f.Id As ImageId, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
@@ -134,7 +134,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
-                                   f.Id As ImageId, p.Text, p.ChapterId, c.Title As ChapterTitle
+                                   f.Id As ImageId, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN [Chapter] c ON c.Id = p.ChapterId
@@ -263,6 +263,64 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
 
                 return await connection.QueryAsync<BookPageModel>(command);
+            }
+        }
+
+
+        public async Task<Page<BookPageModel>> GetPagesByUser(int libraryId, int accountId, PageStatuses statusFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
+                                   p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
+                                   p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
+                                   f.Id As ImageId, p.ChapterId, c.Title As ChapterTitle
+                            FROM BookPage AS p
+                            LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
+                            LEFT OUTER JOIN [Chapter] c ON c.Id = p.ChapterId
+                            INNER JOIN Book b ON b.Id = p.BookId
+                            LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId
+                            LEFT OUTER JOIN [Accounts] ar ON ar.Id = p.ReviewerAccountId
+                            WHERE b.LibraryId = @LibraryId 
+                            AND p.ReviewerAccountId = @AccountId OR p.WriterAccountId = @AccountId
+                            AND (@Status = -1 OR p.Status = @Status )
+                            ORDER BY p.BookId, p.SequenceNumber
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new
+                                                    {
+                                                        LibraryId = libraryId,
+                                                        Status = statusFilter,
+                                                        PageSize = pageSize,
+                                                        PageNumber = pageNumber,
+                                                        AccountId = accountId
+                                                    },
+                                                    cancellationToken: cancellationToken);
+
+                var pages = await connection.QueryAsync<BookPageModel>(command);
+
+                var sqlCount = @"SELECT Count(*)
+                                FROM BookPage p INNER JOIN Book b ON b.Id = p.BookId
+                                WHERE b.LibraryId = @LibraryId 
+                                AND p.ReviewerAccountId = @AccountId OR p.WriterAccountId = @AccountId
+                                AND (@Status = -1 OR p.Status = @Status )";
+                var commandCount = new CommandDefinition(sqlCount, new
+                {
+                    LibraryId = libraryId,
+                    Status = statusFilter,
+                    AccountId = accountId
+                },
+                    cancellationToken: cancellationToken);
+
+                var pagesCount = await connection.QuerySingleAsync<int>(commandCount);
+                return new Page<BookPageModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = pagesCount,
+                    Data = pages
+                };
             }
         }
 

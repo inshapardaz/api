@@ -4,7 +4,9 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Repositories;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,14 +27,16 @@ namespace Inshapardaz.Api.Converters
         private readonly IRenderLink _linkRenderer;
         private readonly IRenderCategory _categoryRenderer;
         private readonly IRenderAuthor _authorRenderer;
+        private readonly IFileStorage _fileStorage;
         private readonly IUserHelper _userHelper;
 
-        public BookRenderer(IRenderLink linkRenderer, IRenderCategory categoryRenderer, IUserHelper userHelper, IRenderAuthor authorRenderer)
+        public BookRenderer(IRenderLink linkRenderer, IRenderCategory categoryRenderer, IUserHelper userHelper, IRenderAuthor authorRenderer, IFileStorage fileStorage)
         {
             _linkRenderer = linkRenderer;
             _categoryRenderer = categoryRenderer;
             _userHelper = userHelper;
             _authorRenderer = authorRenderer;
+            _fileStorage = fileStorage;
         }
 
         public PageView<BookView> Render(PageRendererArgs<BookModel, BookFilter> source, int libraryId)
@@ -185,8 +189,12 @@ namespace Inshapardaz.Api.Converters
 
             if (!string.IsNullOrWhiteSpace(source.ImageUrl))
             {
-                // TODO :  Check and add direct link
-                //links.Add(new LinkView { Href = source.ImageUrl, Method = "GET", Rel = RelTypes.Image, Accept = MimeTypes.Jpg });
+                links.Add(new LinkView { 
+                    Href = _fileStorage.GetPublicUrl(source.ImageUrl), 
+                    Method = "GET", 
+                    Rel = RelTypes.Image, 
+                    Accept = MimeTypes.Jpg 
+                });
             }
             else if (source.ImageId.HasValue)
             {
@@ -361,7 +369,7 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(new LinkView
                 {
-                    Href = source.ContentUrl,
+                    Href = _fileStorage.GetPublicUrl(source.ContentUrl),
                     Method = "GET",
                     Rel = RelTypes.Download,
                     Accept = source.MimeType,

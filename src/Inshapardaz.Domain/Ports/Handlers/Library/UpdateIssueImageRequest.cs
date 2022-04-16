@@ -66,7 +66,7 @@ namespace Inshapardaz.Domain.Models.Library
                     await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
                 }
 
-                var url = await AddImageToFileStore(command.PeriodicalId, issue.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
+                var url = await AddImageToFileStore(command.PeriodicalId, issue.IssueNumber, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
 
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
@@ -77,7 +77,7 @@ namespace Inshapardaz.Domain.Models.Library
             else
             {
                 command.Image.Id = default;
-                var url = await AddImageToFileStore(command.PeriodicalId, issue.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
+                var url = await AddImageToFileStore(command.PeriodicalId, issue.IssueNumber, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
                 command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
@@ -90,16 +90,16 @@ namespace Inshapardaz.Domain.Models.Library
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private async Task<string> AddImageToFileStore(int periodicalId, int issueId, string fileName, byte[] contents, CancellationToken cancellationToken)
+        private async Task<string> AddImageToFileStore(int periodicalId, int issueNumber, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
         {
-            var filePath = GetUniqueFileName(periodicalId, issueId, fileName);
-            return await _fileStorage.StoreImage(filePath, contents, cancellationToken);
+            var filePath = GetUniqueFileName(periodicalId, issueNumber, fileName);
+            return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
         }
 
-        private static string GetUniqueFileName(int periodicalId, int issueId, string fileName)
+        private static string GetUniqueFileName(int periodicalId, int issueNumber, string fileName)
         {
             var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"periodicals/{periodicalId}/issues/{issueId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
+            return $"periodicals/{periodicalId}/issues/{issueNumber}/title.{fileNameWithourExtension}";
         }
     }
 }

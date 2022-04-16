@@ -34,9 +34,9 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/authors", Name = nameof(AuthorController.GetAuthors))]
-        public async Task<IActionResult> GetAuthors(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> GetAuthors(int libraryId, string query, AuthorTypes? authorType = null, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
-            var authorsQuery = new GetAuthorsQuery(libraryId, pageNumber, pageSize) { Query = query };
+            var authorsQuery = new GetAuthorsQuery(libraryId, pageNumber, pageSize) { Query = query, AuthorType = authorType };
             var result = await _queryProcessor.ExecuteAsync(authorsQuery, token);
 
             var args = new PageRendererArgs<AuthorModel>

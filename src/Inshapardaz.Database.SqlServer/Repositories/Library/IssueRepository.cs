@@ -20,9 +20,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT i.*
+                var sql = @"SELECT i.*, f.FilePath as ImageUrl
                             FROM Issue as i
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            LEFT OUTER JOIN [File] f ON f.Id = i.ImageId
                             Where p.LibraryId = @LibraryId
                             Order By i.IssueDate
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -51,9 +52,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT i.*
+                var sql = @"SELECT i.*, f.FilePath as ImageUrl
                             FROM Issue as i
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            LEFT OUTER JOIN [File] f ON f.Id = i.ImageId
                             WHERE p.LibraryId = @LibraryId
                             AND p.Id = @PeriodicalId
                             AND i.IssueNumber = @IssueId";
@@ -98,7 +100,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"Update Issue
                             Set PeriodicalId = @PeriodicalId, Volumenumber = @Volumenumber, IssueNumber = @IssueNumber, IssueDate = @IssueDate, IsPublic = @IsPublic, ImageId = @ImageId
-                            Where Id = @Id AND LibraryId = @LibraryId";
+                            Where Id = @Id";
                 var parameter = new
                 {
                     Id = issue.Id,

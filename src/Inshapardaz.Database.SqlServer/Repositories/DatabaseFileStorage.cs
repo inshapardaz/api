@@ -63,7 +63,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             return path;
         }
 
-        public Task<string> StoreImage(string name, byte[] content, CancellationToken cancellationToken)
+        public Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
         {
             return StoreFile(name, content, cancellationToken);
         }
@@ -87,6 +87,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories
         public Task TryDeleteImage(string filePath, CancellationToken cancellationToken)
         {
             return DeleteFile(filePath, cancellationToken);
+        }
+
+        public string GetPublicUrl(string filePath)
+        {
+            return filePath;
         }
     }
 }

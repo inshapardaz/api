@@ -55,7 +55,7 @@ namespace Inshapardaz.Domain.Models.Library
                     }
                 }
 
-                if (book.ImageId.HasValue)
+                if (book.ImageUrl == null && book.ImageId.HasValue)
                 {
                     book.ImageUrl = await ImageHelper.TryConvertToPublicFile(book.ImageId.Value, _fileRepository, cancellationToken);
                 }

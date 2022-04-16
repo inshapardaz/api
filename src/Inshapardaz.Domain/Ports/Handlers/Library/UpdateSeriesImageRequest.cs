@@ -64,7 +64,7 @@ namespace Inshapardaz.Domain.Models.Library
                     await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
                 }
 
-                var url = await AddImageToFileStore(series.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
+                var url = await AddImageToFileStore(series.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
                 await _fileRepository.UpdateFile(command.Image, cancellationToken);
@@ -74,7 +74,7 @@ namespace Inshapardaz.Domain.Models.Library
             else
             {
                 command.Image.Id = default(int);
-                var url = await AddImageToFileStore(series.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
+                var url = await AddImageToFileStore(series.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
                 command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
@@ -86,16 +86,16 @@ namespace Inshapardaz.Domain.Models.Library
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private async Task<string> AddImageToFileStore(int seriesId, string fileName, byte[] contents, CancellationToken cancellationToken)
+        private async Task<string> AddImageToFileStore(int seriesId, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
         {
             var filePath = GetUniqueFileName(seriesId, fileName);
-            return await _fileStorage.StoreImage(filePath, contents, cancellationToken);
+            return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
         }
 
         private static string GetUniqueFileName(int seriesId, string fileName)
         {
             var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"series/{seriesId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
+            return $"series/{seriesId}/title.{fileNameWithourExtension}";
         }
     }
 }

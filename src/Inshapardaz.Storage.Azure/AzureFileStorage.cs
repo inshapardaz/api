@@ -94,7 +94,7 @@ namespace Inshapardaz.Storage.Azure
             return new Uri(url).Segments[1].Trim('/');
         }
 
-        public async Task<string> StoreImage(string name, byte[] content, CancellationToken cancellationToken)
+        public async Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
         {
             var container = GetContainer("images");
             var blockBlob = container.GetBlockBlobReference(name);
@@ -124,6 +124,11 @@ namespace Inshapardaz.Storage.Azure
             {
                 Console.WriteLine(e);
             }
+        }
+
+        public string GetPublicUrl(string filePath)
+        {
+            return filePath;
         }
     }
 }

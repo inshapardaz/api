@@ -120,6 +120,43 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var param = new
+                {
+                    LibraryId = libraryId,
+                    PageSize = pageSize,
+                    PageNumber = pageNumber
+                };
+                var sql = @"Select Id 
+                            From Book
+                            Where LibraryId = @LibraryId  
+                            ORDER BY Id
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
+
+                var bookIds = await connection.QueryAsync(command);
+
+                var sqlCount = @"Select Count(*)
+                            From Book
+                            Where LibraryId = @LibraryId  ";
+                var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
+
+                var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
+
+                return new Page<BookModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = bookCount,
+                    Data = books
+                };
+            }
+        }
+
         public async Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, int? AccountId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
@@ -293,7 +330,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 BookModel book = null;
-                var sql = @"Select b.*, s.Name As SeriesName,
+                var sql = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                             (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
                             a.*, c.*
@@ -305,6 +342,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Left Outer Join BookCategory bc ON b.Id = bc.BookId
                             Left Outer Join Category c ON bc.CategoryId = c.Id
                             Left Outer Join FavoriteBooks fb On fb.BookId = b.Id
+                            LEFT OUTER JOIN [File] fl ON fl.Id = b.ImageId
                             Where b.LibraryId = @LibraryId AND b.Id = @Id";
                 await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(sql, (b, a, c) =>
                 {
@@ -505,7 +543,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         private async Task<IEnumerable<BookModel>> GetBooks(IDbConnection connection, int libraryId, List<int> bookIds, CancellationToken cancellationToken)
         {
             var books = new Dictionary<int, BookModel>();
-            var sql3 = @"Select b.*, s.Name As SeriesName,
+            var sql3 = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                             (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
                             a.*, c.*
@@ -518,6 +556,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             LEFT JOIN Category c ON bc.CategoryId = c.Id
                             LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id
                             LEFT JOIN RecentBooks r On b.Id = r.BookId
+                            LEFT OUTER JOIN [File] fl ON fl.Id = b.ImageId
                             Where b.LibraryId = @LibraryId
                             AND b.Id IN @BookList";
             var command3 = new CommandDefinition(sql3, new { LibraryId = libraryId, BookList = bookIds }, cancellationToken: cancellationToken);

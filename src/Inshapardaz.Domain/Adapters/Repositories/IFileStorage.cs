@@ -9,7 +9,7 @@ namespace Inshapardaz.Domain.Repositories
 
         Task<string> GetTextFile(string filePath, CancellationToken cancellationToken);
 
-        Task<string> StoreImage(string name, byte[] content, CancellationToken cancellationToken);
+        Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken);
 
         Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken);
 
@@ -22,5 +22,7 @@ namespace Inshapardaz.Domain.Repositories
         Task TryDeleteFile(string filePath, CancellationToken cancellationToken);
 
         Task TryDeleteImage(string filePath, CancellationToken cancellationToken);
+
+        string GetPublicUrl(string filePath);
     }
 }

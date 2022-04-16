@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Mappings
 {
@@ -11,7 +12,8 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 Name = source.Name,
                 Description = source.Description,
-                BookCount = source.BookCount
+                BookCount = source.BookCount,
+                AuthorType = source.AuthorType.ToDescription()
             };
 
         public static AuthorModel Map(this AuthorView source)
@@ -19,7 +21,8 @@ namespace Inshapardaz.Api.Mappings
             {
                 Id = source.Id,
                 Name = source.Name,
-                Description = source.Description
+                Description = source.Description,
+                AuthorType = source.AuthorType.ToEnum<AuthorTypes>(AuthorTypes.Writer)
             };
     }
 }

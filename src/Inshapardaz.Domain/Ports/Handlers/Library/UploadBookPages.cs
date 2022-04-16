@@ -71,7 +71,7 @@ namespace Inshapardaz.Domain.Models.Library
             {
                 var extension = Path.GetExtension(file.FileName).Trim('.');
                 var sequenceNumber = ++pageNumber;
-                var url = await AddImageToFileStore(command.BookId, sequenceNumber, $"{sequenceNumber}{extension}", file.Contents, cancellationToken);
+                var url = await AddImageToFileStore(command.BookId, sequenceNumber, $"{sequenceNumber:0000}.{extension}", file.Contents, file.MimeType, cancellationToken);
                 var fileModel = await _fileRepository.AddFile(new FileModel
                 {
                     IsPublic = false,
@@ -86,16 +86,15 @@ namespace Inshapardaz.Domain.Models.Library
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private async Task<string> AddImageToFileStore(int bookId, int sequenceNumber, string fileName, byte[] contents, CancellationToken cancellationToken)
+        private async Task<string> AddImageToFileStore(int bookId, int sequenceNumber, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
         {
             var filePath = GetUniqueFileName(bookId, sequenceNumber, fileName);
-            return await _fileStorage.StoreImage(filePath, contents, cancellationToken);
+            return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
         }
 
         private static string GetUniqueFileName(int bookId, int sequenceNumber, string fileName)
         {
-            var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"books/{bookId}/pages/{sequenceNumber}_{Guid.NewGuid():N}.{fileNameWithourExtension}";
+            return $"books/{bookId}/pages/{fileName}";
         }
     }
 }

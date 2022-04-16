@@ -16,11 +16,11 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task DeleteAuthor(int libraryId, int authorId, CancellationToken cancellationToken);
 
-        Task<Page<AuthorModel>> GetAuthors(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+        Task<Page<AuthorModel>> GetAuthors(int libraryId, AuthorTypes? authorType, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<AuthorModel> GetAuthorById(int libraryId, int authorId, CancellationToken cancellationToken);
 
-        Task<Page<AuthorModel>> FindAuthors(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
+        Task<Page<AuthorModel>> FindAuthors(int libraryId, string query, AuthorTypes? authorType, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
         Task<IEnumerable<AuthorModel>> GetAuthorByIds(int libraryId, IEnumerable<int> authorIds, CancellationToken cancellationToken);
     }

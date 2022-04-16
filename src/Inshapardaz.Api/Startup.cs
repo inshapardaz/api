@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authorization;
 using static Inshapardaz.Api.Helpers.AuthorizeAttribute;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Inshapardaz.Storage.S3;
 
 namespace Inshapardaz.Api
 {
@@ -93,6 +94,10 @@ namespace Inshapardaz.Api
             if (settings.FileStoreType == FileStoreTypes.AzureBlobStorage)
             {
                 services.AddTransient<IFileStorage, AzureFileStorage>();
+            }
+            if (settings.FileStoreType == FileStoreTypes.S3Storage)
+            {
+                services.AddTransient<IFileStorage, S3FileStorage>();
             }
             else
             {

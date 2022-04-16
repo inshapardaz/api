@@ -86,7 +86,7 @@ namespace Inshapardaz.Api.Tests.Fakes
             return Task.CompletedTask;
         }
 
-        public async Task<string> StoreImage(string name, byte[] content, CancellationToken cancellationToken)
+        public async Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
         {
             var url = GetUrl(name);
             SetupFileContents(url, content);
@@ -96,5 +96,10 @@ namespace Inshapardaz.Api.Tests.Fakes
         public Task DeleteImage(string filePath, CancellationToken cancellationToken) => DeleteFile(filePath, cancellationToken);
 
         public Task TryDeleteImage(string filePath, CancellationToken cancellationToken) => TryDeleteFile(filePath, cancellationToken);
+
+        public string GetPublicUrl(string filePath)
+        {
+            return filePath;
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace Inshapardaz.Domain.Models.Library
                     await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
                 }
 
-                var url = await AddImageToFileStore(periodical.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
+                var url = await AddImageToFileStore(periodical.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
                 await _fileRepository.UpdateFile(command.Image, cancellationToken);
@@ -73,7 +73,7 @@ namespace Inshapardaz.Domain.Models.Library
             else
             {
                 command.Image.Id = default(int);
-                var url = await AddImageToFileStore(periodical.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
+                var url = await AddImageToFileStore(periodical.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
                 command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
@@ -86,16 +86,16 @@ namespace Inshapardaz.Domain.Models.Library
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private async Task<string> AddImageToFileStore(int PeriodicalId, string fileName, byte[] contents, CancellationToken cancellationToken)
+        private async Task<string> AddImageToFileStore(int PeriodicalId, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
         {
             var filePath = GetUniqueFileName(PeriodicalId, fileName);
-            return await _fileStorage.StoreImage(filePath, contents, cancellationToken);
+            return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
         }
 
         private static string GetUniqueFileName(int PeriodicalId, string fileName)
         {
             var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"periodicals/{PeriodicalId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
+            return $"periodicals/{PeriodicalId}/title.{fileNameWithourExtension}";
         }
     }
 }

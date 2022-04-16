@@ -50,6 +50,7 @@ namespace Inshapardaz.Domain.Models.Library
             {
                 result.Name = command.Author.Name;
                 result.Description = command.Author.Description;
+                result.AuthorType = command.Author.AuthorType;
                 await _authorRepository.UpdateAuthor(command.LibraryId, result, cancellationToken);
                 command.Result.Author = command.Author;
             }

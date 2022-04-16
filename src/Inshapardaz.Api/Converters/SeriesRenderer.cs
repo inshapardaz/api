@@ -6,6 +6,7 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Repositories;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +24,13 @@ namespace Inshapardaz.Api.Converters
     {
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
+        private readonly IFileStorage _fileStorage;
 
-        public SeriesRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
+        public SeriesRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
         {
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
+            _fileStorage = fileStorage;
         }
 
         public PageView<SeriesView> Render(PageRendererArgs<SeriesModel> source, int libraryId)
@@ -128,7 +131,12 @@ namespace Inshapardaz.Api.Converters
 
             if (!string.IsNullOrWhiteSpace(series.ImageUrl))
             {
-                view.Links.Add(new LinkView { Href = series.ImageUrl, Method = "GET", Rel = RelTypes.Image, Accept = MimeTypes.Jpg });
+                view.Links.Add(new LinkView { 
+                    Href = _fileStorage.GetPublicUrl(series.ImageUrl), 
+                    Method = "GET", 
+                    Rel = RelTypes.Image, 
+                    Accept = MimeTypes.Jpg 
+                });
             }
             else if (series.ImageId.HasValue)
             {

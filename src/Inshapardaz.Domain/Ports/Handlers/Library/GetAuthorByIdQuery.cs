@@ -34,7 +34,7 @@ namespace Inshapardaz.Domain.Models.Library
         {
             var author = await _authorRepository.GetAuthorById(query.LibraryId, query.AuthorId, cancellationToken);
 
-            if (author != null && author.ImageId.HasValue)
+            if (author != null && author.ImageUrl == null && author.ImageId.HasValue)
             {
                 author.ImageUrl = await ImageHelper.TryConvertToPublicFile(author.ImageId.Value, _fileRepository, cancellationToken);
             }

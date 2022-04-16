@@ -71,7 +71,7 @@ namespace Inshapardaz.Domain.Models.Library
 
             foreach (var book in books.Data)
             {
-                if (book != null && book.ImageId.HasValue)
+                if (book != null && book.ImageUrl == null && book.ImageId.HasValue)
                 {
                     book.ImageUrl = await ImageHelper.TryConvertToPublicFile(book.ImageId.Value, _fileRepository, cancellationToken);
                 }

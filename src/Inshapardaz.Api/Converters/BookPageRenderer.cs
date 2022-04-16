@@ -4,7 +4,9 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Repositories;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,18 +20,20 @@ namespace Inshapardaz.Api.Converters
         PageView<BookPageView> Render(PageRendererArgs<BookPageModel, BookPageFilter> source, int libraryId, int bookId);
         PageView<BookPageView> RenderUserPages(PageRendererArgs<BookPageModel, BookPageFilter> source, int libraryId);
 
-        LinkView RenderImageLink(int imageId);
+        LinkView RenderImageLink(FileModel file);
     }
 
     public class BookPageRenderer : IRenderBookPage
     {
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
+        private readonly IFileStorage _fileStorage;
 
-        public BookPageRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
+        public BookPageRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
         {
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
+            _fileStorage = fileStorage;
         }
 
         public PageView<BookPageView> Render(PageRendererArgs<BookPageModel, BookPageFilter> source, int libraryId, int bookId)
@@ -179,9 +183,26 @@ namespace Inshapardaz.Api.Converters
                             Parameters = new { libraryId = libraryId, bookId = source.BookId }
                         })
                     };
-            if (source.ImageId.HasValue)
+
+            if (!string.IsNullOrWhiteSpace(source.ImageUrl))
             {
-                links.Add(RenderImageLink(source.ImageId.Value));
+                links.Add(new LinkView
+                {
+                    Href = _fileStorage.GetPublicUrl(source.ImageUrl),
+                    Method = "GET",
+                    Rel = RelTypes.Image,
+                    Accept = MimeTypes.Jpg
+                });
+            }
+            else if (source.ImageId.HasValue)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(FileController.GetFile),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Image,
+                    Parameters = new { fileId = source.ImageId.Value }
+                }));
             }
 
             if (source.PreviousPage != null)
@@ -293,14 +314,27 @@ namespace Inshapardaz.Api.Converters
             return result;
         }
 
-        public LinkView RenderImageLink(int imageId) =>
-            _linkRenderer.Render(new Link
+        public LinkView RenderImageLink(FileModel file)
+        {
+            if (!string.IsNullOrWhiteSpace(file.FilePath))
+            {
+                return new LinkView
+                {
+                    Href = _fileStorage.GetPublicUrl(file.FilePath),
+                    Method = "GET",
+                    Rel = RelTypes.Image,
+                    Accept = MimeTypes.Jpg
+                };
+            }
+
+            return _linkRenderer.Render(new Link
             {
                 ActionName = nameof(FileController.GetFile),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Image,
-                Parameters = new { fileId = imageId }
+                Parameters = new { fileId = file.Id }
             });
+        }
 
         private static Dictionary<string, string> CreateQueryString(PageRendererArgs<BookPageModel, BookPageFilter> source, PageView<BookPageView> page)
         {

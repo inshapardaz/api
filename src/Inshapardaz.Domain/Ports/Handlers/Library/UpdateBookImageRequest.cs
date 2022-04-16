@@ -65,7 +65,7 @@ namespace Inshapardaz.Domain.Models.Library
                     await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
                 }
 
-                var url = await AddImageToFileStore(book.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
+                var url = await AddImageToFileStore(book.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
 
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
@@ -76,7 +76,7 @@ namespace Inshapardaz.Domain.Models.Library
             else
             {
                 command.Image.Id = default(int);
-                var url = await AddImageToFileStore(book.Id, command.Image.FileName, command.Image.Contents, cancellationToken);
+                var url = await AddImageToFileStore(book.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
                 command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
@@ -88,16 +88,16 @@ namespace Inshapardaz.Domain.Models.Library
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private async Task<string> AddImageToFileStore(int bookId, string fileName, byte[] contents, CancellationToken cancellationToken)
+        private async Task<string> AddImageToFileStore(int bookId, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
         {
             var filePath = GetUniqueFileName(bookId, fileName);
-            return await _fileStorage.StoreImage(filePath, contents, cancellationToken);
+            return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
         }
 
         private static string GetUniqueFileName(int bookId, string fileName)
         {
             var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"books/{bookId}/{Guid.NewGuid():N}.{fileNameWithourExtension}";
+            return $"books/{bookId}/title.{fileNameWithourExtension}";
         }
     }
 }

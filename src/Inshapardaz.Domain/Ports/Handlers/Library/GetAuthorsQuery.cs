@@ -22,6 +22,8 @@ namespace Inshapardaz.Domain.Models.Library
         public int PageSize { get; private set; }
 
         public string Query { get; set; }
+
+        public AuthorTypes? AuthorType { get; set; }
     }
 
     public class GetAuthorsQueryHandler : QueryHandlerAsync<GetAuthorsQuery, Page<AuthorModel>>
@@ -38,12 +40,12 @@ namespace Inshapardaz.Domain.Models.Library
         public override async Task<Page<AuthorModel>> ExecuteAsync(GetAuthorsQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
             var authors = (string.IsNullOrWhiteSpace(query.Query))
-             ? await _authorRepository.GetAuthors(query.LibraryId, query.PageNumber, query.PageSize, cancellationToken)
-             : await _authorRepository.FindAuthors(query.LibraryId, query.Query, query.PageNumber, query.PageSize, cancellationToken);
+             ? await _authorRepository.GetAuthors(query.LibraryId, query.AuthorType, query.PageNumber, query.PageSize, cancellationToken)
+             : await _authorRepository.FindAuthors(query.LibraryId, query.Query, query.AuthorType, query.PageNumber, query.PageSize, cancellationToken);
 
             foreach (var author in authors.Data)
             {
-                if (author != null && author.ImageId.HasValue)
+                if (author != null && author.ImageUrl == null && author.ImageId.HasValue)
                 {
                     author.ImageUrl = await ImageHelper.TryConvertToPublicFile(author.ImageId.Value, _fileRepository, cancellationToken);
                 }

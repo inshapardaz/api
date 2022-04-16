@@ -20,7 +20,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                var sql = @"SELECT p.*, f.FilePath as ImageUrl,
+                            (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
                             FROM Periodical AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
@@ -50,11 +51,12 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                var sql = @"SELECT p.*, f.FilePath as ImageUrl, 
+                            (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
                             FROM Periodical AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
-                            And a.Title LIKE @Query
+                            And p.Title LIKE @Query
                             Order By p.Title
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -64,7 +66,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var periodicals = await connection.QueryAsync<PeriodicalModel>(command);
 
-                var sqlAuthorCount = "SELECT COUNT(*) FROM Periodical WHERE LibraryId = @LibraryId And a.Title LIKE @Query";
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Periodical WHERE LibraryId = @LibraryId And Title LIKE @Query";
                 var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, Query = query }, cancellationToken: cancellationToken));
 
                 return new Page<PeriodicalModel>
@@ -81,7 +83,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT p.*, f.FilePath as ImageUrl, (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
+                var sql = @"SELECT p.*, f.FilePath as ImageUrl, 
+                            (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount
                             FROM Periodical AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             Where p.LibraryId = @LibraryId
@@ -124,7 +127,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 {
                     Id = periodical.Id,
                     LibraryId = libraryId,
-                    Name = periodical.Title,
+                    Title = periodical.Title,
                     Description = periodical.Description,
                     CategoryId = periodical.CategoryId,
                     ImageId = periodical.ImageId,

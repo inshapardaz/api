@@ -61,6 +61,7 @@ namespace Inshapardaz.Domain.Models.Library
                 await _issueRepository.UpdateIssue(command.LibraryId, command.PeriodicalId, result, cancellationToken);
                 command.Result.Issue = command.Issue;
             }
+            command.Issue.PeriodicalId = command.PeriodicalId;
 
             return await base.HandleAsync(command, cancellationToken);
         }

@@ -9,19 +9,21 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteArticleContentRequest : LibraryBaseCommand
     {
-        public DeleteArticleContentRequest(int libraryId, int periodicalId, int issueId, int articleId, string language, string mimeType)
+        public DeleteArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language, string mimeType)
             : base(libraryId)
         {
             MimeType = mimeType;
             PeriodicalId = periodicalId;
-            IssueId = issueId;
+            VolumeNumber = volumeNumber;
+            IssueNumber = issueNumber;
             ArticleId = articleId;
             Language = language;
         }
 
         public string MimeType { get; }
         public int PeriodicalId { get; }
-        public int IssueId { get; }
+        public int VolumeNumber { get; }
+        public int IssueNumber { get; }
         public int ArticleId { get; }
         public string Language { get; }
     }
@@ -41,7 +43,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<DeleteArticleContentRequest> HandleAsync(DeleteArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var content = await _articleRepository.GetArticleContent(command.LibraryId, command.PeriodicalId, command.IssueId, command.ArticleId, command.Language, command.MimeType, cancellationToken);
+            var content = await _articleRepository.GetArticleContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, command.Language, command.MimeType, cancellationToken);
 
             if (content != null)
             {
@@ -51,7 +53,7 @@ namespace Inshapardaz.Domain.Models.Library
                 }
 
                 await _fileRepository.DeleteFile(content.FileId, cancellationToken);
-                await _articleRepository.DeleteArticleContentById(command.LibraryId, command.PeriodicalId, command.IssueId, command.ArticleId, cancellationToken);
+                await _articleRepository.DeleteArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

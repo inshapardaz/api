@@ -187,7 +187,7 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            if (!string.IsNullOrWhiteSpace(source.ImageUrl))
+            if (!string.IsNullOrWhiteSpace(source.ImageUrl) && _fileStorage.SupportsPublicLink)
             {
                 links.Add(new LinkView { 
                     Href = _fileStorage.GetPublicUrl(source.ImageUrl), 
@@ -364,7 +364,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (!string.IsNullOrWhiteSpace(source.ContentUrl))
+            if (!string.IsNullOrWhiteSpace(source.ContentUrl) && _fileStorage.SupportsPublicLink)
 
             {
                 links.Add(new LinkView

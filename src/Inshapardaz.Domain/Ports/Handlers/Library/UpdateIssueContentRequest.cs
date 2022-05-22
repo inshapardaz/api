@@ -11,17 +11,19 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class UpdateIssueContentRequest : LibraryBaseCommand
     {
-        public UpdateIssueContentRequest(int libraryId, int periodicalId, int issueId, string language, string mimeType)
+        public UpdateIssueContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
-            IssueId = issueId;
+            VolumeNumber = volumeNumber;
+            IssueNumber = issueNumber;
             Language = language;
             MimeType = mimeType;
         }
 
         public int PeriodicalId { get; }
-        public int IssueId { get; }
+        public int VolumeNumber { get; }
+        public int IssueNumber { get; }
 
         public string Language { get; }
         public string MimeType { get; }
@@ -52,10 +54,10 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<UpdateIssueContentRequest> HandleAsync(UpdateIssueContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var issue = await _issueRepository.GetIssueById(command.LibraryId, command.PeriodicalId, command.IssueId, cancellationToken);
+            var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
             if (issue != null)
             {
-                var issueContent = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.IssueId, command.Language, command.MimeType, cancellationToken);
+                var issueContent = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Language, command.MimeType, cancellationToken);
                 if (issueContent != null)
                 {
                     if (!string.IsNullOrWhiteSpace(issueContent.ContentUrl))
@@ -63,11 +65,12 @@ namespace Inshapardaz.Domain.Models.Library
                         await _fileStorage.TryDeleteFile(issueContent.ContentUrl, cancellationToken);
                     }
 
-                    var url = await StoreFile(command.PeriodicalId, command.IssueId, command.Content.FileName, command.Content.Contents, cancellationToken);
+                    var url = await StoreFile(command.PeriodicalId, command.IssueNumber, command.Content.FileName, command.Content.Contents, cancellationToken);
                     issueContent.ContentUrl = url;
                     await _issueRepository.UpdateIssueContentUrl(command.LibraryId,
                                                             command.PeriodicalId,
-                                                            command.IssueId,
+                                                            command.VolumeNumber,
+                                                            command.IssueNumber,
                                                             command.Language,
                                                             command.MimeType,
                                                             url, cancellationToken);
@@ -76,14 +79,14 @@ namespace Inshapardaz.Domain.Models.Library
                 }
                 else
                 {
-                    var url = await StoreFile(command.PeriodicalId, command.IssueId, command.Content.FileName, command.Content.Contents, cancellationToken);
+                    var url = await StoreFile(command.PeriodicalId, command.IssueNumber, command.Content.FileName, command.Content.Contents, cancellationToken);
                     command.Content.FilePath = url;
                     command.Content.IsPublic = issue.IsPublic;
                     var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-                    await _issueRepository.AddIssueContent(command.LibraryId, command.PeriodicalId, command.IssueId, file.Id, command.Language, command.MimeType, cancellationToken);
+                    await _issueRepository.AddIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, file.Id, command.Language, command.MimeType, cancellationToken);
 
                     command.Result.HasAddedNew = true;
-                    command.Result.Content = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.IssueId, command.Language, command.MimeType, cancellationToken); ;
+                    command.Result.Content = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Language, command.MimeType, cancellationToken); ;
                 }
             }
 

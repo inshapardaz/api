@@ -123,7 +123,7 @@ namespace Inshapardaz.Api.Converters
 
             links.Add(_linkRenderer.Render(new Link
             {
-                ActionName = nameof(BookPageController.GetPagesByUser),
+                ActionName = nameof(UserController.GetPagesByUser),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
                 Parameters = new { libraryId = libraryId },
@@ -137,7 +137,7 @@ namespace Inshapardaz.Api.Converters
 
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(BookPageController.GetPagesByUser),
+                    ActionName = nameof(UserController.GetPagesByUser),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Next,
                     Parameters = new { libraryId = libraryId },
@@ -151,7 +151,7 @@ namespace Inshapardaz.Api.Converters
                 pageQuery.Add("pageNumber", (page.CurrentPageIndex - 1).ToString());
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(BookPageController.GetPagesByUser),
+                    ActionName = nameof(UserController.GetPagesByUser),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Previous,
                     Parameters = new { libraryId = libraryId },
@@ -184,7 +184,7 @@ namespace Inshapardaz.Api.Converters
                         })
                     };
 
-            if (!string.IsNullOrWhiteSpace(source.ImageUrl))
+            if (!string.IsNullOrWhiteSpace(source.ImageUrl) && _fileStorage.SupportsPublicLink)
             {
                 links.Add(new LinkView
                 {
@@ -316,7 +316,7 @@ namespace Inshapardaz.Api.Converters
 
         public LinkView RenderImageLink(FileModel file)
         {
-            if (!string.IsNullOrWhiteSpace(file.FilePath))
+            if (!string.IsNullOrWhiteSpace(file.FilePath) && _fileStorage.SupportsPublicLink)
             {
                 return new LinkView
                 {

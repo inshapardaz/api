@@ -121,7 +121,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Update Periodical
-                            Set Title = @Title, Description = @Description, CategoryId = @CategoryId, ImageId = @ImageId
+                            Set Title = @Title, Description = @Description, CategoryId = @CategoryId
                             Where Id = @Id AND LibraryId = @LibraryId";
                 var parameter = new
                 {
@@ -130,7 +130,24 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     Title = periodical.Title,
                     Description = periodical.Description,
                     CategoryId = periodical.CategoryId,
-                    ImageId = periodical.ImageId,
+                };
+                var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
+                await connection.ExecuteScalarAsync<int>(command);
+            }
+        }
+
+        public async Task UpdatePeriodicalImage(int libraryId, int periodicalId, int imageId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update Periodical
+                            Set Imageid = @ImageId
+                            Where Id = @Id AND LibraryId = @LibraryId";
+                var parameter = new
+                {
+                    Id = periodicalId,
+                    LibraryId = libraryId,
+                    Imageid = imageId
                 };
                 var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);

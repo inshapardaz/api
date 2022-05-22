@@ -367,5 +367,32 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<IEnumerable<UserPageSummaryItem>> GetUserPageSummary(int libraryId, int accountId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT 1 As Status, Count(BookPage.Id) As Count 
+                            FROM BookPage INNER JOIN Book ON Book.Id = BookPage.BookId
+                            WHERE Book.LibraryId = @LibraryId AND BookPage.[Status] = 1 AND BookPage.WriterAccountId = @AccountId
+                            UNION
+                            SELECT 2 As Status, Count(BookPage.Id) As Count 
+                            FROM BookPage INNER JOIN Book ON Book.Id = BookPage.BookId
+                            WHERE Book.LibraryId = @LibraryId AND BookPage.[Status] = 2 AND BookPage.WriterAccountId = @AccountId
+                            UNION
+                            SELECT 3 As Status, Count(BookPage.Id) As Count 
+                            FROM BookPage INNER JOIN Book ON Book.Id = BookPage.BookId
+                            WHERE Book.LibraryId = @LibraryId AND BookPage.[Status] = 3 AND BookPage.ReviewerAccountId = @AccountId
+                            UNION
+                            SELECT 4 As Status, Count(BookPage.Id) As Count 
+                            FROM BookPage INNER JOIN Book ON Book.Id = BookPage.BookId
+                            WHERE Book.LibraryId = @LibraryId AND BookPage.[Status] = 4 AND BookPage.ReviewerAccountId = @AccountId";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    AccountId = accountId
+                }, cancellationToken: cancellationToken);
+                return await connection.QueryAsync<UserPageSummaryItem>(command);
+            }
+        }
     }
 }

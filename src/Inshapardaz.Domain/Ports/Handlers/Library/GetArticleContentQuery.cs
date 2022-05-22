@@ -10,19 +10,21 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetArticleContentQuery : LibraryBaseQuery<ArticleContentModel>
     {
-        public GetArticleContentQuery(int libraryId, int periodicalId, int issueId, int articleId, string language, string mimeType)
+        public GetArticleContentQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language, string mimeType)
             : base(libraryId)
         {
             MimeType = mimeType;
             PeriodicalId = periodicalId;
-            IssueId = issueId;
+            VolumeNumber = volumeNumber;
+            IssueNumber = issueNumber;
             ArticleId = articleId;
             Language = language;
         }
 
         public string MimeType { get; set; }
         public int PeriodicalId { get; }
-        public int IssueId { get; }
+        public int VolumeNumber { get; }
+        public int IssueNumber { get; }
         public int ArticleId { get; }
         public string Language { get; set; }
     }
@@ -44,7 +46,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<ArticleContentModel> ExecuteAsync(GetArticleContentQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.IssueId, command.ArticleId, command.Language, command.MimeType, cancellationToken);
+            return await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, command.Language, command.MimeType, cancellationToken);
         }
     }
 }

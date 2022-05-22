@@ -129,7 +129,7 @@ namespace Inshapardaz.Api.Converters
                 }
             }));
 
-            if (!string.IsNullOrWhiteSpace(series.ImageUrl))
+            if (!string.IsNullOrWhiteSpace(series.ImageUrl) && _fileStorage.SupportsPublicLink)
             {
                 view.Links.Add(new LinkView { 
                     Href = _fileStorage.GetPublicUrl(series.ImageUrl), 

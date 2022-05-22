@@ -10,6 +10,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories
     {
         private readonly IProvideConnection _connectionProvider;
 
+        public bool SupportsPublicLink => false;
+
         public DatabaseFileStorage(IProvideConnection connectionProvider)
         {
             _connectionProvider = connectionProvider;

@@ -7,7 +7,7 @@ namespace Inshapardaz.Domain.Repositories.Library
 {
     public interface IIssueRepository
     {
-        Task<IssueModel> GetIssueById(int libraryId, int periodicalId, int issueId, CancellationToken cancellationToken);
+        Task<IssueModel> GetIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken);
 
         Task<Page<IssueModel>> GetIssues(int libraryId, int periodicalId, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
@@ -15,15 +15,15 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task UpdateIssue(int libraryId, int periodicalId, IssueModel issue, CancellationToken cancellationToken);
 
-        Task DeleteIssue(int libraryId, int issueId, CancellationToken cancellationToken);
+        Task DeleteIssue(int libraryId, int volumeNumber, int issueNumber, CancellationToken cancellationToken);
 
-        Task AddIssueContent(int libraryId, int periodicalId, int issueId, int fileId, string language, string mimeType, CancellationToken cancellationToken);
+        Task AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int fileId, string language, string mimeType, CancellationToken cancellationToken);
 
-        Task<IssueContentModel> GetIssueContent(int libraryId, int periodicalId, int issueId, string language, string mimeType, CancellationToken cancellationToken);
+        Task<IssueContentModel> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, CancellationToken cancellationToken);
 
-        Task UpdateIssueContentUrl(int libraryId, int periodicalId, int issueId, string language, string mimeType, string url, CancellationToken cancellationToken);
+        Task UpdateIssueContentUrl(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, string url, CancellationToken cancellationToken);
 
-        Task DeleteIssueContent(int libraryId, int periodicalId, int issueId, string language, string mimeType, CancellationToken cancellationToken);
-        Task UpdateIssueContent(int libraryId, int periodicalId, int issueId, int articleId, string language, string mimeType, string actualUrl, CancellationToken cancellationToken);
+        Task DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, CancellationToken cancellationToken);
+        Task UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language, string mimeType, string actualUrl, CancellationToken cancellationToken);
     }
 }

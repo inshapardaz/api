@@ -16,9 +16,9 @@ namespace Inshapardaz.Api.Converters
     {
         ArticleContentView Render(ArticleContentModel source, int libraryId);
 
-        ArticleView Render(ArticleModel source, int libraryId, int periodicalId, int issueId);
+        ArticleView Render(ArticleModel source, int libraryId, int periodicalId, int volumeNumber, int issueNumber);
 
-        ListView<ArticleView> Render(IEnumerable<ArticleModel> source, int libraryId, int periodicalId, int issueId);
+        ListView<ArticleView> Render(IEnumerable<ArticleModel> source, int libraryId, int periodicalId, int volumeNumber, int issueNumber);
     }
 
     public class ArticleRenderer : IRenderArticle
@@ -32,9 +32,9 @@ namespace Inshapardaz.Api.Converters
             _userHelper = userHelper;
         }
 
-        public ListView<ArticleView> Render(IEnumerable<ArticleModel> source, int libraryId, int periodicalId, int issueId)
+        public ListView<ArticleView> Render(IEnumerable<ArticleModel> source, int libraryId, int periodicalId, int volumeNumber, int issueNumber)
         {
-            var items = source.Select(c => Render(c, libraryId, periodicalId, issueId)).ToList();
+            var items = source.Select(c => Render(c, libraryId, periodicalId, volumeNumber, issueNumber)).ToList();
             var view = new ListView<ArticleView> { Data = items };
 
             view.Links.Add(_linkRenderer.Render(new Link
@@ -42,7 +42,7 @@ namespace Inshapardaz.Api.Converters
                 ActionName = nameof(ArticleController.GetArticlesByIssue),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
-                Parameters = new { libraryId = libraryId, periodicalId = periodicalId, issueId = issueId }
+                Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber }
             }));
 
             if (_userHelper.IsWriter(libraryId))
@@ -52,14 +52,14 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.CreateArticle),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.Create,
-                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, issueId = issueId }
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber }
                 }));
             }
 
             return view;
         }
 
-        public ArticleView Render(ArticleModel source, int libraryId, int periodicalId, int issueId)
+        public ArticleView Render(ArticleModel source, int libraryId, int periodicalId, int volumeNumber, int issueNumber)
         {
             var result = source.Map();
             var links = new List<LinkView>
@@ -69,7 +69,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.GetArticleById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
-                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, issueId = issueId, articleId = source.Id }
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, articleId = source.Id }
                 }),
                 _linkRenderer.Render(new Link
                 {
@@ -83,7 +83,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.GetIssueById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Issue,
-                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, issueId = issueId }
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber }
                 })
             };
 
@@ -94,7 +94,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.UpdateArticle),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
-                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, issueId = issueId, articleId = source.Id }
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, articleId = source.Id }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -102,7 +102,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.DeleteArticle),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
-                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, issueId = issueId, articleId = source.Id }
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, articleId = source.Id }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -110,7 +110,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.CreateArticleContent),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.AddContent,
-                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, issueId = issueId, articleId = source.Id }
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, articleId = source.Id }
                 }));
             }
 
@@ -142,21 +142,21 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Self,
                     MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueId = source.IssueId, articleId = source.ArticleId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, articleId = source.ArticleId }
                 }),
                 _linkRenderer.Render(new Link
                 {
                     ActionName = nameof(ArticleController.GetArticleById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Article,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueId = source.IssueId, articleId = source.ArticleId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, articleId = source.ArticleId }
                 }),
                 _linkRenderer.Render(new Link
                 {
                     ActionName = nameof(IssueController.GetIssueById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Issue,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueId = source.IssueId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId }
                 })
             };
 
@@ -174,7 +174,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Update,
                     MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueId = source.IssueId, articleId = source.ArticleId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, articleId = source.ArticleId }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -184,7 +184,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Delete,
                     MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueId = source.IssueId, articleId = source.ArticleId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, articleId = source.ArticleId }
                 }));
             }
 

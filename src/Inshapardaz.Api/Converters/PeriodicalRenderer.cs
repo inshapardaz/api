@@ -131,7 +131,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (!string.IsNullOrWhiteSpace(source.ImageUrl))
+            if (!string.IsNullOrWhiteSpace(source.ImageUrl) && _fileStorage.SupportsPublicLink)
             {
                 links.Add(new LinkView
                 {
@@ -167,6 +167,14 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(PeriodicalController.DeletePeriodical),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
+                    Parameters = new { libraryId = libraryId, periodicalId = source.Id }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(IssueController.CreateIssue),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.CreateIssue,
                     Parameters = new { libraryId = libraryId, periodicalId = source.Id }
                 }));
 

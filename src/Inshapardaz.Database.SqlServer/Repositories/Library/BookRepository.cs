@@ -325,6 +325,65 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, BookStatuses status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
+                var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
+                var assignmentfilter = string.Empty;
+                if (status == BookStatuses.BeingTyped)
+                {
+                    assignmentfilter = "AND bp.WriterAccountId = @AccountId";
+                }
+                else if (status == BookStatuses.ProofRead)
+                {
+                    assignmentfilter = "AND bp.ReviewerAccountId = @AccountId";
+                }
+                var param = new
+                {
+                    LibraryId = libraryId,
+                    PageSize = pageSize,
+                    PageNumber = pageNumber,
+                    AccountId = accountId,
+                    StatusFilter = status
+                };
+
+                var sql = @"Select b.Id
+                            From Book b
+                            INNER Join BookPage bp on bp.BookId = b.Id
+                            Where b.LibraryId = @LibraryId
+                            AND b.Status = @StatusFilter " +
+                            assignmentfilter +
+                            $" ORDER BY {sortByQuery} {sortDirection} " +
+                            @"OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+
+                var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
+
+                var bookIds = await connection.QueryAsync(command);
+
+                var sqlCount = @"Select COUNT(b.Id)
+                            From Book b
+                            INNER Join BookPage bp on bp.BookId = b.Id
+                            Where b.LibraryId = @LibraryId
+                            AND b.Status = @StatusFilter " +
+                            assignmentfilter;
+
+                var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
+
+                var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
+
+                return new Page<BookModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = bookCount,
+                    Data = books
+                };
+            }
+        }
+
         public async Task<BookModel> GetBookById(int libraryId, int bookId, int? AccountId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())

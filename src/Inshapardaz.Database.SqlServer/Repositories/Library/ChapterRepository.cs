@@ -103,13 +103,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var chapters = new Dictionary<int, ChapterModel>();
 
-                var sql = @"Select c.*, cc.* From Chapter c
+                var sql = @"Select c.*, cc.Id as ContentId, cc.Language As ContentLanguage 
+                            From Chapter c
                             Inner Join Book b On b.Id = c.BookId
                             Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
                             Where b.Id = @BookId AND b.LibraryId = @LibraryId
                             Order By c.ChapterNumber";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ChapterModel, ChapterContentModel, ChapterModel>(command, (c, cc) =>
+                await connection.QueryAsync<ChapterModel, int?, string, ChapterModel>(command, (c, contentId, contentLangugage) =>
                 {
                     if (!chapters.TryGetValue(c.Id, out ChapterModel chapter))
                     {
@@ -117,20 +118,21 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     }
 
                     chapter = chapters[c.Id];
-                    if (cc != null)
+                    if (contentId != null)
                     {
-                        cc.BookId = bookId;
-                        var content = chapter.Contents.SingleOrDefault(x => x.Id == cc.Id);
+                        var content = chapter.Contents.SingleOrDefault(x => x.Id == contentId);
                         if (content == null)
                         {
-                            cc.ChapterNumber = c.ChapterNumber;
-                            // TODO: remove contents as contents should be returned later
+                            ChapterContentModel cc = new ChapterContentModel();
+                            cc.BookId = bookId;
+                            cc.Id = contentId.Value;
+                            cc.Language = contentLangugage;
                             chapter.Contents.Add(cc);
                         }
                     }
 
                     return chapter;
-                });
+                }, splitOn: "ContentId,ContentLanguage");
 
                 return chapters.Values;
             }

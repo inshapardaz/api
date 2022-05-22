@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
         Task<IEnumerable<BookPageModel>> GetAllPagesByBook(int libraryId, int bookId, CancellationToken cancellationToken);
 
         Task DeletePageImage(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken);
-
+        Task<IEnumerable<UserPageSummaryItem>> GetUserPageSummary(int libraryId, int accountId, CancellationToken cancellationToken);
         Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, PageStatuses status, AssignmentFilter assignmentFilter, int? assignedTo, CancellationToken cancellationToken);
         Task<Page<BookPageModel>> GetPagesByUser(int libraryId, int assignedTo, PageStatuses statusFilter, int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<IEnumerable<BookPageModel>> GetPagesByBookChapter(int libraryId, int bookId, int chapterId, CancellationToken cancellationToken);

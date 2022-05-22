@@ -8,16 +8,17 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetIssueByIdQuery : LibraryBaseQuery<IssueModel>
     {
-        public GetIssueByIdQuery(int libraryId, int periodicalId, int issueId)
+        public GetIssueByIdQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
-            IssueId = issueId;
+            VolumeNumber = volumeNumber;
+            IssueNumber = issueNumber;
         }
 
         public int PeriodicalId { get; private set; }
-
-        public int IssueId { get; }
+        public int VolumeNumber { get; }
+        public int IssueNumber { get; }
     }
 
     public class GetIssueByIdQueryHandler : QueryHandlerAsync<GetIssueByIdQuery, IssueModel>
@@ -31,7 +32,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<IssueModel> ExecuteAsync(GetIssueByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _issueRepository.GetIssueById(command.LibraryId, command.PeriodicalId, command.IssueId, cancellationToken);
+            return await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
         }
     }
 }

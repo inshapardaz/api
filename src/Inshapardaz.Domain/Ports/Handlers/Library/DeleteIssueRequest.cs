@@ -8,16 +8,17 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteIssueRequest : LibraryBaseCommand
     {
-        public DeleteIssueRequest(int libraryId, int periodicalId, int issueId)
+        public DeleteIssueRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
-            IssueId = issueId;
+            VolumeNumber = volumeNumber;
+            IssueNumber = issueNumber;
         }
 
         public int PeriodicalId { get; private set; }
-
-        public int IssueId { get; }
+        public int VolumeNumber { get; }
+        public int IssueNumber { get; }
     }
 
     public class DeleteIssueRequestHandler : RequestHandlerAsync<DeleteIssueRequest>
@@ -31,7 +32,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<DeleteIssueRequest> HandleAsync(DeleteIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            await _issueRepository.DeleteIssue(command.PeriodicalId, command.IssueId, cancellationToken);
+            await _issueRepository.DeleteIssue(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

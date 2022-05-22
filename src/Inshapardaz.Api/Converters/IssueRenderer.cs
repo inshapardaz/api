@@ -93,7 +93,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.GetIssues),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Previous,
-                    Parameters = new { libraryId = libraryId },
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId },
                     QueryString = new Dictionary<string, string>()
                     {
                         { "pageNumber" , (page.CurrentPageIndex - 1).ToString() },
@@ -118,18 +118,18 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.GetIssueById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
-                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, IssueNumber = source.IssueNumber }
+                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, VolumeNumber = source.VolumeNumber, IssueNumber = source.IssueNumber }
                 }),
                 _linkRenderer.Render(new Link
                 {
                     ActionName = nameof(ArticleController.GetArticlesByIssue),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Articles,
-                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, IssueNumber = source.IssueNumber }
+                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, VolumeNumber = source.VolumeNumber, IssueNumber = source.IssueNumber }
                 })
             };
 
-            if (!string.IsNullOrWhiteSpace(source.ImageUrl))
+            if (!string.IsNullOrWhiteSpace(source.ImageUrl) && _fileStorage.SupportsPublicLink)
 
             {
                 links.Add(new LinkView
@@ -158,7 +158,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.UpdateIssue),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
-                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, IssueNumber = source.IssueNumber }
+                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, VolumeNumber = source.VolumeNumber, IssueNumber = source.IssueNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -166,7 +166,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.DeleteIssue),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
-                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, IssueNumber = source.IssueNumber }
+                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, VolumeNumber = source.VolumeNumber, IssueNumber = source.IssueNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -174,7 +174,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(IssueController.UpdateIssueImage),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.ImageUpload,
-                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, IssueNumber = source.IssueNumber }
+                    Parameters = new { libraryId = libraryId, PeriodicalId = source.PeriodicalId, VolumeNumber = source.VolumeNumber,  IssueNumber = source.IssueNumber }
                 }));
             }
 

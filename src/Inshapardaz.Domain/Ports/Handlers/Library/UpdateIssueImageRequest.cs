@@ -12,16 +12,17 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class UpdateIssueImageRequest : LibraryBaseCommand
     {
-        public UpdateIssueImageRequest(int libraryId, int periodicalId, int issueId)
+        public UpdateIssueImageRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
-            IssueId = issueId;
+            VolumeNumber = volumeNumber;
+            IssueNumber = issueNumber;
         }
 
         public int PeriodicalId { get; private set; }
-
-        public int IssueId { get; }
+        public int VolumeNumber { get; }
+        public int IssueNumber { get; }
 
         public FileModel Image { get; set; }
 
@@ -50,7 +51,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<UpdateIssueImageRequest> HandleAsync(UpdateIssueImageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var issue = await _issueRepository.GetIssueById(command.LibraryId, command.PeriodicalId, command.IssueId, cancellationToken);
+            var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
             if (issue == null)
             {
@@ -66,7 +67,7 @@ namespace Inshapardaz.Domain.Models.Library
                     await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
                 }
 
-                var url = await AddImageToFileStore(command.PeriodicalId, issue.IssueNumber, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
+                var url = await AddImageToFileStore(command.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
 
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
@@ -77,7 +78,7 @@ namespace Inshapardaz.Domain.Models.Library
             else
             {
                 command.Image.Id = default;
-                var url = await AddImageToFileStore(command.PeriodicalId, issue.IssueNumber, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
+                var url = await AddImageToFileStore(command.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
                 command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
@@ -90,16 +91,16 @@ namespace Inshapardaz.Domain.Models.Library
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private async Task<string> AddImageToFileStore(int periodicalId, int issueNumber, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
+        private async Task<string> AddImageToFileStore(int periodicalId, int volumeNumber, int issueNumber, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
         {
-            var filePath = GetUniqueFileName(periodicalId, issueNumber, fileName);
+            var filePath = GetUniqueFileName(periodicalId, volumeNumber, issueNumber, fileName);
             return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
         }
 
-        private static string GetUniqueFileName(int periodicalId, int issueNumber, string fileName)
+        private static string GetUniqueFileName(int periodicalId, int volumeNumber, int issueNumber, string fileName)
         {
             var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"periodicals/{periodicalId}/issues/{issueNumber}/title.{fileNameWithourExtension}";
+            return $"periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/title.{fileNameWithourExtension}";
         }
     }
 }

@@ -79,8 +79,7 @@ namespace Inshapardaz.Domain.Models.Library
                 command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
                 command.Result.HasAddedNew = true;
 
-                periodical.ImageId = command.Result.File.Id;
-                await _periodicalRepository.UpdatePeriodical(command.LibraryId, periodical, cancellationToken);
+                await _periodicalRepository.UpdatePeriodicalImage(command.LibraryId, periodical.Id, command.Result.File.Id, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

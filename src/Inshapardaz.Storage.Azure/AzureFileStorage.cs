@@ -18,6 +18,8 @@ namespace Inshapardaz.Storage.Azure
             _storageConnectionString = settings.FileStorageConnectionString;
         }
 
+        public bool SupportsPublicLink => true;
+
         public async Task DeleteFile(string filePath, CancellationToken cancellationToken)
         {
             var container = GetContainer();

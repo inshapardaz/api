@@ -211,9 +211,33 @@ namespace Inshapardaz.Api.Converters
 
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(BookPageController.GetPagesByUser),
+                    ActionName = nameof(UserController.GetPagesByUser),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.MyPages,
+                    Parameters = new { libraryId = model.Id }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(UserController.GetBooksByUser),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.MyPublishing,
+                    Parameters = new { libraryId = model.Id }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(UserController.GetUserPublicationSummary),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.MyPublishingSummary,
+                    Parameters = new { libraryId = model.Id }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(PeriodicalController.CreatePeriodical),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.CreatePeriodical,
                     Parameters = new { libraryId = model.Id }
                 }));
             }

@@ -49,10 +49,10 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_issueRenderer.Render(args, libraryId, periodicalId));
         }
 
-        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueNumber}", Name = nameof(IssueController.GetIssueById))]
-        public async Task<IActionResult> GetIssueById(int libraryId, int periodicalId, int issueNumber, CancellationToken token = default(CancellationToken))
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}", Name = nameof(IssueController.GetIssueById))]
+        public async Task<IActionResult> GetIssueById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default(CancellationToken))
         {
-            var query = new GetIssueByIdQuery(libraryId, periodicalId, issueNumber);
+            var query = new GetIssueByIdQuery(libraryId, periodicalId, volumeNumber, issueNumber);
             var issues = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             if (issues != null)
@@ -66,7 +66,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/periodicals{periodicalId}/issues", Name = nameof(IssueController.CreateIssue))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> CreateIssue(int libraryId, int periodicalId, IssueView issue, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateIssue(int libraryId, int periodicalId, [FromBody]IssueView issue, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {
@@ -80,16 +80,16 @@ namespace Inshapardaz.Api.Controllers
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
-        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueNumber}", Name = nameof(IssueController.UpdateIssue))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}", Name = nameof(IssueController.UpdateIssue))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateIssue(int libraryId, int periodicalId, int issueNumber, [FromBody] IssueView issue, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, [FromBody] IssueView issue, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new UpdateIssueRequest(libraryId, periodicalId, issueNumber, issue.Map());
+            var request = new UpdateIssueRequest(libraryId, periodicalId, volumeNumber, issueNumber, issue.Map());
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _issueRenderer.Render(request.Result.Issue, libraryId);
@@ -103,18 +103,18 @@ namespace Inshapardaz.Api.Controllers
             }
         }
 
-        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueNumber}", Name = nameof(IssueController.DeleteIssue))]
+        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}", Name = nameof(IssueController.DeleteIssue))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> DeleteIssue(int libraryId, int periodicalId, int issueNumber, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> DeleteIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default(CancellationToken))
         {
-            var request = new DeleteIssueRequest(libraryId, periodicalId, issueNumber);
+            var request = new DeleteIssueRequest(libraryId, periodicalId, volumeNumber, issueNumber);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }
 
-        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueNumber}/image", Name = nameof(IssueController.UpdateIssueImage))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/image", Name = nameof(IssueController.UpdateIssueImage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateIssueImage(int libraryId, int periodicalId, int issueNumber, IFormFile file, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateIssueImage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
             using (var stream = new MemoryStream(content))
@@ -122,7 +122,7 @@ namespace Inshapardaz.Api.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            var request = new UpdateIssueImageRequest(libraryId, periodicalId, issueNumber)
+            var request = new UpdateIssueImageRequest(libraryId, periodicalId, volumeNumber, issueNumber)
             {
                 Image = new Domain.Models.FileModel
                 {
@@ -143,9 +143,9 @@ namespace Inshapardaz.Api.Controllers
             return new OkResult();
         }
 
-        [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueNumber}/content", Name = nameof(IssueController.CreateIssueContent))]
+        [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/content", Name = nameof(IssueController.CreateIssueContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> CreateIssueContent(int libraryId, int periodicalId, int issueNumber, IFormFile file, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
             using (var stream = new MemoryStream(content))
@@ -155,7 +155,7 @@ namespace Inshapardaz.Api.Controllers
             var language = Request.Headers["Accept-Language"];
             var mimeType = file.ContentType;
 
-            var request = new AddIssueContentRequest(libraryId, periodicalId, issueNumber, language, mimeType)
+            var request = new AddIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, language, mimeType)
             {
                 Content = new FileModel
                 {
@@ -177,9 +177,9 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueNumber}/content", Name = nameof(IssueController.UpdateIssueContent))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/content", Name = nameof(IssueController.UpdateIssueContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateIssueContent(int libraryId, int periodicalId, int issueNumber, IFormFile file, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
             using (var stream = new MemoryStream(content))
@@ -189,7 +189,7 @@ namespace Inshapardaz.Api.Controllers
             var language = Request.Headers["Accept-Language"];
             var mimeType = file.ContentType;
 
-            var request = new UpdateIssueContentRequest(libraryId, periodicalId, issueNumber, language, mimeType)
+            var request = new UpdateIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, language, mimeType)
             {
                 Content = new FileModel
                 {
@@ -219,14 +219,14 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/issues/{issueNumber}/content", Name = nameof(IssueController.DeleteIssueContent))]
+        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/content", Name = nameof(IssueController.DeleteIssueContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> DeleteIssueContent(int libraryId, int periodicalId, int issueNumber, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default(CancellationToken))
         {
             var mimeType = Request.Headers["Content-Type"];
             var language = Request.Headers["Accept-Language"];
 
-            var request = new DeleteIssueContentRequest(libraryId, periodicalId, issueNumber, language, mimeType);
+            var request = new DeleteIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, language, mimeType);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

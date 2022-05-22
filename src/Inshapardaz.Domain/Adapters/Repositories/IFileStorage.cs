@@ -5,6 +5,8 @@ namespace Inshapardaz.Domain.Repositories
 {
     public interface IFileStorage
     {
+        bool SupportsPublicLink { get; }
+
         Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken);
 
         Task<string> GetTextFile(string filePath, CancellationToken cancellationToken);

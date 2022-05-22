@@ -21,6 +21,7 @@
     <PackageReference Include="Paramore.Darker" Version="2.0.78" />
     <PackageReference Include="PDFium.Windows" Version="1.0.0" />
     <PackageReference Include="PDFiumSharp" Version="0.1.1-beta" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.0" />

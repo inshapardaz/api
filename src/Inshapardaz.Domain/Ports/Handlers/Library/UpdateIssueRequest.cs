@@ -8,17 +8,18 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class UpdateIssueRequest : LibraryBaseCommand
     {
-        public UpdateIssueRequest(int libraryId, int periodicalId, int issueId, IssueModel issue)
+        public UpdateIssueRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IssueModel issue)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
-            IssueId = issueId;
+            VolumeNumber = volumeNumber;
+            IssueNumber = issueNumber;
             Issue = issue;
         }
 
         public int PeriodicalId { get; private set; }
-
-        public int IssueId { get; set; }
+        public int VolumeNumber { get; }
+        public int IssueNumber { get; set; }
 
         public IssueModel Issue { get; }
 
@@ -43,7 +44,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<UpdateIssueRequest> HandleAsync(UpdateIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _issueRepository.GetIssueById(command.LibraryId, command.PeriodicalId, command.IssueId, cancellationToken);
+            var result = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
             if (result == null)
             {

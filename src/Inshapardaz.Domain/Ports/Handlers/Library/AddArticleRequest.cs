@@ -10,17 +10,19 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddArticleRequest : LibraryBaseCommand
     {
-        public AddArticleRequest(int libraryId, int peridicalId, int issueId, ArticleModel article)
+        public AddArticleRequest(int libraryId, int peridicalId, int volumeNumber, int issueNumber, ArticleModel article)
             : base(libraryId)
         {
             PeridicalId = peridicalId;
-            IssueId = issueId;
+            VolumeNumber = volumeNumber;
+            IssueNumber = issueNumber;
             Article = article;
         }
 
         public ArticleModel Result { get; set; }
         public int PeridicalId { get; }
-        public int IssueId { get; }
+        public int VolumeNumber { get; }
+        public int IssueNumber { get; }
         public ArticleModel Article { get; }
     }
 
@@ -37,13 +39,13 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<AddArticleRequest> HandleAsync(AddArticleRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var issue = await _issueRepository.GetIssueById(command.LibraryId, command.PeridicalId, command.IssueId, cancellationToken);
+            var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeridicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
             if (issue == null)
             {
                 throw new BadRequestException();
             }
 
-            command.Result = await _articleRepository.AddArticle(command.LibraryId, command.PeridicalId, command.IssueId, command.Article, cancellationToken);
+            command.Result = await _articleRepository.AddArticle(command.LibraryId, command.PeridicalId, issue.Id, command.Article, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

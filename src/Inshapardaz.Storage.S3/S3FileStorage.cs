@@ -20,6 +20,8 @@ namespace Inshapardaz.Storage.S3
             _bucketName = settings.S3BucketName;
         }
 
+        public bool SupportsPublicLink => true;
+
         public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
         {
             var client = GetClient();

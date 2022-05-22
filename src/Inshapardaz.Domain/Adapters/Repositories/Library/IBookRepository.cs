@@ -25,7 +25,7 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task DeleteBookFromRecent(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
 
         Task AddBookToFavorites(int libraryId, int? accountId, int bookId, CancellationToken cancellationToken);
-
+        Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, BookStatuses status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
         Task DeleteBookFromFavorites(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
 
         Task AddBookContent(int bookId, int fileId, string language, string mimeType, CancellationToken cancellationToken);

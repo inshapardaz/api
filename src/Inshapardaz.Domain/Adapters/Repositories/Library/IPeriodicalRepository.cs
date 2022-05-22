@@ -18,5 +18,6 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task UpdatePeriodical(int libraryId, PeriodicalModel periodical, CancellationToken cancellationToken);
 
         Task DeletePeriodical(int libraryId, int periodicalId, CancellationToken cancellationToken);
+        Task UpdatePeriodicalImage(int libraryId, int periodicalId, int imageId, CancellationToken cancellationToken);
     }
 }

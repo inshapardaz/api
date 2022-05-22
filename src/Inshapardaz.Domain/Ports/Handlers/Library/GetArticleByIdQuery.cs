@@ -8,16 +8,18 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetArticleByIdQuery : LibraryBaseQuery<ArticleModel>
     {
-        public GetArticleByIdQuery(int libraryId, int periodicalId, int issueId, int articleId)
+        public GetArticleByIdQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
-            IssueId = issueId;
+            VolumeNumber = volumeNumber;
+            IssueNumber = issueNumber;
             ArticleId = articleId;
         }
 
         public int PeriodicalId { get; }
-        public int IssueId { get; }
+        public int VolumeNumber { get; }
+        public int IssueNumber { get; }
         public int ArticleId { get; }
     }
 
@@ -32,7 +34,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<ArticleModel> ExecuteAsync(GetArticleByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _articleRepository.GetArticleById(command.LibraryId, command.PeriodicalId, command.IssueId, command.ArticleId, cancellationToken);
+            return await _articleRepository.GetArticleById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, cancellationToken);
         }
     }
 }

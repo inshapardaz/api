@@ -11,17 +11,19 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddIssueContentRequest : LibraryBaseCommand
     {
-        public AddIssueContentRequest(int libraryId, int periodicalId, int issueId, string language, string mimeType)
+        public AddIssueContentRequest(int libraryId, int periodicalId, int VolumeNumber, int issueNumber, string language, string mimeType)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
-            IssueId = issueId;
+            this.VolumeNumber = VolumeNumber;
+            IssueNumber = issueNumber;
             Language = language;
             MimeType = mimeType;
         }
 
         public int PeriodicalId { get; }
-        public int IssueId { get; }
+        public int VolumeNumber { get; }
+        public int IssueNumber { get; }
 
         public string Language { get; }
         public string MimeType { get; }
@@ -45,7 +47,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<AddIssueContentRequest> HandleAsync(AddIssueContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var issue = await _issueRepository.GetIssueById(command.LibraryId, command.PeriodicalId, command.IssueId, cancellationToken);
+            var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
             if (issue != null)
             {
@@ -53,9 +55,9 @@ namespace Inshapardaz.Domain.Models.Library
                 command.Content.FilePath = url;
                 command.Content.IsPublic = true;
                 var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-                await _issueRepository.AddIssueContent(command.LibraryId, issue.PeriodicalId, issue.Id, file.Id, command.Language, command.MimeType, cancellationToken);
+                await _issueRepository.AddIssueContent(command.LibraryId, issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, file.Id, command.Language, command.MimeType, cancellationToken);
 
-                command.Result = await _issueRepository.GetIssueContent(command.LibraryId, issue.PeriodicalId, issue.Id, command.Language, command.MimeType, cancellationToken);
+                command.Result = await _issueRepository.GetIssueContent(command.LibraryId, issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, command.Language, command.MimeType, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

@@ -14,6 +14,8 @@ namespace Inshapardaz.Api.Tests.Fakes
 
         private string GetUrl(string name) => $"http://localhost.blob/{name}";
 
+        public bool SupportsPublicLink => false;
+
         public void SetupFileContents(string filePath, string content)
         {
             SetupFileContents(filePath, System.Text.Encoding.UTF8.GetBytes(content));

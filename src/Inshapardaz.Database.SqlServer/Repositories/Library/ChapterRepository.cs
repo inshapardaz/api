@@ -103,14 +103,17 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var chapters = new Dictionary<int, ChapterModel>();
 
-                var sql = @"Select c.*, cc.Id as ContentId, cc.Language As ContentLanguage 
+                var sql = @"Select c.*, cc.Id as ContentId, cc.Language As ContentLanguage,
+                            a.Name As WriterAccountName, ar.Name As ReviewerAccountName
                             From Chapter c
                             Inner Join Book b On b.Id = c.BookId
                             Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
+                            LEFT OUTER JOIN [Accounts] a ON a.Id = c.WriterAccountId
+                            LEFT OUTER JOIN [Accounts] ar ON ar.Id = c.ReviewerAccountId
                             Where b.Id = @BookId AND b.LibraryId = @LibraryId
                             Order By c.ChapterNumber";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ChapterModel, int?, string, ChapterModel>(command, (c, contentId, contentLangugage) =>
+                await connection.QueryAsync<ChapterModel, int?, string, AccountModel, AccountModel, ChapterModel>(command, (c, contentId, contentLangugage, WriterAccountName, ReviewerAccountName) =>
                 {
                     if (!chapters.TryGetValue(c.Id, out ChapterModel chapter))
                     {
@@ -132,7 +135,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     }
 
                     return chapter;
-                }, splitOn: "ContentId,ContentLanguage");
+                }, splitOn: "ContentId,ContentLanguage,WriterAccountName,ReviewerAccountName");
 
                 return chapters.Values;
             }
@@ -143,17 +146,21 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 ChapterModel chapter = null;
-                var sql = @"Select c.*, cc.*
+                var sql = @"Select c.*, cc.*, a.*, ar.*
                             From Chapter c
                             Inner Join Book b On b.Id = c.BookId
                             Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
+                            LEFT OUTER JOIN [Accounts] a ON a.Id = c.WriterAccountId
+                            LEFT OUTER JOIN [Accounts] ar ON ar.Id = c.ReviewerAccountId
                             Where c.chapterNumber = @ChapterNumber AND b.Id = @BookId AND b.LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterNumber = chapterNumber }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ChapterModel, ChapterContentModel, ChapterModel>(command, (c, cc) =>
+                await connection.QueryAsync<ChapterModel, ChapterContentModel, AccountModel, AccountModel, ChapterModel>(command, (c, cc, wa, ra) =>
                 {
                     if (chapter == null)
                     {
                         chapter = c;
+                        chapter.WriterAccountName = wa?.Name;
+                        chapter.ReviewerAccountName = ra?.Name;
                     }
 
                     if (cc != null)

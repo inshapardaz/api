@@ -1,5 +1,7 @@
 ﻿using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Api.Extensions;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Mappings
 {
@@ -11,7 +13,14 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 Title = source.Title,
                 ChapterNumber = source.ChapterNumber,
-                BookId = source.BookId
+                BookId = source.BookId,
+                Status = source.Status.ToDescription(),
+                WriterAccountId = source.WriterAccountId,
+                WriterAccountName = source.WriterAccountName,
+                WriterAssignTimeStamp = source.WriterAssignTimeStamp,
+                ReviewerAccountId = source.ReviewerAccountId,
+                ReviewerAccountName = source.ReviewerAccountName,
+                ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp
             };
 
         public static ChapterModel Map(this ChapterView source)
@@ -20,7 +29,14 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 Title = source.Title,
                 ChapterNumber = source.ChapterNumber,
-                BookId = source.BookId
+                BookId = source.BookId,
+                Status = source.Status.ToEnum(PageStatuses.Available),
+                WriterAccountId = source.WriterAccountId,
+                WriterAccountName = source.WriterAccountName,
+                WriterAssignTimeStamp = source.WriterAssignTimeStamp,
+                ReviewerAccountId = source.ReviewerAccountId,
+                ReviewerAccountName = source.ReviewerAccountName,
+                ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
             };
 
         public static ChapterContentView Map(this ChapterContentModel source)

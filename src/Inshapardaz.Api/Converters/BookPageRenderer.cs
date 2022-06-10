@@ -363,6 +363,16 @@ namespace Inshapardaz.Api.Converters
                     {
                         queryString.Add("assignmentTo", source.Filters.AccountId.ToString());
                     }
+                } 
+                else if (source.Filters.ReviewerAssignmentFilter.HasValue && source.Filters.ReviewerAssignmentFilter != Domain.Models.AssignmentFilter.All)
+                {
+                    queryString.Add("reviewerAssignmentFilter", source.Filters.ReviewerAssignmentFilter.Value.ToString());
+
+                    if (source.Filters.ReviewerAssignmentFilter == Domain.Models.AssignmentFilter.AssignedTo &&
+                        source.Filters.AccountId.HasValue)
+                    {
+                        queryString.Add("assignmentTo", source.Filters.AccountId.ToString());
+                    }
                 }
             }
 

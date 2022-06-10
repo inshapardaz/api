@@ -127,7 +127,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, PageStatuses status, AssignmentFilter assignmentFilter, int? assignedTo, CancellationToken cancellationToken)
+        public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, PageStatuses status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -147,7 +147,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                 ( @AssignmentFilter = 0 ) OR
                                 ( @AssignmentFilter = 1 AND p.WriterAccountId IS NOT NULL) OR
                                 ( @AssignmentFilter = 2 AND p.WriterAccountId IS NULL) OR
-                                ( (@AssignmentFilter = 3  OR @AssignmentFilter = 4) AND p.WriterAccountId = @WriterAccountId )
+                                ( (@AssignmentFilter = 3  OR @AssignmentFilter = 4) AND p.WriterAccountId = @AccountId )
+                            )
+                            AND (
+                                ( @ReviewerAssignmentFilter = 0 ) OR
+                                ( @ReviewerAssignmentFilter = 1 AND p.ReviewerAccountId IS NOT NULL) OR
+                                ( @ReviewerAssignmentFilter = 2 AND p.ReviewerAccountId IS NULL) OR
+                                ( (@ReviewerAssignmentFilter = 3  OR @ReviewerAssignmentFilter = 4) AND p.ReviewerAccountId = @AccountId )
                             )
                             ORDER BY p.SequenceNumber
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -161,7 +167,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                                         PageSize = pageSize,
                                                         PageNumber = pageNumber,
                                                         AssignmentFilter = assignmentFilter,
-                                                        WriterAccountId = assignedTo
+                                                        ReviewerAssignmentFilter = reviewerAssignmentFilter,
+                                                        AccountId = assignedTo
                                                     },
                                                     cancellationToken: cancellationToken);
 
@@ -175,15 +182,22 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                     ( @AssignmentFilter = 0 ) OR
                                     ( @AssignmentFilter = 1 AND p.WriterAccountId IS NOT NULL) OR
                                     ( @AssignmentFilter = 2 AND p.WriterAccountId IS NULL) OR
-                                    ( (@AssignmentFilter = 3  OR @AssignmentFilter = 4) AND p.WriterAccountId = @WriterAccountId )
-                                )";
+                                    ( (@AssignmentFilter = 3  OR @AssignmentFilter = 4) AND p.WriterAccountId = @AccountId )
+                                )
+                                AND (
+                                ( @ReviewerAssignmentFilter = 0 ) OR
+                                ( @ReviewerAssignmentFilter = 1 AND p.ReviewerAccountId IS NOT NULL) OR
+                                ( @ReviewerAssignmentFilter = 2 AND p.ReviewerAccountId IS NULL) OR
+                                ( (@ReviewerAssignmentFilter = 3  OR @ReviewerAssignmentFilter = 4) AND p.ReviewerAccountId = @AccountId )
+                            )";
                 var commandCount = new CommandDefinition(sqlCount, new
                 {
                     LibraryId = libraryId,
                     BookId = bookId,
                     Status = status,
                     AssignmentFilter = assignmentFilter,
-                    WriterAccountId = assignedTo
+                    ReviewerAssignmentFilter = reviewerAssignmentFilter,
+                    AccountId = assignedTo
                 },
                     cancellationToken: cancellationToken);
 

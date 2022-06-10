@@ -25,6 +25,7 @@ namespace Inshapardaz.Domain.Models.Library
         public PageStatuses StatusFilter { get; set; }
         public AssignmentFilter AssignmentFilter { get; set; }
         public int? AccountId { get; set; }
+        public AssignmentFilter ReviewerAssignmentFilter { get; set; }
     }
 
     public class GetBookPagesQueryHandler : QueryHandlerAsync<GetBookPagesQuery, Page<BookPageModel>>
@@ -38,7 +39,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<Page<BookPageModel>> ExecuteAsync(GetBookPagesQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            return  await _bookPageRepository.GetPagesByBook(query.LibraryId, query.BookId, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.AccountId, cancellationToken);
+            return  await _bookPageRepository.GetPagesByBook(query.LibraryId, query.BookId, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.ReviewerAssignmentFilter, query.AccountId, cancellationToken);
         }
     }
 }

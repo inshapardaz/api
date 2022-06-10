@@ -48,6 +48,7 @@ namespace Inshapardaz.Api.Controllers
             int pageSize = 10,
             [FromQuery] PageStatuses status = PageStatuses.All,
             [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
+            [FromQuery] AssignmentFilter reviewerAssignmentFilter = AssignmentFilter.All,
             [FromQuery] int? assignmentTo = null,
             CancellationToken token = default(CancellationToken))
         {
@@ -55,6 +56,7 @@ namespace Inshapardaz.Api.Controllers
             {
                 StatusFilter = status,
                 AssignmentFilter = assignmentFilter,
+                ReviewerAssignmentFilter = reviewerAssignmentFilter,
                 AccountId = assignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.Account?.Id : assignmentTo
             };
             var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
@@ -63,7 +65,7 @@ namespace Inshapardaz.Api.Controllers
             {
                 Page = result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-                Filters = new BookPageFilter { Status = status, AssignmentFilter = assignmentFilter, AccountId = assignmentTo }
+                Filters = new BookPageFilter { Status = status, AssignmentFilter = assignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
             };
 
             return new OkObjectResult(_bookPageRenderer.Render(args, libraryId, bookId));

@@ -57,7 +57,7 @@ namespace Inshapardaz.Api.Controllers
                 StatusFilter = status,
                 AssignmentFilter = assignmentFilter,
                 ReviewerAssignmentFilter = reviewerAssignmentFilter,
-                AccountId = assignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.Account?.Id : assignmentTo
+                AccountId = assignmentFilter == AssignmentFilter.AssignedToMe  || reviewerAssignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.Account?.Id : assignmentTo
             };
             var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
 

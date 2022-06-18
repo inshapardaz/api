@@ -128,6 +128,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                         {
                             ChapterContentModel cc = new ChapterContentModel();
                             cc.BookId = bookId;
+                            cc.ChapterId = c.Id;
+                            cc.ChapterNumber = c.ChapterNumber;
                             cc.Id = contentId.Value;
                             cc.Language = contentLangugage;
                             chapter.Contents.Add(cc);

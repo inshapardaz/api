@@ -146,6 +146,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             ShouldNotHaveAddChapterContentLink();
             ShouldNotHaveUpdateLink();
             ShouldNotHaveDeleteLink();
+            ShouldNotHaveAssignmentLink();
             return this;
         }
 
@@ -154,6 +155,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             ShouldHaveAddChapterContentLink();
             ShouldHaveUpdateLink();
             ShouldHaveDeleteLink();
+            ShouldHaveAssignmentLink();
             return this;
         }
 

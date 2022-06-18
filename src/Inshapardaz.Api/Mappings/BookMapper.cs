@@ -82,7 +82,7 @@ namespace Inshapardaz.Api.Mappings
         public static PageSummaryModel Map(this PageSummaryView source)
             => new PageSummaryModel
             {
-                Status = source.Status.ToEnum(PageStatuses.Available),
+                Status = source.Status.ToEnum(EditingStatus.Available),
                 Count = source.Count,
                 Percentage = source.Percentage
             };

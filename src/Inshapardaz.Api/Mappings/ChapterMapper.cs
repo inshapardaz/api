@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Mappings
                 Title = source.Title,
                 ChapterNumber = source.ChapterNumber,
                 BookId = source.BookId,
-                Status = source.Status.ToEnum(PageStatuses.Available),
+                Status = source.Status.ToEnum(EditingStatus.Available),
                 WriterAccountId = source.WriterAccountId,
                 WriterAccountName = source.WriterAccountName,
                 WriterAssignTimeStamp = source.WriterAssignTimeStamp,

@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Mappings
         public static UserPageSummaryItem Map(this UserPageSummaryView source)
             => new UserPageSummaryItem
             {
-                Status = source.Status.ToEnum<PageStatuses>(PageStatuses.All),
+                Status = source.Status.ToEnum<EditingStatus>(EditingStatus.All),
                 Count = source.Count
             };
     }

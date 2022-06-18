@@ -131,6 +131,26 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_chapterRenderer.Render(request.Result, libraryId, bookId));
         }
 
+        [HttpPost("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/assign", Name = nameof(ChapterController.AssignChapterToUser))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        [Produces(typeof(BookPageView))]
+        public async Task<IActionResult> AssignChapterToUser(int libraryId, int bookId, int chapterNumber, [FromBody] ChapterAssignmentView assignment, CancellationToken token = default(CancellationToken))
+        {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
+            var request = new AssignChapterToUserRequest(libraryId, bookId, chapterNumber, assignment.AccountId ?? _userHelper.Account.Id, assignment.Type);
+
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            var renderResult = _chapterRenderer.Render(request.Result, libraryId, bookId);
+
+            return Ok(renderResult);
+        }
+
+
         [HttpGet("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.GetChapterContent))]
         [Authorize()]
         [Produces(typeof(ChapterContentView))]

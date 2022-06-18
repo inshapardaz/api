@@ -46,7 +46,7 @@ namespace Inshapardaz.Api.Controllers
             int bookId,
             int pageNumber = 1,
             int pageSize = 10,
-            [FromQuery] PageStatuses status = PageStatuses.All,
+            [FromQuery] EditingStatus status = EditingStatus.All,
             [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
             [FromQuery] AssignmentFilter reviewerAssignmentFilter = AssignmentFilter.All,
             [FromQuery] int? assignmentTo = null,

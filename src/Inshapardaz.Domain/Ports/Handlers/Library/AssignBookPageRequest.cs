@@ -41,11 +41,11 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new BadRequestException();
             }
 
-            if (page.Status == PageStatuses.Available || page.Status == PageStatuses.Typing)
+            if (page.Status == EditingStatus.Available || page.Status == EditingStatus.Typing)
             {
                 command.Result = await _bookPageRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
             }
-            else if (page.Status == PageStatuses.Typed || page.Status == PageStatuses.InReview)
+            else if (page.Status == EditingStatus.Typed || page.Status == EditingStatus.InReview)
             {
                 command.Result = await _bookPageRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
             }

@@ -61,7 +61,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         {
             _assert.ShouldNotHaveUpdateLink()
                    .ShouldNotHaveDeleteLink()
-                   .ShouldNotHaveAddChapterContentLink();
+                   .ShouldNotHaveAddChapterContentLink()
+                   .ShouldNotHaveAssignmentLink();
         }
 
         [Test]

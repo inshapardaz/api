@@ -2,7 +2,7 @@
 
 namespace Inshapardaz.Domain.Models
 {
-    public enum PageStatuses
+    public enum EditingStatus
     {
         [Description("All")]
         All = -1,

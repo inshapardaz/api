@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> GetPagesByUser(int libraryId,
             int pageNumber = 1,
             int pageSize = 10,
-            [FromQuery] PageStatuses status = PageStatuses.All,
+            [FromQuery] EditingStatus status = EditingStatus.All,
             [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
             CancellationToken token = default(CancellationToken))
         {

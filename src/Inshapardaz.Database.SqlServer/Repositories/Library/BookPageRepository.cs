@@ -69,7 +69,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, PageStatuses status, int? chapterId, CancellationToken cancellationToken)
+        public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, EditingStatus status, int? chapterId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -127,7 +127,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, PageStatuses status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken)
+        public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -280,7 +280,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<Page<BookPageModel>> GetPagesByUser(int libraryId, int accountId, PageStatuses statusFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<BookPageModel>> GetPagesByUser(int libraryId, int accountId, EditingStatus statusFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {

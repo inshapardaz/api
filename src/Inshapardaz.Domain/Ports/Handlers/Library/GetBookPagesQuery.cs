@@ -22,7 +22,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int PageNumber { get; private set; }
 
         public int PageSize { get; private set; }
-        public PageStatuses StatusFilter { get; set; }
+        public EditingStatus StatusFilter { get; set; }
         public AssignmentFilter AssignmentFilter { get; set; }
         public int? AccountId { get; set; }
         public AssignmentFilter ReviewerAssignmentFilter { get; set; }

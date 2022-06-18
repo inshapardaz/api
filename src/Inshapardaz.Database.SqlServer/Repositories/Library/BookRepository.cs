@@ -576,7 +576,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                 GROUP By bp.BookId, bp.[Status]";
 
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookIds = bookIds }, cancellationToken: cancellationToken);
-                var results = await connection.QueryAsync<(int BookId, PageStatuses Status, int Count, decimal Percentage)>(command);
+                var results = await connection.QueryAsync<(int BookId, EditingStatus Status, int Count, decimal Percentage)>(command);
 
                 foreach (var result in results)
                 {

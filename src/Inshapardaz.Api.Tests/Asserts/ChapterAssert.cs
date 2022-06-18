@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using System;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
@@ -43,6 +44,70 @@ namespace Inshapardaz.Api.Tests.Asserts
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
             location.Should().EndWith($"libraries/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}");
+            return this;
+        }
+
+        internal ChapterAssert ShouldBeAssignedToUserForWriting(AccountDto account)
+        {
+            _chapter.WriterAccountId.Should().Be(account.Id);
+            _chapter.WriterAccountName.Should().Be(account.Name);
+            _chapter.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            return this;
+        }
+
+        internal ChapterAssert ShouldNotBeAssignedForWriting()
+        {
+            _chapter.WriterAccountId.Should().BeNull();
+            _chapter.WriterAccountName.Should().BeNull();
+            _chapter.WriterAssignTimeStamp.Should().BeNull();
+            return this;
+        }
+
+        internal ChapterAssert ShouldBeSavedAssignmentForWriting(IDbConnection dbConnection, AccountDto account)
+        {
+            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            dbChapter.WriterAccountId.Should().Be(account.Id);
+            dbChapter.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            return this;
+        }
+
+        internal ChapterAssert ShouldBeSavedNoAssignmentForWriting(IDbConnection dbConnection)
+        {
+            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            dbChapter.WriterAccountId.Should().BeNull();
+            dbChapter.WriterAssignTimeStamp.Should().BeNull();
+            return this;
+        }
+
+        internal ChapterAssert ShouldBeAssignedToUserForReviewing(AccountDto account)
+        {
+            _chapter.ReviewerAccountId.Should().Be(account.Id);
+            _chapter.ReviewerAccountName.Should().Be(account.Name);
+            _chapter.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            return this;
+        }
+
+        internal ChapterAssert ShouldNotBeAssignedForReviewing()
+        {
+            _chapter.ReviewerAccountId.Should().BeNull();
+            _chapter.ReviewerAccountName.Should().BeNull();
+            _chapter.ReviewerAssignTimeStamp.Should().BeNull();
+            return this;
+        }
+
+        internal ChapterAssert ShouldBeSavedAssignmentForReviewing(IDbConnection dbConnection, AccountDto account)
+        {
+            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            dbChapter.ReviewerAccountId.Should().Be(account.Id);
+            dbChapter.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            return this;
+        }
+
+        internal ChapterAssert ShouldBeSavedNoAssignmentForReviewing(IDbConnection dbConnection)
+        {
+            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            dbChapter.ReviewerAccountId.Should().BeNull();
+            dbChapter.ReviewerAssignTimeStamp.Should().BeNull();
             return this;
         }
 
@@ -111,6 +176,21 @@ namespace Inshapardaz.Api.Tests.Asserts
                   .ShouldBeGet()
                   .EndingWith($"libraries/{_libraryId}/books/{_chapter.BookId}");
 
+            return this;
+        }
+
+        internal ChapterAssert ShouldHaveAssignmentLink()
+        {
+            _chapter.Link("assign")
+                  .ShouldBePost()
+                  .EndingWith($"libraries/{_libraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/assign");
+            return this;
+        }
+
+        internal ChapterAssert ShouldNotHaveAssignmentLink()
+        {
+            _chapter.Link("assign")
+                  .Should().BeNull();
             return this;
         }
 

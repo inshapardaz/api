@@ -257,11 +257,11 @@ namespace Inshapardaz.Api.Converters
                 }
 
                 if (
-                    ((source.Status == Domain.Models.PageStatuses.Available ||
-                        source.Status == Domain.Models.PageStatuses.Typing) && 
+                    ((source.Status == Domain.Models.EditingStatus.Available ||
+                        source.Status == Domain.Models.EditingStatus.Typing) && 
                         source.WriterAccountId != _userHelper.Account.Id) || 
-                    ((source.Status == Domain.Models.PageStatuses.Typed||
-                        source.Status == Domain.Models.PageStatuses.InReview) &&
+                    ((source.Status == Domain.Models.EditingStatus.Typed||
+                        source.Status == Domain.Models.EditingStatus.InReview) &&
                         source.ReviewerAccountId != _userHelper.Account.Id)
                     )
                 {
@@ -349,7 +349,7 @@ namespace Inshapardaz.Api.Converters
 
             if (source.Filters != null)
             {
-                if (source.Filters.Status.HasValue && source.Filters.Status != Domain.Models.PageStatuses.All)
+                if (source.Filters.Status.HasValue && source.Filters.Status != Domain.Models.EditingStatus.All)
                 {
                     queryString.Add("status", source.Filters.Status.Value.ToString());
                 }

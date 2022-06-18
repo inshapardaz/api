@@ -63,7 +63,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         {
             _assert.ShouldHaveUpdateLink()
                    .ShouldHaveDeleteLink()
-                   .ShouldHaveAddChapterContentLink();
+                   .ShouldHaveAddChapterContentLink()
+                   .ShouldHaveAssignmentLink();
         }
     }
 }

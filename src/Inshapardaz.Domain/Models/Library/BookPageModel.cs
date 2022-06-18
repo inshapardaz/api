@@ -9,7 +9,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int BookId { get; set; }
         public int? ImageId { get; set; }
         public string ImageUrl { get; set; }
-        public PageStatuses Status { get; set; }
+        public EditingStatus Status { get; set; }
         public int? WriterAccountId { get; set; }
         public string WriterAccountName { get; set; }
         public DateTime? WriterAssignTimeStamp { get; set; }

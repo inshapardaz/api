@@ -13,7 +13,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int BookId { get; set; }
 
-        public PageStatuses Status { get; set; }
+        public EditingStatus Status { get; set; }
 
         public int? WriterAccountId { get; set; }
         public string WriterAccountName { get; set; }

@@ -13,7 +13,7 @@ namespace Inshapardaz.Domain.Models.Library
 
     public class PageSummaryModel
     {
-        public PageStatuses Status { get; set; }
+        public EditingStatus Status { get; set; }
         public int Count { get; set; }
 
         public decimal Percentage { get; set; }

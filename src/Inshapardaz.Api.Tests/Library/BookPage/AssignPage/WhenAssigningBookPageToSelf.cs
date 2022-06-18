@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
 
             var assignment = new
             {
-                Status = PageStatuses.InReview,
+                Status = EditingStatus.InReview,
                 AccountId = AccountId
             };
 

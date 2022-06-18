@@ -6,6 +6,7 @@ using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Database.SqlServer;
 using Inshapardaz.Api.Tests.Helpers;
+using System;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -19,6 +20,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private int _libraryId;
         private bool _public;
         private string _language;
+        private int? _assignedWriterId, _assignedReviewerId;
 
         public IEnumerable<ChapterContentDto> Contents => _contents;
         public IEnumerable<ChapterDto> Chapters => _chapters;
@@ -66,6 +68,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
+        internal ChapterDataBuilder WithoutAnyAssignment()
+        {
+            _assignedWriterId = _assignedReviewerId = null;
+            return this;
+        }
+
         public ChapterDto Build() => Build(1).Single();
 
         public IEnumerable<ChapterDto> Build(int count)
@@ -78,6 +86,10 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 var chapter = fixture.Build<ChapterDto>()
                                      .With(c => c.BookId, book.Id)
                                      .With(c => c.ChapterNumber, i + 1)
+                                     .With(c => c.WriterAccountId, _assignedWriterId)
+                                     .With(c => c.WriterAssignTimeStamp, _assignedWriterId.HasValue ? DateTime.Now : null)
+                                     .With(c => c.ReviewerAccountId, _assignedReviewerId)
+                                     .With(c => c.ReviewerAssignTimeStamp, _assignedReviewerId.HasValue ? DateTime.Now : null)
                                      .Create();
 
                 _connection.AddChapter(chapter);

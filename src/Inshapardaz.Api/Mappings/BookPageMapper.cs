@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Mappings
                 BookId = view.BookId,
                 Text = view.Text,
                 SequenceNumber = view.SequenceNumber,
-                Status = view.Status.ToEnum(PageStatuses.Available),
+                Status = view.Status.ToEnum(EditingStatus.Available),
                 WriterAccountId = view.WriterAccountId,
                 WriterAccountName = view.WriterAccountName,
                 WriterAssignTimeStamp = view.WriterAssignTimeStamp,

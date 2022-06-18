@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Dto
 
         public int? ImageId { get; set; }
 
-        public PageStatuses Status { get; set; }
+        public EditingStatus Status { get; set; }
         public int? AccountId { get; set; }
     }
 }

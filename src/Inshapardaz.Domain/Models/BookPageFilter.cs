@@ -2,7 +2,7 @@
 {
     public class BookPageFilter
     {
-        public PageStatuses? Status { get; set; }
+        public EditingStatus? Status { get; set; }
 
         public AssignmentFilter? AssignmentFilter { get; set; }
 

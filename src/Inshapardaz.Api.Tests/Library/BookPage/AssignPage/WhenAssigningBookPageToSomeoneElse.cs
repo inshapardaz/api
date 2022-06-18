@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
 
             var assignment = new
             {
-                Status = PageStatuses.Typed,
+                Status = EditingStatus.Typed,
                 AccountId = _secondAccountId
             };
 

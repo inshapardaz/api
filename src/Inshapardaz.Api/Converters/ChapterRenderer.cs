@@ -133,6 +133,14 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.AddContent,
                     Parameters = new { libraryId = libraryId, bookId = bookId, chapterNumber = source.ChapterNumber }
                 }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ChapterController.AssignChapterToUser),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.Assign,
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
+                }));
             }
 
             if (_userHelper.IsAuthenticated)

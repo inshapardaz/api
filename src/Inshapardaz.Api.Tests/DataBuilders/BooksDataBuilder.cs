@@ -51,7 +51,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private int _pageCount;
         private bool _addPageImage;
         private Dictionary<int, int> _assignments = new Dictionary<int, int>();
-        private Dictionary<PageStatuses, int> _pageStatuses = new Dictionary<PageStatuses, int>();
+        private Dictionary<EditingStatus, int> _pageStatuses = new Dictionary<EditingStatus, int>();
 
         public IEnumerable<AuthorDto> Authors => _authors;
         public IEnumerable<BookDto> Books => _books;
@@ -167,7 +167,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
-        public BooksDataBuilder WithStatus(PageStatuses statuses, int count)
+        public BooksDataBuilder WithStatus(EditingStatus statuses, int count)
         {
             _pageStatuses.TryAdd(statuses, count);
             return this;
@@ -361,7 +361,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                             .With(p => p.Text, RandomData.Text)
                             .With(p => p.ImageId, pageImage?.Id)
                             .With(p => p.AccountId, (int?)null)
-                            .With(p => p.Status, PageStatuses.All)
+                            .With(p => p.Status, EditingStatus.All)
                             .Create());
                     }
 
@@ -381,7 +381,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     {
                         foreach (var pageStatus in _pageStatuses)
                         {
-                            var pagesToSetStatus = RandomData.PickRandom(pages.Where(p => p.Status == PageStatuses.All), pageStatus.Value);
+                            var pagesToSetStatus = RandomData.PickRandom(pages.Where(p => p.Status == EditingStatus.All), pageStatus.Value);
                             foreach (var pageToSetStatus in pagesToSetStatus)
                             {
                                 pageToSetStatus.Status = pageStatus.Key;

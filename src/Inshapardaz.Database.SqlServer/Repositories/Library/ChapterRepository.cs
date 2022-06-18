@@ -271,5 +271,37 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 await connection.ExecuteAsync(command2);
             }
         }
+
+        public async Task<ChapterModel> UpdateWriterAssignment(int libraryId, int bookId, int chapterNumber, int? assignedAccountId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update c
+                            SET c.WriterAccountId = @WriterAccountId, c.WriterAssignTimeStamp = GETUTCDATE()
+                            FROM Chapter c
+                            INNER JOIN Book b ON b.Id = c.BookId
+                            Where b.LibraryId = @LibraryId AND c.BookId = @BookId AND c.ChapterNumber = @ChapterNumber";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, WriterAccountId = assignedAccountId, BookId = bookId, ChapterNumber = chapterNumber }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+
+                return await GetChapterById(libraryId, bookId, chapterNumber, cancellationToken);
+            }
+        }
+
+        public async Task<ChapterModel> UpdateReviewerAssignment(int libraryId, int bookId, int chapterNumber, int? assignedAccountId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update c
+                            SET c.ReviewerAccountId = @ReviewerAccountId, c.ReviewerAssignTimeStamp = GETUTCDATE()
+                            FROM Chapter c
+                            INNER JOIN Book b ON b.Id = c.BookId
+                            Where b.LibraryId = @LibraryId AND c.BookId = @BookId AND c.ChapterNumber = @ChapterNumber";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, ReviewerAccountId = assignedAccountId, BookId = bookId, ChapterNumber = chapterNumber }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+
+                return await GetChapterById(libraryId, bookId, chapterNumber, cancellationToken);
+            }
+        }
     }
 }

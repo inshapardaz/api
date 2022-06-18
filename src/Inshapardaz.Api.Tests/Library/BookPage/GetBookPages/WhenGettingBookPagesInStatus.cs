@@ -10,19 +10,19 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
 {
-    [TestFixture(PageStatuses.InReview)]
-    [TestFixture(PageStatuses.Completed)]
-    [TestFixture(PageStatuses.Typed)]
-    [TestFixture(PageStatuses.Typing)]
-    [TestFixture(PageStatuses.Available)]
+    [TestFixture(EditingStatus.InReview)]
+    [TestFixture(EditingStatus.Completed)]
+    [TestFixture(EditingStatus.Typed)]
+    [TestFixture(EditingStatus.Typing)]
+    [TestFixture(EditingStatus.Available)]
     public class WhenGettingBookPagesInStatus : TestBase
     {
         private BookDto _book;
         private HttpResponseMessage _response;
         private PagingAssert<BookPageView> _assert;
-        private readonly PageStatuses _status;
+        private readonly EditingStatus _status;
 
-        public WhenGettingBookPagesInStatus(PageStatuses status)
+        public WhenGettingBookPagesInStatus(EditingStatus status)
             : base(Role.Reader)
         {
             _status = status;

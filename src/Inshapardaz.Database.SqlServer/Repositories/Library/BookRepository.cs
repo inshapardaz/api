@@ -190,16 +190,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             INNER JOIN Author a On ba.AuthorId = a.Id
                             LEFT JOIN BookCategory bc ON b.Id = bc.BookId
                             LEFT JOIN Category c ON bc.CategoryId = c.Id
-                            LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id
-                            LEFT JOIN RecentBooks r On b.Id = r.BookId
+                            LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @FavoriteFilter
+                            LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @RecentFilter
                             Where b.LibraryId = @LibraryId
                             AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
                             AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
                             AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                             AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
+                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
-                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                             GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead " +
                             $" ORDER BY {sortByQuery} {sortDirection} " +
                             @"OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -216,16 +216,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId
                             LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
                             LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
-                            LEFT OUTER JOIN FavoriteBooks fb On fb.BookId = b.Id
-                            LEFT OUTER JOIN RecentBooks r On b.Id = r.BookId
+                            LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @FavoriteFilter
+                            LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @RecentFilter
                             Where b.LibraryId = @LibraryId
                             AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
                             AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
                             AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                             AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
+                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
-                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                             GROUP BY b.Id) AS bkcnt";
                 var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 

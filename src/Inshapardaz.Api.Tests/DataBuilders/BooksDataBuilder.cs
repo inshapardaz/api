@@ -15,8 +15,15 @@ using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
+    
     public class BooksDataBuilder
     {
+        private class AccountItemCountSpec
+        {
+            public int AccountId { get; set; }
+            public int? Count { get; set; }
+        }
+
         private readonly IDbConnection _connection;
         private readonly AuthorsDataBuilder _authorBuilder;
         private readonly SeriesDataBuilder _seriesBuilder;
@@ -40,10 +47,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private List<CategoryDto> _categories = new List<CategoryDto>();
         private SeriesDto _series;
         private int _libraryId;
-        private int? _bookCountToAddToFavorite;
-        private int _addToFavoriteForUser;
-        private int? _bookCountToAddToRecent;
-        private int _addToRecentReadsForUser;
+        private List<AccountItemCountSpec> _favoriteBooks = new List<AccountItemCountSpec>();
+        private List<AccountItemCountSpec> _readBooks = new List<AccountItemCountSpec>();
         private List<BookContentDto> _contents = new List<BookContentDto>();
         private string _language = null;
         private int _numberOfAuthors;
@@ -179,17 +184,16 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
-        public BooksDataBuilder AddToFavorites(int accountId, int? bookToAddToFavorite = null)
+        public BooksDataBuilder AddToFavorites(int accountId, int? countOfbookToAddToFavorite = null)
         {
-            _bookCountToAddToFavorite = bookToAddToFavorite;
-            _addToFavoriteForUser = accountId;
+            _favoriteBooks.Add(new AccountItemCountSpec() { AccountId = accountId, Count = countOfbookToAddToFavorite });
             return this;
         }
 
-        public BooksDataBuilder AddToRecentReads(int accountId, int? bookToAddToRecent = null)
+        public BooksDataBuilder AddToRecentReads(int accountId, int? countOfBookToAddToRecent = null)
         {
-            _bookCountToAddToRecent = bookToAddToRecent;
-            _addToRecentReadsForUser = accountId;
+            _readBooks.Add(new AccountItemCountSpec() { AccountId = accountId, Count = countOfBookToAddToRecent });
+
             return this;
         }
 
@@ -231,12 +235,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 _authors = _authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : numberOfBooks).ToList();
             }
 
-            Func<bool> f = () => _isPublic ?? RandomData.Bool;
+            Func<bool> isPublic = () => _isPublic ?? RandomData.Bool;
 
             _books = fixture.Build<BookDto>()
                           .With(b => b.LibraryId, _libraryId)
                           .With(b => b.ImageId, _hasImage ? RandomData.Number : 0)
-                          .With(b => b.IsPublic, f)
+                          .With(b => b.IsPublic, isPublic)
                           .With(b => b.Language, RandomData.Locale)
                           .With(b => b.SeriesIndex, _hasSeries ? RandomData.Number : (int?)null)
                           .With(b => b.DateAdded, RandomData.Date)
@@ -394,21 +398,27 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 }
             }
 
-            if (_addToFavoriteForUser != 0)
+            if (_favoriteBooks.Any())
             {
-                var booksToAddToFavorite = _bookCountToAddToFavorite.HasValue ? _books.PickRandom(_bookCountToAddToFavorite.Value) : _books;
-                _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), _addToFavoriteForUser);
+                foreach (var f in _favoriteBooks)
+                {
+                    var booksToAddToFavorite = f.Count.HasValue ? _books.PickRandom(f.Count.Value) : _books;
+                    _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), f.AccountId);
+                }
             }
 
-            if (_addToRecentReadsForUser != 0)
+            if (_readBooks.Any())
             {
-                var booksToAddToRecent = _bookCountToAddToRecent.HasValue ? _books.PickRandom(_bookCountToAddToRecent.Value) : _books;
-                foreach (var recentBook in booksToAddToRecent)
+                foreach (var r in _readBooks)
                 {
-                    RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, AccountId = _addToRecentReadsForUser, DateRead = RandomData.Date };
-                    _connection.AddBookToRecentReads(recent);
-                    _recentBooks.Add(recent);
-                }
+                    var booksToAddToRecent = r.Count.HasValue ? _books.PickRandom(r.Count.Value) : _books;
+                    foreach (var recentBook in booksToAddToRecent)
+                    {
+                        RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, AccountId = r.AccountId, DateRead = RandomData.Date };
+                        _connection.AddBookToRecentReads(recent);
+                        _recentBooks.Add(recent);
+                    }
+                }                
             }
 
             return _books;

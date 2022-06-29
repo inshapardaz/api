@@ -115,6 +115,21 @@ namespace Inshapardaz.Api.Controllers
             return Ok(renderResult);
         }
 
+        [HttpPost("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}/sequenceNumber", Name = nameof(BookPageController.UpdatePageSequence))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        public async Task<IActionResult> UpdatePageSequence(int libraryId, int bookId, int sequenceNumber, [FromBody] BookPageView page, CancellationToken token = default(CancellationToken))
+        {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
+
+            var request = new UpdateBookPageSequenceRequest(libraryId, bookId, sequenceNumber, page.SequenceNumber);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return Ok();
+        }
+
         [HttpPost("libraries/{libraryId}/books/{bookId}/pages/upload", Name = nameof(BookPageController.UploadPages))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [RequestSizeLimit(long.MaxValue)]

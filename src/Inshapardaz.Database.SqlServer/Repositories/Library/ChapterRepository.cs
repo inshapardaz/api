@@ -113,10 +113,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Where b.Id = @BookId AND b.LibraryId = @LibraryId
                             Order By c.ChapterNumber";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ChapterModel, int?, string, AccountModel, AccountModel, ChapterModel>(command, (c, contentId, contentLangugage, WriterAccountName, ReviewerAccountName) =>
+                await connection.QueryAsync<ChapterModel, int?, string, string, string, ChapterModel>(command, (c, contentId, contentLangugage, WriterAccountName, ReviewerAccountName) =>
                 {
                     if (!chapters.TryGetValue(c.Id, out ChapterModel chapter))
                     {
+                        c.WriterAccountName = WriterAccountName;
+                        c.ReviewerAccountName = ReviewerAccountName;
+
                         chapters.Add(c.Id, chapter = c);
                     }
 

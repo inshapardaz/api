@@ -256,6 +256,14 @@ namespace Inshapardaz.Api.Converters
                     }));
                 }
 
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookPageController.UpdatePageSequence),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.PageSequence,
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
+                }));
+
                 if (
                     ((source.Status == Domain.Models.EditingStatus.Available ||
                         source.Status == Domain.Models.EditingStatus.Typing) && 

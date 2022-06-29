@@ -11,19 +11,21 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AssignChapterToUserRequest : LibraryBaseCommand
     {
-        public AssignChapterToUserRequest(int libraryId, int bookId, int chapterNumber, int accountId, AssignmentTypes type)
+        public AssignChapterToUserRequest(int libraryId, int bookId, int chapterNumber, AssignmentTypes type, int? accountId, bool isAdmin = false)
         : base(libraryId)
         {
             BookId = bookId;
             ChapterNumber = chapterNumber;
             AccountId = accountId;
+            IsAdmin = isAdmin;
             AssignmentType = type;
         }
 
         public ChapterModel Result { get; set; }
         public int BookId { get; set; }
         public int ChapterNumber { get; set; }
-        public int AccountId { get; private set; }
+        public int? AccountId { get; private set; }
+        public bool IsAdmin { get; }
         public AssignmentTypes AssignmentType { get; }
     }
 
@@ -41,10 +43,13 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<AssignChapterToUserRequest> HandleAsync(AssignChapterToUserRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var account = await _accountRepository.GetLibraryAccountById(command.LibraryId, command.AccountId, cancellationToken);
-            if (account.Role != Role.Admin  && account.Role != Role.LibraryAdmin && account.Role != Role.Writer)
+            if (!command.IsAdmin)
             {
-                throw new BadRequestException("user cannot be assigned chapter");
+                var account = await _accountRepository.GetLibraryAccountById(command.LibraryId, command.AccountId.Value, cancellationToken);
+                if (account.Role != Role.LibraryAdmin && account.Role != Role.Writer)
+                {
+                    throw new BadRequestException("user cannot be assigned chapter");
+                }
             }
 
             var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);

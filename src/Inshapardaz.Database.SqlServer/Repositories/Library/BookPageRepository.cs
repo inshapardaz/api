@@ -126,6 +126,21 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 await connection.ExecuteAsync(command);
             }
         }
+        public async Task<int> GetPageCount(int libraryId, int bookId, int oldSequenceNumber, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+
+            {
+                var sql = @"SELECT COUNT(p.*)
+                            FROM BookPage p
+                            INNER JOIN Book b ON b.Id = p.BookId
+                            WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
+                return await connection.ExecuteScalarAsync<int>(command);
+            }
+        }
+
+
 
         public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken)
         {
@@ -378,6 +393,49 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Where Id = @Id";
                 var command2 = new CommandDefinition(sql2, newOrder, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command2);
+            }
+        }
+
+        public async Task UpdatePageSequenceNumber(int libraryId, int bookId, int oldSequenceNumber, int newSequenceNumber, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+
+                var sql = @"DECLARE @maxPosition INT;
+                            DECLARE @Id INT;
+
+                            SELECT @Id = Id
+                            FROM BookPage
+                            WHERE BookId = @BookId AND SequenceNumber = @oldPosition;
+
+                            SELECT @maxPosition = MAX(SequenceNumber) 
+                            FROM BookPage 
+                            WHERE BookId = @BookId
+
+                            IF (@newPosition < 1)
+                             SET @newPosition = 1
+ 
+                            IF (@newPosition > @maxPosition)
+                             SET @newPosition = @maxPosition
+
+                            UPDATE BookPage SET SequenceNumber = CASE
+                                WHEN Id = @Id THEN @newPosition
+                                WHEN @oldPosition < @newPosition THEN SequenceNumber - 1
+                                WHEN @oldPosition > @newPosition THEN SequenceNumber + 1
+                            END
+                            WHERE BookId = @BookId AND SequenceNumber BETWEEN
+                                CASE WHEN @oldPosition < @newPosition THEN @oldPosition ELSE @newPosition END AND
+                                CASE WHEN @oldPosition > @newPosition THEN @oldPosition ELSE @newPosition END;
+";
+                var command = new CommandDefinition(sql, new
+                {
+                    BookId = bookId,
+                    oldPosition = oldSequenceNumber,
+                    newPosition = newSequenceNumber,
+
+                }, cancellationToken: cancellationToken);
+                
+                await connection.ExecuteAsync(command);
             }
         }
 

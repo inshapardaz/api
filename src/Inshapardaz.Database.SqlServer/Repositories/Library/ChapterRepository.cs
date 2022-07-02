@@ -37,7 +37,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update C Set C.Title = @Title, C.BookId = @BookId, C.ChapterNumber = @ChapterNumber
+                var sql = @"Update C Set C.Title = @Title, C.BookId = @BookId, C.ChapterNumber = @ChapterNumber, C.Status = @Status
                             From Chapter C
                             Inner Join Book b On b.Id = C.BookId
                             Where C.chapterNumber = @OldChapterNumber AND C.BookId = @OldBookId And b.LibraryId = @LibraryId";
@@ -47,6 +47,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     OldBookId = bookId,
                     ChapterId = chapter.Id,
                     Title = chapter.Title,
+                    Status = chapter.Status,
                     BookId = chapter.BookId,
                     OldChapterNumber = oldChapterNumber,
                     ChapterNumber = chapter.ChapterNumber

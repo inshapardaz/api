@@ -7,6 +7,5 @@ namespace Inshapardaz.Api.Views.Library
     {
         
         public int? AccountId { get; set; }
-        public AssignmentTypes Type  { get; set; }
     }
 }

@@ -334,11 +334,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var assignmentfilter = string.Empty;
                 if (status == BookStatuses.BeingTyped)
                 {
-                    assignmentfilter = "AND bp.WriterAccountId = @AccountId";
+                    assignmentfilter = "AND (bp.WriterAccountId = @AccountId OR c.WriterAccountId = @AccountId)";
                 }
                 else if (status == BookStatuses.ProofRead)
                 {
-                    assignmentfilter = "AND bp.ReviewerAccountId = @AccountId";
+                    assignmentfilter = "AND (bp.ReviewerAccountId = @AccountId OR c.ReviewerAccountId = @AccountId)";
                 }
                 var param = new
                 {
@@ -349,13 +349,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     StatusFilter = status
                 };
 
-                var sql = @"Select b.Id
-                            From Book b
-                            INNER Join BookPage bp on bp.BookId = b.Id
-                            Where b.LibraryId = @LibraryId
+                var sql = @"SELECT DISTINCT b.Id, b.Title
+                            FROM Book b
+                            LEFT JOIN BookPage bp ON bp.BookId = b.Id
+                            LEFT JOIN Chapter c ON c.BookId = b.Id
+                            WHERE b.LibraryId = @LibraryId
                             AND b.Status = @StatusFilter " +
                             assignmentfilter +
-                            $" ORDER BY {sortByQuery} {sortDirection} " +
+                            $" ORDER BY {sortByQuery}, b.Id {sortDirection} " +
                             @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
 
@@ -363,10 +364,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var bookIds = await connection.QueryAsync(command);
 
-                var sqlCount = @"Select COUNT(b.Id)
-                            From Book b
-                            INNER Join BookPage bp on bp.BookId = b.Id
-                            Where b.LibraryId = @LibraryId
+                var sqlCount = @"SELECT COUNT(DISTINCT b.Id)
+                            FROM Book b
+                            LEFT JOIN BookPage bp ON bp.BookId = b.Id
+                            LEFT JOIN Chapter c ON c.BookId = b.Id
+                            WHERE b.LibraryId = @LibraryId
                             AND b.Status = @StatusFilter " +
                             assignmentfilter;
 

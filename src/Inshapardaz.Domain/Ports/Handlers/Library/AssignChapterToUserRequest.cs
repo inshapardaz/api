@@ -11,14 +11,13 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AssignChapterToUserRequest : LibraryBaseCommand
     {
-        public AssignChapterToUserRequest(int libraryId, int bookId, int chapterNumber, AssignmentTypes type, int? accountId, bool isAdmin = false)
+        public AssignChapterToUserRequest(int libraryId, int bookId, int chapterNumber, int? accountId, bool isAdmin = false)
         : base(libraryId)
         {
             BookId = bookId;
             ChapterNumber = chapterNumber;
             AccountId = accountId;
             IsAdmin = isAdmin;
-            AssignmentType = type;
         }
 
         public ChapterModel Result { get; set; }
@@ -26,7 +25,6 @@ namespace Inshapardaz.Domain.Models.Library
         public int ChapterNumber { get; set; }
         public int? AccountId { get; private set; }
         public bool IsAdmin { get; }
-        public AssignmentTypes AssignmentType { get; }
     }
 
     public class AssignChapterToUserRequestHandler : RequestHandlerAsync<AssignChapterToUserRequest>
@@ -58,11 +56,11 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new BadRequestException();
             }
 
-            if (command.AssignmentType == AssignmentTypes.Write)
+            if (chapter.Status == EditingStatus.Available || chapter.Status == EditingStatus.Typing)
             {
                 command.Result = await _chapterRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.ChapterNumber, command.AccountId, cancellationToken);
             }
-            else if (command.AssignmentType == AssignmentTypes.Review)
+            else if (chapter.Status == EditingStatus.Typed || chapter.Status == EditingStatus.InReview)
             {
                 command.Result = await _chapterRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.ChapterNumber, command.AccountId, cancellationToken);
             }

@@ -50,6 +50,7 @@ namespace Inshapardaz.Api.Controllers
             [FromQuery] BookStatuses status = BookStatuses.Published,
             [FromQuery] BookSortByType sortBy = BookSortByType.Title,
             [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
+            [FromQuery] BookAssignmentStatus assignedFor = BookAssignmentStatus.None,
             CancellationToken token = default(CancellationToken))
         {
             var filter = new BookFilter
@@ -59,7 +60,8 @@ namespace Inshapardaz.Api.Controllers
                 SeriesId = seriesId,
                 Favorite = favorite,
                 Read = read,
-                Status = status
+                Status = status,
+                AssignmentStatus = assignedFor
             };
             var request = new GetBooksQuery(libraryId, pageNumber, pageSize, _userHelper.Account?.Id)
             {

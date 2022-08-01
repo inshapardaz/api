@@ -13,10 +13,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
     public class CategoriesDataBuilder
     {
         private readonly IDbConnection _connection;
-        private int _bookCount;
+        private int _bookCount, _priodicalCount;
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<CategoryDto> _categories = new List<CategoryDto>();
         private int _libraryId;
+        private IEnumerable<BookDto> _books;
+        private IEnumerable<PeriodicalDto> _periodicals;
 
         public CategoriesDataBuilder(IProvideConnection connectionProvider)
         {
@@ -26,6 +28,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         public CategoriesDataBuilder WithBooks(int bookCount)
         {
             _bookCount = bookCount;
+            return this;
+        }
+
+        public CategoriesDataBuilder WithPeriodicals(int count)
+        {
+            _priodicalCount = count;
             return this;
         }
 
@@ -58,17 +66,25 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 _connection.AddAuthor(author);
                 _authors.Add(author);
 
-                var books = fixture.Build<BookDto>()
+                _books = fixture.Build<BookDto>()
                                    .With(b => b.LibraryId, _libraryId)
                                     .With(b => b.Language, RandomData.Locale)
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);
-                _connection.AddBooks(books);
+                _connection.AddBooks(_books);
 
-                _connection.AddBooksAuthor(books.Select(b => b.Id), author.Id);
+                _periodicals = fixture.Build<PeriodicalDto>()
+                                   .With(b => b.LibraryId, _libraryId)
+                                   .With(b => b.Language, RandomData.Locale)
+                                   .CreateMany(_priodicalCount);
+                _connection.AddPeriodicals(_periodicals);
 
-                _connection.AddBooksToCategory(books, cat);
+                _connection.AddBooksAuthor(_books.Select(b => b.Id), author.Id);
+
+                _connection.AddBooksToCategory(_books, cat);
+
+                _connection.AddPeriodicalToCategory(_periodicals, cat);
             }
 
             return cats;
@@ -78,6 +94,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         {
             _connection.DeleteAuthors(_authors);
             _connection.DeleteCategries(_categories);
+            _connection.DeleteBooks(_books);
+            _connection.DeletePeridicals(_periodicals);
         }
     }
 

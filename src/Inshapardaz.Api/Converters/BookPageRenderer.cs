@@ -17,8 +17,8 @@ namespace Inshapardaz.Api.Converters
     {
         BookPageView Render(BookPageModel source, int libraryId);
 
-        PageView<BookPageView> Render(PageRendererArgs<BookPageModel, BookPageFilter> source, int libraryId, int bookId);
-        PageView<BookPageView> RenderUserPages(PageRendererArgs<BookPageModel, BookPageFilter> source, int libraryId);
+        PageView<BookPageView> Render(PageRendererArgs<BookPageModel, PageFilter> source, int libraryId, int bookId);
+        PageView<BookPageView> RenderUserPages(PageRendererArgs<BookPageModel, PageFilter> source, int libraryId);
 
         LinkView RenderImageLink(FileModel file);
     }
@@ -36,7 +36,7 @@ namespace Inshapardaz.Api.Converters
             _fileStorage = fileStorage;
         }
 
-        public PageView<BookPageView> Render(PageRendererArgs<BookPageModel, BookPageFilter> source, int libraryId, int bookId)
+        public PageView<BookPageView> Render(PageRendererArgs<BookPageModel, PageFilter> source, int libraryId, int bookId)
         {
             var page = new PageView<BookPageView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
@@ -109,7 +109,7 @@ namespace Inshapardaz.Api.Converters
             return page;
         }
 
-        public PageView<BookPageView> RenderUserPages(PageRendererArgs<BookPageModel, BookPageFilter> source, int libraryId)
+        public PageView<BookPageView> RenderUserPages(PageRendererArgs<BookPageModel, PageFilter> source, int libraryId)
         {
             var page = new PageView<BookPageView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
@@ -123,7 +123,7 @@ namespace Inshapardaz.Api.Converters
 
             links.Add(_linkRenderer.Render(new Link
             {
-                ActionName = nameof(UserController.GetPagesByUser),
+                ActionName = nameof(UserController.GetBookPagesByUser),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
                 Parameters = new { libraryId = libraryId },
@@ -137,7 +137,7 @@ namespace Inshapardaz.Api.Converters
 
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(UserController.GetPagesByUser),
+                    ActionName = nameof(UserController.GetBookPagesByUser),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Next,
                     Parameters = new { libraryId = libraryId },
@@ -151,7 +151,7 @@ namespace Inshapardaz.Api.Converters
                 pageQuery.Add("pageNumber", (page.CurrentPageIndex - 1).ToString());
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(UserController.GetPagesByUser),
+                    ActionName = nameof(UserController.GetBookPagesByUser),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Previous,
                     Parameters = new { libraryId = libraryId },
@@ -344,7 +344,7 @@ namespace Inshapardaz.Api.Converters
             });
         }
 
-        private static Dictionary<string, string> CreateQueryString(PageRendererArgs<BookPageModel, BookPageFilter> source, PageView<BookPageView> page)
+        private static Dictionary<string, string> CreateQueryString(PageRendererArgs<BookPageModel, PageFilter> source, PageView<BookPageView> page)
         {
             Dictionary<string, string> queryString = new Dictionary<string, string> {
                     { "pageSize", page.PageSize.ToString() }

@@ -20,6 +20,9 @@ namespace Inshapardaz.Domain.Models.Library
         public int PageSize { get; private set; }
 
         public string Query { get; set; }
+        public PeriodicalFilter Filter { get; set; }
+        public PeriodicalSortByType SortBy { get; set; }
+        public SortDirection Direction { get; set; }
     }
 
     public class GetPeriodicalsQueryHandler : QueryHandlerAsync<GetPeriodicalsQuery, Page<PeriodicalModel>>
@@ -31,14 +34,9 @@ namespace Inshapardaz.Domain.Models.Library
             _periodicalRepository = periodicalRepository;
         }
 
-        public override async Task<Page<PeriodicalModel>> ExecuteAsync(GetPeriodicalsQuery command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<Page<PeriodicalModel>> ExecuteAsync(GetPeriodicalsQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (string.IsNullOrWhiteSpace(command.Query))
-            {
-                return await _periodicalRepository.GetPeriodicals(command.LibraryId, command.PageNumber, command.PageSize, cancellationToken);
-            }
-
-            return await _periodicalRepository.SearchPeriodicals(command.LibraryId, command.Query, command.PageNumber, command.PageSize, cancellationToken);
+            return await _periodicalRepository.GetPeriodicals(query.LibraryId, query.Query, query.PageNumber, query.PageSize, query.Filter, query.SortBy, query.Direction, cancellationToken);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Converters
 {
     public interface IRenderPeriodical
     {
-        PageView<PeriodicalView> Render(PageRendererArgs<PeriodicalModel> source, int libraryId);
+        PageView<PeriodicalView> Render(PageRendererArgs<PeriodicalModel, PeriodicalFilter, PeriodicalSortByType> source, int libraryId);
 
         PeriodicalView Render(PeriodicalModel source, int libraryId);
     }
@@ -24,16 +24,18 @@ namespace Inshapardaz.Api.Converters
     {
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
+        private readonly IRenderCategory _categoryRenderer;
         private readonly IFileStorage _fileStorage;
 
-        public PeriodicalRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
+        public PeriodicalRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderCategory categoryRenderer, IFileStorage fileStorage)
         {
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
             _fileStorage = fileStorage;
+            _categoryRenderer = categoryRenderer;
         }
 
-        public PageView<PeriodicalView> Render(PageRendererArgs<PeriodicalModel> source, int libraryId)
+        public PageView<PeriodicalView> Render(PageRendererArgs<PeriodicalModel, PeriodicalFilter, PeriodicalSortByType> source, int libraryId)
         {
             var page = new PageView<PeriodicalView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
             {
@@ -150,6 +152,17 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Image,
                     Parameters = new { fileId = source.ImageId.Value }
                 }));
+            }
+
+            if (source.Categories != null)
+            {
+                var categories = new List<CategoryView>();
+                foreach (var category in source.Categories)
+                {
+                    categories.Add(_categoryRenderer.Render(category, source.LibraryId));
+                }
+
+                result.Categories = categories;
             }
 
             if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))

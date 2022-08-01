@@ -34,15 +34,38 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/periodicals", Name = nameof(PeriodicalController.GetPeriodicals))]
-        public async Task<IActionResult> GetPeriodicals(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> GetPeriodicals(int libraryId, 
+            string query,
+            int pageNumber = 1, 
+            int pageSize = 10,
+            [FromQuery] int? category = null,
+            [FromQuery] PeriodicalSortByType sortBy = PeriodicalSortByType.Title,
+            [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
+            CancellationToken token = default(CancellationToken))
         {
-            var periodicalsQuery = new GetPeriodicalsQuery(libraryId, pageNumber, pageSize) { Query = query };
+            var filter = new PeriodicalFilter
+            {
+                CategoryId = category
+            };
+
+            var periodicalsQuery = new GetPeriodicalsQuery(libraryId, pageNumber, pageSize) { 
+                Query = query?.Trim(),
+                Filter = filter,
+                Direction = sortDirection,
+                SortBy = sortBy
+            };
             var result = await _queryProcessor.ExecuteAsync(periodicalsQuery, token);
 
-            var args = new PageRendererArgs<PeriodicalModel>
+            var args = new PageRendererArgs<PeriodicalModel, PeriodicalFilter, PeriodicalSortByType>
             {
                 Page = result,
-                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
+                RouteArguments = new PagedRouteArgs<PeriodicalSortByType> { 
+                    PageNumber = pageNumber, 
+                    PageSize = pageSize,
+                    Query = query,
+                    SortBy = sortBy,
+                    SortDirection = sortDirection
+                },
             };
 
             return new OkObjectResult(_periodicalRenderer.Render(args, libraryId));

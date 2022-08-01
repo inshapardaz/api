@@ -47,6 +47,13 @@ namespace Inshapardaz.Api.Tests.DataHelpers
                                 Where bc.BookId = @BookId ", new { BookId = id });
         }
 
+        public static IEnumerable<CategoryDto> GetCategoriesByPeriodical(this IDbConnection connection, int id)
+        {
+            return connection.Query<CategoryDto>(@"Select c.* From Category c
+                                Inner Join PeriodicalCategory pc ON c.Id = pc.CategoryId
+                                Where pc.PeriodicalId = @PeriodicalId", new { PeriodicalId = id });
+        }
+
         public static void AddBooksToCategory(this IDbConnection connection, IEnumerable<BookDto> books, CategoryDto category)
         {
             foreach (var book in books)
@@ -62,6 +69,24 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             {
                 connection.Execute("Insert Into BookCategory (BookId, CategoryId) Values(@BookId, @CategoryId)",
                     new { BookId = bookId, CategoryId = category.Id });
+            }
+        }
+
+        public static void AddPeriodicalToCategory(this IDbConnection connection, IEnumerable<PeriodicalDto> periodicals, CategoryDto category)
+        {
+            foreach (var periodical in periodicals)
+            {
+                connection.Execute("Insert Into PeriodicalCategory (PeriodicalId, CategoryId) Values(@PeriodicalId, @CategoryId)",
+                    new { PeriodicalId = periodical.Id, CategoryId = category.Id });
+            }
+        }
+
+        public static void AddPeriodicalToCategories(this IDbConnection connection, int periodicalId, IEnumerable<CategoryDto> categories)
+        {
+            foreach (var category in categories)
+            {
+                connection.Execute("Insert Into PeriodicalCategory (PeriodicalId, CategoryId) Values(@PeriodicalId, @CategoryId)",
+                    new { PeriodicalId = periodicalId, CategoryId = category.Id });
             }
         }
     }

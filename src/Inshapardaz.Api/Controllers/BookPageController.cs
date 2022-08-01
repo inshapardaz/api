@@ -61,11 +61,11 @@ namespace Inshapardaz.Api.Controllers
             };
             var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
 
-            var args = new PageRendererArgs<BookPageModel, BookPageFilter>
+            var args = new PageRendererArgs<BookPageModel, PageFilter>
             {
                 Page = result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-                Filters = new BookPageFilter { Status = status, AssignmentFilter = assignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
+                Filters = new PageFilter { Status = status, AssignmentFilter = assignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
             };
 
             return new OkObjectResult(_bookPageRenderer.Render(args, libraryId, bookId));
@@ -274,7 +274,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}/assign", Name = nameof(BookPageController.AssignPage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [Produces(typeof(BookPageView))]
-        public async Task<IActionResult> AssignPage(int libraryId, int bookId, int sequenceNumber, [FromBody] BookPageAssignmentView assignment, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> AssignPage(int libraryId, int bookId, int sequenceNumber, [FromBody] PageAssignmentView assignment, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {

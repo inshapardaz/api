@@ -2,7 +2,7 @@
 
 namespace Inshapardaz.Api.Views.Library
 {
-    public class BookPageAssignmentView : ViewWithLinks
+    public class PageAssignmentView : ViewWithLinks
     {
         public int? AccountId { get; set; }
     }

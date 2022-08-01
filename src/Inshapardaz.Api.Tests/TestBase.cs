@@ -104,6 +104,8 @@ namespace Inshapardaz.Api.Tests
                 .AddTransient<BooksDataBuilder>()
                 .AddTransient<ChapterDataBuilder>()
                 .AddTransient<AccountDataBuilder>()
+                .AddTransient<PeriodicalsDataBuilder>()
+                .AddTransient<IssueDataBuilder>()
                 .AddTransient<AccountAssert>();
         }
 
@@ -135,6 +137,9 @@ namespace Inshapardaz.Api.Tests
         protected CategoriesDataBuilder _categoriesDataBuilder;
         protected BooksDataBuilder _booksDataBuilder;
         protected ChapterDataBuilder _chapterDataBuilder;
+        protected IssueDataBuilder _issueDataBuilder;
+        private PeriodicalsDataBuilder _periodicalBuilder;
+
         protected Role? CurrentAuthenticationLevel => _role;
 
         protected AccountDataBuilder AccountBuilder { get; }
@@ -204,6 +209,19 @@ namespace Inshapardaz.Api.Tests
             }
         }
 
+        protected PeriodicalsDataBuilder PeriodicalBuilder
+        {
+            get
+            {
+                if (_periodicalBuilder == null)
+                {
+                    _periodicalBuilder = _factory.Services.GetService<PeriodicalsDataBuilder>();
+                }
+
+                return _periodicalBuilder;
+            }
+        }
+
         protected ChapterDataBuilder ChapterBuilder
         {
             get
@@ -217,6 +235,19 @@ namespace Inshapardaz.Api.Tests
             }
         }
 
+        protected IssueDataBuilder IssueBuilder
+        {
+            get
+            {
+                if (_issueDataBuilder == null)
+                {
+                    _issueDataBuilder = _factory.Services.GetService<IssueDataBuilder>();
+                }
+
+                return _issueDataBuilder;
+            }
+        }
+
         protected virtual void Cleanup()
         {
             _accountBuilder?.CleanUp();
@@ -226,6 +257,8 @@ namespace Inshapardaz.Api.Tests
             _categoriesDataBuilder?.CleanUp();
             _booksDataBuilder?.CleanUp();
             _chapterDataBuilder?.CleanUp();
+            _periodicalBuilder.CleanUp();
+            _issueDataBuilder?.CleanUp();
         }
     }
 }

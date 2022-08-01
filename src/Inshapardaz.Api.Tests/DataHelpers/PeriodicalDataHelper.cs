@@ -10,7 +10,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
     {
         public static void AddPeriodical(this IDbConnection connection, PeriodicalDto periodical)
         {
-            var id = connection.ExecuteScalar<int>("Insert Into Periodical (Title, [Description], CategoryId, ImageId, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @Description, @CategoryId, @ImageId, @LibraryId)", periodical);
+            var id = connection.ExecuteScalar<int>("Insert Into Periodical (Title, [Description], Language, ImageId, LibraryId) OUTPUT Inserted.Id VALUES (@Title, @Description, @Language, @ImageId, @LibraryId)", periodical);
             periodical.Id = id;
         }
 
@@ -22,10 +22,10 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             }
         }
 
-        public static void DeletePeridical(this IDbConnection connection, IEnumerable<PeriodicalDto> serieses)
+        public static void DeletePeridicals(this IDbConnection connection, IEnumerable<PeriodicalDto> periodicals)
         {
-            var sql = "Delete From Periodicals Where Id IN @Ids";
-            connection.Execute(sql, new { Ids = serieses.Select(a => a.Id) });
+            var sql = "Delete From Periodical Where Id IN @Ids";
+            connection.Execute(sql, new { Ids = periodicals.Select(a => a.Id) });
         }
 
         public static PeriodicalDto GetPeriodicalById(this IDbConnection connection, int id)

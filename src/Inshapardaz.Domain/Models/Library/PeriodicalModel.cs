@@ -1,8 +1,11 @@
-﻿namespace Inshapardaz.Domain.Models.Library
+﻿using System.Collections.Generic;
+
+namespace Inshapardaz.Domain.Models.Library
 {
     public class PeriodicalModel
     {
         public int Id { get; set; }
+        public int LibraryId { get; set; }
 
         public string Title { get; set; }
 
@@ -12,8 +15,11 @@
 
         public string ImageUrl { get; set; }
 
-        public int? CategoryId { get; set; }
+        public string Language { get; set; }
 
         public int IssueCount { get; set; }
+
+        public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
+
     }
 }

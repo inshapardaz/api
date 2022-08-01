@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Api.Views.Library;
+using System.Linq;
 
 namespace Inshapardaz.Api.Mappings
 {
@@ -11,7 +12,9 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 Title = source.Title,
                 Description = source.Description,
-                IssueCount = source.IssueCount
+                IssueCount = source.IssueCount,
+                Language = source.Language,
+                Categories = source.Categories?.Select(c => c.Map())
             };
 
         public static PeriodicalModel Map(this PeriodicalView source)
@@ -21,6 +24,8 @@ namespace Inshapardaz.Api.Mappings
                 Title = source.Title,
                 Description = source.Description,
                 IssueCount = source.IssueCount,
+                Language = source.Language,
+                Categories = source.Categories?.Select(c => c.Map()).ToList()
             };
 
         public static IssueView Map(this IssueModel source)

@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
 
-        [HttpPost("libraries/{libraryId}/periodicals{periodicalId}/issues", Name = nameof(IssueController.CreateIssue))]
+        [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/issues", Name = nameof(IssueController.CreateIssue))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateIssue(int libraryId, int periodicalId, [FromBody]IssueView issue, CancellationToken token = default(CancellationToken))
         {

@@ -21,6 +21,7 @@ namespace Inshapardaz.Api.Controllers
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderBook _bookRenderer;
         private readonly IRenderBookPage _bookPageRenderer;
+        private readonly IRenderIssuePage _issuePageRenderer;
         private readonly IRenderFile _fileRenderer;
         private readonly IUserHelper _userHelper;
 
@@ -28,6 +29,7 @@ namespace Inshapardaz.Api.Controllers
             IQueryProcessor queryProcessor,
             IRenderBook bookRenderer,
             IRenderBookPage bookPageRenderer,
+            IRenderIssuePage issuePageRenderer,
             IRenderFile fileRenderer,
             IUserHelper userHelper)
         {
@@ -35,6 +37,7 @@ namespace Inshapardaz.Api.Controllers
             _queryProcessor = queryProcessor;
             _bookRenderer = bookRenderer;
             _bookPageRenderer = bookPageRenderer;
+            _issuePageRenderer = issuePageRenderer;
             _fileRenderer = fileRenderer;
             _userHelper = userHelper;
         }
@@ -50,9 +53,9 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(result.Select(x => x.Map()));
         }
 
-        [HttpGet("libraries/{libraryId}/my/pages", Name = nameof(UserController.GetPagesByUser))]
+        [HttpGet("libraries/{libraryId}/books/my/pages", Name = nameof(UserController.GetBookPagesByUser))]
         [Produces(typeof(PageView<BookPageView>))]
-        public async Task<IActionResult> GetPagesByUser(int libraryId,
+        public async Task<IActionResult> GetBookPagesByUser(int libraryId,
             int pageNumber = 1,
             int pageSize = 10,
             [FromQuery] EditingStatus status = EditingStatus.All,
@@ -60,20 +63,47 @@ namespace Inshapardaz.Api.Controllers
             CancellationToken token = default(CancellationToken))
         {
             var accountId = _userHelper.Account.Id;
-            var getBookPagesQuery = new GetUserPagesQuery(libraryId, accountId, pageNumber, pageSize)
+            var getBookPagesQuery = new GetBookPagesForUserQuery(libraryId, accountId, pageNumber, pageSize)
             {
                 StatusFilter = status,
             };
             var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
 
-            var args = new PageRendererArgs<BookPageModel, BookPageFilter>
+            var args = new PageRendererArgs<BookPageModel, PageFilter>
             {
                 Page = result,
                 RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-                Filters = new BookPageFilter { Status = status }
+                Filters = new PageFilter { Status = status }
             };
 
             return new OkObjectResult(_bookPageRenderer.RenderUserPages(args, libraryId));
+        }
+
+
+        [HttpGet("libraries/{libraryId}/periodicals/my/pages", Name = nameof(UserController.GetIssuePagesByUser))]
+        [Produces(typeof(PageView<BookPageView>))]
+        public async Task<IActionResult> GetIssuePagesByUser(int libraryId,
+           int pageNumber = 1,
+           int pageSize = 10,
+           [FromQuery] EditingStatus status = EditingStatus.All,
+           [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
+           CancellationToken token = default(CancellationToken))
+        {
+            var accountId = _userHelper.Account.Id;
+            var getBookPagesQuery = new GetIssuePagesForUserQuery(libraryId, accountId, pageNumber, pageSize)
+            {
+                StatusFilter = status,
+            };
+            var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
+
+            var args = new PageRendererArgs<IssuePageModel, PageFilter>
+            {
+                Page = result,
+                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
+                Filters = new PageFilter { Status = status }
+            };
+
+            return new OkObjectResult(_issuePageRenderer.RenderUserPages(args, libraryId));
         }
 
         [HttpGet("libraries/{libraryId}/my/books", Name = nameof(UserController.GetBooksByUser))]

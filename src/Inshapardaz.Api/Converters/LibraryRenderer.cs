@@ -211,7 +211,7 @@ namespace Inshapardaz.Api.Converters
 
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(UserController.GetPagesByUser),
+                    ActionName = nameof(UserController.GetBookPagesByUser),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.MyPages,
                     Parameters = new { libraryId = model.Id }

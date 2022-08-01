@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class GetUserPagesQuery : LibraryBaseQuery<Page<BookPageModel>>
+    public class GetBookPagesForUserQuery : LibraryBaseQuery<Page<BookPageModel>>
     {
-        public GetUserPagesQuery(int libraryId, int accountId, int pageNumber, int pageSize)
+        public GetBookPagesForUserQuery(int libraryId, int accountId, int pageNumber, int pageSize)
             : base(libraryId)
         {
             AccountId = accountId;
@@ -24,16 +24,16 @@ namespace Inshapardaz.Domain.Models.Library
         public int AccountId { get; set; }
     }
 
-    public class GetUserPagesQueryHandler : QueryHandlerAsync<GetUserPagesQuery, Page<BookPageModel>>
+    public class GetBookPagesForUserQueryHandler : QueryHandlerAsync<GetBookPagesForUserQuery, Page<BookPageModel>>
     {
         private readonly IBookPageRepository _bookPageRepository;
 
-        public GetUserPagesQueryHandler(IBookPageRepository bookPageRepository)
+        public GetBookPagesForUserQueryHandler(IBookPageRepository bookPageRepository)
         {
             _bookPageRepository = bookPageRepository;
         }
 
-        public override async Task<Page<BookPageModel>> ExecuteAsync(GetUserPagesQuery query, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<Page<BookPageModel>> ExecuteAsync(GetBookPagesForUserQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
             return  await _bookPageRepository.GetPagesByUser(query.LibraryId, query.AccountId, query.StatusFilter, query.PageNumber, query.PageSize, cancellationToken);
         }

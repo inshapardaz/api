@@ -34,6 +34,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IArticleRepository, ArticleRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<ICorrectionRepository, CorrectionRepository>();
+            services.AddTransient<IIssuePageRepository, IssuePageRepository>();
             return services;
         }
 

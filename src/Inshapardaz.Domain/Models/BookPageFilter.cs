@@ -1,6 +1,6 @@
 ﻿namespace Inshapardaz.Domain.Models.Library
 {
-    public class BookPageFilter
+    public class PageFilter
     {
         public EditingStatus? Status { get; set; }
 

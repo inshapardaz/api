@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         [Test]
         public void ShouldNotHavePreviousLink()
         {
-            _assert.ShouldHaveNotNextLink();
+            _assert.ShouldHaveNotPreviousLink();
         }
 
         [Test]

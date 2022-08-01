@@ -2,26 +2,27 @@
 
 namespace Inshapardaz.Api.Tests.Dto
 {
-    public class BookPageDto
+    public class IssuePageDto
     {
-        public BookPageDto()
+        public IssuePageDto()
         {
         }
 
-        public BookPageDto(BookPageDto source)
+        public IssuePageDto(IssuePageDto source)
         {
             Id = source.Id;
-            BookId = source.BookId;
+            IssueId = source.IssueId;
             Text = source.Text;
             SequenceNumber = source.SequenceNumber;
             ImageId = source.ImageId;
             Status = source.Status;
-            AccountId = source.AccountId;
+            WriterAccountId = source.WriterAccountId;
+            ReviewerAccountId = source.ReviewerAccountId;
         }
 
         public long Id { get; set; }
 
-        public int BookId { get; set; }
+        public int IssueId { get; set; }
 
         public string Text { get; set; }
 
@@ -30,6 +31,7 @@ namespace Inshapardaz.Api.Tests.Dto
         public int? ImageId { get; set; }
 
         public EditingStatus Status { get; set; }
-        public int? AccountId { get; set; }
+        public int? WriterAccountId { get; set; }
+        public int? ReviewerAccountId { get; set; }
     }
 }

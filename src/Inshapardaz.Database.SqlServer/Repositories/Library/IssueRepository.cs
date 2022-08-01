@@ -25,18 +25,21 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             LEFT OUTER JOIN [File] f ON f.Id = i.ImageId
                             Where p.LibraryId = @LibraryId
+                            AND p.Id = @PeriodicalId
                             Order By i.IssueDate
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql,
-                                                    new { LibraryId = libraryId, PageSize = pageSize, PageNumber = pageNumber },
+                                                    new { LibraryId = libraryId, PeriodicalId = periodicalId, PageSize = pageSize, PageNumber = pageNumber },
                                                     cancellationToken: cancellationToken);
 
                 var periodicals = await connection.QueryAsync<IssueModel>(command);
 
                 var sqlAuthorCount = @"SELECT COUNT(*) FROM Issue as i
-                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId WHERE p.LibraryId = @LibraryId";
-                var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId }, cancellationToken: cancellationToken));
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            WHERE p.LibraryId = @LibraryId 
+                            AND p.Id = @PeriodicalId";
+                var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, PeriodicalId = periodicalId}, cancellationToken: cancellationToken));
 
                 return new Page<IssueModel>
                 {

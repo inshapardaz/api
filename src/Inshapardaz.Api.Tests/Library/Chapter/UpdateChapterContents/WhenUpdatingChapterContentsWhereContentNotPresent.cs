@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            _assert.ShouldHaveCorrectLoactionHeader();
+            _assert.ShouldHaveCorrectLocationHeader();
         }
 
         [Test]

@@ -35,7 +35,9 @@ namespace Inshapardaz.Api.Mappings
                 PeriodicalId = source.PeriodicalId,
                 VolumeNumber = source.VolumeNumber,
                 IssueNumber = source.IssueNumber,
-                IssueDate = source.IssueDate
+                IssueDate = source.IssueDate,
+                PageCount = source.PageCount,
+                ArticleCount = source.ArticleCount
             };
 
         public static IssueModel Map(this IssueView source)
@@ -45,7 +47,9 @@ namespace Inshapardaz.Api.Mappings
                 PeriodicalId = source.PeriodicalId,
                 VolumeNumber = source.VolumeNumber,
                 IssueNumber = source.IssueNumber,
-                IssueDate = source.IssueDate
+                IssueDate = source.IssueDate,
+                PageCount = source.PageCount,
+                ArticleCount = source.ArticleCount
             };
 
         public static IssueContentView Map(this IssueContentModel source)
@@ -53,7 +57,8 @@ namespace Inshapardaz.Api.Mappings
             {
                 Id = source.Id,
                 PeriodicalId = source.PeriodicalId,
-                IssueId = source.IssueId,
+                IssueNumber = source.IssueNumber,
+                VolumeNumber = source.VolumeNumber,
                 Language = source.Language,
                 MimeType = source.MimeType
             };
@@ -63,7 +68,8 @@ namespace Inshapardaz.Api.Mappings
             {
                 Id = source.Id,
                 PeriodicalId = source.PeriodicalId,
-                IssueId = source.IssueId,
+                IssueNumber = source.IssueNumber,
+                VolumeNumber = source.VolumeNumber,
                 Language = source.Language,
                 MimeType = source.MimeType
             };

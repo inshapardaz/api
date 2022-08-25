@@ -92,7 +92,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             image.Should().BeNull();
         }
 
-        public BookPageAssert ShouldNotHaveCorrectLoactionHeader()
+        public BookPageAssert ShouldNotHaveCorrectLocationHeader()
         {
             _response.Headers.Location.Should().BeNull();
             return this;

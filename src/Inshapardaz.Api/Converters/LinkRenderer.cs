@@ -57,7 +57,10 @@ namespace Inshapardaz.Api.Converters
                 var collection = HttpUtility.ParseQueryString(string.Empty);
                 foreach (var item in link.QueryString)
                 {
-                    collection[item.Key] = item.Value;
+                    if (!string.IsNullOrWhiteSpace(item.Value))
+                    {
+                        collection[item.Key] = item.Value;
+                    }
                 }
 
                 urlBuilder.Query = collection.ToString();

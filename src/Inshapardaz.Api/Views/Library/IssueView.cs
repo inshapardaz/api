@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Inshapardaz.Api.Views.Library
 {
@@ -11,6 +12,10 @@ namespace Inshapardaz.Api.Views.Library
         public int VolumeNumber { get; set; }
 
         public DateTime IssueDate { get; set; }
-        public int PeriodicalId { get; internal set; }
+        public int PeriodicalId { get; set; }
+        public int ArticleCount { get; set; }
+        public int PageCount { get; set; }
+        public List<AuthorView> Authors { get; set; }
+        public List<IssueContentView> Contents { get; set; }
     }
 }

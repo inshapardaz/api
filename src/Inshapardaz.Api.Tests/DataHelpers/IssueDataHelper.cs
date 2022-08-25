@@ -116,10 +116,10 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static IEnumerable<IssueContentDto> GetIssueContents(this IDbConnection connection, int issueId)
         {
-            string sql = @"Select bc.*, f.MimeType From IssueContent ic
+            string sql = @"Select ic.*, f.MimeType From IssueContent ic
                            INNER Join Issue i ON i.Id = ic.IssueId
                            INNER Join [File] f ON f.Id = ic.FileId
-                           Where t.Id = @IssueId";
+                           Where i.Id = @IssueId";
 
             return connection.Query<IssueContentDto>(sql, new
             {

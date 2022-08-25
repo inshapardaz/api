@@ -35,18 +35,48 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues", Name = nameof(IssueController.GetIssues))]
-        public async Task<IActionResult> GetIssues(int libraryId, int periodicalId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> GetIssues(int libraryId, int periodicalId,
+            int pageNumber = 1,
+            int pageSize = 10,
+            [FromQuery] int? year = null,
+            [FromQuery] int? volumeNumber = null,
+            [FromQuery] IssueSortByType sortBy = IssueSortByType.IssueDate,
+            [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
+            [FromQuery] BookAssignmentStatus assignedFor = BookAssignmentStatus.None,
+            CancellationToken token = default(CancellationToken))
         {
-            var issuesQuery = new GetIssuesQuery(libraryId, periodicalId, pageNumber, pageSize) { Query = query };
+            var filter = new IssueFilter
+            {
+                Year = year,
+                VolumeNumber = volumeNumber,
+                AssignmentStatus = assignedFor
+            };
+            var issuesQuery = new GetIssuesQuery(libraryId, periodicalId, pageNumber, pageSize) { 
+                Filter = filter,
+                SortBy = sortBy,
+                SortDirection = sortDirection
+            };
             var result = await _queryProcessor.ExecuteAsync(issuesQuery, token);
 
-            var args = new PageRendererArgs<IssueModel>
+            if (result != null)
             {
-                Page = result,
-                RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
-            };
 
-            return new OkObjectResult(_issueRenderer.Render(args, libraryId, periodicalId));
+                var args = new PageRendererArgs<IssueModel, IssueFilter, IssueSortByType>
+                {
+                    Page = result,
+                    RouteArguments = new PagedRouteArgs<IssueSortByType> { 
+                        PageNumber = pageNumber, 
+                        PageSize = pageSize,
+                        SortBy = sortBy,
+                        SortDirection = sortDirection
+                    },
+                    Filters = filter
+                };
+
+                return new OkObjectResult(_issueRenderer.Render(args, libraryId, periodicalId));
+            }
+
+            return new NotFoundResult();
         }
 
         [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}", Name = nameof(IssueController.GetIssueById))]

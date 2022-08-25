@@ -95,7 +95,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             _connection.DeleteAuthors(_authors);
             _connection.DeleteCategries(_categories);
             _connection.DeleteBooks(_books);
-            _connection.DeletePeridicals(_periodicals);
+            _connection.DeletePeriodicals(_periodicals);
         }
     }
 

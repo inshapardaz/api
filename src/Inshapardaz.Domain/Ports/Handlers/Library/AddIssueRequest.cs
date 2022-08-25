@@ -24,21 +24,32 @@ namespace Inshapardaz.Domain.Models.Library
 
         public class AddIssueRequestHandler : RequestHandlerAsync<AddIssueRequest>
         {
+            private readonly IPeriodicalRepository _periodicalRepository;
             private readonly IIssueRepository _issueRepository;
 
-            public AddIssueRequestHandler(IIssueRepository issueRepository)
+            public AddIssueRequestHandler(IPeriodicalRepository periodicalRepository, IIssueRepository issueRepository)
             {
                 _issueRepository = issueRepository;
+                _periodicalRepository = periodicalRepository;
             }
 
             public override async Task<AddIssueRequest> HandleAsync(AddIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
             {
+
+                var periodical = await _periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);
+
+                if (periodical == null)
+                {
+                    throw new BadRequestException();
+                }
+
                 var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.Issue.VolumeNumber, command.Issue.IssueNumber, cancellationToken);
 
                 if (issue != null)
                 {
                     throw new ConflictException();
                 }
+
                 command.Result = await _issueRepository.AddIssue(command.LibraryId, command.PeriodicalId, command.Issue, cancellationToken);
 
                 return await base.HandleAsync(command, cancellationToken);

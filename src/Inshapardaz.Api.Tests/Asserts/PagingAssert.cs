@@ -95,6 +95,13 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+        internal PagingAssert<T> ShouldHavePageCount(int pageCount)
+        {
+            _page.PageCount.Should().Be(pageCount);
+            return this;
+        }
+
+
         internal PagingAssert<T> ShouldHaveItems(int itemCount)
         {
             _page.Data.Count().Should().Be(itemCount);

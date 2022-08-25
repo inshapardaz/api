@@ -38,7 +38,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
             _exptectedPage = new BookPageDto(_page)
             {
                 Status = assignment.Status,
-                AccountId = assignment.AccountId
+                WriterAccountId = assignment.AccountId
             };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{book.Id}/pages/{_page.SequenceNumber}/assign", assignment);

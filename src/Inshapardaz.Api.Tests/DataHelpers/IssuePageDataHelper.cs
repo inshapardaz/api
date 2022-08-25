@@ -10,9 +10,9 @@ namespace Inshapardaz.Api.Tests.DataHelpers
     {
         public static void AddIssuePage(this IDbConnection connection, IssuePageDto issuePage)
         {
-            var sql = @"Insert Into IssuePage (IssueId, Text, SequenceNumber, ImageId, AccountId, Status)
+            var sql = @"Insert Into IssuePage (IssueId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
                         Output Inserted.Id
-                        Values (@IssueId, @Text, @SequenceNumber, @ImageId, @AccountId, @Status)";
+                        Values (@IssueId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status)";
             var id = connection.ExecuteScalar<int>(sql, issuePage);
             issuePage.Id = id;
         }
@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             return connection.QuerySingleOrDefault<IssuePageDto>(command);
         }
 
-        public static IssuePageDto GetIssuePageById(this IDbConnection connection, int issueId, long pageId)
+        public static IssuePageDto GetIssuePageByIssueId(this IDbConnection connection, int issueId, long pageId)
         {
             var sql = @"SELECT *
                         FROM IssuePage
@@ -49,6 +49,16 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             var command = new CommandDefinition(sql, new { IssueId = issueId, id = pageId });
 
             return connection.QuerySingleOrDefault<IssuePageDto>(command);
+        }
+
+        public static IEnumerable<IssuePageDto> GetIssuePagesByIssue(this IDbConnection connection, int issueId)
+        {
+            var sql = @"SELECT *
+                        FROM IssuePage
+                        Where IssueId = @IssueId";
+            var command = new CommandDefinition(sql, new { IssueId = issueId });
+
+            return connection.Query<IssuePageDto>(command);
         }
     }
 }

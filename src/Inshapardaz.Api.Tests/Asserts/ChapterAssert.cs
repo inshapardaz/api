@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return new ChapterAssert(view, libraryId);
         }
 
-        internal ChapterAssert ShouldHaveCorrectLoactionHeader()
+        internal ChapterAssert ShouldHaveCorrectLocationHeader()
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();

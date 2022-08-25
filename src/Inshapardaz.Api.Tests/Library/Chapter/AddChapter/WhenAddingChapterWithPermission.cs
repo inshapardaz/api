@@ -52,7 +52,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            _assert.ShouldHaveCorrectLoactionHeader();
+            _assert.ShouldHaveCorrectLocationHeader();
         }
 
         [Test]

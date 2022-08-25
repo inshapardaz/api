@@ -122,6 +122,16 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("invite/library/{libraryId}", Name = nameof(AccountsController.InviteUser))]
         public async Task<IActionResult> InviteUser(int libraryId, [FromBody] InviteUserRequest model, CancellationToken cancellationToken)
         {
+            if (!_userHelper.IsAdmin && !_userHelper.IsLibraryAdmin(libraryId))
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!_userHelper.IsAdmin && model.Role == Role.Admin)
+            {
+                return new UnauthorizedResult();
+            }
+
             var command = new InviteUserCommand()
             {
                 Email = model.Email,

@@ -31,12 +31,15 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private List<IssueDto> _issues;
         private readonly List<FileDto> _files = new List<FileDto>();
         private List<IssuePageDto> _pages = new List<IssuePageDto>();
+        private List<AuthorDto> _authors = new List<AuthorDto>();
+        private List<ArticleDto> _articles = new List<ArticleDto>();
 
-        internal IEnumerable<IssuePageDto> GetPages(int bookId) => _pages.Where(p => p.IssueId == bookId);
+        internal IEnumerable<IssuePageDto> GetPages(int issuesId) => _pages.Where(p => p.IssueId == issuesId);
+        internal IEnumerable<ArticleDto> GetArticles(int issuesId) => _articles.Where(a => a.IssueId == issuesId);
 
         private bool _hasImage = true;
         private bool? _isPublic = null;
-        private int _chapterCount, _contentCount;
+        private int _contentCount, _numberOfAuthors;
         private string _contentMimeType;
         private string _language = null;
 
@@ -48,17 +51,22 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private List<IssueContentDto> _contents = new List<IssueContentDto>();
         private List<RecentBookDto> _recentBooks = new List<RecentBookDto>();
         private int _pageCount;
+        private int? _periodicalId;
         private bool _addPageImage;
         private Dictionary<int, int> _assignments = new Dictionary<int, int>();
         private Dictionary<EditingStatus, int> _pageStatuses = new Dictionary<EditingStatus, int>();
+        private int _articleCount;
+        private int? _year;
+        private readonly AuthorsDataBuilder _authorBuilder;
 
         public IEnumerable<IssueDto> Books => _issues;
         public IEnumerable<IssueContentDto> Contents => _contents;
 
-        public IssueDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage)
+        public IssueDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage, AuthorsDataBuilder authorBuilder)
         {
             _connection = connectionProvider.GetConnection();
             _fileStorage = fileStorage as FakeFileStorage;
+            _authorBuilder = authorBuilder;
         }
 
         internal IssueDataBuilder IsPublic(bool isPublic = true)
@@ -67,11 +75,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
-        public IssueDataBuilder WithChapters(int chapterCount)
+        internal IssueDataBuilder WithPublishYear(int year)
         {
-            _chapterCount = chapterCount;
+            _year = year;
             return this;
         }
+
 
         public IssueDataBuilder WithNoImage()
         {
@@ -82,6 +91,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         internal IssueDataBuilder WithLibrary(int libraryId)
         {
             _libraryId = libraryId;
+            return this;
+        }
+
+        internal IssueDataBuilder WithPeriodical(int periodicalId)
+        {
+            _periodicalId = periodicalId;
             return this;
         }
 
@@ -110,6 +125,11 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             _addPageImage = addImage;
             return this;
         }
+        public IssueDataBuilder WithArticles(int count)
+        {
+            _articleCount = count;
+            return this;
+        }
 
         public IssueDataBuilder AssignPagesTo(int accountId, int count)
         {
@@ -120,6 +140,24 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         public IssueDataBuilder WithStatus(EditingStatus statuses, int count)
         {
             _pageStatuses.TryAdd(statuses, count);
+            return this;
+        }
+
+        public IssueDataBuilder WithAuthor(AuthorDto author)
+        {
+            Author = author;
+            return this;
+        }
+
+        public IssueDataBuilder WithAuthors(IEnumerable<AuthorDto> authors)
+        {
+            _authors = authors.ToList();
+            return this;
+        }
+
+        public IssueDataBuilder WithAuthors(int numberOfAuthors)
+        {
+            _numberOfAuthors = numberOfAuthors;
             return this;
         }
 
@@ -154,10 +192,32 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
             Func<bool> isPublic = () => _isPublic ?? RandomData.Bool;
 
+            
+            if (!_periodicalId.HasValue)
+            {
+                var periodical = fixture.Build<PeriodicalDto>()
+                    .With(b => b.LibraryId, _libraryId)
+                    .With(b => b.Language, RandomData.Locale)
+                    .Create();
+
+                _connection.AddPeriodical(periodical);
+                _periodicalId = periodical.Id;
+            }
+
+            if (_year.HasValue)
+            {
+                fixture.Customizations.Add(
+                    new RandomDateTimeSequenceGenerator(
+                        minDate: new DateTime(_year.Value, 1, 1),
+                        maxDate: new DateTime(_year.Value, 12, 31)
+                    ));
+            }
+
             _issues = fixture.Build<IssueDto>()
                           .With(b => b.LibraryId, _libraryId)
                           .With(b => b.ImageId, _hasImage ? RandomData.Number : 0)
                           .With(b => b.IsPublic, isPublic)
+                          .With(b => b.PeriodicalId, _periodicalId)
                           .CreateMany(numberOfIssues)
                           .ToList();
 
@@ -200,7 +260,6 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 }
 
                 _connection.AddIssue(issue);
-
 
                 if (files != null)
                 {
@@ -274,6 +333,45 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     _connection.AddIssuePages(pages);
                     _pages.AddRange(pages);
                 }
+
+                if (_articleCount > 0)
+                {
+
+                    if (Author == null && !_authors.Any())
+                    {
+                        _authors = _authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : 1).ToList();
+                    }
+
+                    var articles = new List<ArticleDto>();
+
+                    for (int i = 0; i < _articleCount; i++)
+                    {
+                        var article = fixture.Build<ArticleDto>()
+                            .With(p => p.IssueId, issue.Id)
+                            .With(p => p.SequenceNumber, i + 1)
+                            .With(p => p.WriterAccountId, (int?)null)
+                            .With(p => p.ReviewerAccountId, (int?)null)
+                            .With(p => p.Status, EditingStatus.All)
+                            .Create();
+
+                        articles.Add(article);
+                        _connection.AddArticle(article);
+
+                        if (Author != null)
+                        {
+                            _connection.AddArticleAuthor(article.Id, Author.Id);
+                        }
+                        else
+                        {
+                            foreach (var author in _authors)
+                            {
+                                _connection.AddArticleAuthor(article.Id, author.Id);
+                            }
+                        }
+                    }
+
+                    _articles.AddRange(articles);
+                }
             }
 
             if (_favoriteBooks.Any())
@@ -307,6 +405,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             _connection.DeleteIssuePages(_pages);
             _connection.DeleteIssues(_issues);
             _connection.DeleteFiles(_files);
+            if(_periodicalId.HasValue) _connection.DeletePeriodical(_periodicalId.Value);
         }
     }
 }

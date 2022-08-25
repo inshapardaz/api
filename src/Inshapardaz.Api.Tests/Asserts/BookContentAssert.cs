@@ -111,7 +111,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal BookContentAssert ShouldHaveCorrectLoactionHeader()
+        internal BookContentAssert ShouldHaveCorrectLocationHeader()
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();

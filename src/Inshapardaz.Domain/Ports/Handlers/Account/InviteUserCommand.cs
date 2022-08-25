@@ -43,17 +43,29 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 
             if (command.Role != Role.Admin && library == null)
             {
-                throw new UnauthorizedException();
+                throw new BadRequestException();
             }
 
             var account = await _accountRepository.GetAccountByEmail(command.Email, cancellationToken);
             if (account != null)
             {
-                var accountLibraries = await _libraryRepository.GetLibrariesByAccountId(account.Id, cancellationToken);
-                if (string.IsNullOrWhiteSpace(account.InvitationCode) &&
-                    accountLibraries.Any(t => t.Id == command.LibraryId))
+                if (command.Role == Role.Admin && account != null)
                 {
-                    return await base.HandleAsync(command, cancellationToken);
+                    throw new ConflictException();
+                }
+
+                var accountLibraries = await _libraryRepository.GetLibrariesByAccountId(account.Id, cancellationToken);
+                if (accountLibraries.Any(t => t.Id == command.LibraryId))
+                {
+                    if (account.IsVerified)
+                    {
+                        throw new ConflictException();
+                    }
+                    else
+                    {
+                        return await base.HandleAsync(command, cancellationToken);
+                    }
+
                 }
                 else
                 {

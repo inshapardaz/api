@@ -48,10 +48,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                             p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
-                            f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
+                            f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, ia.Title As ChapterTitle
                             FROM IssuePage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
-                            LEFT OUTER JOIN [IssueChapter] c ON c.Id = p.ChapterId
+                            LEFT OUTER JOIN [IssueArticle] ia ON ia.Id = p.ArticleId
                             INNER JOIN Issue i ON i.Id = p.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId
@@ -219,10 +219,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                    p.SequenceNumber, p.Status, 
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
-                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ChapterId, c.Title As ChapterTitle
+                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ArticleId, ia.Title As ChapterTitle
                             FROM IssuePage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
-                            LEFT OUTER JOIN [IssueChapter] c ON c.Id = p.ChapterId
+                            LEFT OUTER JOIN [IssueArticle] ia ON ia.Id = p.ArticleId
                             INNER JOIN Issue i ON i.Id = p.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId
@@ -400,10 +400,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Status, 
                             p.WriterAccountId, p.WriterAssignTimeStamp, 
                             p.ReviewerAccountId, p.ReviewerAssignTimeStamp, 
-                            f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ChapterId, c.Title As ChapterTitle
+                            f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ArticleId, ia.Title As ChapterTitle
                             FROM IssuePage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
-                            LEFT OUTER JOIN [IssueChapter] c ON c.Id = p.ChapterId
+                            LEFT OUTER JOIN [IssueArticle] ia ON ia.Id = p.ArticleId
                             INNER JOIN Issue i ON i.Id = p.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId 
@@ -429,10 +429,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Status, 
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
-                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ChapterId, c.Title As ChapterTitle
+                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ArticleId, ia.Title As ChapterTitle
                             FROM IssuePage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
-                            LEFT OUTER JOIN [IssueChapter] c ON c.Id = p.ChapterId
+                            LEFT OUTER JOIN [IssueArticle] ia ON ia.Id = p.ArticleId
                             INNER JOIN Issue i ON i.Id = p.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId

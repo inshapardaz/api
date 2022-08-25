@@ -22,10 +22,16 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             }
         }
 
-        public static void DeletePeridicals(this IDbConnection connection, IEnumerable<PeriodicalDto> periodicals)
+        public static void DeletePeriodicals(this IDbConnection connection, IEnumerable<PeriodicalDto> periodicals)
         {
             var sql = "Delete From Periodical Where Id IN @Ids";
             connection.Execute(sql, new { Ids = periodicals.Select(a => a.Id) });
+        }
+
+        public static void DeletePeriodical(this IDbConnection connection, int periodicalId)
+        {
+            var sql = "Delete From Periodical Where Id = @Id";
+            connection.Execute(sql, new { Id = periodicalId });
         }
 
         public static PeriodicalDto GetPeriodicalById(this IDbConnection connection, int id)

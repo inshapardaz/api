@@ -28,8 +28,8 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
         {
             _account = AccountBuilder.Build();
             _book = BookBuilder.WithLibrary(LibraryId).WithPages(20)
-                .AssignPagesTo(_account.Id, 7)
-                .AssignPagesTo(AccountId, 11)
+                .AssignPagesToWriter(_account.Id, 7)
+                .AssignPagesToWriter(AccountId, 11)
                 .Build();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/pages?pageSize=10&pageNumber=1&assignmentFilter=assignedtome");
@@ -78,7 +78,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
         [Test]
         public void ShouldReturExpectedBookPages()
         {
-            var expectedItems = BookBuilder.GetPages(_book.Id).Where(p => p.AccountId == AccountId).OrderBy(p => p.SequenceNumber).Take(10);
+            var expectedItems = BookBuilder.GetPages(_book.Id).Where(p => p.WriterAccountId == AccountId).OrderBy(p => p.SequenceNumber).Take(10);
             _assert.ShouldHaveTotalCount(11)
                    .ShouldHavePage(1)
                    .ShouldHavePageSize(10);

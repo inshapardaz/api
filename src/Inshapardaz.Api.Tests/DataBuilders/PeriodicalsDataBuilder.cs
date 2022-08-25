@@ -161,7 +161,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
         public void CleanUp()
         {
-            _connection.DeletePeridicals(_periodicals);
+            _connection.DeletePeriodicals(_periodicals);
             _connection.DeleteIssues(_issues);
             _connection.DeleteFiles(_files);
             _categoriesBuilder.CleanUp();

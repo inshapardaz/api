@@ -32,7 +32,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<DeleteIssueRequest> HandleAsync(DeleteIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            await _issueRepository.DeleteIssue(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+            await _issueRepository.DeleteIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

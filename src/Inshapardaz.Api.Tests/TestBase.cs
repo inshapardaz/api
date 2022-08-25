@@ -257,7 +257,7 @@ namespace Inshapardaz.Api.Tests
             _categoriesDataBuilder?.CleanUp();
             _booksDataBuilder?.CleanUp();
             _chapterDataBuilder?.CleanUp();
-            _periodicalBuilder.CleanUp();
+            _periodicalBuilder?.CleanUp();
             _issueDataBuilder?.CleanUp();
         }
     }

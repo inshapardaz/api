@@ -10,9 +10,9 @@ namespace Inshapardaz.Api.Tests.DataHelpers
     {
         public static void AddBookPage(this IDbConnection connection, BookPageDto bookPage)
         {
-            var sql = @"Insert Into BookPage (BookId, Text, SequenceNumber, ImageId, AccountId, Status)
+            var sql = @"Insert Into BookPage (BookId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
                         Output Inserted.Id
-                        Values (@BookId, @Text, @SequenceNumber, @ImageId, @AccountId, @Status)";
+                        Values (@BookId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status)";
             var id = connection.ExecuteScalar<int>(sql, bookPage);
             bookPage.Id = id;
         }

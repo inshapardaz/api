@@ -24,6 +24,7 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
             var account = AccountBuilder.As(Role.Reader)
                 .InLibrary(library.Id)
                 .AsInvitation()
+                .Unverified()
                 .Build();
 
             _response = await Client.PostObject($"/accounts/invite/library/{library.Id}",

@@ -55,7 +55,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private List<RecentBookDto> _recentBooks = new List<RecentBookDto>();
         private int _pageCount;
         private bool _addPageImage;
-        private Dictionary<int, int> _assignments = new Dictionary<int, int>();
+        private Dictionary<int, int> _writerAssignments = new Dictionary<int, int>();
+        private Dictionary<int, int> _reviewerAssignments = new Dictionary<int, int>();
         private Dictionary<EditingStatus, int> _pageStatuses = new Dictionary<EditingStatus, int>();
 
         public IEnumerable<AuthorDto> Authors => _authors;
@@ -166,9 +167,15 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
-        public BooksDataBuilder AssignPagesTo(int accountId, int count)
+        public BooksDataBuilder AssignPagesToWriter(int accountId, int count)
         {
-            _assignments.TryAdd(accountId, count);
+            _writerAssignments.TryAdd(accountId, count);
+            return this;
+        }
+
+        public BooksDataBuilder AssignPagesToReviewer(int accountId, int count)
+        {
+            _reviewerAssignments.TryAdd(accountId, count);
             return this;
         }
 
@@ -364,19 +371,32 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                             .With(p => p.SequenceNumber, i + 1)
                             .With(p => p.Text, RandomData.Text)
                             .With(p => p.ImageId, pageImage?.Id)
-                            .With(p => p.AccountId, (int?)null)
+                            .With(p => p.WriterAccountId, (int?)null)
+                            .With(p => p.ReviewerAccountId, (int?)null)
                             .With(p => p.Status, EditingStatus.All)
                             .Create());
                     }
 
-                    if (_assignments.Any())
+                    if (_writerAssignments.Any())
                     {
-                        foreach (var assignment in _assignments)
+                        foreach (var assignment in _writerAssignments)
                         {
-                            var pagesToAssign = RandomData.PickRandom(pages.Where(p => p.AccountId == null), assignment.Value);
+                            var pagesToAssign = RandomData.PickRandom(pages.Where(p => p.WriterAccountId == null && p.ReviewerAccountId == null), assignment.Value);
                             foreach (var pageToAssign in pagesToAssign)
                             {
-                                pageToAssign.AccountId = assignment.Key;
+                                pageToAssign.WriterAccountId = assignment.Key;
+                            }
+                        }
+                    }
+
+                    if (_reviewerAssignments.Any())
+                    {
+                        foreach (var assignment in _reviewerAssignments)
+                        {
+                            var pagesToAssign = RandomData.PickRandom(pages.Where(p => p.WriterAccountId == null && p.ReviewerAccountId == null), assignment.Value);
+                            foreach (var pageToAssign in pagesToAssign)
+                            {
+                                pageToAssign.ReviewerAccountId = assignment.Key;
                             }
                         }
                     }
@@ -403,6 +423,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 foreach (var f in _favoriteBooks)
                 {
                     var booksToAddToFavorite = f.Count.HasValue ? _books.PickRandom(f.Count.Value) : _books;
+                    if (f.AccountId != 0)
                     _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), f.AccountId);
                 }
             }
@@ -414,9 +435,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     var booksToAddToRecent = r.Count.HasValue ? _books.PickRandom(r.Count.Value) : _books;
                     foreach (var recentBook in booksToAddToRecent)
                     {
-                        RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, AccountId = r.AccountId, DateRead = RandomData.Date };
-                        _connection.AddBookToRecentReads(recent);
-                        _recentBooks.Add(recent);
+                        if (r.AccountId != 0)
+                        {
+                            RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, AccountId = r.AccountId, DateRead = RandomData.Date };
+                            _connection.AddBookToRecentReads(recent);
+                            _recentBooks.Add(recent);
+                        }
                     }
                 }                
             }

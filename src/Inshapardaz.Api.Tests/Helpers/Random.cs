@@ -33,6 +33,8 @@ namespace Inshapardaz.Api.Tests.Helpers
         internal static string MimeType =>
             new Faker().PickRandom(new[] { MimeTypes.Markdown, MimeTypes.Pdf, MimeTypes.Epub, MimeTypes.Html, MimeTypes.Json, MimeTypes.MsWord, MimeTypes.Text });
 
+        internal static int NumberBetween(int v1, int v2) => new Faker().Random.Number(v1, v2);
+
         private static string[] Langs = new[] { "en", "ur", "hi", "pn", "pr", "fr", "ar", "pr", "tr" };
 
         private static int LangPos = 0;

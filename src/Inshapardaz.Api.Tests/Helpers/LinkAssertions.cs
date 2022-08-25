@@ -20,9 +20,8 @@ namespace Inshapardaz.Api.Tests.Helpers
 
         public static void AssertLinkNotPresent(this IEnumerable<LinkView> links, string relType, string method = "GET")
         {
-            var link = links.SingleOrDefault(l => l.Rel.Equals(relType, StringComparison.CurrentCultureIgnoreCase));
-
-            Assert.That(link, Is.Null, $"Link with reltype {relType} shouldn't exists");
+            links.SingleOrDefault(l => l.Rel.Equals(relType, StringComparison.CurrentCultureIgnoreCase))
+                 .Should().BeNull($"Link with reltype {relType} shouldn't exists");
         }
 
         public static LinkView ShouldGet(this LinkView link, string url)

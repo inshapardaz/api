@@ -68,7 +68,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.DeletePeriodical
         }
 
         [Test]
-        public void ShouldBeDeletedIssuesForPeriodical()
+        public void ShouldBeDeleteIssuesForPeriodical()
         {
             PeriodicalAssert.ShouldHaveDeletedIssuesForPeriodical(DatabaseConnection, _expected.Id);
         }

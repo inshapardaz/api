@@ -1,28 +1,31 @@
 ﻿using Inshapardaz.Domain.Models;
+using System;
 
 namespace Inshapardaz.Api.Tests.Dto
 {
-    public class IssuePageDto
+    public class BookPageDto
     {
-        public IssuePageDto()
+        public BookPageDto()
         {
         }
 
-        public IssuePageDto(IssuePageDto source)
+        public BookPageDto(BookPageDto source)
         {
             Id = source.Id;
-            IssueId = source.IssueId;
+            BookId = source.BookId;
             Text = source.Text;
             SequenceNumber = source.SequenceNumber;
             ImageId = source.ImageId;
             Status = source.Status;
             WriterAccountId = source.WriterAccountId;
+            WriterAssignTimeStamp = source.WriterAssignTimeStamp;
             ReviewerAccountId = source.ReviewerAccountId;
+            ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp;
         }
 
         public long Id { get; set; }
 
-        public int IssueId { get; set; }
+        public int BookId { get; set; }
 
         public string Text { get; set; }
 
@@ -32,6 +35,8 @@ namespace Inshapardaz.Api.Tests.Dto
 
         public EditingStatus Status { get; set; }
         public int? WriterAccountId { get; set; }
+        public DateTime? WriterAssignTimeStamp { get; set; }
         public int? ReviewerAccountId { get; set; }
+        public DateTime? ReviewerAssignTimeStamp { get; set; }
     }
 }

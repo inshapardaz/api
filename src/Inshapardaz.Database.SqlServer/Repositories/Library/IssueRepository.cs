@@ -2,6 +2,7 @@
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,21 +17,36 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             _connectionProvider = connectionProvider;
         }
 
-        public async Task<Page<IssueModel>> GetIssues(int libraryId, int periodicalId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<Page<IssueModel>> GetIssues(int libraryId, int periodicalId, int pageNumber, int pageSize, IssueFilter filter, IssueSortByType sortBy, SortDirection sortDirection, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT i.*, f.FilePath as ImageUrl
+                var sortByQuery = $"i.{GetSortByQuery(sortBy)}";
+                var direction = sortDirection == SortDirection.Descending ? "DESC" : "ASC";
+
+                var sql = @"SELECT i.*, f.FilePath as ImageUrl,
+                            (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
+                            (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount]
                             FROM Issue as i
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             LEFT OUTER JOIN [File] f ON f.Id = i.ImageId
                             Where p.LibraryId = @LibraryId
                             AND p.Id = @PeriodicalId
-                            Order By i.IssueDate
-                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            AND (@Year IS NULL OR YEAR(IssueDate) = @Year)
+                            AND (@VolumeNumber IS NULL OR VolumeNumber = @VolumeNumber) " +
+                            $" ORDER BY {sortByQuery} {direction} " +
+                            @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql,
-                                                    new { LibraryId = libraryId, PeriodicalId = periodicalId, PageSize = pageSize, PageNumber = pageNumber },
+                                                    new {
+                                                        LibraryId = libraryId,
+                                                        PeriodicalId = periodicalId,
+                                                        PageSize = pageSize,
+                                                        PageNumber = pageNumber,
+                                                        Year = filter.Year.HasValue ? filter.Year : null,
+                                                        VolumeNumber = filter.VolumeNumber.HasValue ? filter.VolumeNumber : null
+                                                    },
+                                                        
                                                     cancellationToken: cancellationToken);
 
                 var periodicals = await connection.QueryAsync<IssueModel>(command);
@@ -55,7 +71,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT i.*, f.FilePath as ImageUrl
+                var sql = @"SELECT i.*, f.FilePath as ImageUrl,
+                            (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
+                            (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount]
                             FROM Issue as i
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             LEFT OUTER JOIN [File] f ON f.Id = i.ImageId
@@ -125,12 +143,17 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task DeleteIssue(int libraryId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
+        public async Task DeleteIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"DELETE FROM Issue WHERE LibraryId = @LibraryId AND VolumeNumber = @VolumeNumber AND IssueNumber = @IssueNumber";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, VolumeNumber = volumeNumber, IssueNumber = issueNumber }, cancellationToken: cancellationToken);
+                var sql = @"DELETE i FROM Issue i
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            WHERE p.LibraryId = @LibraryId 
+                            AND p.Id = @PeriodicalId
+                            AND i.VolumeNumber = @VolumeNumber
+                            AND i.IssueNumber = @IssueNumber";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, PeriodicalId = periodicalId, VolumeNumber = volumeNumber, IssueNumber = issueNumber }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
@@ -147,6 +170,30 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<IEnumerable<IssueContentModel>> GetIssueContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT ic.Id, ic.IssueId, i.PeriodicalId, i.VolumeNumber, i.IssueNumber, ic.Language, f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl
+                            FROM IssueContent ic
+                            INNER JOIN Issue i ON i.Id = ic.IssueId
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            INNER JOIN [File] f ON ic.FileId = f.Id
+                            WHERE p.LibraryId = @LibraryId 
+                            AND i.VolumeNumber = @VolumeNumber 
+                            AND i.IssueNumber = @IssueNumber 
+                            AND i.PeriodicalId = @PeriodicalId";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    PeriodicalId = periodicalId,
+                    VolumeNumber = volumeNumber,
+                    IssueNumber = issueNumber
+                }, cancellationToken: cancellationToken);
+                return await connection.QueryAsync<IssueContentModel>(command);
+            }
+        }
+
         public async Task<IssueContentModel> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
@@ -154,8 +201,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"SELECT ic.Id, ic.IssueId, ic.Language, f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl
                             FROM IssueContent ic
                             INNER JOIN Issue i ON i.Id = ic.IssueId
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             INNER JOIN [File] f ON ic.FileId = f.Id
-                            WHERE b.LibraryId = @LibraryId 
+                            WHERE p.LibraryId = @LibraryId 
                             AND i.VolumeNumber = @VolumeNumber 
                             AND i.IssueNumber = @IssueNumber 
                             AND i.PeriodicalId = @PeriodicalId 
@@ -222,7 +270,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT i.*, f.FilePath as ImageUrl
+                var sql = @"SELECT i.*, f.FilePath AS ImageUrl,  
+                            (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
+                            (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount]
                             FROM Issue as i
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             LEFT OUTER JOIN [File] f ON f.Id = i.ImageId
@@ -238,6 +288,23 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
 
                 return await connection.QuerySingleOrDefaultAsync<IssueModel>(command);
+            }
+        }
+
+        private static string GetSortByQuery(IssueSortByType sortBy)
+        {
+            switch (sortBy)
+            {
+                case IssueSortByType.IssueDate:
+                    return "IssueDate";
+
+                case IssueSortByType.VolumeNumber:
+                    return "VolumeNumber";
+                case IssueSortByType.VolumeNumberAndIssueNumber:
+                    return "VolumeNumber, IssueDate";
+
+                default:
+                    return "IssueDate";
             }
         }
     }

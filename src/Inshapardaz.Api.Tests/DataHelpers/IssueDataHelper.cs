@@ -142,18 +142,31 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             });
         }
 
-        public static string GetIssueContentPath(this IDbConnection connection, int issueId, string language, string mimetype)
+        public static string GetIssueContentPath(this IDbConnection connection, int id, string language, string mimetype)
         {
             string sql = @"Select f.FilePath From IssueContent ic
                            INNER Join Issue i ON i.Id = ic.IssueId
                            INNER Join [File] f ON f.Id = ic.FileId
-                           Where i.Id = @IssueId AND ic.Language = @Language AND f.MimeType = @MimeType";
+                           Where ic.Id = @Id AND ic.Language = @Language AND f.MimeType = @MimeType";
 
             return connection.QuerySingleOrDefault<string>(sql, new
             {
-                IssueId = issueId,
+                Id = id,
                 Language = language,
                 MimeType = mimetype
+            });
+        }
+
+        public static IssueContentDto GetIssueContent(this IDbConnection connection, int issueId)
+        {
+            string sql = @"Select * From IssueContent ic
+                           INNER Join Issue i ON i.Id = ic.IssueId
+                           INNER Join [File] f ON f.Id = ic.FileId
+                           Where ic.Id = @IssueId";
+
+            return connection.QuerySingleOrDefault<IssueContentDto>(sql, new
+            {
+                IssueId = issueId
             });
         }
     }

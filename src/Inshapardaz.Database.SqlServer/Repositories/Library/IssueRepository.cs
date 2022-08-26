@@ -160,12 +160,12 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int fileId, string language, string mimeType, CancellationToken cancellationToken)
         {
-            var issue = GetIssue(libraryId, periodicalId, volumeNumber, issueNumber,cancellationToken);
+            var issue = await GetIssue(libraryId, periodicalId, volumeNumber, issueNumber,cancellationToken);
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"INSERT INTO IssueContent (PeriodicalId, IssueId, FileId, Language, MimeType)
-                            VALUES (@PeriodicalId, @IssueId, @FileId, @Language, @MimeType)";
-                var command = new CommandDefinition(sql, new { FileId = fileId, PeriodicalId = periodicalId, VolumeNumber = volumeNumber, IssueId = issue.Id, Language = language, MimeType = mimeType }, cancellationToken: cancellationToken);
+                var sql = @"INSERT INTO IssueContent (IssueId, FileId, Language, MimeType)
+                            VALUES (@IssueId, @FileId, @Language, @MimeType)";
+                var command = new CommandDefinition(sql, new { FileId = fileId, IssueId = issue.Id, Language = language, MimeType = mimeType }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
@@ -198,7 +198,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT ic.Id, ic.IssueId, ic.Language, f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl
+                var sql = @"SELECT ic.Id, ic.IssueId, ic.Language, 
+                            p.Id As PeriodicalId, i.VolumeNumber As VolumeNumber, i.IssueNumber As IssueNumber,
+                            f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl
                             FROM IssueContent ic
                             INNER JOIN Issue i ON i.Id = ic.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
@@ -224,14 +226,17 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             FROM  [File] f
                             INNER JOIN IssueContent ic ON ic.FileId = f.Id
                             INNER JOIN Issue i ON i.Id = ic.IssueId
-                            WHERE b.LibraryId = @LibraryId 
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            WHERE p.LibraryId = @LibraryId 
+                            AND i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
                             AND f.MimeType  = @MimeType 
-                            AND bc.Language = @Language";
+                            AND ic.Language = @Language";
                 var command = new CommandDefinition(sql, new
                 {
                     LibraryId = libraryId,
+                    PeriodicalId = periodicalId,
                     VolumeNumber = volumeNumber,
                     IssueNumber = issueNumber,
                     Language = language,
@@ -249,13 +254,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"DELETE ic
                             FROM IssueContent ic
                             INNER JOIN Issue i ON i.Id = ic.IssueId
-                            INNER JOIN [File] f ON bc.FileId = f.Id
-                            WHERE b.LibraryId = @LibraryId 
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            INNER JOIN [File] f ON ic.FileId = f.Id
+                            WHERE p.LibraryId = @LibraryId 
+                            AND p.Id = @PeriodicalId 
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
                             AND f.MimeType = @MimeType 
-                            AND bc.Language = @Language";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Language = language, MimeType = mimeType, VolumeNumber = volumeNumber, IssueNumber = issueNumber }, 
+                            AND ic.Language = @Language";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, PeriodicalId = periodicalId, Language = language, MimeType = mimeType, VolumeNumber = volumeNumber, IssueNumber = issueNumber }, 
                                 cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }

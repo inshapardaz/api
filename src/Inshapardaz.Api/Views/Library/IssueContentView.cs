@@ -9,7 +9,7 @@
         public string MimeType { get; set; }
 
         public string Language { get; set; }
-        public int IssueNumber { get; internal set; }
-        public object VolumeNumber { get; internal set; }
+        public int IssueNumber { get; set; }
+        public object VolumeNumber { get; set; }
     }
 }

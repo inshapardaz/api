@@ -244,12 +244,16 @@ namespace Inshapardaz.Api.Converters
             var links = new List<LinkView>
             {
                 _linkRenderer.Render(new Link {
-                    ActionName = nameof(FileController.GetFile),
+                    ActionName = nameof(IssueController.GetIssueContent),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
                     Language = source.Language,
                     MimeType = source.MimeType,
-                    Parameters = new { fileId = source.FileId }
+                    Parameters = new {  libraryId = libraryId,
+                        periodicalId = source.PeriodicalId,
+                        volumeNumber = source.VolumeNumber,
+                        issueNumber = source.IssueNumber
+                    }
                 }),
                 _linkRenderer.Render(new Link {
                     ActionName = nameof(PeriodicalController.GetPeriodicalById),
@@ -257,19 +261,43 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Periodical,
                     Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId }
                 }),
-                // TODO : Fix the issue number
-                //_linkRenderer.Render(new Link {
-                //    ActionName = nameof(IssueController.GetIssueById),
-                //    Method = HttpMethod.Get,
-                //    Rel = RelTypes.Issue,
-                //    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNu = source.IssueId }
-                //})
+                _linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(IssueController.GetIssueById),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Issue,
+                    Parameters = new { 
+                        libraryId = libraryId, 
+                        periodicalId = source.PeriodicalId, 
+                        volumeNumber = source.VolumeNumber, 
+                        issueNumber = source.IssueNumber
+                    }
+                })
             };
 
-            if (!string.IsNullOrWhiteSpace(source.ContentUrl))
+            if (!string.IsNullOrWhiteSpace(source.ContentUrl) && _fileStorage.SupportsPublicLink)
+
             {
-                // TODO :  Check and add direct link
-                //links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = MimeTypes.Jpg });
+                links.Add(new LinkView
+                {
+                    Href = _fileStorage.GetPublicUrl(source.ContentUrl),
+                    Method = "GET",
+                    Rel = RelTypes.Download,
+                    Accept = source.MimeType,
+                    AcceptLanguage = source.Language
+                });
+            }
+            else
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(FileController.GetFile),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Download,
+                    Language = source.Language,
+                    MimeType = source.MimeType,
+                    Parameters = new { fileId = source.FileId }
+                }));
             }
 
             if (_userHelper.IsWriter(libraryId))
@@ -288,7 +316,7 @@ namespace Inshapardaz.Api.Converters
                 {
                     ActionName = nameof(IssueController.DeleteIssueContent),
                     Method = HttpMethod.Delete,
-                    Rel = RelTypes.Update,
+                    Rel = RelTypes.Delete,
                     Language = source.Language,
                     MimeType = source.MimeType,
                     Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }

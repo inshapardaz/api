@@ -59,6 +59,12 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+        internal IssueAssert ShouldHaveCorrectImageLocationHeader(int issueId)
+        {
+            _response.Headers.Location.AbsoluteUri.Should().NotBeEmpty();
+            return this;
+        }
+
         public IssueAssert ShouldHaveArticlesLink()
         {
             _view.Link("articles")
@@ -323,7 +329,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal static void ShouldNotHaveUpdatedPeriodicalImage(IDbConnection dbConnection, IFileStorage fileStorage, int  issueId, byte[] oldImage)
+        internal static void ShouldNotHaveUpdatedIssueImage(IDbConnection dbConnection, IFileStorage fileStorage, int  issueId, byte[] oldImage)
         {
             var imageUrl = dbConnection.GetIssueImageUrl(issueId);
             imageUrl.Should().NotBeNull();

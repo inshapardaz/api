@@ -22,16 +22,19 @@ namespace Inshapardaz.Api.Controllers
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderIssue _issueRenderer;
         private readonly IRenderFile _fileRenderer;
+        private readonly IUserHelper _userHelper;
 
         public IssueController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
             IRenderIssue issueRenderer,
-            IRenderFile fileRenderer)
+            IRenderFile fileRenderer,
+            IUserHelper userHelper)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _issueRenderer = issueRenderer;
             _fileRenderer = fileRenderer;
+            _userHelper = userHelper;
         }
 
         [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues", Name = nameof(IssueController.GetIssues))]
@@ -173,7 +176,23 @@ namespace Inshapardaz.Api.Controllers
             return new OkResult();
         }
 
-        [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/content", Name = nameof(IssueController.CreateIssueContent))]
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents", Name = nameof(IssueController.GetIssueContent))]
+        public async Task<IActionResult> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default(CancellationToken))
+        {
+            var mimeType = Request.Headers["Accept"];
+            var language = Request.Headers["Accept-Language"];
+
+            var request = new GetIssueContentQuery(libraryId, periodicalId, volumeNumber, issueNumber, language, mimeType, _userHelper.Account?.Id);
+            var content = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
+            if (content != null)
+            {
+                return new OkObjectResult(_issueRenderer.Render(content, libraryId));
+            }
+
+            return new NotFoundResult();
+
+        }
+        [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents", Name = nameof(IssueController.CreateIssueContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IFormFile file, CancellationToken token = default(CancellationToken))
         {
@@ -207,7 +226,7 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/content", Name = nameof(IssueController.UpdateIssueContent))]
+        [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents", Name = nameof(IssueController.UpdateIssueContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IFormFile file, CancellationToken token = default(CancellationToken))
         {
@@ -249,11 +268,11 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/content", Name = nameof(IssueController.DeleteIssueContent))]
+        [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents", Name = nameof(IssueController.DeleteIssueContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default(CancellationToken))
         {
-            var mimeType = Request.Headers["Content-Type"];
+            var mimeType = Request.Headers["Accept"];
             var language = Request.Headers["Accept-Language"];
 
             var request = new DeleteIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, language, mimeType);

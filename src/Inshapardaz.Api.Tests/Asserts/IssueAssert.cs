@@ -94,7 +94,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _view.Link("add-content")
                  .ShouldBePost()
-                 .EndingWith($"libraries/{_libraryId}/periodicals/{_view.PeriodicalId}/volumes/{_view.VolumeNumber}/issues/{_view.IssueNumber}/content");
+                 .EndingWith($"libraries/{_libraryId}/periodicals/{_view.PeriodicalId}/volumes/{_view.VolumeNumber}/issues/{_view.IssueNumber}/contents");
 
             return this;
         }

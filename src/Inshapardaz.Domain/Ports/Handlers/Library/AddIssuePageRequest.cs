@@ -53,12 +53,12 @@ namespace Inshapardaz.Domain.Models.Library
 
             if (existingIssuePage == null)
             {
-                command.Result = await _issuePageRepository.AddPage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, 0, command.IssuePage.ChapterNumber, cancellationToken);
+                command.Result = await _issuePageRepository.AddPage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, 0, command.IssuePage.ArticleNumber, cancellationToken);
                 command.IsAdded = true;
             }
             else
             {
-                command.Result = await _issuePageRepository.UpdatePage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, 0, command.IssuePage.ChapterNumber, command.IssuePage.Status, cancellationToken);
+                command.Result = await _issuePageRepository.UpdatePage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, 0, command.IssuePage.ArticleNumber, command.IssuePage.Status, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

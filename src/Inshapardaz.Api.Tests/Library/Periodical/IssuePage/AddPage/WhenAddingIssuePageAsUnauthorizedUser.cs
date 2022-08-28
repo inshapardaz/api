@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
 {
     [TestFixture]
-    public class WhenAddingBookPageAsUnauthorizedUser
+    public class WhenAddingIssuePageAsUnauthorizedUser
         : TestBase
     {
         private HttpResponseMessage _response;
@@ -17,10 +17,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var book = BookBuilder.WithLibrary(LibraryId).Build();
+            var issue = IssueBuilder.WithLibrary(LibraryId).Build();
 
-            var page = new BookPageView { Text = new Faker().Random.String(), SequenceNumber = 1 };
-            _response = await Client.PostObject($"/libraries/{LibraryId}/books/{book.Id}/pages", page);
+            var page = new IssuePageView { Text = new Faker().Random.String(), SequenceNumber = 1 };
+            _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/pages", page);
         }
 
         [OneTimeTearDown]

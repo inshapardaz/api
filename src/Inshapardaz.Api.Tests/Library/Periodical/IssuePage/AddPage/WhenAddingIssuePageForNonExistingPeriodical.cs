@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
+﻿using Bogus;
+using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -9,12 +10,12 @@ using System.Threading.Tasks;
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
 {
     [TestFixture]
-    public class WhenAddingBookPageForNonExistingBook
+    public class WhenAddingIssuePageForNonExistingPeriodical
         : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenAddingBookPageForNonExistingBook()
+        public WhenAddingIssuePageForNonExistingPeriodical()
             : base(Role.Writer)
         {
         }
@@ -22,8 +23,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var page = new BookPageView { Text = RandomData.Text, SequenceNumber = 1 };
-            _response = await Client.PostObject($"/libraries/{LibraryId}/books/{-RandomData.Number}/pages", page);
+            var issue = IssueBuilder.WithLibrary(LibraryId).Build();
+
+            var page = new IssuePageView { Text = new Faker().Random.String(), SequenceNumber = 1 };
+            _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals/{-RandomData.Number}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/pages", page);
         }
 
         [OneTimeTearDown]

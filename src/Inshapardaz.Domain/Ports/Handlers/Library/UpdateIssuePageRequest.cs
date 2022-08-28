@@ -66,12 +66,12 @@ namespace Inshapardaz.Domain.Models.Library
 
             if (existingIssuePage == null)
             {
-                command.Result.IssuePage = await _issuePageRepository.AddPage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, 0, command.IssuePage.ChapterNumber, cancellationToken);
+                command.Result.IssuePage = await _issuePageRepository.AddPage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, 0, command.IssuePage.ArticleNumber, cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                command.Result.IssuePage = await _issuePageRepository.UpdatePage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, existingIssuePage.ImageId ?? 0, command.IssuePage.ChapterNumber, command.IssuePage.Status, cancellationToken);
+                command.Result.IssuePage = await _issuePageRepository.UpdatePage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, existingIssuePage.ImageId ?? 0, command.IssuePage.ArticleNumber, command.IssuePage.Status, cancellationToken);
             }
 
             var previousPage = await _issuePageRepository.GetPageBySequenceNumber(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.SequenceNumber - 1, cancellationToken);

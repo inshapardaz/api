@@ -23,8 +23,8 @@ namespace Inshapardaz.Api.Mappings
                 ReviewerAccountId = view.ReviewerAccountId,
                 ReviewerAccountName = view.ReviewerAccountName,
                 ReviewerAssignTimeStamp = view.ReviewerAssignTimeStamp,
-                ChapterName = view.ChapterName,
-                ChapterNumber = view.ChapterNumber
+                ArticleName = view.ArticleName,
+                ArticleNumber = view.ArticleNumber
             };
         }
 
@@ -44,8 +44,8 @@ namespace Inshapardaz.Api.Mappings
                 ReviewerAccountId = model.ReviewerAccountId,
                 ReviewerAccountName = model.ReviewerAccountName,
                 ReviewerAssignTimeStamp = model.ReviewerAssignTimeStamp,
-                ChapterName = model.ChapterName,
-                ChapterNumber = model.ChapterNumber
+                 ArticleName = model.ArticleName,
+                ArticleNumber = model.ArticleNumber
             };
         }
     }

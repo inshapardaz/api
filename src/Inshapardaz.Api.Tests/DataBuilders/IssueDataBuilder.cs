@@ -53,7 +53,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private int _pageCount;
         private int? _periodicalId;
         private bool _addPageImage;
-        private Dictionary<int, int> _assignments = new Dictionary<int, int>();
+        private Dictionary<int, int> _writerAssignments = new Dictionary<int, int>();
+        private Dictionary<int, int> _reviewerAssignments = new Dictionary<int, int>();
         private Dictionary<EditingStatus, int> _pageStatuses = new Dictionary<EditingStatus, int>();
         private int _articleCount;
         private int? _year;
@@ -131,9 +132,15 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
-        public IssueDataBuilder AssignPagesTo(int accountId, int count)
+        public IssueDataBuilder AssignPagesToWriter(int accountId, int count)
         {
-            _assignments.TryAdd(accountId, count);
+            _writerAssignments.TryAdd(accountId, count);
+            return this;
+        }
+
+        public IssueDataBuilder AssignPagesToReviewer(int accountId, int count)
+        {
+            _reviewerAssignments.TryAdd(accountId, count);
             return this;
         }
 
@@ -306,16 +313,29 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                             .Create());
                     }
 
-                    if (_assignments.Any())
+                    if (_writerAssignments.Any())
                     {
-                        foreach (var assignment in _assignments)
+                        foreach (var assignment in _writerAssignments)
                         {
-                            var pagesToAssign = RandomData.PickRandom(pages.Where(p => p.WriterAccountId == null), assignment.Value);
+                            var pagesToAssign = RandomData.PickRandom(pages.Where(p => p.WriterAccountId == null && p.ReviewerAccountId == null), assignment.Value);
                             foreach (var pageToAssign in pagesToAssign)
                             {
                                 pageToAssign.WriterAccountId = assignment.Key;
                             }
                         }
+                    }
+
+                    if (_reviewerAssignments.Any())
+                    {
+                        foreach (var assignment in _reviewerAssignments)
+                        {
+                            var pagesToAssign = RandomData.PickRandom(pages.Where(p => p.WriterAccountId == null && p.ReviewerAccountId == null), assignment.Value);
+                            foreach (var pageToAssign in pagesToAssign)
+                            {
+                                pageToAssign.ReviewerAccountId = assignment.Key;
+                            }
+                        }
+
                     }
 
                     if (_pageStatuses.Any())

@@ -51,7 +51,7 @@ namespace Inshapardaz.Domain.Models.Library
                 {
                     var text = await _ocr.PerformOcr(image.Contents, command.ApiKey, cancellationToken);
                     issuePage.Text = text;
-                    await _issuePageRepository.UpdatePage(command.LibraryId, issuePage.PeriodicalId, issuePage.VolumeNumber, issuePage.IssueNumber, issuePage.SequenceNumber, text, issuePage.ImageId.Value, issuePage.ChapterNumber, issuePage.Status, cancellationToken);
+                    await _issuePageRepository.UpdatePage(command.LibraryId, issuePage.PeriodicalId, issuePage.VolumeNumber, issuePage.IssueNumber, issuePage.SequenceNumber, text, issuePage.ImageId.Value, issuePage.ArticleNumber, issuePage.Status, cancellationToken);
                     return await base.HandleAsync(command, cancellationToken);
                 }
             }

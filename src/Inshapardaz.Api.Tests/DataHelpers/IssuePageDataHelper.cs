@@ -41,6 +41,24 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             return connection.QuerySingleOrDefault<IssuePageDto>(command);
         }
 
+        public static IssuePageDto GetIssuePageByNumber(this IDbConnection connection, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber)
+        {
+            var sql = @"SELECT ip.*
+                        FROM IssuePage ip
+                        INNER JOIN Issue i ON i.Id = ip.Issueid
+                        Where i.PeriodicalId = @PeriodicalId 
+                        AND i.VolumeNumber = @VolumeNumber
+                        AND i.IssueNumber = @IssueNumber
+                        AND SequenceNumber = @SequenceNumber";
+            var command = new CommandDefinition(sql, new {
+                PeriodicalId = periodicalId, 
+                VolumeNumber = volumeNumber, 
+                IssueNumber = issueNumber, 
+                SequenceNumber = sequenceNumber });
+
+            return connection.QuerySingleOrDefault<IssuePageDto>(command);
+        }
+
         public static IssuePageDto GetIssuePageByIssueId(this IDbConnection connection, int issueId, long pageId)
         {
             var sql = @"SELECT *

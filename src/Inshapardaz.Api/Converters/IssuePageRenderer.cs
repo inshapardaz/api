@@ -185,7 +185,7 @@ namespace Inshapardaz.Api.Converters
                         {
                             ActionName = nameof(IssueController.GetIssueById),
                             Method = HttpMethod.Get,
-                            Rel = RelTypes.Book,
+                            Rel = RelTypes.Issue,
                             Parameters = new { 
                                 libraryId = libraryId,
                                 periodicalId = source.PeriodicalId,
@@ -197,7 +197,7 @@ namespace Inshapardaz.Api.Converters
                         {
                             ActionName = nameof(PeriodicalController.GetPeriodicalById),
                             Method = HttpMethod.Get,
-                            Rel = RelTypes.Book,
+                            Rel = RelTypes.Periodical,
                             Parameters = new {
                                 libraryId = libraryId,
                                 periodicalId = source.PeriodicalId

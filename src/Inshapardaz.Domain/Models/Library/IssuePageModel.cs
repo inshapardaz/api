@@ -20,7 +20,7 @@ namespace Inshapardaz.Domain.Models.Library
         public DateTime? ReviewerAssignTimeStamp { get; set; }
         public IssuePageModel PreviousPage { get; internal set; }
         public IssuePageModel NextPage { get; internal set; }
-        public int ChapterNumber { get; set; }
-        public string ChapterName { get; set; }
+        public int? ArticleNumber { get; set; }
+        public string ArticleName { get; set; }
     }
 }

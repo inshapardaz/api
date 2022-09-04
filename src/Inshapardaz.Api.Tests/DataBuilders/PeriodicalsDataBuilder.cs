@@ -12,6 +12,8 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Database.SqlServer;
 using RandomData = Inshapardaz.Api.Tests.Helpers.RandomData;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
+using Bogus;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -27,6 +29,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private readonly List<FileDto> _files = new List<FileDto>();
         private List<CategoryDto> _categories = new List<CategoryDto>();
         private List<IssueDto> _issues = new List<IssueDto>();
+
+        private PeriodicalFrequency? _frequency = null;
 
         private int _libraryId;
         private int _categoriesCount;
@@ -79,13 +83,19 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
-        internal PeriodicalsDataBuilder WithLibrary(int libraryId)
+        public PeriodicalsDataBuilder WithLibrary(int libraryId)
         {
             _libraryId = libraryId;
             return this;
         }
 
-        internal PeriodicalView BuildView()
+        public PeriodicalsDataBuilder WithFrequency(PeriodicalFrequency frequency)
+        {
+            _frequency = frequency;
+            return this;
+        }
+
+        public PeriodicalView BuildView()
         {
             var fixture = new Fixture();
 
@@ -107,6 +117,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                           .With(b => b.LibraryId, _libraryId)
                           .With(b => b.Language, _language)
                           .With(b => b.ImageId, _hasImage ? RandomData.Number : 0)
+                          .With(b => b.Frequency, () => _frequency.HasValue ? _frequency.Value : new Faker().PickRandom<PeriodicalFrequency>())
                           .CreateMany(numberOfBooks)
                           .ToList();
 

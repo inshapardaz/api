@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Api.Controllers;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
@@ -42,6 +43,8 @@ namespace Inshapardaz.Api.Converters
                 Data = source.Page.Data?.Select(x => Render(x, libraryId))
             };
 
+            var pageQuery = CreateQueryString(source, page, page.CurrentPageIndex);
+
             var links = new List<LinkView>
             {
                 _linkRenderer.Render(new Link {
@@ -49,12 +52,7 @@ namespace Inshapardaz.Api.Converters
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
                     Parameters = new { libraryId = libraryId },
-                    QueryString = new Dictionary<string, string>()
-                    {
-                        { "pageNumber" , page.CurrentPageIndex.ToString() },
-                        { "pageSize", page.PageSize.ToString() },
-                        { "query", source.RouteArguments.Query }
-                    }
+                    QueryString = pageQuery
                 })
             };
 
@@ -71,35 +69,29 @@ namespace Inshapardaz.Api.Converters
 
             if (page.CurrentPageIndex < page.PageCount)
             {
+                var nextPageQuery = CreateQueryString(source, page, page.CurrentPageIndex + 1);
+                
                 links.Add(_linkRenderer.Render(new Link
                 {
                     ActionName = nameof(PeriodicalController.GetPeriodicals),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Next,
                     Parameters = new { libraryId = libraryId },
-                    QueryString = new Dictionary<string, string>()
-                    {
-                        { "pageNumber" , (page.CurrentPageIndex + 1).ToString() },
-                        { "pageSize", page.PageSize.ToString() },
-                        { "query", source.RouteArguments.Query }
-                    }
+                    QueryString = nextPageQuery
                 }));
             }
 
             if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
             {
+                var prevPageQuery = CreateQueryString(source, page, page.CurrentPageIndex - 1);
+
                 links.Add(_linkRenderer.Render(new Link
                 {
                     ActionName = nameof(PeriodicalController.GetPeriodicals),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Previous,
                     Parameters = new { libraryId = libraryId },
-                    QueryString = new Dictionary<string, string>()
-                    {
-                        { "pageNumber" , (page.CurrentPageIndex - 1).ToString() },
-                        { "pageSize", page.PageSize.ToString() },
-                        { "query", source.RouteArguments.Query }
-                    }
+                    QueryString = prevPageQuery
                 }));
             }
 
@@ -202,6 +194,39 @@ namespace Inshapardaz.Api.Converters
 
             result.Links = links;
             return result;
+        }
+
+        private static Dictionary<string, string> CreateQueryString(PageRendererArgs<PeriodicalModel, PeriodicalFilter, PeriodicalSortByType> source, PageView<PeriodicalView> page, int pageNumber)
+        {
+            Dictionary<string, string> queryString = new Dictionary<string, string> {
+                    { "pageSize", page.PageSize.ToString() }
+                };
+
+            if (pageNumber > 1)
+            {
+                queryString.Add("pageNumber", (pageNumber).ToString());
+            }
+
+            if (!string.IsNullOrWhiteSpace(source.RouteArguments.Query))
+            {
+                queryString.Add("query", source.RouteArguments.Query);
+            }
+
+            if (source.Filters != null)
+            {
+                if (source.Filters.Frequency.HasValue)
+                    queryString.Add("frequency", source.Filters.Frequency.Value.ToDescription());
+
+                if (source.Filters.CategoryId.HasValue)
+                    queryString.Add("category", source.Filters.CategoryId.Value.ToString());
+            }
+
+            if (source.RouteArguments.SortBy != PeriodicalSortByType.Title)
+                queryString.Add("sortby", source.RouteArguments.SortBy.ToDescription());
+
+            if (source.RouteArguments.SortDirection != SortDirection.Ascending)
+                queryString.Add("sortDirection", source.RouteArguments.SortDirection.ToDescription());
+            return queryString;
         }
     }
 }

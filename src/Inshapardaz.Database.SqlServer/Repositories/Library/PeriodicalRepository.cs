@@ -32,16 +32,18 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     LibraryId = libraryId,
                     PageSize = pageSize,
                     PageNumber = pageNumber,
-                    CategoryFilter = filter.CategoryId
+                    CategoryFilter = filter.CategoryId,
+                    Frequency = filter.Frequency
                 };
                 var sql = @"Select p.Id, p.Title
                             From Periodical p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN PeriodicalCategory pc ON p.Id = pc.PeriodicalId
                             LEFT OUTER JOIN Category c ON c.Id = pc.PeriodicalId
-                            Where p.LibraryId = @LibraryId
+                            Where p.LibraryId = @LibraryId 
                             AND (@CategoryFilter IS NULL OR pc.CategoryId = @CategoryFilter)
                             AND (@Query IS NULL OR p.Title LIKE @Query)
+                            AND (p.Frequency = @Frequency OR @Frequency IS NULL)
                             GROUP BY p.Id, p.Title " +
                             $" ORDER BY {sortByQuery} {sortDirection} " +
                             @"OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -57,6 +59,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Where p.LibraryId = @LibraryId
                             AND (pc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                             AND (@Query IS NULL OR p.Title LIKE @Query)
+                            AND (p.Frequency = @Frequency OR @Frequency IS NULL)
                             GROUP BY p.Id) AS pcnt";
                 var periodicalCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
@@ -113,9 +116,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             int id;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"INSERT INTO Periodical (Title, [Description], Language, ImageId, LibraryId) 
+                var sql = @"INSERT INTO Periodical (Title, [Description], Language, ImageId, LibraryId, Frequency) 
                             OUTPUT Inserted.Id 
-                            VALUES (@Title, @Description, @Language, @ImageId, @LibraryId)";
+                            VALUES (@Title, @Description, @Language, @ImageId, @LibraryId, @Frequency)";
                 var parameter = new
                 {
                     LibraryId = libraryId,
@@ -123,9 +126,19 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     Description = periodical.Description,
                     Language = periodical.Language,
                     ImageId = periodical.ImageId,
+                    Frequency = periodical.Frequency
                 };
                 var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
                 id = await connection.ExecuteScalarAsync<int>(command);
+
+                var sqlCategory = @"Insert Into PeriodicalCategory (PeriodicalId, CategoryId) Values (@PeriodicalId, @CategoryId);";
+
+                if (periodical.Categories != null && periodical.Categories.Any())
+                {
+                    var periodicalCategories = periodical.Categories.Select(c => new { PeriodicalId = id, CategoryId = c.Id });
+                    var commandCategory = new CommandDefinition(sqlCategory, periodicalCategories, cancellationToken: cancellationToken);
+                    await connection.ExecuteAsync(commandCategory);
+                }
             }
 
             return await GetPeriodicalById(libraryId, id, cancellationToken);
@@ -136,7 +149,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Update Periodical
-                            Set Title = @Title, Description = @Description, Language = @Language
+                            Set Title = @Title, Description = @Description, Language = @Language, Frequency = @Frequency
                             Where Id = @Id AND LibraryId = @LibraryId";
                 var parameter = new
                 {
@@ -145,6 +158,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     Title = periodical.Title,
                     Description = periodical.Description,
                     Language = periodical.Language,
+                    Frequency = periodical.Frequency
                 };
                 var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);

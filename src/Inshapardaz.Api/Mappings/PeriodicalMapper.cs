@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Api.Views.Library;
 using System.Linq;
+using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Mappings
 {
@@ -14,6 +15,7 @@ namespace Inshapardaz.Api.Mappings
                 Description = source.Description,
                 IssueCount = source.IssueCount,
                 Language = source.Language,
+                Frequency = source.Frequency.ToDescription(),
                 Categories = source.Categories?.Select(c => c.Map())
             };
 
@@ -25,6 +27,7 @@ namespace Inshapardaz.Api.Mappings
                 Description = source.Description,
                 IssueCount = source.IssueCount,
                 Language = source.Language,
+                Frequency = source.Frequency.ToEnum(PeriodicalFrequency.Unknown),
                 Categories = source.Categories?.Select(c => c.Map()).ToList()
             };
 

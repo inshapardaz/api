@@ -39,13 +39,15 @@ namespace Inshapardaz.Api.Controllers
             int pageNumber = 1, 
             int pageSize = 10,
             [FromQuery] int? category = null,
+            [FromQuery] PeriodicalFrequency? frequency = null,
             [FromQuery] PeriodicalSortByType sortBy = PeriodicalSortByType.Title,
             [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
             CancellationToken token = default(CancellationToken))
         {
             var filter = new PeriodicalFilter
             {
-                CategoryId = category
+                CategoryId = category,
+                Frequency = frequency
             };
 
             var periodicalsQuery = new GetPeriodicalsQuery(libraryId, pageNumber, pageSize) { 
@@ -64,8 +66,9 @@ namespace Inshapardaz.Api.Controllers
                     PageSize = pageSize,
                     Query = query,
                     SortBy = sortBy,
-                    SortDirection = sortDirection
+                    SortDirection = sortDirection,
                 },
+                Filters = filter
             };
 
             return new OkObjectResult(_periodicalRenderer.Render(args, libraryId));

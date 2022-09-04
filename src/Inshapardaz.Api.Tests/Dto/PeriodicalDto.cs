@@ -1,4 +1,6 @@
-﻿namespace Inshapardaz.Api.Tests.Dto
+﻿using Inshapardaz.Domain.Models.Library;
+
+namespace Inshapardaz.Api.Tests.Dto
 {
     public class PeriodicalDto
     {
@@ -13,5 +15,6 @@
         public int LibraryId { get; set; }
 
         public string Language { get; set; }
+        public PeriodicalFrequency Frequency { get; set; }
     }
 }

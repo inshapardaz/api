@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Api.Views.Library
 {
@@ -15,5 +16,6 @@ namespace Inshapardaz.Api.Views.Library
         public string Language { get; set; }
 
         public IEnumerable<CategoryView> Categories { get; set; }
+        public string Frequency { get;  set; }
     }
 }

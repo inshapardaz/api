@@ -19,6 +19,8 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int IssueCount { get; set; }
 
+        public PeriodicalFrequency Frequency { get; set; }
+
         public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
 
     }

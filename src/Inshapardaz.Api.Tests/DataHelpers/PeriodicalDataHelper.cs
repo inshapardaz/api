@@ -10,7 +10,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
     {
         public static void AddPeriodical(this IDbConnection connection, PeriodicalDto periodical)
         {
-            var id = connection.ExecuteScalar<int>("Insert Into Periodical (Title, [Description], Language, ImageId, LibraryId) OUTPUT Inserted.Id VALUES (@Title, @Description, @Language, @ImageId, @LibraryId)", periodical);
+            var id = connection.ExecuteScalar<int>("Insert Into Periodical (Title, [Description], Language, ImageId, LibraryId, Frequency) OUTPUT Inserted.Id VALUES (@Title, @Description, @Language, @ImageId, @LibraryId, @Frequency)", periodical);
             periodical.Id = id;
         }
 

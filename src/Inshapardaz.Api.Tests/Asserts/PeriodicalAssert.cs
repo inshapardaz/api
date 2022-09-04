@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
@@ -155,6 +156,8 @@ namespace Inshapardaz.Api.Tests.Asserts
             dbPeriodical.Should().NotBeNull();
             _view.Title.Should().Be(dbPeriodical.Title);
             _view.Description.Should().Be(dbPeriodical.Description);
+            _view.Language.Should().Be(dbPeriodical.Language);
+            _view.Frequency.Should().Be(dbPeriodical.Frequency.ToDescription());
             return this;
         }
 
@@ -182,6 +185,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.Title.Should().Be(expected.Title);
             _view.Description.Should().Be(expected.Description);
             _view.Language.Should().Be(expected.Language);
+            _view.Frequency.Should().Be(expected.Frequency);
             if (issueCount.HasValue)
             {
                 _view.IssueCount.Should().Be(issueCount);
@@ -209,6 +213,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.Title.Should().Be(expected.Title);
             _view.Description.Should().Be(expected.Description);
             _view.Language.Should().Be(expected.Language);
+            _view.Frequency.Should().Be(expected.Frequency.ToDescription());
             if (issueCount.HasValue)
             {
                 _view.IssueCount.Should().Be(issueCount);

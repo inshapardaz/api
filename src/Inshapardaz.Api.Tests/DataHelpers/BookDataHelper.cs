@@ -127,8 +127,11 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void DeleteBooks(this IDbConnection connection, IEnumerable<BookDto> books)
         {
-            var sql = "Delete From Book Where Id IN @Ids";
-            connection.Execute(sql, new { Ids = books.Select(f => f.Id) });
+            if (books.Any())
+            {
+                var sql = "Delete From Book Where Id IN @Ids";
+                connection.Execute(sql, new { Ids = books.Select(f => f.Id) });
+            }
         }
 
         //TODO : Add user id.

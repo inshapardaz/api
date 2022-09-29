@@ -5,9 +5,10 @@
         public int Id { get; set; }
 
         public int PeriodicalId { get; set; }
+
         public int IssueId { get; set; }
 
-        public int ArticleId { get; set; }
+        public int SequenceNumber { get; set; }
 
         public string ContentUrl { get; set; }
 

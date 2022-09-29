@@ -5,6 +5,7 @@ using Inshapardaz.Domain.Models.Library;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,35 +25,55 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             int id;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"INSERT INTO Article (Title, IssueId, AuthorId, SequenceNumber, SeriesName, SeriesIndex) 
-                            OUTPUT Inserted.Id VALUES (@Title, @IssueId, @AuthorId, @SequenceNumber, @SeriesName, @SeriesIndex)";
+                var sql = @"INSERT INTO Article (Title, IssueId, Status, SequenceNumber, SeriesName, SeriesIndex, WriterAccountId, WriterAssignTimestamp, ReviewerAccountId, ReviewerAssignTimeStamp) 
+                            OUTPUT Inserted.Id VALUES (@Title, @IssueId, @Status, @SequenceNumber, @SeriesName, @SeriesIndex, @WriterAccountId, @WriteAssignTimestamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
                 var command = new CommandDefinition(sql, new
                 {
                     Title = article.Title,
                     IssueId = issueId,
-                    AuthorId = article.AuthorId,
                     SequenceNumber = article.SequenceNumber,
+                    Status = article.Status,
                     SeriesName = article.SeriesName,
-                    SeriesIndex = article.SeriesIndex
+                    SeriesIndex = article.SeriesIndex,
+                    WriterAccountId = article.WriterAccountId,
+                    WriteAssignTimestamp = article.WriterAssignTimeStamp,
+                    ReviewerAccountId = article.ReviewerAccountId,
+                    ReviewerAssignTimeStamp = article.ReviewerAssignTimeStamp
                 }, cancellationToken: cancellationToken);
                 id = await connection.ExecuteScalarAsync<int>(command);
+
+                var sqlAuthor = @"Insert Into ArticleAuthor (ArticleId, AuthorId) Values (@ArticleId, @AuthorId);";
+
+                if (article.Authors != null && article.Authors.Any())
+                {
+                    var bookAuthors = article.Authors.Select(a => new { ArticleId = article.Id, AuthorId = a.Id });
+                    var commandCategory = new CommandDefinition(sqlAuthor, bookAuthors, cancellationToken: cancellationToken);
+                    await connection.ExecuteAsync(commandCategory);
+                }
             }
 
-            return await GetArticleById(libraryId, peridicalId, issueId, id, cancellationToken);
+            return await GetArticleById(id, cancellationToken);
         }
 
         public async Task UpdateArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, ArticleModel article, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"UPDATE a SET a.Title = @Title, a.AuthorId = @AuthorId, a.SequenceNumber = @SequenceNumber
-                            a.SeriesName = @SeriesName, a.SeriesIndex = @SeriesIndex
+                var sql = @"UPDATE a SET a.Title = @Title, 
+                            a.SequenceNumber = @SequenceNumber,
+                            a.SeriesName = @SeriesName, 
+                            a.SeriesIndex = @SeriesIndex,
+                            a.WriterAccountId = @WriterAccountId, 
+                            a.WriterAssignTimestamp = @WriteAssignTimestamp, 
+                            a.ReviewerAccountId = @ReviewerAccountId, 
+                            a.ReviewerAssignTimeStamp = @ReviewerAssignTimeStamp
                             FROM Article a
                             INNER JOIN Issue i ON i.Id = a.IssueId
-                            WHERE a.Id = @ArticleId 
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            WHERE p.LibraryId = @LibraryId 
+                            AND p.Id = @PeriodicalId 
                             AND i.VolumeNumber = @VolumeNumber 
-                            AND i.IssueNumber = @IssueNumber 
-                            AND i.PeriodicalId = @PeriodicalId";
+                            AND i.IssueNumber = @IssueNumber";
                 var args = new
                 {
                     LibraryId = libraryId,
@@ -61,59 +82,63 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     IssueNumber = issueNumber,
                     ArticleId = article.Id,
                     Title = article.Title,
-                    AuthorId = article.AuthorId,
                     SequenceNumber = article.SequenceNumber,
                     SeriesName = article.SeriesName,
-                    SeriesIndex = article.SeriesIndex
+                    SeriesIndex = article.SeriesIndex,
+                    WriterAccountId = article.WriterAccountId,
+                    WriteAssignTimestamp = article.WriterAssignTimeStamp,
+                    ReviewerAccountId = article.ReviewerAccountId,
+                    ReviewerAssignTimeStamp = article.ReviewerAssignTimeStamp
                 };
                 var command = new CommandDefinition(sql, args, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
+
+                await ReorderArticles(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
             }
         }
 
-        public async Task DeleteArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, CancellationToken cancellationToken)
+        public async Task DeleteArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"DELETE a 
                             FROM Article a
                             INNER JOIN Issue i ON i.Id = a.IssueId
-                            WHERE a.Id = @ArticleId 
-                            AND i.PeriodicalId = @PeriodicalId
+                            WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
-                            AND i.IssueNumber = @IssueNumber";
+                            AND i.IssueNumber = @IssueNumber
+                            AND a.SequenceNumber = @SequenceNumber";
                 var command = new CommandDefinition(sql, new
                 {
                     PeriodicalId = periodicalId,
                     VolumeNumber = volumeNumber,
                     IssueNumber = issueNumber,
-                    ArticleId = articleId
+                    SequenceNumber = sequenceNumber
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
 
-        public async Task<ArticleModel> GetArticleById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, CancellationToken cancellationToken)
+        public async Task<ArticleModel> GetArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 ArticleModel article = null;
-                var sql = @"SELECT a.*, ac.*, f.*
+                var sql = @"SELECT a.*, ac.*
                             FROM Article a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
-                            LEFT OUTER JOIN [File] f ON f.Id = cc.FileId
-                            WHERE a.Id = @ArticleId
-                            AND i.PeriodicalId = @PeriodicalId
+                            WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
-                            AND i.IssueNumber = @IssueNumber";
+                            AND i.IssueNumber = @IssueNumber
+                            AND a.SequenceNumber = @SequenceNumber";
                 var command = new CommandDefinition(sql, new {
                     PeriodicalId = periodicalId,
                     VolumeNumber = volumeNumber,
                     IssueNumber = issueNumber,
-                    ArticleId = articleId
+                    SequenceNumber = sequenceNumber
                 }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ArticleModel, ArticleContentModel, FileModel, ArticleModel>(command, (a, ac, f) =>
+                await connection.QueryAsync<ArticleModel, ArticleContentModel, ArticleModel>(command, (a, ac) =>
                 {
                     if (article == null)
                     {
@@ -129,16 +154,6 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                         }
                     }
 
-                    if (f != null)
-                    {
-                        var content = article.Contents.SingleOrDefault(x => x.Id == ac.Id);
-                        if (content != null)
-                        {
-                            content.MimeType = f.MimeType;
-                            content.ContentUrl = f.FilePath;
-                        }
-                    }
-
                     return article;
                 });
 
@@ -146,8 +161,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-
-        public async Task<ArticleContentModel> GetArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language, string mimeType, CancellationToken cancellationToken)
+        public async Task<ArticleContentModel> GetArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string mimeType, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -157,17 +171,17 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
                             LEFT OUTER JOIN [File] f ON f.Id = cc.FileId
-                            WHERE a.Id = @ArticleId
-                            AND i.PeriodicalId = @PeriodicalId
+                            WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
+                            AND a.SequenceNumber = @SequenceNumber
                             AND a.MimeType = @MimeType 
                             AND a.Language = @Language";
                 var command = new CommandDefinition(sql, new {
                     PeriodicalId = periodicalId,
                     VolumeNumber = volumeNumber,
                     IssueNumber = issueNumber,
-                    ArticleId = articleId,
+                    SequenceNumber = sequenceNumber,
                     MimeType = mimeType, 
                     Language = language }, cancellationToken: cancellationToken);
                 await connection.QueryAsync<ArticleModel, ArticleContentModel, FileModel, ArticleModel>(command, (a, ac, f) =>
@@ -212,7 +226,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"SELECT a.*, at.* 
                             FROM Article a
                             INNER JOIN Issue i ON i.Id = a.IssueId
-                            LEFT OUTER JOIN ArticleText at ON a.Id = at.ArticleId
+                            LEFT OUTER JOIN ArticleContent at ON a.Id = at.ArticleId
                             WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber";
@@ -246,17 +260,63 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public Task<ArticleContentModel> GetArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language, string mimeType, CancellationToken cancellationToken)
+        public async Task<ArticleContentModel> GetArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string mimeType, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT ac.*, a.sequenceNumber, p.Id AS PeriodicalId 
+                            FROM Article a
+                            INNER JOIN Issue i ON i.Id = a.IssueId
+                            INNER JOIN Periodical p ON p.Id = i.Periodicalid
+                            LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                            WHERE 
+                                AND a.Id = @Articleid
+                                AND p.LibraryId = @LibraryId 
+                                AND i.PeriodicalId = @PeriodicalId
+                                AND i.VolumeNumber = @VolumeNumber
+                                AND i.IssueNumber = @IssueNumber
+                                AND a.sequenceNumber = @SequenceNumber 
+                                AND ac.Language = @Language";
+                var command = new CommandDefinition(sql, new { 
+                    LibraryId = libraryId, 
+                    PeriodicalId = periodicalId, 
+                    VolumeNumber = volumeNumber, 
+                    IssueNumber = issueNumber,
+                    SequenceNumber = sequenceNumber,
+                    Language = language 
+                }, cancellationToken: cancellationToken);
+                return await connection.QuerySingleOrDefaultAsync<ArticleContentModel>(command);
+            }
         }
 
-        public Task<IEnumerable<ArticleContentModel>> GetArticleContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ArticleContentModel>> GetArticleContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT ac.*, a.SequenceNumber AS SequenceNumber, p.Id AS PeriodicalId 
+                            FROM Article a
+                            INNER JOIN Issue i ON i.Id = a.IssueId
+                            INNER JOIN Periodical p ON p.Id = i.Periodicalid
+                            LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                            WHERE a.sequenceNumber = @SequenceNumber 
+                                AND p.LibraryId = @LibraryId 
+                                AND i.PeriodicalId = @PeriodicalId
+                                AND i.VolumeNumber = @VolumeNumber
+                                AND i.IssueNumber = @IssueNumber
+                                AND a.SequenceNumber = @SequenceNumber";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    PeriodicalId = periodicalId,
+                    VolumeNumber = volumeNumber,
+                    IssueNumber = issueNumber,
+                    SequenceNumber = sequenceNumber
+                }, cancellationToken: cancellationToken);
+                return await connection.QueryAsync<ArticleContentModel>(command);
+            }
         }
 
-        public Task<string> GetArticleContentUrl(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language, string mimeType, CancellationToken cancellationToken)
+        public Task<string> GetArticleContentUrl(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string mimeType, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -266,31 +326,59 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             throw new NotImplementedException();
         }
 
-        public Task DeleteArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, CancellationToken cancellationToken)
+        public async Task DeleteArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Delete ac
+                            FROM Article a
+                            INNER JOIN Issue i ON i.Id = a.IssueId
+                            INNER JOIN Periodical p ON p.Id = i.Periodicalid
+                            LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                            WHERE a.sequenceNumber = @SequenceNumber 
+                                AND p.LibraryId = @LibraryId 
+                                AND i.PeriodicalId = @PeriodicalId
+                                AND i.VolumeNumber = @VolumeNumber
+                                AND i.IssueNumber = @IssueNumber
+                                AND a.SequenceNumber = @SequenceNumber";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    PeriodicalId = periodicalId,
+                    VolumeNumber = volumeNumber,
+                    IssueNumber = issueNumber,
+                    SequenceNumber = sequenceNumber
+                }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+
+        public Task<ArticleModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        private async Task<ArticleModel> GetArticleById(int libraryId, int periodicalId, int issueId, int articleId, CancellationToken cancellationToken)
+        public Task<ArticleModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task<ArticleModel> GetArticleById(int articleId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 ArticleModel article = null;
-                var sql = @"SELECT a.*, ac.*, f.*
+                var sql = @"SELECT a.*, ac.*
                             FROM Article a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
-                            LEFT OUTER JOIN [File] f ON f.Id = cc.FileId
-                            WHERE a.Id = @ArticleId
-                            AND i.PeriodicalId = @PeriodicalId
-                            AND i.Id = @IssueId";
+                            WHERE a.Id = @Id";
                 var command = new CommandDefinition(sql, new
                 {
-                    PeriodicalId = periodicalId,
-                    IssueId = issueId,
-                    ArticleId = articleId
+                    Id = articleId
                 }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ArticleModel, ArticleContentModel, FileModel, ArticleModel>(command, (a, ac, f) =>
+                await connection.QueryAsync<ArticleModel, ArticleContentModel, ArticleModel>(command, (a, ac) =>
                 {
                     if (article == null)
                     {
@@ -306,20 +394,40 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                         }
                     }
 
-                    if (f != null)
-                    {
-                        var content = article.Contents.SingleOrDefault(x => x.Id == ac.Id);
-                        if (content != null)
-                        {
-                            content.MimeType = f.MimeType;
-                            content.ContentUrl = f.FilePath;
-                        }
-                    }
-
                     return article;
                 });
 
                 return article;
+            }
+        }
+
+        public async Task ReorderArticles(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT a.Id, row_number() OVER (ORDER BY a.SequenceNumber) as 'SequenceNumber'
+                            From Article a
+                            Inner Join Issue i On i.Id = a.IssueId
+                            Inner Join Periodical p On p.Id = i.PeriodicalId
+                            Where p.LibraryId = @LibraryId 
+                            AND p.Id = @PeriodicalId 
+                            AND i.VolumeNumber = @VolumeNumber
+                            AND i.IssueNumber = @IssueNumber
+                            Order By a.SequenceNumber";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    PeriodicalId = periodicalId,
+                    VolumeNumber = volumeNumber,
+                    IssueNumber = issueNumber
+                }, cancellationToken: cancellationToken);
+                var newOrder = await connection.QueryAsync(command);
+
+                var sql2 = @"UPDATE Article
+                            SET SequenceNumber = @SequenceNumber
+                            Where Id = @Id";
+                var command2 = new CommandDefinition(sql2, newOrder, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command2);
             }
         }
     }

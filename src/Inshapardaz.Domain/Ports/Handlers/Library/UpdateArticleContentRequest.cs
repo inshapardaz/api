@@ -12,13 +12,13 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class UpdateArticleContentRequest : LibraryBaseCommand
     {
-        public UpdateArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string contents, string language, string mimetype)
+        public UpdateArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string contents, string language, string mimetype)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
             VolumeNumber = volumeNumber;
             IssueNumber = issueNumber;
-            ArticleId = articleId;
+            SequenceNumber = sequenceNumber;
             Contents = contents;
             MimeType = mimetype;
             Language = language;
@@ -29,7 +29,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int PeriodicalId { get; }
         public int VolumeNumber { get; }
         public int IssueNumber { get; }
-        public int ArticleId { get; }
+        public int SequenceNumber { get; }
         public string Contents { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();
@@ -63,7 +63,7 @@ namespace Inshapardaz.Domain.Models.Library
         public override async Task<UpdateArticleContentRequest> HandleAsync(UpdateArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
-            var article = await _articleRepository.GetArticleById(command.LibraryId, command.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, command.ArticleId, cancellationToken);
+            var article = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, command.SequenceNumber, cancellationToken);
 
             if (issue == null || article == null)
             {
@@ -81,11 +81,11 @@ namespace Inshapardaz.Domain.Models.Library
                 command.Language = library.Language;
             }
 
-            var contentUrl = await _articleRepository.GetArticleContentUrl(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, command.Language, command.MimeType, cancellationToken);
+            var contentUrl = await _articleRepository.GetArticleContentUrl(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, command.MimeType, cancellationToken);
 
             if (contentUrl == null)
             {
-                var name = GenerateArticleContentUrl(command.PeriodicalId, command.IssueNumber, command.ArticleId, command.Language, command.MimeType);
+                var name = GenerateArticleContentUrl(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
 
                 var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = issue.IsPublic, FileName = name };
@@ -94,7 +94,7 @@ namespace Inshapardaz.Domain.Models.Library
                 {
                     PeriodicalId = command.PeriodicalId,
                     IssueId = command.IssueNumber,
-                    ArticleId = command.ArticleId,
+                    SequenceNumber = command.SequenceNumber,
                     Language = command.Language,
                     MimeType = command.MimeType,
                     FileId = file.Id
@@ -107,14 +107,14 @@ namespace Inshapardaz.Domain.Models.Library
             }
             else
             {
-                string url = contentUrl ?? GenerateArticleContentUrl(command.PeriodicalId, command.IssueNumber, command.ArticleId, command.Language, command.MimeType);
+                string url = contentUrl ?? GenerateArticleContentUrl(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(url, command.Contents, cancellationToken);
 
                 await _issueRepository.UpdateIssueContent(command.LibraryId,
                                                         command.PeriodicalId,
                                                         command.VolumeNumber,
                                                         command.IssueNumber,
-                                                        command.ArticleId,
+                                                        command.SequenceNumber,
                                                         command.Language,
                                                         command.MimeType,
                                                         actualUrl,
@@ -123,7 +123,7 @@ namespace Inshapardaz.Domain.Models.Library
                                                         command.PeriodicalId,
                                                         command.VolumeNumber,
                                                         command.IssueNumber,
-                                                        command.ArticleId,
+                                                        command.SequenceNumber,
                                                         command.Language,
                                                         command.MimeType,
                                                         cancellationToken);
@@ -134,10 +134,10 @@ namespace Inshapardaz.Domain.Models.Library
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        private string GenerateArticleContentUrl(int periodicalId, int issueId, int articleId, string language, string mimeType)
+        private string GenerateArticleContentUrl(int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string mimeType)
         {
             var extension = MimetypeToExtension(mimeType);
-            return $"periodicals/{periodicalId}/issues/{issueId}/{articleId}_{language}.{extension}";
+            return $"periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/{sequenceNumber}_{language}.{extension}";
         }
 
         private string MimetypeToExtension(string mimeType)

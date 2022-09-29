@@ -146,7 +146,10 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
         public IssueDataBuilder WithStatus(EditingStatus statuses, int count)
         {
-            _pageStatuses.TryAdd(statuses, count);
+            if (statuses != EditingStatus.All)
+            {
+                _pageStatuses.TryAdd(statuses, count);
+            }
             return this;
         }
 

@@ -41,4 +41,15 @@ namespace Inshapardaz.Api.Tests.Dto
         public DateTime? ReviewerAssignTimestamp { get; set; }
 
     }
+
+    public class ArticleContentDto
+    {
+        public int Id { get; set; }
+
+        public int ArticleId { get; set; }
+
+        public string Language { get; set; }
+
+        public string Text { get; set; }
+    }
 }

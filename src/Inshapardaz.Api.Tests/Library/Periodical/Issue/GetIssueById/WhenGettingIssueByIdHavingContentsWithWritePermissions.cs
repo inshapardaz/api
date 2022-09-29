@@ -66,7 +66,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
             _assert.ShouldHaveUpdateLink()
                    .ShouldHaveDeleteLink()
                    .ShouldHaveCreatePageLink()
-                   .ShouldHaveCreateArticlesLink();
+                   .ShouldHaveCreateArticlesLink()
+                   .ShouldHaveCreateMultipleLink();
         }
 
         [Test]

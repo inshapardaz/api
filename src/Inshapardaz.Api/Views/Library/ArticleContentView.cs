@@ -7,7 +7,7 @@ namespace Inshapardaz.Api.Views.Library
         public int PeriodicalId { get; set; }
         public int IssueId { get; set; }
 
-        public int ArticleId { get; set; }
+        public int SequenceNumber { get; set; }
 
         public string Language { get; set; }
 

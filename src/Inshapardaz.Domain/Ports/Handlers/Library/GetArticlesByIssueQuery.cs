@@ -40,7 +40,7 @@ namespace Inshapardaz.Domain.Models.Library
             var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken); 
             if (issue == null)
             {
-                throw new BadRequestException();
+                return null;
             }
 
             return await _articleRepository.GetArticlesByIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);

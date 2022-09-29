@@ -1,5 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Handlers.Library;
+using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,27 +37,37 @@ namespace Inshapardaz.Domain.Models.Library
 
     public class UpdateArticleRequestHandler : RequestHandlerAsync<UpdateArticleRequest>
     {
+        private readonly IIssueRepository _issueRepository;
         private readonly IArticleRepository _articleRepository;
 
-        public UpdateArticleRequestHandler(IArticleRepository articleRepository)
+        public UpdateArticleRequestHandler(IArticleRepository articleRepository, IIssueRepository issueRepository)
         {
             _articleRepository = articleRepository;
+            _issueRepository = issueRepository;
         }
 
         public override async Task<UpdateArticleRequest> HandleAsync(UpdateArticleRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _articleRepository.GetArticleById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, cancellationToken);
+            var result = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, cancellationToken);
 
             if (result == null)
             {
+                var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+
+                if (issue == null)
+                {
+                    throw new BadRequestException();
+                }
+
                 var article = command.Article;
                 article.Id = default(int);
-                command.Result.Article = await _articleRepository.AddArticle(command.LibraryId, command.PeriodicalId, result.Id, article, cancellationToken);
+                command.Result.Article = await _articleRepository.AddArticle(command.LibraryId, command.PeriodicalId, issue.Id, article, cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
                 await _articleRepository.UpdateArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Article, cancellationToken);
+                command.Article.Id = result.Id;
                 command.Result.Article = command.Article;
             }
 

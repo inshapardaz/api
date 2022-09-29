@@ -69,7 +69,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.GetArticleById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
-                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, articleId = source.Id }
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.SequenceNumber }
                 }),
                 _linkRenderer.Render(new Link
                 {
@@ -87,6 +87,28 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
+            if (source.PreviousArticle != null)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ArticleController.GetArticleById),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Previous,
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.PreviousArticle.SequenceNumber }
+                }));
+            }
+
+            if (source.NextArticle != null)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ArticleController.GetArticleById),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Next,
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.NextArticle.SequenceNumber }
+                }));
+            }
+
             if (_userHelper.IsWriter(libraryId))
             {
                 links.Add(_linkRenderer.Render(new Link
@@ -94,7 +116,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.UpdateArticle),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
-                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, articleId = source.Id }
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.SequenceNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -102,7 +124,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.DeleteArticle),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
-                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, articleId = source.Id }
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.SequenceNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -110,7 +132,15 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.CreateArticleContent),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.AddContent,
-                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, articleId = source.Id }
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.SequenceNumber }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ArticleController.AssignArticleToUser),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.Assign,
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.SequenceNumber }
                 }));
             }
 
@@ -142,14 +172,14 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Self,
                     MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, articleId = source.ArticleId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, sequenceNumber = source.SequenceNumber }
                 }),
                 _linkRenderer.Render(new Link
                 {
                     ActionName = nameof(ArticleController.GetArticleById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Article,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, articleId = source.ArticleId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, sequenceNumber = source.SequenceNumber }
                 }),
                 _linkRenderer.Render(new Link
                 {
@@ -174,7 +204,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Update,
                     MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, articleId = source.ArticleId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, sequenceNumber = source.SequenceNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -184,7 +214,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Delete,
                     MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, articleId = source.ArticleId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, sequenceNumber = source.SequenceNumber }
                 }));
             }
 

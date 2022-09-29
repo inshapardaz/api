@@ -204,6 +204,14 @@ namespace Inshapardaz.Api.Converters
 
                 links.Add(_linkRenderer.Render(new Link
                 {
+                    ActionName = nameof(IssuePageController.UploadIssuePages),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.MultiCreate,
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber  }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
                     ActionName = nameof(IssueController.CreateIssueContent),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.AddContent,

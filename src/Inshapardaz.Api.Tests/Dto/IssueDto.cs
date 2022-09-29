@@ -20,6 +20,18 @@ namespace Inshapardaz.Api.Tests.Dto
         public DateTime IssueDate { get; set; }
 
         public bool IsPublic { get; set; }
+
+        public string SeriesName { get; set; }
+
+        public int SeriesIndex { get; set; }
+
+        public int? WriterAccountId { get; set; }
+
+        public DateTime? WriterAssignTimeStamp { get; set; }
+
+        public int? ReviewerAccountId { get; set; }
+
+        public DateTime? ReviewerAssignTimeStamp { get; set; }
     }
 
     public class IssueContentDto

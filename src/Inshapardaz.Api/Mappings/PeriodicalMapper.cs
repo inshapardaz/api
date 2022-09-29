@@ -84,7 +84,13 @@ namespace Inshapardaz.Api.Mappings
                 Title = source.Title,
                 SequenceNumber = source.SequenceNumber,
                 SeriesName = source.SeriesName,
-                SeriesIndex = source.SeriesIndex
+                SeriesIndex = source.SeriesIndex,
+                WriterAccountId = source.WriterAccountId,
+                WriterAccountName = source.WriterAccountName,
+                WriterAssignTimeStamp = source.WriterAssignTimeStamp,
+                ReviewerAccountId = source.ReviewerAccountId,
+                ReviewerAccountName = source.ReviewerAccountName,
+                ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp
             };
 
         public static ArticleModel Map(this ArticleView source)
@@ -94,7 +100,13 @@ namespace Inshapardaz.Api.Mappings
                 Title = source.Title,
                 SequenceNumber = source.SequenceNumber,
                 SeriesName = source.SeriesName,
-                SeriesIndex = source.SeriesIndex
+                SeriesIndex = source.SeriesIndex,
+                WriterAccountId = source.WriterAccountId,
+                WriterAccountName = source.WriterAccountName,
+                WriterAssignTimeStamp = source.WriterAssignTimeStamp,
+                ReviewerAccountId = source.ReviewerAccountId,
+                ReviewerAccountName = source.ReviewerAccountName,
+                ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp
             };
 
         public static ArticleContentView Map(this ArticleContentModel source)
@@ -103,7 +115,7 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 PeriodicalId = source.PeriodicalId,
                 IssueId = source.IssueId,
-                ArticleId = source.ArticleId,
+                SequenceNumber = source.SequenceNumber,
                 Language = source.Language,
                 MimeType = source.MimeType
             };
@@ -114,7 +126,7 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 PeriodicalId = source.PeriodicalId,
                 IssueId = source.IssueId,
-                ArticleId = source.ArticleId,
+                SequenceNumber = source.SequenceNumber,
                 Language = source.Language,
                 MimeType = source.MimeType
             };

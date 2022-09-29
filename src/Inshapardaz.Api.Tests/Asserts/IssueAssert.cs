@@ -124,6 +124,15 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+        public IssueAssert ShouldHaveCreateMultipleLink()
+        {
+            _view.Link("create-multiple")
+                  .ShouldBePost()
+                  .EndingWith($"libraries/{_libraryId}/periodicals/{_view.PeriodicalId}/volumes/{_view.VolumeNumber}/issues/{_view.IssueNumber}/pages/upload");
+
+            return this;
+        }
+
         public IssueAssert ShouldNotHaveCreatePageLink()
         {
             _view.Link("add-pages").Should().BeNull();

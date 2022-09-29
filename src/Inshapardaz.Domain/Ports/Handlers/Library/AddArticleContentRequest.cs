@@ -12,13 +12,13 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddArticleContentRequest : LibraryBaseCommand
     {
-        public AddArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string contents, string language, string mimeType)
+        public AddArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string contents, string language, string mimeType)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
             VolumeNumber = volumeNumber;
             IssueNumber = issueNumber;
-            ArticleId = articleId;
+            SequenceNumber = sequenceNumber;
             Contents = contents;
             MimeType = mimeType;
             Language = language;
@@ -27,7 +27,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int PeriodicalId { get; }
         public int VolumeNumber { get; }
         public int IssueNumber { get; }
-        public int ArticleId { get; }
+        public int SequenceNumber { get; }
         public string Contents { get; }
 
         public string MimeType { get; set; }
@@ -73,10 +73,10 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new BadRequestException();
             }
 
-            var article = await _articleRepository.GetArticleById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, cancellationToken);
+            var article = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
             if (article != null)
             {
-                var name = GenerateChapterContentUrl(command.PeriodicalId, command.IssueNumber, command.ArticleId, command.Language, command.MimeType);
+                var name = GenerateChapterContentUrl(command.PeriodicalId, command.IssueNumber, command.SequenceNumber, command.Language, command.MimeType);
                 var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
 
                 var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = issue.IsPublic, FileName = name };
@@ -85,7 +85,7 @@ namespace Inshapardaz.Domain.Models.Library
                 {
                     PeriodicalId = command.PeriodicalId,
                     IssueId = issue.Id,
-                    ArticleId = command.ArticleId,
+                    SequenceNumber = command.SequenceNumber,
                     Language = command.Language,
                     MimeType = command.MimeType,
                     FileId = file.Id

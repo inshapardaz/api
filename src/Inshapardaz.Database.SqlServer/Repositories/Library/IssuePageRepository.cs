@@ -378,8 +378,6 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             FROM IssuePage AS p
                             INNER JOIN Issue i ON i.Id = p.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
-                            INNER JOIN Issue i ON i.Id = p.IssueId
-                            INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId 
                                 AND i.PeriodicalId = @PeriodicalId 
                                 AND i.VolumeNumber = @VolumeNumber 

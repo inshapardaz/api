@@ -88,7 +88,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
                    .ShouldHaveDeleteLink()
                    .ShouldHaveCreateArticlesLink()
                    .ShouldHaveCreatePageLink()
-                   .ShouldHaveAddContentLink();
+                   .ShouldHaveAddContentLink()
+                   .ShouldHaveCreateMultipleLink();
 
                 assert.ShouldHaveCorrectContents(DatabaseConnection);
             }

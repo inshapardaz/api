@@ -114,10 +114,11 @@ namespace Inshapardaz.Api.Mappings
             {
                 Id = source.Id,
                 PeriodicalId = source.PeriodicalId,
-                IssueId = source.IssueId,
+                VolumeNumber = source.VolumeNumber,
+                IssueNumber = source.IssueNumber,
                 SequenceNumber = source.SequenceNumber,
                 Language = source.Language,
-                MimeType = source.MimeType
+                Text = source.Text
             };
 
         public static ArticleContentModel Map(this ArticleContentView source)
@@ -125,10 +126,11 @@ namespace Inshapardaz.Api.Mappings
             {
                 Id = source.Id,
                 PeriodicalId = source.PeriodicalId,
-                IssueId = source.IssueId,
+                VolumeNumber = source.VolumeNumber,
+                IssueNumber = source.IssueNumber,
                 SequenceNumber = source.SequenceNumber,
                 Language = source.Language,
-                MimeType = source.MimeType
+                Text = source.Text
             };
     }
 }

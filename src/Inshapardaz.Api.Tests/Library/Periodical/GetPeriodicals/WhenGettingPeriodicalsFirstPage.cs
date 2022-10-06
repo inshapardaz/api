@@ -44,7 +44,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
         [Test]
         public void ShouldHaveSelfLink()
         {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals", 1, 10);
+            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals");
         }
 
         [Test]

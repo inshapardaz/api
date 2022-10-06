@@ -61,13 +61,17 @@ namespace Inshapardaz.Api.Tests.Asserts
             _page.Links.AssertLinkNotPresent("create");
         }
 
-        internal void ShouldHaveNextLink(string format, int pageNumber, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
+        internal void ShouldHaveNextLink(string format, int? pageNumber = null, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
         {
             var link = _page.Links.AssertLink("next");
             link.ShouldBeGet()
                 .ShouldHaveUrl(format)
-                .ShouldHaveQueryParameter("pageSize", pageSize)
-                .ShouldHaveQueryParameter("pageNumber", pageNumber);
+                .ShouldHaveQueryParameter("pageSize", pageSize);
+
+            if (pageNumber.HasValue)
+            {
+                link.ShouldHaveQueryParameter("pageNumber", pageNumber);
+            }
 
             foreach (var param in parameters)
             {
@@ -75,13 +79,17 @@ namespace Inshapardaz.Api.Tests.Asserts
             }
         }
 
-        internal void ShouldHavePreviousLink(string format, int pageNumber, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
+        internal void ShouldHavePreviousLink(string format, int? pageNumber = null, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
         {
             var link = _page.Links.AssertLink("previous");
             link.ShouldBeGet()
                 .ShouldHaveUrl(format)
-                .ShouldHaveQueryParameter("pageSize", pageSize)
-                .ShouldHaveQueryParameter("pageNumber", pageNumber);
+                .ShouldHaveQueryParameter("pageSize", pageSize);
+
+            if (pageNumber.HasValue)
+            {
+                link.ShouldHaveQueryParameter("pageNumber", pageNumber);
+            }
 
             foreach (var param in parameters)
             {

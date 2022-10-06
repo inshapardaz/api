@@ -10,7 +10,9 @@ namespace Inshapardaz.Api.Tests.DataHelpers
     {
         public static void AddChapter(this IDbConnection connection, ChapterDto chapter)
         {
-            var sql = "Insert Into Chapter (Title, BookId, ChapterNumber) OUTPUT Inserted.Id VALUES (@Title, @BookId, @ChapterNumber)";
+            var sql = @"Insert Into Chapter (Title, BookId, ChapterNumber, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp) 
+                      OUTPUT Inserted.Id 
+                      VALUES (@Title, @BookId, @ChapterNumber, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
             var id = connection.ExecuteScalar<int>(sql, chapter);
             chapter.Id = id;
         }

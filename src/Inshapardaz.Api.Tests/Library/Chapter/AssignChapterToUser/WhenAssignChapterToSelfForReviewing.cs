@@ -1,7 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
@@ -25,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _chapter = ChapterBuilder.WithLibrary(LibraryId).WithContents().WithoutAnyAssignment().Build();
+            _chapter = ChapterBuilder.WithLibrary(LibraryId).WithContents().WithStatus(EditingStatus.InReview).WithoutAnyAssignment().Build();
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/assign", new { Type = "review" });
         }
 

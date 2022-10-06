@@ -12,15 +12,14 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class AddArticleContentRequest : LibraryBaseCommand
     {
-        public AddArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string contents, string language, string mimeType)
+        public AddArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string contents, string language)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
             VolumeNumber = volumeNumber;
             IssueNumber = issueNumber;
             SequenceNumber = sequenceNumber;
-            Contents = contents;
-            MimeType = mimeType;
+            Content = contents;
             Language = language;
         }
 
@@ -28,9 +27,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int VolumeNumber { get; }
         public int IssueNumber { get; }
         public int SequenceNumber { get; }
-        public string Contents { get; }
-
-        public string MimeType { get; set; }
+        public string Content { get; }
 
         public string Language { get; set; }
 
@@ -74,54 +71,21 @@ namespace Inshapardaz.Domain.Models.Library
             }
 
             var article = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+
             if (article != null)
             {
-                var name = GenerateChapterContentUrl(command.PeriodicalId, command.IssueNumber, command.SequenceNumber, command.Language, command.MimeType);
-                var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
-
-                var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = issue.IsPublic, FileName = name };
-                var file = await _fileRepository.AddFile(fileModel, cancellationToken);
-                var issueContent = new ArticleContentModel
-                {
-                    PeriodicalId = command.PeriodicalId,
-                    IssueId = issue.Id,
-                    SequenceNumber = command.SequenceNumber,
-                    Language = command.Language,
-                    MimeType = command.MimeType,
-                    FileId = file.Id
-                };
-
-                command.Result = await _articleRepository.AddArticleContent(command.LibraryId, issueContent, cancellationToken);
-
-                if (file.IsPublic)
-                {
-                    var url = await ImageHelper.TryConvertToPublicFile(file.Id, _fileRepository, cancellationToken);
-                    command.Result.ContentUrl = url;
-                }
+                command.Result = await _articleRepository.AddArticleContent(
+                    command.LibraryId, 
+                    command.PeriodicalId,
+                    command.VolumeNumber,
+                    command.IssueNumber,
+                    command.SequenceNumber,
+                    command.Language,
+                    command.Content,
+                    cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);
-        }
-
-        private string GenerateChapterContentUrl(int periodicalId, int issueId, int articleId, string language, string mimeType)
-        {
-            var extension = MimetypeToExtension(mimeType);
-            return $"periodicals/{periodicalId}/issues/{issueId}/{articleId}_{language}.{extension}";
-        }
-
-        private string MimetypeToExtension(string mimeType)
-        {
-            switch (mimeType.ToLower())
-            {
-                case "text/plain": return "txt";
-                case "text/markdown": return "md";
-                case "text/html": return "md";
-                case "application/msword": return "docx";
-                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": return "docx";
-                case "application/pdf": return "pdf";
-                case "application/epub+zip": return "epub";
-                default: throw new BadRequestException();
-            }
         }
     }
 }

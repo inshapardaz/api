@@ -79,5 +79,17 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             return connection.Query<ArticleContentDto>("Select * From ArticleContent Where ArticleId = @Id", new { Id = articleId });
         }
 
+        public static void AddArticleContents(this IDbConnection connection, IEnumerable<ArticleContentDto> contents)
+        {
+            var sql = "INSERT INTO ArticleContent (ArticleId, Language, Text) VALUES (@ArticleId, @Language, @Text)";
+            connection.Execute(sql, contents);
+        }
+
+        public static void AddArticleContents(this IDbConnection connection, ArticleContentDto content)
+        {
+            var sql = "INSERT INTO ArticleContent (ArticleId, Language, Text) VALUES (@ArticleId, @Language, @Text)";
+            connection.Execute(sql, content);
+        }
+
     }
 }

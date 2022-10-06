@@ -9,51 +9,39 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class DeleteArticleContentRequest : LibraryBaseCommand
     {
-        public DeleteArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language, string mimeType)
+        public DeleteArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language)
             : base(libraryId)
         {
-            MimeType = mimeType;
             PeriodicalId = periodicalId;
             VolumeNumber = volumeNumber;
             IssueNumber = issueNumber;
-            ArticleId = articleId;
+            SequenceNumber = articleId;
             Language = language;
         }
 
-        public string MimeType { get; }
         public int PeriodicalId { get; }
         public int VolumeNumber { get; }
         public int IssueNumber { get; }
-        public int ArticleId { get; }
+        public int SequenceNumber { get; }
         public string Language { get; }
     }
 
     public class DeleteArticleContentRequestHandler : RequestHandlerAsync<DeleteArticleContentRequest>
     {
         private readonly IArticleRepository _articleRepository;
-        private readonly IFileRepository _fileRepository;
-        private readonly IFileStorage _fileStorage;
 
-        public DeleteArticleContentRequestHandler(IArticleRepository chapterRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+        public DeleteArticleContentRequestHandler(IArticleRepository articleRepository)
         {
-            _articleRepository = chapterRepository;
-            _fileRepository = fileRepository;
-            _fileStorage = fileStorage;
+            _articleRepository = articleRepository;
         }
 
         public override async Task<DeleteArticleContentRequest> HandleAsync(DeleteArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var content = await _articleRepository.GetArticleContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, command.Language, command.MimeType, cancellationToken);
+            var content = await _articleRepository.GetArticleContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, cancellationToken);
 
             if (content != null)
             {
-                if (!string.IsNullOrWhiteSpace(content.ContentUrl))
-                {
-                    await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
-                }
-
-                await _fileRepository.DeleteFile(content.FileId, cancellationToken);
-                await _articleRepository.DeleteArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, cancellationToken);
+                await _articleRepository.DeleteArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

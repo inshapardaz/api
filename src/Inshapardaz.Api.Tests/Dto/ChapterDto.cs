@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Inshapardaz.Domain.Models;
+using System;
 
 namespace Inshapardaz.Api.Tests.Dto
 {
@@ -11,8 +12,10 @@ namespace Inshapardaz.Api.Tests.Dto
         public int BookId { get; set; }
 
         public int ChapterNumber { get; set; }
+        public EditingStatus Status { get; set; }
 
         public int? WriterAccountId { get; set; }
+
         public DateTime? WriterAssignTimeStamp { get; set; }
 
         public int? ReviewerAccountId { get; set; }

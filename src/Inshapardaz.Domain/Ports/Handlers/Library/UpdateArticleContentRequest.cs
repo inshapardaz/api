@@ -12,25 +12,23 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class UpdateArticleContentRequest : LibraryBaseCommand
     {
-        public UpdateArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string contents, string language, string mimetype)
+        public UpdateArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string content, string language)
             : base(libraryId)
         {
             PeriodicalId = periodicalId;
             VolumeNumber = volumeNumber;
             IssueNumber = issueNumber;
             SequenceNumber = sequenceNumber;
-            Contents = contents;
-            MimeType = mimetype;
+            Content = content;
             Language = language;
         }
 
-        public string MimeType { get; set; }
         public string Language { get; set; }
         public int PeriodicalId { get; }
         public int VolumeNumber { get; }
         public int IssueNumber { get; }
         public int SequenceNumber { get; }
-        public string Contents { get; set; }
+        public string Content { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();
 
@@ -81,78 +79,34 @@ namespace Inshapardaz.Domain.Models.Library
                 command.Language = library.Language;
             }
 
-            var contentUrl = await _articleRepository.GetArticleContentUrl(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, command.MimeType, cancellationToken);
+            var contentUrl = await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, cancellationToken);
 
             if (contentUrl == null)
             {
-                var name = GenerateArticleContentUrl(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, command.MimeType);
-                var actualUrl = await _fileStorage.StoreTextFile(name, command.Contents, cancellationToken);
-
-                var fileModel = new Models.FileModel { MimeType = command.MimeType, FilePath = actualUrl, IsPublic = issue.IsPublic, FileName = name };
-                var file = await _fileRepository.AddFile(fileModel, cancellationToken);
-                var articleContent = new ArticleContentModel
-                {
-                    PeriodicalId = command.PeriodicalId,
-                    IssueId = command.IssueNumber,
-                    SequenceNumber = command.SequenceNumber,
-                    Language = command.Language,
-                    MimeType = command.MimeType,
-                    FileId = file.Id
-                };
-
-                command.Result.Content = await _articleRepository.AddArticleContent(command.LibraryId,
-                                                                                           articleContent,
-                                                                                           cancellationToken);
+                command.Result.Content = await _articleRepository.AddArticleContent(
+                    command.LibraryId,
+                    command.PeriodicalId,
+                    command.VolumeNumber,
+                    command.IssueNumber,
+                    command.SequenceNumber,
+                    command.Language,
+                    command.Content,
+                    cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                string url = contentUrl ?? GenerateArticleContentUrl(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, command.MimeType);
-                var actualUrl = await _fileStorage.StoreTextFile(url, command.Contents, cancellationToken);
-
-                await _issueRepository.UpdateIssueContent(command.LibraryId,
+                command.Result.Content = await _articleRepository.UpdateArticleContent(command.LibraryId,
                                                         command.PeriodicalId,
                                                         command.VolumeNumber,
                                                         command.IssueNumber,
                                                         command.SequenceNumber,
                                                         command.Language,
-                                                        command.MimeType,
-                                                        actualUrl,
-                                                        cancellationToken);
-                command.Result.Content = await _articleRepository.GetArticleContent(command.LibraryId,
-                                                        command.PeriodicalId,
-                                                        command.VolumeNumber,
-                                                        command.IssueNumber,
-                                                        command.SequenceNumber,
-                                                        command.Language,
-                                                        command.MimeType,
+                                                        command.Content,
                                                         cancellationToken);
             }
-
-            command.Result.Content.ContentUrl = await ImageHelper.TryConvertToPublicFile(command.Result.Content.FileId, _fileRepository, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
-        }
-
-        private string GenerateArticleContentUrl(int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string mimeType)
-        {
-            var extension = MimetypeToExtension(mimeType);
-            return $"periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/{sequenceNumber}_{language}.{extension}";
-        }
-
-        private string MimetypeToExtension(string mimeType)
-        {
-            switch (mimeType.ToLower())
-            {
-                case "text/plain": return "txt";
-                case "text/markdown": return "md";
-                case "text/html": return "md";
-                case "application/msword": return "doc";
-                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": return "doc";
-                case "application/pdf": return "pdf";
-                case "application/epub+zip": return "epub";
-                default: throw new BadRequestException();
-            }
         }
     }
 }

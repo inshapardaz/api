@@ -190,8 +190,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             INNER JOIN Author a On ba.AuthorId = a.Id
                             LEFT JOIN BookCategory bc ON b.Id = bc.BookId
                             LEFT JOIN Category c ON bc.CategoryId = c.Id
-                            LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @FavoriteFilter
-                            LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @RecentFilter
+                            LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
+                            LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
                             Where b.LibraryId = @LibraryId
                             AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
                             AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
@@ -216,8 +216,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId
                             LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
                             LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
-                            LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @FavoriteFilter
-                            LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @RecentFilter
+                            LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
+                            LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
                             Where b.LibraryId = @LibraryId
                             AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
                             AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)

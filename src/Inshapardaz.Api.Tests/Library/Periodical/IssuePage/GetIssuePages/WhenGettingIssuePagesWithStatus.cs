@@ -22,7 +22,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
         private IssueDto _issue;
         private HttpResponseMessage _response;
         private PagingAssert<IssuePageView> _assert;
-        private AccountDto _account;
         private readonly EditingStatus _status;
 
         public WhenGettingIssuePagesWithStatus(EditingStatus status)
@@ -34,7 +33,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _account = AccountBuilder.Build();
             _issue = IssueBuilder.WithLibrary(LibraryId).WithPages(20)
                 .WithStatus(_status, 12)
                 .Build();
@@ -104,7 +102,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
             var expectedItems = IssueBuilder.GetPages(_issue.Id)
                                             .Where(p => _status == EditingStatus.All || p.Status == _status)
                                             .OrderBy(p => p.SequenceNumber).Take(10);
-            _assert.ShouldHaveTotalCount(20)
+            _assert.ShouldHaveTotalCount(12)
                    .ShouldHavePage(1)
                    .ShouldHavePageSize(10);
 

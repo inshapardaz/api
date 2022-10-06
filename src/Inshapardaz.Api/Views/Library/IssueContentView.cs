@@ -10,6 +10,6 @@
 
         public string Language { get; set; }
         public int IssueNumber { get; set; }
-        public object VolumeNumber { get; set; }
+        public int VolumeNumber { get; set; }
     }
 }

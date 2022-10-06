@@ -56,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
         [Test]
         public void ShouldHavePreviousLink()
         {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/periodicals", 1, 10);
+            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/periodicals");
         }
 
         public void ShouldReturnExpectedPeriodicals()

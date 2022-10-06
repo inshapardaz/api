@@ -251,7 +251,6 @@ namespace Inshapardaz.Api.Tests
         protected virtual void Cleanup()
         {
             _accountBuilder?.CleanUp();
-            _libraryBuilder?.CleanUp();
             _authorBuilder?.CleanUp();
             _seriesDataBuilder?.CleanUp();
             _categoriesDataBuilder?.CleanUp();
@@ -259,6 +258,8 @@ namespace Inshapardaz.Api.Tests
             _chapterDataBuilder?.CleanUp();
             _periodicalBuilder?.CleanUp();
             _issueDataBuilder?.CleanUp();
+            _accountBuilder?.CleanUp();
+            _libraryBuilder?.CleanUp();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         public async Task Setup()
         {
             _writer = AccountBuilder.InLibrary(LibraryId).As(Role.Writer).Build();
-            _chapter = ChapterBuilder.WithLibrary(LibraryId).WithContents().WithoutAnyAssignment().Build();
+            _chapter = ChapterBuilder.WithLibrary(LibraryId).WithContents().WithStatus(EditingStatus.Typing).WithoutAnyAssignment().Build();
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/assign", new { AccountId = _writer.Id, Type = "write" });
         }
 

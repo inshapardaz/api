@@ -17,7 +17,7 @@ namespace Inshapardaz.Domain.Models.Library
         public string Language { get; set; }
 
         public int FileId { get; internal set; }
-        public object VolumeNumber { get; set; }
+        public int VolumeNumber { get; set; }
 
         internal List<IssueContentModel> ToList()
         {

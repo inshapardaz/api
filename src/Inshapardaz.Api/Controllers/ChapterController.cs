@@ -172,11 +172,12 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.CreateChapterContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        // TODO: Remove language
         public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterNumber, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
         {
-            //var language = Request.Headers["Content-Language"];
+            var contentLanguage = Request.Headers["Content-Language"];
 
-            var request = new AddChapterContentRequest(libraryId, bookId, chapterNumber, content, language);
+            var request = new AddChapterContentRequest(libraryId, bookId, chapterNumber, content, language ?? contentLanguage);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)

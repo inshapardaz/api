@@ -7,6 +7,7 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Database.SqlServer;
 using Inshapardaz.Api.Tests.Helpers;
 using System;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -21,6 +22,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private bool _public;
         private string _language;
         private int? _assignedWriterId, _assignedReviewerId;
+        private EditingStatus? _status;
 
         public IEnumerable<ChapterContentDto> Contents => _contents;
         public IEnumerable<ChapterDto> Chapters => _chapters;
@@ -68,6 +70,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
+        internal ChapterDataBuilder WithStatus(EditingStatus status)
+        {
+            _status = status;
+            return this;
+        }
+
         internal ChapterDataBuilder WithoutAnyAssignment()
         {
             _assignedWriterId = _assignedReviewerId = null;
@@ -90,6 +98,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                                      .With(c => c.WriterAssignTimeStamp, _assignedWriterId.HasValue ? DateTime.Now : null)
                                      .With(c => c.ReviewerAccountId, _assignedReviewerId)
                                      .With(c => c.ReviewerAssignTimeStamp, _assignedReviewerId.HasValue ? DateTime.Now : null)
+                                     .With(c => c.Status, _status ?? RandomData.AsignableEditingStatus)
                                      .Create();
 
                 _connection.AddChapter(chapter);

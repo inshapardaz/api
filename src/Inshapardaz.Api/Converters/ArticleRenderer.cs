@@ -170,30 +170,31 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.GetArticleContent),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
-                    MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, sequenceNumber = source.SequenceNumber }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber, sequenceNumber = source.SequenceNumber }
                 }),
                 _linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(ArticleController.GetArticleById),
+                    ActionName = nameof(PeriodicalController.GetPeriodicalById),
                     Method = HttpMethod.Get,
-                    Rel = RelTypes.Article,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, sequenceNumber = source.SequenceNumber }
+                    Rel = RelTypes.Periodical,
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId }
                 }),
                 _linkRenderer.Render(new Link
                 {
                     ActionName = nameof(IssueController.GetIssueById),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Issue,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
+                }),
+                _linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ArticleController.GetArticleById),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Article,
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber, sequenceNumber = source.SequenceNumber }
                 })
             };
-
-            if (!string.IsNullOrWhiteSpace(source.ContentUrl))
-            {
-                links.Add(new LinkView { Href = source.ContentUrl, Method = "GET", Rel = RelTypes.Download, Accept = MimeTypes.Jpg });
-            }
 
             if (_userHelper.IsWriter(libraryId))
             {
@@ -202,9 +203,8 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.UpdateArticleContent),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
-                    MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, sequenceNumber = source.SequenceNumber }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber,  issueNumber = source.IssueNumber, sequenceNumber = source.SequenceNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -212,9 +212,8 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.DeleteArticleContent),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
-                    MimeType = source.MimeType,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, issueNumber = source.IssueId, sequenceNumber = source.SequenceNumber }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber,  issueNumber = source.IssueNumber, sequenceNumber = source.SequenceNumber }
                 }));
             }
 

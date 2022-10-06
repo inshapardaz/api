@@ -10,10 +10,9 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class GetArticleContentQuery : LibraryBaseQuery<ArticleContentModel>
     {
-        public GetArticleContentQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language, string mimeType)
+        public GetArticleContentQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language)
             : base(libraryId)
         {
-            MimeType = mimeType;
             PeriodicalId = periodicalId;
             VolumeNumber = volumeNumber;
             IssueNumber = issueNumber;
@@ -21,7 +20,6 @@ namespace Inshapardaz.Domain.Models.Library
             Language = language;
         }
 
-        public string MimeType { get; set; }
         public int PeriodicalId { get; }
         public int VolumeNumber { get; }
         public int IssueNumber { get; }
@@ -31,22 +29,16 @@ namespace Inshapardaz.Domain.Models.Library
 
     public class GetArticleContentQueryHandler : QueryHandlerAsync<GetArticleContentQuery, ArticleContentModel>
     {
-        private readonly ILibraryRepository _libraryRepository;
         private readonly IArticleRepository _articleRepository;
-        private readonly IIssueRepository _issueRepository;
-        private readonly IFileRepository _fileRepository;
 
-        public GetArticleContentQueryHandler(ILibraryRepository libraryRepository, IArticleRepository articleRepository, IIssueRepository issueRepository, IFileRepository fileRepository)
+        public GetArticleContentQueryHandler(IArticleRepository articleRepository)
         {
-            _libraryRepository = libraryRepository;
             _articleRepository = articleRepository;
-            _issueRepository = issueRepository;
-            _fileRepository = fileRepository;
         }
 
         public override async Task<ArticleContentModel> ExecuteAsync(GetArticleContentQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, command.Language, command.MimeType, cancellationToken);
+            return await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, command.Language, cancellationToken);
         }
     }
 }

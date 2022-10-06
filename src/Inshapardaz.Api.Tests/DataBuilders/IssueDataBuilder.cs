@@ -39,9 +39,9 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
         private bool _hasImage = true;
         private bool? _isPublic = null;
-        private int _contentCount, _numberOfAuthors;
+        private int _contentCount, _numberOfAuthors, _articleContentCount;
         private string _contentMimeType;
-        private string _language = null;
+        private string _language = null, _articleContentLanguage;
 
         public AuthorDto Author { get; set; }
         private List<CategoryDto> _categories = new List<CategoryDto>();
@@ -49,6 +49,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private List<AccountItemCountSpec> _favoriteBooks = new List<AccountItemCountSpec>();
         private List<AccountItemCountSpec> _readBooks = new List<AccountItemCountSpec>();
         private List<IssueContentDto> _contents = new List<IssueContentDto>();
+        private List<ArticleContentDto> _articleContents = new List<ArticleContentDto>();
         private List<RecentBookDto> _recentBooks = new List<RecentBookDto>();
         private int _pageCount;
         private int? _periodicalId;
@@ -60,8 +61,9 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private int? _year;
         private readonly AuthorsDataBuilder _authorBuilder;
 
-        public IEnumerable<IssueDto> Books => _issues;
+        public IEnumerable<IssueDto> Issues => _issues;
         public IEnumerable<IssueContentDto> Contents => _contents;
+        public IEnumerable<ArticleContentDto> ArticleContents => _articleContents;
 
         public IssueDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage, AuthorsDataBuilder authorBuilder)
         {
@@ -126,9 +128,21 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             _addPageImage = addImage;
             return this;
         }
+        
         public IssueDataBuilder WithArticles(int count)
         {
             _articleCount = count;
+            return this;
+        }
+
+        public IssueDataBuilder WithArticleContents(int count)
+        {
+            _articleContentCount = count;
+            return this;
+        }
+        public IssueDataBuilder WithArticleContentLanguage(string language)
+        {
+            _articleContentLanguage = language;
             return this;
         }
 
@@ -390,6 +404,18 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                             {
                                 _connection.AddArticleAuthor(article.Id, author.Id);
                             }
+                        }
+
+                        if (_articleContentCount > 0)
+                        {
+                            var articleContent = fixture.Build<ArticleContentDto>()
+                                    .With(x => x.ArticleId, article.Id)
+                                    .With(x => x.Language, _articleContentLanguage ?? RandomData.Locale)
+                                    .With(x => x.Text, RandomData.String)
+                                    .CreateMany(_articleContentCount);
+
+                            _connection.AddArticleContents(articleContent);
+                            _articleContents.AddRange(articleContent);
                         }
                     }
 

@@ -69,9 +69,25 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             connection.Execute(sql, new { IssueId = issueId, AuthorId = authorId });
         }
 
-        public static ArticleContentDto GetArticleContentById(this IDbConnection connection, int id)
+        public static ArticleContentDto GetArticleContentById(this IDbConnection connection, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language)
         {
-            return connection.QuerySingleOrDefault<ArticleContentDto>("Select * From ArticleContent Where Id = @Id", new { Id = id });
+            return connection.QuerySingleOrDefault<ArticleContentDto>(@"select ac.*
+                    FROM Article a
+                    INNER JOIN Issue i ON i.Id = a.IssueId
+                    INNER JOIN Periodical p ON p.Id = i.Periodicalid
+                    LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                    WHERE i.PeriodicalId = @PeriodicalId
+                    AND i.VolumeNumber = @VolumeNumber
+                    AND i.IssueNumber = @IssueNumber
+                    AND a.SequenceNumber = @SequenceNumber
+                    AND ac.Language = @Language", 
+                new { 
+                    PeriodicalId = periodicalId,
+                    VolumeNumber = volumeNumber,
+                    IssueNumber = issueNumber,
+                    SequenceNumber = sequenceNumber,
+                    Language = language
+                });
         }
 
         public static IEnumerable<ArticleContentDto> GetContentByArticle(this IDbConnection connection, int articleId)

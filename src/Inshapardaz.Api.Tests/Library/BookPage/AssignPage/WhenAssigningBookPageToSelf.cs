@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var book = BookBuilder.WithLibrary(LibraryId).WithPages(3, true).Build();
+            var book = BookBuilder.WithLibrary(LibraryId).WithPages(3, true).WithStatus(EditingStatus.Typing, 3).Build();
             _page = BookBuilder.GetPages(book.Id).PickRandom();
 
             var assignment = new

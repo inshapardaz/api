@@ -6,25 +6,26 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
+namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleContents
 {
     [TestFixture]
-    public class WhenGettingIssueContentForNonExistingContent
+    public class WhenGettingArticleContentWhenNoContent
         : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenGettingIssueContentForNonExistingContent()
-           : base(Role.Reader)
+        public WhenGettingArticleContentWhenNoContent()
+            : base(Role.Reader)
         {
         }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var issue = IssueBuilder.WithLibrary(LibraryId).WithContent().Build();
-            var content = IssueBuilder.Contents.First();
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents", RandomData.NextLocale(), RandomData.MimeType);
+            var issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(1).Build();
+            var article = IssueBuilder.GetArticles(issue.Id).PickRandom();
+
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{article.SequenceNumber}/contents", "test");
         }
 
         [OneTimeTearDown]

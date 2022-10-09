@@ -5,7 +5,6 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyModel;
 using System.Data;
 using System.Net.Http;
 
@@ -98,14 +97,14 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal ArticleContentAssert ShouldHaveSavedCorrectText(string expected, IDbConnection dbConnection)
         {
-            var content = dbConnection.GetArticleContentById(_articleContent.Id);
+            var content = dbConnection.GetArticleContentById(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
             content.Text.Should().NotBeNull().And.Be(expected);
             return this;
         }
 
         internal ArticleContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, IDbConnection dbConnection)
         {
-            var content = dbConnection.GetArticleContentById(_articleContent.Id);
+            var content = dbConnection.GetArticleContentById(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
             content.Text.Should().NotBeNull().And.Should().NotBe(expected);
             content.Language.Should().Be(language);
             return this;
@@ -113,7 +112,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal ArticleContentAssert ShouldHaveContentLink()
         {
-            _articleContent.Link("content")
+            _articleContent.Link("contents")
                            .ShouldBeGet();
 
             return this;
@@ -121,7 +120,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal ArticleContentAssert ShouldHaveSavedArticleContent(IDbConnection dbConnection)
         {
-            var dbContent = dbConnection.GetArticleContentById(_articleContent.Id);
+            var dbContent = dbConnection.GetArticleContentById(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
             dbContent.Should().NotBeNull();
             var dbArticle = dbConnection.GetArticleById(dbContent.ArticleId);
             dbArticle.Should().NotBeNull();
@@ -177,18 +176,20 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        //internal ArticleContentAssert ShouldMatch(ChapterContentDto content, int bookId, IDbConnection dbConnection)
-        //{
-        //    _articleContent.ChapterId.Should().Be(content.ChapterId);
-        //    _articleContent.BookId.Should().Be(bookId);
-        //    _articleContent.Language.Should().Be(content.Language);
-
-        //    return this;
-        //}
-
-        internal static void ShouldHaveDeletedContent(IDbConnection dbConnection, ArticleContentDto content)
+        internal ArticleContentAssert ShouldMatch(ArticleContentDto content, IssueDto issue, ArticleDto article)
         {
-            var dbContent = dbConnection.GetArticleContentById(content.Id);
+            _articleContent.PeriodicalId.Should().Be(issue.PeriodicalId);
+            _articleContent.VolumeNumber.Should().Be(issue.VolumeNumber);
+            _articleContent.IssueNumber.Should().Be(issue.IssueNumber);
+            _articleContent.SequenceNumber.Should().Be(article.SequenceNumber);
+            _articleContent.Language.Should().Be(content.Language);
+
+            return this;
+        }
+
+        internal static void ShouldHaveDeletedContent(IDbConnection dbConnection, IssueDto issue, ArticleDto article, ArticleContentDto content)
+        {
+            var dbContent = dbConnection.GetArticleContentById(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article.SequenceNumber, content.Language);
             dbContent.Should().BeNull("Article content should be deleted");
         }
 

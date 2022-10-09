@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
         public async Task Setup()
         {
             _secondAccountId = AccountBuilder.Build().Id;
-            var book = BookBuilder.WithLibrary(LibraryId).WithPages(3, true).Build();
+            var book = BookBuilder.WithLibrary(LibraryId).WithPages(3, true).WithStatus(EditingStatus.Typing, 3).Build();
             _page = BookBuilder.GetPages(book.Id).PickRandom();
 
             var assignment = new

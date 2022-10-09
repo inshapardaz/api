@@ -255,9 +255,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.Periodicalid
                             LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
-                            WHERE 
-                                AND a.Id = @Articleid
-                                AND p.LibraryId = @LibraryId 
+                            WHERE p.LibraryId = @LibraryId 
                                 AND i.PeriodicalId = @PeriodicalId
                                 AND i.VolumeNumber = @VolumeNumber
                                 AND i.IssueNumber = @IssueNumber
@@ -335,13 +333,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"Update ac SET Text = @Text
                             FROM ArticleContent ac
+                            INNER JOIN Article a ON a.Id = ac.Articleid
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             WHERE p.LibraryId =  @LibraryId
                             AND i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
-                            AND a.SequenceNumber = @SequenceNumber)
+                            AND a.SequenceNumber = @SequenceNumber
                             AND ac.Language = @Language";
                 var command = new CommandDefinition(sql, new
                 {

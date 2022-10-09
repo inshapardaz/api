@@ -20,18 +20,18 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<BookPageModel> AddPage(int libraryId, int bookId, int sequenceNumber, string text, int imageId, int? chapterId, CancellationToken cancellationToken)
         {
-            int authorId;
+            int pageId;
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"Insert Into BookPage(BookId, SequenceNumber, Text, ImageId, ChapterId)
                             OUTPUT Inserted.Id
                             VALUES(@BookId, @SequenceNumber, @Text, @ImageId, @ChapterId);";
                 var command = new CommandDefinition(sql, new { BookId = bookId, SequenceNumber = sequenceNumber, Text = text, ImageId = imageId, ChapterId = chapterId }, cancellationToken: cancellationToken);
-                authorId = await connection.ExecuteScalarAsync<int>(command);
+                pageId = await connection.ExecuteScalarAsync<int>(command);
             }
 
             await ReorderPages(libraryId, bookId, cancellationToken);
-            return await GetPageBySequenceNumber(libraryId, bookId, sequenceNumber, cancellationToken);
+            return await GetPageById(pageId, cancellationToken);
         }
 
         public async Task<BookPageModel> GetPageBySequenceNumber(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken)
@@ -139,8 +139,6 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 return await connection.ExecuteScalarAsync<int>(command);
             }
         }
-
-
 
         public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken)
         {
@@ -466,5 +464,26 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 return await connection.QueryAsync<UserPageSummaryItem>(command);
             }
         }
+
+        private async Task<BookPageModel> GetPageById(int pageId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
+                            p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
+                            f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
+                            FROM BookPage AS p 
+                            LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
+                            LEFT OUTER JOIN [Chapter] c ON c.Id = p.ChapterId
+                            INNER JOIN Book b ON b.Id = p.BookId
+                            LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId
+                            LEFT OUTER JOIN [Accounts] ar ON ar.Id = p.ReviewerAccountId
+                            Where p.id= @PageId";
+                var command = new CommandDefinition(sql, new { PageId = pageId }, cancellationToken: cancellationToken);
+
+                return await connection.QuerySingleOrDefaultAsync<BookPageModel>(command);
+            }
+        }
+
     }
 }

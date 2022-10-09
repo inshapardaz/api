@@ -2,29 +2,28 @@
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
+namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleContents
 {
     [TestFixture]
-    public class WhenGettingIssueContentForNonExistingContent
+    public class WhenGettingArticleContentWhenNoChapterNotExists
         : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenGettingIssueContentForNonExistingContent()
-           : base(Role.Reader)
+        public WhenGettingArticleContentWhenNoChapterNotExists()
+            : base(Role.Reader)
         {
         }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var issue = IssueBuilder.WithLibrary(LibraryId).WithContent().Build();
-            var content = IssueBuilder.Contents.First();
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents", RandomData.NextLocale(), RandomData.MimeType);
+            var issue = IssueBuilder.WithLibrary(LibraryId).Build();
+
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{-RandomData.Number}/contents", RandomData.Locale);
         }
 
         [OneTimeTearDown]

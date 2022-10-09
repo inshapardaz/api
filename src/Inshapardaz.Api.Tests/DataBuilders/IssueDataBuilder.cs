@@ -410,7 +410,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                         {
                             var articleContent = fixture.Build<ArticleContentDto>()
                                     .With(x => x.ArticleId, article.Id)
-                                    .With(x => x.Language, _articleContentLanguage ?? RandomData.Locale)
+                                    .With(x => x.Language, () => _articleContentLanguage ?? RandomData.String)
                                     .With(x => x.Text, RandomData.String)
                                     .CreateMany(_articleContentCount);
 
@@ -451,6 +451,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
         public void CleanUp()
         {
+            _connection.DeleteArticles(_articles);
             _connection.DeleteIssuePages(_pages);
             _connection.DeleteIssues(_issues);
             _connection.DeleteFiles(_files);

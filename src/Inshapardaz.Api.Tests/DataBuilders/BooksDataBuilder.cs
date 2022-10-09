@@ -373,7 +373,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                             .With(p => p.ImageId, pageImage?.Id)
                             .With(p => p.WriterAccountId, (int?)null)
                             .With(p => p.ReviewerAccountId, (int?)null)
-                            .With(p => p.Status, EditingStatus.Typing)
+                            .With(p => p.Status, EditingStatus.All)
                             .Create());
                     }
 

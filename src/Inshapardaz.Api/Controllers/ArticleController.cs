@@ -115,6 +115,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/articles/{sequenceNumber}/contents", Name = nameof(ArticleController.GetArticleContent))]
+        [Authorize()]
         public async Task<IActionResult> GetArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken token = default(CancellationToken))
         {
             var language = Request.Headers["Accept-Language"]; // default to  ""
@@ -153,18 +154,18 @@ namespace Inshapardaz.Api.Controllers
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, [FromBody] string content, CancellationToken token = default(CancellationToken))
         {
-            var language = Request.Headers["Accept-Language"];
+            var language = Request.Headers["Content-Language"];
 
             var request = new UpdateArticleContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, content, language);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
-            if (request.Result != null)
+            var renderResult = _articleRenderer.Render(request.Result.Content, libraryId);
+            if (request.Result != null && request.Result.HasAddedNew)
             {
-                var renderResult = _articleRenderer.Render(request.Result.Content, libraryId);
                 return new CreatedResult(renderResult.Links.Self(), renderResult);
             }
 
-            return new BadRequestResult();
+            return Ok(renderResult);
         }
 
         [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/articles/{sequenceNumber}/contents", Name = nameof(ArticleController.DeleteArticleContent))]

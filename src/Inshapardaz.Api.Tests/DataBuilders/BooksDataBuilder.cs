@@ -35,6 +35,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private readonly List<FileDto> _files = new List<FileDto>();
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<BookPageDto> _pages = new List<BookPageDto>();
+        private List<ChapterDto> _chapters = new List<ChapterDto>();
 
         internal IEnumerable<BookPageDto> GetPages(int bookId) => _pages.Where(p => p.BookId == bookId);
 
@@ -346,6 +347,17 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     _contents.AddRange(contents);
                 }
 
+                if (_chapterCount > 0)
+                {
+                    int c = 1;
+                    var chapters = fixture.Build<ChapterDto>()
+                        .With(c => c.BookId, book.Id)
+                        .With(c => c.ChapterNumber, () => c++)
+                        .CreateMany(_chapterCount);
+
+                    _connection.AddChapters(chapters);
+                    _chapters.AddRange(chapters);
+                }
                 if (_pageCount > 0)
                 {
                     var pages = new List<BookPageDto>();
@@ -453,6 +465,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             _connection.DeleteBooks(_books);
             _connection.DeleteFiles(_files);
             _connection.DeleteBookPages(_pages);
+            _connection.DeleteChapters(_chapters);
             _seriesBuilder.CleanUp();
             _authorBuilder.CleanUp();
         }

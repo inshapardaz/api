@@ -394,6 +394,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                             (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
+                            (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.id) As ChapterCount,
                             a.*, c.*
                             from Book b
                             Left Outer Join BookAuthor ba ON b.Id = ba.BookId

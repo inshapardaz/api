@@ -51,6 +51,8 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int PageCount { get; set; }
 
+        public int ChapterCount { get; set; }
+
         public IEnumerable<PageSummaryModel> PageStatus { get; set; }
     }
 }

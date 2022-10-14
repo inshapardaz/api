@@ -27,6 +27,7 @@ namespace Inshapardaz.Api.Mappings
             Progress = source.Progress,
             Categories = source.Categories?.Select(c => c.Map()),
             PageCount = source.PageCount,
+            ChapterCount = source.ChapterCount,
             PageStatus = source.PageStatus?.Select(ps => ps.Map()),
             Authors = source.Authors?.Select(c => c.Map()),
         };
@@ -49,6 +50,7 @@ namespace Inshapardaz.Api.Mappings
             Progress = source.Progress,
             Categories = source.Categories?.Select(c => c.Map()).ToList(),
             PageCount = source.PageCount,
+            ChapterCount = source.ChapterCount,
             PageStatus = source.PageStatus?.Select(ps => ps.Map()),
             Authors = source.Authors?.Select(c => c.Map()).ToList() ?? new System.Collections.Generic.List<AuthorModel>(),
         };

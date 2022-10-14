@@ -28,9 +28,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 id = await connection.ExecuteScalarAsync<int>(command);
             }
 
-            var retVal = await GetChapterById(libraryId, bookId, chapter.ChapterNumber, cancellationToken);
             await ReorderChapters(libraryId, bookId, cancellationToken);
-            return retVal;
+            return  await GetChapterByChapterId(id, cancellationToken);
         }
 
         public async Task UpdateChapter(int libraryId, int bookId, int oldChapterNumber, ChapterModel chapter, CancellationToken cancellationToken)
@@ -307,6 +306,46 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 await connection.ExecuteAsync(command);
 
                 return await GetChapterById(libraryId, bookId, chapterNumber, cancellationToken);
+            }
+        }
+
+        private async Task<ChapterModel> GetChapterByChapterId(int chapterId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                ChapterModel chapter = null;
+                var sql = @"Select c.*, cc.*, a.*, ar.*
+                            From Chapter c
+                            Inner Join Book b On b.Id = c.BookId
+                            Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
+                            LEFT OUTER JOIN [Accounts] a ON a.Id = c.WriterAccountId
+                            LEFT OUTER JOIN [Accounts] ar ON ar.Id = c.ReviewerAccountId
+                            Where c.Id = @ChapterId ";
+                var command = new CommandDefinition(sql, new { ChapterId = chapterId }, cancellationToken: cancellationToken);
+                await connection.QueryAsync<ChapterModel, ChapterContentModel, AccountModel, AccountModel, ChapterModel>(command, (c, cc, wa, ra) =>
+                {
+                    if (chapter == null)
+                    {
+                        chapter = c;
+                        chapter.WriterAccountName = wa?.Name;
+                        chapter.ReviewerAccountName = ra?.Name;
+                    }
+
+                    if (cc != null)
+                    {
+                        var content = chapter.Contents.SingleOrDefault(x => x.Id == cc.Id);
+                        if (content == null)
+                        {
+                            cc.ChapterNumber = c.ChapterNumber;
+                            cc.BookId = c.BookId;
+                            chapter.Contents.Add(cc);
+                        }
+                    }
+
+                    return chapter;
+                });
+
+                return chapter;
             }
         }
     }

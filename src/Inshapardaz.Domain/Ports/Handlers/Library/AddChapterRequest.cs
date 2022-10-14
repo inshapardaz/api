@@ -41,6 +41,7 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new BadRequestException();
             }
 
+            command.Chapter.ChapterNumber = book.ChapterCount + 1;
             command.Result = await _chapterRepository.AddChapter(command.LibraryId, command.BookId, command.Chapter, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);

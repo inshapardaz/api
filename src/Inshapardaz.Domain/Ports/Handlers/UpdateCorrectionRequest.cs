@@ -33,7 +33,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<UpdateCorrectionRequest> HandleAsync(UpdateCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var result = await _correctionRepository.GetCorrection(command.Correction.Id, cancellationToken);
+            var result = await _correctionRepository.GetCorrection(command.Correction.Language, command.Correction.Profile, command.Correction.Id, cancellationToken);
 
             if (result == null)
             {   

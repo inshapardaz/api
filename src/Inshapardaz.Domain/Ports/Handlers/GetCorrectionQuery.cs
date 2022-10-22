@@ -9,6 +9,8 @@ namespace Inshapardaz.Domain.Ports.Handlers
     public class GetCorrectionQuery : IQuery<CorrectionModel>
     {
         public long Id { get; set; }
+        public string Language { get; set; }
+        public string Profile { get; set; }
     }
 
     public class GetCorrectionQueryHandler : QueryHandlerAsync<GetCorrectionQuery, CorrectionModel>
@@ -21,7 +23,7 @@ namespace Inshapardaz.Domain.Ports.Handlers
         }
 
         public async override Task<CorrectionModel> ExecuteAsync(GetCorrectionQuery query, CancellationToken cancellationToken = default)
-            => await _correctionRepository.GetCorrection(query.Id, cancellationToken);
+            => await _correctionRepository.GetCorrection(query.Language, query.Profile, query.Id, cancellationToken);
 
     }
 }

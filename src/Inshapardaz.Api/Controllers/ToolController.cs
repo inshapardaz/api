@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Controllers
         [Authorize(Role.Admin)]
         public async Task<IActionResult> GetCorrectionById(string language, string profile, long id, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var query = new GetCorrectionQuery() { Id = id };
+            var query = new GetCorrectionQuery() { Id = id, Language = language, Profile = profile };
             var result = await _queryProcessor.ExecuteAsync(query, cancellationToken: cancellationToken);
             if (result == null)
             {

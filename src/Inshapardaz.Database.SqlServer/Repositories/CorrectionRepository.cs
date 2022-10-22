@@ -64,7 +64,26 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             }
         }
 
-        public async Task<CorrectionModel> GetCorrection(long id, CancellationToken cancellationToken)
+        public async Task<CorrectionModel> GetCorrection(string language, string profile, long id, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT * FROM corrections 
+                            WHERE Id = @Id
+                            AND language = @Language 
+                            AND Profile = @Profile";
+                var command = new CommandDefinition(sql, new
+                {
+                    Id = id,
+                    Language = language,
+                    Profile = profile
+                }, cancellationToken: cancellationToken);
+
+                return await connection.QuerySingleOrDefaultAsync<CorrectionModel>(command);
+            }
+        }
+
+        private async Task<CorrectionModel> GetCorrectionById(long id, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -84,14 +103,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             var id = 0;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Corrections(Language, Profile, IncorrectText, CorrectText) 
+                var sql = @"Insert Into Corrections(Language, Profile, IncorrectText, CorrectText, CompleteWord) 
                             Output Inserted.Id 
-                            VALUES(@Language, @Profile, @IncorrectText, @CorrectText);";
-                var command = new CommandDefinition(sql, new { Language = correction.Language, Profile = correction.Profile, IncorrectText = correction.IncorrectText, CorrectText = correction.CorrectText }, cancellationToken: cancellationToken);
+                            VALUES(@Language, @Profile, @IncorrectText, @CorrectText, @CompleteWord);";
+                var command = new CommandDefinition(sql, correction, cancellationToken: cancellationToken);
                 id = await connection.ExecuteScalarAsync<int>(command);
             }
 
-            return await GetCorrection(id, cancellationToken);
+            return await GetCorrectionById(id, cancellationToken);
 
         }
 
@@ -99,11 +118,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Update Corrections Set IncorrectText  = @IncorrectText, CorrectText = @CorrectionText Where Id = @Id";
-                var command = new CommandDefinition(sql, new { Id = correction.Id, IncorrectText = correction.IncorrectText, CorrectionText = correction.CorrectText }, cancellationToken: cancellationToken);
+                var sql = @"Update Corrections Set IncorrectText  = @IncorrectText, CorrectText = @CorrectionText, CompleteWord = @CompleteWord Where Id = @Id";
+                var command = new CommandDefinition(sql, new { 
+                    Id = correction.Id, 
+                    IncorrectText = correction.IncorrectText, 
+                    CorrectionText = correction.CorrectText,
+                    CompleteWord = correction.CompleteWord
+                }, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
 
-                return await GetCorrection(correction.Id, cancellationToken);
+                return await GetCorrectionById(correction.Id, cancellationToken);
             }
         }
 

@@ -30,7 +30,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public override async Task<DeleteCorrectionRequest> HandleAsync(DeleteCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var author = await _corretionRepository.GetCorrection(command.Id, cancellationToken);
+            var author = await _corretionRepository.GetCorrection(command.Language, command.Profile, command.Id, cancellationToken);
             if (author != null)
             {
                 await _corretionRepository.DeleteCorrection(command.Id, cancellationToken);

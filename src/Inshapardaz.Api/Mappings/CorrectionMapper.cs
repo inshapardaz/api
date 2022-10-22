@@ -12,7 +12,8 @@ namespace Inshapardaz.Api.Mappings
                 Language = source.Language,
                 Profile = source.Profile,
                 IncorrectText = source.IncorrectText,
-                CorrectText = source.CorrectText
+                CorrectText = source.CorrectText,
+                CompleteWord = source.CompleteWord
             };
 
         public static CorrectionModel Map(this CorrectionView source)
@@ -22,7 +23,8 @@ namespace Inshapardaz.Api.Mappings
                 Language = source.Language,
                 Profile = source.Profile,
                 IncorrectText = source.IncorrectText,
-                CorrectText = source.CorrectText
+                CorrectText = source.CorrectText,
+                CompleteWord = source.CompleteWord
             };
     }
 }

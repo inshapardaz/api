@@ -9,7 +9,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Inshapardaz.Database.SqlServer.Repositories.Library
 {
@@ -22,17 +21,18 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             _connectionProvider = connectionProvider;
         }
 
-        public async Task<ArticleModel> AddArticle(int libraryId, int peridicalId, int issueId, ArticleModel article, CancellationToken cancellationToken)
+        public async Task<ArticleModel> AddArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, ArticleModel article, CancellationToken cancellationToken)
         {
             int id;
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO Article (Title, IssueId, Status, SequenceNumber, SeriesName, SeriesIndex, WriterAccountId, WriterAssignTimestamp, ReviewerAccountId, ReviewerAssignTimeStamp) 
-                            OUTPUT Inserted.Id VALUES (@Title, @IssueId, @Status, @SequenceNumber, @SeriesName, @SeriesIndex, @WriterAccountId, @WriteAssignTimestamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
+                            OUTPUT Inserted.Id VALUES (@Title, (SELECT Id FROM Issue WHERE VolumeNumber = @VolumeNumber AND IssueNumber = @IssueNumber), @Status, @SequenceNumber, @SeriesName, @SeriesIndex, @WriterAccountId, @WriteAssignTimestamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
                 var command = new CommandDefinition(sql, new
                 {
                     Title = article.Title,
-                    IssueId = issueId,
+                    VolumeNumber = volumeNumber,
+                    IssueNumber = issueNumber,
                     SequenceNumber = article.SequenceNumber,
                     Status = article.Status,
                     SeriesName = article.SeriesName,
@@ -54,6 +54,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 }
             }
 
+            await ReorderArticles(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
             return await GetArticleById(id, cancellationToken);
         }
 
@@ -101,6 +102,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task DeleteArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
         {
+            await DeleteArticleContent(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = @"DELETE a 
@@ -118,6 +120,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     SequenceNumber = sequenceNumber
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
+
+                await ReorderArticles(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
             }
         }
 
@@ -213,7 +217,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             LEFT OUTER JOIN ArticleContent at ON a.Id = at.ArticleId
                             WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
-                            AND i.IssueNumber = @IssueNumber";
+                            AND i.IssueNumber = @IssueNumber
+                            ORDER BY a.SequenceNumber";
                 var command = new CommandDefinition(sql, new {
                     PeriodicalId = periodicalId,
                     VolumeNumber = volumeNumber,
@@ -358,7 +363,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             return await GetArticleContent(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, language, cancellationToken);
         }
 
-        public async Task DeleteArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+        public async Task DeleteArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -462,5 +467,31 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task UpdateArticleSequence(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IEnumerable<ArticleModel> articles, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Update A Set A.SequenceNumber = @SequenceNumber
+                            From Article A
+                            Inner Join Issue i On i.Id = A.IssueId
+                            Inner Join Periodical p On p.Id = i.PeriodicalId
+                            Where p.LibraryId = @LibraryId 
+                            AND p.Id = @PeriodicalId 
+                            AND i.VolumeNumber = @VolumeNumber
+                            AND i.IssueNumber = @IssueNumber
+                            AND A.Id = @Id";
+                var args = articles.Select(a => new
+                {
+                    LibraryId = libraryId,
+                    PeriodicalId = periodicalId,
+                    VolumeNumber = volumeNumber,
+                    IssueNumber = issueNumber,
+                    Id = a.Id,
+                    SequenceNumber = a.SequenceNumber
+                });
+                var command = new CommandDefinition(sql, args, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
     }
 }

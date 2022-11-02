@@ -3,6 +3,8 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,7 +26,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sortByQuery = $"i.{GetSortByQuery(sortBy)}";
                 var direction = sortDirection == SortDirection.Descending ? "DESC" : "ASC";
 
-                var sql = @"SELECT i.*, f.FilePath as ImageUrl,
+                var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
                             (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
                             (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount]
                             FROM Issue as i
@@ -49,12 +51,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                                         
                                                     cancellationToken: cancellationToken);
 
-                var periodicals = await connection.QueryAsync<IssueModel>(command);
+                var issues = await connection.QueryAsync<IssueModel, PeriodicalModel, IssueModel>(command, (i, periodical) =>
+                {
+                     i.Periodical = periodical;
+                        return i;
+                });
 
                 var sqlAuthorCount = @"SELECT COUNT(*) FROM Issue as i
-                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
-                            WHERE p.LibraryId = @LibraryId 
-                            AND p.Id = @PeriodicalId";
+                        INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                        WHERE p.LibraryId = @LibraryId 
+                        AND p.Id = @PeriodicalId";
                 var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, PeriodicalId = periodicalId}, cancellationToken: cancellationToken));
 
                 return new Page<IssueModel>
@@ -62,7 +68,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     PageNumber = pageNumber,
                     PageSize = pageSize,
                     TotalCount = authorCount,
-                    Data = periodicals
+                    Data = issues
                 };
             }
         }
@@ -71,7 +77,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT i.*, f.FilePath as ImageUrl,
+                var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
                             (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
                             (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount]
                             FROM Issue as i
@@ -90,7 +96,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 };
                 var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
 
-                return await connection.QuerySingleOrDefaultAsync<IssueModel>(command);
+                var result = await connection.QueryAsync<IssueModel, PeriodicalModel, IssueModel>(command, (i, p) =>
+                {
+                    i.Periodical = p;
+                    return i;
+                });
+
+                return result.SingleOrDefault();
             }
         }
 

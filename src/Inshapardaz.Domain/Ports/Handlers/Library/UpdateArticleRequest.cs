@@ -61,7 +61,7 @@ namespace Inshapardaz.Domain.Models.Library
 
                 var article = command.Article;
                 article.Id = default(int);
-                command.Result.Article = await _articleRepository.AddArticle(command.LibraryId, command.PeriodicalId, issue.Id, article, cancellationToken);
+                command.Result.Article = await _articleRepository.AddArticle(command.LibraryId, command.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article, cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else

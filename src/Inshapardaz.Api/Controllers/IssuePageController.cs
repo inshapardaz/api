@@ -142,7 +142,7 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new UpdateIssueSequenceRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, page.SequenceNumber);
+            var request = new UpdateIssuePageSequenceRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, page.SequenceNumber);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             return Ok();

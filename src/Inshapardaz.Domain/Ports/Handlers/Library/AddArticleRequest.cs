@@ -45,7 +45,8 @@ namespace Inshapardaz.Domain.Models.Library
                 throw new BadRequestException();
             }
 
-            command.Result = await _articleRepository.AddArticle(command.LibraryId, command.PeridicalId, issue.Id, command.Article, cancellationToken);
+            command.Article.SequenceNumber = issue.ArticleCount + 1;
+            command.Result = await _articleRepository.AddArticle(command.LibraryId, command.PeridicalId, command.VolumeNumber, command.IssueNumber, command.Article, cancellationToken);
 
             return await base.HandleAsync(command, cancellationToken);
         }

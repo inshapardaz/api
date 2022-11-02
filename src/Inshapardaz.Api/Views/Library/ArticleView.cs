@@ -19,6 +19,8 @@ namespace Inshapardaz.Api.Views.Library
 
         public IEnumerable<AuthorView> Authors { get; set; }
 
+        public string Status { get; set; }
+
         public int? WriterAccountId { get; set; }
 
         public string WriterAccountName { get; set; }

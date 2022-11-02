@@ -41,7 +41,7 @@ namespace Inshapardaz.Domain.Models.Library
 
             if (content != null)
             {
-                await _articleRepository.DeleteArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+                await _articleRepository.DeleteArticleContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

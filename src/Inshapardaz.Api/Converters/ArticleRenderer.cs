@@ -54,6 +54,14 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Create,
                     Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber }
                 }));
+
+                view.Links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ArticleController.UpdateArticleSequence),
+                    Method = HttpMethod.Post,
+                    Rel = RelTypes.ArticleSequence,
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber }
+                }));
             }
 
             return view;

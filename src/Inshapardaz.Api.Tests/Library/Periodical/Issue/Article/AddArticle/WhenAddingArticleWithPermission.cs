@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.AddArticle
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).Build();
 
-            _article = new ArticleView { Title = new Faker().Random.Words(2), SequenceNumber = 1 };
+            _article = new ArticleView { Title = new Faker().Random.Words(2) };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles", _article);
 
@@ -65,7 +65,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.AddArticle
         [Test]
         public void ShouldHaveCorrectObjectRetured()
         {
-            _assert.ShouldMatch(_article);
+            _assert.ShouldMatch(new ArticleView { 
+                Title = _article.Title,
+                SequenceNumber = 1
+            });
         }
 
         [Test]

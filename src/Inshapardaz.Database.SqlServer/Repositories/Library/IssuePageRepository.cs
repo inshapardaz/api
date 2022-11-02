@@ -522,15 +522,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"DECLARE @maxPosition INT;
                             DECLARE @Id INT;
 
-                            SELECT @Id = p.Id
-                            FROM IssuePage p
-                            INNER JOIN Issue i ON i.Id = p.IssueId
+                            SELECT @Id = ip.Id
+                            FROM IssuePage ip
+                            INNER JOIN Issue i ON i.Id = ip.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId 
                                 AND i.PeriodicalId = @PeriodicalId 
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber 
-                                AND p.SequenceNumber = @oldPosition;
+                                AND ip.SequenceNumber = @oldPosition;
 
                             SELECT @maxPosition = MAX(p.SequenceNumber) 
                             FROM IssuePage p
@@ -547,18 +547,20 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             IF (@newPosition > @maxPosition)
                              SET @newPosition = @maxPosition
 
-                            UPDATE IssuePage p SET p.SequenceNumber = CASE
-                                WHEN Id = @Id THEN @newPosition
-                                WHEN @oldPosition < @newPosition THEN SequenceNumber - 1
-                                WHEN @oldPosition > @newPosition THEN SequenceNumber + 1
+                            UPDATE ip 
+                            SET ip.SequenceNumber = CASE
+                                WHEN ip.Id = @Id THEN @newPosition
+                                WHEN @oldPosition < @newPosition THEN ip.SequenceNumber - 1
+                                WHEN @oldPosition > @newPosition THEN ip.SequenceNumber + 1
                             END
-                            INNER JOIN Issue i ON i.Id = p.IssueId
+                            FROM IssuePage ip
+                            INNER JOIN Issue i ON i.Id = ip.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId 
                                 AND i.PeriodicalId = @PeriodicalId 
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber 
-                                AND SequenceNumber BETWEEN
+                                AND ip.SequenceNumber BETWEEN
                                     CASE WHEN @oldPosition < @newPosition THEN @oldPosition ELSE @newPosition END AND
                                     CASE WHEN @oldPosition > @newPosition THEN @oldPosition ELSE @newPosition END;
 ";

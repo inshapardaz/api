@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Views.Library;
 using System.Linq;
 using Inshapardaz.Api.Extensions;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Mappings
 {
@@ -36,6 +37,7 @@ namespace Inshapardaz.Api.Mappings
             {
                 Id = source.Id,
                 PeriodicalId = source.PeriodicalId,
+                PeriodicalName = source.Periodical.Title,
                 VolumeNumber = source.VolumeNumber,
                 IssueNumber = source.IssueNumber,
                 IssueDate = source.IssueDate,
@@ -85,6 +87,7 @@ namespace Inshapardaz.Api.Mappings
                 SequenceNumber = source.SequenceNumber,
                 SeriesName = source.SeriesName,
                 SeriesIndex = source.SeriesIndex,
+                Status = source.Status.ToDescription(),
                 WriterAccountId = source.WriterAccountId,
                 WriterAccountName = source.WriterAccountName,
                 WriterAssignTimeStamp = source.WriterAssignTimeStamp,
@@ -101,6 +104,7 @@ namespace Inshapardaz.Api.Mappings
                 SequenceNumber = source.SequenceNumber,
                 SeriesName = source.SeriesName,
                 SeriesIndex = source.SeriesIndex,
+                Status = source.Status.ToEnum(EditingStatus.Available),
                 WriterAccountId = source.WriterAccountId,
                 WriterAccountName = source.WriterAccountName,
                 WriterAssignTimeStamp = source.WriterAssignTimeStamp,
@@ -108,6 +112,13 @@ namespace Inshapardaz.Api.Mappings
                 ReviewerAccountName = source.ReviewerAccountName,
                 ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp
             };
+
+        public static ArticleModel Map(this ArticleSequenceView source)
+          => source == null ? null : new ArticleModel
+          {
+              Id = source.Id,
+              SequenceNumber = source.SequenceNumber,
+          };
 
         public static ArticleContentView Map(this ArticleContentModel source)
             => new ArticleContentView

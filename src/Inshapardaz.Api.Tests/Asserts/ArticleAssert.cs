@@ -348,6 +348,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.ReviewerAccountName.Should().Be(view.ReviewerAccountName);
             _article.SeriesName.Should().Be(view.SeriesName);
             _article.SeriesIndex.Should().Be(view.SeriesIndex);
+            _article.Status.Should().Be(view.Status);
         }
 
         internal void ShouldMatch(ArticleDto dto)
@@ -377,6 +378,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
             _article.SeriesName.Should().Be(dto.SeriesName);
             _article.SeriesIndex.Should().Be(dto.SeriesIndex);
+            _article.Status.Should().Be(dto.Status.ToString());
         }
 
         internal ArticleAssert ShouldBeSameAs(ArticleDto dto)
@@ -389,6 +391,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimestamp.Value, 200);
             _article.SeriesName.Should().Be(dto.SeriesName);
             _article.SeriesIndex.Should().Be(dto.SeriesIndex);
+            _article.Status.Should().Be(dto.Status.ToString());
 
             return this;
         }

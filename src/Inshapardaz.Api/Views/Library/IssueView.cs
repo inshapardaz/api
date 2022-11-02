@@ -17,5 +17,6 @@ namespace Inshapardaz.Api.Views.Library
         public int PageCount { get; set; }
         public List<AuthorView> Authors { get; set; }
         public List<IssueContentView> Contents { get; set; }
+        public string PeriodicalName { get; internal set; }
     }
 }

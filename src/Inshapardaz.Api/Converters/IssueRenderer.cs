@@ -219,17 +219,6 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            if (source.Authors.Any())
-            {
-                var authors = new List<AuthorView>();
-                foreach (var author in source.Authors)
-                {
-                    authors.Add(_authorRenderer.Render(author, libraryId));
-                }
-
-                result.Authors = authors;
-            }
-
             if (source.Contents.Any())
             {
                 var contents = new List<IssueContentView>();

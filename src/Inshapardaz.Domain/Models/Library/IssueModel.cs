@@ -24,9 +24,8 @@ namespace Inshapardaz.Domain.Models.Library
         public bool IsPublic { get; set; }
 
         public int ArticleCount { get; set; }
-        public int PageCount { get; set; }
 
-        public List<AuthorModel> Authors { get; set; } = new List<AuthorModel>();
+        public int PageCount { get; set; }
 
         public List<IssueContentModel> Contents { get; set; } = new List<IssueContentModel>();
     }

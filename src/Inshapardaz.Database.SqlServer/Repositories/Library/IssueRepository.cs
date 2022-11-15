@@ -96,11 +96,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 };
                 var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
 
-                var result = await connection.QueryAsync<IssueModel, PeriodicalModel, IssueModel>(command, (i, p) =>
+                var result = await connection.QueryAsync<IssueModel, PeriodicalModel, string, int, int, IssueModel>(command, (i, p, iUrl, ac, pc) =>
                 {
                     i.Periodical = p;
+                    i.ArticleCount = ac;
+                    i.PageCount = pc;
+                    i.ImageUrl = iUrl;
                     return i;
-                });
+                }, splitOn: "Id, ImageUrl, ArticleCount, PageCount") ;
 
                 return result.SingleOrDefault();
             }

@@ -17,19 +17,18 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             _connectionProvider = connectionProvider;
         }
 
-        public async Task<Dictionary<string, string>> GetAllCorrections(string language, string profile, CancellationToken cancellationToken)
+        public async Task<IEnumerable<CorrectionModel>> GetAllCorrections(string language, string profile, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT IncorrectText, CorrectText FROM corrections WHERE language = @Language AND [Profile] = @Profile";
+                var sql = @"SELECT * FROM corrections WHERE language = @Language AND [Profile] = @Profile";
                 var command = new CommandDefinition(sql, new
                 {
                     Language = language,
                     Profile = profile
                 }, cancellationToken: cancellationToken);
 
-                var items = await connection.QueryAsync<(string key, string val)>(command);
-                return items.ToDictionary(t => t.key, t => t.val);
+                return await connection.QueryAsync<CorrectionModel>(command);
             }
         }
 

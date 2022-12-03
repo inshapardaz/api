@@ -15,6 +15,7 @@ namespace Inshapardaz.Api.Converters
     public interface IRenderCorrection
     {
         PageView<CorrectionView> Render(PageRendererArgs<CorrectionModel> source, string language, string profile);
+        IEnumerable<CorrectionSimpleView> RenderSimple(IEnumerable<CorrectionModel> source);
 
         CorrectionView Render(CorrectionModel correction);
     }
@@ -135,6 +136,11 @@ namespace Inshapardaz.Api.Converters
             }
 
             return view;
+        }
+
+        public IEnumerable<CorrectionSimpleView> RenderSimple(IEnumerable<CorrectionModel> source)
+        {
+            return source.Select(x => x.MapSimple());
         }
     }
 }

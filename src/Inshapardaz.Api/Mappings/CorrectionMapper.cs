@@ -26,5 +26,14 @@ namespace Inshapardaz.Api.Mappings
                 CorrectText = source.CorrectText,
                 CompleteWord = source.CompleteWord
             };
+
+        public static CorrectionSimpleView MapSimple(this CorrectionModel source)
+            => new CorrectionSimpleView
+            {
+                IncorrectText = source.IncorrectText,
+                CorrectText = source.CorrectText,
+                CompleteWord = source.CompleteWord
+            };
+
     }
 }

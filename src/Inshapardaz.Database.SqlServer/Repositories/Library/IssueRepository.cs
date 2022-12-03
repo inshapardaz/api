@@ -292,7 +292,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT i.*, f.FilePath AS ImageUrl,  
+                var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
                             (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
                             (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount]
                             FROM Issue as i
@@ -309,7 +309,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 };
                 var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
 
-                return await connection.QuerySingleOrDefaultAsync<IssueModel>(command);
+                var result = await connection.QueryAsync<IssueModel, PeriodicalModel, string, int, int, IssueModel>(command, (i, p, iUrl, ac, pc) =>
+                {
+                    i.Periodical = p;
+                    i.ArticleCount = ac;
+                    i.PageCount = pc;
+                    i.ImageUrl = iUrl;
+                    return i;
+                }, splitOn: "Id, ImageUrl, ArticleCount, PageCount");
+
+                return result.SingleOrDefault();
             }
         }
 

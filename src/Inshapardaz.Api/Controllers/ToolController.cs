@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Controllers
         {
             var query = new GetAllCorrectionsQuery() { Language = language, Profile = profile };
             var result = await _queryProcessor.ExecuteAsync(query, cancellationToken: cancellationToken);
-            return Ok(result);
+            return Ok(_correctionRenderer.RenderSimple(result));
         }
 
 

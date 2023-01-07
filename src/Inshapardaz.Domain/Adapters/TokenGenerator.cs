@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Adapters
 {
     public interface IGenerateToken
     {
-        string GenerateJwtToken(AccountModel account);
+        string GenerateAccessToken(AccountModel account);
 
         RefreshTokenModel GenerateRefreshToken(string ipAddress);
 
@@ -27,7 +27,7 @@ namespace Inshapardaz.Domain.Adapters
             _settings = settings;
         }
 
-        public string GenerateJwtToken(AccountModel account)
+        public string GenerateAccessToken(AccountModel account)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_settings.Secret);

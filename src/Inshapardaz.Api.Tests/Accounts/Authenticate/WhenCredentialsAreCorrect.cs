@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Tests.Accounts.Authenticate
         [Test]
         public void ShouldContainAccessToken()
         {
-            _authenticateResponse.JwtToken.Should().NotBeNullOrEmpty();
+            _authenticateResponse.AccessToken.Should().NotBeNullOrEmpty();
         }
 
         [Test]

@@ -217,7 +217,7 @@ namespace Inshapardaz.Api.Converters
                 Created = model.Account.Created,
                 IsSuperAdmin = model.Account.IsSuperAdmin,
                 IsVerified = model.Account.IsVerified,
-                JwtToken = model.JwtToken,
+                AccessToken = model.AccessToken,
                 RefreshToken = model.RefreshToken,
                 Updated = model.Account.Updated
             };

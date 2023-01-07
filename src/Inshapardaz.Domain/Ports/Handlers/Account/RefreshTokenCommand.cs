@@ -74,12 +74,12 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 
             await _accountRepository.RemoveOldRefreshTokens(account, _settings.RefreshTokenTTLInDays, cancellationToken);
 
-            var jwtToken = _tokenGenerator.GenerateJwtToken(account);
+            var accessToken = _tokenGenerator.GenerateAccessToken(account);
 
             command.Response = new TokenResponse
             {
                 Account = account,
-                JwtToken = jwtToken,
+                AccessToken = accessToken,
                 RefreshToken = refreshToken.Token
             };
 

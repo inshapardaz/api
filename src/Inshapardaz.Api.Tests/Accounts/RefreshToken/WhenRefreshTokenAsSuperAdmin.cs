@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
             var library = LibraryBuilder.Build();
             var account = AccountBuilder.As(Domain.Models.Role.Admin).Verified().InLibrary(library.Id).Build();
             _authResponse = await AccountBuilder.Authenticate(Client, account.Email);
-            AuthenticateClientWithToken(_authResponse.JwtToken);
+            AuthenticateClientWithToken(_authResponse.AccessToken);
 
             _response = await Client.PostObject("/accounts/refresh-token", new RefreshTokenRequest { RefreshToken = _authResponse.RefreshToken });
             _refreshResponse = await _response.GetContent<AuthenticateResponse>();
@@ -43,8 +43,8 @@ namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
         [Test]
         public void ShouldReturnNewAccessToken()
         {
-            _refreshResponse.JwtToken.Should().NotBeNullOrEmpty()
-                                 .And.Should().NotBe(_authResponse.JwtToken);
+            _refreshResponse.AccessToken.Should().NotBeNullOrEmpty()
+                                 .And.Should().NotBe(_authResponse.AccessToken);
         }
     }
 }

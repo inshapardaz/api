@@ -49,8 +49,8 @@ namespace Inshapardaz.Api.Middleware
                     ClockSkew = TimeSpan.Zero,
                 }, out SecurityToken validatedToken);
 
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var accessToken = (JwtSecurityToken)validatedToken;
+                var accountId = int.Parse(accessToken.Claims.First(x => x.Type == "id").Value);
 
                 context.Items["Account"] = await accountRepository.GetAccountById(accountId, CancellationToken.None);
                 context.Items["Libraries"] = await libraryRepository.GetLibrariesByAccountId(accountId, CancellationToken.None);

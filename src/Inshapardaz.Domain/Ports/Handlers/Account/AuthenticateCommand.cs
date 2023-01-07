@@ -47,7 +47,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
                 throw new UnauthorizedException();
             }
 
-            var jwtToken = _tokenGenerator.GenerateJwtToken(account);
+            var accessToken = _tokenGenerator.GenerateAccessToken(account);
             var refreshToken = _tokenGenerator.GenerateRefreshToken(_ipAddressGetter.GetIPAddressFromRequest());
 
             await _accountRepository.AddRefreshToken(refreshToken, account.Id, cancellationToken);
@@ -56,7 +56,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
             command.Response = new TokenResponse
             {
                 Account = account,
-                JwtToken = jwtToken,
+                AccessToken = accessToken,
                 RefreshToken = refreshToken.Token
             };
 

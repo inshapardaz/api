@@ -4,7 +4,7 @@
     {
         public AccountModel Account { get; set; }
 
-        public string JwtToken { get; set; }
+        public string AccessToken { get; set; }
 
         public string RefreshToken { get; set; }
     }

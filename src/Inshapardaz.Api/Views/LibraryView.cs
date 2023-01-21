@@ -9,5 +9,6 @@
         public bool SupportsPeriodicals { get; set; }
         public string PrimaryColor { get; set; }
         public string SecondaryColor { get; set; }
+        public bool Public { get; set; }
     }
 }

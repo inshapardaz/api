@@ -13,7 +13,8 @@ namespace Inshapardaz.Api.Mappings
                 Language = source.Language,
                 SupportsPeriodicals = source.SupportsPeriodicals,
                 PrimaryColor = source.PrimaryColor,
-                SecondaryColor = source.SecondaryColor
+                SecondaryColor = source.SecondaryColor,
+                Public = source.Public
             };
 
         public static LibraryModel Map(this LibraryView source)
@@ -24,7 +25,8 @@ namespace Inshapardaz.Api.Mappings
                 Language = source.Language,
                 SupportsPeriodicals = source.SupportsPeriodicals,
                 PrimaryColor = source.PrimaryColor,
-                SecondaryColor = source.SecondaryColor
+                SecondaryColor = source.SecondaryColor,
+                Public = source.Public
             };
     }
 }

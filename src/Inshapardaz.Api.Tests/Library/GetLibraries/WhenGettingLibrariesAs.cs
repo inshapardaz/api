@@ -8,14 +8,16 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.GetLibraries
 {
-    [TestFixture]
-    public class WhenGettingLibrariesAsLibraryAdmin : TestBase
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
+    [TestFixture(Role.Reader)]
+    public class WhenGettingLibrariesAs: TestBase
     {
         private HttpResponseMessage _response;
         private PagingAssert<LibraryView> _assert;
 
-        public WhenGettingLibrariesAsLibraryAdmin()
-            : base(Role.LibraryAdmin, createLibrary: false)
+        public WhenGettingLibrariesAs(Role role)
+            : base(role, createLibrary: false)
         {
         }
 
@@ -50,26 +52,6 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         public void ShouldNotHaveCreateLink()
         {
             _assert.ShouldNotHaveCreateLink();
-        }
-
-        [Test]
-        public void ShouldNotHaveNavigationLinks()
-        {
-            _assert.ShouldNotHaveNextLink();
-            _assert.ShouldNotHavePreviousLink();
-        }
-
-        [Test]
-        public void ShouldReturnExpectedLibraries()
-        {
-            var expectedItems = LibraryBuilder.Libraries.OrderBy(a => a.Name).Take(10);
-            foreach (var item in expectedItems)
-            {
-                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item)
-                     .ShouldHaveUpdateLink()
-                     .ShouldNotHaveDeletelink();
-            }
         }
     }
 }

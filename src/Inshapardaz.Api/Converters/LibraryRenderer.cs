@@ -297,6 +297,7 @@ namespace Inshapardaz.Api.Converters
                 SupportsPeriodicals = model.SupportsPeriodicals,
                 PrimaryColor = model.PrimaryColor,
                 SecondaryColor = model.SecondaryColor,
+                Public = model.Public,
                 Links = links
             };
         }

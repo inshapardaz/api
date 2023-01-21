@@ -142,12 +142,81 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<Page<LibraryModel>> GetUnassignedLibraries(int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT  l.*, al.Role
+                            FROM Library l
+                            Left JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            WHERE al.AccountId != @AccountId
+                            Order By l.Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { AccountId = accountId, PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<LibraryModel>(command);
+
+                var sqlAuthorCount = @"SELECT COUNT(*)
+                                       FROM Library l
+                                       LEFT JOIN AccountLibrary al ON al.LibraryId = l.Id
+                                       WHERE al.AccountId != @AccountId";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount,
+                    new { AccountId = accountId },
+                    cancellationToken: cancellationToken));
+
+                return new Page<LibraryModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
+        }
+
+        public async Task<Page<LibraryModel>> FindUnassignedLibraries(string query, int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT  l.*, al.Role
+                            FROM Library l
+                            LEFT JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            WHERE al.AccountId != @AccountId AND Name LIKE @Query
+                            Order By l.Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { Query = $"%{query}%", AccountId = accountId, PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<LibraryModel>(command);
+
+                var sqlAuthorCount = @"SELECT COUNT(*)
+                            FROM Library l
+                            LEFT JOIN AccountLibrary al ON al.LibraryId = l.Id
+                            WHERE al.AccountId != @AccountId AND Name LIKE @Query";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { Query = $"%{query}%", AccountId = accountId }, cancellationToken: cancellationToken));
+
+                return new Page<LibraryModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
+        }
+
+
         public async Task<LibraryModel> AddLibrary(LibraryModel library, CancellationToken cancellationToken)
         {
             int libraryId;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Library(Name, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor, OwnerEmail) OUTPUT Inserted.Id VALUES(@Name, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor, @OwnerEmail);";
+                var sql = @"Insert Into Library(Name, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor, OwnerEmail, [Public]) OUTPUT Inserted.Id VALUES(@Name, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor, @OwnerEmail, @Public);";
                 var command = new CommandDefinition(sql, new
                 {
                     Name = library.Name,
@@ -155,7 +224,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     SupportsPeriodicals = library.SupportsPeriodicals,
                     PrimaryColor = library.PrimaryColor,
                     SecondaryColor = library.SecondaryColor,
-                    OwnerEmail = library.OwnerEmail
+                    OwnerEmail = library.OwnerEmail,
+                    Public = library.Public
                 },
                 cancellationToken: cancellationToken);
                 libraryId = await connection.ExecuteScalarAsync<int>(command);
@@ -188,7 +258,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             SupportsPeriodicals = @SupportsPeriodicals,
                             PrimaryColor = @PrimaryColor,
                             SecondaryColor = @SecondaryColor,
-                            OwnerEmail = @OwnerEmail
+                            OwnerEmail = @OwnerEmail,
+                            [Public] = @Public
                             Where Id = @Id";
                 var command = new CommandDefinition(sql, new
                 {
@@ -198,7 +269,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     SupportsPeriodicals = library.SupportsPeriodicals,
                     PrimaryColor = library.PrimaryColor,
                     SecondaryColor = library.SecondaryColor,
-                    OwnerEmail = library.OwnerEmail
+                    OwnerEmail = library.OwnerEmail,
+                    Public = library.Public
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
             }

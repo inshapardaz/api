@@ -53,11 +53,16 @@ jobs:
     - name: Publish
       run: dotnet publish -c Release -r win-x86 -o ./Release ./src/Inshapardaz.Api/Inshapardaz.Api.csproj
   
-    - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+    - name: Deploy App
+      uses: azure/webapps-deploy@v2
       with:
-        server: ${{ secrets.DEPLOY_FTP_SERVER }}
-        username: ${{ secrets.DEPLOY_FTP_USERNAME }}
-        password: ${{ secrets.DEPLOY_FTP_PASSWORD }}
-        server-dir: /api/
-        local-dir: ./Release/
+        app-name: api
+        publish-profile: ${{ secrets.PUBLISHPROFILE }}
+    # - name: Sync files
+    #   uses: SamKirkland/FTP-Deploy-Action@4.3.0
+    #   with:
+    #     server: ${{ secrets.DEPLOY_FTP_SERVER }}
+    #     username: ${{ secrets.DEPLOY_FTP_USERNAME }}
+    #     password: ${{ secrets.DEPLOY_FTP_PASSWORD }}
+    #     server-dir: /api/
+    #     local-dir: ./Release/

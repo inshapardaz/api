@@ -51,7 +51,7 @@ jobs:
       run: dotnet publish -c Release -r win-x86 -o ./Release ./src/Inshapardaz.Api/Inshapardaz.Api.csproj
   
     - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@3.0.0
+      uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
         ftp-server: ${{ secrets.DEPLOY_FTP_SERVER }}
         ftp-username: ${{ secrets.DEPLOY_FTP_USERNAME }}

@@ -1,3 +1,5 @@
+using System;
+
 namespace Inshapardaz.Domain.Adapters
 {
     public class Settings
@@ -8,7 +10,14 @@ namespace Inshapardaz.Domain.Adapters
         public string FileStorageConnectionString { get; set; }
 
         public FileStoreTypes FileStoreType { get; set; }
-        public string[] AllowedOrigins { get; set; }
+        public string[] AllowedOrigins { 
+            get 
+            {
+                return Allowed_Origins.Split(',', StringSplitOptions.TrimEntries & StringSplitOptions.RemoveEmptyEntries);
+            }  
+        }
+
+        public string Allowed_Origins { get; set; }
 
         public string EmailFrom { get; set; }
         public string EmailFromName { get; set; }

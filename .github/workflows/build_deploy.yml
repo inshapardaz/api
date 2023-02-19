@@ -42,6 +42,9 @@ jobs:
         AppSettings.FrontEndUrl: ${{ secrets.FRONTENDURL }}  
         AppSettings.ResetPasswordPagePath: ${{ secrets.RESETPASSWORDPAGEPATH }}  
         AppSettings.RegisterPagePath: ${{ secrets.REGISTERPAGEPATH }}
+        AppSettings.FileStoreType: ${{ secrets.FILESTORETYPE }}
+        AppSettings.Allowed_Origins: ${{ secrets.ALLOWEDORIGINS }}
+
     - name: Build
       run: dotnet build --no-restore
     # - name: Test

@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace Inshapardaz.Api.Converters
 {
@@ -51,24 +51,22 @@ namespace Inshapardaz.Api.Converters
         public LinkView Render(Link link)
         {
             var urlBuilder = new UriBuilder(_urlHelper.RouteUrl(link.ActionName, link.Parameters, Scheme));
+            var param = new Dictionary<string, string>();
 
             if (link.QueryString != null && link.QueryString.Any())
             {
-                var collection = HttpUtility.ParseQueryString(string.Empty);
                 foreach (var item in link.QueryString)
                 {
                     if (!string.IsNullOrWhiteSpace(item.Value))
                     {
-                        collection[item.Key] = item.Value;
+                        param[item.Key] = item.Value;
                     }
                 }
-
-                urlBuilder.Query = collection.ToString();
             }
 
             return new LinkView
             {
-                Href = urlBuilder.Uri.ToString(),
+                Href = QueryHelpers.AddQueryString(urlBuilder.Uri.ToString(), param),
                 Rel = link.Rel,
                 Type = link.Type,
                 Method = link.Method.ToString(),

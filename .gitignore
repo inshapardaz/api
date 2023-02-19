@@ -32,3 +32,4 @@ custom.css
 /src/Inshapardaz.Api/Properties/PublishProfiles
 /src/_NCrunch_Inshapardaz.Api/StoredText
 *[C]coverage*
+/src/Inshapardaz.Api/appsettings.Production.smartasp.json

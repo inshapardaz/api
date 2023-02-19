@@ -58,6 +58,7 @@ jobs:
       with:
         app-name: api
         publish-profile: ${{ secrets.PUBLISHPROFILE }}
+        package: ./Release
     # - name: Sync files
     #   uses: SamKirkland/FTP-Deploy-Action@4.3.0
     #   with:

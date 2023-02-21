@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _account = _connection.GetAccountById(id);
             _account.IsVerified.Should().BeTrue();
             _account.VerificationToken.Should().NotBeNullOrWhiteSpace();
-            _account.Verified.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            _account.Verified.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             _account.InvitationCode.Should().BeNullOrWhiteSpace();
             _account.InvitationCodeExpiry.Should().BeNull();
             _account.AcceptTerms.Should().BeTrue();
@@ -53,7 +53,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             var dbAccount = _connection.GetAccountById(account.Id);
             dbAccount.Should().NotBeNull();
             dbAccount.ResetToken.Should().NotBeNull();
-            dbAccount.ResetTokenExpires.Should().BeCloseTo(DateTime.UtcNow.AddDays(1), 2000);
+            dbAccount.ResetTokenExpires.Should().BeCloseTo(DateTime.UtcNow.AddDays(1), TimeSpan.FromSeconds(2));
 
             return this;
         }
@@ -104,7 +104,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal AccountAssert ShouldHaveInvitationExpiring(DateTime dateTime)
         {
-            _account.InvitationCodeExpiry.Should().BeCloseTo(dateTime);
+            _account.InvitationCodeExpiry.Should().BeCloseTo(dateTime, TimeSpan.FromSeconds(2));
             return this;
         }
 

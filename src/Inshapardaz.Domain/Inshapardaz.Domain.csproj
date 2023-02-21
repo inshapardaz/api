@@ -11,20 +11,20 @@
     <None Remove="Database\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Lucene.Net" Version="4.8.0-beta00005" />
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00005" />
 
-    <PackageReference Include="Microsoft.Data.SQLite" Version="5.0.6" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
-    <PackageReference Include="Paramore.Brighter" Version="9.0.1-beta.1" />
-    <PackageReference Include="Paramore.Darker" Version="2.0.78" />
+    <PackageReference Include="Microsoft.Data.SQLite" Version="7.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Paramore.Brighter" Version="9.4.0" />
+    <PackageReference Include="Paramore.Darker" Version="3.0.0" />
     <PackageReference Include="PDFium.Windows" Version="1.0.0" />
     <PackageReference Include="PDFiumSharp" Version="0.1.1-beta" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.0" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />

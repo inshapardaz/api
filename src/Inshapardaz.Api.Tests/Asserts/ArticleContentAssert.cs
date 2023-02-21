@@ -105,7 +105,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         internal ArticleContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, IDbConnection dbConnection)
         {
             var content = dbConnection.GetArticleContentById(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
-            content.Text.Should().NotBeNull().And.Should().NotBe(expected);
+            content.Text.Should().NotBeNull().Should().NotBe(expected);
             content.Language.Should().Be(language);
             return this;
         }

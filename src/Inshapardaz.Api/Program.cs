@@ -13,6 +13,10 @@ namespace Inshapardaz.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseDefaultServiceProvider((context, options) =>
+                {
+                    options.ValidateOnBuild = false;
+                })
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();

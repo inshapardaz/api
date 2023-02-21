@@ -265,7 +265,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _issuePage.WriterAccountName.Should().Be(view.WriterAccountName);
             if (view.WriterAssignTimeStamp.HasValue)
             {
-                _issuePage.WriterAssignTimeStamp.Should().BeCloseTo(view.WriterAssignTimeStamp.Value, 3000);
+                _issuePage.WriterAssignTimeStamp.Should().BeCloseTo(view.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(3));
             }
             else
             {
@@ -275,7 +275,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _issuePage.ReviewerAccountName.Should().Be(view.ReviewerAccountName);
             if (view.ReviewerAssignTimeStamp.HasValue)
             {
-                _issuePage.ReviewerAssignTimeStamp.Should().BeCloseTo(view.ReviewerAssignTimeStamp.Value, 3000);
+                _issuePage.ReviewerAssignTimeStamp.Should().BeCloseTo(view.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(3));
             }
             else
             {
@@ -294,7 +294,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
             if (dto.WriterAssignTimeStamp.HasValue)
             {
-                _issuePage.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimeStamp.Value, 2000);
+                _issuePage.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
@@ -303,7 +303,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _issuePage.ReviewerAccountId.Should().Be(dto.ReviewerAccountId);
             if (dto.ReviewerAssignTimeStamp.HasValue)
             {
-                _issuePage.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimeStamp.Value, 2000);
+                _issuePage.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {

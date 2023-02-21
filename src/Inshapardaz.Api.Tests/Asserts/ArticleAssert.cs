@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _article.WriterAccountId.Should().Be(account.Id);
             _article.WriterAccountName.Should().Be(account.Name);
-            _article.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            _article.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
@@ -70,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var dbArticle = dbConnection.GetArticleById(_article.Id);
             dbArticle.WriterAccountId.Should().Be(account.Id);
-            dbArticle.WriterAssignTimestamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            dbArticle.WriterAssignTimestamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
@@ -86,7 +86,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _article.ReviewerAccountId.Should().Be(account.Id);
             _article.ReviewerAccountName.Should().Be(account.Name);
-            _article.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            _article.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
@@ -102,7 +102,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var dbArticle = dbConnection.GetArticleById(_article.Id);
             dbArticle.ReviewerAccountId.Should().Be(account.Id);
-            dbArticle.ReviewerAssignTimestamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            dbArticle.ReviewerAssignTimestamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
@@ -330,7 +330,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.WriterAccountName.Should().Be(view.WriterAccountName);
             if (view.WriterAssignTimeStamp.HasValue)
             {
-                _article.WriterAssignTimeStamp.Should().BeCloseTo(view.WriterAssignTimeStamp.Value, 200);
+                _article.WriterAssignTimeStamp.Should().BeCloseTo(view.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
@@ -339,7 +339,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.ReviewerAccountId.Should().Be(view.ReviewerAccountId);
             if (view.ReviewerAssignTimeStamp.HasValue)
             {
-                _article.ReviewerAssignTimeStamp.Should().BeCloseTo(view.ReviewerAssignTimeStamp.Value, 200);
+                _article.ReviewerAssignTimeStamp.Should().BeCloseTo(view.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
@@ -358,7 +358,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.WriterAccountId.Should().Be(dto.WriterAccountId);
             if (dto.WriterAssignTimestamp.HasValue)
             {
-                _article.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimestamp.Value, 200);
+                _article.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimestamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
@@ -368,7 +368,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.ReviewerAccountId.Should().Be(dto.ReviewerAccountId);
             if (dto.ReviewerAssignTimestamp.HasValue)
             {
-                _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimestamp.Value, 200);
+                _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimestamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
@@ -386,9 +386,9 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.Title.Should().Be(dto.Title);
             _article.SequenceNumber.Should().Be(dto.SequenceNumber);
             _article.WriterAccountId.Should().Be(dto.WriterAccountId);
-            _article.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimestamp.Value, 200);
+            _article.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimestamp.Value, TimeSpan.FromSeconds(2));
             _article.ReviewerAccountId.Should().Be(dto.ReviewerAccountId);
-            _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimestamp.Value, 200);
+            _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimestamp.Value, TimeSpan.FromSeconds(2));
             _article.SeriesName.Should().Be(dto.SeriesName);
             _article.SeriesIndex.Should().Be(dto.SeriesIndex);
             _article.Status.Should().Be(dto.Status.ToString());

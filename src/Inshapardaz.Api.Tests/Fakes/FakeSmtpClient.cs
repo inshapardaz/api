@@ -98,6 +98,8 @@ namespace Inshapardaz.Api.Tests.Fakes
 
         public int? SslKeyExchangeStrength => throw new NotImplementedException();
 
+        public TlsCipherSuite? SslCipherSuite => throw new NotImplementedException();
+
         public event EventHandler<MessageSentEventArgs> MessageSent;
 
         public event EventHandler<ConnectedEventArgs> Connected;
@@ -290,6 +292,46 @@ namespace Inshapardaz.Api.Tests.Fakes
         }
 
         public Task<MailboxAddress> VerifyAsync(string address, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        string IMailTransport.Send(MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> IMailTransport.SendAsync(MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress)
+        {
+            throw new NotImplementedException();
+        }
+
+        string IMailTransport.Send(MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> IMailTransport.SendAsync(MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress)
+        {
+            throw new NotImplementedException();
+        }
+
+        string IMailTransport.Send(FormatOptions options, MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> IMailTransport.SendAsync(FormatOptions options, MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress)
+        {
+            throw new NotImplementedException();
+        }
+
+        string IMailTransport.Send(FormatOptions options, MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> IMailTransport.SendAsync(FormatOptions options, MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress)
         {
             throw new NotImplementedException();
         }

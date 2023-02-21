@@ -37,14 +37,14 @@ namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
         public void ShouldReturnNewRefreshToken()
         {
             _refreshResponse.RefreshToken.Should().NotBeNullOrEmpty()
-                                 .And.Should().NotBe(_authResponse.RefreshToken);
+                                 .Should().NotBe(_authResponse.RefreshToken);
         }
 
         [Test]
         public void ShouldReturnNewAccessToken()
         {
             _refreshResponse.AccessToken.Should().NotBeNullOrEmpty()
-                                 .And.Should().NotBe(_authResponse.AccessToken);
+                                 .Should().NotBe(_authResponse.AccessToken);
         }
     }
 }

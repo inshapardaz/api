@@ -51,7 +51,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapter.WriterAccountId.Should().Be(account.Id);
             _chapter.WriterAccountName.Should().Be(account.Name);
-            _chapter.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            _chapter.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
@@ -67,7 +67,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.WriterAccountId.Should().Be(account.Id);
-            dbChapter.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            dbChapter.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
@@ -83,7 +83,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapter.ReviewerAccountId.Should().Be(account.Id);
             _chapter.ReviewerAccountName.Should().Be(account.Name);
-            _chapter.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            _chapter.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
@@ -99,7 +99,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.ReviewerAccountId.Should().Be(account.Id);
-            dbChapter.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, 2000);
+            dbChapter.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 

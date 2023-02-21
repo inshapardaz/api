@@ -101,7 +101,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         internal ChapterContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, IDbConnection dbConnection)
         {
             var content = dbConnection.GetChapterContentById(_chapterContent.Id);
-            content.Text.Should().NotBeNull().And.Should().NotBe(expected);
+            content.Text.Should().NotBeNull().Should().NotBe(expected);
             content.Language.Should().Be(language);
             return this;
         }

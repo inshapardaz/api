@@ -271,7 +271,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             dbIssue.Should().NotBeNull();
             _view.VolumeNumber.Should().Be(dbIssue.VolumeNumber);
             _view.IssueNumber.Should().Be(dbIssue.IssueNumber);
-            _view.IssueDate.Should().BeCloseTo(dbIssue.IssueDate, 2000);
+            _view.IssueDate.Should().BeCloseTo(dbIssue.IssueDate, TimeSpan.FromSeconds(2));
 
             return this;
         }
@@ -305,7 +305,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.Should().NotBeNull();
             _view.VolumeNumber.Should().Be(expected.VolumeNumber);
             _view.IssueNumber.Should().Be(expected.IssueNumber);
-            _view.IssueDate.Should().BeCloseTo(expected.IssueDate, 2000);
+            _view.IssueDate.Should().BeCloseTo(expected.IssueDate, TimeSpan.FromSeconds(2));
             if (articleCount.HasValue)
             {
                 _view.ArticleCount.Should().Be(articleCount);
@@ -324,7 +324,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.Should().NotBeNull();
             _view.VolumeNumber.Should().Be(expected.VolumeNumber);
             _view.IssueNumber.Should().Be(expected.IssueNumber);
-            _view.IssueDate.Should().BeCloseTo(expected.IssueDate, 2000);
+            _view.IssueDate.Should().BeCloseTo(expected.IssueDate, TimeSpan.FromSeconds(2));
             if (articleCount.HasValue)
             {
                 _view.ArticleCount.Should().Be(articleCount);

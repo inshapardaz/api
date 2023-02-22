@@ -43,7 +43,9 @@ jobs:
         AppSettings.ResetPasswordPagePath: ${{ secrets.RESETPASSWORDPAGEPATH }}  
         AppSettings.RegisterPagePath: ${{ secrets.REGISTERPAGEPATH }}
         AppSettings.FileStoreType: ${{ secrets.FILESTORETYPE }}
-        AppSettings.Allowed_Origins: ${{ secrets.ALLOWEDORIGINS }}
+        AppSettings.Allowed_Origins: ${{ secrets.ALLOWEDORIGINS }
+        KissLog.OrganizationId: ${{ secrets.KISSLOGORGANIZATIONID }}
+        KissLog.ApplicationId: ${{ secrets.KISSLOGAPPLICATIONID }}
 
     - name: Build
       run: dotnet build --no-restore

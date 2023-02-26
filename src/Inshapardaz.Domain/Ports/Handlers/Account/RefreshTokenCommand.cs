@@ -4,6 +4,7 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -76,11 +77,16 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 
             var accessToken = _tokenGenerator.GenerateAccessToken(account);
 
+            var accessTokenExpiry = DateTime.UtcNow.AddMinutes(_settings.AccessTokenTTLInMinutes);
+            var refreshTokenExpiry = DateTime.UtcNow.AddMinutes(_settings.RefreshTokenTTLInDays);
+
             command.Response = new TokenResponse
             {
                 Account = account,
                 AccessToken = accessToken,
-                RefreshToken = refreshToken.Token
+                AccessTokenExpiry = accessTokenExpiry,
+                RefreshToken = refreshToken.Token,
+                RefreshTokenExpiry = refreshTokenExpiry
             };
 
             return await base.HandleAsync(command, cancellationToken);

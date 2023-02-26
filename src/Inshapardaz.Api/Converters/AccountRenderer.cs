@@ -218,7 +218,9 @@ namespace Inshapardaz.Api.Converters
                 IsSuperAdmin = model.Account.IsSuperAdmin,
                 IsVerified = model.Account.IsVerified,
                 AccessToken = model.AccessToken,
+                AccessTokenExpiry = model.AccessTokenExpiry,
                 RefreshToken = model.RefreshToken,
+                RefreshTokenExiry = model.RefreshTokenExpiry,
                 Updated = model.Account.Updated
             };
         }

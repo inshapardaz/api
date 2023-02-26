@@ -6,6 +6,7 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Exception;
+using System;
 
 namespace Inshapardaz.Domain.Ports.Handlers.Account
 {
@@ -52,12 +53,16 @@ namespace Inshapardaz.Domain.Ports.Handlers.Account
 
             await _accountRepository.AddRefreshToken(refreshToken, account.Id, cancellationToken);
             await _accountRepository.RemoveOldRefreshTokens(account, _settings.RefreshTokenTTLInDays, cancellationToken);
+            var accessTokenExpiry = DateTime.UtcNow.AddMinutes(_settings.AccessTokenTTLInMinutes);
+            var refreshTokenExpiry = DateTime.UtcNow.AddMinutes(_settings.RefreshTokenTTLInDays);
 
             command.Response = new TokenResponse
             {
                 Account = account,
                 AccessToken = accessToken,
-                RefreshToken = refreshToken.Token
+                AccessTokenExpiry = accessTokenExpiry,
+                RefreshToken = refreshToken.Token,
+                RefreshTokenExpiry = refreshTokenExpiry
             };
 
             return await base.HandleAsync(command, cancellationToken);

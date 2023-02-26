@@ -50,7 +50,7 @@ namespace Inshapardaz.Domain.Adapters
             return new RefreshTokenModel
             {
                 Token = RandomGenerator.GenerateRandomString(),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(_settings.RefreshTokenTTLInDays),
                 Created = DateTime.UtcNow,
                 CreatedByIp = ipAddress
             };

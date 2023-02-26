@@ -1,4 +1,6 @@
-﻿namespace Inshapardaz.Domain.Models
+﻿using System;
+
+namespace Inshapardaz.Domain.Models
 {
     public class TokenResponse
     {
@@ -7,5 +9,7 @@
         public string AccessToken { get; set; }
 
         public string RefreshToken { get; set; }
+        public DateTime AccessTokenExpiry { get; internal set; }
+        public DateTime RefreshTokenExpiry { get; internal set; }
     }
 }

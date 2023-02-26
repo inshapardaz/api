@@ -13,5 +13,7 @@ namespace Inshapardaz.Api.Models.Accounts
         public bool IsVerified { get; set; }
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
+        public DateTime AccessTokenExpiry { get; internal set; }
+        public DateTime RefreshTokenExiry { get; internal set; }
     }
 }

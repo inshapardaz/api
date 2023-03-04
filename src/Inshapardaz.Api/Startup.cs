@@ -21,12 +21,6 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using Inshapardaz.Storage.S3;
 
-using KissLog;
-using KissLog.AspNetCore;
-using KissLog.CloudListeners.Auth;
-using KissLog.CloudListeners.RequestLogsListener;
-using KissLog.Formatters;
-
 namespace Inshapardaz.Api
 {
     public class Startup
@@ -45,24 +39,6 @@ namespace Inshapardaz.Api
             Configuration.Bind("AppSettings", settings);
             services.AddSingleton(settings);
 
-            services.AddHttpContextAccessor();
-
-            services.AddLogging(logging =>
-            {
-                logging.AddKissLog(options =>
-                {
-                    options.Formatter = (FormatterArgs args) =>
-                    {
-                        if (args.Exception == null)
-                            return args.DefaultValue;
-
-                        string exceptionStr = new ExceptionFormatter().Format(args.Exception, args.Logger);
-
-                        return string.Join(Environment.NewLine, new[] { args.DefaultValue, exceptionStr });
-                    };
-                });
-            });
-
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
@@ -74,7 +50,7 @@ namespace Inshapardaz.Api
             });
             services.AddControllers().AddJsonOptions(j =>
             {
-                j.JsonSerializerOptions.IgnoreNullValues = true;
+                j.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 j.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, false));
             });
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -146,7 +122,6 @@ namespace Inshapardaz.Api
                 .AllowCredentials());
 
             app.UseStaticFiles();
-            app.UseKissLogMiddleware(options => ConfigureKissLog(options));
             // global error handler
             app.UseMiddleware<ErrorHandlerMiddleware>();
             app.UseStatusCodeMiddleWare();
@@ -165,17 +140,6 @@ namespace Inshapardaz.Api
         protected virtual IServiceCollection AddCustomServices(IServiceCollection services)
         {
             return services;
-        }
-
-        private void ConfigureKissLog(IOptionsBuilder options)
-        {
-            KissLogConfiguration.Listeners.Add(new RequestLogsApiListener(new Application(
-                Configuration["KissLog.OrganizationId"],
-                Configuration["KissLog.ApplicationId"])
-            )
-            {
-                ApiUrl = Configuration["KissLog.ApiUrl"]
-            });
         }
     }
 }

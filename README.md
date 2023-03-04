@@ -6,7 +6,7 @@ API for Inshapardaz
 
 Master
 
-[![Build status](https://ci.appveyor.com/api/projects/status/xoq9t6wau07b6hmq/branch/master?svg=true)](https://ci.appveyor.com/project/umerfaruk/api/branch/master)
+[![.NET](https://github.com/inshapardaz/api/actions/workflows/build_deploy.yml/badge.svg?branch=master)](https://github.com/inshapardaz/api/actions/workflows/build_deploy.yml)
 
 # Components
 
@@ -26,7 +26,7 @@ Checkout code and
 
 - Build the app
   `dotnet build`
-
+  
 - Start app locally
   `dotnet run`
 

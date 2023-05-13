@@ -123,7 +123,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(BookController.GetBooks),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Books,
-                    Parameters = new { libraryId = libraryId, authorId = source.Id },
+                    Parameters = new { libraryId = libraryId },
                     QueryString = new Dictionary<string, string>
                     {
                         { "authorid", source.Id.ToString() }

@@ -303,7 +303,8 @@ namespace Inshapardaz.Api.Tests.Fakes
 
         Task<string> IMailTransport.SendAsync(MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress)
         {
-            throw new NotImplementedException();
+            EmailsSent.Add(new EmailMessage(message));
+            return Task.FromResult(string.Empty);
         }
 
         string IMailTransport.Send(MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress)

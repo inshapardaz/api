@@ -72,7 +72,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
         }
 
         [Test]
-        public void ShouldHaveCorrectIssuesData()
+         public void ShouldHaveCorrectIssuesData()
         {
             foreach (var expected in _issues)
             {

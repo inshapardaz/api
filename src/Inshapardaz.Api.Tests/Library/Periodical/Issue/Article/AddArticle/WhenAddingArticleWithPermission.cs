@@ -67,7 +67,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.AddArticle
         {
             _assert.ShouldMatch(new ArticleView { 
                 Title = _article.Title,
-                SequenceNumber = 1
+                SequenceNumber = 1,
+                Status = "Available"
             });
         }
 

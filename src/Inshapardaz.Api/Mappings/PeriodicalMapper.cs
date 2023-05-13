@@ -93,7 +93,7 @@ namespace Inshapardaz.Api.Mappings
                 WriterAssignTimeStamp = source.WriterAssignTimeStamp,
                 ReviewerAccountId = source.ReviewerAccountId,
                 ReviewerAccountName = source.ReviewerAccountName,
-                ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp
+                ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
             };
 
         public static ArticleModel Map(this ArticleView source)

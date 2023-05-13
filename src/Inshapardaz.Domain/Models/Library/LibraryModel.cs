@@ -19,5 +19,8 @@
         public string OwnerEmail { get; set; }
 
         public bool Public { get; set; }
+        public string DatabaseConnection { get; set; }
+        public string FileStoreType { get; set; }
+        public string FileStoreSource { get; set; }
     }
 }

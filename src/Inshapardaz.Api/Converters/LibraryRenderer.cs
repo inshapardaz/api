@@ -298,7 +298,10 @@ namespace Inshapardaz.Api.Converters
                 PrimaryColor = model.PrimaryColor,
                 SecondaryColor = model.SecondaryColor,
                 Public = model.Public,
-                Links = links
+                Links = links,
+                DatabaseConnection = _userHelper.IsAdmin ? "*****" : null,
+                FileStoreType = _userHelper.IsAdmin ? model.FileStoreType : null,
+                FileStoreSource = _userHelper.IsAdmin ? model.FileStoreSource : null
             };
         }
     }

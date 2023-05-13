@@ -68,7 +68,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item)
+                actual.ShouldMatchWithNoConfiguration(item)
                      .ShouldNotHaveEditLinks()
                      .ShouldNotHaveCreateCategoryLink()
                      .ShouldHaveCreateAuthorLink()

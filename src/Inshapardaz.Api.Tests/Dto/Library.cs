@@ -14,5 +14,9 @@
 
         public string SecondaryColor { get; set; }
         public string OwnerEmail { get; set; }
+
+        public string DatabaseConnection { get; set; }
+        public string FileStoreType { get; set; }
+        public string FileStoreSource { get; set; }
     }
 }

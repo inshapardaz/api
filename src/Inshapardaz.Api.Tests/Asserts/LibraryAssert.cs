@@ -61,6 +61,24 @@ namespace Inshapardaz.Api.Tests.Asserts
             library.PrimaryColor.Should().Be(_view.PrimaryColor);
             library.SecondaryColor.Should().Be(_view.SecondaryColor);
             library.OwnerEmail.Should().Be(_view.OwnerEmail);
+            library.DatabaseConnection.Should().BeNull();
+            library.FileStoreType.Should().Be(_view.FileStoreType);
+            library.FileStoreSource.Should().Be(_view.FileStoreSource);
+            return this;
+        }
+
+        internal LibraryAssert ShouldHaveCreatedLibraryWithConfiguration(IDbConnection databaseConnection)
+        {
+            var library = databaseConnection.GetLibrary(_view);
+            library.Name.Should().Be(_view.Name);
+            library.Language.Should().Be(_view.Language);
+            library.SupportsPeriodicals.Should().Be(_view.SupportsPeriodicals);
+            library.PrimaryColor.Should().Be(_view.PrimaryColor);
+            library.SecondaryColor.Should().Be(_view.SecondaryColor);
+            library.OwnerEmail.Should().Be(_view.OwnerEmail);
+            library.DatabaseConnection.Should().NotBeNull();
+            library.FileStoreType.Should().Be(_view.FileStoreType);
+            library.FileStoreSource.Should().Be(_view.FileStoreSource);
             return this;
         }
 
@@ -78,6 +96,9 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.SupportsPeriodicals.Should().Be(dbLibrary.SupportsPeriodicals);
             _view.PrimaryColor.Should().Be(dbLibrary.PrimaryColor);
             _view.SecondaryColor.Should().Be(dbLibrary.SecondaryColor);
+            _view.DatabaseConnection.Should().Be(dbLibrary.DatabaseConnection);
+            _view.FileStoreType.Should().Be(dbLibrary.FileStoreType);
+            _view.FileStoreSource.Should().Be(dbLibrary.FileStoreSource);
         }
 
         public void ShouldBeSameAs(LibraryView expectedLibrary)
@@ -87,6 +108,9 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
             _view.PrimaryColor.Should().Be(expectedLibrary.PrimaryColor);
             _view.SecondaryColor.Should().Be(expectedLibrary.SecondaryColor);
+            _view.DatabaseConnection.Should().Be(expectedLibrary.DatabaseConnection);
+            _view.FileStoreType.Should().Be(expectedLibrary.FileStoreType);
+            _view.FileStoreSource.Should().Be(expectedLibrary.FileStoreSource);
         }
 
         public LibraryAssert ShouldBeSameAs(LibraryDto expectedLibrary)
@@ -96,6 +120,21 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
             _view.PrimaryColor.Should().Be(expectedLibrary.PrimaryColor);
             _view.SecondaryColor.Should().Be(expectedLibrary.SecondaryColor);
+            _view.FileStoreType.Should().Be(expectedLibrary.FileStoreType);
+            _view.FileStoreSource.Should().Be(expectedLibrary.FileStoreSource);
+
+            return this;
+        }
+
+        public LibraryAssert ShouldBeSameWithNoConfiguration(LibraryDto expectedLibrary)
+        {
+            _view.Name.Should().Be(expectedLibrary.Name);
+            _view.Language.Should().Be(expectedLibrary.Language);
+            _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
+            _view.PrimaryColor.Should().Be(expectedLibrary.PrimaryColor);
+            _view.SecondaryColor.Should().Be(expectedLibrary.SecondaryColor);
+            _view.FileStoreType.Should().BeNull();
+            _view.FileStoreSource.Should().BeNull();
 
             return this;
         }
@@ -284,6 +323,12 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             return LibraryAssert.FromObject(view, dto.Id)
                                .ShouldBeSameAs(dto);
+        }
+
+        internal static LibraryAssert ShouldMatchWithNoConfiguration(this LibraryView view, LibraryDto dto)
+        {
+            return LibraryAssert.FromObject(view, dto.Id)
+                               .ShouldBeSameWithNoConfiguration(dto);
         }
     }
 }

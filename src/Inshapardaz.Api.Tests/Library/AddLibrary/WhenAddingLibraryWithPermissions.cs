@@ -26,7 +26,15 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _library = new LibraryView { OwnerEmail = RandomData.Email, Name = RandomData.Name, Language = RandomData.Locale, SupportsPeriodicals = _periodicalsEnabled };
+            _library = new LibraryView { 
+                OwnerEmail = RandomData.Email, 
+                Name = RandomData.Name, 
+                Language = RandomData.Locale, 
+                SupportsPeriodicals = _periodicalsEnabled,
+                DatabaseConnection = RandomData.String,
+                FileStoreType = RandomData.String,
+                FileStoreSource = RandomData.String 
+            };
 
             _response = await Client.PostObject($"/libraries", _library);
             _returnedView = await _response.GetContent<LibraryView>();
@@ -56,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         [Test]
         public void ShouldHaveCreatedLibraryInDataStore()
         {
-            _assert.ShouldHaveCreatedLibrary(DatabaseConnection);
+            _assert.ShouldHaveCreatedLibraryWithConfiguration(DatabaseConnection);
         }
 
         [Test]

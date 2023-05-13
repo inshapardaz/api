@@ -26,7 +26,12 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _library = new LibraryView { OwnerEmail = Account.Email, Name = RandomData.Name, Language = RandomData.Locale, SupportsPeriodicals = _periodicalsEnabled };
+            _library = new LibraryView { 
+                OwnerEmail = Account.Email, 
+                Name = RandomData.Name, 
+                Language = RandomData.Locale, 
+                SupportsPeriodicals = _periodicalsEnabled, 
+                FileStoreType = "Database" };
 
             _response = await Client.PostObject($"/libraries", _library);
             _returnedView = await _response.GetContent<LibraryView>();

@@ -1,4 +1,8 @@
-﻿namespace Inshapardaz.Api.Views
+﻿using Amazon.Auth.AccessControlPolicy;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
+namespace Inshapardaz.Api.Views
 {
     public class LibraryView : ViewWithLinks
     {
@@ -10,5 +14,12 @@
         public string PrimaryColor { get; set; }
         public string SecondaryColor { get; set; }
         public bool Public { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string DatabaseConnection { get; set; }
+        [Required]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string FileStoreType { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string FileStoreSource { get; set; }
     }
 }

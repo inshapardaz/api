@@ -14,7 +14,10 @@ namespace Inshapardaz.Api.Mappings
                 SupportsPeriodicals = source.SupportsPeriodicals,
                 PrimaryColor = source.PrimaryColor,
                 SecondaryColor = source.SecondaryColor,
-                Public = source.Public
+                Public = source.Public,
+                DatabaseConnection = null,
+                FileStoreSource = source.FileStoreSource,
+                FileStoreType = source.FileStoreType
             };
 
         public static LibraryModel Map(this LibraryView source)
@@ -26,7 +29,10 @@ namespace Inshapardaz.Api.Mappings
                 SupportsPeriodicals = source.SupportsPeriodicals,
                 PrimaryColor = source.PrimaryColor,
                 SecondaryColor = source.SecondaryColor,
-                Public = source.Public
+                Public = source.Public,
+                DatabaseConnection = source.DatabaseConnection,
+                FileStoreSource = source.FileStoreSource,
+                FileStoreType = source.FileStoreType
             };
     }
 }

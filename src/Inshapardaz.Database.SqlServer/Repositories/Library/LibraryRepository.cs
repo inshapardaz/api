@@ -210,13 +210,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-
         public async Task<LibraryModel> AddLibrary(LibraryModel library, CancellationToken cancellationToken)
         {
             int libraryId;
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Library(Name, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor, OwnerEmail, [Public]) OUTPUT Inserted.Id VALUES(@Name, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor, @OwnerEmail, @Public);";
+                var sql = @"INSERT INTO Library(Name, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor, OwnerEmail, [Public], DatabaseConnection, FileStoreType, FileStoreSource) 
+                            OUTPUT Inserted.Id 
+                            VALUES(@Name, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor, @OwnerEmail, @Public, @DatabaseConnection, @FileStoreType, @FileStoreSource);";
                 var command = new CommandDefinition(sql, new
                 {
                     Name = library.Name,
@@ -225,7 +226,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     PrimaryColor = library.PrimaryColor,
                     SecondaryColor = library.SecondaryColor,
                     OwnerEmail = library.OwnerEmail,
-                    Public = library.Public
+                    Public = library.Public,
+                    DatabaseConnection = library.DatabaseConnection,
+                    FileStoreType = library.FileStoreType,
+                    FileStoreSource = library.FileStoreSource
                 },
                 cancellationToken: cancellationToken);
                 libraryId = await connection.ExecuteScalarAsync<int>(command);
@@ -260,6 +264,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             SecondaryColor = @SecondaryColor,
                             OwnerEmail = @OwnerEmail,
                             [Public] = @Public
+                            DatabaseConnection = @DatabaseConnection
+                            FileStoreType = @FileStoreType
+                            FileStoreSource = @FileStoreSource
                             Where Id = @Id";
                 var command = new CommandDefinition(sql, new
                 {
@@ -270,7 +277,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     PrimaryColor = library.PrimaryColor,
                     SecondaryColor = library.SecondaryColor,
                     OwnerEmail = library.OwnerEmail,
-                    Public = library.Public
+                    Public = library.Public,
+                    DatabaseConnection = library.DatabaseConnection,
+                    FileStoreType = library.FileStoreType,
+                    FileStoreSource = library.FileStoreSource
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
             }

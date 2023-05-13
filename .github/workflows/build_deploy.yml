@@ -44,8 +44,6 @@ jobs:
         AppSettings.RegisterPagePath: ${{ secrets.REGISTERPAGEPATH }}
         AppSettings.FileStoreType: ${{ secrets.FILESTORETYPE }}
         AppSettings.Allowed_Origins: ${{ secrets.ALLOWEDORIGINS }}
-        KissLog.OrganizationId: ${{ secrets.KISSLOGORGANIZATIONID }}
-        KissLog.ApplicationId: ${{ secrets.KISSLOGAPPLICATIONID }}
 
     - name: Build
       run: dotnet build --no-restore
@@ -63,4 +61,3 @@ jobs:
         password: ${{ secrets.DEPLOY_FTP_PASSWORD }}
         server-dir: /api/
         local-dir: ./Release/
-        dangerous-clean-slate: true

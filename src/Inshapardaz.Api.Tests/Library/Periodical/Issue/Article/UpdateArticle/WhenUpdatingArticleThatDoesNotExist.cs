@@ -60,7 +60,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticle
         [Test]
         public void ShouldHaveCorrectObjectRetured()
         {
-            _articleAssert.ShouldMatch(_newArticle);
+            ArticleView expected = new ArticleView
+            {
+                Title = _newArticle.Title,
+                SequenceNumber = 6,
+                Status = "Available"
+            };
+            _articleAssert.ShouldMatch(expected);
         }
 
         [Test]

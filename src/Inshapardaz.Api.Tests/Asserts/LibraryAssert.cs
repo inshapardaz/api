@@ -96,9 +96,18 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.SupportsPeriodicals.Should().Be(dbLibrary.SupportsPeriodicals);
             _view.PrimaryColor.Should().Be(dbLibrary.PrimaryColor);
             _view.SecondaryColor.Should().Be(dbLibrary.SecondaryColor);
-            _view.DatabaseConnection.Should().Be(dbLibrary.DatabaseConnection);
             _view.FileStoreType.Should().Be(dbLibrary.FileStoreType);
             _view.FileStoreSource.Should().Be(dbLibrary.FileStoreSource);
+        }
+
+        internal void ShouldHaveUpdatedLibraryWithoutConfiguration(IDbConnection databaseConnection)
+        {
+            var dbLibrary = databaseConnection.GetLibraryById(_libraryId);
+            _view.Name.Should().Be(dbLibrary.Name);
+            _view.Language.Should().Be(dbLibrary.Language);
+            _view.SupportsPeriodicals.Should().Be(dbLibrary.SupportsPeriodicals);
+            _view.PrimaryColor.Should().Be(dbLibrary.PrimaryColor);
+            _view.SecondaryColor.Should().Be(dbLibrary.SecondaryColor);
         }
 
         public void ShouldBeSameAs(LibraryView expectedLibrary)
@@ -108,9 +117,21 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
             _view.PrimaryColor.Should().Be(expectedLibrary.PrimaryColor);
             _view.SecondaryColor.Should().Be(expectedLibrary.SecondaryColor);
-            _view.DatabaseConnection.Should().Be(expectedLibrary.DatabaseConnection);
+            _view.DatabaseConnection.Should().Be("*****");
             _view.FileStoreType.Should().Be(expectedLibrary.FileStoreType);
             _view.FileStoreSource.Should().Be(expectedLibrary.FileStoreSource);
+        }
+
+        public void ShouldBeSameWithNoConfiguration(LibraryView expectedLibrary)
+        {
+            _view.Name.Should().Be(expectedLibrary.Name);
+            _view.Language.Should().Be(expectedLibrary.Language);
+            _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
+            _view.PrimaryColor.Should().Be(expectedLibrary.PrimaryColor);
+            _view.SecondaryColor.Should().Be(expectedLibrary.SecondaryColor);
+            _view.DatabaseConnection.Should().BeNull();
+            _view.FileStoreType.Should().BeNull();
+            _view.FileStoreSource.Should().BeNull();
         }
 
         public LibraryAssert ShouldBeSameAs(LibraryDto expectedLibrary)

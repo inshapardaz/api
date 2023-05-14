@@ -30,9 +30,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleCo
         {
             _newContents = RandomData.String;
 
-            _issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(1).WithArticleContents(2).Build();
+            _issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(1).WithArticleContents(2).WithContentLanguage("en").Build();
             _article = IssueBuilder.GetArticles(_issue.Id).PickRandom();
-            _newArticleContentLanguage = IssueBuilder.ArticleContents.Where(a => a.ArticleId == _article.Id).PickRandom().Language + "+";
+            _newArticleContentLanguage = "ur";
 
             _response = await Client.PutString($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}/contents", _newContents, _newArticleContentLanguage);
 

@@ -53,13 +53,27 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
         [Test]
         public void ShouldHaveReturnedUpdatedTheLibrary()
         {
-            _assert.ShouldBeSameAs(_expectedLibrary);
+            if (_role == Role.Admin)
+            {
+                _assert.ShouldBeSameAs(_expectedLibrary);
+            }
+            else
+            {
+                _assert.ShouldBeSameWithNoConfiguration(_expectedLibrary);
+            }
         }
 
         [Test]
         public void ShouldHaveUpdatedLibrary()
         {
-            _assert.ShouldHaveUpdatedLibrary(DatabaseConnection);
+            if (_role == Role.Admin)
+            {
+                _assert.ShouldHaveUpdatedLibrary(DatabaseConnection);
+            }
+            else
+            {
+                _assert.ShouldHaveUpdatedLibraryWithoutConfiguration(DatabaseConnection);
+            }
         }
     }
 }

@@ -263,9 +263,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             PrimaryColor = @PrimaryColor,
                             SecondaryColor = @SecondaryColor,
                             OwnerEmail = @OwnerEmail,
-                            [Public] = @Public
-                            DatabaseConnection = @DatabaseConnection
-                            FileStoreType = @FileStoreType
+                            [Public] = @Public,
+                            DatabaseConnection = @DatabaseConnection,
+                            FileStoreType = @FileStoreType,
                             FileStoreSource = @FileStoreSource
                             Where Id = @Id";
                 var command = new CommandDefinition(sql, new

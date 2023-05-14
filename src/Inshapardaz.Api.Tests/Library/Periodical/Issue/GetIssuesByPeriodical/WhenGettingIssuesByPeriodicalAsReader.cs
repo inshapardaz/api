@@ -15,14 +15,14 @@ using System.Threading.Tasks;
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
 {
     [TestFixture]
-    public class WhenGettingIssuessByPeriodicalAsReader : TestBase
+    public class WhenGettingIssuesByPeriodicalAsReader : TestBase
     {
         private PeriodicalDto _periodical;
         private IEnumerable<IssueDto> _issues;
         private HttpResponseMessage _response;
         private PageView<IssueView> _view;
 
-        public WhenGettingIssuessByPeriodicalAsReader()
+        public WhenGettingIssuesByPeriodicalAsReader()
             : base(Role.Reader)
         {
         }

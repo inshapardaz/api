@@ -18,8 +18,8 @@ namespace Inshapardaz.Api.Views
         public string DatabaseConnection { get; set; }
         [Required]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string FileStoreType { get; set; }
+        public string? FileStoreType { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string FileStoreSource { get; set; }
+        public string? FileStoreSource { get; set; }
     }
 }

@@ -2,8 +2,9 @@
 {
     public enum FileStoreTypes
     {
-        Database = 0,
-        AzureBlobStorage = 1,
-        S3Storage = 2
+        Unknown = 0,
+        Database = 1,
+        AzureBlobStorage = 2,
+        S3Storage = 3
     }
 }

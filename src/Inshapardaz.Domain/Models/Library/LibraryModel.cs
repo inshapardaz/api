@@ -1,4 +1,6 @@
-﻿namespace Inshapardaz.Domain.Models.Library
+﻿using Inshapardaz.Domain.Adapters;
+
+namespace Inshapardaz.Domain.Models.Library
 {
     public class LibraryModel
     {
@@ -20,7 +22,7 @@
 
         public bool Public { get; set; }
         public string DatabaseConnection { get; set; }
-        public string FileStoreType { get; set; }
+        public FileStoreTypes? FileStoreType { get; set; }
         public string FileStoreSource { get; set; }
     }
 }

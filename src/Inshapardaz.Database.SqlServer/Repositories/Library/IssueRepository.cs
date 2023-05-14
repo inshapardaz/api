@@ -26,9 +26,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sortByQuery = $"i.{GetSortByQuery(sortBy)}";
                 var direction = sortDirection == SortDirection.Descending ? "DESC" : "ASC";
 
-                var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
+                var sql = @"SELECT i.*, f.FilePath as ImageUrl,
                             (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
-                            (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount]
+                            (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount],
+                            p.*
                             FROM Issue as i
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             LEFT OUTER JOIN [File] f ON f.Id = i.ImageId
@@ -53,8 +54,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var issues = await connection.QueryAsync<IssueModel, PeriodicalModel, IssueModel>(command, (i, periodical) =>
                 {
-                     i.Periodical = periodical;
-                        return i;
+                    i.Periodical = periodical; 
+                    return i;
                 });
 
                 var sqlAuthorCount = @"SELECT COUNT(*) FROM Issue as i

@@ -1,6 +1,8 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Extensions;
+using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
@@ -30,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
                 Language = RandomData.Locale, 
                 SupportsPeriodicals = RandomData.Bool,
                 DatabaseConnection = RandomData.String,
-                FileStoreType = RandomData.String,
+                FileStoreType = FileStoreTypes.S3Storage.ToDescription(),
                 FileStoreSource = RandomData.String
             };
 

@@ -1,5 +1,7 @@
 ﻿using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Api.Extensions;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Mappings
 {
@@ -17,7 +19,7 @@ namespace Inshapardaz.Api.Mappings
                 Public = source.Public,
                 DatabaseConnection = null,
                 FileStoreSource = source.FileStoreSource,
-                FileStoreType = source.FileStoreType
+                FileStoreType = source.FileStoreType.ToDescription()
             };
 
         public static LibraryModel Map(this LibraryView source)
@@ -32,7 +34,7 @@ namespace Inshapardaz.Api.Mappings
                 Public = source.Public,
                 DatabaseConnection = source.DatabaseConnection,
                 FileStoreSource = source.FileStoreSource,
-                FileStoreType = source.FileStoreType
+                FileStoreType = source.FileStoreType.ToEnum<FileStoreTypes>(FileStoreTypes.Unknown)
             };
     }
 }

@@ -1,8 +1,10 @@
 ﻿using FluentAssertions;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Adapters;
 using System.Data;
 using System.Net.Http;
 
@@ -62,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             library.SecondaryColor.Should().Be(_view.SecondaryColor);
             library.OwnerEmail.Should().Be(_view.OwnerEmail);
             library.DatabaseConnection.Should().BeNull();
-            library.FileStoreType.Should().Be(_view.FileStoreType);
+            library.FileStoreType.ToEnum<FileStoreTypes>(FileStoreTypes.Unknown).ToDescription().Should().Be(_view.FileStoreType);
             library.FileStoreSource.Should().Be(_view.FileStoreSource);
             return this;
         }
@@ -77,7 +79,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             library.SecondaryColor.Should().Be(_view.SecondaryColor);
             library.OwnerEmail.Should().Be(_view.OwnerEmail);
             library.DatabaseConnection.Should().NotBeNull();
-            library.FileStoreType.Should().Be(_view.FileStoreType);
+            library.FileStoreType.ToEnum<FileStoreTypes>(FileStoreTypes.Unknown).ToDescription().Should().Be(_view.FileStoreType);
             library.FileStoreSource.Should().Be(_view.FileStoreSource);
             return this;
         }
@@ -96,7 +98,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _view.SupportsPeriodicals.Should().Be(dbLibrary.SupportsPeriodicals);
             _view.PrimaryColor.Should().Be(dbLibrary.PrimaryColor);
             _view.SecondaryColor.Should().Be(dbLibrary.SecondaryColor);
-            _view.FileStoreType.Should().Be(dbLibrary.FileStoreType);
+            _view.FileStoreType.ToEnum<FileStoreTypes>(FileStoreTypes.Unknown).Should().Be(dbLibrary.FileStoreType.ToEnum<FileStoreTypes>(FileStoreTypes.Unknown));
             _view.FileStoreSource.Should().Be(dbLibrary.FileStoreSource);
         }
 

@@ -8,6 +8,7 @@ using Inshapardaz.Database.SqlServer.Repositories.Library;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Configuration
 {
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.Configuration
     {
         public static IServiceCollection AddDatabaseConnection(this IServiceCollection services)
         {
-            services.AddTransient<IProvideConnection>(sp => new SqlServerConnectionProvider(sp.GetService<Settings>().DefaultConnection));
+            services.AddTransient<IProvideConnection>(sp => new SqlServerConnectionProvider(sp.GetService<Settings>().DefaultConnection, sp.GetService<LibraryConfiguration>()));
             return services;
         }
 

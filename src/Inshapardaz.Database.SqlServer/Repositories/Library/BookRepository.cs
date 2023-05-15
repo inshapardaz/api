@@ -24,7 +24,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         public async Task<BookModel> AddBook(int libraryId, BookModel book, int? AccountId, CancellationToken cancellationToken)
         {
             int bookId;
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 book.LibraryId = libraryId;
                 var sql = @"Insert Into Book
@@ -68,7 +68,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         public async Task UpdateBook(int libraryId, BookModel book, CancellationToken cancellationToken)
         {
             book.LibraryId = libraryId;
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update Book SET
                             Title = @Title, [Description] = @Description,
@@ -112,7 +112,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task DeleteBook(int libraryId, int bookId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Delete From Book Where LibraryId = @LibraryId AND Id = @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = bookId }, cancellationToken: cancellationToken);
@@ -122,7 +122,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var param = new
                 {
@@ -159,7 +159,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, int? AccountId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
                 var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -243,7 +243,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<Page<BookModel>> SearchBooks(int libraryId, string searchText, int pageNumber, int pageSize, int? AccountId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
                 var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -327,7 +327,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, BookStatuses status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
                 var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -388,7 +388,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<BookModel> GetBookById(int libraryId, int bookId, int? AccountId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 BookModel book = null;
                 var sql = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
@@ -432,7 +432,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task AddRecentBook(int libraryId, int AccountId, int bookId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 // TODO :  Delete to old records
                 var sql = @"Delete From RecentBooks Where LibraryId = @LibraryId And BookId = @BookId And AccountId = @AccountId;
@@ -444,7 +444,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task DeleteBookFromRecent(int libraryId, int AccountId, int bookId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Delete From RecentBooks Where LibraryId = @LibraryId And BookId = @BookId And AccountId = @AccountId;";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, AccountId = AccountId }, cancellationToken: cancellationToken);
@@ -454,7 +454,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task AddBookToFavorites(int libraryId, int? AccountId, int bookId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var check = "Select count(*) From FavoriteBooks Where LibraryId = @LibraryId And AccountId = @AccountId And BookId = @BookId;";
                 var commandCheck = new CommandDefinition(check, new { LibraryId = libraryId, AccountId = AccountId, BookId = bookId }, cancellationToken: cancellationToken);
@@ -470,7 +470,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task DeleteBookFromFavorites(int libraryId, int AccountId, int bookId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Delete From FavoriteBooks Where LibraryId = @LibraryId And AccountId = @AccountId And BookId = @BookId";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = AccountId, BookId = bookId }, cancellationToken: cancellationToken);
@@ -480,7 +480,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task DeleteBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Delete bc
                             From BookContent bc
@@ -494,7 +494,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<BookContentModel> GetBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl
                             FROM BookContent bc
@@ -508,7 +508,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<IEnumerable<BookContentModel>> GetBookContents(int libraryId, int bookId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl
                             FROM BookContent bc
@@ -522,7 +522,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task UpdateBookContentUrl(int libraryId, int bookId, string language, string mimeType, string contentUrl, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update f SET FilePath = @ContentUrl
                             From  [File] f
@@ -543,7 +543,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task AddBookContent(int bookId, int fileId, string language, string mimeType, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Insert Into BookContent (BookId, FileId, Language)
                             Values (@BookId, @FileId, @Language)";
@@ -554,7 +554,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task UpdateBookImage(int libraryId, int bookId, int imageId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update Book
                             Set ImageId = @ImageId
@@ -566,7 +566,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<IEnumerable<BookPageSummaryModel>> GetBookPageSummary(int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var bookSummaries = new Dictionary<int, BookPageSummaryModel>();
                 const string sql = @"Select bp.BookId, bp.[Status], Count(*),

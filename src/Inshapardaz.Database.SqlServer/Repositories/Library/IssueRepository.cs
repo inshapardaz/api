@@ -21,7 +21,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<Page<IssueModel>> GetIssues(int libraryId, int periodicalId, int pageNumber, int pageSize, IssueFilter filter, IssueSortByType sortBy, SortDirection sortDirection, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sortByQuery = $"i.{GetSortByQuery(sortBy)}";
                 var direction = sortDirection == SortDirection.Descending ? "DESC" : "ASC";
@@ -76,7 +76,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<IssueModel> GetIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
                             (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
@@ -113,7 +113,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         public async Task<IssueModel> AddIssue(int libraryId, int periodicalId, IssueModel issue, CancellationToken cancellationToken)
         {
             int id;
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = "INSERT Into Issue (PeriodicalId, Volumenumber, IssueNumber, IsPublic, ImageId, IssueDate) " +
                           "OUTPUT Inserted.Id " +
@@ -137,7 +137,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task UpdateIssue(int libraryId, int periodicalId, IssueModel issue, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"UPDATE Issue
                             SET PeriodicalId = @PeriodicalId, Volumenumber = @Volumenumber, IssueNumber = @IssueNumber, 
@@ -161,7 +161,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task DeleteIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"DELETE i FROM Issue i
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
@@ -177,7 +177,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         public async Task AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int fileId, string language, string mimeType, CancellationToken cancellationToken)
         {
             var issue = await GetIssue(libraryId, periodicalId, volumeNumber, issueNumber,cancellationToken);
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"INSERT INTO IssueContent (IssueId, FileId, Language, MimeType)
                             VALUES (@IssueId, @FileId, @Language, @MimeType)";
@@ -188,7 +188,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<IEnumerable<IssueContentModel>> GetIssueContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT ic.Id, ic.IssueId, i.PeriodicalId, i.VolumeNumber, i.IssueNumber, ic.Language, f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl
                             FROM IssueContent ic
@@ -212,7 +212,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<IssueContentModel> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT ic.Id, ic.IssueId, ic.Language, 
                             p.Id As PeriodicalId, i.VolumeNumber As VolumeNumber, i.IssueNumber As IssueNumber,
@@ -236,7 +236,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task UpdateIssueContentUrl(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, string url, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"UPDATE f SET FilePath = @ContentUrl
                             FROM  [File] f
@@ -265,7 +265,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"DELETE ic
                             FROM IssueContent ic
@@ -291,7 +291,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         private async Task<IssueModel> GetIssueById(int libraryId, int periodicalId, int issueId,CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
                             (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,

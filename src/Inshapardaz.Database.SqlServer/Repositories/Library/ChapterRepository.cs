@@ -21,7 +21,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         public async Task<ChapterModel> AddChapter(int libraryId, int bookId, ChapterModel chapter, CancellationToken cancellationToken)
         {
             int id;
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = "Insert Into Chapter (Title, BookId, ChapterNumber) Output Inserted.Id Values (@Title, @BookId, @ChapterNumber)";
                 var command = new CommandDefinition(sql, new { Title = chapter.Title, BookId = bookId, ChapterNumber = chapter.ChapterNumber }, cancellationToken: cancellationToken);
@@ -34,7 +34,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task UpdateChapter(int libraryId, int bookId, int oldChapterNumber, ChapterModel chapter, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update C Set C.Title = @Title, C.BookId = @BookId, C.ChapterNumber = @ChapterNumber, C.Status = @Status
                             From Chapter C
@@ -60,7 +60,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task UpdateChaptersSequence(int libraryId, int bookId, IEnumerable<ChapterModel> chapters, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update C Set C.ChapterNumber = @ChapterNumber
                             From Chapter C
@@ -80,7 +80,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task DeleteChapter(int libraryId, int bookId, int chapterNumber, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Delete c From Chapter c
                             Inner Join Book b On b.Id = c.BookId
@@ -99,7 +99,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<IEnumerable<ChapterModel>> GetChaptersByBook(int libraryId, int bookId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var chapters = new Dictionary<int, ChapterModel>();
 
@@ -148,7 +148,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<ChapterModel> GetChapterById(int libraryId, int bookId, int chapterNumber, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 ChapterModel chapter = null;
                 var sql = @"Select c.*, cc.*, a.*, ar.*
@@ -188,7 +188,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<ChapterContentModel> GetChapterContent(int libraryId, int bookId, int chapterNumber, string language, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Select cc.*, c.chapterNumber, b.Id As BookId From Chapter c
                             Inner Join Book b On b.Id = c.BookId
@@ -201,7 +201,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<ChapterContentModel> AddChapterContent(int libraryId, ChapterContentModel content, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Insert Into ChapterContent (ChapterId, Language, Text)
                             Values (@ChapterId, @Language, @Text)";
@@ -214,7 +214,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, string text, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update cc SET Text = @Text
                             FROM ChapterContent cc
@@ -235,7 +235,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task DeleteChapterContentById(int libraryId, int bookId, int chapterNumber, string language, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Delete cc
                             From ChapterContent cc
@@ -255,7 +255,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task ReorderChapters(int libraryId, int bookId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT c.Id, row_number() OVER (ORDER BY c.ChapterNumber) as 'ChapterNumber'
                             From Chapter c
@@ -279,7 +279,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<ChapterModel> UpdateWriterAssignment(int libraryId, int bookId, int chapterNumber, int? assignedAccountId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update c
                             SET c.WriterAccountId = @WriterAccountId, c.WriterAssignTimeStamp = GETUTCDATE()
@@ -295,7 +295,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<ChapterModel> UpdateReviewerAssignment(int libraryId, int bookId, int chapterNumber, int? assignedAccountId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update c
                             SET c.ReviewerAccountId = @ReviewerAccountId, c.ReviewerAssignTimeStamp = GETUTCDATE()
@@ -311,7 +311,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         private async Task<ChapterModel> GetChapterByChapterId(int chapterId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 ChapterModel chapter = null;
                 var sql = @"Select c.*, cc.*, a.*, ar.*

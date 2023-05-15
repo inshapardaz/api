@@ -20,7 +20,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         public async Task<AuthorModel> AddAuthor(int libraryId, AuthorModel author, CancellationToken cancellationToken)
         {
             int authorId;
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Insert Into Author(Name, Description, ImageId, LibraryId, AuthorType) OUTPUT Inserted.Id VALUES(@Name, @Description, @ImageId, @LibraryId, @AuthorType);";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Name = author.Name, Description = author.Description, ImageId = author.ImageId, AuthorType = (int)author.AuthorType }, cancellationToken: cancellationToken);
@@ -32,7 +32,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task UpdateAuthor(int libraryId, AuthorModel author, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update Author Set Name = @Name, Description = @Description, ImageId = @ImageId, AuthorType = @AuthorType Where Id = @Id AND LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new { Id = author.Id, LibraryId = libraryId, Name = author.Name, Description = author.Description, ImageId = author.ImageId, AuthorType = (int)author.AuthorType }, cancellationToken: cancellationToken);
@@ -42,7 +42,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task UpdateAuthorImage(int libraryId, int authorId, int imageId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update Author Set ImageId = @ImageId Where Id = @Id AND LibraryId = @LibraryId ";
                 var command = new CommandDefinition(sql, new { Id = authorId, LibraryId = libraryId, ImageId = imageId }, cancellationToken: cancellationToken);
@@ -52,7 +52,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task DeleteAuthor(int libraryId, int authorId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Delete From Author Where LibraryId = @LibraryId AND Id = @Id";
                 var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = authorId }, cancellationToken: cancellationToken);
@@ -62,7 +62,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<Page<AuthorModel>> GetAuthors(int libraryId, AuthorTypes? authorType, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                             (SELECT Count(*)
@@ -97,7 +97,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<AuthorModel> GetAuthorById(int libraryId, int authorId, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType as AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                             (SELECT Count(*)
@@ -118,7 +118,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<Page<AuthorModel>> FindAuthors(int libraryId, string query, AuthorTypes? authorType, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                             (SELECT Count(*)
@@ -154,7 +154,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         public async Task<IEnumerable<AuthorModel>> GetAuthorByIds(int libraryId, IEnumerable<int> authorIds, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                             (SELECT Count(*)

@@ -1,5 +1,4 @@
 ﻿using Amazon.S3;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using System;
 using System.IO;
@@ -8,16 +7,14 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Storage.S3
 {
+
     public class S3FileStorage : IFileStorage
     {
-        private readonly string _accessKey, _accessSecret, _serviceUrl, _bucketName;
+        private readonly S3Configuration _configuration;
 
-        public S3FileStorage(Settings settings)
+        public S3FileStorage(S3Configuration configuration)
         {
-            _serviceUrl = settings.S3ServiceUrl;
-            _accessKey = settings.S3Accesskey;
-            _accessSecret = settings.S3AccessSecret;
-            _bucketName = settings.S3BucketName;
+            _configuration = configuration;
         }
 
         public bool SupportsPublicLink => true;
@@ -27,7 +24,7 @@ namespace Inshapardaz.Storage.S3
             var client = GetClient();
             var request = new Amazon.S3.Model.GetObjectRequest();
             request.Key = filePath;
-            request.BucketName = _bucketName;
+            request.BucketName = _configuration.BucketName;
             var response = await client.GetObjectAsync(request, cancellationToken);
             return await ReadAllContents(response.ResponseStream);
         }
@@ -37,7 +34,7 @@ namespace Inshapardaz.Storage.S3
             var client = GetClient();
             var request = new Amazon.S3.Model.GetObjectRequest();
             request.Key = filePath;
-            request.BucketName = _bucketName;
+            request.BucketName = _configuration.BucketName;
             var response = await client.GetObjectAsync(request, cancellationToken);
             return await ReadAllText(response.ResponseStream);
         }
@@ -46,7 +43,7 @@ namespace Inshapardaz.Storage.S3
         {
             var client = GetClient();
             var request = new Amazon.S3.Model.PutObjectRequest();
-            request.BucketName = _bucketName;
+            request.BucketName = _configuration.BucketName;
             request.ContentType = "";
             request.InputStream = new MemoryStream(content);
             request.Key = name;
@@ -59,7 +56,7 @@ namespace Inshapardaz.Storage.S3
         {
             var client = GetClient();
             var request = new Amazon.S3.Model.PutObjectRequest();
-            request.BucketName = _bucketName;
+            request.BucketName = _configuration.BucketName;
             request.ContentType = mimeType;
             request.InputStream = new MemoryStream(content);
             request.Key = name;
@@ -72,7 +69,7 @@ namespace Inshapardaz.Storage.S3
         {
             var client = GetClient();
             var request = new Amazon.S3.Model.PutObjectRequest();
-            request.BucketName = _bucketName;
+            request.BucketName = _configuration.BucketName;
             request.ContentType = "";
             request.ContentBody = content;
             request.Key = name;
@@ -85,7 +82,7 @@ namespace Inshapardaz.Storage.S3
         {
             var client = GetClient();
             var request = new Amazon.S3.Model.DeleteObjectRequest();
-            request.BucketName = _bucketName;
+            request.BucketName = _configuration.BucketName;
             request.Key = filePath;
             await client.DeleteObjectAsync(request, cancellationToken);
         }
@@ -94,7 +91,7 @@ namespace Inshapardaz.Storage.S3
         {
             var client = GetClient();
             var request = new Amazon.S3.Model.DeleteObjectRequest();
-            request.BucketName = _bucketName;
+            request.BucketName = _configuration.BucketName;
             request.Key = filePath;
             await client.DeleteObjectAsync(request, cancellationToken);
         }
@@ -105,7 +102,7 @@ namespace Inshapardaz.Storage.S3
             try
             {
                 var request = new Amazon.S3.Model.GetObjectMetadataRequest();
-                request.BucketName = _bucketName;
+                request.BucketName = _configuration.BucketName;
                 request.Key = filePath;
                 await client.GetObjectMetadataAsync(request, cancellationToken);
                 await DeleteFile(filePath, cancellationToken);
@@ -121,7 +118,7 @@ namespace Inshapardaz.Storage.S3
             try
             {
                 var request = new Amazon.S3.Model.DeleteObjectRequest();
-                request.BucketName = _bucketName;
+                request.BucketName = _configuration.BucketName;
                 request.Key = filePath;
                 await client.DeleteObjectAsync(request, cancellationToken);
             }
@@ -133,11 +130,11 @@ namespace Inshapardaz.Storage.S3
         private AmazonS3Client GetClient()
         {
             AmazonS3Config config = new AmazonS3Config();
-            config.ServiceURL = _serviceUrl;
+            config.ServiceURL = _configuration.ServiceUrl;
 
             return new AmazonS3Client(
-                    _accessKey,
-                    _accessSecret,
+                    _configuration.AccessKey,
+                    _configuration.AccessSecret,
                     config);
         }
 
@@ -166,7 +163,7 @@ namespace Inshapardaz.Storage.S3
 
         public string GetPublicUrl(string filePath)
         {
-            return new Uri(new Uri(_serviceUrl), $"{_bucketName}/" + filePath).ToString();
+            return new Uri(new Uri(_configuration.ServiceUrl), $"{_configuration.BucketName}/" + filePath).ToString();
         }
     }
 }

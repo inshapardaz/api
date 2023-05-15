@@ -17,7 +17,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
 
         public async Task<FileModel> GetFileById(int id, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Select *
                             FROM [File]
@@ -31,7 +31,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
         public async Task<FileModel> AddFile(FileModel file, CancellationToken cancellationToken)
         {
             int id;
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Insert Into [File] (FileName, MimeType, FilePath, IsPublic, DateCreated)
                             Output Inserted.Id
@@ -45,7 +45,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
 
         public async Task UpdateFile(FileModel file, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update [File]
                             Set FileName = @FileName,
@@ -61,7 +61,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
 
         public async Task DeleteFile(int id, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Delete From [File] Where Id = @Id";
                 var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);

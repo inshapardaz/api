@@ -19,7 +19,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
 
         public async Task DeleteFile(string filePath, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Delete From [FileData] Where Path = @Path";
                 var command = new CommandDefinition(sql, new { Path = filePath }, cancellationToken: cancellationToken);
@@ -34,7 +34,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
 
         public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Select [content]
                             From [FileData]
@@ -54,7 +54,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories
         public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
         {
             var path = $"{Guid.NewGuid():N}/{name}";
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Insert Into [FileData] (Path, Content)
                             VALUES (@Path, @Content)"; ;

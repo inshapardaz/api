@@ -20,6 +20,7 @@ using MailKit.Net.Smtp;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using Inshapardaz.Storage.S3;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api
 {
@@ -88,20 +89,8 @@ namespace Inshapardaz.Api
             services.AddTransient<IConvertPdf, PdfConverter>();
             services.AddTransient<IOpenZip, ZipReader>();
             services.AddTransient<IProvideOcr, GoogleOcr>();
-
-            if (settings.FileStoreType == FileStoreTypes.AzureBlobStorage)
-            {
-                services.AddTransient<IFileStorage, AzureFileStorage>();
-            }
-            if (settings.FileStoreType == FileStoreTypes.S3Storage)
-            {
-                services.AddTransient<IFileStorage, S3FileStorage>();
-            }
-            else
-            {
-                services.AddTransient<IFileStorage, DatabaseFileStorage>();
-            }
-
+            services.AddScoped<LibraryConfiguration>();
+            services.AddTransient(s => FileStorageFactory.GetFileStore(s.GetService<LibraryConfiguration>(), s.GetService<Settings>()));
             AddCustomServices(services);
         }
 
@@ -124,6 +113,7 @@ namespace Inshapardaz.Api
             app.UseStaticFiles();
             // global error handler
             app.UseMiddleware<ErrorHandlerMiddleware>();
+            app.UseMiddleware<LibraryConfigurationMiddleware>();
             app.UseStatusCodeMiddleWare();
             // custom jwt auth middleware
             app.UseMiddleware<JwtMiddleware>();

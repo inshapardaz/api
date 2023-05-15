@@ -5,5 +5,6 @@ namespace Inshapardaz.Database.SqlServer
     public interface IProvideConnection
     {
         IDbConnection GetConnection();
+        IDbConnection GetLibraryConnection();
     }
 }

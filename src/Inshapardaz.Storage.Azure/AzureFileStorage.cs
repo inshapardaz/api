@@ -13,9 +13,9 @@ namespace Inshapardaz.Storage.Azure
     {
         private readonly string _storageConnectionString;
 
-        public AzureFileStorage(Settings settings)
+        public AzureFileStorage(string storageConnectionString)
         {
-            _storageConnectionString = settings.FileStorageConnectionString;
+            _storageConnectionString = storageConnectionString;
         }
 
         public bool SupportsPublicLink => true;

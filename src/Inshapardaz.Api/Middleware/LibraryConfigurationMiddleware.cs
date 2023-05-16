@@ -14,17 +14,15 @@ namespace Inshapardaz.Api.Middleware
         private readonly RequestDelegate _next;
         private readonly ILibraryRepository _libraryRepository;
         private readonly Settings _settings;
-        private readonly LibraryConfiguration _libraryConfiguration;
 
-        public LibraryConfigurationMiddleware(RequestDelegate next, ILibraryRepository libraryRepository, Settings settings, LibraryConfiguration libraryConfiguration)
+        public LibraryConfigurationMiddleware(RequestDelegate next, ILibraryRepository libraryRepository, Settings settings)
         {
             _next = next;
             _libraryRepository = libraryRepository;
             _settings = settings;
-            _libraryConfiguration = libraryConfiguration;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, LibraryConfiguration libraryConfiguration)
         {
             var libraryIdValue = context.GetRouteValue("libraryId")?.ToString();
             if (!string.IsNullOrWhiteSpace(libraryIdValue) && int.TryParse(libraryIdValue, out var libraryId))
@@ -32,9 +30,9 @@ namespace Inshapardaz.Api.Middleware
                 var library = await _libraryRepository.GetLibraryById(libraryId, CancellationToken.None);
                 if (library is not null)
                 {
-                    _libraryConfiguration.ConnectionString = library.DatabaseConnection ?? _settings.DefaultConnection;
-                    _libraryConfiguration.FileStoreType = library.FileStoreType ?? _settings.FileStoreType;
-                    _libraryConfiguration.FileStoreSource = library.FileStoreSource;
+                    libraryConfiguration.ConnectionString = library.DatabaseConnection ?? _settings.DefaultConnection;
+                    libraryConfiguration.FileStoreType = library.FileStoreType ?? _settings.FileStoreType;
+                    libraryConfiguration.FileStoreSource = library.FileStoreSource;
                 }
             }
             await _next(context);

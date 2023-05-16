@@ -90,7 +90,7 @@ namespace Inshapardaz.Api
             services.AddTransient<IOpenZip, ZipReader>();
             services.AddTransient<IProvideOcr, GoogleOcr>();
             services.AddScoped<LibraryConfiguration>();
-            services.AddTransient(s => FileStorageFactory.GetFileStore(s.GetService<LibraryConfiguration>(), s.GetService<Settings>()));
+            services.AddScoped(s => FileStorageFactory.GetFileStore(s.GetService<LibraryConfiguration>(), s.GetService<Settings>()));
             AddCustomServices(services);
         }
 

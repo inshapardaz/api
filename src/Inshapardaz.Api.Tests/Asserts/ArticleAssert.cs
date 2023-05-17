@@ -10,39 +10,39 @@ using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Asserts
 {
-    internal class ArticleAssert
+    internal class IssueArticleAssert
     {
         private HttpResponseMessage _response;
         private readonly int _libraryId;
         private readonly IssueDto _issue;
-        private ArticleView _article;
+        private IssueArticleView _article;
 
-        public ArticleAssert(ArticleView view, int libraryId, IssueDto issue)
+        public IssueArticleAssert(IssueArticleView view, int libraryId, IssueDto issue)
         {
             _libraryId = libraryId;
             _issue = issue;
             _article = view;
         }
 
-        public ArticleAssert(HttpResponseMessage response, int libraryId, IssueDto issue)
+        public IssueArticleAssert(HttpResponseMessage response, int libraryId, IssueDto issue)
         {
             _response = response;
             _libraryId = libraryId;
             _issue = issue;
-            _article = response.GetContent<ArticleView>().Result;
+            _article = response.GetContent<IssueArticleView>().Result;
         }
 
-        internal static ArticleAssert FromResponse(HttpResponseMessage response, int libraryId, IssueDto issue)
+        internal static IssueArticleAssert FromResponse(HttpResponseMessage response, int libraryId, IssueDto issue)
         {
-            return new ArticleAssert(response, libraryId, issue);
+            return new IssueArticleAssert(response, libraryId, issue);
         }
 
-        internal static ArticleAssert FromObject(ArticleView view, int libraryId, IssueDto issue)
+        internal static IssueArticleAssert FromObject(IssueArticleView view, int libraryId, IssueDto issue)
         {
-            return new ArticleAssert(view, libraryId, issue);
+            return new IssueArticleAssert(view, libraryId, issue);
         }
 
-        internal ArticleAssert ShouldHaveCorrectLocationHeader()
+        internal IssueArticleAssert ShouldHaveCorrectLocationHeader()
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldBeAssignedToUserForWriting(AccountDto account)
+        internal IssueArticleAssert ShouldBeAssignedToUserForWriting(AccountDto account)
         {
             _article.WriterAccountId.Should().Be(account.Id);
             _article.WriterAccountName.Should().Be(account.Name);
@@ -58,7 +58,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldNotBeAssignedForWriting()
+        internal IssueArticleAssert ShouldNotBeAssignedForWriting()
         {
             _article.WriterAccountId.Should().BeNull();
             _article.WriterAccountName.Should().BeNull();
@@ -66,7 +66,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldBeSavedAssignmentForWriting(IDbConnection dbConnection, AccountDto account)
+        internal IssueArticleAssert ShouldBeSavedAssignmentForWriting(IDbConnection dbConnection, AccountDto account)
         {
             var dbArticle = dbConnection.GetArticleById(_article.Id);
             dbArticle.WriterAccountId.Should().Be(account.Id);
@@ -74,7 +74,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldBeSavedNoAssignmentForWriting(IDbConnection dbConnection)
+        internal IssueArticleAssert ShouldBeSavedNoAssignmentForWriting(IDbConnection dbConnection)
         {
             var dbArticle = dbConnection.GetArticleById(_article.Id);
             dbArticle.WriterAccountId.Should().BeNull();
@@ -82,7 +82,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldBeAssignedToUserForReviewing(AccountDto account)
+        internal IssueArticleAssert ShouldBeAssignedToUserForReviewing(AccountDto account)
         {
             _article.ReviewerAccountId.Should().Be(account.Id);
             _article.ReviewerAccountName.Should().Be(account.Name);
@@ -90,7 +90,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldNotBeAssignedForReviewing()
+        internal IssueArticleAssert ShouldNotBeAssignedForReviewing()
         {
             _article.ReviewerAccountId.Should().BeNull();
             _article.ReviewerAccountName.Should().BeNull();
@@ -98,7 +98,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldBeSavedAssignmentForReviewing(IDbConnection dbConnection, AccountDto account)
+        internal IssueArticleAssert ShouldBeSavedAssignmentForReviewing(IDbConnection dbConnection, AccountDto account)
         {
             var dbArticle = dbConnection.GetArticleById(_article.Id);
             dbArticle.ReviewerAccountId.Should().Be(account.Id);
@@ -106,7 +106,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldBeSavedNoAssignmentForReviewing(IDbConnection dbConnection)
+        internal IssueArticleAssert ShouldBeSavedNoAssignmentForReviewing(IDbConnection dbConnection)
         {
             var dbArticle = dbConnection.GetArticleById(_article.Id);
             dbArticle.ReviewerAccountId.Should().BeNull();
@@ -114,7 +114,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldHaveSavedArticle(IDbConnection dbConnection)
+        internal IssueArticleAssert ShouldHaveSavedArticle(IDbConnection dbConnection)
         {
             var dbArticle = dbConnection.GetArticleById(_article.Id);
             dbArticle.Should().NotBeNull();
@@ -134,7 +134,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             contents.Should().BeNullOrEmpty();
         }
 
-        internal ArticleAssert ShouldHaveSelfLink()
+        internal IssueArticleAssert ShouldHaveSelfLink()
         {
             _article.SelfLink()
                   .ShouldBeGet()
@@ -143,7 +143,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert WithReadOnlyLinks()
+        internal IssueArticleAssert WithReadOnlyLinks()
         {
             ShouldHaveSelfLink()
             .ShouldHavePeriodicalLink()
@@ -155,7 +155,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert WithWriteableLinks()
+        internal IssueArticleAssert WithWriteableLinks()
         {
             ShouldHaveAddIssueContentLink()
             .ShouldHaveUpdateLink()
@@ -176,7 +176,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _article.Link("content").Should().BeNull();
         }
-        internal ArticleAssert ShouldHaveIssueLink()
+        internal IssueArticleAssert ShouldHaveIssueLink()
         {
             _article.Link("issue")
                   .ShouldBeGet()
@@ -185,7 +185,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldHavePeriodicalLink()
+        internal IssueArticleAssert ShouldHavePeriodicalLink()
         {
             _article.Link("periodical")
                   .ShouldBeGet()
@@ -194,7 +194,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldHaveAssignmentLink()
+        internal IssueArticleAssert ShouldHaveAssignmentLink()
         {
             _article.Link("assign")
                   .ShouldBePost()
@@ -202,7 +202,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldNotHaveAssignmentLink()
+        internal IssueArticleAssert ShouldNotHaveAssignmentLink()
         {
             _article.Link("assign")
                   .Should().BeNull();
@@ -221,7 +221,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             }
         }
 
-        internal ArticleAssert ShouldHaveUpdateLink()
+        internal IssueArticleAssert ShouldHaveUpdateLink()
         {
             _article.UpdateLink()
                  .ShouldBePut()
@@ -230,13 +230,13 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldNotHaveUpdateLink()
+        internal IssueArticleAssert ShouldNotHaveUpdateLink()
         {
             _article.UpdateLink().Should().BeNull();
             return this;
         }
 
-        internal ArticleAssert ShouldHaveDeleteLink()
+        internal IssueArticleAssert ShouldHaveDeleteLink()
         {
             _article.DeleteLink()
                  .ShouldBeDelete()
@@ -245,13 +245,13 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldNotHaveDeleteLink()
+        internal IssueArticleAssert ShouldNotHaveDeleteLink()
         {
             _article.DeleteLink().Should().BeNull();
             return this;
         }
 
-        internal ArticleAssert ShouldHaveAddIssueContentLink()
+        internal IssueArticleAssert ShouldHaveAddIssueContentLink()
         {
             _article.Link("add-content")
                  .ShouldBePost()
@@ -260,13 +260,13 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldNotHaveAddArticleContentLink()
+        internal IssueArticleAssert ShouldNotHaveAddArticleContentLink()
         {
             _article.Link("add-content").Should().BeNull();
             return this;
         }
 
-        internal ArticleAssert ShouldHaveUpdateArticleContentLink(IssueContentDto content)
+        internal IssueArticleAssert ShouldHaveUpdateArticleContentLink(IssueContentDto content)
         {
             var actual = _article.Contents.Single(x => x.Id == content.Id);
             actual.UpdateLink()
@@ -277,7 +277,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldHaveDeleteIssueContentLink(IssueContentDto content)
+        internal IssueArticleAssert ShouldHaveDeleteIssueContentLink(IssueContentDto content)
         {
             var actual = _article.Contents.Single(x => x.Id == content.Id);
             actual.DeleteLink()
@@ -288,19 +288,19 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldNotHaveContentsLink()
+        internal IssueArticleAssert ShouldNotHaveContentsLink()
         {
             _article.Link("content").Should().BeNull();
             return this;
         }
 
-        internal ArticleAssert ShouldHaveNotNextLink()
+        internal IssueArticleAssert ShouldHaveNotNextLink()
         {
             _article.Link("next").Should().BeNull();
             return this;
         }
 
-        internal ArticleAssert ShouldHaveNextLink(int sequenceNumber)
+        internal IssueArticleAssert ShouldHaveNextLink(int sequenceNumber)
         {
             _article.Link("next")
                     .ShouldBeGet()
@@ -308,13 +308,13 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldHaveNotPreviousLink()
+        internal IssueArticleAssert ShouldHaveNotPreviousLink()
         {
             _article.Link("previous").Should().BeNull();
             return this;
         }
 
-        internal ArticleAssert ShouldHavePreviousLink(int sequenceNumber)
+        internal IssueArticleAssert ShouldHavePreviousLink(int sequenceNumber)
         {
             _article.Link("previous")
                     .ShouldBeGet()
@@ -322,7 +322,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal void ShouldMatch(ArticleView view)
+        internal void ShouldMatch(IssueArticleView view)
         {
             _article.Title.Should().Be(view.Title);
             _article.SequenceNumber.Should().Be(view.SequenceNumber);
@@ -381,7 +381,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.Status.Should().Be(dto.Status.ToString());
         }
 
-        internal ArticleAssert ShouldBeSameAs(ArticleDto dto)
+        internal IssueArticleAssert ShouldBeSameAs(ArticleDto dto)
         {
             _article.Title.Should().Be(dto.Title);
             _article.SequenceNumber.Should().Be(dto.SequenceNumber);

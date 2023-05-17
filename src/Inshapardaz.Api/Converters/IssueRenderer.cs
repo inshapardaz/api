@@ -124,7 +124,7 @@ namespace Inshapardaz.Api.Converters
                 }),
                 _linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(ArticleController.GetArticlesByIssue),
+                    ActionName = nameof(IssueArticleController.GetIssueArticles),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Articles,
                     Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
@@ -188,7 +188,7 @@ namespace Inshapardaz.Api.Converters
 
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(ArticleController.CreateArticle),
+                    ActionName = nameof(IssueArticleController.CreateIssueArticle),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.CreateArticle,
                     Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }

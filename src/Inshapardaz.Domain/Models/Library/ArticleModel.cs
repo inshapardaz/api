@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Inshapardaz.Domain.Models.Library
 {
-    public class ArticleModel
+    public class IssueArticleModel
     {
         public int Id { get; set; }
 
@@ -27,7 +27,7 @@ namespace Inshapardaz.Domain.Models.Library
         public string ReviewerAccountName { get; set; }
         public DateTime? ReviewerAssignTimeStamp { get; set; }
         public EditingStatus Status { get; set; }
-        public ArticleModel PreviousArticle { get; set; }
-        public ArticleModel NextArticle { get; set; }
+        public IssueArticleModel PreviousArticle { get; set; }
+        public IssueArticleModel NextArticle { get; set; }
     }
 }

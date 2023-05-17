@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Adapters.Repositories.Library
 {
-    public interface IArticleRepository
+    public interface IIssueArticleRepository
     {
-        Task<IEnumerable<ArticleModel>> GetArticlesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken);
+        Task<IEnumerable<IssueArticleModel>> GetArticlesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken);
 
-        Task<ArticleModel> GetArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber,int sequenceNumber, CancellationToken cancellationToken);
+        Task<IssueArticleModel> GetArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber,int sequenceNumber, CancellationToken cancellationToken);
 
-        Task<ArticleModel> AddArticle(int libraryId, int peridicalId, int volumeNumber, int issueNumber, ArticleModel article, CancellationToken cancellationToken);
+        Task<IssueArticleModel> AddArticle(int libraryId, int peridicalId, int volumeNumber, int issueNumber, IssueArticleModel article, CancellationToken cancellationToken);
 
-        Task UpdateArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, ArticleModel article, CancellationToken cancellationToken);
+        Task UpdateArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IssueArticleModel article, CancellationToken cancellationToken);
 
         Task<IEnumerable<ArticleContentModel>> GetArticleContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken);
 
@@ -28,8 +28,8 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
         Task<ArticleContentModel> GetArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken);
 
         Task DeleteArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken);
-        Task<ArticleModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken);
-        Task<ArticleModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken);
-        Task UpdateArticleSequence(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IEnumerable<ArticleModel> articles, CancellationToken cancellationToken);
+        Task<IssueArticleModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken);
+        Task<IssueArticleModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken);
+        Task UpdateArticleSequence(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IEnumerable<IssueArticleModel> articles, CancellationToken cancellationToken);
     }
 }

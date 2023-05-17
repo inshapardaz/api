@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Inshapardaz.Api.Views.Library
 {
-    public class ArticleView : ViewWithLinks
+    public class IssueArticleView : ViewWithLinks
     {
         public int Id { get; set; }
 

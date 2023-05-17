@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Database.SqlServer.Repositories.Library
 {
-    public class ArticleRepository : IArticleRepository
+    public class ArticleRepository : IIssueArticleRepository
     {
         private readonly IProvideConnection _connectionProvider;
 
@@ -21,7 +21,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             _connectionProvider = connectionProvider;
         }
 
-        public async Task<ArticleModel> AddArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, ArticleModel article, CancellationToken cancellationToken)
+        public async Task<IssueArticleModel> AddArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IssueArticleModel article, CancellationToken cancellationToken)
         {
             int id;
             using (var connection = _connectionProvider.GetLibraryConnection())
@@ -58,7 +58,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             return await GetArticleById(id, cancellationToken);
         }
 
-        public async Task UpdateArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, ArticleModel article, CancellationToken cancellationToken)
+        public async Task UpdateArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IssueArticleModel article, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
@@ -125,11 +125,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<ArticleModel> GetArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+        public async Task<IssueArticleModel> GetArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                ArticleModel article = null;
+                IssueArticleModel article = null;
                 var sql = @"SELECT a.*, ac.*
                             FROM Article a
                             INNER JOIN Issue i ON i.Id = a.IssueId
@@ -144,7 +144,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     IssueNumber = issueNumber,
                     SequenceNumber = sequenceNumber
                 }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ArticleModel, ArticleContentModel, ArticleModel>(command, (a, ac) =>
+                await connection.QueryAsync<IssueArticleModel, ArticleContentModel, IssueArticleModel>(command, (a, ac) =>
                 {
                     if (article == null)
                     {
@@ -187,7 +187,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     IssueNumber = issueNumber,
                     SequenceNumber = sequenceNumber,
                     Language = language }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ArticleModel, ArticleContentModel, IssueModel, ArticleContentModel>(command, (a, ac, i) =>
+                await connection.QueryAsync<IssueArticleModel, ArticleContentModel, IssueModel, ArticleContentModel>(command, (a, ac, i) =>
                 {
                     if (articleContent == null)
                     {
@@ -205,11 +205,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<IEnumerable<ArticleModel>> GetArticlesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
+        public async Task<IEnumerable<IssueArticleModel>> GetArticlesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var articles = new Dictionary<int, ArticleModel>();
+                var articles = new Dictionary<int, IssueArticleModel>();
 
                 var sql = @"SELECT a.*, at.*, i.*
                             FROM Article a
@@ -224,9 +224,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     VolumeNumber = volumeNumber,
                     IssueNumber = issueNumber,
                 }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ArticleModel, ArticleContentModel, IssueModel, ArticleModel>(command, (a, at, i) =>
+                await connection.QueryAsync<IssueArticleModel, ArticleContentModel, IssueModel, IssueArticleModel>(command, (a, at, i) =>
                 {
-                    if (!articles.TryGetValue(a.Id, out ArticleModel article))
+                    if (!articles.TryGetValue(a.Id, out IssueArticleModel article))
                     {
                         articles.Add(a.Id, article = a);
                     }
@@ -390,21 +390,21 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public Task<ArticleModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
+        public Task<IssueArticleModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ArticleModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
+        public Task<IssueArticleModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        private async Task<ArticleModel> GetArticleById(int articleId, CancellationToken cancellationToken)
+        private async Task<IssueArticleModel> GetArticleById(int articleId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                ArticleModel article = null;
+                IssueArticleModel article = null;
                 var sql = @"SELECT a.*, ac.*
                             FROM Article a
                             INNER JOIN Issue i ON i.Id = a.IssueId
@@ -414,7 +414,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 {
                     Id = articleId
                 }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<ArticleModel, ArticleContentModel, ArticleModel>(command, (a, ac) =>
+                await connection.QueryAsync<IssueArticleModel, ArticleContentModel, IssueArticleModel>(command, (a, ac) =>
                 {
                     if (article == null)
                     {
@@ -467,7 +467,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task UpdateArticleSequence(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IEnumerable<ArticleModel> articles, CancellationToken cancellationToken)
+        public async Task UpdateArticleSequence(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IEnumerable<IssueArticleModel> articles, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {

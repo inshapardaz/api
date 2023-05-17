@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIss
     {
         private IssueDto _issue;
         private HttpResponseMessage _response;
-        private ListView<ArticleView> _view;
+        private ListView<IssueArticleView> _view;
 
         public WhenGettingArticlesByIssueAsReader()
             : base(Role.Reader)
@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIss
             _issue = RandomData.PickRandom(issues);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles");
-            _view = _response.GetContent<ListView<ArticleView>>().Result;
+            _view = _response.GetContent<ListView<IssueArticleView>>().Result;
         }
 
         [OneTimeTearDown]
@@ -72,7 +72,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIss
             foreach (var expected in IssueBuilder.GetArticles(_issue.Id))
             {
                 var actual = _view.Data.FirstOrDefault(x => x.Id == expected.Id);
-                var assert = new ArticleAssert(actual, LibraryId, _issue);
+                var assert = new IssueArticleAssert(actual, LibraryId, _issue);
                 assert.ShouldBeSameAs(expected)
                       .WithReadOnlyLinks();
 

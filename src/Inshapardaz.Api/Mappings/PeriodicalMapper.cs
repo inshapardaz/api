@@ -79,8 +79,8 @@ namespace Inshapardaz.Api.Mappings
                 MimeType = source.MimeType
             };
 
-        public static ArticleView Map(this ArticleModel source)
-            => source == null ? null : new ArticleView
+        public static IssueArticleView Map(this IssueArticleModel source)
+            => source == null ? null : new IssueArticleView
             {
                 Id = source.Id,
                 Title = source.Title,
@@ -96,8 +96,8 @@ namespace Inshapardaz.Api.Mappings
                 ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
             };
 
-        public static ArticleModel Map(this ArticleView source)
-            => source == null ? null : new ArticleModel
+        public static IssueArticleModel Map(this IssueArticleView source)
+            => source == null ? null : new IssueArticleModel
             {
                 Id = source.Id,
                 Title = source.Title,
@@ -113,8 +113,8 @@ namespace Inshapardaz.Api.Mappings
                 ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp
             };
 
-        public static ArticleModel Map(this ArticleSequenceView source)
-          => source == null ? null : new ArticleModel
+        public static IssueArticleModel Map(this ArticleSequenceView source)
+          => source == null ? null : new IssueArticleModel
           {
               Id = source.Id,
               SequenceNumber = source.SequenceNumber,

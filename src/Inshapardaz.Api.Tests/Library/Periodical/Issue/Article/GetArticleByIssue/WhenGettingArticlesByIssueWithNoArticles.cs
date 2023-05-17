@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIss
     {
         private IssueDto _issue;
         private HttpResponseMessage _response;
-        private ListView<ArticleView> _view;
+        private ListView<IssueArticleView> _view;
 
         public WhenGettingArticlesByIssueWithNoArticles()
             : base(Role.Writer)
@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIss
             _issue = RandomData.PickRandom(issues);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles");
-            _view = _response.GetContent<ListView<ArticleView>>().Result;
+            _view = _response.GetContent<ListView<IssueArticleView>>().Result;
         }
 
         [OneTimeTearDown]

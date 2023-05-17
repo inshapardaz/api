@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticle
             var articles = IssueBuilder.GetArticles(issue.Id);
             var article = RandomData.PickRandom(articles);
 
-            var article2 = new ArticleView { Title = RandomData.Name };
+            var article2 = new IssueArticleView { Title = RandomData.Name };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{article.SequenceNumber}", article2);
         }

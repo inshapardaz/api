@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.AddArticle
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).Build();
 
-            var article = new ArticleView { Title = new Faker().Random.String(), SequenceNumber = 1 };
+            var article = new IssueArticleView { Title = new Faker().Random.String(), SequenceNumber = 1 };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{-RandomData.Number}/articles", article);
         }

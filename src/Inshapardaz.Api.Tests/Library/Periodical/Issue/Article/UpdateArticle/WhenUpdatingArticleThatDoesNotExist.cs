@@ -13,8 +13,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticle
         : TestBase
     {
         private HttpResponseMessage _response;
-        private ArticleAssert _articleAssert;
-        private ArticleView _newArticle;
+        private IssueArticleAssert _articleAssert;
+        private IssueArticleView _newArticle;
 
         public WhenUpdatingArticleThatDoesNotExist()
             : base(Role.Writer)
@@ -26,11 +26,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticle
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(5).Build();
 
-            _newArticle = new ArticleView { Title = RandomData.Name, SequenceNumber = 10 };
+            _newArticle = new IssueArticleView { Title = RandomData.Name, SequenceNumber = 10 };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_newArticle.SequenceNumber + 1}", _newArticle);
 
-            _articleAssert = ArticleAssert.FromResponse(_response, LibraryId, issue);
+            _articleAssert = IssueArticleAssert.FromResponse(_response, LibraryId, issue);
         }
 
         [OneTimeTearDown]
@@ -60,7 +60,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticle
         [Test]
         public void ShouldHaveCorrectObjectRetured()
         {
-            ArticleView expected = new ArticleView
+            IssueArticleView expected = new IssueArticleView
             {
                 Title = _newArticle.Title,
                 SequenceNumber = 6,

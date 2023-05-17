@@ -46,13 +46,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.DeleteArticle
         [Test]
         public void ShouldHaveDeletedArticle()
         {
-            ArticleAssert.ShouldHaveDeletedArticle(_expected.Id, DatabaseConnection);
+            IssueArticleAssert.ShouldHaveDeletedArticle(_expected.Id, DatabaseConnection);
         }
 
         [Test]
         public void ShouldHaveDeletedTheChapterContents()
         {
-            ArticleAssert.ThatContentsAreDeletedForArticle(_expected.Id, DatabaseConnection);
+            IssueArticleAssert.ThatContentsAreDeletedForArticle(_expected.Id, DatabaseConnection);
         }
     }
 }

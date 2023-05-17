@@ -16,9 +16,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.AddArticle
     public class WhenAddingArticleWithPermission
         : TestBase
     {
-        private ArticleView _article;
+        private IssueArticleView _article;
         private HttpResponseMessage _response;
-        private ArticleAssert _assert;
+        private IssueArticleAssert _assert;
         private ClaimsPrincipal _claim;
 
         public WhenAddingArticleWithPermission(Role role)
@@ -31,11 +31,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.AddArticle
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).Build();
 
-            _article = new ArticleView { Title = new Faker().Random.Words(2) };
+            _article = new IssueArticleView { Title = new Faker().Random.Words(2) };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles", _article);
 
-            _assert = ArticleAssert.FromResponse(_response, LibraryId, issue);
+            _assert = IssueArticleAssert.FromResponse(_response, LibraryId, issue);
         }
 
         [OneTimeTearDown]
@@ -65,7 +65,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.AddArticle
         [Test]
         public void ShouldHaveCorrectObjectRetured()
         {
-            _assert.ShouldMatch(new ArticleView { 
+            _assert.ShouldMatch(new IssueArticleView { 
                 Title = _article.Title,
                 SequenceNumber = 1,
                 Status = "Available"

@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleById
     {
         private HttpResponseMessage _response;
         private ArticleDto _expected;
-        private ArticleAssert _assert;
+        private IssueArticleAssert _assert;
 
         public WhenGettingFirstArticleOfIssue()
             : base(Role.Reader)
@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleById
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_expected.SequenceNumber}");
 
-            _assert = ArticleAssert.FromResponse(_response, LibraryId, issue);
+            _assert = IssueArticleAssert.FromResponse(_response, LibraryId, issue);
         }
 
         [OneTimeTearDown]

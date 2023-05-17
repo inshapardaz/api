@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IBookPageRepository, BookPageRepository>();
             services.AddTransient<IPeriodicalRepository, PeriodicalRepository>();
             services.AddTransient<IIssueRepository, IssueRepository>();
-            services.AddTransient<IArticleRepository, ArticleRepository>();
+            services.AddTransient<IIssueArticleRepository, ArticleRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<ICorrectionRepository, CorrectionRepository>();
             services.AddTransient<IIssuePageRepository, IssuePageRepository>();

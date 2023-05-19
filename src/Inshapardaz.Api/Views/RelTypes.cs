@@ -85,5 +85,6 @@ namespace Inshapardaz.Api.Views
         public const string MyPublishingSummary = "my-publishing-summary";
         public const string CreateIssue = "create-issue";
         public const string CreateArticle = "create-article";
+        public const string AddBook = "add-book";
     }
 }

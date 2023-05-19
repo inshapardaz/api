@@ -125,6 +125,9 @@ namespace Inshapardaz.Api.Converters
 
                 if (source.Filters.CategoryId.HasValue)
                     queryString.Add("categoryid", source.Filters.CategoryId.Value.ToString());
+                
+                if (source.Filters.BookShelfId.HasValue)
+                    queryString.Add("bookShelfId", source.Filters.BookShelfId.Value.ToString());
 
                 if (source.Filters.Favorite.HasValue)
                     queryString.Add("favorite", bool.TrueString);
@@ -132,7 +135,7 @@ namespace Inshapardaz.Api.Converters
                 if (source.Filters.Read.HasValue)
                     queryString.Add("read", bool.TrueString);
 
-                if (source.Filters.Status != Domain.Models.BookStatuses.Published)
+                if (source.Filters.Status != BookStatuses.Published)
                     queryString.Add("status", source.Filters.Status.ToDescription());
             }
 

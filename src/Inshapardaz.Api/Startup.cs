@@ -86,6 +86,7 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderIssueArticle, IssueArticleRenderer>();
             services.AddTransient<IRenderBookPage, BookPageRenderer>();
             services.AddTransient<IRenderCorrection, CorrectionRenderer>();
+            services.AddTransient<IRenderBookSelf, BookShelfRenderer>();
             services.AddTransient<IConvertPdf, PdfConverter>();
             services.AddTransient<IOpenZip, ZipReader>();
             services.AddTransient<IProvideOcr, GoogleOcr>();

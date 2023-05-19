@@ -15,6 +15,7 @@
         public BookStatuses Status { get; set; }
 
         public BookAssignmentStatus AssignmentStatus { get; set; }
+        public int? BookShelfId { get; set; }
     }
 
     public enum BookAssignmentStatus

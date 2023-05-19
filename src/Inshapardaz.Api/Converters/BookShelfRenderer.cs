@@ -174,7 +174,7 @@ namespace Inshapardaz.Api.Converters
 
                     links.Add(_linkRenderer.Render(new Link
                     {
-                        ActionName = nameof(BookShelfController.AddBook),
+                        ActionName = nameof(BookShelfController.AddBookInBookShelf),
                         Method = HttpMethod.Delete,
                         Rel = RelTypes.AddBook,
                         Parameters = new { libraryId = libraryId, bookShelfId = source.Id }

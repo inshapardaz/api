@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Helpers
                     return new FileSystemStorage(Path.Combine(root, path.TrimStart('/')));
                 case FileStoreTypes.Unknown:
                 default:
-                    throw new ArgumentOutOfRangeException("file store type not supported");
+                    throw new ArgumentOutOfRangeException($"file store type `{configuration.FileStoreType}` not supported");
             }
         }
     }

@@ -1,6 +1,4 @@
-﻿using Amazon.S3;
-using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Repositories;
+﻿using Inshapardaz.Domain.Repositories;
 using System;
 using System.IO;
 using System.Threading;
@@ -12,9 +10,9 @@ namespace Inshapardaz.Storage.FileSystem
     {
         private readonly string _basePath;
 
-        public S3FileStorage(Settings settings)
+        public FileSystemStorage(string basePath)
         {
-            _basePath = settings.BasePath;
+            _basePath = basePath;
         }
 
         public bool SupportsPublicLink => false;
@@ -31,32 +29,40 @@ namespace Inshapardaz.Storage.FileSystem
             return File.ReadAllTextAsync(GetFullPath(filePath));
         }
 
-        public Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
+        public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
         {
-            return File.WriteAllBytesAsync(GetFullPath(filePath), content);
+            var path = GetFullPath(name);
+            await File.WriteAllBytesAsync(path, content);
+            return path;
         }
 
-        public Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
+        public async Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
         {
-            return File.WriteAllBytesAsync(GetFullPath(filePath), content);
+            var path = GetFullPath(name);
+            await File.WriteAllBytesAsync(path, content);
+            return path;
         }
 
-        public Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
+        public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
         {
-            return File.WriteAllTextAsync(GetFullPath(filePath), content);
+            var path = GetFullPath(name);
+            await File.WriteAllTextAsync(path, content);
+            return path;
         }
 
         public Task DeleteFile(string filePath, CancellationToken cancellationToken)
         {
             File.Delete(GetFullPath(filePath));
+            return Task.CompletedTask;
         }
 
         public Task DeleteImage(string filePath, CancellationToken cancellationToken)
         {
             File.Delete(GetFullPath(filePath));
+            return Task.CompletedTask;
         }
 
-        public async Task TryDeleteFile(string filePath, CancellationToken cancellationToken)
+        public Task TryDeleteFile(string filePath, CancellationToken cancellationToken)
         {
             try
             {
@@ -65,9 +71,11 @@ namespace Inshapardaz.Storage.FileSystem
             catch
             {
             }
+
+            return Task.CompletedTask;
         }
 
-        public async Task TryDeleteImage(string filePath, CancellationToken cancellationToken)
+        public Task TryDeleteImage(string filePath, CancellationToken cancellationToken)
         {
             try
             {
@@ -76,6 +84,8 @@ namespace Inshapardaz.Storage.FileSystem
             catch
             {
             }
+
+            return Task.CompletedTask;
         }
 
         public string GetPublicUrl(string filePath)

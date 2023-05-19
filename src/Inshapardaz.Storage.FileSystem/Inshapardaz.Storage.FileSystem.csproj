@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.7.103.13" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Inshapardaz.Domain\Inshapardaz.Domain.csproj" />
   </ItemGroup>
 

@@ -30,6 +30,7 @@ namespace Inshapardaz.Api.Middleware
                 var library = await _libraryRepository.GetLibraryById(libraryId, CancellationToken.None);
                 if (library is not null)
                 {
+                    libraryConfiguration.LibraryId = libraryId;
                     libraryConfiguration.ConnectionString = library.DatabaseConnection ?? _settings.DefaultConnection;
                     libraryConfiguration.FileStoreType = library.FileStoreType ?? _settings.FileStoreType;
                     libraryConfiguration.FileStoreSource = library.FileStoreSource;

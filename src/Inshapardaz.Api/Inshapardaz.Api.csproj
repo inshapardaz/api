@@ -26,6 +26,7 @@
     <ProjectReference Include="..\Inshapardaz.Database.SqlServer\Inshapardaz.Database.SqlServer.csproj" />
     <ProjectReference Include="..\Inshapardaz.Domain\Inshapardaz.Domain.csproj" />
     <ProjectReference Include="..\Inshapardaz.Storage.Azure\Inshapardaz.Storage.Azure.csproj" />
+    <ProjectReference Include="..\Inshapardaz.Storage.FileSystem\Inshapardaz.Storage.FileSystem.csproj" />
     <ProjectReference Include="..\Inshapardaz.Storage.S3\Inshapardaz.Storage.S3.csproj" />
   </ItemGroup>
 </Project>

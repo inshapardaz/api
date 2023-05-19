@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Adapter.Ocr.Goo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.S3", "src\Inshapardaz.Storage.S3\Inshapardaz.Storage.S3.csproj", "{F911C302-12BC-414A-830E-5B81ADB20051}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.FileSystem", "src\Inshapardaz.Storage.FileSystem\Inshapardaz.Storage.FileSystem.csproj", "{6E4D4A79-11C8-4C8B-B938-7F83A31DC02B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{F911C302-12BC-414A-830E-5B81ADB20051}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F911C302-12BC-414A-830E-5B81ADB20051}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F911C302-12BC-414A-830E-5B81ADB20051}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E4D4A79-11C8-4C8B-B938-7F83A31DC02B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E4D4A79-11C8-4C8B-B938-7F83A31DC02B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E4D4A79-11C8-4C8B-B938-7F83A31DC02B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E4D4A79-11C8-4C8B-B938-7F83A31DC02B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

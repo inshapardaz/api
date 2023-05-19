@@ -6,6 +6,6 @@
         Database = 1,
         AzureBlobStorage = 2,
         S3Storage = 3,
-        File = 4
+        FileSystem = 4
     }
 }

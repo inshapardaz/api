@@ -11,15 +11,11 @@ using Inshapardaz.Api.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Inshapardaz.Api.Converters;
-using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Storage.Azure;
-using Inshapardaz.Database.SqlServer.Repositories;
 using Inshapardaz.Api.Infrastructure;
 using Inshapardaz.Adapter.Ocr.Google;
 using MailKit.Net.Smtp;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using Inshapardaz.Storage.S3;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api
@@ -91,13 +87,16 @@ namespace Inshapardaz.Api
             services.AddTransient<IOpenZip, ZipReader>();
             services.AddTransient<IProvideOcr, GoogleOcr>();
             services.AddScoped<LibraryConfiguration>();
-            services.AddScoped(s => FileStorageFactory.GetFileStore(s.GetService<LibraryConfiguration>(), s.GetService<Settings>()));
+            services.AddScoped(s => FileStorageFactory.GetFileStore(s.GetService<LibraryConfiguration>(), s.GetService<Settings>(), s.GetService<IWebHostEnvironment>()));
             AddCustomServices(services);
         }
 
         // configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            Console.WriteLine($"ContentRootPath : {env.ContentRootPath}");
+            Console.WriteLine($"WebRootPath : {env.WebRootPath}");
+
             // generated swagger json and swagger ui middleware
             app.UseSwagger();
             app.UseSwaggerUI(x => x.SwaggerEndpoint("/swagger/v1/swagger.json", "Inshapardaz API"));

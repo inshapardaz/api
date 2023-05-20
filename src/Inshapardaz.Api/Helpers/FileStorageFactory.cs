@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Helpers
 {
     public static class FileStorageFactory
     {
-        public static IFileStorage GetFileStore(LibraryConfiguration configuration, Settings settings, IWebHostEnvironment webHostEnvironment)
+        public static IFileStorage GetFileStore(LibraryConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             switch (configuration.FileStoreType)
             {

@@ -9,14 +9,17 @@ namespace Inshapardaz.Api.Configuration
     {
         public static IServiceCollection AddBrighterCommand(this IServiceCollection services)
         {
-            services.AddBrighter()
+            services.AddBrighter(options =>
+            {
+                options.HandlerLifetime = ServiceLifetime.Scoped;
+            })
                     .AutoFromAssemblies(typeof(Startup).Assembly, typeof(DomainModule).Assembly);
             return services;
         }
 
         public static IServiceCollection AddDarkerQuery(this IServiceCollection services)
         {
-            services.AddDarker()
+            services.AddDarker(options => options.QueryProcessorLifetime = ServiceLifetime.Scoped)
                     .AddHandlersFromAssemblies(typeof(DomainModule).Assembly);
             return services;
         }

@@ -2,7 +2,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
-using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

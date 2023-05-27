@@ -42,7 +42,8 @@ namespace Inshapardaz.Api
                 {
                     builder.WithOrigins(settings.AllowedOrigins)
                            .AllowAnyHeader()
-                           .AllowAnyMethod();
+                           .AllowAnyMethod()
+                           .WithExposedHeaders("Location", "Access-Control-Expose-Headers");
                 });
             });
             services.AddControllers().AddJsonOptions(j =>

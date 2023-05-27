@@ -17,6 +17,7 @@ using MailKit.Net.Smtp;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using Inshapardaz.Domain.Models;
+using Microsoft.Net.Http.Headers;
 
 namespace Inshapardaz.Api
 {
@@ -43,7 +44,7 @@ namespace Inshapardaz.Api
                     builder.WithOrigins(settings.AllowedOrigins)
                            .AllowAnyHeader()
                            .AllowAnyMethod()
-                           .WithExposedHeaders("Location", "Access-Control-Expose-Headers");
+                           .WithExposedHeaders(HeaderNames.Location, HeaderNames.ContentDisposition, HeaderNames.ContentType);
                 });
             });
             services.AddControllers().AddJsonOptions(j =>
@@ -105,11 +106,7 @@ namespace Inshapardaz.Api
             app.UseRouting();
 
             // global cors policy
-            app.UseCors(x => x
-                .SetIsOriginAllowed(origin => true)
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
+            app.UseCors();
 
             app.UseStaticFiles();
             // global error handler

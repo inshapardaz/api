@@ -106,7 +106,12 @@ namespace Inshapardaz.Api
             app.UseRouting();
 
             // global cors policy
-            app.UseCors();
+            app.UseCors(x => x
+                .SetIsOriginAllowed(origin => true)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .WithExposedHeaders(HeaderNames.Location, HeaderNames.ContentDisposition, HeaderNames.ContentType));
 
             app.UseStaticFiles();
             // global error handler

@@ -116,7 +116,7 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(BookShelfController.GetBookShelf),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
-                    Parameters = new { libraryId = libraryId, authorId = source.Id }
+                    Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
                 }),
                 _linkRenderer.Render(new Link
                 {
@@ -162,25 +162,6 @@ namespace Inshapardaz.Api.Converters
                     Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
                 }));
 
-                if (_userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
-                {
-                    links.Add(_linkRenderer.Render(new Link
-                    {
-                        ActionName = nameof(BookShelfController.DeleteBookShelf),
-                        Method = HttpMethod.Delete,
-                        Rel = RelTypes.Delete,
-                        Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
-                    }));
-
-                    links.Add(_linkRenderer.Render(new Link
-                    {
-                        ActionName = nameof(BookShelfController.AddBookInBookShelf),
-                        Method = HttpMethod.Delete,
-                        Rel = RelTypes.AddBook,
-                        Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
-                    }));
-                }
-
                 links.Add(_linkRenderer.Render(new Link
                 {
                     ActionName = nameof(BookShelfController.UpdateBookShelfImage),
@@ -189,6 +170,26 @@ namespace Inshapardaz.Api.Converters
                     Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
                 }));
             }
+
+            if (_userHelper.Account.Id == source.AccountId || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookShelfController.DeleteBookShelf),
+                    Method = HttpMethod.Delete,
+                    Rel = RelTypes.Delete,
+                    Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookShelfController.AddBookInBookShelf),
+                    Method = HttpMethod.Delete,
+                    Rel = RelTypes.AddBook,
+                    Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
+                }));
+            }
+
 
             result.Links = links;
             return result;

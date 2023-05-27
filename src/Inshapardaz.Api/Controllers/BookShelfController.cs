@@ -38,7 +38,7 @@ namespace Inshapardaz.Api.Controllers
             _userHelper = userHelper;
         }
 
-        [HttpGet("libraries/{libraryId}/bookshelves", Name = nameof(BookShelfController.GetBookShelves))]
+        [HttpGet("libraries/{libraryId}/bookshelves", Name = nameof(GetBookShelves))]
         public async Task<IActionResult> GetBookShelves(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
             var bookShelvesQuery = new GetBookShelfQuery(libraryId, pageNumber, pageSize) { Query = query };
@@ -53,7 +53,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_bookShelfRenderer.Render(args, libraryId));
         }
 
-        [HttpGet("libraries/{libraryId}/bookshelves/{bookShelfId}", Name = nameof(BookShelfController.GetBookShelf))]
+        [HttpGet("libraries/{libraryId}/bookshelves/{bookShelfId}", Name = nameof(GetBookShelf))]
         public async Task<IActionResult> GetBookShelf(int libraryId, int bookShelfId, CancellationToken token = default(CancellationToken))
         {
             var query = new GetBookShelfByIdQuery(libraryId, bookShelfId);
@@ -67,7 +67,7 @@ namespace Inshapardaz.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpPost("libraries/{libraryId}/bookshelves", Name = nameof(BookShelfController.CreateBookShelf))]
+        [HttpPost("libraries/{libraryId}/bookshelves", Name = nameof(CreateBookShelf))]
         [Authorize()]
         public async Task<IActionResult> CreateBookShelf(int libraryId, [FromBody] BookShelfView bookShelf, CancellationToken token = default(CancellationToken))
         {
@@ -76,23 +76,24 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new AddBookShelfRequest(libraryId, bookShelf.Map());
+            var request = new AddBookShelfRequest(libraryId, bookShelf.Map(_userHelper.Account.Id));
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _bookShelfRenderer.Render(request.Result, libraryId);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
-        [HttpPut("libraries/{libraryId}/bookshelves/{bookShelfId}", Name = nameof(BookShelfController.UpdateBookShelf))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        [HttpPut("libraries/{libraryId}/bookshelves/{bookShelfId}", Name = nameof(UpdateBookShelf))]
+        [Authorize()]
         public async Task<IActionResult> UpdateBookShelf(int libraryId, int bookShelfId, [FromBody] BookShelfView bookShelf, CancellationToken token = default(CancellationToken))
         {
-            if (!ModelState.IsValid || bookShelfId != bookShelf.Id)
+            if (!ModelState.IsValid)
             {
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new UpdateBookShelfRequest(libraryId, bookShelf.Map());
+            bookShelf.Id = bookShelfId;
+            var request = new UpdateBookShelfRequest(libraryId, bookShelf.Map(_userHelper.Account.Id));
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _bookShelfRenderer.Render(request.Result.BookShelf, libraryId);
@@ -106,17 +107,17 @@ namespace Inshapardaz.Api.Controllers
             }
         }
 
-        [HttpDelete("libraries/{libraryId}/bookshelves/{bookShelfId}", Name = nameof(BookShelfController.DeleteBookShelf))]
-        [Authorize(Role.Admin, Role.LibraryAdmin)]
+        [HttpDelete("libraries/{libraryId}/bookshelves/{bookShelfId}", Name = nameof(DeleteBookShelf))]
+        [Authorize()]
         public async Task<IActionResult> DeleteBookShelf(int libraryId, int bookShelfId, CancellationToken token = default)
         {
-            var request = new DeleteBookSelfRequest(libraryId, bookShelfId);
+            var request = new DeleteBookSelfRequest(libraryId, bookShelfId, _userHelper.Account.Id);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }
 
-        [HttpPut("libraries/{libraryId}/bookshelves/{bookShelfId}/image", Name = nameof(BookShelfController.UpdateBookShelfImage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        [HttpPut("libraries/{libraryId}/bookshelves/{bookShelfId}/image", Name = nameof(UpdateBookShelfImage))]
+        [Authorize()]
         public async Task<IActionResult> UpdateBookShelfImage(int libraryId, int bookShelfId, [FromForm] IFormFile file, CancellationToken token = default)
         {
             var content = new byte[file.Length];
@@ -125,7 +126,7 @@ namespace Inshapardaz.Api.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            var request = new UpdateBookShelfImageRequest(libraryId, bookShelfId)
+            var request = new UpdateBookShelfImageRequest(libraryId, bookShelfId, _userHelper.Account.Id)
             {
                 Image = new FileModel
                 {
@@ -146,7 +147,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkResult();
         }
 
-        [HttpPost("libraries/{libraryId}/bookshelves/{bookShelfId}", Name = nameof(BookShelfController.AddBookInBookShelf))]
+        [HttpPost("libraries/{libraryId}/bookshelves/{bookShelfId}", Name = nameof(AddBookInBookShelf))]
         [Authorize()]
         public async Task<IActionResult> AddBookInBookShelf(int libraryId, int bookShelfId, [FromBody] BookShelfBookView bookShelfBook, CancellationToken token = default(CancellationToken))
         {
@@ -170,7 +171,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok();
         }
 
-        [HttpDelete("libraries/{libraryId}/bookshelves/{bookShelfId}/books/{bookId}", Name = nameof(BookShelfController.DeleteBookInBookShelf))]
+        [HttpDelete("libraries/{libraryId}/bookshelves/{bookShelfId}/books/{bookId}", Name = nameof(DeleteBookInBookShelf))]
         [Authorize()]
         public async Task<IActionResult> DeleteBookInBookShelf(int libraryId, int bookShelfId, int bookId, CancellationToken token = default(CancellationToken))
         {

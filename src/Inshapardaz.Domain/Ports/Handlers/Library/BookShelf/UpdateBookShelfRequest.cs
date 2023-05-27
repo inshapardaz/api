@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -39,6 +40,11 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.BookShelf
         public override async Task<UpdateBookShelfRequest> HandleAsync(UpdateBookShelfRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await _bookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelf.Id, cancellationToken);
+
+            if (result.AccountId != command.BookShelf.AccountId)
+            {
+                throw new ForbiddenException();
+            }
 
             if (result == null)
             {

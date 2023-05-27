@@ -9,7 +9,8 @@ using Inshapardaz.Domain.Ports.Handlers;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
-using System;
+using System.IO;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Controllers
             _correctionRenderer = correctionRenderer;
         }
 
-        [HttpGet("/tools/{language}/spellchecker/{profile}", Name = nameof(ToolController.GetAllCorrections))]
+        [HttpGet("/tools/{language}/spellchecker/{profile}", Name = nameof(GetAllCorrections))]
         public async Task<IActionResult> GetAllCorrections(string language, string profile, CancellationToken cancellationToken)
         {
             var query = new GetAllCorrectionsQuery() { Language = language, Profile = profile };
@@ -37,7 +38,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
 
-        [HttpGet("/tools/{language}/corrections/{profile}", Name = nameof(ToolController.GetCorrections))]
+        [HttpGet("/tools/{language}/corrections/{profile}", Name = nameof(GetCorrections))]
         public async Task<IActionResult> GetCorrections(string language, string profile, string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
         {
             var correctionQuery = new GetCorrectionsQuery() { Language = language, Query = query, Profile = profile, PageNumber = pageNumber, PageSize = pageSize };
@@ -50,7 +51,7 @@ namespace Inshapardaz.Api.Controllers
             return Ok(_correctionRenderer.Render(pageRenderArgs, language, profile));
         }
 
-        [HttpGet("/tools/{language}/corrections/{profile}/{id}", Name = nameof(ToolController.GetCorrectionById))]
+        [HttpGet("/tools/{language}/corrections/{profile}/{id}", Name = nameof(GetCorrectionById))]
         [Authorize(Role.Admin)]
         public async Task<IActionResult> GetCorrectionById(string language, string profile, long id, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -65,7 +66,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
 
-        [HttpPost("/tools/{language}/corrections/{profile}", Name = nameof(ToolController.AddCorrection))]
+        [HttpPost("/tools/{language}/corrections/{profile}", Name = nameof(AddCorrection))]
         [Authorize(Role.Admin)]
         public async Task<IActionResult> AddCorrection(string language, string profile, [FromBody] CorrectionView correction, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -84,7 +85,7 @@ namespace Inshapardaz.Api.Controllers
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
          
-        [HttpPut("/tools/{language}/corrections/{profile}/{id}", Name = nameof(ToolController.UpdateCorrection))]
+        [HttpPut("/tools/{language}/corrections/{profile}/{id}", Name = nameof(UpdateCorrection))]
         [Authorize(Role.Admin)]
         public async Task<IActionResult> UpdateCorrection(string language, string profile, long id, [FromBody] CorrectionView correction, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -110,13 +111,25 @@ namespace Inshapardaz.Api.Controllers
             }
         }
 
-        [HttpDelete("/tools/{language}/corrections/{profile}/{id}", Name = nameof(ToolController.DeleteCorrection))]
+        [HttpDelete("/tools/{language}/corrections/{profile}/{id}", Name = nameof(DeleteCorrection))]
         [Authorize(Role.Admin)]
         public async Task<IActionResult> DeleteCorrection(string language, string profile, long id, CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new DeleteCorrectionRequest(language, profile, id);
             await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
             return new NoContentResult();
+        }
+
+        [HttpPost("/tools/rekhtadownload", Name = nameof(DownloadRekhtaBook))]
+        public async Task<IActionResult> DownloadRekhtaBook([FromBody] RekhtaDownloadView downloadView, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var request = new DownloadRekhtaBookRequest(downloadView.BookUrl) { CreatePdf = downloadView.ConvertToPdf };
+            await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
+
+            return new FileContentResult(request.DownloadResult.File, request.DownloadResult.MimeType) 
+            { 
+                FileDownloadName = request.DownloadResult.FileName 
+            };
         }
     }
 }

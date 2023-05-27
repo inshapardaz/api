@@ -107,7 +107,8 @@ namespace Inshapardaz.Api.Tests
                 .AddTransient<PeriodicalsDataBuilder>()
                 .AddTransient<IssueDataBuilder>()
                 .AddTransient<AccountAssert>()
-                .AddTransient<CorrectionBuilder>();
+                .AddTransient<CorrectionBuilder>()
+                .AddTransient<BookShelfDataBuilder>();
         }
 
         protected void AuthenticateClientWithToken(string token)
@@ -141,6 +142,7 @@ namespace Inshapardaz.Api.Tests
         protected IssueDataBuilder _issueDataBuilder;
         private PeriodicalsDataBuilder _periodicalBuilder;
         protected CorrectionBuilder _correctionBuilder;
+        private BookShelfDataBuilder _bookshelfDataBuilder;
 
         protected Role? CurrentAuthenticationLevel => _role;
 
@@ -211,6 +213,19 @@ namespace Inshapardaz.Api.Tests
             }
         }
 
+        protected BookShelfDataBuilder BookShelfBuilder
+        {
+            get
+            {
+                if (_bookshelfDataBuilder == null)
+                {
+                    _bookshelfDataBuilder = _factory.Services.GetService<BookShelfDataBuilder>();
+                }
+
+                return _bookshelfDataBuilder;
+            }
+        }
+
         protected PeriodicalsDataBuilder PeriodicalBuilder
         {
             get
@@ -275,6 +290,7 @@ namespace Inshapardaz.Api.Tests
             _accountBuilder?.CleanUp();
             _libraryBuilder?.CleanUp();
             _correctionBuilder?.Cleanup();
+            _bookshelfDataBuilder?.CleanUp();
         }
     }
 }

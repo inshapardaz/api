@@ -22,7 +22,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             int bookShelfId;
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"Insert Into BookShelf(Name, Description, ImageId, LibraryId, IsPublic, AccountId) OUTPUT Inserted.Id VALUES(@Name, @Description, @ImageId, @LibraryId, @AuthorType, @IsPublic, @AccountId);";
+                var sql = @"Insert Into BookShelf(Name, Description, ImageId, LibraryId, IsPublic, AccountId) OUTPUT Inserted.Id VALUES(@Name, @Description, @ImageId, @LibraryId, @IsPublic, @AccountId);";
                 var command = new CommandDefinition(sql, new {
                     LibraryId = libraryId,
                     Name = bookShelf.Name,
@@ -105,7 +105,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"SELECT b.Id, b.Name, b.Description, b.IsPublic, f.Id As ImageId, f.FilePath AS ImageUrl,
+                var sql = @"SELECT b.Id, b.Name, b.Description, b.IsPublic, b.AccountId, f.Id As ImageId, f.FilePath AS ImageUrl,
                             (SELECT Count(*)
                                 FROM BookShelfBook 
                                 WHERE BookShelfId = b.Id) AS BookCount

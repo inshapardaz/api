@@ -8,19 +8,21 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using static Lucene.Net.Util.Fst.Util;
 
 namespace Inshapardaz.Domain.Ports.Handlers.Library.BookShelf
 {
     public class UpdateBookShelfImageRequest : LibraryBaseCommand
     {
-        public UpdateBookShelfImageRequest(int libraryId, int bookShelfId)
+        public UpdateBookShelfImageRequest(int libraryId, int bookShelfId, int accountId)
             : base(libraryId)
         {
             BookShelfId = bookShelfId;
+            AccountId = accountId;
         }
 
         public int BookShelfId { get; }
-
+        public int AccountId { get; }
         public FileModel Image { get; set; }
 
         public RequestResult Result { get; set; } = new RequestResult();
@@ -48,34 +50,39 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.BookShelf
 
         public override async Task<UpdateBookShelfImageRequest> HandleAsync(UpdateBookShelfImageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var BookShelf = await _BookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelfId, cancellationToken);
+            var bookShelf = await _BookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelfId, cancellationToken);
 
-            if (BookShelf == null)
+            if (bookShelf == null)
             {
                 throw new NotFoundException();
             }
 
-            if (BookShelf.ImageId.HasValue)
+            if (bookShelf.AccountId != command.AccountId)
             {
-                command.Image.Id = BookShelf.ImageId.Value;
+                throw new ForbiddenException();
+            }
 
-                var existingImage = await _fileRepository.GetFileById(BookShelf.ImageId.Value, cancellationToken);
+            if (bookShelf.ImageId.HasValue)
+            {
+                command.Image.Id = bookShelf.ImageId.Value;
+
+                var existingImage = await _fileRepository.GetFileById(bookShelf.ImageId.Value, cancellationToken);
                 if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
                 {
                     await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
                 }
 
-                var url = await AddImageToFileStore(BookShelf.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
+                var url = await AddImageToFileStore(bookShelf.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
                 await _fileRepository.UpdateFile(command.Image, cancellationToken);
                 command.Result.File = command.Image;
-                command.Result.File.Id = BookShelf.ImageId.Value;
+                command.Result.File.Id = bookShelf.ImageId.Value;
             }
             else
             {
                 command.Image.Id = default;
-                var url = await AddImageToFileStore(BookShelf.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
+                var url = await AddImageToFileStore(bookShelf.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
                 command.Image.FilePath = url;
                 command.Image.IsPublic = true;
                 command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);

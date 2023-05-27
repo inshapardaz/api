@@ -2,11 +2,7 @@
 {
     public class UnauthorizedException : System.Exception
     {
-    }
-
-    public class ForbiddenException : System.Exception
-    {
-        public ForbiddenException(string scheme = "Bearer")
+        public UnauthorizedException(string scheme = "Bearer")
         {
             AuthenticationScheme = scheme;
         }

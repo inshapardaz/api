@@ -21,7 +21,7 @@
     <PackageReference Include="Paramore.Darker" Version="3.0.0" />
     <PackageReference Include="PDFium.Windows" Version="1.0.0" />
     <PackageReference Include="PDFiumSharp" Version="0.1.1-beta" />
-    <PackageReference Include="RekhtaDownloader" Version="1.0.46" />
+    <PackageReference Include="RekhtaDownloader" Version="1.0.48" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />

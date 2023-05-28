@@ -20,6 +20,8 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<BookModel> GetBookById(int libraryId, int bookId, int? accountId, CancellationToken cancellationToken);
 
+        Task<BookModel> GetBookBySource(int libraryId, string source, CancellationToken cancellationToken);
+
         Task AddRecentBook(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
 
         Task DeleteBookFromRecent(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);

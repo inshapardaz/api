@@ -5,9 +5,6 @@ namespace Inshapardaz.Domain.Adapters
     public class Settings
     {
         public string DefaultConnection { get; set; }
-        //public string CDNAddress { get; set; }
-        //public string BlobRoot { get; set; }
-        //public string FileStorageConnectionString { get; set; }
 
         public FileStoreTypes FileStoreType { get; set; } = FileStoreTypes.Database;
 
@@ -38,9 +35,6 @@ namespace Inshapardaz.Domain.Adapters
         public double ResetTokenTTLInDays { get; internal set; } = 1;
 
         public int RefreshTokenTTLInDays { get; set; }
-        //public string S3ServiceUrl { get; set; }
-        //public string S3Accesskey { get; set; }
-        //public string S3AccessSecret { get; set; }
-        //public string S3BucketName { get; set; }
+        public int DefaultLibraryId { get; set; }
     }
 }

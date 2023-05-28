@@ -24,17 +24,25 @@ namespace Inshapardaz.Api.Middleware
         public async Task Invoke(HttpContext context, LibraryConfiguration libraryConfiguration)
         {
             var libraryIdValue = context.GetRouteValue("libraryId")?.ToString();
-            if (!string.IsNullOrWhiteSpace(libraryIdValue) && int.TryParse(libraryIdValue, out var libraryId))
+            var libraryId = 0;
+            if (string.IsNullOrWhiteSpace(libraryIdValue))
             {
-                var library = await _libraryRepository.GetLibraryById(libraryId, CancellationToken.None);
-                if (library is not null)
-                {
-                    libraryConfiguration.LibraryId = libraryId;
-                    libraryConfiguration.ConnectionString = library.DatabaseConnection ?? _settings.DefaultConnection;
-                    libraryConfiguration.FileStoreType = library.FileStoreType ?? _settings.FileStoreType;
-                    libraryConfiguration.FileStoreSource = library.FileStoreSource;
-                }
+                libraryId = _settings.DefaultLibraryId;
             }
+            else if (!int.TryParse(libraryIdValue, out libraryId))
+            {
+                await _next(context);
+            }
+
+            var library = await _libraryRepository.GetLibraryById(libraryId, CancellationToken.None);
+            if (library is not null)
+            {
+                libraryConfiguration.LibraryId = libraryId;
+                libraryConfiguration.ConnectionString = library.DatabaseConnection ?? _settings.DefaultConnection;
+                libraryConfiguration.FileStoreType = library.FileStoreType ?? _settings.FileStoreType;
+                libraryConfiguration.FileStoreSource = library.FileStoreSource;
+            }
+            
             await _next(context);
         }
     }

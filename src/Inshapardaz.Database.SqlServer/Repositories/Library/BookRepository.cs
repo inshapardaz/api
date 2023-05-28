@@ -28,8 +28,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 book.LibraryId = libraryId;
                 var sql = @"Insert Into Book
-                            (Title, [Description], ImageId, LibraryId, IsPublic, IsPublished, [Language], [Status], SeriesId, SeriesIndex, CopyRights, YearPublished, DateAdded, DateUpdated)
-                            OUTPUT Inserted.Id VALUES(@Title, @Description, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, GETDATE(), GETDATE());";
+                            (Title, [Description], ImageId, LibraryId, IsPublic, IsPublished, [Language], [Status], SeriesId, SeriesIndex, CopyRights, YearPublished, Source, DateAdded, DateUpdated)
+                            OUTPUT Inserted.Id VALUES(@Title, @Description, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, @Source, GETDATE(), GETDATE());";
                 var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
                 bookId = await connection.ExecuteScalarAsync<int>(command);
 
@@ -425,6 +425,47 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                     return book;
                 }, new { LibraryId = libraryId, Id = bookId, AccountId = AccountId });
+
+                return book;
+            }
+        }
+
+        public async Task<BookModel> GetBookBySource(int libraryId, string source, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                BookModel book = null;
+                var sql = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
+                            (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
+                            (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.id) As ChapterCount,
+                            a.*, c.*
+                            from Book b
+                            Left Outer Join BookAuthor ba ON b.Id = ba.BookId
+                            Left Outer Join Author a On ba.AuthorId = a.Id
+                            Left Outer Join Series s On b.SeriesId = s.id
+                            Left Outer Join BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Category c ON bc.CategoryId = c.Id
+                            LEFT OUTER JOIN [File] fl ON fl.Id = b.ImageId
+                            Where b.LibraryId = @LibraryId AND b.Source= @Source";
+                await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(sql, (b, a, c) =>
+                {
+                    if (book == null)
+                    {
+                        book = b;
+                    }
+
+                    if (!book.Authors.Any(x => x.Id == a.Id))
+                    {
+                        book.Authors.Add(a);
+                    }
+
+                    if (c != null && !book.Categories.Any(x => x.Id == c.Id))
+                    {
+                        book.Categories.Add(c);
+                    }
+
+                    return book;
+                }, new { LibraryId = libraryId, Source = source });
 
                 return book;
             }

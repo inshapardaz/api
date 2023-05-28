@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Helpers
                     return new S3FileStorage(config);
                 case FileStoreTypes.FileSystem:
                     var path = configuration.FileStoreSource ?? $"data/{configuration.LibraryId}";
-                    var root = webHostEnvironment.WebRootPath;
+                    var root = new DirectoryInfo(webHostEnvironment.ContentRootPath).Parent.FullName;
                     return new FileSystemStorage(Path.Combine(root, path.TrimStart('/')));
                 case FileStoreTypes.Unknown:
                 default:

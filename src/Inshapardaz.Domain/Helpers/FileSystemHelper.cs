@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using System.Linq;
 
-namespace Inshapardaz.Storage.FileSystem
+namespace Inshapardaz.Domain.Helpers
 {
-    internal static class FileSystemHelper
+    public static class FileSystemHelper
     {
         public static void EnsureEmptyDirectory(this string path)
         {

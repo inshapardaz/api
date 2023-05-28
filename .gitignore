@@ -33,3 +33,4 @@ custom.css
 /src/_NCrunch_Inshapardaz.Api/StoredText
 *[C]coverage*
 /src/Inshapardaz.Api/appsettings.Production.smartasp.json
+/src/data/*

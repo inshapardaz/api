@@ -1,13 +1,12 @@
 ﻿using Common;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Book;
 using Inshapardaz.Domain.Ports.Handlers.Library.Book.Page;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
-using Lucene.Net.Search;
-using Microsoft.IdentityModel.Tokens;
 using Paramore.Brighter;
 using RekhtaDownloader.Models;
 using System;
@@ -17,6 +16,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
+using File = System.IO.File;
 
 namespace Inshapardaz.Domain.Models
 {
@@ -86,17 +87,20 @@ namespace Inshapardaz.Domain.Models
                         if (file != null)
                         {
                             var contents = await _fileStorage.GetFile(file.FilePath, cancellationToken);
-                            var result = new DownloadRekhtaBookRequest.Result()
+                            if (contents != null)
                             {
+                                var result = new DownloadRekhtaBookRequest.Result()
+                                {
 
-                                FileName = Path.GetFileName(file.FileName),
-                                MimeType = MimeTypes.Pdf,
-                                File = contents
-                            };
+                                    FileName = Path.GetFileName(file.FileName),
+                                    MimeType = MimeTypes.Pdf,
+                                    File = contents
+                                };
 
-                            command.DownloadResult = result;
+                                command.DownloadResult = result;
 
-                            return await base.HandleAsync(command, cancellationToken);
+                                return await base.HandleAsync(command, cancellationToken);
+                            }
                         }
                     }
                 }
@@ -112,7 +116,7 @@ namespace Inshapardaz.Domain.Models
                                 foreach (var page in pages.Where(p => p.ImageId.HasValue))
                                 {
                                     var file = await _fileRepository.GetFileById(page.ImageId.Value, cancellationToken);
-                                    if (file != null)
+                                    if (file != null && file.Contents != null)
                                     {
                                         var contents = await _fileStorage.GetFile(file.FilePath, cancellationToken);
 
@@ -122,36 +126,50 @@ namespace Inshapardaz.Domain.Models
                                             entryStream.Write(contents, 0, contents.Length);
                                         }
                                     }
+                                    else
+                                    {
+                                        await DeleteBookPages(book, pages, cancellationToken);
+                                        await DownloadBook(book, command, cancellationToken);
+
+                                        return await base.HandleAsync(command, cancellationToken);
+                                    }
                                 }
-
-                                var result = new DownloadRekhtaBookRequest.Result()
-                                {
-
-                                    FileName = Path.GetFileName($"{book.Title}.zip"),
-                                    MimeType = MimeTypes.Zip,
-                                    File = memoryStream.ToArray()
-                                };
-
-                                command.DownloadResult = result;
-
-                                return await base.HandleAsync(command, cancellationToken);
-
                             }
+
+                            var result = new DownloadRekhtaBookRequest.Result()
+                            {
+
+                                FileName = Path.GetFileName($"{book.Title}.zip"),
+                                MimeType = MimeTypes.Zip,
+                                File = memoryStream.ToArray()
+                            };
+
+                            command.DownloadResult = result;
+
+                            return await base.HandleAsync(command, cancellationToken);
+
                         }
                     }
                 }
             }
 
+            await DownloadBook(book, command, cancellationToken);
+
+            return await base.HandleAsync(command, cancellationToken);
+        }
+
+        private async Task DownloadBook(BookModel book, DownloadRekhtaBookRequest command, CancellationToken cancellationToken)
+        {
             var exporter = new RekhtaDownloader.BookExporter(new ConsoleLogger());
-            var path = $"../data/downloads/{Guid.NewGuid():N}";
+            var path = $"../data/downloads";
+            var filePath = await exporter.DownloadBook(command.Url, 10, command.CreatePdf ? RekhtaDownloader.OutputType.Pdf : RekhtaDownloader.OutputType.Images, path, cancellationToken);
+            var bookInfo = await exporter.GetBookInformation(command.Url, cancellationToken);
+
             try
             {
-                var filePath = await exporter.DownloadBook(command.Url, 10, command.CreatePdf ? RekhtaDownloader.OutputType.Pdf : RekhtaDownloader.OutputType.Images, path, cancellationToken);
-                var bookInfo = await exporter.GetBookInformation(command.Url, cancellationToken);
-
                 if (book == null)
                 {
-                    book = await CreateNewBook(bookInfo, command.Url,  cancellationToken);
+                    book = await CreateNewBook(bookInfo, command.Url, cancellationToken);
                 }
 
                 var result = new DownloadRekhtaBookRequest.Result()
@@ -165,48 +183,45 @@ namespace Inshapardaz.Domain.Models
                 {
                     result.File = await File.ReadAllBytesAsync(filePath);
 
-                    var cmdAddBookContent = new AddBookContentRequest(_settings.DefaultLibraryId, book.Id, null, MimeTypes.Pdf, null)
-                    {
-                        Content = new FileModel
-                        {
-                            MimeType = MimeTypes.Pdf,
-                            Contents = result.File,
-                            FileName = Path.GetFileName(filePath)
-                        }
-                    };
-                    await _commandProcessor.SendAsync(cmdAddBookContent, cancellationToken: cancellationToken);
+                    await SaveBookPdfContents(book, filePath, result.File, cancellationToken);
                 }
                 else
                 {
-                    ZipFile.CreateFromDirectory(filePath, $"{path}.zip");
-                    result.File = await File.ReadAllBytesAsync($"{path}.zip");
-
-                    var _files = Directory.EnumerateFiles(filePath)
-                     .OrderByDescending(filename => filename)
-                     .Select(f => new FileModel {  
-                         MimeType = MimeTypes.Jpg, 
-                         Contents = File.ReadAllBytes(f),
-                         FileName = Path.GetFileName(f)
-                     }).ToList();
-
-                    var cmd = new UploadBookPages(_settings.DefaultLibraryId, book.Id)
+                    var zipFilePath = Path.Combine(new DirectoryInfo(filePath).Parent.FullName,
+                        $"{new DirectoryInfo(filePath).Name}.zip");
+                    try
                     {
-                        Files = _files
-                    };
+                        zipFilePath.MakeSureFileDoesNotExist();
+                        ZipFile.CreateFromDirectory(filePath, zipFilePath);
+                        result.File = await File.ReadAllBytesAsync(zipFilePath);
+                    }
+                    finally
+                    {
+                        zipFilePath.TryDeleteFile();
+                    }
 
-                    await _commandProcessor.SendAsync(cmd);
+                    await SaveBookPages(book, filePath, cancellationToken);
                 }
 
                 command.DownloadResult = result;
-
-                return await base.HandleAsync(command, cancellationToken);
             }
             finally
             {
-                Directory.Delete(path, true);
+                if (command.CreatePdf)
+                    filePath.TryDeleteFile();
+                else
+                    filePath.TryDeleteDirectory();
             }
         }
 
+
+        private async Task DeleteBookPages(BookModel book, IEnumerable<BookPageModel> pages, CancellationToken cancellationToken)
+        {
+            foreach (var page in pages.OrderByDescending(x => x.SequenceNumber))
+            {
+                await _bookPageRepository.DeletePage(_settings.DefaultLibraryId, book.Id, page.SequenceNumber, cancellationToken);
+            }
+        }
         public async Task<BookModel> CreateNewBook(BookInfo bookInfo, string source, CancellationToken cancellationToken)
         {
             var authorName = bookInfo.Authors?.FirstOrDefault() ?? "Unknown";
@@ -251,6 +266,51 @@ namespace Inshapardaz.Domain.Models
             }
 
             return book;
+        }
+
+        public async Task SaveBookPdfContents(BookModel book, string filePath, byte[] contents, CancellationToken cancellationToken)
+        {
+            var cmdAddBookContent = new AddBookContentRequest(_settings.DefaultLibraryId, book.Id, null, MimeTypes.Pdf, null)
+            {
+                Content = new FileModel
+                {
+                    MimeType = MimeTypes.Pdf,
+                    Contents = contents,
+                    FileName = Path.GetFileName(filePath)
+                }
+            };
+            await _commandProcessor.SendAsync(cmdAddBookContent, cancellationToken: cancellationToken);
+
+            var amdAddBookPages = new UploadBookPages(_settings.DefaultLibraryId, book.Id)
+            {
+                Files = new[] { new FileModel
+                        {
+                            MimeType = MimeTypes.Pdf,
+                            Contents = contents,
+                            FileName = Path.GetFileName(filePath)
+                        }}
+            };
+
+            await _commandProcessor.SendAsync(amdAddBookPages, cancellationToken: cancellationToken);
+        }
+
+        public async Task SaveBookPages(BookModel book, string filePath, CancellationToken cancellationToken)
+        {
+            var _files = Directory.EnumerateFiles(filePath)
+                     .OrderBy(filename => filename)
+                     .Select(f => new FileModel
+                     {
+                         MimeType = MimeTypes.Jpg,
+                         Contents = File.ReadAllBytes(f),
+                         FileName = Path.GetFileName(f)
+                     }).ToList();
+
+            var cmd = new UploadBookPages(_settings.DefaultLibraryId, book.Id)
+            {
+                Files = _files
+            };
+
+            await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
         }
     }
 }

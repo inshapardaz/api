@@ -54,7 +54,7 @@ namespace Inshapardaz.Domain.Models
         private readonly IFileRepository _fileRepository;
         private readonly IFileStorage _fileStorage;
 
-
+        const bool _saveBook = false;
         public DownloadRekhtaBookRequestHandler(
             IAmACommandProcessor commandProcessor,
             Settings settings,
@@ -217,6 +217,8 @@ namespace Inshapardaz.Domain.Models
 
         private async Task DeleteBookPages(BookModel book, IEnumerable<BookPageModel> pages, CancellationToken cancellationToken)
         {
+            if (!_saveBook) return;
+
             foreach (var page in pages.OrderByDescending(x => x.SequenceNumber))
             {
                 await _bookPageRepository.DeletePage(_settings.DefaultLibraryId, book.Id, page.SequenceNumber, cancellationToken);
@@ -224,6 +226,8 @@ namespace Inshapardaz.Domain.Models
         }
         public async Task<BookModel> CreateNewBook(BookInfo bookInfo, string source, CancellationToken cancellationToken)
         {
+            if (!_saveBook) return null;
+
             var authorName = bookInfo.Authors?.FirstOrDefault() ?? "Unknown";
             var authors = await _authorRepository.FindAuthors(_settings.DefaultLibraryId, authorName, AuthorTypes.Writer, 1, 1, cancellationToken);
             AuthorModel author = null;
@@ -270,6 +274,8 @@ namespace Inshapardaz.Domain.Models
 
         public async Task SaveBookPdfContents(BookModel book, string filePath, byte[] contents, CancellationToken cancellationToken)
         {
+            if (!_saveBook) return;
+
             var cmdAddBookContent = new AddBookContentRequest(_settings.DefaultLibraryId, book.Id, null, MimeTypes.Pdf, null)
             {
                 Content = new FileModel
@@ -296,6 +302,8 @@ namespace Inshapardaz.Domain.Models
 
         public async Task SaveBookPages(BookModel book, string filePath, CancellationToken cancellationToken)
         {
+            if (!_saveBook) return;
+
             var _files = Directory.EnumerateFiles(filePath)
                      .OrderBy(filename => filename)
                      .Select(f => new FileModel

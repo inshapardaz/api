@@ -41,7 +41,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.BookShelf
         {
             var result = await _bookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelf.Id, cancellationToken);
 
-            if (result.AccountId != command.BookShelf.AccountId)
+            if (result != null && result.AccountId != command.BookShelf.AccountId)
             {
                 throw new ForbiddenException();
             }

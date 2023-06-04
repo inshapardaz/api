@@ -288,9 +288,9 @@ namespace Inshapardaz.Api.Tests
             _periodicalBuilder?.CleanUp();
             _issueDataBuilder?.CleanUp();
             _accountBuilder?.CleanUp();
+            _bookshelfDataBuilder?.CleanUp();
             _libraryBuilder?.CleanUp();
             _correctionBuilder?.Cleanup();
-            _bookshelfDataBuilder?.CleanUp();
         }
     }
 }

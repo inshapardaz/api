@@ -56,7 +56,7 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
-            if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+            if (_userHelper.IsAuthenticated)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -152,7 +152,7 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
-            if (_userHelper.Account.Id == source.AccountId)
+            if (_userHelper.Account?.Id == source.AccountId)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -169,9 +169,16 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.ImageUpload,
                     Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
                 }));
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(BookShelfController.AddBookInBookShelf),
+                    Method = HttpMethod.Delete,
+                    Rel = RelTypes.AddBook,
+                    Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
+                }));
             }
 
-            if (_userHelper.Account.Id == source.AccountId || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+            if (_userHelper.Account?.Id == source.AccountId || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
@@ -181,13 +188,6 @@ namespace Inshapardaz.Api.Converters
                     Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
                 }));
 
-                links.Add(_linkRenderer.Render(new Link
-                {
-                    ActionName = nameof(BookShelfController.AddBookInBookShelf),
-                    Method = HttpMethod.Delete,
-                    Rel = RelTypes.AddBook,
-                    Parameters = new { libraryId = libraryId, bookShelfId = source.Id }
-                }));
             }
 
 

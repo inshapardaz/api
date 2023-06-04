@@ -8,26 +8,30 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
 {
-    [TestFixture]
-    public class WhenGettingSeriesByIdAsReader : TestBase
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
+    [TestFixture(Role.Reader)]
+    public class WhenGettingPublicBookShelfOfOtherUser : TestBase
     {
         private HttpResponseMessage _response;
-        private SeriesDto _expected;
-        private SeriesAssert _assert;
+        private BookShelfDto _expected;
+        private BookShelfAssert _assert;
 
-        public WhenGettingSeriesByIdAsReader()
-            : base(Role.Reader)
+        public WhenGettingPublicBookShelfOfOtherUser(Role role)
+            : base(role)
         {
         }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var series = SeriesBuilder.WithLibrary(LibraryId).Build(4);
-            _expected = series.PickRandom();
+            var account = AccountBuilder.Build();
+            var bookShelf = BookShelfBuilder.WithLibrary(LibraryId).AsPublic().ForAccount(account.Id).Build(4);
+            _expected = bookShelf.PickRandom();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/series/{_expected.Id}");
-            _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/bookshelves/{_expected.Id}");
+            _assert = BookShelfAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -61,9 +65,16 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
         }
 
         [Test]
-        public void ShouldNotHaveDeleteLink()
+        public void ShouldHaveCorrectDeleteLink()
         {
-            _assert.ShouldNotHaveDeleteLink();
+            if (_role == Role.Admin || _role == Role.LibraryAdmin)
+            {
+                _assert.ShouldHaveDeleteLink();
+            }
+            else
+            {
+                _assert.ShouldNotHaveDeleteLink();
+            }
         }
 
         [Test]
@@ -75,7 +86,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
         [Test]
         public void ShouldReturnCorrectSeriesData()
         {
-            _assert.ShouldHaveCorrectSeriesRetunred(_expected, DatabaseConnection);
+            _assert.ShouldHaveCorrectBookShelfRetunred(_expected, DatabaseConnection);
         }
     }
 }

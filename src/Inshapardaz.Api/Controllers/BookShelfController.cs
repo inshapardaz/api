@@ -39,9 +39,12 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/bookshelves", Name = nameof(GetBookShelves))]
-        public async Task<IActionResult> GetBookShelves(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> GetBookShelves(int libraryId, string query, bool onlyPublic = false, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
-            var bookShelvesQuery = new GetBookShelfQuery(libraryId, pageNumber, pageSize) { Query = query };
+            var bookShelvesQuery = new GetBookShelfQuery(libraryId, pageNumber, pageSize, _userHelper.Account?.Id) { 
+                Query = query,
+                OnlyPublic = onlyPublic
+            };
             var result = await _queryProcessor.ExecuteAsync(bookShelvesQuery, token);
 
             var args = new PageRendererArgs<BookShelfModel>
@@ -54,9 +57,9 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/bookshelves/{bookShelfId}", Name = nameof(GetBookShelf))]
-        public async Task<IActionResult> GetBookShelf(int libraryId, int bookShelfId, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> GetBookShelf(int libraryId, int bookShelfId ,CancellationToken token = default(CancellationToken))
         {
-            var query = new GetBookShelfByIdQuery(libraryId, bookShelfId);
+            var query = new GetBookShelfByIdQuery(libraryId, bookShelfId, _userHelper.Account?.Id);
             var bookShelf = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
             if (bookShelf != null)

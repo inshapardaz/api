@@ -12,18 +12,20 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.BookShelf
 {
     public class GetBookShelfQuery : LibraryBaseQuery<Page<BookShelfModel>>
     {
-        public GetBookShelfQuery(int libraryId, int pageNumber, int pageSize)
+        public GetBookShelfQuery(int libraryId, int pageNumber, int pageSize, int? accountId)
             : base(libraryId)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
+            AccountId = accountId;
         }
 
         public int PageNumber { get; private set; }
 
         public int PageSize { get; private set; }
-
+        public int? AccountId { get; }
         public string Query { get; set; }
+        public bool OnlyPublic { get; set; }
     }
 
     public class GetBookShelfQueryHandler : QueryHandlerAsync<GetBookShelfQuery, Page<BookShelfModel>>
@@ -40,8 +42,8 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.BookShelf
         public override async Task<Page<BookShelfModel>> ExecuteAsync(GetBookShelfQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
             var BookShelf = string.IsNullOrWhiteSpace(query.Query)
-             ? await _bookShelfRepository.GetBookShelves(query.LibraryId, query.PageNumber, query.PageSize, cancellationToken)
-             : await _bookShelfRepository.FindBookShelves(query.LibraryId, query.Query, query.PageNumber, query.PageSize, cancellationToken);
+             ? await _bookShelfRepository.GetBookShelves(query.LibraryId, query.OnlyPublic, query.PageNumber, query.PageSize, query.AccountId, cancellationToken)
+             : await _bookShelfRepository.FindBookShelves(query.LibraryId, query.Query, query.OnlyPublic, query.PageNumber, query.PageSize, query.AccountId, cancellationToken);
 
             foreach (var author in BookShelf.Data)
             {

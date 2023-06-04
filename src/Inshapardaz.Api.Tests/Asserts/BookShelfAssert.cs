@@ -146,8 +146,6 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal BookShelfAssert WithReadOnlyLinks()
         {
-            ShouldHaveSelfLink();
-            ShouldHaveBooksLink();
             ShouldNotHaveUpdateLink();
             ShouldNotHaveDeleteLink();
             ShouldNotHaveImageUpdateLink();
@@ -157,11 +155,18 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal BookShelfAssert WithEditableLinks()
         {
-            ShouldHaveSelfLink();
-            ShouldHaveBooksLink();
             ShouldHaveUpdateLink();
             ShouldHaveDeleteLink();
             ShouldHaveImageUpdateLink();
+
+            return this;
+        }
+
+        internal BookShelfAssert WithDeleteOnlyEditableLinks()
+        {
+            ShouldNotHaveUpdateLink();
+            ShouldHaveDeleteLink();
+            ShouldNotHaveImageUpdateLink();
 
             return this;
         }

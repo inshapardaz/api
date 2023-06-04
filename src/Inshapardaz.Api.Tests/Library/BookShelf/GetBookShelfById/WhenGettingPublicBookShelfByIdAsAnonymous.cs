@@ -8,20 +8,21 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
 {
     [TestFixture]
-    public class WhenGettingSeriesByIdAsAnonymous : TestBase
+    public class WhenGettingPublicBookShelfByIdAsAnonymous : TestBase
     {
         private HttpResponseMessage _response;
-        private SeriesDto _expected;
-        private SeriesAssert _assert;
+        private BookShelfDto _expected;
+        private BookShelfAssert _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var series = SeriesBuilder.WithLibrary(LibraryId).Build(4);
+            var account = AccountBuilder.Build();
+            var series = BookShelfBuilder.WithLibrary(LibraryId).ForAccount(account.Id).AsPublic().Build(1);
             _expected = series.PickRandom();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/series/{_expected.Id}");
-            _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/bookshelves/{_expected.Id}");
+            _assert = BookShelfAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -67,9 +68,9 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
         }
 
         [Test]
-        public void ShouldReturnCorrectSeriesData()
+        public void ShouldReturnCorrectBookShelfData()
         {
-            _assert.ShouldHaveCorrectSeriesRetunred(_expected, DatabaseConnection);
+            _assert.ShouldHaveCorrectBookShelfRetunred(_expected, DatabaseConnection);
         }
     }
 }

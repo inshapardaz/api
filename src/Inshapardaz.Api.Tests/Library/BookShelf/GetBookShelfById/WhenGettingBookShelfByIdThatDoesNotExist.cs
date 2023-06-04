@@ -8,11 +8,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
 {
     [TestFixture]
-    public class WhenGettingSeriesByIdThatDoesNotExist : TestBase
+    public class WhenGettingBookShelfByIdThatDoesNotExist : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenGettingSeriesByIdThatDoesNotExist()
+        public WhenGettingBookShelfByIdThatDoesNotExist()
             : base(Role.Writer)
         {
         }
@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/series/{-RandomData.Number}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/bookshelves/{-RandomData.Number}");
         }
 
         [OneTimeTearDown]

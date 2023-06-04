@@ -13,9 +13,9 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task DeleteBookShelf(int libraryId, int bookshelfId, CancellationToken cancellationToken);
 
-        Task<Page<BookShelfModel>> GetBookShelves(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+        Task<Page<BookShelfModel>> GetBookShelves(int libraryId, bool onlyPublic, int pageNumber, int pageSize, int? accountId, CancellationToken cancellationToken);
 
-        Task<Page<BookShelfModel>> FindBookShelves(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
+        Task<Page<BookShelfModel>> FindBookShelves(int libraryId, string query, bool onlyPublic, int pageNumber, int pageSize, int? accountId, CancellationToken cancellationToken);
 
         Task<BookShelfModel> GetBookShelfById(int libraryId, int bookshelfId, CancellationToken cancellationToken);
 

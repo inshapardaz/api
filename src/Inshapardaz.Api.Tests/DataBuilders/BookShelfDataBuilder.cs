@@ -24,11 +24,11 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private int _bookCount;
         private int _libraryId;
         private string _namePattern = "";
-        private bool _isPublic;
+        private bool _isPublic = false;
 
         public IEnumerable<BookDto> Books => _books;
 
-        public IEnumerable<BookShelfDto> BookShelf => _bookShelf;
+        public IEnumerable<BookShelfDto> BookShelves => _bookShelf;
 
         public BookShelfDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage)
         {
@@ -119,11 +119,14 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                                    .With(b => b.LibraryId, _libraryId)
                                    .With(b => b.Language, RandomData.Locale)
                                    .Without(b => b.ImageId)
+                                   .Without(b => b.SeriesId)
+                                   .Without(b => b.SeriesIndex)
+                                   .Without(b => b.Id)
                                    .CreateMany(_bookCount);
-                _books.AddRange(books);
-                _connection.AddBookstToBookShelf(bookShelf.Id, _books.Select(b => b.Id));
                 _connection.AddBooks(books);
+                _connection.AddBookstToBookShelf(bookShelf.Id, books.Select(b => b.Id));
                 _connection.AddBooksAuthor(books.Select(b => b.Id), author.Id);
+                _books.AddRange(books);
             }
 
             _bookShelf.AddRange(bookShelfList);

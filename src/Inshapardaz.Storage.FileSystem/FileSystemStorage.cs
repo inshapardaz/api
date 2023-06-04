@@ -96,7 +96,7 @@ namespace Inshapardaz.Storage.FileSystem
 
         public string GetPublicUrl(string filePath)
         {
-            throw new NotSupportedException();
+            return filePath;
         }
     }
 }

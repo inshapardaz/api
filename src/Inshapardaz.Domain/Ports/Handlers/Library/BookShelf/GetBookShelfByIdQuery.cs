@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Helpers;
+﻿using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories;
@@ -11,13 +12,15 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.BookShelf
 {
     public class GetBookShelfByIdQuery : LibraryBaseQuery<BookShelfModel>
     {
-        public GetBookShelfByIdQuery(int libraryId, int bookShelfId)
+        public GetBookShelfByIdQuery(int libraryId, int bookShelfId, int? accountId)
             : base(libraryId)
         {
             BookShelfId = bookShelfId;
+            AccountId = accountId;
         }
 
         public int BookShelfId { get; }
+        public int? AccountId { get; }
     }
 
     public class GetBookShelfByIdQueryHandler : QueryHandlerAsync<GetBookShelfByIdQuery, BookShelfModel>
@@ -33,14 +36,18 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.BookShelf
 
         public override async Task<BookShelfModel> ExecuteAsync(GetBookShelfByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var BookShelf = await _bookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelfId, cancellationToken);
+            var bookShelf = await _bookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelfId, cancellationToken);
 
-            if (BookShelf != null && BookShelf.ImageId.HasValue)
+            if (bookShelf != null && !bookShelf.IsPublic && bookShelf.AccountId != command.AccountId)
             {
-                BookShelf.ImageUrl = await ImageHelper.TryConvertToPublicFile(BookShelf.ImageId.Value, _fileRepository, cancellationToken);
+                throw new NotFoundException();
+            }
+            if (bookShelf != null && bookShelf.ImageId.HasValue)
+            {
+                bookShelf.ImageUrl = await ImageHelper.TryConvertToPublicFile(bookShelf.ImageId.Value, _fileRepository, cancellationToken);
             }
 
-            return BookShelf;
+            return bookShelf;
         }
     }
 }

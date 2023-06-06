@@ -200,7 +200,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"INSERT INTO BookShelfBook (BookId, BookShelfId, Index) VALUES (@BookId, @BookShelfId, @Index)";
+                var sql = @"INSERT INTO BookShelfBook (BookId, BookShelfId, [Index]) 
+                            VALUES (@BookId, @BookShelfId, @Index)";
                 var command = new CommandDefinition(sql, new
                 {
                     BookId = bookId,
@@ -215,7 +216,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"UPDATE BookShelfBook SET Index = @Index 
+                var sql = @"UPDATE BookShelfBook SET [Index] = @Index 
                             WHERE BookId = @BookId AND BookShelfId = @BookShelfId";
                 var command = new CommandDefinition(sql, new
                 {
@@ -255,7 +256,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"SELECT * FROM BookShelf 
+                var sql = @"SELECT * FROM BookShelfBook
                             WHERE BookShelfId = @BookShelfId
                             AND BookId = @BookId";
                 var command = new CommandDefinition(sql, new { BookShelfId = bookShelfId, BookId = bookId }, cancellationToken: cancellationToken);

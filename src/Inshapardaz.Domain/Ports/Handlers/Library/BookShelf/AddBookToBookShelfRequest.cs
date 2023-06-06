@@ -52,7 +52,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.BookShelf
             
             if (bookShelf.AccountId != command.AccountId)
             {
-                throw new UnauthorizedException();
+                throw new ForbiddenException();
             }
 
             await _bookShelfRepository.AddBookToBookShelf(command.LibraryId, command.BookShelfId, command.BookId, command.Index, cancellationToken);

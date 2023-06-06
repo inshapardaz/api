@@ -67,7 +67,6 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.BookShelf
                 await _bookShelfRepository.UpdateBookToBookShelf(command.LibraryId, result, cancellationToken);
             }
 
-            await _bookShelfRepository.AddBookToBookShelf(command.LibraryId, command.BookShelfId, command.BookId, command.Index, cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

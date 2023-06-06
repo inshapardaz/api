@@ -150,7 +150,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkResult();
         }
 
-        [HttpPost("libraries/{libraryId}/bookshelves/{bookShelfId}", Name = nameof(AddBookInBookShelf))]
+        [HttpPost("libraries/{libraryId}/bookshelves/{bookShelfId}/books", Name = nameof(AddBookInBookShelf))]
         [Authorize()]
         public async Task<IActionResult> AddBookInBookShelf(int libraryId, int bookShelfId, [FromBody] BookShelfBookView bookShelfBook, CancellationToken token = default(CancellationToken))
         {
@@ -164,10 +164,10 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}/bookshelves/{bookShelfId}/books/{bookId}", Name = nameof(BookShelfController.UpdateBookInBookShelf))]
         [Authorize()]
-        public async Task<IActionResult> UpdateBookInBookShelf(int libraryId, int bookShelfId, int booksId, [FromBody] BookShelfBookView bookShelfBook, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateBookInBookShelf(int libraryId, int bookShelfId, int bookId, [FromBody] BookShelfBookView bookShelfBook, CancellationToken token = default(CancellationToken))
         {
             var request = new UpdateBookToBookShelfRequest(libraryId, bookShelfId,
-                booksId,
+                bookId,
                 bookShelfBook.Index,
                 _userHelper.Account.Id);
             await _commandProcessor.SendAsync(request, cancellationToken: token);

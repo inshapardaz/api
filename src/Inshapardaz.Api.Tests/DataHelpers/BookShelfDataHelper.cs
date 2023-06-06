@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -53,6 +54,12 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             return connection.QuerySingleOrDefault<int>(@"Select Count(*) From BookShelf s
                                 Inner Join BookShelfBook b ON s.Id = b.BookShelfId
                                 Where s.Id = @BookShelfId", new { BookShelfId = bookShelfId });
+        }
+
+        public static IEnumerable<(int BookId, int Index)> GetBookShelfBooks(this IDbConnection connection, int bookShelfId)
+        {
+            return connection.Query<(int, int)>(@"SELECT BookId, [Index] FROM BookShelfBook
+                                WHERE BookShelfId = @BookShelfId", new { BookShelfId = bookShelfId });
         }
 
         public static string GetBookShelfImageUrl(this IDbConnection connection, int bookShelfId)

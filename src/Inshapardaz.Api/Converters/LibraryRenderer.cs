@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using System.Linq;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Extensions;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Repositories;
 
 namespace Inshapardaz.Api.Converters
 {
@@ -20,11 +22,13 @@ namespace Inshapardaz.Api.Converters
     {
         private readonly IRenderLink _linkRenderer;
         private readonly IUserHelper _userHelper;
+        private readonly IFileStorage _fileStorage;
 
-        public LibraryRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
+        public LibraryRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
         {
             _linkRenderer = linkRenderer;
             _userHelper = userHelper;
+            _fileStorage = fileStorage;
         }
 
         public PageView<LibraryView> Render(PageRendererArgs<LibraryModel> source)
@@ -171,6 +175,28 @@ namespace Inshapardaz.Api.Converters
                 }));
             }
 
+            if (!string.IsNullOrWhiteSpace(model.ImageUrl) && _fileStorage.SupportsPublicLink)
+            {
+                links.Add(new LinkView
+                {
+                    Href = _fileStorage.GetPublicUrl(model.ImageUrl),
+                    Method = "GET",
+                    Rel = RelTypes.Image,
+                    Accept = MimeTypes.Jpg
+                });
+            }
+            else if (model.ImageId.HasValue)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(FileController.GetFile),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Image,
+                    Parameters = new { fileId = model.ImageId.Value }
+                }));
+            }
+
+
             if (_userHelper.IsAuthenticated)
             {
                 links.Add(_linkRenderer.Render(new Link
@@ -254,6 +280,14 @@ namespace Inshapardaz.Api.Converters
 
                 links.Add(_linkRenderer.Render(new Link
                 {
+                    ActionName = nameof(LibraryController.UpdateLibraryImage),
+                    Method = HttpMethod.Put,
+                    Rel = RelTypes.ImageUpload,
+                    Parameters = new { libraryId = model.Id }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
                     ActionName = nameof(CategoryController.CreateCategory),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.CreateCategory,
@@ -292,6 +326,7 @@ namespace Inshapardaz.Api.Converters
             {
                 Id = model.Id,
                 Name = model.Name,
+                Description = model.Description,
                 OwnerEmail = _userHelper.IsAdmin ? model.OwnerEmail : model.OwnerEmail.MaskEmail(),
                 Language = model.Language,
                 SupportsPeriodicals = model.SupportsPeriodicals,

@@ -35,5 +35,6 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
         Task RemoveLibraryFromAccount(int libraryId, int accountId, CancellationToken cancellationToken);
 
         Task<IEnumerable<LibraryModel>> GetLibrariesByAccountId(int accountId, CancellationToken cancellationToken = default(CancellationToken));
+        Task UpdateLibraryImage(int libraryId, int imageId, CancellationToken cancellationToken);
     }
 }

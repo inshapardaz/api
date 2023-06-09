@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
@@ -6,11 +6,11 @@ using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
-using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Ports.Handlers.Library;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -23,16 +23,19 @@ namespace Inshapardaz.Api.Controllers
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderLibrary _libraryRenderer;
         private readonly IUserHelper _userHelper;
+        private readonly IRenderFile _fileRenderer;
 
         public LibraryController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
             IRenderLibrary libraryRenderer,
-            IUserHelper userHelper)
+            IUserHelper userHelper,
+            IRenderFile fileRenderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _libraryRenderer = libraryRenderer;
             _userHelper = userHelper;
+            _fileRenderer = fileRenderer;
         }
 
         [HttpGet("libraries", Name = nameof(LibraryController.GetLibraries))]
@@ -153,6 +156,37 @@ namespace Inshapardaz.Api.Controllers
             var request = new RemoveLibraryFromAccountRequest(libraryId, accountId);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
+        }
+
+        [HttpPut("libraries/{libraryId}/image", Name = nameof(LibraryController.UpdateLibraryImage))]
+        [Authorize(Role.Admin, Role.LibraryAdmin)]
+        public async Task<IActionResult> UpdateLibraryImage(int libraryId, [FromForm] IFormFile file, CancellationToken token = default(CancellationToken))
+        {
+            var content = new byte[file.Length];
+            using (var stream = new MemoryStream(content))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var request = new UpdateLibraryImageRequest(libraryId)
+            {
+                Image = new FileModel
+                {
+                    FileName = file.FileName,
+                    MimeType = file.ContentType,
+                    Contents = content
+                }
+            };
+
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            if (request.Result.HasAddedNew)
+            {
+                var response = _fileRenderer.Render(request.Result.File);
+                return new CreatedResult(response.Links.Self(), response);
+            }
+
+            return new OkResult();
         }
     }
 }

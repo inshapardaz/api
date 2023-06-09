@@ -21,8 +21,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  *
+                var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library
+                            LEFT OUTER JOIN [File] f ON f.Id = ImageId
                             Order By Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -49,8 +50,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  *
+                var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library
+                            LEFT OUTER JOIN [File] f ON f.Id = ImageId
                             WHERE Name LIKE @Query
                             Order By Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -78,8 +80,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  l.*, al.Role
+                var sql = @"SELECT  l.*, al.Role, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
+                            LEFT OUTER JOIN [File] f ON f.Id = l.ImageId
                             INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
                             WHERE al.AccountId = @AccountId
                             Order By l.Name
@@ -113,8 +116,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  l.*, al.Role
+                var sql = @"SELECT  l.*, al.Role, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
+                            LEFT OUTER JOIN [File] f ON f.Id = l.ImageId
                             INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
                             WHERE al.AccountId = @AccountId AND Name LIKE @Query
                             Order By l.Name
@@ -146,8 +150,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  l.*, al.Role
+                var sql = @"SELECT  l.*, al.Role, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
+                            LEFT OUTER JOIN [File] f ON f.Id = l.ImageId
                             Left JOIN AccountLibrary al ON al.LibraryId = l.Id
                             WHERE al.AccountId != @AccountId
                             Order By l.Name
@@ -181,8 +186,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  l.*, al.Role
+                var sql = @"SELECT  l.*, al.Role, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
+                            LEFT OUTER JOIN [File] f ON f.Id = l.ImageId
                             LEFT JOIN AccountLibrary al ON al.LibraryId = l.Id
                             WHERE al.AccountId != @AccountId AND Name LIKE @Query
                             Order By l.Name
@@ -242,9 +248,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT l.*
+                var sql = @"SELECT l.*, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
-                            Where Id = @LibraryId";
+                            LEFT OUTER JOIN [File] f ON f.Id = l.ImageId
+                            Where l.Id = @LibraryId";
                 var command = new CommandDefinition(sql,
                                                     new { LibraryId = libraryId },
                                                     cancellationToken: cancellationToken);
@@ -259,6 +266,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"Update Library Set Name = @Name,
                             Language = @Language,
+                            Description = @Description,
                             SupportsPeriodicals = @SupportsPeriodicals,
                             PrimaryColor = @PrimaryColor,
                             SecondaryColor = @SecondaryColor,
@@ -272,6 +280,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 {
                     Id = library.Id,
                     Name = library.Name,
+                    Description = library.Description,
                     Language = library.Language,
                     SupportsPeriodicals = library.SupportsPeriodicals,
                     PrimaryColor = library.PrimaryColor,
@@ -330,8 +339,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"SELECT  l.*, al.Role
+                var sql = @"SELECT  l.*, al.Role, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
+                            LEFT OUTER JOIN [File] f ON f.Id = l.ImageId
                             INNER JOIN AccountLibrary al ON al.LibraryId = l.Id
                             WHERE al.AccountId = @AccountId
                             Order By l.Name";
@@ -340,6 +350,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                                     cancellationToken: cancellationToken);
 
                 return await connection.QueryAsync<LibraryModel>(command);
+            }
+        }
+
+        public async Task UpdateLibraryImage(int libraryId, int imageId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"Update Library Set ImageId = @ImageId Where Id = @Id";
+                var command = new CommandDefinition(sql, new { Id = libraryId, ImageId = imageId }, cancellationToken: cancellationToken);
+                await connection.ExecuteScalarAsync<int>(command);
             }
         }
     }

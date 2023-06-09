@@ -20,7 +20,9 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void AddLibrary(this IDbConnection connection, LibraryDto library)
         {
-            var id = connection.ExecuteScalar<int>("Insert Into Library (Name, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor) OUTPUT Inserted.Id VALUES (@Name, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor)", library);
+            var id = connection.ExecuteScalar<int>(@"INSERT INTO Library (Name, Description, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor, ImageId)
+                        OUTPUT Inserted.Id 
+                        VALUES (@Name, @Description, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor, @ImageId)", library);
             library.Id = id;
         }
 
@@ -51,6 +53,22 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         {
             connection.Execute("INSERT INTO AccountLibrary (LibraryId, AccountId, Role) VALUES (@LibraryId, @AccountId, @Role)",
             libraries.Select(l => new { LibraryId = l.Id, AccountId = accountId, Role = role }));
+        }
+
+        public static FileDto GetLibraryImage(this IDbConnection connection, int id)
+        {
+            var sql = @"Select f.* from [File] f
+                        Inner Join Library l ON f.Id = l.ImageId
+                        Where l.Id = @Id";
+            return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = id });
+        }
+
+        public static string GetLibraryImageUrl(this IDbConnection connection, int id)
+        {
+            var sql = @"Select f.FilePath from [File] f
+                        Inner Join Library l ON f.Id = l.ImageId
+                        Where l.Id = @Id";
+            return connection.QuerySingleOrDefault<string>(sql, new { Id = id });
         }
     }
 }

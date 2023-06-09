@@ -7,6 +7,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int Id { get; set; }
 
         public string Name { get; set; }
+        public string Description { get; set; }
 
         public string Language { get; set; }
 
@@ -24,5 +25,7 @@ namespace Inshapardaz.Domain.Models.Library
         public string DatabaseConnection { get; set; }
         public FileStoreTypes? FileStoreType { get; set; }
         public string FileStoreSource { get; set; }
+        public int? ImageId { get; internal set; }
+        public string ImageUrl { get; set; }
     }
 }

@@ -2,11 +2,14 @@
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters;
+using System;
 using System.Data;
 using System.Net.Http;
+using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Asserts
 {
@@ -338,6 +341,43 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             return new LibraryAssert(view, libraryId);
         }
+
+        internal static void ShouldNotHaveUpdatedLibraryImage(int libraryId, byte[] newImage, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        {
+            var imageUrl = databaseConnection.GetLibraryImageUrl(libraryId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStore.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().NotEqual(newImage);
+        }
+
+        internal void ShouldHaveCorrectImageLocationHeader(int libraryId)
+        {
+            _response.Headers.Location.Should().NotBeNull();
+        }
+
+        internal static void ShouldHaveAddedLibraryImage(int libraryId, byte[] newImage, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        {
+            var imageUrl = databaseConnection.GetLibraryImageUrl(libraryId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStore.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().NotBeNullOrEmpty().And.Equal(newImage);
+        }
+
+        internal static void ShouldHavePublicImage(int libraryId, IDbConnection databaseConnection)
+        {
+            var image = databaseConnection.GetLibraryImage(libraryId);
+            image.Should().NotBeNull();
+            image.IsPublic.Should().BeTrue();
+        }
+
+        internal static void ShouldHaveUpdatedImage(int libraryId, byte[] newImage, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        {
+            var imageUrl = databaseConnection.GetLibraryImageUrl(libraryId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStore.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().NotBeNull().And.Equal(newImage);
+        }
+
     }
 
     internal static class LibraryAssertionExtensions

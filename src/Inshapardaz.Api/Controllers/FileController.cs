@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Controllers
                 return new NotFoundResult();
             }
 
-            return new FileContentResult(file.Contents, new MediaTypeHeaderValue(file.MimeType));
+            return File(file.Contents, file.MimeType);
         }
 
         [HttpDelete("files/{fileId}", Name = nameof(FileController.DeleteFile))]

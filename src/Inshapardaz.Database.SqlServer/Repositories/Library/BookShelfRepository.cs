@@ -3,6 +3,7 @@ using Dapper;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,7 +37,6 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
             return await GetBookShelfById(libraryId, bookShelfId, cancellationToken);
         }
-
 
         public async Task UpdateBookShelf(int libraryId, BookShelfModel bookShelf, CancellationToken cancellationToken)
         {
@@ -196,6 +196,50 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<Page<BookShelfModel>> GetAllBookShelves(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"SELECT b.Id, b.Name, b.Description, b.IsPublic, b.AccountId, f.Id As ImageId, f.FilePath AS ImageUrl,
+                            (SELECT Count(*)
+                                FROM BookShelfBook 
+                                WHERE BookShelfId = b.Id) AS BookCount
+                            FROM BookShelf AS b
+                            LEFT OUTER JOIN [File] f ON f.Id = b.ImageId
+                            Where b.LibraryId = @LibraryId
+                            Order By b.Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new
+                                                    {
+                                                        LibraryId = libraryId,
+                                                        PageSize = pageSize,
+                                                        PageNumber = pageNumber
+                                                    },
+                                                    cancellationToken: cancellationToken);
+
+                var bookShelves = await connection.QueryAsync<BookShelfModel>(command);
+
+                var sqlShelfCount = @"SELECT COUNT(*) 
+                    FROM BookShelf 
+                    WHERE LibraryId = @LibraryId";
+                var bookShelfCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlShelfCount,
+                    new
+                    {
+                        LibraryId = libraryId
+                    }, cancellationToken: cancellationToken));
+
+                return new Page<BookShelfModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = bookShelfCount,
+                    Data = bookShelves
+                };
+            }
+        }
+        
         public async Task AddBookToBookShelf(int libraryId, int bookshelfId, int bookId, int index, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
@@ -249,6 +293,17 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"Update BookShelf Set ImageId = @ImageId Where Id = @Id AND LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new { Id = bookshelfId, LibraryId = libraryId, ImageId = imageId }, cancellationToken: cancellationToken);
                 await connection.ExecuteScalarAsync<int>(command);
+            }
+        }
+
+        public async Task<IEnumerable<BookShelfBook>> GetBookShelfBooks(int libraryId, int bookShelfId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"SELECT * FROM BookShelfBook
+                            WHERE BookShelfId = @BookShelfId";
+                var command = new CommandDefinition(sql, new { BookShelfId = bookShelfId }, cancellationToken: cancellationToken);
+                return await connection.QueryAsync<BookShelfBook>(command);
             }
         }
 

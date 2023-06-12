@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Inshapardaz.LibraryMigrator": {
+      "commandName": "Project",
+      "commandLineArgs": "-s \"data source=.;Database=Nawishta;integrated security=True;\"  -d \"data source=.;Database=Nawishta_test;integrated security=True;\" -l 1",
+      "hotReloadEnabled": false
+    },
+    "Profile 1": {
+      "commandName": "Project",
+      "commandLineArgs": "-s \"Server=inshapardaz.database.windows.net;Database=inshapardaz;user=omar;pwd=2JiR5jSfLtDZ33U;MultipleActiveResultSets=true;\"  -d \"Data Source=SQL8005.site4now.net;Initial Catalog=db_a9426d_nawishta;User Id=db_a9426d_nawishta_admin;Password=2v5HVNZ7Hct653\" -l 1",
+      "hotReloadEnabled": false
+    }
+  }
+}

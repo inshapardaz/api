@@ -199,6 +199,19 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<IEnumerable<ChapterContentModel>> GetChapterContents(int libraryId, int bookId, int chapterNumber, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"Select cc.*, c.chapterNumber, b.Id As BookId From Chapter c
+                            Inner Join Book b On b.Id = c.BookId
+                            Left Outer Join ChapterContent cc On c.Id = cc.ChapterId
+                            Where c.chapterNumber = @ChapterId AND b.Id = @BookId AND b.LibraryId = @LibraryId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, ChapterId = chapterNumber }, cancellationToken: cancellationToken);
+                return await connection.QueryAsync<ChapterContentModel>(command);
+            }
+        }
+
         public async Task<ChapterContentModel> AddChapterContent(int libraryId, ChapterContentModel content, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())

@@ -223,6 +223,81 @@ namespace Inshapardaz.Database.SqlServer.Repositories
             }
         }
 
+        public async Task<AccountModel> AddAccount(AccountModel account, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Insert Into Accounts (
+                    Name, 
+                    Email, 
+                    IsSuperAdmin, 
+                    InvitationCode, 
+                    InvitationCodeExpiry, 
+                    Created, 
+                    AcceptTerms, 
+                    Updated, 
+                    PasswordHash, 
+                    PasswordReset, 
+                    ResetToken, 
+                    ResetTokenExpires, 
+                    VerificationToken, 
+                    Verified)
+                OUTPUT Inserted.Id 
+                VALUES (
+                    @Name, 
+                    @Email, 
+                    @IsSuperAdmin, 
+                    @InvitationCode, 
+                    @InvitationCodeExpiry, 
+                    @Created,
+                    @AcceptTerms, 
+                    @Updated, 
+                    @PasswordHash,
+                    @PasswordReset,
+                    @ResetToken,
+                    @ResetTokenExpires,
+                    @VerificationToken,
+                    @Verified)";
+
+                var command = new CommandDefinition(sql, new
+                {
+                    account.Name,
+                    account.Email,
+                    account.IsSuperAdmin,
+                    account.InvitationCode,
+                    account.InvitationCodeExpiry,
+                    account.Created,
+                    account.AcceptTerms,
+                    account.Updated,
+                    account.PasswordHash,
+                    account.PasswordReset,
+                    account.ResetToken,
+                    account.ResetTokenExpires,
+                    account.VerificationToken,
+                    account.Verified
+                }, cancellationToken: cancellationToken);
+
+                var accountId = await connection.ExecuteScalarAsync<int>(command);
+                account.Id = accountId;
+                return account;
+            }
+        }
+
+        public async Task AddAccountToLibrary(int libraryId, int accountId, Role role, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = "Insert Into AccountLibrary VALUES (@AccountId, @LibraryId, @Role)";
+                var command = new CommandDefinition(sql, new
+                {
+                    AccountId = accountId,
+                    LibraryId = libraryId,
+                    Role = role
+                }, cancellationToken: cancellationToken);
+
+                await connection.ExecuteAsync(command);
+            }
+        }
         public async Task UpdateInvitationCode(string email, string invitationCode, System.DateTime invitationCodeExpiry, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetConnection())

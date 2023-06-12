@@ -34,6 +34,39 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             return await GetPageById(pageId, cancellationToken);
         }
 
+        public async Task<int> AddPage(int libraryId, BookPageModel page, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"Insert Into BookPage(
+                                Text,
+                                SequenceNumber,
+                                BookId,
+                                ImageId,
+                                Status,
+                                WriterAccountId,
+                                WriterAssignTimeStamp,
+                                ReviewerAccountId,
+                                ReviewerAssignTimeStamp,
+                                ChapterId
+                             )
+                            OUTPUT Inserted.Id
+                            VALUES(
+                                @Text,
+                                @SequenceNumber,
+                                @BookId,
+                                @ImageId,
+                                @Status,
+                                @WriterAccountId,
+                                @WriterAssignTimeStamp,
+                                @ReviewerAccountId,
+                                @ReviewerAssignTimeStamp,
+                                @ChapterId)";
+                var command = new CommandDefinition(sql, page, cancellationToken: cancellationToken);
+                return await connection.ExecuteScalarAsync<int>(command);
+            }
+        }
+
         public async Task<BookPageModel> GetPageBySequenceNumber(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())

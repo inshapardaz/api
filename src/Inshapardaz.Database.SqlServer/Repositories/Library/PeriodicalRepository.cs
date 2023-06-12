@@ -241,14 +241,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
         private static string GetSortByQuery(PeriodicalSortByType sortBy)
         {
-            switch (sortBy)
-            {
-                case PeriodicalSortByType.DateCreated:
-                    return "DateAdded";
+            return "Title";
 
-                default:
-                    return "Title";
-            }
+            //switch (sortBy)
+            //{
+            //    case PeriodicalSortByType.DateCreated:
+            //        return "DateAdded";
+
+            //    default:
+            //        return "Title";
+            //}
         }
     }
 }

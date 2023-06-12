@@ -77,7 +77,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
                 var command = new CommandDefinition(sql,
-                                                    new { LibraryId = libraryId, AuthorType = authorType, PageSize = pageSize, PageNumber = pageNumber },
+                                                    new { LibraryId = libraryId, 
+                                                        AuthorType = authorType, 
+                                                        PageSize = pageSize, 
+                                                        PageNumber = pageNumber },
                                                     cancellationToken: cancellationToken);
 
                 var authors = await connection.QueryAsync<AuthorModel>(command);

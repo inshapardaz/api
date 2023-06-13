@@ -21,5 +21,7 @@
         public const string Zip = "application/zip";
 
         public const string CompressedFile = "application/x-zip-compressed";
+
+        public static string WordDoc { get; internal set; }
     }
 }

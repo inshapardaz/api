@@ -314,7 +314,7 @@ namespace Inshapardaz.Api.Controllers
             return new OkResult();
         }
 
-        [HttpGet("libraries/{libraryId}/favorites/books/{bookId}/bind", Name = nameof(BindBook))]
+        [HttpGet("libraries/{libraryId}/books/{bookId}/bind", Name = nameof(BindBook))]
         [Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> BindBook(int libraryId, int bookId, CancellationToken token)
         {
@@ -324,8 +324,8 @@ namespace Inshapardaz.Api.Controllers
             return File(System.Text.Encoding.UTF8.GetBytes(request.Result), MimeTypes.Text);
         }
 
-        [HttpPost("libraries/{libraryId}/favorites/books/{bookId}/publish", Name = nameof(PublishBook))]
-        [Authorize(Role.Admin, Role.LibraryAdmin)]
+        [HttpPost("libraries/{libraryId}/books/{bookId}/publish", Name = nameof(PublishBook))]
+        //[Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> PublishBook(int libraryId, int bookId, CancellationToken token)
         {
             var request = new PublishBookRequest(libraryId, bookId);

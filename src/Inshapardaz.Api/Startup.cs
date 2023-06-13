@@ -89,6 +89,7 @@ namespace Inshapardaz.Api
             services.AddTransient<IOpenZip, ZipReader>();
             services.AddTransient<IProvideOcr, GoogleOcr>();
             services.AddScoped<LibraryConfiguration>();
+            services.AddTransient<IWriteWordDocument, WordDocumentWriter>();
             services.AddScoped(s => FileStorageFactory.GetFileStore(s.GetService<LibraryConfiguration>(), s.GetService<IWebHostEnvironment>()));
             AddCustomServices(services);
         }

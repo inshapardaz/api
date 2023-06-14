@@ -9,7 +9,6 @@ using Paramore.Brighter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -80,7 +79,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
                 }
             }
 
-            var wordDocument = _wordDocumentWriter.ConvertTextToWord(chapterText);
+            var wordDocument = _wordDocumentWriter.ConvertMarkdownToWord(chapterText);
 
             var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, book.Language, MimeTypes.MsWord, cancellationToken);
 

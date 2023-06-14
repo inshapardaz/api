@@ -325,7 +325,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/books/{bookId}/publish", Name = nameof(PublishBook))]
-        //[Authorize(Role.Admin, Role.LibraryAdmin)]
+        [Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> PublishBook(int libraryId, int bookId, CancellationToken token)
         {
             var request = new PublishBookRequest(libraryId, bookId);

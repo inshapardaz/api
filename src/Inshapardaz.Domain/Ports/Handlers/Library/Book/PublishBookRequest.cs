@@ -150,7 +150,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
                 builder.Append(finalText);
             }
 
-            return builder.ToString();
+            return builder.ToString().TrimStart();
         }
     }
 }

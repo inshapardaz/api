@@ -648,7 +648,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             var books = new Dictionary<int, BookModel>();
             var sql3 = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
-                            (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
+                            (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.Id) As PageCount,
+                            (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.Id) As ChapterCount,
                             a.*, c.*
                             From Book b
                             LEFT JOIN Series s On b.SeriesId = s.id

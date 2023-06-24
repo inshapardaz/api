@@ -44,6 +44,8 @@ jobs:
         AppSettings.RegisterPagePath: ${{ secrets.REGISTERPAGEPATH }}
         AppSettings.FileStoreType: ${{ secrets.FILESTORETYPE }}
         AppSettings.Allowed_Origins: ${{ secrets.ALLOWEDORIGINS }}
+        AppSettings.DefaultLibraryId": ${{ secrets.DEFAULT_LIBRARY }}
+        
 
     - name: Build
       run: dotnet build --no-restore

@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Bcpg;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -21,15 +23,17 @@ namespace Inshapardaz.Api.Middleware
 
         public async Task Invoke(HttpContext context)
         {
+            Stopwatch sw = new Stopwatch();
             try
             {
+                sw.Start();
                 _logger.LogInformation($"BGN : {context.Request.Method} {context.Request.Path} ");
                 await _next.Invoke(context);
-                _logger.LogInformation($"FIN : {context.Request.Method} {context.Request.Path} - {context.Response.StatusCode}");
+                _logger.LogInformation($"FIN : {context.Request.Method} {context.Request.Path} - {context.Response.StatusCode}. TimeElapsed : {sw.ElapsedMilliseconds} ms");
             }
             catch
             {
-                _logger.LogInformation($"Err : {context.Request.Method} {context.Request.Path} - {context.Response.StatusCode}");
+                _logger.LogInformation($"Err : {context.Request.Method} {context.Request.Path} - {context.Response.StatusCode}. TimeElapsed : {sw.ElapsedMilliseconds} ms");
             }
         }
     }

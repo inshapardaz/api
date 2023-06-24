@@ -97,9 +97,6 @@ namespace Inshapardaz.Api
         // configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Console.WriteLine($"ContentRootPath : {env.ContentRootPath}");
-            Console.WriteLine($"WebRootPath : {env.WebRootPath}");
-
             // generated swagger json and swagger ui middleware
             app.UseSwagger();
             app.UseSwaggerUI(x => x.SwaggerEndpoint("/swagger/v1/swagger.json", "Inshapardaz API"));
@@ -116,6 +113,7 @@ namespace Inshapardaz.Api
 
             app.UseStaticFiles();
             // global error handler
+            app.UseRequestLogging();
             app.UseMiddleware<ErrorHandlerMiddleware>();
             app.UseMiddleware<LibraryConfigurationMiddleware>();
             app.UseStatusCodeMiddleWare();

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Inshapardaz.Api.Views.Library
 {
@@ -8,16 +9,19 @@ namespace Inshapardaz.Api.Views.Library
     {
         public int Id { get; set; }
 
+        [Required]
         public string Title { get; set; }
 
         public string Description { get; set; }
 
+        [Required]
         public IEnumerable<AuthorView> Authors { get; set; }
 
         public IEnumerable<CategoryView> Categories { get; set; }
 
         public IEnumerable<BookContentView> Contents { get; set; }
 
+        [Required]
         public string Language { get; set; }
 
         public bool IsPublic { get; set; }

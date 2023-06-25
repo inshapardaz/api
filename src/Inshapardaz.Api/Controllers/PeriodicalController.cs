@@ -114,7 +114,9 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new UpdatePeriodicalRequest(libraryId, periodical.Map());
+            PeriodicalModel periodicalModel = periodical.Map();
+            periodicalModel.Id = periodicalId;
+            var request = new UpdatePeriodicalRequest(libraryId, periodicalModel);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _periodicalRenderer.Render(request.Result.Periodical, libraryId);

@@ -123,7 +123,7 @@ namespace Inshapardaz.Api.Controllers
 
             var request = new UpdateAuthorImageRequest(libraryId, authorId)
             {
-                Image = new Domain.Models.FileModel
+                Image = new FileModel
                 {
                     FileName = file.FileName,
                     MimeType = file.ContentType,

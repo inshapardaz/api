@@ -26,6 +26,8 @@ namespace Inshapardaz.Domain.Models.Library
         public int ArticleCount { get; set; }
 
         public int PageCount { get; set; }
+        public PeriodicalFrequency Frequency { get; set; }
+
 
         public List<IssueContentModel> Contents { get; set; } = new List<IssueContentModel>();
     }

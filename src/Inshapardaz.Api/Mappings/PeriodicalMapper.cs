@@ -42,6 +42,7 @@ namespace Inshapardaz.Api.Mappings
                 IssueNumber = source.IssueNumber,
                 IssueDate = source.IssueDate,
                 PageCount = source.PageCount,
+                Frequency = source.Frequency.ToDescription(),
                 ArticleCount = source.ArticleCount
             };
 

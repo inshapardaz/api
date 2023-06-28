@@ -54,7 +54,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
 
                 var issues = await connection.QueryAsync<IssueModel, PeriodicalModel, IssueModel>(command, (i, periodical) =>
                 {
-                    i.Periodical = periodical; 
+                    i.Periodical = periodical;
+                    i.Frequency = periodical.Frequency;
                     return i;
                 });
 
@@ -100,6 +101,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var result = await connection.QueryAsync<IssueModel, PeriodicalModel, string, int, int, IssueModel>(command, (i, p, iUrl, ac, pc) =>
                 {
                     i.Periodical = p;
+                    i.Frequency = p.Frequency;
                     i.ArticleCount = ac;
                     i.PageCount = pc;
                     i.ImageUrl = iUrl;

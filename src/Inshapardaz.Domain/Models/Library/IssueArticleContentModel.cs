@@ -1,6 +1,6 @@
 ﻿namespace Inshapardaz.Domain.Models.Library
 {
-    public class ArticleContentModel
+    public class IssueArticleContentModel
     {
         public int Id { get; set; }
 

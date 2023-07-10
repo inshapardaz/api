@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.Converters
 {
     public interface IRenderIssueArticle
     {
-        ArticleContentView Render(ArticleContentModel source, int libraryId);
+        ArticleContentView Render(IssueArticleContentModel source, int libraryId);
 
         IssueArticleView Render(IssueArticleModel source, int libraryId, int periodicalId, int volumeNumber, int issueNumber);
 
@@ -165,7 +165,7 @@ namespace Inshapardaz.Api.Converters
             return result;
         }
 
-        public ArticleContentView Render(ArticleContentModel source, int libraryId)
+        public ArticleContentView Render(IssueArticleContentModel source, int libraryId)
         {
             var result = source.Map();
 
@@ -210,7 +210,7 @@ namespace Inshapardaz.Api.Converters
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber,  issueNumber = source.IssueNumber, sequenceNumber = source.SequenceNumber }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber, sequenceNumber = source.SequenceNumber }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -219,7 +219,7 @@ namespace Inshapardaz.Api.Converters
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber,  issueNumber = source.IssueNumber, sequenceNumber = source.SequenceNumber }
+                    Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber, sequenceNumber = source.SequenceNumber }
                 }));
             }
 

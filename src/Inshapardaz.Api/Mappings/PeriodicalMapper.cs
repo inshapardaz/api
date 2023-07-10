@@ -121,7 +121,7 @@ namespace Inshapardaz.Api.Mappings
               SequenceNumber = source.SequenceNumber,
           };
 
-        public static ArticleContentView Map(this ArticleContentModel source)
+        public static ArticleContentView Map(this IssueArticleContentModel source)
             => new ArticleContentView
             {
                 Id = source.Id,
@@ -133,8 +133,8 @@ namespace Inshapardaz.Api.Mappings
                 Text = source.Text
             };
 
-        public static ArticleContentModel Map(this ArticleContentView source)
-            => new ArticleContentModel
+        public static IssueArticleContentModel Map(this ArticleContentView source)
+            => new IssueArticleContentModel
             {
                 Id = source.Id,
                 PeriodicalId = source.PeriodicalId,

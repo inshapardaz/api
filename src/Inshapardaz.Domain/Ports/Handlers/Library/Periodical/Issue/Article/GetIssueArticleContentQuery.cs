@@ -10,7 +10,7 @@ using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article
 {
-    public class GetIssueArticleContentQuery : LibraryBaseQuery<ArticleContentModel>
+    public class GetIssueArticleContentQuery : LibraryBaseQuery<IssueArticleContentModel>
     {
         public GetIssueArticleContentQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language)
             : base(libraryId)
@@ -29,7 +29,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article
         public string Language { get; set; }
     }
 
-    public class GetArticleContentQueryHandler : QueryHandlerAsync<GetIssueArticleContentQuery, ArticleContentModel>
+    public class GetArticleContentQueryHandler : QueryHandlerAsync<GetIssueArticleContentQuery, IssueArticleContentModel>
     {
         private readonly ILibraryRepository _libraryRepository;
         private readonly IIssueArticleRepository _articleRepository;
@@ -40,7 +40,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article
             _articleRepository = articleRepository;
         }
 
-        public override async Task<ArticleContentModel> ExecuteAsync(GetIssueArticleContentQuery command, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<IssueArticleContentModel> ExecuteAsync(GetIssueArticleContentQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             if (string.IsNullOrWhiteSpace(command.Language))
             {

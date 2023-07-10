@@ -35,7 +35,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article
 
         public class RequestResult
         {
-            public ArticleContentModel Content { get; set; }
+            public IssueArticleContentModel Content { get; set; }
 
             public bool HasAddedNew { get; set; }
         }

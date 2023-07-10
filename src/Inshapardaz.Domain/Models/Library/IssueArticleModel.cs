@@ -18,7 +18,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int IssueId { get; set; }
 
-        public List<ArticleContentModel> Contents { get; set; } = new List<ArticleContentModel>();
+        public List<IssueArticleContentModel> Contents { get; set; } = new List<IssueArticleContentModel>();
 
         public int? WriterAccountId { get; set; }
         public string WriterAccountName { get; set; }

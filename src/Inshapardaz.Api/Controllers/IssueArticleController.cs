@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
@@ -10,10 +8,8 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue;
 using Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;

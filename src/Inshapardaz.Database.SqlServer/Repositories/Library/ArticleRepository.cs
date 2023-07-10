@@ -138,13 +138,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
                             AND a.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new {
+                var command = new CommandDefinition(sql, new
+                {
                     PeriodicalId = periodicalId,
                     VolumeNumber = volumeNumber,
                     IssueNumber = issueNumber,
                     SequenceNumber = sequenceNumber
                 }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<IssueArticleModel, ArticleContentModel, IssueArticleModel>(command, (a, ac) =>
+                await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, IssueArticleModel>(command, (a, ac) =>
                 {
                     if (article == null)
                     {
@@ -167,11 +168,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<ArticleContentModel> GetArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken)
+        public async Task<IssueArticleContentModel> GetArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                ArticleContentModel articleContent = null;
+                IssueArticleContentModel articleContent = null;
                 var sql = @"SELECT a.*, ac.*, i.*
                             FROM Article a
                             INNER JOIN Issue i ON i.Id = a.IssueId
@@ -181,13 +182,15 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             AND i.IssueNumber = @IssueNumber
                             AND a.SequenceNumber = @SequenceNumber
                             AND ac.Language = @Language";
-                var command = new CommandDefinition(sql, new {
+                var command = new CommandDefinition(sql, new
+                {
                     PeriodicalId = periodicalId,
                     VolumeNumber = volumeNumber,
                     IssueNumber = issueNumber,
                     SequenceNumber = sequenceNumber,
-                    Language = language }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<IssueArticleModel, ArticleContentModel, IssueModel, ArticleContentModel>(command, (a, ac, i) =>
+                    Language = language
+                }, cancellationToken: cancellationToken);
+                await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, IssueModel, IssueArticleContentModel>(command, (a, ac, i) =>
                 {
                     if (articleContent == null)
                     {
@@ -219,12 +222,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
                             ORDER BY a.SequenceNumber";
-                var command = new CommandDefinition(sql, new {
+                var command = new CommandDefinition(sql, new
+                {
                     PeriodicalId = periodicalId,
                     VolumeNumber = volumeNumber,
                     IssueNumber = issueNumber,
                 }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<IssueArticleModel, ArticleContentModel, IssueModel, IssueArticleModel>(command, (a, at, i) =>
+                await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, IssueModel, IssueArticleModel>(command, (a, at, i) =>
                 {
                     if (!articles.TryGetValue(a.Id, out IssueArticleModel article))
                     {
@@ -251,7 +255,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<ArticleContentModel> GetArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken)
+        public async Task<IssueArticleContentModel> GetArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
@@ -266,19 +270,20 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                 AND i.IssueNumber = @IssueNumber
                                 AND a.sequenceNumber = @SequenceNumber 
                                 AND ac.Language = @Language";
-                var command = new CommandDefinition(sql, new { 
-                    LibraryId = libraryId, 
-                    PeriodicalId = periodicalId, 
-                    VolumeNumber = volumeNumber, 
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    PeriodicalId = periodicalId,
+                    VolumeNumber = volumeNumber,
                     IssueNumber = issueNumber,
                     SequenceNumber = sequenceNumber,
-                    Language = language 
+                    Language = language
                 }, cancellationToken: cancellationToken);
-                return await connection.QuerySingleOrDefaultAsync<ArticleContentModel>(command);
+                return await connection.QuerySingleOrDefaultAsync<IssueArticleContentModel>(command);
             }
         }
 
-        public async Task<IEnumerable<ArticleContentModel>> GetArticleContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+        public async Task<IEnumerable<IssueArticleContentModel>> GetArticleContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
@@ -301,11 +306,11 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     IssueNumber = issueNumber,
                     SequenceNumber = sequenceNumber
                 }, cancellationToken: cancellationToken);
-                return await connection.QueryAsync<ArticleContentModel>(command);
+                return await connection.QueryAsync<IssueArticleContentModel>(command);
             }
         }
 
-        public async Task<ArticleContentModel> AddArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string content, CancellationToken cancellationToken)
+        public async Task<IssueArticleContentModel> AddArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string content, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
@@ -319,20 +324,22 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             AND i.IssueNumber = @IssueNumber
                             AND a.SequenceNumber = @SequenceNumber)"
                 ;
-                var command = new CommandDefinition(sql, new {
+                var command = new CommandDefinition(sql, new
+                {
                     LibraryId = libraryId,
                     PeriodicalId = periodicalId,
                     VolumeNumber = volumeNumber,
                     IssueNumber = issueNumber,
                     SequenceNumber = sequenceNumber,
-                    Language = language, 
-                    Text = content }, cancellationToken: cancellationToken);
+                    Language = language,
+                    Text = content
+                }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
                 return await GetArticleContentById(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, language, cancellationToken);
             }
         }
 
-        public async Task<ArticleContentModel> UpdateArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string content, CancellationToken cancellationToken)
+        public async Task<IssueArticleContentModel> UpdateArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string content, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
@@ -414,7 +421,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 {
                     Id = articleId
                 }, cancellationToken: cancellationToken);
-                await connection.QueryAsync<IssueArticleModel, ArticleContentModel, IssueArticleModel>(command, (a, ac) =>
+                await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, IssueArticleModel>(command, (a, ac) =>
                 {
                     if (article == null)
                     {

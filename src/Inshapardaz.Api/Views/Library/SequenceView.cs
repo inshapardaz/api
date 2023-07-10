@@ -1,6 +1,6 @@
 ﻿namespace Inshapardaz.Api.Views.Library
 {
-    public class ArticleSequenceView : ViewWithLinks
+    public class SequenceView : ViewWithLinks
     {
         public int Id { get; set; }
 

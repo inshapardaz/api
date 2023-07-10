@@ -79,6 +79,7 @@ namespace Inshapardaz.Api
             services.AddTransient<IRenderLink, LinkRenderer>();
             services.AddTransient<IRenderSeries, SeriesRenderer>();
             services.AddTransient<IRenderPeriodical, PeriodicalRenderer>();
+            services.AddTransient<IRenderArticle, ArticleRenderer>();
             services.AddTransient<IRenderIssue, IssueRenderer>();
             services.AddTransient<IRenderIssuePage, IssuePageRenderer>();
             services.AddTransient<IRenderIssueArticle, IssueArticleRenderer>();

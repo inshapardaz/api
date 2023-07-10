@@ -51,7 +51,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 Copyrights = fake.PickRandom<CopyrightStatuses>().ToDescription(),
                 Language = Helpers.RandomData.Locale,
                 YearPublished = fake.Date.Past().Year,
-                Status = fake.PickRandom<BookStatuses>().ToDescription(),
+                Status = fake.PickRandom<StatusType>().ToDescription(),
                 IsPublic = fake.Random.Bool(),
                 Authors = new List<AuthorView> { new AuthorView { Id = otherAuthor.Id, Name = otherAuthor.Name } },
                 SeriesId = otherSeries.Id,

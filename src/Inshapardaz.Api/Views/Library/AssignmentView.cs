@@ -3,9 +3,9 @@ using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Api.Views.Library
 {
-    public class ChapterAssignmentView : ViewWithLinks
+    public class AssignmentView : ViewWithLinks
     {
-        
+
         public int? AccountId { get; set; }
     }
 }

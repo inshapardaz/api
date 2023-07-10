@@ -44,7 +44,7 @@ namespace Inshapardaz.Api.Mappings
             SeriesId = source.SeriesId,
             SeriesIndex = source.SeriesIndex,
             Copyrights = source.Copyrights.ToEnum(CopyrightStatuses.Copyright),
-            Status = source.Status.ToEnum(BookStatuses.AvailableForTyping),
+            Status = source.Status.ToEnum(StatusType.AvailableForTyping),
             YearPublished = source.YearPublished,
             IsPublished = source.IsPublished,
             Progress = source.Progress,

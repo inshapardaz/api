@@ -49,10 +49,10 @@ namespace Inshapardaz.Api.Controllers
             [FromQuery] int? bookShelfId = null,
             [FromQuery] bool? favorite = null,
             [FromQuery] bool? read = null,
-            [FromQuery] BookStatuses status = BookStatuses.Published,
+            [FromQuery] StatusType status = StatusType.Published,
             [FromQuery] BookSortByType sortBy = BookSortByType.Title,
             [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
-            [FromQuery] BookAssignmentStatus assignedFor = BookAssignmentStatus.None,
+            [FromQuery] AssignmentStatus assignedFor = AssignmentStatus.None,
             CancellationToken token = default(CancellationToken))
         {
             var filter = new BookFilter

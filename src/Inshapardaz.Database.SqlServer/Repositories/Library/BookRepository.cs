@@ -325,18 +325,18 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, BookStatuses status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, StatusType status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
                 var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
                 var assignmentfilter = string.Empty;
-                if (status == BookStatuses.BeingTyped)
+                if (status == StatusType.BeingTyped)
                 {
                     assignmentfilter = "AND (bp.WriterAccountId = @AccountId OR c.WriterAccountId = @AccountId)";
                 }
-                else if (status == BookStatuses.ProofRead)
+                else if (status == StatusType.ProofRead)
                 {
                     assignmentfilter = "AND (bp.ReviewerAccountId = @AccountId OR c.ReviewerAccountId = @AccountId)";
                 }

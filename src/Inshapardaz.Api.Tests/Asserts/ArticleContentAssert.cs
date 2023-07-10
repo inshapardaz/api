@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Asserts
     {
         private HttpResponseMessage _response;
         private readonly int _libraryId;
-        private ArticleContentView _articleContent;
+        private IssueArticleContentView _articleContent;
         private IssueDto _issue;
         private LibraryDto _library;
 
@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _response = response;
             _libraryId = libraryId;
             _issue = issue;
-            _articleContent = response.GetContent<ArticleContentView>().Result;
+            _articleContent = response.GetContent<IssueArticleContentView>().Result;
         }
 
         public ArticleContentAssert(HttpResponseMessage response, LibraryDto library, IssueDto issue)
@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _libraryId = library.Id;
             _library = library;
             _issue = issue;
-            _articleContent = response.GetContent<ArticleContentView>().Result;
+            _articleContent = response.GetContent<IssueArticleContentView>().Result;
         }
 
         internal ArticleContentAssert ShouldHaveSelfLink()

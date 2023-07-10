@@ -125,7 +125,7 @@ namespace Inshapardaz.Api.Converters
 
                 if (source.Filters.CategoryId.HasValue)
                     queryString.Add("categoryid", source.Filters.CategoryId.Value.ToString());
-                
+
                 if (source.Filters.BookShelfId.HasValue)
                     queryString.Add("bookShelfId", source.Filters.BookShelfId.Value.ToString());
 
@@ -135,7 +135,7 @@ namespace Inshapardaz.Api.Converters
                 if (source.Filters.Read.HasValue)
                     queryString.Add("read", bool.TrueString);
 
-                if (source.Filters.Status != BookStatuses.Published)
+                if (source.Filters.Status != StatusType.Published)
                     queryString.Add("status", source.Filters.Status.ToDescription());
             }
 
@@ -192,11 +192,12 @@ namespace Inshapardaz.Api.Converters
 
             if (!string.IsNullOrWhiteSpace(source.ImageUrl) && _fileStorage.SupportsPublicLink)
             {
-                links.Add(new LinkView { 
-                    Href = _fileStorage.GetPublicUrl(source.ImageUrl), 
-                    Method = "GET", 
-                    Rel = RelTypes.Image, 
-                    Accept = MimeTypes.Jpg 
+                links.Add(new LinkView
+                {
+                    Href = _fileStorage.GetPublicUrl(source.ImageUrl),
+                    Method = "GET",
+                    Rel = RelTypes.Image,
+                    Accept = MimeTypes.Jpg
                 });
             }
             else if (source.ImageId.HasValue)

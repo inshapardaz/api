@@ -4,12 +4,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Inshapardaz.Api.Views.Library
 {
-    public class ArticleView : ViewWithLinks
+    public class IssueArticleView : ViewWithLinks
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public string Title { get; set; }
+
+        public int SequenceNumber { get; set; }
+
+        public string SeriesName { get; set; }
+
+        public int? SeriesIndex { get; set; }
 
         public IEnumerable<AuthorView> Authors { get; set; }
 
@@ -27,6 +33,6 @@ namespace Inshapardaz.Api.Views.Library
 
         public DateTime? ReviewerAssignTimeStamp { get; set; }
 
-        public List<ArticleContentView> Contents { get; internal set; }
+        public List<IssueArticleContentView> Contents { get; internal set; }
     }
 }

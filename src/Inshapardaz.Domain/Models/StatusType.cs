@@ -2,7 +2,7 @@
 
 namespace Inshapardaz.Domain.Models
 {
-    public enum BookStatuses
+    public enum StatusType
     {
         [Description("Published")]
         Published = 0,

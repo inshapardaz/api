@@ -1,6 +1,6 @@
-namespace Inshapardaz.Api.Views.Library
+﻿namespace Inshapardaz.Domain.Models.Library
 {
-    public class ArticleContentView : ViewWithLinks
+    public class ArticleContentModel
     {
         public int Id { get; set; }
 
@@ -8,8 +8,7 @@ namespace Inshapardaz.Api.Views.Library
 
         public int ChapterNumber { get; set; }
 
-        public string Language { get; set; }
-
         public string Text { get; set; }
+        public string Language { get; set; }
     }
 }

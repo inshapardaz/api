@@ -1,10 +1,8 @@
 ﻿namespace Inshapardaz.Domain.Models.Library
 {
-    public class BookFilter
+    public class ArticleFilter
     {
         public int? AuthorId { get; set; }
-
-        public int? SeriesId { get; set; }
 
         public int? CategoryId { get; set; }
 
@@ -15,7 +13,5 @@
         public StatusType Status { get; set; }
 
         public AssignmentStatus AssignmentStatus { get; set; }
-        public int? BookShelfId { get; set; }
     }
-
 }

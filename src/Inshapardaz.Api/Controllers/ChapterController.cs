@@ -135,7 +135,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/assign", Name = nameof(ChapterController.AssignChapterToUser))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [Produces(typeof(BookPageView))]
-        public async Task<IActionResult> AssignChapterToUser(int libraryId, int bookId, int chapterNumber, [FromBody] ChapterAssignmentView assignment, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> AssignChapterToUser(int libraryId, int bookId, int chapterNumber, [FromBody] AssignmentView assignment, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {

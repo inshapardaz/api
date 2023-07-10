@@ -97,7 +97,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 var books = fixture.Build<BookDto>()
                                    .With(b => b.LibraryId, _libraryId)
                                    .With(b => b.Language, RandomData.Locale)
-                                   .With(b => b.Status, Domain.Models.BookStatuses.Published)
+                                   .With(b => b.Status, Domain.Models.StatusType.Published)
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);

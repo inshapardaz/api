@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.Converters
 {
     public interface IRenderIssueArticle
     {
-        ArticleContentView Render(IssueArticleContentModel source, int libraryId);
+        IssueArticleContentView Render(IssueArticleContentModel source, int libraryId);
 
         IssueArticleView Render(IssueArticleModel source, int libraryId, int periodicalId, int volumeNumber, int issueNumber);
 
@@ -152,7 +152,7 @@ namespace Inshapardaz.Api.Converters
 
             if (_userHelper.IsAuthenticated)
             {
-                var contents = new List<ArticleContentView>();
+                var contents = new List<IssueArticleContentView>();
                 foreach (var content in source.Contents)
                 {
                     contents.Add(Render(content, libraryId));
@@ -165,7 +165,7 @@ namespace Inshapardaz.Api.Converters
             return result;
         }
 
-        public ArticleContentView Render(IssueArticleContentModel source, int libraryId)
+        public IssueArticleContentView Render(IssueArticleContentModel source, int libraryId)
         {
             var result = source.Map();
 

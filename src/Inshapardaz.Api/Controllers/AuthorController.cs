@@ -88,7 +88,9 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new UpdateAuthorRequest(libraryId, author.Map());
+            var authorModel = author.Map();
+            authorModel.Id = authorId;
+            var request = new UpdateAuthorRequest(libraryId, authorModel);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _authorRenderer.Render(request.Result.Author, libraryId);

@@ -329,17 +329,17 @@ public class Migrator
                     cancellationToken);
             }
 
-            await MigrateArticle(libraryId, newLibraryId, periodicalId, newPeriodicalId, newIssue.Id, newIssue.VolumeNumber, newIssue.IssueNumber, authorMap, accountsMap, cancellationToken);
+            await IssueMigrateArticle(libraryId, newLibraryId, periodicalId, newPeriodicalId, newIssue.Id, newIssue.VolumeNumber, newIssue.IssueNumber, authorMap, accountsMap, cancellationToken);
             issueMap.Add(issue.Id, newIssue.Id);
         }
 
         return issueMap;
     }
 
-    private async Task<Dictionary<int, int>> MigrateArticle(int libraryId, int newLibraryId, int periodicalId, int newPeriodicalId, int newIssueId, int volumeNumber, int issueNumber, Dictionary<int, int> authorMap, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
+    private async Task<Dictionary<int, int>> IssueMigrateArticle(int libraryId, int newLibraryId, int periodicalId, int newPeriodicalId, int newIssueId, int volumeNumber, int issueNumber, Dictionary<int, int> authorMap, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
-        var sourceDb = new ArticleRepository(SourceConnectionProvider);
-        var destinationDb = new ArticleRepository(DestinationConnectionProvider);
+        var sourceDb = new IssueArticleRepository(SourceConnectionProvider);
+        var destinationDb = new IssueArticleRepository(DestinationConnectionProvider);
         var articleMap = new Dictionary<int, int>();
 
         var articles = await sourceDb.GetArticlesByIssue(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);

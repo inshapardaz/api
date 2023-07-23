@@ -142,7 +142,7 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new AssignChapterToUserRequest(libraryId, bookId, chapterNumber, assignment.AccountId ?? _userHelper.Account.Id, _userHelper.IsAdmin);
+            var request = new AssignChapterToUserRequest(libraryId, bookId, chapterNumber, assignment.Unassign ? null : assignment.AccountId ?? _userHelper.Account.Id, _userHelper.IsAdmin);
 
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 

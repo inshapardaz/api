@@ -34,6 +34,7 @@ namespace Inshapardaz.Api.Controllers
             _fileRenderer = fileRenderer;
         }
 
+        // TODO : Add sorting
         [HttpGet("libraries/{libraryId}/authors", Name = nameof(AuthorController.GetAuthors))]
         public async Task<IActionResult> GetAuthors(int libraryId, string query, AuthorTypes? authorType = null, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {

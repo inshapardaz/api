@@ -11,7 +11,7 @@ namespace Inshapardaz.Api.Converters
 {
     public interface IRenderFile
     {
-        FileView Render(FileModel source);
+        FileView Render(int libraryId, FileModel source);
     }
 
     public class FileRenderer : IRenderFile
@@ -25,17 +25,17 @@ namespace Inshapardaz.Api.Converters
             _userHelper = userHelper;
         }
 
-        public FileView Render(FileModel source)
+        public FileView Render(int libraryId, FileModel source)
         {
             var result = source.Map();
             var links = new List<LinkView>
             {
                 _linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(FileController.GetFile),
+                    ActionName = nameof(FileController.GetLibraryFile),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
-                    Parameters = new { fileId = source.Id },
+                    Parameters = new { libraryId = libraryId, fileId = source.Id },
                 })
             };
 

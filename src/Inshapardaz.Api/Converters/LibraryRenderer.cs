@@ -8,6 +8,7 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
+using Microsoft.Extensions.DependencyModel;
 
 namespace Inshapardaz.Api.Converters
 {
@@ -189,10 +190,10 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(FileController.GetFile),
+                    ActionName = nameof(FileController.GetLibraryFile),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Image,
-                    Parameters = new { fileId = model.ImageId.Value }
+                    Parameters = new { libraryId = model.Id, fileId = model.ImageId.Value }
                 }));
             }
 

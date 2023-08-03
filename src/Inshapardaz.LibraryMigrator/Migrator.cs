@@ -338,13 +338,13 @@ public class Migrator
                 issue.ImageId = issueImage.Id;
             }
 
-            var newIssue = await destinationDb.AddIssue(newLibraryId, periodicalId, issue, cancellationToken);
+            var newIssue = await destinationDb.AddIssue(newLibraryId, newPeriodicalId, issue, cancellationToken);
 
             var contents = await sourceDb.GetIssueContents(libraryId, periodicalId, issue.VolumeNumber, issue.IssueNumber, cancellationToken);
 
             foreach (var content in contents)
             {
-                content.PeriodicalId = periodicalId;
+                content.PeriodicalId = newPeriodicalId;
 
                 var newFile = await CopyFile(content.FileId, cancellationToken);
                 await destinationDb.AddIssueContent(newLibraryId, 

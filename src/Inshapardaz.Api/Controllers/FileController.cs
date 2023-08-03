@@ -34,6 +34,20 @@ namespace Inshapardaz.Api.Controllers
             return File(file.Contents, file.MimeType);
         }
 
+        [HttpGet("libraries/{libraryId}/files/{fileId}", Name = nameof(FileController.GetLibraryFile))]
+        public async Task<IActionResult> GetLibraryFile(int libraryId, int fileId, CancellationToken token = default(CancellationToken))
+        {
+            var query = new GetFileQuery(fileId, 200, 200);
+            var file = await _queryProcessor.ExecuteAsync(query, token);
+
+            if (file == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return File(file.Contents, file.MimeType);
+        }
+
         [HttpDelete("files/{fileId}", Name = nameof(FileController.DeleteFile))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteFile(int fileId, CancellationToken token = default(CancellationToken))

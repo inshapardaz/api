@@ -142,10 +142,10 @@ namespace Inshapardaz.Api.Converters
             {
                 view.Links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(FileController.GetFile),
+                    ActionName = nameof(FileController.GetLibraryFile),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Image,
-                    Parameters = new { fileId = series.ImageId.Value }
+                    Parameters = new { libraryId = libraryId, fileId = series.ImageId.Value }
                 }));
             }
 

@@ -233,7 +233,7 @@ namespace Inshapardaz.Api.Controllers
 
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
-            var imageLink = _bookPageRenderer.RenderImageLink(request.Result.File);
+            var imageLink = _bookPageRenderer.RenderImageLink(libraryId, request.Result.File);
 
             if (request.Result.HasAddedNew)
             {

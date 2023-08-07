@@ -51,7 +51,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             f.Id As ImageId, f.FilePath AS ImageUrl, ia.Id As ArticleId, ia.Title As ArticleTitle
                             FROM IssuePage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
-                            LEFT OUTER JOIN [Article] ia ON ia.Id = p.ArticleId
+                            LEFT OUTER JOIN [IssueArticle] ia ON ia.Id = p.ArticleId
                             INNER JOIN Issue i ON i.Id = p.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId
@@ -226,7 +226,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                                    f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ArticleId, ia.Title As ArticleTitle
                             FROM IssuePage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
-                            LEFT OUTER JOIN [Article] ia ON ia.Id = p.ArticleId
+                            LEFT OUTER JOIN [IssueArticle] ia ON ia.Id = p.ArticleId
                             INNER JOIN Issue i ON i.Id = p.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId
@@ -632,7 +632,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             f.Id As ImageId, f.FilePath AS ImageUrl, ia.Id As ArticleId, ia.Title As ArticleTitle
                             FROM IssuePage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
-                            LEFT OUTER JOIN [Article] ia ON ia.Id = p.ArticleId
+                            LEFT OUTER JOIN [IssueArticle] ia ON ia.Id = p.ArticleId
                             INNER JOIN Issue i ON i.Id = p.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId

@@ -50,7 +50,8 @@ namespace Inshapardaz.Api.Helpers
                     {
                         var library = libraries.SingleOrDefault(l => l.Id == libraryId);
 
-                        if (library != null && _roles.Contains(library.Role))
+                        if (library == null) return;
+                        if (_roles.Contains(library.Role))
                         {
                             return;
                         }

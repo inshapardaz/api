@@ -26,7 +26,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             int id;
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"INSERT INTO Article (Title, IssueId, Status, SequenceNumber, SeriesName, SeriesIndex, WriterAccountId, WriterAssignTimestamp, ReviewerAccountId, ReviewerAssignTimeStamp) 
+                var sql = @"INSERT INTO IssueArticle (Title, IssueId, Status, SequenceNumber, SeriesName, SeriesIndex, WriterAccountId, WriterAssignTimestamp, ReviewerAccountId, ReviewerAssignTimeStamp) 
                             OUTPUT Inserted.Id VALUES (@Title, (SELECT Id FROM Issue WHERE VolumeNumber = @VolumeNumber AND IssueNumber = @IssueNumber), @Status, @SequenceNumber, @SeriesName, @SeriesIndex, @WriterAccountId, @WriteAssignTimestamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
                 var command = new CommandDefinition(sql, new
                 {
@@ -44,7 +44,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 }, cancellationToken: cancellationToken);
                 id = await connection.ExecuteScalarAsync<int>(command);
 
-                var sqlAuthor = @"Insert Into ArticleAuthor (ArticleId, AuthorId) Values (@ArticleId, @AuthorId);";
+                var sqlAuthor = @"Insert Into IssueArticleAuthor (ArticleId, AuthorId) Values (@ArticleId, @AuthorId);";
 
                 if (article.Authors != null && article.Authors.Any())
                 {
@@ -70,7 +70,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             a.WriterAssignTimestamp = @WriteAssignTimestamp, 
                             a.ReviewerAccountId = @ReviewerAccountId, 
                             a.ReviewerAssignTimeStamp = @ReviewerAssignTimeStamp
-                            FROM Article a
+                            FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             WHERE p.LibraryId = @LibraryId 
@@ -106,7 +106,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"DELETE a 
-                            FROM Article a
+                            FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
@@ -131,9 +131,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 IssueArticleModel article = null;
                 var sql = @"SELECT a.*, ac.*
-                            FROM Article a
+                            FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
-                            LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                            LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
                             WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
@@ -174,9 +174,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 IssueArticleContentModel articleContent = null;
                 var sql = @"SELECT a.*, ac.*, i.*
-                            FROM Article a
+                            FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
-                            LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                            LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
                             WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
@@ -215,9 +215,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var articles = new Dictionary<int, IssueArticleModel>();
 
                 var sql = @"SELECT a.*, at.*, i.*
-                            FROM Article a
+                            FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
-                            LEFT OUTER JOIN ArticleContent at ON a.Id = at.ArticleId
+                            LEFT OUTER JOIN IssueArticleContent at ON a.Id = at.ArticleId
                             WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
@@ -260,10 +260,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT ac.*, a.sequenceNumber, p.Id AS PeriodicalId 
-                            FROM Article a
+                            FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.Periodicalid
-                            LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                            LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
                             WHERE p.LibraryId = @LibraryId 
                                 AND i.PeriodicalId = @PeriodicalId
                                 AND i.VolumeNumber = @VolumeNumber
@@ -288,10 +288,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT ac.*, a.SequenceNumber AS SequenceNumber, p.Id AS PeriodicalId 
-                            FROM Article a
+                            FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.Periodicalid
-                            LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                            LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
                             WHERE a.sequenceNumber = @SequenceNumber 
                                 AND p.LibraryId = @LibraryId 
                                 AND i.PeriodicalId = @PeriodicalId
@@ -314,8 +314,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"INSERT INTO  ArticleContent (ArticleId, [Language], Text)
-                            (SELECT TOp 1 a.Id, @Language,  @Text FROM Article a
+                var sql = @"INSERT INTO  IssueArticleContent (ArticleId, [Language], Text)
+                            (SELECT TOp 1 a.Id, @Language,  @Text FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             WHERE p.LibraryId =  @LibraryId
@@ -344,8 +344,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update ac SET Text = @Text
-                            FROM ArticleContent ac
-                            INNER JOIN Article a ON a.Id = ac.Articleid
+                            FROM IssueArticleContent ac
+                            INNER JOIN IssueArticle a ON a.Id = ac.Articleid
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             WHERE p.LibraryId =  @LibraryId
@@ -375,10 +375,10 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Delete ac
-                            FROM Article a
+                            FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.Periodicalid
-                            LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                            LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
                             WHERE a.sequenceNumber = @SequenceNumber 
                                 AND p.LibraryId = @LibraryId 
                                 AND i.PeriodicalId = @PeriodicalId
@@ -413,9 +413,9 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 IssueArticleModel article = null;
                 var sql = @"SELECT a.*, ac.*
-                            FROM Article a
+                            FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
-                            LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                            LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
                             WHERE a.Id = @Id";
                 var command = new CommandDefinition(sql, new
                 {
@@ -449,7 +449,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT a.Id, row_number() OVER (ORDER BY a.SequenceNumber) as 'SequenceNumber'
-                            From Article a
+                            From IssueArticle a
                             Inner Join Issue i On i.Id = a.IssueId
                             Inner Join Periodical p On p.Id = i.PeriodicalId
                             Where p.LibraryId = @LibraryId 
@@ -466,7 +466,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 }, cancellationToken: cancellationToken);
                 var newOrder = await connection.QueryAsync(command);
 
-                var sql2 = @"UPDATE Article
+                var sql2 = @"UPDATE IssueArticle
                             SET SequenceNumber = @SequenceNumber
                             Where Id = @Id";
                 var command2 = new CommandDefinition(sql2, newOrder, cancellationToken: cancellationToken);
@@ -479,7 +479,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"Update A Set A.SequenceNumber = @SequenceNumber
-                            From Article A
+                            From IssueArticle A
                             Inner Join Issue i On i.Id = A.IssueId
                             Inner Join Periodical p On p.Id = i.PeriodicalId
                             Where p.LibraryId = @LibraryId 

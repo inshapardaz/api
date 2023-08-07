@@ -12,7 +12,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
     {
         public static void AddArticle(this IDbConnection connection, ArticleDto issue)
         {
-            var sql = @"Insert Into Article (Title, IssueId, SequenceNumber, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SeriesName, SeriesIndex)
+            var sql = @"Insert Into IssueArticle (Title, IssueId, SequenceNumber, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SeriesName, SeriesIndex)
                         Output Inserted.Id
                         Values (@Title, @IssueId, @SequenceNumber, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SeriesName, @SeriesIndex)";
             var id = connection.ExecuteScalar<int>(sql, issue);
@@ -29,13 +29,19 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static ArticleDto GetArticleById(this IDbConnection connection, int articleId)
         {
-            var sql = @"SELECT * FROM Article WHERE Id = @Id";
+            var sql = @"SELECT * FROM IssueArticle WHERE Id = @Id";
+            return connection.QuerySingleOrDefault<ArticleDto>(sql, new { Id = articleId });
+        }
+
+        public static ArticleDto GetArticleById(this IDbConnection connection, long articleId)
+        {
+            var sql = @"SELECT * FROM IssueArticle WHERE Id = @Id";
             return connection.QuerySingleOrDefault<ArticleDto>(sql, new { Id = articleId });
         }
 
         public static ArticleDto GetArticlesByIssue(this IDbConnection connection, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber)
         {
-            var sql = @"SELECT a.* FROM Article a
+            var sql = @"SELECT a.* FROM IssueArticle a
                         INNER JOIN Issue i on i.Id = a.IssueId
                         WHERE i.PeriodicalId = @PeriodicalId
                         AND i.VolumeNumber = @VolumeNumber
@@ -51,13 +57,13 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void DeleteArticles(this IDbConnection connection, IEnumerable<ArticleDto> articles)
         {
-            var sql = "Delete From Article Where Id IN @Ids";
+            var sql = "Delete From IssueArticle Where Id IN @Ids";
             connection.Execute(sql, new { Ids = articles.Select(f => f.Id) });
         }
 
         public static IEnumerable<ArticleDto> GetArticlesByIssue(this IDbConnection connection, int issueId)
         {
-            var sql = @"SELECT a.* FROM Article a
+            var sql = @"SELECT a.* FROM IssueArticle a
                         INNER JOIN Issue i on i.Id = a.IssueId
                         WHERE i.Id = @IssueId";
             return connection.Query<ArticleDto>(sql, new { IssueId = issueId });
@@ -65,17 +71,17 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void AddArticleAuthor(this IDbConnection connection, int issueId, int authorId)
         {
-            var sql = "INSERT INTO ArticleAuthor VALUES (@IssueId, @AuthorId)";
+            var sql = "INSERT INTO IssueArticleAuthor VALUES (@IssueId, @AuthorId)";
             connection.Execute(sql, new { IssueId = issueId, AuthorId = authorId });
         }
 
-        public static ArticleContentDto GetArticleContentById(this IDbConnection connection, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language)
+        public static ArticleContentDto GetIssueArticleContent(this IDbConnection connection, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language)
         {
             return connection.QuerySingleOrDefault<ArticleContentDto>(@"select ac.*
-                    FROM Article a
+                    FROM IssueArticle a
                     INNER JOIN Issue i ON i.Id = a.IssueId
                     INNER JOIN Periodical p ON p.Id = i.Periodicalid
-                    LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
+                    LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
                     WHERE i.PeriodicalId = @PeriodicalId
                     AND i.VolumeNumber = @VolumeNumber
                     AND i.IssueNumber = @IssueNumber
@@ -90,14 +96,30 @@ namespace Inshapardaz.Api.Tests.DataHelpers
                 });
         }
 
+        public static IEnumerable<ArticleContentDto> GetArticleContents(this IDbConnection connection, long articleId)
+        {
+            return connection.Query<ArticleContentDto>(@"select *
+                    FROM IssueArticleContent
+                    WHERE ArticleId = @Id",
+                new
+                {
+                    Id = articleId
+                });
+        }
+
         public static IEnumerable<ArticleContentDto> GetContentByArticle(this IDbConnection connection, int articleId)
         {
-            return connection.Query<ArticleContentDto>("Select * From ArticleContent Where ArticleId = @Id", new { Id = articleId });
+            return connection.Query<ArticleContentDto>("Select * From IssueArticleContent Where ArticleId = @Id", new { Id = articleId });
+        }
+
+        public static IEnumerable<ArticleContentDto> GetContentByArticle(this IDbConnection connection, long articleId)
+        {
+            return connection.Query<ArticleContentDto>("Select * From IssueArticleContent Where ArticleId = @Id", new { Id = articleId });
         }
 
         public static void AddArticleContents(this IDbConnection connection, IEnumerable<ArticleContentDto> contents)
         {
-            var sql = "INSERT INTO ArticleContent (ArticleId, Language, Text) VALUES (@ArticleId, @Language, @Text)";
+            var sql = "INSERT INTO IssueArticleContent (ArticleId, Language, Text) VALUES (@ArticleId, @Language, @Text)";
             connection.Execute(sql, contents);
         }
 

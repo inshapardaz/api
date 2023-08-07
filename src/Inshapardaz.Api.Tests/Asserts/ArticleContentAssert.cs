@@ -97,14 +97,14 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal ArticleContentAssert ShouldHaveSavedCorrectText(string expected, IDbConnection dbConnection)
         {
-            var content = dbConnection.GetArticleContentById(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
+            var content = dbConnection.GetIssueArticleContent(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
             content.Text.Should().NotBeNull().And.Be(expected);
             return this;
         }
 
         internal ArticleContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, IDbConnection dbConnection)
         {
-            var content = dbConnection.GetArticleContentById(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
+            var content = dbConnection.GetIssueArticleContent(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
             content.Text.Should().NotBeNull().Should().NotBe(expected);
             content.Language.Should().Be(language);
             return this;
@@ -120,7 +120,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal ArticleContentAssert ShouldHaveSavedArticleContent(IDbConnection dbConnection)
         {
-            var dbContent = dbConnection.GetArticleContentById(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
+            var dbContent = dbConnection.GetIssueArticleContent(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
             dbContent.Should().NotBeNull();
             var dbArticle = dbConnection.GetArticleById(dbContent.ArticleId);
             dbArticle.Should().NotBeNull();
@@ -189,7 +189,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal static void ShouldHaveDeletedContent(IDbConnection dbConnection, IssueDto issue, ArticleDto article, ArticleContentDto content)
         {
-            var dbContent = dbConnection.GetArticleContentById(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article.SequenceNumber, content.Language);
+            var dbContent = dbConnection.GetIssueArticleContent(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article.SequenceNumber, content.Language);
             dbContent.Should().BeNull("Article content should be deleted");
         }
 

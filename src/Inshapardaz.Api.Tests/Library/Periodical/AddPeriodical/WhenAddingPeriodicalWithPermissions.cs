@@ -1,7 +1,10 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
+﻿using Bogus;
+using Inshapardaz.Api.Extensions;
+using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -25,7 +28,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var periodical = new PeriodicalView { Title = RandomData.Name, Description = RandomData.Words(20) };
+            var periodical = new PeriodicalView 
+            { 
+                Title = RandomData.Name, 
+                Description = RandomData.Words(20),
+                Language = RandomData.Locale,
+                Frequency = new Faker().PickRandom<PeriodicalFrequency>().ToDescription()
+            };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals", periodical);
 

@@ -49,6 +49,8 @@ namespace Inshapardaz.Api.Mappings
             Status = source.Status.ToEnum(StatusType.AvailableForTyping),
             YearPublished = source.YearPublished,
             IsPublished = source.IsPublished,
+            Source = source.Source,
+            Publisher = source.Publisher,
             Progress = source.Progress,
             Categories = source.Categories?.Select(c => c.Map()).ToList(),
             PageCount = source.PageCount,

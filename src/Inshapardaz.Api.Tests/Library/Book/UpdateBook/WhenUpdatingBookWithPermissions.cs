@@ -58,6 +58,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 Authors = new List<AuthorView> { new AuthorView { Id = otherAuthor.Id, Name = otherAuthor.Name } },
                 SeriesId = otherSeries.Id,
                 IsPublished = fake.Random.Bool(),
+                Source = RandomData.String,
+                Publisher = RandomData.String,
                 Categories = _otherCategories.Select(c => new CategoryView { Id = c.Id })
             };
 

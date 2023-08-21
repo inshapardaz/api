@@ -322,6 +322,8 @@ namespace Inshapardaz.Api.Tests.Asserts
             _book.Status.Should().Be(expected.Status.ToDescription());
             _book.YearPublished.Should().Be(expected.YearPublished);
             _book.SeriesId.Should().Be(expected.SeriesId);
+            _book.Source.Should().Be(expected.Source);
+            _book.Publisher.Should().Be(expected.Publisher);
             if (_book.SeriesId.HasValue)
             {
                 _book.SeriesName.Should().Be(db.GetSeriesById(expected.SeriesId.Value).Name);
@@ -376,6 +378,8 @@ namespace Inshapardaz.Api.Tests.Asserts
             _book.SeriesId.Should().Be(expected.SeriesId);
             _book.SeriesName.Should().Be(db.GetSeriesById(expected.SeriesId.Value).Name);
             _book.SeriesIndex.Should().Be(expected.SeriesIndex);
+            _book.Source.Should().Be(expected.Source);
+            _book.Publisher.Should().Be(expected.Publisher);
 
             var authors = db.GetAuthorsByBook(expected.Id);
             _book.Authors.Should().HaveSameCount(authors);

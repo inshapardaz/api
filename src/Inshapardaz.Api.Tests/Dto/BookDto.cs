@@ -33,5 +33,7 @@ namespace Inshapardaz.Api.Tests.Dto
         public DateTime DateAdded { get; set; }
 
         public DateTime DateUpdated { get; set; }
+        public string Source { get; internal set; }
+        public string Publisher { get; internal set; }
     }
 }

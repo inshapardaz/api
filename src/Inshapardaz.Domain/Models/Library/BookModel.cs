@@ -56,5 +56,6 @@ namespace Inshapardaz.Domain.Models.Library
         public IEnumerable<PageSummaryModel> PageStatus { get; set; }
 
         public string Source { get; set; }
+        public string Publisher { get; set; }
     }
 }

@@ -11,7 +11,10 @@ namespace Inshapardaz.Api.Views.Library
         [Required]
         public string Title { get; set; }
 
+        public bool IsPublic { get; set; }
+
         public IEnumerable<AuthorView> Authors { get; set; }
+        public IEnumerable<CategoryView> Categories { get; set; }
 
         public string Status { get; set; }
 
@@ -27,6 +30,6 @@ namespace Inshapardaz.Api.Views.Library
 
         public DateTime? ReviewerAssignTimeStamp { get; set; }
 
-        public List<ArticleContentView> Contents { get; internal set; }
+        public List<ArticleContentView> Contents { get; set; }
     }
 }

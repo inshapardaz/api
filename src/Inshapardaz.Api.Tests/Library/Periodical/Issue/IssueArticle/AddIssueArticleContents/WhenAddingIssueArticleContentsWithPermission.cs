@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
     {
         private HttpResponseMessage _response;
         private string _contents;
-        private ArticleDto _article;
+        private IssueArticleDto _article;
         private ArticleContentAssert _assert;
 
         public WhenAddingIssueArticleContentsWithPermission(Role role)

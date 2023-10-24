@@ -13,15 +13,13 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task<ArticleModel> GetArticle(int libraryId, long articleId, CancellationToken cancellationToken);
 
-        Task<ArticleModel> AddArticle(int libraryId, ArticleModel article, CancellationToken cancellationToken);
+        Task<ArticleModel> AddArticle(int libraryId, ArticleModel article, int? accountId, CancellationToken cancellationToken);
 
-        Task UpdateArticle(int libraryId, long articleId, ArticleModel article, CancellationToken cancellationToken);
+        Task<ArticleModel> UpdateArticle(int libraryId, long articleId, ArticleModel article, CancellationToken cancellationToken);
 
         Task<IEnumerable<ArticleContentModel>> GetArticleContents(int libraryId, long articleId, CancellationToken cancellationToken);
 
         Task DeleteArticle(int libraryId, long articleId, CancellationToken cancellationToken);
-
-        Task<ArticleContentModel> GetArticleContentById(int libraryId, long articleId, string language, CancellationToken cancellationToken);
 
         Task<ArticleContentModel> AddArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken);
 

@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Common;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Common;
 using Inshapardaz.Domain.Models;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -7,16 +8,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Inshapardaz.Domain.Adapters
+namespace Inshapardaz.Api.Infrastructure
 {
-    public interface IGenerateToken
-    {
-        string GenerateAccessToken(AccountModel account);
-
-        RefreshTokenModel GenerateRefreshToken(string ipAddress);
-
-        string GenerateResetToken();
-    }
 
     public class TokenGenerator : IGenerateToken
     {

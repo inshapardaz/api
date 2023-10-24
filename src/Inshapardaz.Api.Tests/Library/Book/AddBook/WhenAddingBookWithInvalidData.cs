@@ -40,9 +40,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             }
 
             [Test]
-            public void ShouldHaveForbiddenResult()
+            public void ShouldHaveBadRequestResult()
             {
-                _response.ShouldBeForbidden();
+                _response.ShouldBeBadRequest();
             }
         }
 

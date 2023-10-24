@@ -32,10 +32,10 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private readonly List<FileDto> _files = new List<FileDto>();
         private List<IssuePageDto> _pages = new List<IssuePageDto>();
         private List<AuthorDto> _authors = new List<AuthorDto>();
-        private List<ArticleDto> _articles = new List<ArticleDto>();
+        private List<IssueArticleDto> _articles = new List<IssueArticleDto>();
 
         internal IEnumerable<IssuePageDto> GetPages(int issuesId) => _pages.Where(p => p.IssueId == issuesId);
-        internal IEnumerable<ArticleDto> GetArticles(int issuesId) => _articles.Where(a => a.IssueId == issuesId);
+        internal IEnumerable<IssueArticleDto> GetArticles(int issuesId) => _articles.Where(a => a.IssueId == issuesId);
 
         private bool _hasImage = true;
         private bool? _isPublic = null;
@@ -49,7 +49,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private List<AccountItemCountSpec> _favoriteBooks = new List<AccountItemCountSpec>();
         private List<AccountItemCountSpec> _readBooks = new List<AccountItemCountSpec>();
         private List<IssueContentDto> _contents = new List<IssueContentDto>();
-        private List<ArticleContentDto> _articleContents = new List<ArticleContentDto>();
+        private List<IssueArticleContentDto> _articleContents = new List<IssueArticleContentDto>();
         private List<RecentBookDto> _recentBooks = new List<RecentBookDto>();
         private int _pageCount;
         private int? _periodicalId;
@@ -63,7 +63,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
         public IEnumerable<IssueDto> Issues => _issues;
         public IEnumerable<IssueContentDto> Contents => _contents;
-        public IEnumerable<ArticleContentDto> ArticleContents => _articleContents;
+        public IEnumerable<IssueArticleContentDto> ArticleContents => _articleContents;
 
         public IssueDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage, AuthorsDataBuilder authorBuilder)
         {
@@ -379,11 +379,11 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                         _authors = _authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : 1).ToList();
                     }
 
-                    var articles = new List<ArticleDto>();
+                    var articles = new List<IssueArticleDto>();
 
                     for (int i = 0; i < _articleCount; i++)
                     {
-                        var article = fixture.Build<ArticleDto>()
+                        var article = fixture.Build<IssueArticleDto>()
                             .With(p => p.IssueId, issue.Id)
                             .With(p => p.SequenceNumber, i + 1)
                             .With(p => p.WriterAccountId, (int?)null)
@@ -392,29 +392,29 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                             .Create();
 
                         articles.Add(article);
-                        _connection.AddArticle(article);
+                        _connection.AddIssueArticle(article);
 
                         if (Author != null)
                         {
-                            _connection.AddArticleAuthor(article.Id, Author.Id);
+                            _connection.AddIssueArticleAuthor(article.Id, Author.Id);
                         }
                         else
                         {
                             foreach (var author in _authors)
                             {
-                                _connection.AddArticleAuthor(article.Id, author.Id);
+                                _connection.AddIssueArticleAuthor(article.Id, author.Id);
                             }
                         }
 
                         if (_articleContentCount > 0)
                         {
-                            var articleContent = fixture.Build<ArticleContentDto>()
+                            var articleContent = fixture.Build<IssueArticleContentDto>()
                                     .With(x => x.ArticleId, article.Id)
                                     .With(x => x.Language, () => _articleContentLanguage ?? RandomData.String)
                                     .With(x => x.Text, RandomData.String)
                                     .CreateMany(_articleContentCount);
 
-                            _connection.AddArticleContents(articleContent);
+                            _connection.AddIssueArticleContents(articleContent);
                             _articleContents.AddRange(articleContent);
                         }
                     }
@@ -451,7 +451,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
         public void CleanUp()
         {
-            _connection.DeleteArticles(_articles);
+            _connection.DeleteIssueArticles(_articles);
             _connection.DeleteIssuePages(_pages);
             _connection.DeleteIssues(_issues);
             _connection.DeleteFiles(_files);

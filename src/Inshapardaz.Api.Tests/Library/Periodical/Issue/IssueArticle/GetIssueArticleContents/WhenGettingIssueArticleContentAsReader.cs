@@ -17,8 +17,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         private HttpResponseMessage _response;
         private ArticleContentAssert _assert;
         private IssueDto _issue;
-        private ArticleDto _article;
-        private ArticleContentDto _content;
+        private IssueArticleDto _article;
+        private IssueArticleContentDto _content;
 
         public WhenGettingIssueArticleContentAsReader()
             : base(Role.Reader)

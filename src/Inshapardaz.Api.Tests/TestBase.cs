@@ -108,7 +108,8 @@ namespace Inshapardaz.Api.Tests
                 .AddTransient<IssueDataBuilder>()
                 .AddTransient<AccountAssert>()
                 .AddTransient<CorrectionBuilder>()
-                .AddTransient<BookShelfDataBuilder>();
+                .AddTransient<BookShelfDataBuilder>()
+                .AddTransient<ArticlesDataBuilder>();
         }
 
         protected void AuthenticateClientWithToken(string token)
@@ -143,6 +144,7 @@ namespace Inshapardaz.Api.Tests
         private PeriodicalsDataBuilder _periodicalBuilder;
         protected CorrectionBuilder _correctionBuilder;
         private BookShelfDataBuilder _bookshelfDataBuilder;
+        private ArticlesDataBuilder _articleBuilder;
 
         protected Role? CurrentAuthenticationLevel => _role;
 
@@ -213,6 +215,19 @@ namespace Inshapardaz.Api.Tests
             }
         }
 
+        protected ArticlesDataBuilder ArticleBuilder
+        {
+            get
+            {
+                if (_articleBuilder == null)
+                {
+                    _articleBuilder = _factory.Services.GetService<ArticlesDataBuilder>();
+                }
+
+                return _articleBuilder;
+            }
+        }
+
         protected BookShelfDataBuilder BookShelfBuilder
         {
             get
@@ -279,15 +294,15 @@ namespace Inshapardaz.Api.Tests
         }
         protected virtual void Cleanup()
         {
-            _accountBuilder?.CleanUp();
-            _authorBuilder?.CleanUp();
-            _seriesDataBuilder?.CleanUp();
-            _categoriesDataBuilder?.CleanUp();
             _booksDataBuilder?.CleanUp();
+            _seriesDataBuilder?.CleanUp();
             _chapterDataBuilder?.CleanUp();
             _periodicalBuilder?.CleanUp();
             _issueDataBuilder?.CleanUp();
+            _articleBuilder?.CleanUp();
             _accountBuilder?.CleanUp();
+            _authorBuilder?.CleanUp();
+            _categoriesDataBuilder?.CleanUp();
             _bookshelfDataBuilder?.CleanUp();
             _libraryBuilder?.CleanUp();
             _correctionBuilder?.Cleanup();

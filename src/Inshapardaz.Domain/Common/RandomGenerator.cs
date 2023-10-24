@@ -3,9 +3,9 @@ using System.Security.Cryptography;
 
 namespace Inshapardaz.Domain.Common
 {
-    internal static class RandomGenerator
+    public static class RandomGenerator
     {
-        internal static string GenerateRandomString()
+        public static string GenerateRandomString()
         {
             using (var rngCryptoServiceProvider = new RNGCryptoServiceProvider())
             {

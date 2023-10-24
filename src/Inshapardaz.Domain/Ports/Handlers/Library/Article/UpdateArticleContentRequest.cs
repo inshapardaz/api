@@ -69,7 +69,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
                 command.Language = library.Language;
             }
 
-            var contentUrl = await _articleRepository.GetArticleContentById(command.LibraryId, command.ArticleId, command.Language, cancellationToken);
+            var contentUrl = await _articleRepository.GetArticleContent(command.LibraryId, command.ArticleId, command.Language, cancellationToken);
 
             if (contentUrl == null)
             {

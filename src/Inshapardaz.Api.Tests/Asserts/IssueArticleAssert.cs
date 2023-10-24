@@ -68,17 +68,17 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal IssueArticleAssert ShouldBeSavedAssignmentForWriting(IDbConnection dbConnection, AccountDto account)
         {
-            var dbArticle = dbConnection.GetArticleById(_article.Id);
+            var dbArticle = dbConnection.GetIssueArticleById(_article.Id);
             dbArticle.WriterAccountId.Should().Be(account.Id);
-            dbArticle.WriterAssignTimestamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
+            dbArticle.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
         internal IssueArticleAssert ShouldBeSavedNoAssignmentForWriting(IDbConnection dbConnection)
         {
-            var dbArticle = dbConnection.GetArticleById(_article.Id);
+            var dbArticle = dbConnection.GetIssueArticleById(_article.Id);
             dbArticle.WriterAccountId.Should().BeNull();
-            dbArticle.WriterAssignTimestamp.Should().BeNull();
+            dbArticle.WriterAssignTimeStamp.Should().BeNull();
             return this;
         }
 
@@ -100,23 +100,23 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal IssueArticleAssert ShouldBeSavedAssignmentForReviewing(IDbConnection dbConnection, AccountDto account)
         {
-            var dbArticle = dbConnection.GetArticleById(_article.Id);
+            var dbArticle = dbConnection.GetIssueArticleById(_article.Id);
             dbArticle.ReviewerAccountId.Should().Be(account.Id);
-            dbArticle.ReviewerAssignTimestamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
+            dbArticle.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
         internal IssueArticleAssert ShouldBeSavedNoAssignmentForReviewing(IDbConnection dbConnection)
         {
-            var dbArticle = dbConnection.GetArticleById(_article.Id);
+            var dbArticle = dbConnection.GetIssueArticleById(_article.Id);
             dbArticle.ReviewerAccountId.Should().BeNull();
-            dbArticle.ReviewerAssignTimestamp.Should().BeNull();
+            dbArticle.ReviewerAssignTimeStamp.Should().BeNull();
             return this;
         }
 
         internal IssueArticleAssert ShouldHaveSavedArticle(IDbConnection dbConnection)
         {
-            var dbArticle = dbConnection.GetArticleById(_article.Id);
+            var dbArticle = dbConnection.GetIssueArticleById(_article.Id);
             dbArticle.Should().NotBeNull();
             _article.Title.Should().Be(dbArticle.Title);
             return this;
@@ -124,13 +124,13 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal static void ShouldHaveDeletedArticle(int articleId, IDbConnection databaseConnection)
         {
-            var article = databaseConnection.GetArticleById(articleId);
+            var article = databaseConnection.GetIssueArticleById(articleId);
             article.Should().BeNull();
         }
 
         internal static void ThatContentsAreDeletedForArticle(int articleId, IDbConnection databaseConnection)
         {
-            var contents = databaseConnection.GetContentByArticle(articleId);
+            var contents = databaseConnection.GetContentByIssueArticle(articleId);
             contents.Should().BeNullOrEmpty();
         }
 
@@ -351,28 +351,28 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.Status.Should().Be(view.Status);
         }
 
-        internal void ShouldMatch(ArticleDto dto)
+        internal void ShouldMatch(IssueArticleDto dto)
         {
             _article.Title.Should().Be(dto.Title);
             _article.SequenceNumber.Should().Be(dto.SequenceNumber);
             _article.WriterAccountId.Should().Be(dto.WriterAccountId);
-            if (dto.WriterAssignTimestamp.HasValue)
+            if (dto.WriterAssignTimeStamp.HasValue)
             {
-                _article.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimestamp.Value, TimeSpan.FromSeconds(2));
+                _article.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
-                _article.WriterAssignTimeStamp.Should().Be(dto.WriterAssignTimestamp);
+                _article.WriterAssignTimeStamp.Should().Be(dto.WriterAssignTimeStamp);
             }
 
             _article.ReviewerAccountId.Should().Be(dto.ReviewerAccountId);
-            if (dto.ReviewerAssignTimestamp.HasValue)
+            if (dto.ReviewerAssignTimeStamp.HasValue)
             {
-                _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimestamp.Value, TimeSpan.FromSeconds(2));
+                _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
-                _article.ReviewerAssignTimeStamp.Should().Be(dto.ReviewerAssignTimestamp);
+                _article.ReviewerAssignTimeStamp.Should().Be(dto.ReviewerAssignTimeStamp);
 
             }
 
@@ -381,14 +381,14 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.Status.Should().Be(dto.Status.ToString());
         }
 
-        internal IssueArticleAssert ShouldBeSameAs(ArticleDto dto)
+        internal IssueArticleAssert ShouldBeSameAs(IssueArticleDto dto)
         {
             _article.Title.Should().Be(dto.Title);
             _article.SequenceNumber.Should().Be(dto.SequenceNumber);
             _article.WriterAccountId.Should().Be(dto.WriterAccountId);
-            _article.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimestamp.Value, TimeSpan.FromSeconds(2));
+            _article.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             _article.ReviewerAccountId.Should().Be(dto.ReviewerAccountId);
-            _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimestamp.Value, TimeSpan.FromSeconds(2));
+            _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             _article.SeriesName.Should().Be(dto.SeriesName);
             _article.SeriesIndex.Should().Be(dto.SeriesIndex);
             _article.Status.Should().Be(dto.Status.ToString());

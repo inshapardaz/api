@@ -13,7 +13,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         : TestBase
     {
         private HttpResponseMessage _response;
-        private ArticleDto _expected;
+        private IssueArticleDto _expected;
         private IssueArticleAssert _assert;
 
         public WhenGettingLastArticleOfIssue()

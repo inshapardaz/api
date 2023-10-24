@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
@@ -8,6 +9,7 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Article;
+using Inshapardaz.Domain.Ports.Handlers.Library.Book;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -104,7 +106,11 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new AddArticleRequest(libraryId, article.Map());
+            var request = new AddArticleRequest(libraryId, article.Map())
+            {
+                AccountId = _userHelper.Account.Id
+            };
+
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)
@@ -125,7 +131,10 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new UpdateArticleRequest(libraryId, articleId, article.Map());
+            var request = new UpdateArticleRequest(libraryId, articleId, article.Map())
+            {
+                AccountId = _userHelper.Account.Id
+            };
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _articleRenderer.Render(request.Result.Article, libraryId);
@@ -163,24 +172,6 @@ namespace Inshapardaz.Api.Controllers
             }
 
             return new NotFoundResult();
-        }
-
-        [HttpPost("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.CreateArticleContent))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> CreateArticleContent(int libraryId, int articleId, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
-        {
-            var parsedLanguage = Request.Headers["Content-Language"];
-            var request = new AddArticleContentRequest(libraryId, articleId, content, language ?? parsedLanguage);
-            await _commandProcessor.SendAsync(request, cancellationToken: token);
-
-            if (request.Result != null)
-            {
-                var renderResult = _articleRenderer.Render(request.Result, libraryId, articleId);
-                return new CreatedResult(renderResult.Links.Self(), renderResult);
-            }
-
-
-            return new BadRequestResult();
         }
 
         [HttpPut("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.UpdateArticleContent))]
@@ -231,5 +222,24 @@ namespace Inshapardaz.Api.Controllers
             return Ok(renderResult);
         }
 
+        [HttpPost("libraries/{libraryId}/favorites/articles/{articleId}", Name = nameof(ArticleController.AddArticleToFavorites))]
+        [Authorize]
+        public async Task<IActionResult> AddArticleToFavorites(int libraryId, int articleId, CancellationToken token)
+        {
+            var request = new AddBookToFavoriteRequest(libraryId, articleId, _userHelper.Account?.Id);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return new OkResult();
+        }
+
+        [HttpDelete("libraries/{libraryId}/favorites/articles/{articleId}", Name = nameof(ArticleController.RemoveArtiucleFromFavorites))]
+        [Authorize]
+        public async Task<IActionResult> RemoveArtiucleFromFavorites(int libraryId, int articleId, CancellationToken token)
+        {
+            var request = new DeleteBookToFavoriteRequest(libraryId, articleId, _userHelper.Account?.Id);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            return new OkResult();
+        }
     }
 }

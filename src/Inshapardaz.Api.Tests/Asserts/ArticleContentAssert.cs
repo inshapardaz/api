@@ -122,7 +122,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var dbContent = dbConnection.GetIssueArticleContent(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
             dbContent.Should().NotBeNull();
-            var dbArticle = dbConnection.GetArticleById(dbContent.ArticleId);
+            var dbArticle = dbConnection.GetIssueArticleById(dbContent.ArticleId);
             dbArticle.Should().NotBeNull();
             var dbIssue = dbConnection.GetIssueById(dbArticle.IssueId);
             _articleContent.PeriodicalId.Should().Be(dbIssue.PeriodicalId);
@@ -176,7 +176,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleContentAssert ShouldMatch(ArticleContentDto content, IssueDto issue, ArticleDto article)
+        internal ArticleContentAssert ShouldMatch(IssueArticleContentDto content, IssueDto issue, IssueArticleDto article)
         {
             _articleContent.PeriodicalId.Should().Be(issue.PeriodicalId);
             _articleContent.VolumeNumber.Should().Be(issue.VolumeNumber);
@@ -187,7 +187,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal static void ShouldHaveDeletedContent(IDbConnection dbConnection, IssueDto issue, ArticleDto article, ArticleContentDto content)
+        internal static void ShouldHaveDeletedContent(IDbConnection dbConnection, IssueDto issue, IssueArticleDto article, IssueArticleContentDto content)
         {
             var dbContent = dbConnection.GetIssueArticleContent(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article.SequenceNumber, content.Language);
             dbContent.Should().BeNull("Article content should be deleted");

@@ -26,8 +26,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             int id;
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"INSERT INTO IssueArticle (Title, IssueId, Status, SequenceNumber, SeriesName, SeriesIndex, WriterAccountId, WriterAssignTimestamp, ReviewerAccountId, ReviewerAssignTimeStamp) 
-                            OUTPUT Inserted.Id VALUES (@Title, (SELECT Id FROM Issue WHERE VolumeNumber = @VolumeNumber AND IssueNumber = @IssueNumber), @Status, @SequenceNumber, @SeriesName, @SeriesIndex, @WriterAccountId, @WriteAssignTimestamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
+                var sql = @"INSERT INTO IssueArticle (Title, IssueId, Status, SequenceNumber, SeriesName, SeriesIndex, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp) 
+                            OUTPUT Inserted.Id VALUES (@Title, (SELECT Id FROM Issue WHERE VolumeNumber = @VolumeNumber AND IssueNumber = @IssueNumber), @Status, @SequenceNumber, @SeriesName, @SeriesIndex, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
                 var command = new CommandDefinition(sql, new
                 {
                     Title = article.Title,
@@ -38,7 +38,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     SeriesName = article.SeriesName,
                     SeriesIndex = article.SeriesIndex,
                     WriterAccountId = article.WriterAccountId,
-                    WriteAssignTimestamp = article.WriterAssignTimeStamp,
+                    WriterAssignTimeStamp = article.WriterAssignTimeStamp,
                     ReviewerAccountId = article.ReviewerAccountId,
                     ReviewerAssignTimeStamp = article.ReviewerAssignTimeStamp
                 }, cancellationToken: cancellationToken);
@@ -67,7 +67,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             a.SeriesName = @SeriesName, 
                             a.SeriesIndex = @SeriesIndex,
                             a.WriterAccountId = @WriterAccountId, 
-                            a.WriterAssignTimestamp = @WriteAssignTimestamp, 
+                            a.WriterAssignTimeStamp = @WriterAssignTimeStamp, 
                             a.ReviewerAccountId = @ReviewerAccountId, 
                             a.ReviewerAssignTimeStamp = @ReviewerAssignTimeStamp
                             FROM IssueArticle a
@@ -89,7 +89,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     SeriesName = article.SeriesName,
                     SeriesIndex = article.SeriesIndex,
                     WriterAccountId = article.WriterAccountId,
-                    WriteAssignTimestamp = article.WriterAssignTimeStamp,
+                    WriterAssignTimeStamp = article.WriterAssignTimeStamp,
                     ReviewerAccountId = article.ReviewerAccountId,
                     ReviewerAssignTimeStamp = article.ReviewerAssignTimeStamp
                 };

@@ -246,11 +246,11 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        public void ShouldMatch(BookPageView view)
+        public void ShouldMatch(BookPageView view, int pageNumber = -1)
         {
             _bookPage.Text.Should().Be(view.Text);
             _bookPage.BookId.Should().Be(view.BookId);
-            _bookPage.SequenceNumber.Should().Be(view.SequenceNumber);
+            _bookPage.SequenceNumber.Should().Be(pageNumber >= 0 ? pageNumber : view.SequenceNumber);
         }
 
         public BookPageAssert ShouldMatch(BookPageDto dto)

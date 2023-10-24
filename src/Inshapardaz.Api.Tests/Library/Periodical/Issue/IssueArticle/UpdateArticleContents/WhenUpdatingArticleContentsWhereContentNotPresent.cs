@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleCo
         private HttpResponseMessage _response;
         private ArticleContentAssert _assert;
         private IssueDto _issue;
-        private ArticleDto _article;
+        private IssueArticleDto _article;
         private string _newContents;
 
         public WhenUpdatingArticleContentsWhereContentNotPresent()

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
@@ -53,7 +52,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticle
         }
 
         [Test]
-        public void ShouldSaveTheBook()
+        public void ShouldSaveTheArticle()
         {
             _articleAssert.ShouldHaveSavedArticle(DatabaseConnection);
         }

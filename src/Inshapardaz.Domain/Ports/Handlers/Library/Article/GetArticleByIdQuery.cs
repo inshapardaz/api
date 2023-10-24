@@ -1,7 +1,9 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +31,14 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
 
         public override async Task<ArticleModel> ExecuteAsync(GetArticleByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _articleRepository.GetArticle(command.LibraryId, command.ArticleId, cancellationToken);
+            var article = await _articleRepository.GetArticle(command.LibraryId, command.ArticleId, cancellationToken);
+            if (article != null)
+            {
+                var contents = await _articleRepository.GetArticleContents(command.LibraryId, command.ArticleId, cancellationToken);
+
+                article.Contents = contents?.ToList();
+            }
+            return article;
         }
     }
 }

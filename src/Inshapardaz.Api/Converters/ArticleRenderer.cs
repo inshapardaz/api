@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Controllers;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
@@ -23,11 +24,15 @@ namespace Inshapardaz.Api.Converters
     public class ArticleRenderer : IRenderArticle
     {
         private readonly IRenderLink _linkRenderer;
+        private readonly IRenderAuthor _authorRenderer;
+        private readonly IRenderCategory _categoryRenderer;
         private readonly IUserHelper _userHelper;
 
-        public ArticleRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
+        public ArticleRenderer(IRenderLink linkRenderer, IRenderAuthor authorRenderer, IRenderCategory categoryRenderer,  IUserHelper userHelper)
         {
             _linkRenderer = linkRenderer;
+            _authorRenderer = authorRenderer;
+            _categoryRenderer = categoryRenderer;
             _userHelper = userHelper;
         }
 
@@ -78,6 +83,29 @@ namespace Inshapardaz.Api.Converters
                 })
             };
 
+
+            if (source.ImageId.HasValue)
+            {
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(FileController.GetLibraryFile),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Image,
+                    Parameters = new { libraryId = libraryId, fileId = source.ImageId.Value }
+                }));
+            }
+
+            if (source.Contents != null && source.Contents.Any())
+            {
+                var contents = new List<ArticleContentView>();
+                foreach (var content in source.Contents)
+                {
+                    contents.Add(Render(content, libraryId, source.Id));
+                }
+
+                result.Contents = contents;
+            }
+
             if (source.PreviousArticle != null)
             {
                 links.Add(_linkRenderer.Render(new Link
@@ -120,8 +148,8 @@ namespace Inshapardaz.Api.Converters
 
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(ArticleController.CreateArticleContent),
-                    Method = HttpMethod.Post,
+                    ActionName = nameof(ArticleController.UpdateArticleContent),
+                    Method = HttpMethod.Put,
                     Rel = RelTypes.AddContent,
                     Parameters = new { libraryId = libraryId, articleId = source.Id }
                 }));
@@ -137,13 +165,59 @@ namespace Inshapardaz.Api.Converters
 
             if (_userHelper.IsAuthenticated)
             {
-                var contents = new List<ArticleContentView>();
-                foreach (var content in source.Contents)
+                if (source.Contents != null && source.Contents.Any())
                 {
-                    contents.Add(Render(content, libraryId, source.Id));
+                    var contents = new List<ArticleContentView>();
+                    foreach (var content in source.Contents)
+                    {
+                        contents.Add(Render(content, libraryId, source.Id));
+                    }
+
+                    result.Contents = contents;
                 }
 
-                result.Contents = contents;
+                if (source.IsFavorite)
+                {
+                    links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(ArticleController.RemoveArtiucleFromFavorites),
+                        Method = HttpMethod.Delete,
+                        Rel = RelTypes.RemoveFavorite,
+                        Parameters = new { libraryId = libraryId, articleId = source.Id }
+                    }));
+                }
+                else
+                {
+                    links.Add(_linkRenderer.Render(new Link
+                    {
+                        ActionName = nameof(ArticleController.AddArticleToFavorites),
+                        Method = HttpMethod.Post,
+                        Rel = RelTypes.CreateFavorite,
+                        Parameters = new { libraryId = libraryId, articleId = source.Id }
+                    }));
+                }
+            }
+
+            if (source.Authors.Any())
+            {
+                var authors = new List<AuthorView>();
+                foreach (var author in source.Authors)
+                {
+                    authors.Add(_authorRenderer.Render(author, libraryId));
+                }
+
+                result.Authors = authors;
+            }
+
+            if (source.Categories != null)
+            {
+                var categories = new List<CategoryView>();
+                foreach (var category in source.Categories)
+                {
+                    categories.Add(_categoryRenderer.Render(category, libraryId));
+                }
+
+                result.Categories = categories;
             }
 
             result.Links = links;
@@ -162,7 +236,8 @@ namespace Inshapardaz.Api.Converters
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Self,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, articleId = articleId }
+                    Parameters = new { libraryId = libraryId, articleId = articleId },
+                    QueryString = new Dictionary<string, string>{{ "language",  source.Language}}
                 }),
                 _linkRenderer.Render(new Link
                 {
@@ -181,7 +256,8 @@ namespace Inshapardaz.Api.Converters
                     Method = HttpMethod.Put,
                     Rel = RelTypes.Update,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, articleId = articleId }
+                    Parameters = new { libraryId = libraryId, articleId = articleId },
+                    QueryString = new Dictionary<string, string> { { "language", source.Language } }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -190,7 +266,8 @@ namespace Inshapardaz.Api.Converters
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.Delete,
                     Language = source.Language,
-                    Parameters = new { libraryId = libraryId, articleId = articleId }
+                    Parameters = new { libraryId = libraryId, articleId = articleId },
+                    QueryString = new Dictionary<string, string> { { "language", source.Language } }
                 }));
             }
 

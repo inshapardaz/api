@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Tests.Helpers
         public static LinkView EndingWith(this LinkView link, string endingWith)
         {
             Uri uri = new Uri(link.Href);
-            uri.AbsolutePath.Should().EndWith(endingWith, $"Link {uri.AbsoluteUri} reltype '{link.Rel}' not ending with `{endingWith}`.");
+            uri.AbsolutePath.Should().EndWith(endingWith, $"Link {uri.AbsolutePath} reltype '{link.Rel}' not ending with `{endingWith}`.");
 
             return link;
         }

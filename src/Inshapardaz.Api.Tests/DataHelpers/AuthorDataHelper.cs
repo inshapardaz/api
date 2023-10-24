@@ -62,5 +62,13 @@ namespace Inshapardaz.Api.Tests.DataHelpers
                     WHERE ba.BookId = @Id";
             return connection.Query<AuthorDto>(query, new { Id = bookId });
         }
+
+        public static IEnumerable<AuthorDto> GetAuthorsByArticle(this IDbConnection connection, long articleId)
+        {
+            var query = @"Select a.* From ArticleAuthor
+                    INNER JOIN Author a ON a.Id = ArticleAuthor.AuthorId
+                    WHERE ArticleAuthor.ArticleId = @Id";
+            return connection.Query<AuthorDto>(query, new { Id = articleId });
+        }
     }
 }

@@ -3,19 +3,21 @@ using System.Collections.Generic;
 
 namespace Inshapardaz.Domain.Models.Library
 {
+
     public class ArticleModel
     {
         public long Id { get; set; }
 
         public string Title { get; set; }
-
-
+        public bool IsPublic { get; set; }
         public List<AuthorModel> Authors { get; set; } = new List<AuthorModel>();
-
-        public int IssueId { get; set; }
-
+        public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
         public List<ArticleContentModel> Contents { get; set; } = new List<ArticleContentModel>();
+        public bool IsRead { get; set; }
+        public bool IsFavorite { get; set; }
+        public int? ImageId { get; set; }
 
+        public ArticleType Type { get; set; }
         public int? WriterAccountId { get; set; }
         public string WriterAccountName { get; set; }
         public DateTime? WriterAssignTimeStamp { get; set; }
@@ -25,5 +27,7 @@ namespace Inshapardaz.Domain.Models.Library
         public EditingStatus Status { get; set; }
         public ArticleModel PreviousArticle { get; set; }
         public ArticleModel NextArticle { get; set; }
+        public int SourceType { get; set; }
+        public int SourceId { get; set; }
     }
 }

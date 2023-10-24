@@ -14,8 +14,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleCo
     {
         private HttpResponseMessage _response;
         private IssueDto _issue;
-        private ArticleDto _article;
-        private ArticleContentDto _content;
+        private IssueArticleDto _article;
+        private IssueArticleContentDto _content;
 
         private string _newContents;
 

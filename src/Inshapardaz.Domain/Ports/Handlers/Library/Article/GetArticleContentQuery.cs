@@ -46,7 +46,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
 
                 command.Language = library.Language;
             }
-            return await _articleRepository.GetArticleContentById(command.LibraryId, command.ArticleId, command.Language, cancellationToken);
+            return await _articleRepository.GetArticleContent(command.LibraryId, command.ArticleId, command.Language, cancellationToken);
         }
     }
 }

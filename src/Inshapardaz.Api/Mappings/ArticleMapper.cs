@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Domain.Models;
+using System.Linq;
 
 namespace Inshapardaz.Api.Mappings
 {
@@ -12,6 +13,7 @@ namespace Inshapardaz.Api.Mappings
             {
                 Id = source.Id,
                 Title = source.Title,
+                IsPublic = source.IsPublic,
                 Status = source.Status.ToDescription(),
                 WriterAccountId = source.WriterAccountId,
                 WriterAccountName = source.WriterAccountName,
@@ -19,6 +21,9 @@ namespace Inshapardaz.Api.Mappings
                 ReviewerAccountId = source.ReviewerAccountId,
                 ReviewerAccountName = source.ReviewerAccountName,
                 ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
+                Authors = source.Authors?.Select(a => a.Map()),
+                Categories = source.Categories?.Select(c => c.Map()),
+                Contents = source?.Contents?.Select(c => c.Map()).ToList()
             };
 
         public static ArticleModel Map(this ArticleView source)
@@ -26,21 +31,24 @@ namespace Inshapardaz.Api.Mappings
             {
                 Id = source.Id,
                 Title = source.Title,
+                IsPublic = source.IsPublic,
                 Status = source.Status.ToEnum(EditingStatus.Available),
                 WriterAccountId = source.WriterAccountId,
                 WriterAccountName = source.WriterAccountName,
                 WriterAssignTimeStamp = source.WriterAssignTimeStamp,
                 ReviewerAccountId = source.ReviewerAccountId,
                 ReviewerAccountName = source.ReviewerAccountName,
-                ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp
+                ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
+                Authors = source.Authors?.Select(x => x.Map()).ToList(),
+                Categories = source.Categories?.Select(x => x.Map()).ToList(),
+                Contents = source?.Contents?.Select(c => c.Map()).ToList()
             };
 
         public static ArticleContentView Map(this ArticleContentModel source)
             => new ArticleContentView
             {
                 Id = source.Id,
-                BookId = source.BookId,
-                ChapterNumber = source.ChapterNumber,
+                ArticleId = source.ArticleId,
                 Language = source.Language,
                 Text = source.Text
             };
@@ -49,8 +57,7 @@ namespace Inshapardaz.Api.Mappings
             => new ArticleContentModel
             {
                 Id = source.Id,
-                BookId = source.BookId,
-                ChapterNumber = source.ChapterNumber,
+                ArticleId = source.ArticleId,
                 Language = source.Language,
                 Text = source.Text
             };

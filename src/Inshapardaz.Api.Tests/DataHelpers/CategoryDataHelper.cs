@@ -54,6 +54,13 @@ namespace Inshapardaz.Api.Tests.DataHelpers
                                 Where pc.PeriodicalId = @PeriodicalId", new { PeriodicalId = id });
         }
 
+        public static IEnumerable<CategoryDto> GetCategoriesByArticle(this IDbConnection connection, long id)
+        {
+            return connection.Query<CategoryDto>(@"Select c.* From Category c
+                                Inner Join ArticleCategory bc ON c.Id = bc.CategoryId
+                                Where bc.ArticleId = @ArticleId ", new { ArticleId = id });
+        }
+
         public static void AddBooksToCategory(this IDbConnection connection, IEnumerable<BookDto> books, CategoryDto category)
         {
             foreach (var book in books)
@@ -87,6 +94,15 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             {
                 connection.Execute("Insert Into PeriodicalCategory (PeriodicalId, CategoryId) Values(@PeriodicalId, @CategoryId)",
                     new { PeriodicalId = periodicalId, CategoryId = category.Id });
+            }
+        }
+
+        public static void AddArticleToCategories(this IDbConnection connection, long articleId, IEnumerable<CategoryDto> categories)
+        {
+            foreach (var category in categories)
+            {
+                connection.Execute("Insert Into ArticleCategory (ArticleId, CategoryId) Values(@ArticleId, @CategoryId)",
+                    new { ArticleId = articleId, CategoryId = category.Id });
             }
         }
     }

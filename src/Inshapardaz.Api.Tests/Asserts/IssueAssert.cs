@@ -290,7 +290,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal static void ShouldHaveDeletedArticlesForIssue(IDbConnection dbConnection, int issueId)
         {
-            var articles = dbConnection.GetArticlesByIssue(issueId);
+            var articles = dbConnection.GetIssueArticlesByIssue(issueId);
             articles.Should().BeNullOrEmpty();
         }
 

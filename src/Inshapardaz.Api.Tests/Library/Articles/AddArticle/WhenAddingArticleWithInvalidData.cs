@@ -40,9 +40,9 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticle
             }
 
             [Test]
-            public void ShouldHaveForbiddenResult()
+            public void ShouldReturnBadRequest()
             {
-                _response.ShouldBeForbidden();
+                _response.ShouldBeBadRequest();
             }
         }
 
@@ -111,21 +111,30 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticle
                 _response.ShouldBeBadRequest();
             }
         }
-
+        
         [TestFixture]
-        public class AndUsingNonExistingSeries : TestBase
+        public class AndUsingCategoryFromOtherLibrary : TestBase
         {
             private HttpResponseMessage _response;
+            private LibraryDataBuilder _library2Builder;
 
-            public AndUsingNonExistingSeries() : base(Role.Writer)
+            public AndUsingCategoryFromOtherLibrary() : base(Role.Writer)
             {
             }
 
             [OneTimeSetUp]
             public async Task Setup()
             {
-                var author = AuthorBuilder.WithLibrary(LibraryId).Build();
-                var article = new ArticleView { Title = new Faker().Random.String(), Authors = new List<AuthorView> { new AuthorView { Id = author.Id } }};
+                _library2Builder = Services.GetService<LibraryDataBuilder>();
+                var library2 = _library2Builder.Build();
+                var author = AuthorBuilder.WithLibrary(Library.Id).Build();
+                var categories = CategoryBuilder.WithLibrary(library2.Id).Build();
+
+                var article = new ArticleView { 
+                    Title = RandomData.Name, 
+                    Authors = new List<AuthorView> { new AuthorView { Id = author.Id } },
+                    Categories = new List<CategoryView> { new CategoryView { Id = categories.Id } }
+                };
 
                 _response = await Client.PostObject($"/libraries/{LibraryId}/articles", article);
             }
@@ -133,6 +142,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticle
             [OneTimeTearDown]
             public void Teardown()
             {
+                _library2Builder.CleanUp();
                 Cleanup();
             }
 
@@ -144,24 +154,24 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticle
         }
 
         [TestFixture]
-        public class AndUsingSeriesFromOtherLibrary : TestBase
+        public class AndUsingNonExistingCategories : TestBase
         {
             private HttpResponseMessage _response;
-            private LibraryDataBuilder _library2Builder;
 
-            public AndUsingSeriesFromOtherLibrary() : base(Role.Writer)
+            public AndUsingNonExistingCategories() : base(Role.Writer)
             {
             }
 
             [OneTimeSetUp]
             public async Task Setup()
             {
-                _library2Builder = Services.GetService<LibraryDataBuilder>();
-                var library2 = _library2Builder.Build();
-                var series = SeriesBuilder.WithLibrary(library2.Id).Build();
-                var author = AuthorBuilder.WithLibrary(LibraryId).Build();
+                var author = AuthorBuilder.WithLibrary(Library.Id).Build();
 
-                var article = new ArticleView { Title = new Faker().Random.String(), Authors = new List<AuthorView> { new AuthorView { Id = author.Id } } };
+                var article = new ArticleView { 
+                    Title = RandomData.Name, 
+                    Authors = new List<AuthorView> { new AuthorView { Id = author.Id } },
+                    Categories = new List<CategoryView> { new CategoryView { Id = -RandomData.Number } } 
+                };
 
                 _response = await Client.PostObject($"/libraries/{LibraryId}/articles", article);
             }
@@ -169,7 +179,6 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticle
             [OneTimeTearDown]
             public void Teardown()
             {
-                _library2Builder.CleanUp();
                 Cleanup();
             }
 

@@ -13,7 +13,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
         : TestBase
     {
         private HttpResponseMessage _response;
-        private ArticleDto _article;
+        private IssueArticleDto _article;
         private ArticleContentAssert _assert;
 
         public WhenAddingIssueArticleContentsWithoutLanguage()

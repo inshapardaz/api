@@ -12,6 +12,8 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Database.SqlServer;
 using RandomData = Inshapardaz.Api.Tests.Helpers.RandomData;
 using Inshapardaz.Domain.Models;
+using Bogus;
+using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -29,7 +31,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private readonly CategoriesDataBuilder _categoriesBuilder;
         private readonly FakeFileStorage _fileStorage;
 
-        private List<ArticleDto> _articles;
+        private List<ArticleDto> _articles = new();
         private readonly List<FileDto> _files = new();
         private List<AuthorDto> _authors = new();
 
@@ -41,18 +43,20 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         public AuthorDto Author { get; set; }
         private List<CategoryDto> _categories = new();
         private int _libraryId;
-        private List<AccountItemCountSpec> _favoriteArticles = new();
-        private List<AccountItemCountSpec> _readArticles = new();
+        private List<AccountItemCountSpec> _favoriteArticlesSpec = new();
+        private List<AccountItemCountSpec> _readArticlesSpec = new();
         private List<ArticleContentDto> _contents = new();
         private string _language = null;
         private int _numberOfAuthors;
         private List<RecentArticleDto> _recentArticles = new();
-        private Dictionary<int, int> _writerAssignments = new();
-        private Dictionary<int, int> _reviewerAssignments = new();
-        private Dictionary<EditingStatus, int> _pageStatuses = new();
+        private List<FavoriteArticleDto> _favoriteArticles = new();
+        private int? _assignedWriterId, _assignedReviewerId;
+        private EditingStatus? _status;
+        private ArticleType? _articleType;
 
         public IEnumerable<AuthorDto> Authors => _authors;
         public IEnumerable<ArticleDto> Articles => _articles;
+        public IEnumerable<FavoriteArticleDto> FavoriteArticles => _favoriteArticles;
         public IEnumerable<ArticleContentDto> Contents => _contents;
         public IEnumerable<RecentArticleDto> RecentReads => _recentArticles;
 
@@ -119,9 +123,9 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
-        public ArticlesDataBuilder WithStatus(EditingStatus statuses, int count)
+        public ArticlesDataBuilder WithStatus(EditingStatus statuses)
         {
-            _pageStatuses.TryAdd(statuses, count);
+            _status = statuses;
             return this;
         }
 
@@ -131,15 +135,15 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
-        public ArticlesDataBuilder AddToFavorites(int accountId, int? countOfbookToAddToFavorite = null)
+        public ArticlesDataBuilder AddToFavorites(int accountId, int? countOfArticlesToAddToFavorite = null)
         {
-            _favoriteArticles.Add(new AccountItemCountSpec() { AccountId = accountId, Count = countOfbookToAddToFavorite });
+            _favoriteArticlesSpec.Add(new AccountItemCountSpec() { AccountId = accountId, Count = countOfArticlesToAddToFavorite });
             return this;
         }
 
-        public ArticlesDataBuilder AddToRecentReads(int accountId, int? countOfBookToAddToRecent = null)
+        public ArticlesDataBuilder AddToRecentReads(int accountId, int? countOfArticlesToAddToRecent = null)
         {
-            _readArticles.Add(new AccountItemCountSpec() { AccountId = accountId, Count = countOfBookToAddToRecent });
+            _readArticlesSpec.Add(new AccountItemCountSpec() { AccountId = accountId, Count = countOfArticlesToAddToRecent });
 
             return this;
         }
@@ -154,6 +158,25 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         {
             _contentCount = contentCount;
             _contentMimeType = mimeType;
+            return this;
+        }
+
+
+        internal ArticlesDataBuilder WithType(ArticleType type)
+        {
+            _articleType = type;
+            return this;
+        }
+
+        internal ArticlesDataBuilder WithWtiterAssignment(int accountId)
+        {
+            _assignedWriterId = accountId;
+            return this;
+        }
+
+        internal ArticlesDataBuilder WithReviewerAssignment(int accountId)
+        {
+            _assignedReviewerId = accountId;
             return this;
         }
 
@@ -190,16 +213,17 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
             Func<bool> isPublic = () => _isPublic ?? RandomData.Bool;
 
-            _articles = fixture.Build<ArticleDto>()
+            var articles = fixture.Build<ArticleDto>()
                           .With(b => b.LibraryId, _libraryId)
-                          .With(b => b.ImageId, _hasImage ? RandomData.Number : 0)
+                          .With(b => b.ImageId, () => _hasImage ? RandomData.Number : 0)
                           .With(b => b.IsPublic, isPublic)
-                          .With(b => b.LastModified, RandomData.Date)
-                          .With(b => b.Status, EditingStatus.Completed)
-                          .Without(b => b.WriterAccountId)
-                          .Without(b => b.WriterAssignTimeStamp)
-                          .Without(b => b.ReviewerAccountId)
-                          .Without(b => b.ReviewerAssignTimeStamp)
+                          .With(b => b.LastModified, () => RandomData.Date)
+                          .With(b => b.Status, _status ?? EditingStatus.Completed)
+                          .With(b => b.Type, _articleType ?? new Faker().PickRandom(ArticleType.Writing, ArticleType.Poetry))
+                          .With(b => b.WriterAccountId, _assignedWriterId)
+                          .With(b => b.WriterAssignTimeStamp, _assignedWriterId.HasValue ? DateTime.Now : null)
+                          .With(b => b.ReviewerAccountId, _assignedReviewerId)
+                          .With(b => b.ReviewerAssignTimeStamp, _assignedReviewerId.HasValue ? DateTime.Now : null)
                           .CreateMany(numberOfArticles)
                           .ToList();
 
@@ -216,7 +240,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 categories = _categories;
             }
 
-            foreach (var article in _articles)
+            foreach (var article in articles)
             {
                 FileDto articleImage = null;
                 if (_hasImage)
@@ -275,21 +299,29 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
             }
 
-            if (_favoriteArticles.Any())
+            if (_favoriteArticlesSpec.Any())
             {
-                foreach (var f in _favoriteArticles)
+                foreach (var f in _favoriteArticlesSpec)
                 {
-                    var articlessToAddToFavorite = f.Count.HasValue ? _articles.PickRandom(f.Count.Value) : _articles;
-                    if (f.AccountId != 0)
-                        _connection.AddArticlesToFavorites(_libraryId, articlessToAddToFavorite.Select(b => b.Id), f.AccountId);
+                    var articlessToAddToFavorite = f.Count.HasValue ? articles.PickRandom(f.Count.Value) : articles;
+                    foreach (var fav in articlessToAddToFavorite)
+                    {
+                        if (f.AccountId != 0)
+                        {
+                            var favorite = new FavoriteArticleDto { AccountId = f.AccountId, ArticleId = fav.Id, LibraryId = _libraryId, DateAdded = RandomData.Date };
+                            _connection.AddArticleToFavorites(_libraryId, favorite.ArticleId, favorite.AccountId, favorite.DateAdded);
+
+                            _favoriteArticles.Add(favorite);
+                        }
+                    }
                 }
             }
 
-            if (_readArticles.Any())
+            if (_readArticlesSpec.Any())
             {
-                foreach (var r in _readArticles)
+                foreach (var r in _readArticlesSpec)
                 {
-                    var articlesToAddToRecent = r.Count.HasValue ? _articles.PickRandom(r.Count.Value) : _articles;
+                    var articlesToAddToRecent = r.Count.HasValue ? articles.PickRandom(r.Count.Value) : articles;
                     foreach (var recentArticle in articlesToAddToRecent)
                     {
                         if (r.AccountId != 0)
@@ -302,6 +334,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 }
             }
 
+            _articles.AddRange(articles);
             return _articles;
         }
 

@@ -29,5 +29,7 @@ namespace Inshapardaz.Domain.Models.Library
         public ArticleModel NextArticle { get; set; }
         public int SourceType { get; set; }
         public int SourceId { get; set; }
+        public DateTime? LastModified { get; set; }
+
     }
 }

@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
@@ -112,14 +115,86 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public Task<Page<ArticleModel>> GetArticles(int libraryId, int pageNumber, int pageSize, int? accountId, ArticleFilter filter, ArticleSortByType sortBy, SortDirection sortDirection, CancellationToken cancellationToken)
+        public async Task<Page<ArticleModel>> GetArticles(int libraryId, string query, int pageNumber, int pageSize, int? accountId, ArticleFilter filter, ArticleSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
-        }
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
+                var sortByQuery = GetSortByQuery(sortBy, sortDirection, "at");
+                var param = new
+                {
+                    LibraryId = libraryId,
+                    Query = string.IsNullOrWhiteSpace(query) ? null : $"%{query}%",
+                    PageSize = pageSize,
+                    PageNumber = pageNumber,
+                    AccountId = accountId,
+                    AuthorFilter = filter.AuthorId,
+                    TypeFilter = filter.Type == ArticleType.Unknown ? (ArticleType?) null : filter.Type,
+                    CategoryFilter = filter.CategoryId,
+                    FavoriteFilter = filter.Favorite,
+                    RecentFilter = filter.Read,
+                    StatusFilter = filter.Status 
+                };
 
-        public Task<Page<ArticleModel>> SearchArticles(int libraryId, string query, int pageNumber, int pageSize, int? accountId, ArticleFilter filter, ArticleSortByType sortBy, SortDirection sortDirection, CancellationToken cancellationToken)
-        {
-            throw new System.NotImplementedException();
+                var sql = @"SELECT at.Id
+                            From Article at
+                            INNER JOIN ArticleAuthor aa ON at.Id = aa.ArticleId
+                            INNER JOIN Author a On aa.AuthorId = a.Id
+                            LEFT JOIN ArticleCategory ac ON at.Id = ac.ArticleId
+                            LEFT JOIN Category c ON ac.CategoryId = c.Id
+                            LEFT JOIN ArticleFavorite f On f.ArticleId= at.Id
+                            LEFT JOIN ArticleRead r On at.Id = r.ArticleId
+                            Where at.LibraryId = @LibraryId
+                            AND (at.Title Like @Query OR @Query IS NULL)
+                            AND (@AccountId IS NOT NULL OR at.IsPublic = 1)
+                            AND (at.[Type] = @TypeFilter OR @TypeFilter = 0 OR @TypeFilter IS NULL)
+                            AND (at.Status = @StatusFilter OR @StatusFilter = 0 OR @StatusFilter IS NULL)
+                            AND (aa.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
+                            AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
+                            AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                            AND (ac.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                            GROUP BY at.Id, at.Title, at.LastModified " +
+                            $" ORDER BY {sortByQuery} " +
+                            @"OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+
+                var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
+
+                var articleIds = await connection.QueryAsync(command);
+
+                var sqlCount = @"SELECT Count(*) 
+                                 FROM (
+                                    SELECT at.Id
+                                    FROM Article at
+                                    INNER JOIN ArticleAuthor aa ON at.Id = aa.ArticleId
+                                    INNER JOIN Author a On aa.AuthorId = a.Id
+                                    LEFT JOIN ArticleCategory ac ON at.Id = ac.ArticleId
+                                    LEFT JOIN Category c ON ac.CategoryId = c.Id
+                                    LEFT JOIN ArticleFavorite f On f.ArticleId= at.Id
+                                    LEFT JOIN ArticleRead r On at.Id = r.ArticleId
+                                    Where at.LibraryId = @LibraryId
+                                    AND (at.Title Like @Query OR @Query IS NULL)
+                                    AND (@AccountId IS NOT NULL OR at.IsPublic = 1)
+                                    AND (at.[Type] = @TypeFilter OR @TypeFilter = 0 OR @TypeFilter IS NULL)
+                                    AND (at.Status = @StatusFilter OR @StatusFilter = 0 OR @StatusFilter IS NULL)
+                                    AND (aa.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
+                                    AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
+                                    AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                                    AND (ac.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                    GROUP BY at.Id) as articleCounts";
+
+                var articleCount = await connection.QuerySingleAsync<long>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
+
+                var articles = await GetArticles(connection, libraryId, articleIds.Select(b => (long)b.Id).ToList(), accountId, cancellationToken);
+
+                return new Page<ArticleModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = articleCount,
+                    Data = articles
+                };
+            }
         }
 
         public async Task<ArticleModel> UpdateArticle(int libraryId, long articleId, ArticleModel article, CancellationToken cancellationToken)
@@ -209,19 +284,20 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 ArticleModel article = null;
                 
-                var sql = @"Select at.*, fl.FilePath AS ImageUrl,
+                var sql = @"SElect at.*, fl.FilePath AS ImageUrl,
                             CASE WHEN af.ArticleId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
-                            a.*, c.*
-                            from Article at
-                            Left Outer Join ArticleAuthor ara ON ara.ArticleId = at.Id
-                            Left Outer Join Author a On ara.AuthorId = a.Id
-                            Left Outer Join ArticleFavorite af On at.Id = af.ArticleId AND (af.AccountId = @AccountId OR @AccountId Is Null)
-                            Left Outer Join ArticleRead ar On at.Id = ar.ArticleId AND (ar.AccountId = @AccountId OR @AccountId Is Null)
-                            Left Outer Join ArticleCategory ac ON at.Id = ac.ArticleId
-                            Left Outer Join Category c ON ac.CategoryId = c.Id
+                            a.*, c.*, con.*
+                            FROM Article at
+                            LEFT OUTER JOIN ArticleAuthor ara ON ara.ArticleId = at.Id
+                            LEFT OUTER JOIN Author a ON ara.AuthorId = a.Id
+                            LEFT OUTER JOIN ArticleFavorite af ON at.Id = af.ArticleId AND (af.AccountId = @AccountId OR @AccountId Is Null)
+                            LEFT OUTER JOIN ArticleRead ar On at.Id = ar.ArticleId AND (ar.AccountId = @AccountId OR @AccountId Is Null)
+                            LEFT OUTER JOIN ArticleCategory ac ON at.Id = ac.ArticleId
+                            LEFT OUTER JOIN Category c ON ac.CategoryId = c.Id
+                            LEFT JOIN ArticleContent con ON con.ArticleId = at.Id
                             LEFT OUTER JOIN [File] fl ON fl.Id = at.ImageId
-                            Where at.LibraryId = @LibraryId AND at.Id = @Id";
-                await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleModel>(sql, (ar, a, c) =>
+                            WhEre at.LibraryId = @LibraryId AND at.Id = @Id";
+                await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, ArticleModel>(sql, (ar, a, c, con) =>
                 {
                     if (article == null)
                     {
@@ -237,11 +313,81 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     {
                         article.Categories.Add(c);
                     }
+
+                    if (con != null && !article.Contents.Any(x => x.Id == con.Id))
+                    {
+                        article.Contents.Add(con);
+                    }
+
                     return article;
 
                 }, new { LibraryId = libraryId, Id = articleId, AccountId = accountId });
 
                 return article;
+            }
+        }
+
+        private async Task<IEnumerable<ArticleModel>> GetArticles(IDbConnection connection, int libraryId, List<long> articleIds, int? accountId = null, CancellationToken cancellationToken = default)
+        {
+            var articles = new Dictionary<long, ArticleModel>();
+            var sql3 = @"SELECT at.*, fl.FilePath AS ImageUrl,
+                            CASE WHEN af.ArticleId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
+                            a.*, c.*, con.*
+                        FROM Article at
+                            LEFT OUTER JOIN ArticleAuthor ara ON ara.ArticleId = at.Id
+                            LEFT OUTER JOIN Author a On ara.AuthorId = a.Id
+                            LEFT OUTER JOIN ArticleFavorite af On at.Id = af.ArticleId 
+                                AND (af.AccountId = @AccountId OR @AccountId Is Null)
+                            LEFT OUTER JOIN ArticleRead ar On at.Id = ar.ArticleId 
+                                AND (ar.AccountId = @AccountId OR @AccountId Is Null)
+                            LEFT OUTER JOIN ArticleCategory ac ON at.Id = ac.ArticleId
+                            LEFT OUTER JOIN Category c ON ac.CategoryId = c.Id
+                            LEFT OUTER JOIN [File] fl ON fl.Id = at.ImageId
+                            LEFT JOIN ArticleContent con ON con.ArticleId = at.Id
+                        WHERE at.LibraryId = @LibraryId 
+                            AND at.Id IN @ArticleList";
+            var command3 = new CommandDefinition(sql3, new { 
+                LibraryId = libraryId, 
+                ArticleList = articleIds,
+                AccountId = accountId
+            }, cancellationToken: cancellationToken);
+
+            await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, ArticleModel>(command3, (at, a, c, con) =>
+            {
+                if (!articles.TryGetValue(at.Id, out ArticleModel article))
+                    articles.Add(at.Id, article = at);
+
+                if (!article.Authors.Any(x => x.Id == a.Id))
+                {
+                    article.Authors.Add(a);
+                }
+
+                if (c != null && !article.Categories.Any(x => x.Id == c.Id))
+                {
+                    article.Categories.Add(c);
+                }
+
+                if (con != null && !article.Contents.Any(x => x.Id == con.Id))
+                {
+                    article.Contents.Add(con);
+                }
+
+                return article;
+            });
+
+            return articles.Values.OrderBy(b => articleIds.IndexOf(b.Id)).ToList();
+        }
+
+        private static string GetSortByQuery(ArticleSortByType sortBy, string sortDiretion, string prefix = "")
+        {
+            switch (sortBy)
+            {
+                case ArticleSortByType.LastModified:
+                    return $"{prefix}.LastModified {sortDiretion}, {prefix}.Title {sortDiretion}";
+
+                case ArticleSortByType.Title:
+                default:
+                    return $"{prefix}.Title {sortDiretion}";
             }
         }
     }

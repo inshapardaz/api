@@ -8,8 +8,7 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 {
     public interface IArticleRepository
     {
-        Task<Page<ArticleModel>> GetArticles(int libraryId, int pageNumber, int pageSize, int? accountId, ArticleFilter filter, ArticleSortByType sortBy, SortDirection sortDirection, CancellationToken cancellationToken);
-        Task<Page<ArticleModel>> SearchArticles(int libraryId, string query, int pageNumber, int pageSize, int? accountId, ArticleFilter filter, ArticleSortByType sortBy, SortDirection sortDirection, CancellationToken cancellationToken);
+        Task<Page<ArticleModel>> GetArticles(int libraryId, string query, int pageNumber, int pageSize, int? accountId, ArticleFilter filter, ArticleSortByType sortBy, SortDirection sortDirection, CancellationToken cancellationToken);
 
         Task<ArticleModel> GetArticle(int libraryId, long articleId, CancellationToken cancellationToken);
 

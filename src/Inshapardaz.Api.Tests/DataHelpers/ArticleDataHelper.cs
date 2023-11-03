@@ -12,18 +12,18 @@ namespace Inshapardaz.Api.Tests.DataHelpers
     {
         public static void AddArticle(this IDbConnection connection, ArticleDto article)
         {
-            var sql = @"Insert Into Article (LibraryId, Title, IsPublic, ImageId, Type, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SourceId, SourceType)
+            var sql = @"Insert Into Article (LibraryId, Title, IsPublic, ImageId, Type, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SourceId, SourceType, LastModified)
                         Output Inserted.Id
-                        Values (@LibraryId, @Title, @IsPublic, @ImageId, @Type, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SourceId, @SourceType)";
+                        Values (@LibraryId, @Title, @IsPublic, @ImageId, @Type, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SourceId, @SourceType, @LastModified)";
             var id = connection.ExecuteScalar<int>(sql, article);
             article.Id = id;
         }
 
-        public static void AddArticles(this IDbConnection connection, IEnumerable<ArticleDto> issues)
+        public static void AddArticles(this IDbConnection connection, IEnumerable<ArticleDto> articles)
         {
-            foreach (var issue in issues)
+            foreach (var article in articles)
             {
-                AddArticle(connection, issue);
+                AddArticle(connection, article);
             }
         }
 
@@ -86,7 +86,6 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         {
             articleIds.ForEach(id => connection.AddArticleToFavorites(libraryId, id, accountId));
         }
-
 
         public static void AddArticleToFavorites(this IDbConnection connection, int libraryId, long articleId, int accountId, DateTime? timestamp = null)
         {

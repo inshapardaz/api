@@ -8,6 +8,8 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Database.SqlServer;
 using Inshapardaz.Api.Tests.Helpers;
+using System;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -16,12 +18,14 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<BookDto> _books = new List<BookDto>();
         private List<FileDto> _files = new List<FileDto>();
+        private List<ArticleDto> _articles = new();
         private readonly IDbConnection _connection;
         private readonly FakeFileStorage _fileStorage;
         private int _libraryId;
         private int _bookCount;
         private bool _withImage = true;
         private string _namePattern = "";
+        private int _articleCount;
 
         internal IEnumerable<BookDto> Books => _books;
 
@@ -54,6 +58,13 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         public AuthorsDataBuilder WithoutImage()
         {
             _withImage = false;
+            return this;
+        }
+
+
+        internal AuthorsDataBuilder WithArticles(int count)
+        {
+            _articleCount = count;
             return this;
         }
 
@@ -106,6 +117,23 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
                 _books.AddRange(books);
 
+                var articles = fixture.Build<ArticleDto>()
+                                .With(b => b.LibraryId, _libraryId)
+                                .Without(b => b.ImageId)
+                                .With(b => b.IsPublic, true)
+                                .With(b => b.LastModified, RandomData.Date)
+                                .With(b => b.Status, EditingStatus.Completed)
+                                .CreateMany(_articleCount);
+
+                _connection.AddArticles(articles);
+
+                _articles.AddRange(articles);
+
+                foreach(var article in articles)
+                {
+                    _connection.AddArticleAuthor(article.Id, author.Id);
+                }
+
                 authors.Add(author);
             }
 
@@ -117,5 +145,6 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             _connection.DeleteAuthors(_authors);
             _connection.DeleteFiles(_files);
         }
+
     }
 }

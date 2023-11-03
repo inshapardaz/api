@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Inshapardaz.Domain.Models.Library;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -31,5 +32,7 @@ namespace Inshapardaz.Api.Views.Library
         public DateTime? ReviewerAssignTimeStamp { get; set; }
 
         public List<ArticleContentView> Contents { get; set; }
+        public string Type { get; set; }
+        public DateTime? LastModified { get; set; }
     }
 }

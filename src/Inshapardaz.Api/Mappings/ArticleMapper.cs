@@ -15,6 +15,7 @@ namespace Inshapardaz.Api.Mappings
                 Title = source.Title,
                 IsPublic = source.IsPublic,
                 Status = source.Status.ToDescription(),
+                Type = source.Type.ToDescription(),
                 WriterAccountId = source.WriterAccountId,
                 WriterAccountName = source.WriterAccountName,
                 WriterAssignTimeStamp = source.WriterAssignTimeStamp,
@@ -23,7 +24,8 @@ namespace Inshapardaz.Api.Mappings
                 ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
                 Authors = source.Authors?.Select(a => a.Map()),
                 Categories = source.Categories?.Select(c => c.Map()),
-                Contents = source?.Contents?.Select(c => c.Map()).ToList()
+                Contents = source?.Contents?.Select(c => c.Map()).ToList(),
+                LastModified = source?.LastModified
             };
 
         public static ArticleModel Map(this ArticleView source)
@@ -33,6 +35,7 @@ namespace Inshapardaz.Api.Mappings
                 Title = source.Title,
                 IsPublic = source.IsPublic,
                 Status = source.Status.ToEnum(EditingStatus.Available),
+                Type = source.Type.ToEnum(ArticleType.Unknown),
                 WriterAccountId = source.WriterAccountId,
                 WriterAccountName = source.WriterAccountName,
                 WriterAssignTimeStamp = source.WriterAssignTimeStamp,
@@ -41,7 +44,8 @@ namespace Inshapardaz.Api.Mappings
                 ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
                 Authors = source.Authors?.Select(x => x.Map()).ToList(),
                 Categories = source.Categories?.Select(x => x.Map()).ToList(),
-                Contents = source?.Contents?.Select(c => c.Map()).ToList()
+                Contents = source?.Contents?.Select(c => c.Map()).ToList(),
+                LastModified = source?.LastModified
             };
 
         public static ArticleContentView Map(this ArticleContentModel source)

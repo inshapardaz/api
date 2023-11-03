@@ -10,8 +10,9 @@
 
         public bool? Read { get; set; }
 
-        public StatusType Status { get; set; }
+        public EditingStatus Status { get; set; }
 
         public AssignmentStatus AssignmentStatus { get; set; }
+        public ArticleType Type { get; set; }
     }
 }

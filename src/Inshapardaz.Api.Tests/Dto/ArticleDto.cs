@@ -71,7 +71,7 @@ namespace Inshapardaz.Api.Tests.Dto
     {
         public long ArticleId { get; set; }
 
-        public Guid AccountId { get; set; }
+        public int AccountId { get; set; }
 
         public DateTime DateAdded { get; set; }
 

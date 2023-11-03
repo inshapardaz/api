@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.Converters
                 QueryString = query
             }));
 
-            if (_userHelper.IsWriter(libraryId))
+            if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
             {
                 page.Links.Add(_linkRenderer.Render(new Link
                 {
@@ -63,6 +63,36 @@ namespace Inshapardaz.Api.Converters
                     Method = HttpMethod.Post,
                     Rel = RelTypes.Create,
                     Parameters = new { libraryId = libraryId }
+                }));
+            }
+
+            if (page.CurrentPageIndex < page.PageCount)
+            {
+                var pageQuery = CreateQueryString(source, page);
+                pageQuery.Add("pageNumber", (page.CurrentPageIndex + 1).ToString());
+
+                page.Links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ArticleController.GetArticles),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Next,
+                    Parameters = new { libraryId = libraryId },
+                    QueryString = pageQuery
+                }));
+            }
+
+            if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
+            {
+                var pageQuery = CreateQueryString(source, page);
+                pageQuery.Add("pageNumber", (page.CurrentPageIndex - 1).ToString());
+
+                page.Links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ArticleController.GetArticles),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Previous,
+                    Parameters = new { libraryId = libraryId },
+                    QueryString = pageQuery
                 }));
             }
 
@@ -151,6 +181,14 @@ namespace Inshapardaz.Api.Converters
                     ActionName = nameof(ArticleController.UpdateArticleContent),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.AddContent,
+                    Parameters = new { libraryId = libraryId, articleId = source.Id }
+                }));
+
+                links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(ArticleController.UpdateArticleImage),
+                    Method = HttpMethod.Put,
+                    Rel = RelTypes.ImageUpload,
                     Parameters = new { libraryId = libraryId, articleId = source.Id }
                 }));
 
@@ -300,8 +338,14 @@ namespace Inshapardaz.Api.Converters
                 if (source.Filters.Read.HasValue)
                     queryString.Add("read", bool.TrueString);
 
-                if (source.Filters.Status != Domain.Models.StatusType.Published)
+                if (source.Filters.Status != Domain.Models.EditingStatus.Completed)
                     queryString.Add("status", source.Filters.Status.ToDescription());
+
+                if (source.Filters.Type != ArticleType.Unknown)
+                    queryString.Add("type", source.Filters.Type.ToDescription());
+
+                if (source.Filters.AssignmentStatus != AssignmentStatus.None)
+                    queryString.Add("assignedfor", source.Filters.AssignmentStatus.ToDescription());
             }
 
             if (source.RouteArguments.SortBy != ArticleSortByType.Title)

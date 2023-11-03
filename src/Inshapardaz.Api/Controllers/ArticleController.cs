@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
@@ -10,6 +11,7 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Article;
 using Inshapardaz.Domain.Ports.Handlers.Library.Book;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -42,7 +44,8 @@ namespace Inshapardaz.Api.Controllers
             [FromQuery] int? categoryId = null,
             [FromQuery] bool? favorite = null,
             [FromQuery] bool? read = null,
-            [FromQuery] StatusType status = StatusType.Published,
+            [FromQuery] EditingStatus status = EditingStatus.All,
+            [FromQuery] ArticleType type = ArticleType.Unknown,
             [FromQuery] AssignmentStatus assignedFor = AssignmentStatus.None,
             [FromQuery] ArticleSortByType sortBy = ArticleSortByType.Title,
             [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
@@ -55,6 +58,7 @@ namespace Inshapardaz.Api.Controllers
                 Favorite = favorite,
                 Read = read,
                 Status = status,
+                Type = type,
                 AssignmentStatus = assignedFor
             };
             var articlesQuery = new GetArticlesQuery(libraryId, pageNumber, pageSize, _userHelper.Account?.Id)
@@ -154,6 +158,38 @@ namespace Inshapardaz.Api.Controllers
             var request = new DeleteArticleRequest(libraryId, articleId);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
+        }
+
+        [HttpPut("libraries/{libraryId}/articles/{articleId}/image", Name = nameof(ArticleController.UpdateArticleImage))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        public async Task<IActionResult> UpdateArticleImage(int libraryId, int articleId, IFormFile file, CancellationToken token = default(CancellationToken))
+        {
+            var content = new byte[file.Length];
+            using (var stream = new MemoryStream(content))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            //var request = new UpdateBookImageRequest(libraryId, bookId, _userHelper.Account?.Id)
+            //{
+            //    Image = new FileModel
+            //    {
+            //        FileName = file.FileName,
+            //        MimeType = file.ContentType,
+            //        Contents = content
+            //    }
+            //};
+
+            //await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            //if (request.Result.HasAddedNew)
+            //{
+            //    var response = _fileRenderer.Render(libraryId, request.Result.File);
+
+            //    return new CreatedResult(response.Links.Self(), response);
+            //}
+
+            return new OkResult();
         }
 
         [HttpGet("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.GetArticleContent))]

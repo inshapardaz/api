@@ -43,9 +43,16 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
 
         public override async Task<Page<ArticleModel>> ExecuteAsync(GetArticlesQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var articles = string.IsNullOrWhiteSpace(command.Query)
-            ? await _articleRepository.GetArticles(command.LibraryId, command.PageNumber, command.PageSize, command.AccountId, command.Filter, command.SortBy, command.SortDirection, cancellationToken)
-            : await _articleRepository.SearchArticles(command.LibraryId, command.Query, command.PageNumber, command.PageSize, command.AccountId, command.Filter, command.SortBy, command.SortDirection, cancellationToken);
+            var articles = await _articleRepository.GetArticles(
+                command.LibraryId, 
+                command.Query, 
+                command.PageNumber, 
+                command.PageSize, 
+                command.AccountId, 
+                command.Filter, 
+                command.SortBy, 
+                command.SortDirection, 
+                cancellationToken);
 
             return articles;
         }

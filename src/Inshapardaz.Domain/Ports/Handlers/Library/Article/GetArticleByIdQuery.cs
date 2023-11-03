@@ -31,14 +31,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
 
         public override async Task<ArticleModel> ExecuteAsync(GetArticleByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var article = await _articleRepository.GetArticle(command.LibraryId, command.ArticleId, cancellationToken);
-            if (article != null)
-            {
-                var contents = await _articleRepository.GetArticleContents(command.LibraryId, command.ArticleId, cancellationToken);
-
-                article.Contents = contents?.ToList();
-            }
-            return article;
+            return await _articleRepository.GetArticle(command.LibraryId, command.ArticleId, cancellationToken);
         }
     }
 }

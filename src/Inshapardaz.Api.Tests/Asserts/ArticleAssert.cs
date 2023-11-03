@@ -14,7 +14,7 @@ using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Asserts
 {
-    internal class ArticleAssert
+    public class ArticleAssert
     {
         private HttpResponseMessage _response;
         private readonly int _libraryId;
@@ -171,7 +171,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal ArticleAssert WithWriteableLinks()
         {
-            ShouldHaveAddIssueContentLink()
+            ShouldHaveAddContentLink()
             .ShouldHaveUpdateLink()
             .ShouldHaveDeleteLink()
             .ShouldHaveAssignmentLink();
@@ -228,15 +228,6 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleAssert ShouldHaveAddIssueContentLink()
-        {
-            _article.Link("add-content")
-                 .ShouldBePost()
-                 .EndingWith($"libraries/{_libraryId}/articles/{_article.Id}");
-
-            return this;
-        }
-
         internal ArticleAssert ShouldNotHaveAddArticleContentLink()
         {
             _article.Link("add-content").Should().BeNull();
@@ -277,6 +268,20 @@ namespace Inshapardaz.Api.Tests.Asserts
                 .ShouldBeGet();
             //.Href.Should().StartWith(Settings.CDNAddress);
 
+            return this;
+        }
+
+        internal ArticleAssert ShouldNotHaveImageUpdateLink()
+        {
+            _article.Link("image-upload").Should().BeNull();
+            return this;
+        }
+
+        internal ArticleAssert ShouldHaveImageUpdateLink()
+        {
+            _article.Link("image-upload")
+                .ShouldBePut()
+                .EndingWith($"libraries/{_libraryId}/articles/{_article.Id}/image");
             return this;
         }
 
@@ -338,10 +343,6 @@ namespace Inshapardaz.Api.Tests.Asserts
                 }
 
             }
-            
-            //_article.Link("content")
-            //      .ShouldBeGet()
-            //      .EndingWith($"libraries/{_libraryId}/articles/{_article.Id}/contents");
             return this;
         }
 
@@ -471,6 +472,9 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _article.Title.Should().Be(_expected.Title);
             _article.IsPublic.Should().Be(_expected.IsPublic);
+            _article.Status.Should().Be(_expected.Status.ToString());
+            _article.Type.Should().Be(_expected.Type.ToString());
+            _article.LastModified.Should().BeCloseTo(_expected.LastModified,TimeSpan.FromSeconds(2));
             _article.WriterAccountId.Should().Be(_expected.WriterAccountId);
             if (_expected.WriterAssignTimeStamp.HasValue)
             {
@@ -489,7 +493,6 @@ namespace Inshapardaz.Api.Tests.Asserts
             {
                 _article.ReviewerAssignTimeStamp.Should().BeNull();
             }
-            _article.Status.Should().Be(_expected.Status.ToString());
 
             var authors = db.GetAuthorsByArticle(_expected.Id);
             _article.Authors.Should().HaveSameCount(authors);
@@ -544,6 +547,16 @@ namespace Inshapardaz.Api.Tests.Asserts
                 actual.Should().BeEquivalentTo(category, config => config.ExcludingMissingMembers());
             }
             return this;
+        }
+    }
+
+
+    public static class ArticleAssertionExtensions
+    {
+        public static ArticleAssert ShouldMatch(this ArticleView view, ArticleDto dto, IDbConnection dbConnection, int libraryId)
+        {
+            return new ArticleAssert(view, libraryId)
+                               .ShouldBeSameAs(dto, dbConnection);
         }
     }
 }

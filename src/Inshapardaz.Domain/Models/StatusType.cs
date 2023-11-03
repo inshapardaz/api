@@ -4,8 +4,11 @@ namespace Inshapardaz.Domain.Models
 {
     public enum StatusType
     {
+        [Description("Unknown")]
+        Unknown = 0,
+
         [Description("Published")]
-        Published = 0,
+        Published = 1,
 
         [Description("AvailableForTyping")]
         AvailableForTyping,

@@ -390,5 +390,35 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     return $"{prefix}.Title {sortDiretion}";
             }
         }
+
+        public async Task AddArticleToFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"INSERT INTO ArticleFavorite (LibraryId, ArticleId, AccountId) VALUES (@LibraryId, @ArticleId, @AccountId)";
+                var command = new CommandDefinition(sql, new { 
+                    LibraryId = libraryId, 
+                    ArticleId = articleId, 
+                    AccountId = accountId }, 
+                    cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task RemoveArticleFromFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"DELETE FROM ArticleFavorite WHERE LibraryId = @Libraryid AND ArticleId = @ArticleId AND AccountId = @AccountId";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    ArticleId = articleId,
+                    AccountId = accountId
+                },
+                    cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
     }
 }

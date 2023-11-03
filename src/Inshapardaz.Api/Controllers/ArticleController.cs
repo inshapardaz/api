@@ -262,7 +262,7 @@ namespace Inshapardaz.Api.Controllers
         [Authorize]
         public async Task<IActionResult> AddArticleToFavorites(int libraryId, int articleId, CancellationToken token)
         {
-            var request = new AddBookToFavoriteRequest(libraryId, articleId, _userHelper.Account?.Id);
+            var request = new AddArticleToFavoriteRequest(libraryId, articleId, _userHelper.Account?.Id);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             return new OkResult();
@@ -272,7 +272,7 @@ namespace Inshapardaz.Api.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveArtiucleFromFavorites(int libraryId, int articleId, CancellationToken token)
         {
-            var request = new DeleteBookToFavoriteRequest(libraryId, articleId, _userHelper.Account?.Id);
+            var request = new RemoveArticleFromFavoriteRequest(libraryId, articleId, _userHelper.Account?.Id);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             return new OkResult();

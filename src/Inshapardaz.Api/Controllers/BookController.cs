@@ -308,7 +308,7 @@ namespace Inshapardaz.Api.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveBookFromFavorites(int libraryId, int bookId, CancellationToken token)
         {
-            var request = new DeleteBookToFavoriteRequest(libraryId, bookId, _userHelper.Account?.Id);
+            var request = new DeleteBookFromFavoriteRequest(libraryId, bookId, _userHelper.Account?.Id);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             return new OkResult();

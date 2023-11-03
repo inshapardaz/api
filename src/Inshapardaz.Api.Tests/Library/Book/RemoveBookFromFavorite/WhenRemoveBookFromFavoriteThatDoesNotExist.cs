@@ -8,12 +8,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
 {
     [TestFixture]
-    public class WhenAddBookToFavoriteThatDoesNotExist : TestBase
+    public class WhenRemoveBookFromFavoriteThatDoesNotExist : TestBase
     {
         private HttpResponseMessage _response;
         private int _bookId = -RandomData.Number;
 
-        public WhenAddBookToFavoriteThatDoesNotExist()
+        public WhenRemoveBookFromFavoriteThatDoesNotExist()
             : base(Role.Writer)
         {
         }

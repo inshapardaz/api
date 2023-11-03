@@ -4,20 +4,20 @@ using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
+namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleToFavorite
 {
     [TestFixture]
-    public class WhenAddBookToFavoriteAsUnauthorized : TestBase
+    public class WhenAddArticleToFavoriteAsUnauthorized : TestBase
     {
         private HttpResponseMessage _response;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var book = BookBuilder.WithLibrary(LibraryId).AddToFavorites(AccountId).Build();
-            book.Title = RandomData.Name;
+            var article = ArticleBuilder.WithLibrary(LibraryId).Build();
+            article.Title = RandomData.Name;
 
-            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/favorites/books/{book.Id}");
+            _response = await Client.PostObject($"/libraries/{LibraryId}/favorites/articles/{article.Id}", new object());
         }
 
         [OneTimeTearDown]
@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
         }
 
         [Test]
-        public void ShouldHaveUnauthorisedResult()
+        public void ShouldHaveUnauthorizedResult()
         {
             _response.ShouldBeUnauthorized();
         }

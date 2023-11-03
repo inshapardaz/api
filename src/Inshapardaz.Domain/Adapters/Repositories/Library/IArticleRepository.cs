@@ -29,5 +29,10 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
         Task DeleteArticleContent(int libraryId, long articleId, string language, CancellationToken cancellationToken);
         Task<ArticleModel> UpdateWriterAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken);
         Task<ArticleModel> UpdateReviewerAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken);
+
+        #region Faviorite 
+        Task AddArticleToFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken);
+        Task RemoveArticleFromFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken);
+        #endregion
     }
 }

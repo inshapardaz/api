@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Library\Articles\AssignArticleToUser\" />
     <Folder Include="Library\Articles\UpdateArticleImage\" />
   </ItemGroup>
 

@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
         }
 
         [Test]
-        public void ShouldSaveTheChapterContent()
+        public void ShouldSaveTheArticleContent()
         {
             _assert.ShouldHaveSavedArticleContent(DatabaseConnection);
         }

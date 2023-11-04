@@ -69,7 +69,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
         }
 
         [Test]
-        public void ShouldReturnCorrectChapterData()
+        public void ShouldReturnCorrectArticleData()
         {
             _assert.ShouldMatch(_content, _article);
         }

@@ -310,14 +310,40 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public Task<ArticleModel> UpdateReviewerAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken)
+        public async Task<ArticleModel> UpdateReviewerAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"Update Article
+                            SET ReviewerAccountId = @ReviewerAccountId, ReviewerAssignTimeStamp = GETUTCDATE()
+                            WHERE LibraryId = @LibraryId AND Id = @ArticleId";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, 
+                    ReviewerAccountId = accountId,
+                    ArticleId = articleId
+                }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+
+                return await GetArticle(libraryId, articleId, cancellationToken);
+            }
         }
 
-        public Task<ArticleModel> UpdateWriterAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken)
+        public async Task<ArticleModel> UpdateWriterAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"Update Article
+                            SET WriterAccountId = @WriterAccountId, WriterAssignTimeStamp = GETUTCDATE()
+                            WHERE LibraryId = @LibraryId AND Id = @ArticleId";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    WriterAccountId = accountId,
+                    ArticleId = articleId
+                }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+
+                return await GetArticle(libraryId, articleId, cancellationToken);
+            }
         }
 
         private async Task<ArticleModel> GetArticleById(int libraryId, long articleId,  int? accountId, CancellationToken cancellationToken)
@@ -328,7 +354,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 
                 var sql = @"SElect at.*, fl.FilePath AS ImageUrl,
                             CASE WHEN af.ArticleId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
-                            a.*, c.*, con.*
+                            a.*, c.*, con.*, aw.*, arv.*
                             FROM Article at
                             LEFT OUTER JOIN ArticleAuthor ara ON ara.ArticleId = at.Id
                             LEFT OUTER JOIN Author a ON ara.AuthorId = a.Id
@@ -337,13 +363,17 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             LEFT OUTER JOIN ArticleCategory ac ON at.Id = ac.ArticleId
                             LEFT OUTER JOIN Category c ON ac.CategoryId = c.Id
                             LEFT JOIN ArticleContent con ON con.ArticleId = at.Id
+                            LEFT OUTER JOIN [Accounts] aw ON aw.Id = WriterAccountId
+                            LEFT OUTER JOIN [Accounts] arv ON arv.Id = ReviewerAccountId
                             LEFT OUTER JOIN [File] fl ON fl.Id = at.ImageId
                             WhEre at.LibraryId = @LibraryId AND at.Id = @Id";
-                await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, ArticleModel>(sql, (ar, a, c, con) =>
+                await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, AccountModel, AccountModel, ArticleModel>(sql, (ar, a, c, con, writer, reviewer) =>
                 {
                     if (article == null)
                     {
                         article = ar;
+                        article.WriterAccountName = writer?.Name;
+                        article.ReviewerAccountName = reviewer?.Name;
                     }
 
                     if (a != null && !article.Authors.Any(x => x.Id == a.Id))

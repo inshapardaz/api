@@ -44,7 +44,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticleContent
         }
 
         [Test]
-        public void ShouldHaveDeletedChapterContent()
+        public void ShouldHaveDeletedArticleContent()
         {
             ArticleContentAssert.ShouldHaveDeletedContent(DatabaseConnection, _content);
         }

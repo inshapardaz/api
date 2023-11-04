@@ -304,12 +304,12 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                         article = ar;
                     }
 
-                    if (!article.Authors.Any(x => x.Id == a.Id))
+                    if (a != null && !article.Authors.Any(x => x.Id == a.Id))
                     {
                         article.Authors.Add(a);
                     }
 
-                    if (!article.Categories.Any(x => x.Id == c.Id))
+                    if (c != null && !article.Categories.Any(x => x.Id == c.Id))
                     {
                         article.Categories.Add(c);
                     }
@@ -390,6 +390,19 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     return $"{prefix}.Title {sortDiretion}";
             }
         }
+
+        public async Task UpdateArticleImage(int libraryId, long articleId, int imageId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"Update Article
+                            Set ImageId = @ImageId
+                            Where Id = @ArticleId And LibraryId = @LibraryId;";
+                var command = new CommandDefinition(sql, new { ImageId = imageId, ArticleId = articleId, LibraryId = libraryId }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+
 
         public async Task AddArticleToFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken)
         {

@@ -76,7 +76,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [Test]
-        public void ShouldReturnExpectedBooks()
+        public void ShouldReturnExpectedArticles()
         {
             var expectedItems = _expected.OrderByDescending(a => a.LastModified).ThenBy(x => x.Title).ToArray();
             _assert.Data.Count().Should().Be(expectedItems.Length);

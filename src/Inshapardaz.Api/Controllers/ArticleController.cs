@@ -10,7 +10,6 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Article;
-using Inshapardaz.Domain.Ports.Handlers.Library.Book;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -24,16 +23,20 @@ namespace Inshapardaz.Api.Controllers
         private readonly IQueryProcessor _queryProcessor;
         private readonly IRenderArticle _articleRenderer;
         private readonly IUserHelper _userHelper;
+        private readonly IRenderFile _fileRenderer;
 
         public ArticleController(IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor,
             IRenderArticle articleRenderer,
-            IUserHelper userHelper)
+            IUserHelper userHelper,
+            IRenderFile fileRenderer)
         {
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
             _articleRenderer = articleRenderer;
             _userHelper = userHelper;
+            _fileRenderer = fileRenderer;
+
         }
 
         [HttpGet("libraries/{libraryId}/articles", Name = nameof(ArticleController.GetArticles))]
@@ -162,7 +165,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}/articles/{articleId}/image", Name = nameof(ArticleController.UpdateArticleImage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateArticleImage(int libraryId, int articleId, IFormFile file, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateArticleImage(int libraryId, long articleId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
             using (var stream = new MemoryStream(content))
@@ -170,24 +173,24 @@ namespace Inshapardaz.Api.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            //var request = new UpdateBookImageRequest(libraryId, bookId, _userHelper.Account?.Id)
-            //{
-            //    Image = new FileModel
-            //    {
-            //        FileName = file.FileName,
-            //        MimeType = file.ContentType,
-            //        Contents = content
-            //    }
-            //};
+            var request = new UpdateArticleImageRequest(libraryId, articleId, _userHelper.Account?.Id)
+            {
+                Image = new FileModel
+                {
+                    FileName = file.FileName,
+                    MimeType = file.ContentType,
+                    Contents = content
+                }
+            };
 
-            //await _commandProcessor.SendAsync(request, cancellationToken: token);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
 
-            //if (request.Result.HasAddedNew)
-            //{
-            //    var response = _fileRenderer.Render(libraryId, request.Result.File);
+            if (request.Result.HasAddedNew)
+            {
+                var response = _fileRenderer.Render(libraryId, request.Result.File);
 
-            //    return new CreatedResult(response.Links.Self(), response);
-            //}
+                return new CreatedResult(response.Links.Self(), response);
+            }
 
             return new OkResult();
         }

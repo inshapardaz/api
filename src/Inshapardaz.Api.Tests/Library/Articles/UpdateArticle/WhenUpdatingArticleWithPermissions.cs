@@ -74,7 +74,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         }
 
         [Test]
-        public void ShouldHaveUpdatedTheBook()
+        public void ShouldHaveUpdatedTheArticle()
         {
             _expected.Authors.ElementAt(0).Links = new List<Views.LinkView> { new Views.LinkView {
             Rel = RelTypes.Self,

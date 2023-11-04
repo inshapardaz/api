@@ -73,7 +73,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleById
         }
 
         [Test]
-        public void ShouldReturnCorrectBookData()
+        public void ShouldReturnCorrectArticleData()
         {
             _assert.ShouldBeSameAs(_expected, DatabaseConnection);
         }

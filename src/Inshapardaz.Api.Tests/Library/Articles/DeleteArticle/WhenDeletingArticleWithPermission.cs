@@ -80,7 +80,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticle
         [Test]
         public void ShouldBeDeletedFromTheRecentReadArticles()
         {
-            ArticleAssert.ShouldHaveDeletedBookFromRecentReads(_expected.Id, DatabaseConnection);
+            ArticleAssert.ShouldHaveDeletedArticleFromRecentReads(_expected.Id, DatabaseConnection);
         }
     }
 }

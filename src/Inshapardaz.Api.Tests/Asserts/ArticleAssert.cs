@@ -5,12 +5,14 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Repositories;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Asserts
 {
@@ -145,9 +147,39 @@ namespace Inshapardaz.Api.Tests.Asserts
             dbConnection.DoesArticleExistsInFavorites(articleId, accountId).Should().BeFalse();
         }
 
-        internal static void ShouldHaveDeletedBookFromRecentReads(long articleId, IDbConnection dbConnection)
+        internal static void ShouldHaveDeletedArticleFromRecentReads(long articleId, IDbConnection dbConnection)
         {
             dbConnection.DoesArticleExistsInRecent(articleId).Should().BeFalse();
+        }
+
+        internal static void ShouldHaveDeletedArticleImage(long articleId, IDbConnection databaseConnection)
+        {
+            var image = databaseConnection.GetArticleImage(articleId);
+            image.Should().BeNull();
+        }
+
+        internal static void ShouldNotHaveUpdatedArticleImage(long articleId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetArticleImageUrl(articleId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().Equal(oldImage);
+        }
+
+        internal static void ShouldHaveAddedArticleImage(long articleId, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetArticleImageUrl(articleId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().NotBeNullOrEmpty();
+        }
+
+        internal static void ShouldHaveUpdatedArticleImage(long articleId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        {
+            var imageUrl = dbConnection.GetArticleImageUrl(articleId);
+            imageUrl.Should().NotBeNull();
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            image.Should().NotBeNull().And.Equal(newImage);
         }
 
         internal ArticleAssert ShouldHaveSelfLink()
@@ -313,6 +345,19 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _article.Link(RelTypes.RemoveFavorite).Should().BeNull();
             return this;
+        }
+
+        internal ArticleAssert ShouldHaveCorrectImageLocationHeader(long articleId)
+        {
+            _response.Headers.Location.AbsoluteUri.Should().NotBeEmpty();
+            return this;
+        }
+
+        internal static void ShouldHavePublicImage(long articleId, IDbConnection dbConnection)
+        {
+            var image = dbConnection.GetArticleImage(articleId);
+            image.Should().NotBeNull();
+            image.IsPublic.Should().BeTrue();
         }
 
         public ArticleAssert ShouldHaveContents(List<ArticleContentDto> articles, bool withEditableLinks = false)

@@ -69,7 +69,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [Test]
-        public void ShouldReturnExpectedBooks()
+        public void ShouldReturnExpectedArticles()
         {
             _assert.ShouldHaveNoData();
         }

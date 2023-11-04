@@ -121,5 +121,22 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             {
                 ArticleId = articleId
             });
+
+        public static string GetArticleImageUrl(this IDbConnection connection, long articleId)
+        {
+            var sql = @"SELECT f.FilePath FROM [File] f
+                        INNER JOIN Article a ON f.Id = a.ImageId
+                        WHERE a.Id = @Id";
+            return connection.QuerySingleOrDefault<string>(sql, new { Id = articleId });
+        }
+
+        public static FileDto GetArticleImage(this IDbConnection connection, long articleId)
+        {
+            var sql = @"Select f.* from [File] f
+                        Inner Join Article a ON f.Id = a.ImageId
+                        Where a.Id = @Id";
+            return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = articleId });
+        }
+
     }
 }

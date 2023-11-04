@@ -70,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [Test]
-        public void ShouldReturnExpectedBooks()
+        public void ShouldReturnExpectedArticles()
         {
             var expectedItems = ArticleBuilder.Articles.OrderBy(a => a.Title).Take(10).ToArray();
             _assert.Data.Count().Should().Be(expectedItems.Length);

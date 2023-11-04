@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;

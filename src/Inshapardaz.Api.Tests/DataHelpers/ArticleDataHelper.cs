@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             return connection.QuerySingleOrDefault<IssueArticleContentDto>(@"select ac.*
                     FROM Article a
                     LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
-                    WHERE a.articleId = @ArticleId
+                    WHERE a.Id = @ArticleId
                     AND ac.Language = @Language",
                 new
                 {

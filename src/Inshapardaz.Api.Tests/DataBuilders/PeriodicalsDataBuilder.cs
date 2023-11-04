@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -7,17 +6,15 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
-using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Database.SqlServer;
 using RandomData = Inshapardaz.Api.Tests.Helpers.RandomData;
-using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Bogus;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
-    
+
     public class PeriodicalsDataBuilder
     {
         private readonly IDbConnection _connection;

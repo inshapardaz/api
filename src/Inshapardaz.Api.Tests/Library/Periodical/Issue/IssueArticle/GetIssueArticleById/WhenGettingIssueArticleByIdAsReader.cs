@@ -3,7 +3,6 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 

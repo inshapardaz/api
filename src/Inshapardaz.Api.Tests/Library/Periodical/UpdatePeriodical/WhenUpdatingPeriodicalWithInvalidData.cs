@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bogus;
-using FluentAssertions;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataBuilders;
-using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;

@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
     {
         private HttpResponseMessage _response;
         private IssueArticleDto _article;
-        private ArticleContentAssert _assert;
+        private IssueArticleContentAssert _assert;
 
         public WhenAddingIssueArticleContentsWithoutLanguage()
             : base(Role.Writer)
@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
             _article = RandomData.PickRandom(articles);
 
             _response = await Client.PostString($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_article.SequenceNumber}/contents", RandomData.String, null);
-            _assert = new ArticleContentAssert(_response, Library, issue);
+            _assert = new IssueArticleContentAssert(_response, Library, issue);
         }
 
         [OneTimeTearDown]

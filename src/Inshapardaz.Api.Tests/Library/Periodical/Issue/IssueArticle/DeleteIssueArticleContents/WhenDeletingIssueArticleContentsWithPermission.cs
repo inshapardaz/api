@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssu
         [Test]
         public void ShouldHaveDeletedArticleContent()
         {
-            ArticleContentAssert.ShouldHaveDeletedContent(DatabaseConnection, _issue, _article, _content);
+            IssueArticleContentAssert.ShouldHaveDeletedContent(DatabaseConnection, _issue, _article, _content);
         }
     }
 }

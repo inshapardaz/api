@@ -4,7 +4,6 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 

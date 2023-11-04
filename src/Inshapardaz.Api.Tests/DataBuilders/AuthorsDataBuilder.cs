@@ -8,7 +8,6 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Database.SqlServer;
 using Inshapardaz.Api.Tests.Helpers;
-using System;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.DataBuilders

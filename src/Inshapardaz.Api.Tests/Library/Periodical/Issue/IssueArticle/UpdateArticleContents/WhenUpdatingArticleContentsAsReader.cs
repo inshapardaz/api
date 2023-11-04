@@ -5,7 +5,6 @@ using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleContents

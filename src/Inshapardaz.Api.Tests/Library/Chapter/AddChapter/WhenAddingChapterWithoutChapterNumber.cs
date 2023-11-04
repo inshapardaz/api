@@ -5,7 +5,6 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter

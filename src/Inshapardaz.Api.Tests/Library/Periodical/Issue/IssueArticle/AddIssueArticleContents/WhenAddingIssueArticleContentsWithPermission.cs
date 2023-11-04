@@ -3,7 +3,6 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -18,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
         private HttpResponseMessage _response;
         private string _contents;
         private IssueArticleDto _article;
-        private ArticleContentAssert _assert;
+        private IssueArticleContentAssert _assert;
 
         public WhenAddingIssueArticleContentsWithPermission(Role role)
             : base(role)
@@ -35,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
             _contents = RandomData.String;
 
             _response = await Client.PostString($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_article.SequenceNumber}/contents", _contents, RandomData.Locale);
-            _assert = new ArticleContentAssert(_response, Library, issue);
+            _assert = new IssueArticleContentAssert(_response, Library, issue);
         }
 
         [OneTimeTearDown]

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Bibliography;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
@@ -10,6 +12,8 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Article;
+using Inshapardaz.Domain.Ports.Handlers.Library.Book;
+using Inshapardaz.Domain.Ports.Handlers.Library.Book.Chapter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -211,6 +215,24 @@ namespace Inshapardaz.Api.Controllers
             }
 
             return new NotFoundResult();
+        }
+
+        [HttpPost("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(CreateArticleContent))]
+        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
+        public async Task<IActionResult> CreateArticleContent(int libraryId, long articleId, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
+        {
+            var contentLanguage = Request.Headers["Content-Language"];
+
+            var request = new AddArticleContentRequest(libraryId, articleId, content, language ?? contentLanguage);
+            await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+            if (request.Result != null)
+            {
+                var renderResult = _articleRenderer.Render(request.Result, libraryId, articleId);
+                return new CreatedResult(renderResult.Links.Self(), renderResult);
+            }
+
+            return new BadRequestResult();
         }
 
         [HttpPut("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.UpdateArticleContent))]

@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
@@ -60,9 +61,17 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             return await GetArticleById(libraryId, id, accountId, cancellationToken);
         }
 
-        public Task<ArticleContentModel> AddArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken)
+        public async Task<ArticleContentModel> AddArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"Insert Into ArticleContent (ArticleId, Language, Text)
+                            Values (@ArticleId, @Language, @Text)";
+                var command = new CommandDefinition(sql, new { ArticleId = articleId, Language = language, Text = content }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+
+                return await GetArticleContent(libraryId, articleId, language, cancellationToken);
+            }
         }
 
         public async Task DeleteArticle(int libraryId, long articleId, CancellationToken cancellationToken)
@@ -75,9 +84,24 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public Task DeleteArticleContent(int libraryId, long articleId, string language, CancellationToken cancellationToken)
+        public async Task DeleteArticleContent(int libraryId, long articleId, string language, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"DELETE ac 
+                            FROM ArticleContent ac
+                            INNER JOIN Article a ON a.Id = ac.ArticleId
+                            WHERE a.Id= @ArticleId
+                                AND a.LibraryId = @LibraryId 
+                                AND ac.Language = @Language";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    ArticleId = articleId,
+                    Language = language
+                }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
         }
 
         public Task<ArticleModel> GetArticle(int libraryId, long articleId, CancellationToken cancellationToken)
@@ -92,7 +116,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"SELECT ac.*
                             FROM ArticleContent ac
                             INNER JOIN Article a ON a.Id = ac.ArticleId
-                            WHERE b.LibraryId = @LibraryId AND ac.ArticleId = @ArticleId AND Language = @Language";
+                            WHERE a.LibraryId = @LibraryId AND ac.ArticleId = @ArticleId AND Language = @Language";
                 var command = new CommandDefinition(sql, new { 
                     LibraryId = libraryId, 
                     ArticleId = articleId,
@@ -263,9 +287,27 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             return await GetArticleById(libraryId, articleId, null, cancellationToken);  
         }
 
-        public Task<ArticleContentModel> UpdateArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken)
+        public async Task<ArticleContentModel> UpdateArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"UPDATE ac SET Text = @Text
+                            FROM ArticleContent ac
+                            INNER JOIN Article a ON a.Id = ac.ArticleId
+                            WHERE a.Id= @ArticleId
+                                AND a.LibraryId = @LibraryId 
+                                AND ac.Language = @Language";
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    ArticleId = articleId,
+                    Language = language,
+                    Text = content
+                }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+
+                return await GetArticleContent(libraryId, articleId, language, cancellationToken);
+            }
         }
 
         public Task<ArticleModel> UpdateReviewerAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken)

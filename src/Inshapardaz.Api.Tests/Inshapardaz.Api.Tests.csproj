@@ -36,9 +36,6 @@
 
   <ItemGroup>
     <Folder Include="Library\Articles\AssignArticleToUser\" />
-    <Folder Include="Library\Articles\GetArticleContent\" />
-    <Folder Include="Library\Articles\DeleteArticleContent\" />
-    <Folder Include="Library\Articles\UpdateArticleContent\" />
     <Folder Include="Library\Articles\UpdateArticleImage\" />
   </ItemGroup>
 

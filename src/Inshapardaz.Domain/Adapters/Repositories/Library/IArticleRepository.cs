@@ -20,6 +20,7 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task DeleteArticle(int libraryId, long articleId, CancellationToken cancellationToken);
 
+        #region Content
         Task<ArticleContentModel> AddArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken);
 
         Task<ArticleContentModel> UpdateArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken);
@@ -27,7 +28,7 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
         Task<ArticleContentModel> GetArticleContent(int libraryId, long articleId, string language, CancellationToken cancellationToken);
 
         Task DeleteArticleContent(int libraryId, long articleId, string language, CancellationToken cancellationToken);
-        
+        #endregion
         Task<ArticleModel> UpdateWriterAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken);
         
         Task<ArticleModel> UpdateReviewerAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken);

@@ -11,7 +11,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
 {
     public class AddArticleContentRequest : LibraryBaseCommand
     {
-        public AddArticleContentRequest(int libraryId, int articleId, string contents, string language)
+        public AddArticleContentRequest(int libraryId, long articleId, string contents, string language)
             : base(libraryId)
         {
             ArticleId = articleId;
@@ -19,7 +19,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
             Language = language;
         }
 
-        public int ArticleId { get; set; }
+        public long ArticleId { get; set; }
 
         public string Content { get; }
 

@@ -5,7 +5,6 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.Http;

@@ -5,7 +5,6 @@ using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticleContents
@@ -15,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         : TestBase
     {
         private HttpResponseMessage _response;
-        private ArticleContentAssert _assert;
+        private IssueArticleContentAssert _assert;
         private IssueDto _issue;
         private IssueArticleDto _article;
         private IssueArticleContentDto _content;
@@ -33,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
             _content = IssueBuilder.ArticleContents.Where(x => x.ArticleId == _article.Id).PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}/contents");
-            _assert = new ArticleContentAssert(_response, Library, _issue);
+            _assert = new IssueArticleContentAssert(_response, Library, _issue);
         }
 
         [OneTimeTearDown]

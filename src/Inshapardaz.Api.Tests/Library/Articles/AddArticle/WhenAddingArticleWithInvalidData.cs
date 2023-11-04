@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Bogus;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataBuilders;
 using Inshapardaz.Api.Tests.Helpers;

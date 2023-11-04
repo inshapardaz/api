@@ -6,7 +6,6 @@ using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters;
-using System;
 using System.Data;
 using System.Net.Http;
 using System.Threading;

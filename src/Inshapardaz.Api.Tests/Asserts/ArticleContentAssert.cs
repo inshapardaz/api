@@ -98,11 +98,12 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, IDbConnection dbConnection)
+        internal ArticleContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, string newLayout, IDbConnection dbConnection)
         {
             var content = dbConnection.GetArticleContent(_articleContent.ArticleId, _articleContent.Language);
             content.Text.Should().NotBeNull().Should().NotBe(expected);
             content.Language.Should().Be(language);
+            content.Layout.Should().Be(newLayout);
             return this;
         }
 
@@ -114,6 +115,8 @@ namespace Inshapardaz.Api.Tests.Asserts
             dbArticle.Should().NotBeNull();
             _articleContent.ArticleId.Should().Be(dbContent.ArticleId);
             _articleContent.Language.Should().Be(dbContent.Language);
+            _articleContent.Layout.Should().Be(dbContent.Layout);
+            _articleContent.Text.Should().Be(dbContent.Text);
 
             return this;
         }
@@ -146,6 +149,8 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _articleContent.ArticleId.Should().Be(article.Id);
             _articleContent.Language.Should().Be(content.Language);
+            _articleContent.Layout.Should().Be(content.Layout);
+            _articleContent.Text.Should().Be(content.Text);
 
             return this;
         }

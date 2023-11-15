@@ -11,19 +11,12 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
 {
     public class AddArticleContentRequest : LibraryBaseCommand
     {
-        public AddArticleContentRequest(int libraryId, long articleId, string contents, string language)
+        public AddArticleContentRequest(int libraryId)
             : base(libraryId)
         {
-            ArticleId = articleId;
-            Content = contents;
-            Language = language;
         }
 
-        public long ArticleId { get; set; }
-
-        public string Content { get; }
-
-        public string Language { get; set; }
+        public ArticleContentModel Content { get; set; }
 
         public ArticleContentModel Result { get; set; }
     }
@@ -45,7 +38,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
 
         public override async Task<AddArticleContentRequest> HandleAsync(AddArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (string.IsNullOrWhiteSpace(command.Language))
+            if (string.IsNullOrWhiteSpace(command.Content.Language))
             {
                 var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
                 if (library == null)
@@ -53,17 +46,15 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
                     throw new BadRequestException();
                 }
 
-                command.Language = library.Language;
+                command.Content.Language = library.Language;
             }
 
-            var article = await _articleRepository.GetArticle(command.LibraryId, command.ArticleId, cancellationToken);
+            var article = await _articleRepository.GetArticle(command.LibraryId, command.Content.ArticleId, cancellationToken);
 
             if (article != null)
             {
                 command.Result = await _articleRepository.AddArticleContent(
                     command.LibraryId,
-                    command.ArticleId,
-                    command.Language,
                     command.Content,
                     cancellationToken);
             }

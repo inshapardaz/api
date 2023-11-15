@@ -13,15 +13,13 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
 {
     public class UpdateArticleRequest : LibraryBaseCommand
     {
-        public UpdateArticleRequest(int libraryId, int articleId, ArticleModel article)
+        public UpdateArticleRequest(int libraryId, ArticleModel article)
             : base(libraryId)
         {
-            ArticleId = articleId;
             Article = article;
         }
 
         public RequestResult Result { get; set; } = new RequestResult();
-        public int ArticleId { get; }
         public ArticleModel Article { get; }
         public int? AccountId { get; set; }
 
@@ -75,7 +73,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
             }
 
 
-            var result = await _articleRepository.GetArticle(command.LibraryId, command.ArticleId, cancellationToken);
+            var result = await _articleRepository.GetArticle(command.LibraryId, command.Article.Id, cancellationToken);
 
             if (result == null)
             {
@@ -86,7 +84,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
             }
             else
             {
-                command.Result.Article = await _articleRepository.UpdateArticle(command.LibraryId, command.ArticleId, command.Article, cancellationToken);
+                command.Result.Article = await _articleRepository.UpdateArticle(command.LibraryId, command.Article, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

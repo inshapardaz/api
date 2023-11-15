@@ -13,6 +13,7 @@
         public string ImageUrl { get; set; }
 
         public int BookCount { get; set; }
+        public int ArticleCount { get; set; }
 
         public AuthorTypes AuthorType { get; set; }
     }

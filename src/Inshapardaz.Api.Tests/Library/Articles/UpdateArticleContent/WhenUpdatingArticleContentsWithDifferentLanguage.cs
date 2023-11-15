@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
         private ArticleContentDto _content;
         private ArticleContentAssert _assert;
 
-        private string _newContents;
+        private string _newContents, _newLayout, _newLanguge;
 
         public WhenUpdatingArticleContentsWithDifferentLanguage()
             : base(Role.Writer)
@@ -28,12 +29,20 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _article = ArticleBuilder.WithLibrary(LibraryId).IsPublic().WithContent().Build();
+            _article = ArticleBuilder.WithLibrary(LibraryId).IsPublic().WithContent().WithContentLanguage("de").Build();
             _content = ArticleBuilder.Contents.Single(x => x.ArticleId == _article.Id);
 
             _newContents = RandomData.String;
+            _newLayout = RandomData.String;
+            _newLanguge = "en";
 
-            _response = await Client.PutString($"/libraries/{LibraryId}/articles/{_article.Id}/contents?language={_content.Language}1", _newContents);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/articles/{_article.Id}/contents",
+                new ArticleContentView
+                {
+                    Text = _newContents,
+                    Language = _newLanguge,
+                    Layout = _newLayout
+                });
             _assert = new ArticleContentAssert(_response, LibraryId);
         }
 
@@ -67,7 +76,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
         [Test]
         public void ShouldHaveCreatedCorrectContents()
         {
-            _assert.ShouldHaveMatechingTextForLanguage(_newContents, _content.Language + "1", DatabaseConnection);
+            _assert.ShouldHaveMatechingTextForLanguage(_newContents, _newLanguge, _newLayout, DatabaseConnection);
         }
 
         [Test]

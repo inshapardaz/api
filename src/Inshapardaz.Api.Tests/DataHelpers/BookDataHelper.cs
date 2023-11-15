@@ -75,7 +75,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             var sql = @"SELECT Count(*)
                                 FROM Book b
                                 INNER JOIN BookAuthor ba ON ba.BookId = b.Id
-                                WHERE ba.AuthorId = @Id  AND b.Status = 0";
+                                WHERE ba.AuthorId = @Id";
             return connection.ExecuteScalar<int>(sql, new { Id = id });
         }
 

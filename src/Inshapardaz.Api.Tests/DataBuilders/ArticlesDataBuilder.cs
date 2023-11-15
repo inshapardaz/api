@@ -288,6 +288,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                         ArticleId = article.Id,
                         Language = _language ?? RandomData.NextLocale(),
                         Text = RandomData.Words(100),
+                        Layout = RandomData.String
                     }).ToList();
                     contents.ForEach(f => {
                         f.Id = _connection.AddArticleContents(f);

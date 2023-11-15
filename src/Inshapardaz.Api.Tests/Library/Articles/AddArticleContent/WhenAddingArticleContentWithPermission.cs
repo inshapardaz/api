@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
@@ -14,9 +15,8 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleContent
         : TestBase
     {
         private HttpResponseMessage _response;
-        private string _locale;
+        private string _locale, _contents, _layout;
         private ArticleContentAssert _assert;
-        private string _contents;
 
         public WhenAddingArticleContentWithPermission(Role role)
             : base(role)
@@ -30,8 +30,15 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleContent
 
             var article = ArticleBuilder.WithLibrary(LibraryId).Build();
             _contents = RandomData.Text;
+            _layout = RandomData.String;
 
-            _response = await Client.PostString($"/libraries/{LibraryId}/articles/{article.Id}/contents", _contents, _locale);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/articles/{article.Id}/contents",
+                new ArticleContentView
+                {
+                    Text = _contents,
+                    Language = _locale,
+                    Layout = _layout
+                });
 
             _assert = new ArticleContentAssert(_response, LibraryId);
         }

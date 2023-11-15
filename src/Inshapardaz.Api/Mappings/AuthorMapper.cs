@@ -13,6 +13,7 @@ namespace Inshapardaz.Api.Mappings
                 Name = source.Name,
                 Description = source.Description,
                 BookCount = source.BookCount,
+                ArticleCount = source.ArticleCount,
                 AuthorType = source.AuthorType.ToDescription()
             };
 

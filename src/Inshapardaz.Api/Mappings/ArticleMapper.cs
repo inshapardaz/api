@@ -54,7 +54,8 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 ArticleId = source.ArticleId,
                 Language = source.Language,
-                Text = source.Text
+                Text = source.Text,
+                Layout = source.Layout
             };
 
         public static ArticleContentModel Map(this ArticleContentView source)
@@ -63,7 +64,8 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 ArticleId = source.ArticleId,
                 Language = source.Language,
-                Text = source.Text
+                Text = source.Text,
+                Layout = source.Layout
             };
     }
 }

@@ -61,16 +61,16 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             return await GetArticleById(libraryId, id, accountId, cancellationToken);
         }
 
-        public async Task<ArticleContentModel> AddArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken)
+        public async Task<ArticleContentModel> AddArticleContent(int libraryId, ArticleContentModel content, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"Insert Into ArticleContent (ArticleId, Language, Text)
-                            Values (@ArticleId, @Language, @Text)";
-                var command = new CommandDefinition(sql, new { ArticleId = articleId, Language = language, Text = content }, cancellationToken: cancellationToken);
+                var sql = @"Insert Into ArticleContent (ArticleId, Language, Text, Layout)
+                            Values (@ArticleId, @Language, @Text, @Layout)";
+                var command = new CommandDefinition(sql, content, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
 
-                return await GetArticleContent(libraryId, articleId, language, cancellationToken);
+                return await GetArticleContent(libraryId, content.ArticleId, content.Language, cancellationToken);
             }
         }
 
@@ -221,7 +221,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<ArticleModel> UpdateArticle(int libraryId, long articleId, ArticleModel article, CancellationToken cancellationToken)
+        public async Task<ArticleModel> UpdateArticle(int libraryId, ArticleModel article, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
@@ -284,14 +284,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 }
             }
 
-            return await GetArticleById(libraryId, articleId, null, cancellationToken);  
+            return await GetArticleById(libraryId, article.Id, null, cancellationToken);  
         }
 
-        public async Task<ArticleContentModel> UpdateArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken)
+        public async Task<ArticleContentModel> UpdateArticleContent(int libraryId, ArticleContentModel content, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"UPDATE ac SET Text = @Text
+                var sql = @"UPDATE ac SET Text = @Text, Layout = @Layout
                             FROM ArticleContent ac
                             INNER JOIN Article a ON a.Id = ac.ArticleId
                             WHERE a.Id= @ArticleId
@@ -300,13 +300,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var command = new CommandDefinition(sql, new
                 {
                     LibraryId = libraryId,
-                    ArticleId = articleId,
-                    Language = language,
-                    Text = content
+                    ArticleId = content.ArticleId,
+                    Language = content.Language,
+                    Text = content.Text,
+                    Layout = content.Layout
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
 
-                return await GetArticleContent(libraryId, articleId, language, cancellationToken);
+                return await GetArticleContent(libraryId, content.ArticleId, content.Language, cancellationToken);
             }
         }
 

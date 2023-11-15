@@ -142,7 +142,9 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new UpdateArticleRequest(libraryId, articleId, article.Map())
+            var articleToUpdate = article.Map();
+            articleToUpdate.Id = articleId;
+            var request = new UpdateArticleRequest(libraryId, articleToUpdate)
             {
                 AccountId = _userHelper.Account.Id
             };
@@ -219,11 +221,15 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(CreateArticleContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> CreateArticleContent(int libraryId, long articleId, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateArticleContent(int libraryId, long articleId, [FromBody] ArticleContentView content, CancellationToken token = default(CancellationToken))
         {
-            var contentLanguage = Request.Headers["Content-Language"];
+            var contentPayload = content.Map();
+            contentPayload.ArticleId = articleId;
 
-            var request = new AddArticleContentRequest(libraryId, articleId, content, language ?? contentLanguage);
+            var request = new AddArticleContentRequest(libraryId)
+            {
+                Content = contentPayload
+            };
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             if (request.Result != null)
@@ -237,11 +243,15 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPut("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.UpdateArticleContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateArticleContent(int libraryId, int articleId, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateArticleContent(int libraryId, int articleId, [FromBody] ArticleContentView content, CancellationToken token = default(CancellationToken))
         {
-            var parsedLanguage = Request.Headers["Content-Language"];
+            var contentPayload = content.Map();
+            contentPayload.ArticleId = articleId;
 
-            var request = new UpdateArticleContentRequest(libraryId, articleId, content, language ?? parsedLanguage);
+            var request = new UpdateArticleContentRequest(libraryId)
+            {
+                Content = contentPayload
+            };
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _articleRenderer.Render(request.Result.Content, libraryId, articleId);

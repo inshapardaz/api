@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -17,7 +18,13 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleContent
         {
             var article = ArticleBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.PostString($"/libraries/{LibraryId}/articles/{article.Id}/contents", RandomData.Text, "hi");
+            _response = await Client.PostObject($"/libraries/{LibraryId}/articles/{article.Id}/contents",
+                new ArticleContentView
+                {
+                    Text = RandomData.Text,
+                    Language = "hi",
+                    Layout = RandomData.String
+                });
         }
 
         [OneTimeTearDown]

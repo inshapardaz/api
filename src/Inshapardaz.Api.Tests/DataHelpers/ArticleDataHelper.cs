@@ -45,9 +45,9 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             connection.Execute(sql, new { ArticleId = articleId, AuthorId = authorId });
         }
 
-        public static IssueArticleContentDto GetArticleContent(this IDbConnection connection, long articleId, string language)
+        public static ArticleContentDto GetArticleContent(this IDbConnection connection, long articleId, string language)
         {
-            return connection.QuerySingleOrDefault<IssueArticleContentDto>(@"select ac.*
+            return connection.QuerySingleOrDefault<ArticleContentDto>(@"select ac.*
                     FROM Article a
                     LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
                     WHERE a.Id = @ArticleId
@@ -77,9 +77,9 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static int AddArticleContents(this IDbConnection connection, ArticleContentDto content)
         {
-            var sql = @"INSERT INTO ArticleContent (ArticleId, Language, Text)
+            var sql = @"INSERT INTO ArticleContent (ArticleId, Language, Text, Layout)
                 OUTPUT Inserted.ID
-                VALUES (@ArticleId, @Language, @Text)";
+                VALUES (@ArticleId, @Language, @Text, @Layout)";
             return connection.ExecuteScalar<int>(sql, content);
         }
         public static void AddArticlesToFavorites(this IDbConnection connection, int libraryId, IEnumerable<long> articleIds, int accountId)
@@ -136,6 +136,12 @@ namespace Inshapardaz.Api.Tests.DataHelpers
                         Inner Join Article a ON f.Id = a.ImageId
                         Where a.Id = @Id";
             return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = articleId });
+        }
+
+        public static int GetArticleCountByAuthor(this IDbConnection connection, int id)
+        {
+            var sql = @"SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = @Id";
+            return connection.ExecuteScalar<int>(sql, new { Id = id });
         }
 
     }

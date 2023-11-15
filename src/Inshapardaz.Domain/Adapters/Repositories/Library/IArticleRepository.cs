@@ -14,16 +14,16 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task<ArticleModel> AddArticle(int libraryId, ArticleModel article, int? accountId, CancellationToken cancellationToken);
 
-        Task<ArticleModel> UpdateArticle(int libraryId, long articleId, ArticleModel article, CancellationToken cancellationToken);
+        Task<ArticleModel> UpdateArticle(int libraryId, ArticleModel article, CancellationToken cancellationToken);
 
         Task<IEnumerable<ArticleContentModel>> GetArticleContents(int libraryId, long articleId, CancellationToken cancellationToken);
 
         Task DeleteArticle(int libraryId, long articleId, CancellationToken cancellationToken);
 
         #region Content
-        Task<ArticleContentModel> AddArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken);
+        Task<ArticleContentModel> AddArticleContent(int libraryId, ArticleContentModel content, CancellationToken cancellationToken);
 
-        Task<ArticleContentModel> UpdateArticleContent(int libraryId, long articleId, string language, string content, CancellationToken cancellationToken);
+        Task<ArticleContentModel> UpdateArticleContent(int libraryId, ArticleContentModel content, CancellationToken cancellationToken);
 
         Task<ArticleContentModel> GetArticleContent(int libraryId, long articleId, string language, CancellationToken cancellationToken);
 

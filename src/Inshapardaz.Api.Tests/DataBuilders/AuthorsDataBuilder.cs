@@ -122,6 +122,10 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                                 .With(b => b.IsPublic, true)
                                 .With(b => b.LastModified, RandomData.Date)
                                 .With(b => b.Status, EditingStatus.Completed)
+                                .Without(b => b.WriterAccountId)
+                                .Without(b => b.WriterAssignTimeStamp)
+                                .Without(b => b.ReviewerAccountId)
+                                .Without(b => b.ReviewerAssignTimeStamp)
                                 .CreateMany(_articleCount);
 
                 _connection.AddArticles(articles);

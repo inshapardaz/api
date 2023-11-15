@@ -11,17 +11,13 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
 {
     public class UpdateArticleContentRequest : LibraryBaseCommand
     {
-        public UpdateArticleContentRequest(int libraryId, int articleId, string content, string language)
+        public UpdateArticleContentRequest(int libraryId)
             : base(libraryId)
         {
-            ArticleId = articleId;
-            Content = content;
-            Language = language;
         }
 
-        public int ArticleId { get; }
-        public string Language { get; set; }
-        public string Content { get; set; }
+        public ArticleContentModel Content { get; set; }
+
 
         public RequestResult Result { get; set; } = new RequestResult();
 
@@ -36,29 +32,24 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
     public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateArticleContentRequest>
     {
         private readonly IArticleRepository _articleRepository;
-        private readonly IFileStorage _fileStorage;
-        private readonly IFileRepository _fileRepository;
         private readonly ILibraryRepository _libraryRepository;
 
-        public UpdateArticleContentRequestHandler(IArticleRepository articleRepository, IFileStorage fileStorage,
-                                                  IFileRepository fileRepository, ILibraryRepository libraryRepository)
+        public UpdateArticleContentRequestHandler(IArticleRepository articleRepository, ILibraryRepository libraryRepository)
         {
             _articleRepository = articleRepository;
-            _fileStorage = fileStorage;
-            _fileRepository = fileRepository;
             _libraryRepository = libraryRepository;
         }
 
         public override async Task<UpdateArticleContentRequest> HandleAsync(UpdateArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var article = await _articleRepository.GetArticle(command.LibraryId, command.ArticleId, cancellationToken);
+            var article = await _articleRepository.GetArticle(command.LibraryId, command.Content.ArticleId, cancellationToken);
 
             if (article == null)
             {
                 throw new BadRequestException();
             }
 
-            if (string.IsNullOrWhiteSpace(command.Language))
+            if (string.IsNullOrWhiteSpace(command.Content.Language))
             {
                 var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
                 if (library == null)
@@ -66,17 +57,15 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
                     throw new BadRequestException();
                 }
 
-                command.Language = library.Language;
+                command.Content.Language = library.Language;
             }
 
-            var content = await _articleRepository.GetArticleContent(command.LibraryId, command.ArticleId, command.Language, cancellationToken);
+            var content = await _articleRepository.GetArticleContent(command.LibraryId, command.Content.ArticleId, command.Content.Language, cancellationToken);
 
             if (content == null)
             {
                 command.Result.Content = await _articleRepository.AddArticleContent(
                     command.LibraryId,
-                    command.ArticleId,
-                    command.Language,
                     command.Content,
                     cancellationToken);
                 command.Result.HasAddedNew = true;
@@ -84,8 +73,6 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
             else
             {
                 command.Result.Content = await _articleRepository.UpdateArticleContent(command.LibraryId,
-                                                        command.ArticleId,
-                                                        command.Language,
                                                         command.Content,
                                                         cancellationToken);
             }

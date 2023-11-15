@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
         [OneTimeSetUp]
         public async Task Setup()
         {
-            AuthorBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
+            AuthorBuilder.WithLibrary(LibraryId).WithBooks(3).WithArticles(5).Build(4);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/authors?pageNumber={1}&pageSize={10}");
             _assert = new PagingAssert<AuthorView>(_response);

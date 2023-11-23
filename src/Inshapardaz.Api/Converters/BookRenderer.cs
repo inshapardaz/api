@@ -358,7 +358,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Self,
                     Language = source.Language,
                     MimeType = source.MimeType,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, contentId = source.Id }
                 }),
                 _linkRenderer.Render(new Link {
                     ActionName = nameof(BookController.GetBookById),
@@ -402,7 +402,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Update,
                     Language = source.Language,
                     MimeType = source.MimeType,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, contentId = source.Id }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -412,7 +412,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Delete,
                     Language = source.Language,
                     MimeType = source.MimeType,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, contentId = source.Id }
                 }));
             }
 

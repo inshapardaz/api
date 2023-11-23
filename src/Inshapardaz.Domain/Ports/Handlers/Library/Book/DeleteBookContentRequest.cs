@@ -8,15 +8,13 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
 {
     public class DeleteBookContentRequest : BookRequest
     {
-        public DeleteBookContentRequest(int libraryId, int bookId, string language, string mimeType)
+        public DeleteBookContentRequest(int libraryId, int bookId, int contentId)
             : base(libraryId, bookId)
         {
-            Language = language;
-            MimeType = mimeType;
+            ContentId = contentId;
         }
 
-        public string Language { get; }
-        public string MimeType { get; }
+        public int ContentId { get; }
     }
 
     public class DeleteBookContentRequestHandler : RequestHandlerAsync<DeleteBookContentRequest>
@@ -34,11 +32,11 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
 
         public override async Task<DeleteBookContentRequest> HandleAsync(DeleteBookContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);
+            var content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
             if (content != null)
             {
                 await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
-                await _bookRepository.DeleteBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);
+                await _bookRepository.DeleteBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
                 await _fileRepository.DeleteFile(content.FileId, cancellationToken);
             }
 

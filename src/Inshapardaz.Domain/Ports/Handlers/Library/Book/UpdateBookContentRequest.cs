@@ -14,17 +14,18 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
 {
     public class UpdateBookContentRequest : LibraryBaseCommand
     {
-        public UpdateBookContentRequest(int libraryId, int bookId, string language, string mimeType, int? accountId)
+        public UpdateBookContentRequest(int libraryId, int bookId, int contentId, string language, string mimeType, int? accountId)
             : base(libraryId)
         {
             BookId = bookId;
+            ContentId = contentId;
             Language = language;
             MimeType = mimeType;
             AccountId = accountId;
         }
 
         public int BookId { get; }
-
+        public int ContentId { get; }
         public string Language { get; }
         public string MimeType { get; }
         public int? AccountId { get; }
@@ -58,7 +59,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
             var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.AccountId, cancellationToken);
             if (book != null)
             {
-                var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken);
+                var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
                 if (bookContent != null)
                 {
                     if (!string.IsNullOrWhiteSpace(bookContent.ContentUrl))
@@ -68,8 +69,9 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
 
                     var url = await StoreFile(command.BookId, command.Content.FileName, command.Content.Contents, cancellationToken);
                     bookContent.ContentUrl = url;
-                    await _bookRepository.UpdateBookContentUrl(command.LibraryId,
+                    await _bookRepository.UpdateBookContent(command.LibraryId,
                                                             command.BookId,
+                                                            command.ContentId,
                                                             command.Language,
                                                             command.MimeType,
                                                             url, cancellationToken);
@@ -82,10 +84,10 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
                     command.Content.FilePath = url;
                     command.Content.IsPublic = book.IsPublic;
                     var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-                    await _bookRepository.AddBookContent(command.BookId, file.Id, command.Language, command.MimeType, cancellationToken);
+                    var contentId = await _bookRepository.AddBookContent(command.BookId, file.Id, command.Language, command.MimeType, cancellationToken);
 
                     command.Result.HasAddedNew = true;
-                    command.Result.Content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.Language, command.MimeType, cancellationToken); ;
+                    command.Result.Content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, contentId, cancellationToken); ;
                 }
             }
 

@@ -240,9 +240,9 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpPut("libraries/{libraryId}/books/{bookId}/contents", Name = nameof(BookController.UpdateBookContent))]
+        [HttpPut("libraries/{libraryId}/books/{bookId}/contents/{contentId}", Name = nameof(BookController.UpdateBookContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateBookContent(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateBookContent(int libraryId, int bookId, int contentId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
             using (var stream = new MemoryStream(content))
@@ -252,7 +252,7 @@ namespace Inshapardaz.Api.Controllers
             var language = Request.Headers["Accept-Language"];
             var mimeType = file.ContentType;
 
-            var request = new UpdateBookContentRequest(libraryId, bookId, language, mimeType, _userHelper.Account?.Id)
+            var request = new UpdateBookContentRequest(libraryId, bookId, contentId, language, mimeType, _userHelper.Account?.Id)
             {
                 Content = new FileModel
                 {
@@ -282,14 +282,11 @@ namespace Inshapardaz.Api.Controllers
             return new BadRequestResult();
         }
 
-        [HttpDelete("libraries/{libraryId}/books/{bookId}/contents", Name = nameof(BookController.DeleteBookContent))]
+        [HttpDelete("libraries/{libraryId}/books/{bookId}/contents/{contentId}", Name = nameof(BookController.DeleteBookContent))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> DeleteBookContent(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> DeleteBookContent(int libraryId, int bookId, int contentId, CancellationToken token = default(CancellationToken))
         {
-            var mimeType = Request.Headers["Accept"];
-            var language = Request.Headers["Accept-Language"];
-
-            var request = new DeleteBookContentRequest(libraryId, bookId, language, mimeType);
+            var request = new DeleteBookContentRequest(libraryId, bookId, contentId);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
             return new NoContentResult();
         }

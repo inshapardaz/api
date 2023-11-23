@@ -65,7 +65,8 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 BookId = source.BookId,
                 Language = source.Language,
-                MimeType = source.MimeType
+                MimeType = source.MimeType,
+                FileName = source.FileName,
             };
 
         public static BookContentModel Map(this BookContentView source)

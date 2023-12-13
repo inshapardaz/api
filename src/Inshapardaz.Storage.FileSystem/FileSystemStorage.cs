@@ -40,7 +40,7 @@ namespace Inshapardaz.Storage.FileSystem
             var path = GetFullPath(name);
             new FileInfo(path).Directory.FullName.CreateIfDirectoryDoesNotExists();
             await File.WriteAllBytesAsync(path, content);
-            return path;
+            return name;
         }
 
         public async Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
@@ -48,7 +48,7 @@ namespace Inshapardaz.Storage.FileSystem
             var path = GetFullPath(name);
             new FileInfo(path).Directory.FullName.CreateIfDirectoryDoesNotExists();
             await File.WriteAllBytesAsync(path, content);
-            return path;
+            return name;
         }
 
         public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
@@ -56,7 +56,7 @@ namespace Inshapardaz.Storage.FileSystem
             var path = GetFullPath(name);
             new FileInfo(path).Directory.FullName.CreateIfDirectoryDoesNotExists();
             await File.WriteAllTextAsync(path, content);
-            return path;
+            return name;
         }
 
         public Task DeleteFile(string filePath, CancellationToken cancellationToken)

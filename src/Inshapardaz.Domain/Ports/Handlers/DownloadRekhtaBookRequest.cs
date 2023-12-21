@@ -287,7 +287,7 @@ namespace Inshapardaz.Domain.Models
             };
             await _commandProcessor.SendAsync(cmdAddBookContent, cancellationToken: cancellationToken);
 
-            var amdAddBookPages = new UploadBookPages(_settings.DefaultLibraryId, book.Id)
+            var amdAddBookPages = new UploadBookPagesRequest(_settings.DefaultLibraryId, book.Id)
             {
                 Files = new[] { new FileModel
                         {
@@ -313,7 +313,7 @@ namespace Inshapardaz.Domain.Models
                          FileName = Path.GetFileName(f)
                      }).ToList();
 
-            var cmd = new UploadBookPages(_settings.DefaultLibraryId, book.Id)
+            var cmd = new UploadBookPagesRequest(_settings.DefaultLibraryId, book.Id)
             {
                 Files = _files
             };

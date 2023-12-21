@@ -98,8 +98,8 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book.Page
 
         private static string GetUniqueFileName(int bookId, int sequenceNumber, string fileName)
         {
-            var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-            return $"books/{bookId}/pages/page_{sequenceNumber:0000}.{fileNameWithourExtension}";
+            var extension = Path.GetExtension(fileName).Trim('.');
+            return $"books/{bookId}/pages/page_{sequenceNumber:0000}.{extension}";
         }
     }
 }

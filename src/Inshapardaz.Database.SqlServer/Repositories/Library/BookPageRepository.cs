@@ -26,7 +26,13 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"Insert Into BookPage(BookId, SequenceNumber, Text, ImageId, ChapterId)
                             OUTPUT Inserted.Id
                             VALUES(@BookId, @SequenceNumber, @Text, @ImageId, @ChapterId);";
-                var command = new CommandDefinition(sql, new { BookId = bookId, SequenceNumber = sequenceNumber, Text = text, ImageId = imageId, ChapterId = chapterId }, cancellationToken: cancellationToken);
+                var command = new CommandDefinition(sql, new { 
+                    BookId = bookId, 
+                    SequenceNumber = sequenceNumber, 
+                    Text = text, 
+                    ImageId = imageId, 
+                    ChapterId = chapterId 
+                }, cancellationToken: cancellationToken);
                 pageId = await connection.ExecuteScalarAsync<int>(command);
             }
 

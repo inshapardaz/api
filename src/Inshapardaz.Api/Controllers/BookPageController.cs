@@ -154,7 +154,7 @@ namespace Inshapardaz.Api.Controllers
                 });
             }
 
-            var request = new UploadBookPages(libraryId, bookId)
+            var request = new UploadBookPagesRequest(libraryId, bookId)
             {
                 Files = fileModels
             };

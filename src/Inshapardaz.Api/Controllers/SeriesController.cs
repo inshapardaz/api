@@ -137,7 +137,7 @@ namespace Inshapardaz.Api.Controllers
 
             if (request.Result.HasAddedNew)
             {
-                var response = _fileRenderer.Render(request.Result.File);
+                var response = _fileRenderer.Render(libraryId, request.Result.File);
                 return new CreatedResult(response.Links.Self(), response);
             }
 

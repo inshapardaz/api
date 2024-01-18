@@ -5,21 +5,21 @@ namespace Inshapardaz.Domain.Models
     public enum EditingStatus
     {
         [Description("All")]
-        All = -1,
+        All = 0,
 
         [Description("Available")]
-        Available = 0,
+        Available,
 
         [Description("Typing")]
-        Typing = 1,
+        Typing,
 
         [Description("Typed")]
-        Typed = 2,
+        Typed,
 
         [Description("InReview")]
-        InReview = 3,
+        InReview,
 
         [Description("Completed")]
-        Completed = 4
+        Completed
     }
 }

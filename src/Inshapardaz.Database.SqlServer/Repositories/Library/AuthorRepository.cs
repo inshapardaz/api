@@ -65,10 +65,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
-                            (SELECT Count(*)
-                                FROM Book b
-                                INNER JOIN BookAuthor ba ON ba.BookId = b.Id
-                                WHERE ba.AuthorId = a.Id  AND b.Status = 0) AS BookCount
+                            (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
+                            (SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = a.Id) AS ArticleCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
@@ -103,10 +101,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType as AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
-                            (SELECT Count(*)
-                                FROM Book b
-                                INNER JOIN BookAuthor ba ON ba.BookId = b.Id
-                                WHERE ba.AuthorId = a.Id  AND b.Status = 0) AS BookCount
+                            (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
+                            (SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = a.Id) AS ArticleCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
@@ -124,10 +120,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
-                            (SELECT Count(*)
-                                FROM Book b
-                                INNER JOIN BookAuthor ba ON ba.BookId = b.Id
-                                WHERE ba.AuthorId = a.Id  AND b.Status = 0) AS BookCount
+                            (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
+                            (SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = a.Id) AS ArticleCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
@@ -160,10 +154,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
-                            (SELECT Count(*)
-                                FROM Book b
-                                INNER JOIN BookAuthor ba ON ba.BookId = b.Id
-                                WHERE ba.AuthorId = a.Id  AND b.Status = 0) AS BookCount
+                            (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
+                            (SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = a.Id) AS ArticleCount
                             FROM Author AS a
                             LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId

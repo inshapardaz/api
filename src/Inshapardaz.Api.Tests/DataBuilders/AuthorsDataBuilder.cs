@@ -8,6 +8,7 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Database.SqlServer;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -16,12 +17,14 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<BookDto> _books = new List<BookDto>();
         private List<FileDto> _files = new List<FileDto>();
+        private List<ArticleDto> _articles = new();
         private readonly IDbConnection _connection;
         private readonly FakeFileStorage _fileStorage;
         private int _libraryId;
         private int _bookCount;
         private bool _withImage = true;
         private string _namePattern = "";
+        private int _articleCount;
 
         internal IEnumerable<BookDto> Books => _books;
 
@@ -57,6 +60,13 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             return this;
         }
 
+
+        internal AuthorsDataBuilder WithArticles(int count)
+        {
+            _articleCount = count;
+            return this;
+        }
+
         public AuthorDto Build()
         {
             return Build(1).Single();
@@ -74,7 +84,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 if (_withImage)
                 {
                     authorImage = fixture.Build<FileDto>()
-                                         .With(a => a.FilePath, Helpers.RandomData.BlobUrl)
+                                         .With(a => a.FilePath, RandomData.BlobUrl)
                                          .With(a => a.IsPublic, true)
                                          .Create();
                     _connection.AddFile(authorImage);
@@ -86,7 +96,6 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
                 var author = fixture.Build<AuthorDto>()
                                      .With(a => a.Name, () => fixture.Create(_namePattern))
-                                     //.With(a => a.Name, Random.Name)
                                      .With(a => a.LibraryId, _libraryId)
                                      .With(a => a.ImageId, authorImage?.Id)
                                      .Create();
@@ -97,7 +106,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 var books = fixture.Build<BookDto>()
                                    .With(b => b.LibraryId, _libraryId)
                                    .With(b => b.Language, RandomData.Locale)
-                                   .With(b => b.Status, Domain.Models.BookStatuses.Published)
+                                   .With(b => b.Status, Domain.Models.StatusType.Published)
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);
@@ -106,6 +115,27 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 _connection.AddBooksAuthor(books.Select(b => b.Id), author.Id);
 
                 _books.AddRange(books);
+
+                var articles = fixture.Build<ArticleDto>()
+                                .With(b => b.LibraryId, _libraryId)
+                                .Without(b => b.ImageId)
+                                .With(b => b.IsPublic, true)
+                                .With(b => b.LastModified, RandomData.Date)
+                                .With(b => b.Status, EditingStatus.Completed)
+                                .Without(b => b.WriterAccountId)
+                                .Without(b => b.WriterAssignTimeStamp)
+                                .Without(b => b.ReviewerAccountId)
+                                .Without(b => b.ReviewerAssignTimeStamp)
+                                .CreateMany(_articleCount);
+
+                _connection.AddArticles(articles);
+
+                _articles.AddRange(articles);
+
+                foreach(var article in articles)
+                {
+                    _connection.AddArticleAuthor(article.Id, author.Id);
+                }
 
                 authors.Add(author);
             }
@@ -118,5 +148,6 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             _connection.DeleteAuthors(_authors);
             _connection.DeleteFiles(_files);
         }
+
     }
 }

@@ -46,7 +46,7 @@ namespace Inshapardaz.Api.Controllers
             [FromQuery] int? volumeNumber = null,
             [FromQuery] IssueSortByType sortBy = IssueSortByType.IssueDate,
             [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
-            [FromQuery] BookAssignmentStatus assignedFor = BookAssignmentStatus.None,
+            [FromQuery] AssignmentStatus assignedFor = AssignmentStatus.None,
             CancellationToken token = default(CancellationToken))
         {
             var filter = new IssueFilter
@@ -55,7 +55,8 @@ namespace Inshapardaz.Api.Controllers
                 VolumeNumber = volumeNumber,
                 AssignmentStatus = assignedFor
             };
-            var issuesQuery = new GetIssuesQuery(libraryId, periodicalId, pageNumber, pageSize) { 
+            var issuesQuery = new GetIssuesQuery(libraryId, periodicalId, pageNumber, pageSize)
+            {
                 Filter = filter,
                 SortBy = sortBy,
                 SortDirection = sortDirection
@@ -68,8 +69,9 @@ namespace Inshapardaz.Api.Controllers
                 var args = new PageRendererArgs<IssueModel, IssueFilter, IssueSortByType>
                 {
                     Page = result,
-                    RouteArguments = new PagedRouteArgs<IssueSortByType> { 
-                        PageNumber = pageNumber, 
+                    RouteArguments = new PagedRouteArgs<IssueSortByType>
+                    {
+                        PageNumber = pageNumber,
                         PageSize = pageSize,
                         SortBy = sortBy,
                         SortDirection = sortDirection
@@ -100,7 +102,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/issues", Name = nameof(IssueController.CreateIssue))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> CreateIssue(int libraryId, int periodicalId, [FromBody]IssueView issue, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> CreateIssue(int libraryId, int periodicalId, [FromBody] IssueView issue, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {
@@ -170,7 +172,7 @@ namespace Inshapardaz.Api.Controllers
 
             if (request.Result.HasAddedNew)
             {
-                var response = _fileRenderer.Render(request.Result.File);
+                var response = _fileRenderer.Render(libraryId, request.Result.File);
                 return new CreatedResult(response.Links.Self(), response);
             }
 

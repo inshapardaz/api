@@ -1,5 +1,4 @@
-﻿using Inshapardaz.Domain.Models;
-using System;
+﻿using System;
 
 namespace Inshapardaz.Api.Tests.Dto
 {

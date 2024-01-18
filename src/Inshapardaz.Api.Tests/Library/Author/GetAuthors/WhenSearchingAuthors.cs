@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var authors = AuthorBuilder.WithLibrary(LibraryId).WithBooks(3).WithoutImage().Build(20);
+            var authors = AuthorBuilder.WithLibrary(LibraryId).WithBooks(3).WithArticles(4).WithoutImage().Build(20);
 
             _searchedAuthor = authors.PickRandom();
 

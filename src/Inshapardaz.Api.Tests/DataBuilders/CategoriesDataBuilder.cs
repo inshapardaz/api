@@ -68,7 +68,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
                 _books = fixture.Build<BookDto>()
                                    .With(b => b.LibraryId, _libraryId)
-                                    .With(b => b.Language, RandomData.Locale)
+                                   .With(b => b.Language, RandomData.Locale)
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);

@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Converters;
@@ -10,10 +8,8 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue;
 using Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -120,7 +116,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/articles/sequence", Name = nameof(IssueArticleController.UpdateIssueArticleSequence))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> UpdateIssueArticleSequence(int libraryId, int periodicalId, int volumeNumber, int issueNumber, [FromBody] IEnumerable<ArticleSequenceView> articles, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> UpdateIssueArticleSequence(int libraryId, int periodicalId, int volumeNumber, int issueNumber, [FromBody] IEnumerable<SequenceView> articles, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {
@@ -201,7 +197,7 @@ namespace Inshapardaz.Api.Controllers
         [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/articles/{sequenceNumber}/assign", Name = nameof(IssueArticleController.AssignIssueArticleToUser))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [Produces(typeof(IssueArticleView))]
-        public async Task<IActionResult> AssignIssueArticleToUser(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, [FromBody] ChapterAssignmentView assignment, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> AssignIssueArticleToUser(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, [FromBody] AssignmentView assignment, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
             {

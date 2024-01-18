@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Helpers;
+﻿using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Repositories;
 using System;
 using System.IO;
@@ -22,14 +23,16 @@ namespace Inshapardaz.Storage.FileSystem
 
         public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
         {
-            if (!File.Exists(filePath)) { return new byte[0]; }
-            return await File.ReadAllBytesAsync(GetFullPath(filePath));
+            var fullPath = GetFullPath(filePath);
+            if (!File.Exists(fullPath)) { throw new NotFoundException(); }
+            return await File.ReadAllBytesAsync(fullPath);
         }
 
         public async Task<string> GetTextFile(string filePath, CancellationToken cancellationToken)
         {
-            if (!File.Exists(filePath)) { return string.Empty; }
-            return await File.ReadAllTextAsync(GetFullPath(filePath));
+            var fullPath = GetFullPath(filePath);
+            if (!File.Exists(fullPath)) { throw new NotFoundException(); }
+            return await File.ReadAllTextAsync(fullPath);
         }
 
         public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
@@ -37,7 +40,7 @@ namespace Inshapardaz.Storage.FileSystem
             var path = GetFullPath(name);
             new FileInfo(path).Directory.FullName.CreateIfDirectoryDoesNotExists();
             await File.WriteAllBytesAsync(path, content);
-            return path;
+            return name;
         }
 
         public async Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
@@ -45,7 +48,7 @@ namespace Inshapardaz.Storage.FileSystem
             var path = GetFullPath(name);
             new FileInfo(path).Directory.FullName.CreateIfDirectoryDoesNotExists();
             await File.WriteAllBytesAsync(path, content);
-            return path;
+            return name;
         }
 
         public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
@@ -53,7 +56,7 @@ namespace Inshapardaz.Storage.FileSystem
             var path = GetFullPath(name);
             new FileInfo(path).Directory.FullName.CreateIfDirectoryDoesNotExists();
             await File.WriteAllTextAsync(path, content);
-            return path;
+            return name;
         }
 
         public Task DeleteFile(string filePath, CancellationToken cancellationToken)

@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Bogus;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
@@ -28,7 +30,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             {
                 Title = RandomData.Name,
                 Description = RandomData.Words(10),
-                Language = RandomData.Locale
+                Language = RandomData.Locale,
+                Frequency = new Faker().PickRandom<PeriodicalFrequency>().ToDescription()
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_expected.Id}", _expected);

@@ -21,10 +21,10 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             file.Id = id;
         }
 
-        public static void DeleteFiles(this IDbConnection connection, IEnumerable<FileDto> file)
+        public static void DeleteFiles(this IDbConnection connection, IEnumerable<FileDto> files)
         {
             var sql = "Delete From [File] Where Id IN @Ids";
-            connection.Execute(sql, new { Ids = file.Select(f => f.Id) });
+            connection.Execute(sql, new { Ids = files.Select(f => f.Id) });
         }
 
         public static FileDto GetFileById(this IDbConnection connection, int fileId)

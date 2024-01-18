@@ -27,7 +27,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var direction = sortDirection == SortDirection.Descending ? "DESC" : "ASC";
 
                 var sql = @"SELECT i.*, f.FilePath as ImageUrl,
-                            (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
+                            (SELECT COUNT(*) FROM IssueArticle WHERE IssueId = i.id) As ArticleCount,
                             (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount],
                             p.*
                             FROM Issue as i
@@ -80,7 +80,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
-                            (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
+                            (SELECT COUNT(*) FROM IssueArticle WHERE IssueId = i.id) As ArticleCount,
                             (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount]
                             FROM Issue as i
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
@@ -296,7 +296,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
-                            (SELECT COUNT(*) FROM Article WHERE IssueId = i.id) As ArticleCount,
+                            (SELECT COUNT(*) FROM IssueArticle WHERE IssueId = i.id) As ArticleCount,
                             (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As [PageCount]
                             FROM Issue as i
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId

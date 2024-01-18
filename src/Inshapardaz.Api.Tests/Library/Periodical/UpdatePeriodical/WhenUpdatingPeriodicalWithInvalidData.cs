@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using FluentAssertions;
+using Bogus;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.DataBuilders;
-using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -69,9 +69,14 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
                 var periodicals = PeriodicalBuilder.WithLibrary(LibraryId).WithCategory(_category).Build(1);
                 _periodicalToUpdate = periodicals.PickRandom();
 
-                var book = new BookView { Title = RandomData.Text, Categories = new[] { new CategoryView { Id = -RandomData.Number } } };
+                var periodical = new PeriodicalView { 
+                    Title = RandomData.Text,
+                    Language = RandomData.Locale,
+                    Frequency = new Faker().PickRandom<PeriodicalFrequency>().ToDescription(),
+                    Categories = new[] { new CategoryView { Id = -RandomData.Number } } 
+                };
 
-                _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_periodicalToUpdate.Id}", book);
+                _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_periodicalToUpdate.Id}", periodical);
                 _assert = PeriodicalAssert.WithResponse(_response);
             }
 
@@ -119,7 +124,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
                 var periodicals = PeriodicalBuilder.WithLibrary(LibraryId).WithCategory(_category).Build(1);
                 _periodicalToUpdate = periodicals.PickRandom();
 
-                var periodical = new PeriodicalView { Title = RandomData.Text, Language = RandomData.Locale, Categories = new[] { new CategoryView { Id = category.Id } } };
+                var periodical = new PeriodicalView { 
+                    Title = RandomData.Text, 
+                    Language = RandomData.Locale,
+                    Frequency = new Faker().PickRandom<PeriodicalFrequency>().ToDescription(),
+                    Categories = new[] { new CategoryView { Id = category.Id } } };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_periodicalToUpdate.Id}", periodical);
                 _assert = PeriodicalAssert.WithResponse(_response);

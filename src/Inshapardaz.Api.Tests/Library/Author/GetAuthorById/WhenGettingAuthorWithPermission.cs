@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var authors = AuthorBuilder.WithLibrary(LibraryId).Build(4);
+            var authors = AuthorBuilder.WithLibrary(LibraryId).WithBooks(20).WithArticles(13).Build(4);
             _expected = authors.PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/authors/{_expected.Id}");

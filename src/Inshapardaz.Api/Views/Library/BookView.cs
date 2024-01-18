@@ -13,6 +13,8 @@ namespace Inshapardaz.Api.Views.Library
         public string Title { get; set; }
 
         public string Description { get; set; }
+        public string Publisher { get; set; }
+        public string Source { get; set; }
 
         [Required]
         public IEnumerable<AuthorView> Authors { get; set; }

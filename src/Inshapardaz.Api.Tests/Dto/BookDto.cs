@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Dto
         public bool IsPublic { get; set; }
 
         public string Language { get; set; }
-        public BookStatuses Status { get; set; }
+        public StatusType Status { get; set; }
 
         public int LibraryId { get; set; }
 
@@ -33,5 +33,7 @@ namespace Inshapardaz.Api.Tests.Dto
         public DateTime DateAdded { get; set; }
 
         public DateTime DateUpdated { get; set; }
+        public string Source { get; internal set; }
+        public string Publisher { get; internal set; }
     }
 }

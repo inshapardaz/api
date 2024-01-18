@@ -1,11 +1,9 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Tests.Dto;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
 

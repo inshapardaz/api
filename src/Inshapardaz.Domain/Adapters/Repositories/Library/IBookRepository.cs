@@ -27,20 +27,21 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task DeleteBookFromRecent(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
 
         Task AddBookToFavorites(int libraryId, int? accountId, int bookId, CancellationToken cancellationToken);
-        Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, BookStatuses status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
+        Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, StatusType status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
         Task DeleteBookFromFavorites(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
 
-        Task AddBookContent(int bookId, int fileId, string language, string mimeType, CancellationToken cancellationToken);
+        Task<int> AddBookContent(int bookId, int fileId, string language, string mimeType, CancellationToken cancellationToken);
 
-        Task DeleteBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken);
+        Task DeleteBookContent(int libraryId, int bookId, int contentId, CancellationToken cancellationToken);
 
         Task<BookContentModel> GetBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken);
+        Task<BookContentModel> GetBookContent(int libraryId, int bookId, int conetntId, CancellationToken cancellationToken);
 
         Task<IEnumerable<BookContentModel>> GetBookContents(int libraryId, int bookId, CancellationToken cancellationToken);
 
         Task UpdateBookImage(int libraryId, int bookId, int fileId, CancellationToken cancellationToken);
 
-        Task UpdateBookContentUrl(int libraryId, int bookId, string language, string mimeType, string url, CancellationToken cancellationToken);
+        Task UpdateBookContent(int libraryId, int bookId, int contentId, string language, string mimeType, string url, CancellationToken cancellationToken);
 
         Task<IEnumerable<BookPageSummaryModel>> GetBookPageSummary(int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken);
     }

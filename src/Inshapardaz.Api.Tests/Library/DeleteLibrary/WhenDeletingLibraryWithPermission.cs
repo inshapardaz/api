@@ -1,5 +1,4 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;

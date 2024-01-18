@@ -114,15 +114,15 @@ namespace Inshapardaz.Api.Mappings
                 ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp
             };
 
-        public static IssueArticleModel Map(this ArticleSequenceView source)
+        public static IssueArticleModel Map(this SequenceView source)
           => source == null ? null : new IssueArticleModel
           {
               Id = source.Id,
               SequenceNumber = source.SequenceNumber,
           };
 
-        public static ArticleContentView Map(this ArticleContentModel source)
-            => new ArticleContentView
+        public static IssueArticleContentView Map(this IssueArticleContentModel source)
+            => new IssueArticleContentView
             {
                 Id = source.Id,
                 PeriodicalId = source.PeriodicalId,
@@ -133,8 +133,8 @@ namespace Inshapardaz.Api.Mappings
                 Text = source.Text
             };
 
-        public static ArticleContentModel Map(this ArticleContentView source)
-            => new ArticleContentModel
+        public static IssueArticleContentModel Map(this IssueArticleContentView source)
+            => new IssueArticleContentModel
             {
                 Id = source.Id,
                 PeriodicalId = source.PeriodicalId,

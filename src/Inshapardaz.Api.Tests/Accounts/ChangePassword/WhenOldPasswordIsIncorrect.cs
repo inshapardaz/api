@@ -1,5 +1,4 @@
-﻿using Inshapardaz.Api.Entities;
-using Inshapardaz.Api.Models.Accounts;
+﻿using Inshapardaz.Api.Models.Accounts;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Models;

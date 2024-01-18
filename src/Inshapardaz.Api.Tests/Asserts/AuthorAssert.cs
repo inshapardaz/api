@@ -257,6 +257,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _author.Id.Should().Be(author.Id);
             _author.Name.Should().Be(author.Name);
             _author.BookCount.Should().Be(dbConnection.GetBookCountByAuthor(_author.Id));
+            _author.ArticleCount.Should().Be(dbConnection.GetArticleCountByAuthor(_author.Id));
             return this;
         }
     }

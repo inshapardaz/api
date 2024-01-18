@@ -15,7 +15,7 @@ using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
-    
+
     public class BooksDataBuilder
     {
         private class AccountItemCountSpec
@@ -253,7 +253,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                           .With(b => b.SeriesIndex, _hasSeries ? RandomData.Number : (int?)null)
                           .With(b => b.DateAdded, RandomData.Date)
                           .With(b => b.DateUpdated, RandomData.Date)
-                          .With(b => b.Status, Domain.Models.BookStatuses.Published)
+                          .With(b => b.Status, Domain.Models.StatusType.Published)
                           .CreateMany(numberOfBooks)
                           .ToList();
 
@@ -436,7 +436,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 {
                     var booksToAddToFavorite = f.Count.HasValue ? _books.PickRandom(f.Count.Value) : _books;
                     if (f.AccountId != 0)
-                    _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), f.AccountId);
+                        _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), f.AccountId);
                 }
             }
 
@@ -454,7 +454,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                             _recentBooks.Add(recent);
                         }
                     }
-                }                
+                }
             }
 
             return _books;

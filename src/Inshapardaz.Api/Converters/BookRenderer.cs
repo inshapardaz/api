@@ -125,7 +125,7 @@ namespace Inshapardaz.Api.Converters
 
                 if (source.Filters.CategoryId.HasValue)
                     queryString.Add("categoryid", source.Filters.CategoryId.Value.ToString());
-                
+
                 if (source.Filters.BookShelfId.HasValue)
                     queryString.Add("bookShelfId", source.Filters.BookShelfId.Value.ToString());
 
@@ -135,7 +135,7 @@ namespace Inshapardaz.Api.Converters
                 if (source.Filters.Read.HasValue)
                     queryString.Add("read", bool.TrueString);
 
-                if (source.Filters.Status != BookStatuses.Published)
+                if (source.Filters.Status != StatusType.Published)
                     queryString.Add("status", source.Filters.Status.ToDescription());
             }
 
@@ -192,21 +192,22 @@ namespace Inshapardaz.Api.Converters
 
             if (!string.IsNullOrWhiteSpace(source.ImageUrl) && _fileStorage.SupportsPublicLink)
             {
-                links.Add(new LinkView { 
-                    Href = _fileStorage.GetPublicUrl(source.ImageUrl), 
-                    Method = "GET", 
-                    Rel = RelTypes.Image, 
-                    Accept = MimeTypes.Jpg 
+                links.Add(new LinkView
+                {
+                    Href = _fileStorage.GetPublicUrl(source.ImageUrl),
+                    Method = "GET",
+                    Rel = RelTypes.Image,
+                    Accept = MimeTypes.Jpg
                 });
             }
             else if (source.ImageId.HasValue)
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(FileController.GetFile),
+                    ActionName = nameof(FileController.GetLibraryFile),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Image,
-                    Parameters = new { fileId = source.ImageId.Value }
+                    Parameters = new { libraryId = libraryId,  fileId = source.ImageId.Value }
                 }));
             }
 
@@ -357,7 +358,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Self,
                     Language = source.Language,
                     MimeType = source.MimeType,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, contentId = source.Id }
                 }),
                 _linkRenderer.Render(new Link {
                     ActionName = nameof(BookController.GetBookById),
@@ -383,12 +384,12 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(FileController.GetFile),
+                    ActionName = nameof(FileController.GetLibraryFile),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Download,
                     Language = source.Language,
                     MimeType = source.MimeType,
-                    Parameters = new { fileId = source.FileId }
+                    Parameters = new { libraryId = libraryId, fileId = source.FileId }
                 }));
             }
 
@@ -401,7 +402,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Update,
                     Language = source.Language,
                     MimeType = source.MimeType,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, contentId = source.Id }
                 }));
 
                 links.Add(_linkRenderer.Render(new Link
@@ -411,7 +412,7 @@ namespace Inshapardaz.Api.Converters
                     Rel = RelTypes.Delete,
                     Language = source.Language,
                     MimeType = source.MimeType,
-                    Parameters = new { libraryId = libraryId, bookId = source.BookId }
+                    Parameters = new { libraryId = libraryId, bookId = source.BookId, contentId = source.Id }
                 }));
             }
 

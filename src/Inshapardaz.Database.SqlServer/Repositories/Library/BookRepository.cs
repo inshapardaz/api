@@ -28,8 +28,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 book.LibraryId = libraryId;
                 var sql = @"Insert Into Book
-                            (Title, [Description], ImageId, LibraryId, IsPublic, IsPublished, [Language], [Status], SeriesId, SeriesIndex, CopyRights, YearPublished, Source, DateAdded, DateUpdated)
-                            OUTPUT Inserted.Id VALUES(@Title, @Description, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, @Source, GETDATE(), GETDATE());";
+                            (Title, [Description], Publisher, Source, ImageId, LibraryId, IsPublic, IsPublished, [Language], [Status], SeriesId, SeriesIndex, CopyRights, YearPublished, DateAdded, DateUpdated)
+                            OUTPUT Inserted.Id VALUES(@Title, @Description, @Publisher, @Source, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, GETDATE(), GETDATE());";
                 var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
                 bookId = await connection.ExecuteScalarAsync<int>(command);
 
@@ -72,6 +72,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             {
                 var sql = @"Update Book SET
                             Title = @Title, [Description] = @Description,
+                            Publisher = @Publisher, Source = @Source, 
                             IsPublic = @IsPublic, IsPublished = @IsPublished,
                             [Language] = @Language, [Status] = @Status, SeriesId = @SeriesId,
                             SeriesIndex = @SeriesIndex, CopyRights = @CopyRights,
@@ -325,18 +326,18 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, BookStatuses status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
+        public async Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, StatusType status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
                 var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
                 var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
                 var assignmentfilter = string.Empty;
-                if (status == BookStatuses.BeingTyped)
+                if (status == StatusType.BeingTyped)
                 {
                     assignmentfilter = "AND (bp.WriterAccountId = @AccountId OR c.WriterAccountId = @AccountId)";
                 }
-                else if (status == BookStatuses.ProofRead)
+                else if (status == StatusType.ProofRead)
                 {
                     assignmentfilter = "AND (bp.ReviewerAccountId = @AccountId OR c.ReviewerAccountId = @AccountId)";
                 }
@@ -471,6 +472,47 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<BookModel> GetBookByPublisher(int libraryId, string publisher, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                BookModel book = null;
+                var sql = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
+                            (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
+                            (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.id) As ChapterCount,
+                            a.*, c.*
+                            from Book b
+                            Left Outer Join BookAuthor ba ON b.Id = ba.BookId
+                            Left Outer Join Author a On ba.AuthorId = a.Id
+                            Left Outer Join Series s On b.SeriesId = s.id
+                            Left Outer Join BookCategory bc ON b.Id = bc.BookId
+                            Left Outer Join Category c ON bc.CategoryId = c.Id
+                            LEFT OUTER JOIN [File] fl ON fl.Id = b.ImageId
+                            Where b.LibraryId = @LibraryId AND b.Publisher= @Publisher";
+                await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(sql, (b, a, c) =>
+                {
+                    if (book == null)
+                    {
+                        book = b;
+                    }
+
+                    if (!book.Authors.Any(x => x.Id == a.Id))
+                    {
+                        book.Authors.Add(a);
+                    }
+
+                    if (c != null && !book.Categories.Any(x => x.Id == c.Id))
+                    {
+                        book.Categories.Add(c);
+                    }
+
+                    return book;
+                }, new { LibraryId = libraryId, Publisher = publisher });
+
+                return book;
+            }
+        }
+
         public async Task AddRecentBook(int libraryId, int AccountId, int bookId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
@@ -519,7 +561,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task DeleteBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken)
+        public async Task DeleteBookContent(int libraryId, int bookId, int contentId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
@@ -527,8 +569,8 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             From BookContent bc
                             Inner Join Book b On b.Id = bc.BookId
                             INNER JOIN [File] f ON bc.FileId = f.Id
-                            Where b.LibraryId = @LibraryId and b.Id = @BookId And f.MimeType = @MimeType AND bc.Language = @Language";
-                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Language = language, MimeType = mimeType, BookId = bookId }, cancellationToken: cancellationToken);
+                            Where b.LibraryId = @LibraryId and b.Id = @BookId And bc.id= @Id";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = contentId, BookId = bookId }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }
         }
@@ -537,7 +579,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl
+                var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
                             FROM BookContent bc
                             INNER JOIN Book b ON b.Id = bc.BookId
                             INNER JOIN [File] f ON bc.FileId = f.Id
@@ -547,11 +589,25 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<BookContentModel> GetBookContent(int libraryId, int bookId, int contentId, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
+                            FROM BookContent bc
+                            INNER JOIN Book b ON b.Id = bc.BookId
+                            INNER JOIN [File] f ON bc.FileId = f.Id
+                            WHERE b.LibraryId = @LibraryId AND bc.BookId = @BookId AND bc.Id = @Id";
+                var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, Id = contentId }, cancellationToken: cancellationToken);
+                return await connection.QuerySingleOrDefaultAsync<BookContentModel>(command);
+            }
+        }
+
         public async Task<IEnumerable<BookContentModel>> GetBookContents(int libraryId, int bookId, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl
+                var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
                             FROM BookContent bc
                             INNER JOIN Book b ON b.Id = bc.BookId
                             INNER JOIN [File] f ON bc.FileId = f.Id
@@ -561,19 +617,24 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task UpdateBookContentUrl(int libraryId, int bookId, string language, string mimeType, string contentUrl, CancellationToken cancellationToken)
+        public async Task UpdateBookContent(int libraryId, int bookId, int contentId, string language, string mimeType, string contentUrl, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"Update f SET FilePath = @ContentUrl
-                            From  [File] f
-                            Inner Join BookContent bc On bc.FileId = f.Id
-                            Inner Join Book b On b.Id = bc.BookId
-                            Where b.LibraryId = @LibraryId and b.Id = @BookId And f.MimeType  = @MimeType AND bc.Language = @Language";
+                var sql = @"UPDATE f SET FilePath = @ContentUrl
+                            FROM  [File] f
+                            INNER JOIN BookContent bc ON bc.FileId = f.Id
+                            INNER JOIN Book b ON b.Id = bc.BookId
+                            Where b.LibraryId = @LibraryId 
+                                AND b.Id = @BookId 
+                                AND bc.Id = @Id
+                                AND f.MimeType  = @MimeType 
+                                AND bc.Language = @Language";
                 var command = new CommandDefinition(sql, new
                 {
                     LibraryId = libraryId,
                     BookId = bookId,
+                    Id = contentId,
                     Language = language,
                     MimeType = mimeType,
                     ContentUrl = contentUrl
@@ -582,14 +643,14 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
-        public async Task AddBookContent(int bookId, int fileId, string language, string mimeType, CancellationToken cancellationToken)
+        public async Task<int> AddBookContent(int bookId, int fileId, string language, string mimeType, CancellationToken cancellationToken)
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
-                var sql = @"Insert Into BookContent (BookId, FileId, Language)
-                            Values (@BookId, @FileId, @Language)";
+                var sql = @"INSERT INTO BookContent (BookId, FileId, Language)
+                            OUTPUT Inserted.Id VALUES (@BookId, @FileId, @Language)";
                 var command = new CommandDefinition(sql, new { FileId = fileId, BookId = bookId, Language = language }, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(command);
+                return await connection.ExecuteScalarAsync<int>(command);
             }
         }
 

@@ -153,10 +153,10 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(FileController.GetFile),
+                    ActionName = nameof(FileController.GetLibraryFile),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Image,
-                    Parameters = new { fileId = source.ImageId.Value }
+                    Parameters = new { libraryId = libraryId, fileId = source.ImageId.Value }
                 }));
             }
 
@@ -288,12 +288,12 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(FileController.GetFile),
+                    ActionName = nameof(FileController.GetLibraryFile),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Download,
                     Language = source.Language,
                     MimeType = source.MimeType,
-                    Parameters = new { fileId = source.FileId }
+                    Parameters = new { libraryId = libraryId, fileId = source.FileId }
                 }));
             }
 

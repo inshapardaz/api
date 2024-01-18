@@ -114,7 +114,7 @@ namespace Inshapardaz.Api.Controllers
         public async Task<IActionResult> GetBooksByUser(int libraryId,
             int pageNumber = 1,
             int pageSize = 10,
-            [FromQuery] BookStatuses status = BookStatuses.BeingTyped,
+            [FromQuery] StatusType status = StatusType.BeingTyped,
             CancellationToken token = default(CancellationToken))
         {
             var accountId = _userHelper.Account.Id;

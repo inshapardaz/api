@@ -4,7 +4,6 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent

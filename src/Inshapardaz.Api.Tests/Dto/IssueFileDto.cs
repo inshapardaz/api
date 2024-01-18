@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Inshapardaz.Api.Tests.Dto
+﻿namespace Inshapardaz.Api.Tests.Dto
 {
     public class IssueFileDto
     {

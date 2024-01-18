@@ -23,7 +23,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
         public int PageNumber { get; private set; }
 
         public int PageSize { get; private set; }
-        public BookStatuses StatusFilter { get; set; }
+        public StatusType StatusFilter { get; set; }
         public int AccountId { get; set; }
     }
 

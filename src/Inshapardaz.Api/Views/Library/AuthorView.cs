@@ -9,5 +9,6 @@ namespace Inshapardaz.Api.Views.Library
         public string Description { get; set; }
         public int BookCount { get; set; }
         public string AuthorType { get; set; }
+        public int ArticleCount { get; set; }
     }
 }

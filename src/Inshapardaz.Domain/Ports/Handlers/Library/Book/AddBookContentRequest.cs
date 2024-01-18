@@ -74,9 +74,9 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
                 command.Content.FilePath = url;
                 command.Content.IsPublic = true;
                 var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-                await _bookRepository.AddBookContent(book.Id, file.Id, command.Language, command.MimeType, cancellationToken);
+                var contentId = await _bookRepository.AddBookContent(book.Id, file.Id, command.Language, command.MimeType, cancellationToken);
 
-                command.Result = await _bookRepository.GetBookContent(book.LibraryId, book.Id, command.Language, command.MimeType, cancellationToken); ;
+                command.Result = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, contentId, cancellationToken); ;
             }
 
             return await base.HandleAsync(command, cancellationToken);

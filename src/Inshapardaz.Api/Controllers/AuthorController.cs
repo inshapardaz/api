@@ -34,6 +34,7 @@ namespace Inshapardaz.Api.Controllers
             _fileRenderer = fileRenderer;
         }
 
+        // TODO : Add sorting
         [HttpGet("libraries/{libraryId}/authors", Name = nameof(AuthorController.GetAuthors))]
         public async Task<IActionResult> GetAuthors(int libraryId, string query, AuthorTypes? authorType = null, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
         {
@@ -88,7 +89,9 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new UpdateAuthorRequest(libraryId, author.Map());
+            var authorModel = author.Map();
+            authorModel.Id = authorId;
+            var request = new UpdateAuthorRequest(libraryId, authorModel);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             var renderResult = _authorRenderer.Render(request.Result.Author, libraryId);
@@ -135,7 +138,7 @@ namespace Inshapardaz.Api.Controllers
 
             if (request.Result.HasAddedNew)
             {
-                var response = _fileRenderer.Render(request.Result.File);
+                var response = _fileRenderer.Render(libraryId, request.Result.File);
                 return new CreatedResult(response.Links.Self(), response);
             }
 

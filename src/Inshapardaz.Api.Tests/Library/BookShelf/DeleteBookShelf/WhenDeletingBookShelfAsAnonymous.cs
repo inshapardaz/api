@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookShelf

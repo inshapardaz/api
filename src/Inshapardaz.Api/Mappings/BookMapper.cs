@@ -28,6 +28,8 @@ namespace Inshapardaz.Api.Mappings
             Categories = source.Categories?.Select(c => c.Map()),
             PageCount = source.PageCount,
             ChapterCount = source.ChapterCount,
+            Source = source.Source,
+            Publisher = source.Publisher,
             PageStatus = source.PageStatus?.Select(ps => ps.Map()),
             Authors = source.Authors?.Select(c => c.Map()),
         };
@@ -44,9 +46,11 @@ namespace Inshapardaz.Api.Mappings
             SeriesId = source.SeriesId,
             SeriesIndex = source.SeriesIndex,
             Copyrights = source.Copyrights.ToEnum(CopyrightStatuses.Copyright),
-            Status = source.Status.ToEnum(BookStatuses.AvailableForTyping),
+            Status = source.Status.ToEnum(StatusType.AvailableForTyping),
             YearPublished = source.YearPublished,
             IsPublished = source.IsPublished,
+            Source = source.Source,
+            Publisher = source.Publisher,
             Progress = source.Progress,
             Categories = source.Categories?.Select(c => c.Map()).ToList(),
             PageCount = source.PageCount,
@@ -61,7 +65,8 @@ namespace Inshapardaz.Api.Mappings
                 Id = source.Id,
                 BookId = source.BookId,
                 Language = source.Language,
-                MimeType = source.MimeType
+                MimeType = source.MimeType,
+                FileName = source.FileName,
             };
 
         public static BookContentModel Map(this BookContentView source)

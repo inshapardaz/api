@@ -25,6 +25,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IFileRepository, FileRepository>();
             services.AddTransient<ILibraryRepository, LibraryRepository>();
             services.AddTransient<IAuthorRepository, AuthorRepository>();
+            services.AddTransient<IArticleRepository, ArticleRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IBookRepository, BookRepository>();
             services.AddTransient<IChapterRepository, ChapterRepository>();
@@ -32,7 +33,7 @@ namespace Inshapardaz.Api.Configuration
             services.AddTransient<IBookPageRepository, BookPageRepository>();
             services.AddTransient<IPeriodicalRepository, PeriodicalRepository>();
             services.AddTransient<IIssueRepository, IssueRepository>();
-            services.AddTransient<IIssueArticleRepository, ArticleRepository>();
+            services.AddTransient<IIssueArticleRepository, IssueArticleRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<ICorrectionRepository, CorrectionRepository>();
             services.AddTransient<IIssuePageRepository, IssuePageRepository>();

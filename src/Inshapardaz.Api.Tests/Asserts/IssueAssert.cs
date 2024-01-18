@@ -5,7 +5,6 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
@@ -290,7 +289,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal static void ShouldHaveDeletedArticlesForIssue(IDbConnection dbConnection, int issueId)
         {
-            var articles = dbConnection.GetArticlesByIssue(issueId);
+            var articles = dbConnection.GetIssueArticlesByIssue(issueId);
             articles.Should().BeNullOrEmpty();
         }
 

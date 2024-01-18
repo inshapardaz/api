@@ -154,7 +154,7 @@ namespace Inshapardaz.Api.Controllers
                 });
             }
 
-            var request = new UploadBookPages(libraryId, bookId)
+            var request = new UploadBookPagesRequest(libraryId, bookId)
             {
                 Files = fileModels
             };
@@ -233,7 +233,7 @@ namespace Inshapardaz.Api.Controllers
 
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
-            var imageLink = _bookPageRenderer.RenderImageLink(request.Result.File);
+            var imageLink = _bookPageRenderer.RenderImageLink(libraryId, request.Result.File);
 
             if (request.Result.HasAddedNew)
             {

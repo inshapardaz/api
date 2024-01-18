@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Converters
         PageView<IssuePageView> Render(PageRendererArgs<IssuePageModel, PageFilter> source, int libraryId, int periodicalId, int volumeNumber, int issueNumber);
         PageView<IssuePageView> RenderUserPages(PageRendererArgs<IssuePageModel, PageFilter> source, int libraryId);
 
-        LinkView RenderImageLink(FileModel file);
+        LinkView RenderImageLink(int libraryId, FileModel file);
     }
 
     public class IssuePageRenderer : IRenderIssuePage
@@ -219,10 +219,10 @@ namespace Inshapardaz.Api.Converters
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(FileController.GetFile),
+                    ActionName = nameof(FileController.GetLibraryFile),
                     Method = HttpMethod.Get,
                     Rel = RelTypes.Image,
-                    Parameters = new { fileId = source.ImageId.Value }
+                    Parameters = new { libraryId = libraryId, fileId = source.ImageId.Value }
                 }));
             }
 
@@ -409,7 +409,7 @@ namespace Inshapardaz.Api.Converters
             return result;
         }
 
-        public LinkView RenderImageLink(FileModel file)
+        public LinkView RenderImageLink(int libraryId, FileModel file)
         {
             if (!string.IsNullOrWhiteSpace(file.FilePath) && _fileStorage.SupportsPublicLink)
             {
@@ -424,10 +424,10 @@ namespace Inshapardaz.Api.Converters
 
             return _linkRenderer.Render(new Link
             {
-                ActionName = nameof(FileController.GetFile),
+                ActionName = nameof(FileController.GetLibraryFile),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Image,
-                Parameters = new { fileId = file.Id }
+                Parameters = new { libraryId = libraryId, fileId = file.Id }
             });
         }
 

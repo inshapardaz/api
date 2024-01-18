@@ -35,7 +35,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public int? SeriesIndex { get; set; }
 
-        public BookStatuses Status { get; set; }
+        public StatusType Status { get; set; }
 
         public int? YearPublished { get; set; }
 
@@ -56,5 +56,6 @@ namespace Inshapardaz.Domain.Models.Library
         public IEnumerable<PageSummaryModel> PageStatus { get; set; }
 
         public string Source { get; set; }
+        public string Publisher { get; set; }
     }
 }

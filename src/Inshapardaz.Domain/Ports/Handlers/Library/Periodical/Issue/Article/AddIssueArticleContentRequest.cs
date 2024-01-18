@@ -32,7 +32,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article
 
         public string Language { get; set; }
 
-        public ArticleContentModel Result { get; set; }
+        public IssueArticleContentModel Result { get; set; }
     }
 
     public class AddArticleContentRequestHandler : RequestHandlerAsync<AddIssueArticleContentRequest>

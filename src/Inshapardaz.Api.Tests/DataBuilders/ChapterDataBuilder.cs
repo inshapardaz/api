@@ -15,6 +15,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
     {
         private readonly List<ChapterDto> _chapters = new List<ChapterDto>();
         private readonly List<ChapterContentDto> _contents = new List<ChapterContentDto>();
+        private readonly List<BookPageDto> _pages = new List<BookPageDto>();
         private readonly IDbConnection _connection;
         private readonly BooksDataBuilder _booksBuilder;
         private int _contentCount;
@@ -23,6 +24,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private string _language;
         private int? _assignedWriterId, _assignedReviewerId;
         private EditingStatus? _status;
+        private bool _addPages;
 
         public IEnumerable<ChapterContentDto> Contents => _contents;
         public IEnumerable<ChapterDto> Chapters => _chapters;
@@ -67,6 +69,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         internal ChapterDataBuilder WithLibrary(int libraryId)
         {
             _libraryId = libraryId;
+            return this;
+        }
+
+        internal ChapterDataBuilder WithPages()
+        {
+            _addPages = true;
             return this;
         }
 
@@ -116,6 +124,22 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
                     _connection.AddChapterContent(content);
                 }
+
+                if (_addPages)
+                {
+                    var pages = fixture.Build<BookPageDto>()
+                        .With(x => x.BookId, book.Id)
+                        .With(x => x.ChapterId, chapter.Id)
+                        .Without(x => x.WriterAccountId)
+                        .Without(x => x.WriterAssignTimeStamp)
+                        .Without(x => x.ReviewerAccountId)
+                        .Without(x => x.ReviewerAssignTimeStamp)
+                        .Without(x => x.ImageId)
+                        .CreateMany(2);
+
+                    _pages.AddRange(pages);
+                    _connection.AddBookPages(pages);
+                }
             }
 
             return _chapters;
@@ -123,6 +147,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
         public void CleanUp()
         {
+            _connection.DeleteBookPages(_pages);
             _connection.DeleteChapterContents(_contents);
             _connection.DeleteChapters(_chapters);
         }

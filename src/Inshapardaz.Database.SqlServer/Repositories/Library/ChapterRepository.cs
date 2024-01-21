@@ -82,14 +82,27 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
         {
             using (var connection = _connectionProvider.GetLibraryConnection())
             {
+                var sql1 = @"UPDATE bp 
+                             SET ChapterId = NULL 
+                             FROM BookPage AS bp
+                             INNER JOIN Chapter c ON c.Id = bp.ChapterId
+                             WHERE c.BookId = @BookId AND c.ChapterNumber = @ChapterNumber";
+
+                var command1 = new CommandDefinition(sql1, new
+                {
+                    BookId = bookId,
+                    ChapterNumber = chapterNumber
+                }, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command1);
+
                 var sql = @"Delete c From Chapter c
                             Inner Join Book b On b.Id = c.BookId
-                            Where c.chapterNumber = @ChapterId AND c.BookId = @BookId And b.LibraryId = @LibraryId";
+                            Where c.chapterNumber = @ChapterNumber AND c.BookId = @BookId And b.LibraryId = @LibraryId";
                 var command = new CommandDefinition(sql, new
                 {
                     LibraryId = libraryId,
                     BookId = bookId,
-                    ChapterId = chapterNumber
+                    ChapterNumber = chapterNumber
                 }, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(command);
             }

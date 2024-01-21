@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _expected = ChapterBuilder.WithLibrary(LibraryId).WithContents().Build();
+            _expected = ChapterBuilder.WithLibrary(LibraryId).WithContents().WithPages().Build();
 
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{_expected.BookId}/chapters/{_expected.ChapterNumber}");
         }

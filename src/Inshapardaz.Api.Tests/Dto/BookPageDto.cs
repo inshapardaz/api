@@ -38,5 +38,6 @@ namespace Inshapardaz.Api.Tests.Dto
         public DateTime? WriterAssignTimeStamp { get; set; }
         public int? ReviewerAccountId { get; set; }
         public DateTime? ReviewerAssignTimeStamp { get; set; }
+        public object ChapterId { get; set; }
     }
 }

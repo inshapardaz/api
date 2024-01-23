@@ -202,9 +202,9 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpPost("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}/ocr", Name = nameof(BookPageController.OcrPage))]
         [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> OcrPage(int libraryId, int bookId, int sequenceNumber, [FromBody] string apiKey, CancellationToken token = default(CancellationToken))
+        public async Task<IActionResult> OcrPage(int libraryId, int bookId, int sequenceNumber, [FromBody] OcrRequest ocrRequest, CancellationToken token = default(CancellationToken))
         {
-            var request = new BookPageOcrRequest(libraryId, bookId, sequenceNumber, apiKey);
+            var request = new BookPageOcrRequest(libraryId, bookId, sequenceNumber, ocrRequest.Key);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             return Ok();

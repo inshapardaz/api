@@ -20,6 +20,9 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
 
         Task<Page<LibraryModel>> FindUnassignedLibraries(string query, int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
+        Task<Page<LibraryModel>> GetPublicLibraries(int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+        Task<Page<LibraryModel>> FindPublicLibraries(string query, int pageNumber, int pageSize, CancellationToken cancellationToken); 
         Task<LibraryModel> GetLibraryById(int libraryId, CancellationToken cancellationToken);
 
         Task<LibraryModel> AddLibrary(LibraryModel library, CancellationToken cancellationToken);

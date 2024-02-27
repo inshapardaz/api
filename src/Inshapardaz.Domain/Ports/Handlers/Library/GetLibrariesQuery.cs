@@ -39,23 +39,29 @@ namespace Inshapardaz.Domain.Models.Handlers
         {
             if (query.AccountId.HasValue)
             {
-                if (query.Assigned)
-                {
-                    return (string.IsNullOrWhiteSpace(query.Query))
-                    ? await _libraryRepository.GetUserLibraries(query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken)
-                    : await _libraryRepository.FindUserLibraries(query.Query, query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken);
-                }
-
-                else if (query.Unassigned)
+                if (query.Unassigned)
                 {
                     return (string.IsNullOrWhiteSpace(query.Query))
                     ? await _libraryRepository.GetUnassignedLibraries(query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken)
                     : await _libraryRepository.FindUnassignedLibraries(query.Query, query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken);
                 }
+
+                else if (query.Assigned)
+                {
+                    return (string.IsNullOrWhiteSpace(query.Query))
+                    ? await _libraryRepository.GetUserLibraries(query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken)
+                    : await _libraryRepository.FindUserLibraries(query.Query, query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken);
+                }
+                else if (query.Role == Role.Admin)
+                {
+                    return (string.IsNullOrWhiteSpace(query.Query))
+                        ? await _libraryRepository.GetLibraries(query.PageNumber, query.PageSize, cancellationToken)
+                        : await _libraryRepository.FindLibraries(query.Query, query.PageNumber, query.PageSize, cancellationToken);
+                }
             }
             return (string.IsNullOrWhiteSpace(query.Query))
-                ? await _libraryRepository.GetLibraries(query.PageNumber, query.PageSize, cancellationToken)
-                : await _libraryRepository.FindLibraries(query.Query, query.PageNumber, query.PageSize, cancellationToken);
+                ? await _libraryRepository.GetPublicLibraries(query.PageNumber, query.PageSize, cancellationToken)
+                : await _libraryRepository.FindPublicLibraries(query.Query, query.PageNumber, query.PageSize, cancellationToken);
         }
     }
 }

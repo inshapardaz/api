@@ -216,6 +216,65 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
             }
         }
 
+        public async Task<Page<LibraryModel>> GetPublicLibraries(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
+                            FROM Library
+                            LEFT OUTER JOIN [File] f ON f.Id = ImageId
+                            WHERE Public = 1
+                            Order By Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<LibraryModel>(command);
+
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Library";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, cancellationToken: cancellationToken));
+
+                return new Page<LibraryModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
+        }
+
+        public async Task<Page<LibraryModel>> FindPublicLibraries(string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
+                            FROM Library
+                            LEFT OUTER JOIN [File] f ON f.Id = ImageId
+                            WHERE Name LIKE @Query AND Public = 1
+                            Order By Name
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+                var command = new CommandDefinition(sql,
+                                                    new { Query = $"%{query}%", PageSize = pageSize, PageNumber = pageNumber },
+                                                    cancellationToken: cancellationToken);
+
+                var series = await connection.QueryAsync<LibraryModel>(command);
+
+                var sqlAuthorCount = "SELECT COUNT(*) FROM Library WHERE Name LIKE @Query";
+                var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { Query = $"%{query}%" }, cancellationToken: cancellationToken));
+
+                return new Page<LibraryModel>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = seriesCount,
+                    Data = series
+                };
+            }
+        }
         public async Task<LibraryModel> AddLibrary(LibraryModel library, CancellationToken cancellationToken)
         {
             int libraryId;

@@ -223,7 +223,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library
                             LEFT OUTER JOIN [File] f ON f.Id = ImageId
-                            WHERE Public = 1
+                            WHERE [Public] = 1
                             Order By Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
@@ -253,7 +253,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                 var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library
                             LEFT OUTER JOIN [File] f ON f.Id = ImageId
-                            WHERE Name LIKE @Query AND Public = 1
+                            WHERE Name LIKE @Query AND [Public] = 1
                             Order By Name
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";

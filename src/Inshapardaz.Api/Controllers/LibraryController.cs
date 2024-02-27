@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Controllers
 
         [HttpGet("libraries", Name = nameof(LibraryController.GetLibraries))]
         [Produces(typeof(PageView<LibraryView>))]
-        public async Task<IActionResult> GetLibraries(string query, int pageNumber = 1, bool assigned = true, bool unassigned = false, int pageSize = 10, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetLibraries(string query, int pageNumber = 1, bool assigned = false, bool unassigned = false, int pageSize = 10, CancellationToken cancellationToken = default)
         {
             Role? role = _userHelper.Account != null && _userHelper.Account.IsSuperAdmin ? Role.Admin : null;
             var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.Account?.Id, role) { 

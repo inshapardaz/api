@@ -22,8 +22,6 @@ namespace Inshapardaz.Domain.Models.Handlers
         public int? AccountId { get; }
         public Role? Role { get; }
         public string Query { get; set; }
-        public bool Unassigned { get; set; }
-        public bool Assigned { get; set; }
     }
 
     public class GetLibrariesQueryHandler : QueryHandlerAsync<GetLibrariesQuery, Page<LibraryModel>>
@@ -39,24 +37,17 @@ namespace Inshapardaz.Domain.Models.Handlers
         {
             if (query.AccountId.HasValue)
             {
-                if (query.Unassigned)
-                {
-                    return (string.IsNullOrWhiteSpace(query.Query))
-                    ? await _libraryRepository.GetUnassignedLibraries(query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken)
-                    : await _libraryRepository.FindUnassignedLibraries(query.Query, query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken);
-                }
-
-                else if (query.Assigned)
-                {
-                    return (string.IsNullOrWhiteSpace(query.Query))
-                    ? await _libraryRepository.GetUserLibraries(query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken)
-                    : await _libraryRepository.FindUserLibraries(query.Query, query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken);
-                }
-                else if (query.Role == Role.Admin)
+                if (query.Role == Role.Admin)
                 {
                     return (string.IsNullOrWhiteSpace(query.Query))
                         ? await _libraryRepository.GetLibraries(query.PageNumber, query.PageSize, cancellationToken)
                         : await _libraryRepository.FindLibraries(query.Query, query.PageNumber, query.PageSize, cancellationToken);
+                }
+                else
+                {
+                    return (string.IsNullOrWhiteSpace(query.Query))
+                    ? await _libraryRepository.GetUserLibraries(query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken)
+                    : await _libraryRepository.FindUserLibraries(query.Query, query.AccountId.Value, query.PageNumber, query.PageSize, cancellationToken);
                 }
             }
             return (string.IsNullOrWhiteSpace(query.Query))

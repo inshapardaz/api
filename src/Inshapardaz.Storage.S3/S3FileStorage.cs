@@ -1,4 +1,5 @@
 ﻿using Amazon.S3;
+using Amazon.S3.Model;
 using Inshapardaz.Domain.Repositories;
 using System;
 using System.IO;
@@ -163,7 +164,14 @@ namespace Inshapardaz.Storage.S3
 
         public string GetPublicUrl(string filePath)
         {
-            return new Uri(new Uri(_configuration.ServiceUrl), $"{_configuration.BucketName}/" + filePath).ToString();
+            GetPreSignedUrlRequest preSignedUrlRequest = new GetPreSignedUrlRequest
+            {
+                BucketName = _configuration.BucketName,
+                Key = $"{_configuration.FolderName}/{filePath}",
+                Expires = DateTime.UtcNow.AddMinutes(30)
+            };
+
+            return GetClient().GetPreSignedURL(preSignedUrlRequest);
         }
     }
 }

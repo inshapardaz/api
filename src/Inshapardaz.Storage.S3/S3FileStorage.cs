@@ -23,7 +23,7 @@ namespace Inshapardaz.Storage.S3
         {
             var client = GetClient();
             var request = new Amazon.S3.Model.GetObjectRequest();
-            request.Key = $"${_configuration.FolderName}/${filePath}";
+            request.Key = $"{_configuration.FolderName}/{filePath}";
             request.BucketName = _configuration.BucketName;
             var response = await client.GetObjectAsync(request, cancellationToken);
             return await ReadAllContents(response.ResponseStream);
@@ -33,7 +33,7 @@ namespace Inshapardaz.Storage.S3
         {
             var client = GetClient();
             var request = new Amazon.S3.Model.GetObjectRequest();
-            request.Key = $"${_configuration.FolderName}/${filePath}";
+            request.Key = $"{_configuration.FolderName}/{filePath}";
             request.BucketName = _configuration.BucketName;
             var response = await client.GetObjectAsync(request, cancellationToken);
             return await ReadAllText(response.ResponseStream);
@@ -46,7 +46,7 @@ namespace Inshapardaz.Storage.S3
             request.BucketName = _configuration.BucketName;
             request.ContentType = "";
             request.InputStream = new MemoryStream(content);
-            request.Key = $"${_configuration.FolderName}/${name}";
+            request.Key = $"{_configuration.FolderName}/{name}";
             request.CannedACL = "private";
             var response = await client.PutObjectAsync(request, cancellationToken);
             return name;
@@ -59,7 +59,7 @@ namespace Inshapardaz.Storage.S3
             request.BucketName = _configuration.BucketName;
             request.ContentType = mimeType;
             request.InputStream = new MemoryStream(content);
-            request.Key = $"${_configuration.FolderName}/${name}";
+            request.Key = $"{_configuration.FolderName}/{name}";
             request.CannedACL = "public-read";
             var response = await client.PutObjectAsync(request, cancellationToken);
             return name;
@@ -72,7 +72,7 @@ namespace Inshapardaz.Storage.S3
             request.BucketName = _configuration.BucketName;
             request.ContentType = "";
             request.ContentBody = content;
-            request.Key = $"${_configuration.FolderName}/${name}";
+            request.Key = $"{_configuration.FolderName}/{name}";
             request.CannedACL = "private ";
             var response = await client.PutObjectAsync(request, cancellationToken);
             return name;
@@ -83,7 +83,7 @@ namespace Inshapardaz.Storage.S3
             var client = GetClient();
             var request = new Amazon.S3.Model.DeleteObjectRequest();
             request.BucketName = _configuration.BucketName;
-            request.Key = $"${_configuration.FolderName}/${filePath}";
+            request.Key = $"{_configuration.FolderName}/{filePath}";
             await client.DeleteObjectAsync(request, cancellationToken);
         }
 
@@ -92,7 +92,7 @@ namespace Inshapardaz.Storage.S3
             var client = GetClient();
             var request = new Amazon.S3.Model.DeleteObjectRequest();
             request.BucketName = _configuration.BucketName;
-            request.Key = $"${_configuration.FolderName}/${filePath}";
+            request.Key = $"{_configuration.FolderName}/{filePath}";
             await client.DeleteObjectAsync(request, cancellationToken);
         }
 
@@ -103,7 +103,7 @@ namespace Inshapardaz.Storage.S3
             {
                 var request = new Amazon.S3.Model.GetObjectMetadataRequest();
                 request.BucketName = _configuration.BucketName;
-                request.Key = $"${_configuration.FolderName}/${filePath}";
+                request.Key = $"{_configuration.FolderName}/{filePath}";
                 await client.GetObjectMetadataAsync(request, cancellationToken);
                 await DeleteFile(filePath, cancellationToken);
             }
@@ -119,7 +119,7 @@ namespace Inshapardaz.Storage.S3
             {
                 var request = new Amazon.S3.Model.DeleteObjectRequest();
                 request.BucketName = _configuration.BucketName;
-                request.Key = $"${_configuration.FolderName}/${filePath}";
+                request.Key = $"{_configuration.FolderName}/{filePath}";
                 await client.DeleteObjectAsync(request, cancellationToken);
             }
             catch

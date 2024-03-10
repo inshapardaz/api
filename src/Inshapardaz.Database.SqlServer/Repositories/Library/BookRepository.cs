@@ -195,7 +195,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
                             Where b.LibraryId = @LibraryId
                             AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
-                            AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
+                            AND (b.Status = @StatusFilter OR @StatusFilter = 0)
                             AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                             AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
@@ -276,7 +276,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             Where b.LibraryId = @LibraryId
                             AND b.Title Like @Query
                             AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
-                            AND (b.Status = @StatusFilter OR @StatusFilter IS NULL)
+                            AND (b.Status = @StatusFilter OR @StatusFilter = 0)
                             AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                             AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)

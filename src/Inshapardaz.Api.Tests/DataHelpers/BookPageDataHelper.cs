@@ -50,5 +50,15 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
             return connection.QuerySingleOrDefault<BookPageDto>(command);
         }
+
+        public static int GetBookPageCount(this IDbConnection connection, int bookId)
+        {
+            var sql = @"SELECT Count(*)
+                        FROM BookPage
+                        Where BookId = @BookId";
+            var command = new CommandDefinition(sql, new { BookId = bookId });
+
+            return connection.QuerySingleOrDefault<int>(command);
+        }
     }
 }

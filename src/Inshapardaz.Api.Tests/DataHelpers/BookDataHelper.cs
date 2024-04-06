@@ -134,12 +134,6 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             }
         }
 
-        //TODO : Add user id.
-        public static List<RecentBookDto> GetRecentBooks(this IDbConnection connection)
-        {
-            throw new NotImplementedException();
-        }
-
         public static bool DoesBookExistsInFavorites(this IDbConnection connection, int bookId, int accountId) =>
             connection.QuerySingle<bool>(@"Select Count(1) From FavoriteBooks Where BookId = @BookId And AccountId = @AccountId", new
             {

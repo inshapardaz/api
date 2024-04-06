@@ -182,6 +182,12 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+        public BookPageAssert ShouldHavePageNumber(int pageNumber)
+        {
+            _bookPage.SequenceNumber.Should().Be(pageNumber);
+            return this;
+        }
+
         public BookPageAssert ShouldHaveNextLinkForPageNumber(int pageNumber)
         {
             _bookPage.Link("next")

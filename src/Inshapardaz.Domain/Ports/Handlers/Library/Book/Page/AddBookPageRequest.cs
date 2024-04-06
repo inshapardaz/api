@@ -52,7 +52,9 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Book.Page
 
             if (existingBookPage == null)
             {
-                command.Result = await _bookPageRepository.AddPage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, 0, command.BookPage.ChapterId, cancellationToken);
+              
+                var pageSequenceNumber = command.BookPage.SequenceNumber == 0 ? book.PageCount + 1 : command.BookPage.SequenceNumber;
+                command.Result = await _bookPageRepository.AddPage(command.LibraryId, command.BookPage.BookId, pageSequenceNumber, command.BookPage.Text, 0, command.BookPage.ChapterId, cancellationToken);
                 command.IsAdded = true;
             }
             else

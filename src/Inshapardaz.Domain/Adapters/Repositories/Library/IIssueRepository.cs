@@ -12,6 +12,8 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<Page<IssueModel>> GetIssues(int libraryId, int periodicalId, int pageNumber, int pageSize, IssueFilter filter, IssueSortByType sortBy, SortDirection sortDirection, CancellationToken cancellationToken);
 
+        Task<IEnumerable<(int Year, int count)>> GetIssuesYear(int libraryId, int periodicalId, AssignmentStatus assignmentStatus, SortDirection sortDirection, CancellationToken cancellationToken);
+
         Task<IssueModel> AddIssue(int libraryId, int periodicalId, IssueModel issue, CancellationToken cancellationToken);
 
         Task UpdateIssue(int libraryId, int periodicalId, IssueModel issue, CancellationToken cancellationToken);

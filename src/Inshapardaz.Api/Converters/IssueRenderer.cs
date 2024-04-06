@@ -4,7 +4,6 @@ using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories;
@@ -21,6 +20,8 @@ namespace Inshapardaz.Api.Converters
         IssueView Render(IssueModel source, int libraryId);
 
         IssueContentView Render(IssueContentModel source, int libraryId);
+
+        IssueYearlyView Render(IEnumerable<(int Year, int Count)> source, int libraryId, int periodicalId, SortDirection sortDirection);
     }
 
     public class IssueRenderer : IRenderIssue
@@ -321,6 +322,50 @@ namespace Inshapardaz.Api.Converters
             }
 
             result.Links = links;
+            return result;
+        }
+
+
+        public IssueYearlyView Render(IEnumerable<(int Year, int Count)> source, int libraryId, int periodicalId, SortDirection sortDirection)
+        {
+            var result = new IssueYearlyView();
+
+            result.Data = source.Select(s =>
+            {
+                var year = new IssueYearView
+                {
+                    Year = s.Year,
+                    Count = s.Count
+                };
+
+                year.Links.Add(_linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(IssueController.GetIssues),
+                    Method = HttpMethod.Get,
+                    Rel = RelTypes.Self,
+                    Parameters = new { libraryId = libraryId, periodicalId = periodicalId },
+                    QueryString = new Dictionary<string, string>()
+                    {
+                        { "year", s.Year.ToString() }
+                    }
+                }));
+
+                return year;
+            }).ToList();
+
+            var selfLink = new Link
+            {
+                ActionName = nameof(IssueController.GetIssuesByYear),
+                Method = HttpMethod.Get,
+                Rel = RelTypes.Self,
+                Parameters = new { libraryId = libraryId, periodicalId = periodicalId, }
+            };
+                
+            if (sortDirection != SortDirection.Ascending)
+            {
+                selfLink.QueryString.Add("sortDirection", sortDirection.ToString());
+            };
+            result.Links.Add(_linkRenderer.Render(selfLink));
             return result;
         }
 

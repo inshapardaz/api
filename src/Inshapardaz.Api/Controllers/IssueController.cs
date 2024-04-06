@@ -38,22 +38,24 @@ namespace Inshapardaz.Api.Controllers
             _userHelper = userHelper;
         }
 
-        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues", Name = nameof(IssueController.GetIssues))]
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues", Name = nameof(GetIssues))]
         public async Task<IActionResult> GetIssues(int libraryId, int periodicalId,
-            int pageNumber = 1,
+            int pageNumber = 1, 
             int pageSize = 10,
             [FromQuery] int? year = null,
             [FromQuery] int? volumeNumber = null,
+            [FromQuery] StatusType status = StatusType.Unknown,
             [FromQuery] IssueSortByType sortBy = IssueSortByType.IssueDate,
             [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
             [FromQuery] AssignmentStatus assignedFor = AssignmentStatus.None,
-            CancellationToken token = default(CancellationToken))
+            CancellationToken token = default)
         {
             var filter = new IssueFilter
             {
                 Year = year,
                 VolumeNumber = volumeNumber,
-                AssignmentStatus = assignedFor
+                AssignmentStatus = assignedFor,
+                Status = status
             };
             var issuesQuery = new GetIssuesQuery(libraryId, periodicalId, pageNumber, pageSize)
             {
@@ -80,6 +82,27 @@ namespace Inshapardaz.Api.Controllers
                 };
 
                 return new OkObjectResult(_issueRenderer.Render(args, libraryId, periodicalId));
+            }
+
+            return new NotFoundResult();
+        }
+
+        [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues/years", Name = nameof(GetIssuesByYear))]
+        public async Task<IActionResult> GetIssuesByYear(int libraryId, int periodicalId,
+            [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
+            [FromQuery] AssignmentStatus assignedFor = AssignmentStatus.None,
+            CancellationToken token = default)
+        {
+            var issuesQuery = new GetIssuesYearQuery(libraryId, periodicalId)
+            {
+                SortDirection = sortDirection,
+                AssignmentStatus = assignedFor
+            };
+            var result = await _queryProcessor.ExecuteAsync(issuesQuery, token);
+
+            if (result != null)
+            {
+                return new OkObjectResult(_issueRenderer.Render(result, libraryId, periodicalId, sortDirection));
             }
 
             return new NotFoundResult();

@@ -35,7 +35,7 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                             LEFT OUTER JOIN [File] f ON f.Id = i.ImageId
                             Where p.LibraryId = @LibraryId
                             AND p.Id = @PeriodicalId
-                            AND (@Year IS NULL OR YEAR(IssueDate) = @Year)
+                            AND (@Year IS NULL OR YEAR(i.IssueDate) = @Year)
                             AND (@VolumeNumber IS NULL OR VolumeNumber = @VolumeNumber) " +
                             $" ORDER BY {sortByQuery} {direction} " +
                             @"OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -59,19 +59,44 @@ namespace Inshapardaz.Database.SqlServer.Repositories.Library
                     return i;
                 });
 
-                var sqlAuthorCount = @"SELECT COUNT(*) FROM Issue as i
+                var totalCountSql = @"SELECT COUNT(*) FROM Issue as i
                         INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                         WHERE p.LibraryId = @LibraryId 
                         AND p.Id = @PeriodicalId";
-                var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, PeriodicalId = periodicalId}, cancellationToken: cancellationToken));
+                var totalCount = await connection.QuerySingleAsync<int>(new CommandDefinition(totalCountSql, new { LibraryId = libraryId, PeriodicalId = periodicalId}, cancellationToken: cancellationToken));
 
                 return new Page<IssueModel>
                 {
                     PageNumber = pageNumber,
                     PageSize = pageSize,
-                    TotalCount = authorCount,
+                    TotalCount = totalCount,
                     Data = issues
                 };
+            }
+        }
+
+        public async Task<IEnumerable<(int Year, int count)>> GetIssuesYear(int libraryId, int periodicalId, AssignmentStatus assignmentStatus, SortDirection sortDirection, CancellationToken cancellationToken)
+        {
+            using (var connection = _connectionProvider.GetLibraryConnection())
+            {
+                var direction = sortDirection == SortDirection.Descending ? "DESC" : "ASC";
+
+                    var sql = @"SELECT YEAR(i.IssueDate) [Year], COUNT(*)
+                                FROM Issue AS i
+                                INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            WHERE p.LibraryId = @LibraryId
+                            AND p.Id = @PeriodicalId 
+                            GROUP BY YEAR(i.IssueDate) " +
+                            $" ORDER BY [Year] {direction}";
+                var command = new CommandDefinition(sql,
+                        new
+                        {
+                            LibraryId = libraryId,
+                            PeriodicalId = periodicalId
+                        },
+                        cancellationToken: cancellationToken);
+
+                return await connection.QueryAsync<(int Year, int count)>(command);
             }
         }
 

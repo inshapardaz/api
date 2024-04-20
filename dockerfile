@@ -1,5 +1,5 @@
 #BACKEND SERVICE
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /app
 
 ARG asp_environment
@@ -23,12 +23,17 @@ COPY . .
 
 RUN dotnet publish src/Inshapardaz.Api/Inshapardaz.Api.csproj -r linux-x64 -c Release
 
+# Build the runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS pubish
 WORKDIR /app
 
 RUN apt-get update
 RUN apt-get install -y libunwind-dev
 
-COPY --from=build /app/src/Inshapardaz.Api/bin/Release/net5.0/linux-x64/publish/ .
+COPY --from=build /app/src/Inshapardaz.Api/bin/Release/net7.0/linux-x64/publish/ .
 RUN echo "1.0.0.$build_number" >> version.txt
-ENTRYPOINT ["./Inshapardaz.Api", "--console"]
+# Expose the API port
+EXPOSE 80
+
+# Set the entry point for the API
+ENTRYPOINT ["dotnet", "Inshapardaz.Api.dll"]

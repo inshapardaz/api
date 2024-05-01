@@ -1,4 +1,5 @@
 using System;
+using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Domain.Adapters
 {
@@ -8,11 +9,12 @@ namespace Inshapardaz.Domain.Adapters
 
         public FileStoreTypes FileStoreType { get; set; } = FileStoreTypes.Database;
 
-        public string[] AllowedOrigins { 
-            get 
+        public string[] AllowedOrigins
+        {
+            get
             {
                 return Allowed_Origins.Split(',', StringSplitOptions.TrimEntries & StringSplitOptions.RemoveEmptyEntries);
-            }  
+            }
         }
 
         public string Allowed_Origins { get; set; }
@@ -36,5 +38,6 @@ namespace Inshapardaz.Domain.Adapters
 
         public int RefreshTokenTTLInDays { get; set; }
         public int DefaultLibraryId { get; set; }
+        public DatabaseTypes DatabaseConnectionType { get; set; } = DatabaseTypes.SqlServer;
     }
 }

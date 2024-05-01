@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <PackageId>Inshapardaz.Database.Migrations</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Muhammad Umer Farooq</Authors>
+    <Company>Inshapardaz</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentMigrator" Version="5.2.0" />
+  </ItemGroup>
+
+</Project>

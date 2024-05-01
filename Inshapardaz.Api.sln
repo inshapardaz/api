@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Domain", "src\Inshapardaz.Domain\Inshapardaz.Domain.csproj", "{B867197D-41E9-4D3E-9BDE-8BE32B4DDDCA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{26B32815-EFF1-4EA6-A846-BE4432C7E6A7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Database.SqlServer", "src\Inshapardaz.Database.SqlServer\Inshapardaz.Database.SqlServer.csproj", "{EFB37C52-0CFF-4B3A-944F-41B35628EFB7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.Azure", "src\Inshapardaz.Storage.Azure\Inshapardaz.Storage.Azure.csproj", "{7EE0CEAD-9629-4C6A-A215-97D1EC4C4BB1}"
@@ -19,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api", "src\Inshapardaz.Api\Inshapardaz.Api.csproj", "{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api.Tests", "src\Inshapardaz.Api.Tests\Inshapardaz.Api.Tests.csproj", "{1ADABB20-5947-409C-B0FA-6F12274B8076}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Adapter.Ocr.Google", "src\Inshapardaz.Adapter.Ocr.Google\Inshapardaz.Adapter.Ocr.Google.csproj", "{8B17CB57-1B13-4988-B87A-06810692A0E5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.S3", "src\Inshapardaz.Storage.S3\Inshapardaz.Storage.S3.csproj", "{F911C302-12BC-414A-830E-5B81ADB20051}"
@@ -28,6 +24,18 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.FileSystem", "src\Inshapardaz.Storage.FileSystem\Inshapardaz.Storage.FileSystem.csproj", "{6E4D4A79-11C8-4C8B-B938-7F83A31DC02B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.LibraryMigrator", "src\Inshapardaz.LibraryMigrator\Inshapardaz.LibraryMigrator.csproj", "{E1BBEA24-EA65-41FB-9D2F-9236183289F2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8C7E3360-AA68-4EE4-B86F-ADDA09663AB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.Api.Tests", "tests\Inshapardaz.Api.Tests\Inshapardaz.Api.Tests.csproj", "{9266B395-C0B8-4DB9-823C-70BE2110592F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.Database.Migrations.MySql.Tests", "tests\Inshapardaz.Database.Migrations.MySql.Tests\Inshapardaz.Database.Migrations.MySql.Tests.csproj", "{5A13316A-2B96-469F-A08A-BF5C946F226A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.Database.Migrations.SqlServer.Tests", "tests\Inshapardaz.Database.Migrations.SqlServer.Tests\Inshapardaz.Database.Migrations.SqlServer.Tests.csproj", "{0A24E280-8AB5-4F6F-B420-CB7358C1B081}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "db", "db", "{1274C3EB-9C86-4F47-A316-DAAAE352F5BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inshapardaz.Database.Migrations", "db\Inshapardaz.Database.Migrations\Inshapardaz.Database.Migrations.csproj", "{3624CD1B-8357-4DB1-9B0F-D90DB62BBC0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,10 +59,6 @@ Global
 		{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D3C96B5-5A0B-43D5-BDAC-8AB11D582DB8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1ADABB20-5947-409C-B0FA-6F12274B8076}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1ADABB20-5947-409C-B0FA-6F12274B8076}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1ADABB20-5947-409C-B0FA-6F12274B8076}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1ADABB20-5947-409C-B0FA-6F12274B8076}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8B17CB57-1B13-4988-B87A-06810692A0E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8B17CB57-1B13-4988-B87A-06810692A0E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B17CB57-1B13-4988-B87A-06810692A0E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -71,14 +75,33 @@ Global
 		{E1BBEA24-EA65-41FB-9D2F-9236183289F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1BBEA24-EA65-41FB-9D2F-9236183289F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1BBEA24-EA65-41FB-9D2F-9236183289F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9266B395-C0B8-4DB9-823C-70BE2110592F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9266B395-C0B8-4DB9-823C-70BE2110592F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9266B395-C0B8-4DB9-823C-70BE2110592F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9266B395-C0B8-4DB9-823C-70BE2110592F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A13316A-2B96-469F-A08A-BF5C946F226A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A13316A-2B96-469F-A08A-BF5C946F226A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A13316A-2B96-469F-A08A-BF5C946F226A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A13316A-2B96-469F-A08A-BF5C946F226A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A24E280-8AB5-4F6F-B420-CB7358C1B081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A24E280-8AB5-4F6F-B420-CB7358C1B081}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A24E280-8AB5-4F6F-B420-CB7358C1B081}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A24E280-8AB5-4F6F-B420-CB7358C1B081}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3624CD1B-8357-4DB1-9B0F-D90DB62BBC0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3624CD1B-8357-4DB1-9B0F-D90DB62BBC0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3624CD1B-8357-4DB1-9B0F-D90DB62BBC0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3624CD1B-8357-4DB1-9B0F-D90DB62BBC0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{1ADABB20-5947-409C-B0FA-6F12274B8076} = {26B32815-EFF1-4EA6-A846-BE4432C7E6A7}
-	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01E64C09-181F-45EA-ADBF-22907FDB86A8}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9266B395-C0B8-4DB9-823C-70BE2110592F} = {8C7E3360-AA68-4EE4-B86F-ADDA09663AB1}
+		{5A13316A-2B96-469F-A08A-BF5C946F226A} = {8C7E3360-AA68-4EE4-B86F-ADDA09663AB1}
+		{0A24E280-8AB5-4F6F-B420-CB7358C1B081} = {8C7E3360-AA68-4EE4-B86F-ADDA09663AB1}
+		{3624CD1B-8357-4DB1-9B0F-D90DB62BBC0C} = {1274C3EB-9C86-4F47-A316-DAAAE352F5BE}
 	EndGlobalSection
 EndGlobal

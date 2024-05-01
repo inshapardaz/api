@@ -5,6 +5,7 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 
 namespace Inshapardaz.Api.Middleware
 {
@@ -13,21 +14,25 @@ namespace Inshapardaz.Api.Middleware
         private readonly RequestDelegate _next;
         private readonly ILibraryRepository _libraryRepository;
         private readonly Settings _settings;
+        private readonly ILogger<LibraryConfigurationMiddleware> _logger;
 
-        public LibraryConfigurationMiddleware(RequestDelegate next, ILibraryRepository libraryRepository, Settings settings)
+        public LibraryConfigurationMiddleware(RequestDelegate next, ILibraryRepository libraryRepository, Settings settings, ILogger<LibraryConfigurationMiddleware> logger)
         {
             _next = next;
             _libraryRepository = libraryRepository;
             _settings = settings;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context, LibraryConfiguration libraryConfiguration)
         {
             var libraryIdValue = context.GetRouteValue("libraryId")?.ToString();
+            _logger.LogDebug("Library from route {LibraryId}", libraryIdValue);
             var libraryId = 0;
             if (string.IsNullOrWhiteSpace(libraryIdValue))
             {
                 libraryId = _settings.DefaultLibraryId;
+                _logger.LogDebug("Using default library");
             }
             else if (!int.TryParse(libraryIdValue, out libraryId))
             {
@@ -39,10 +44,15 @@ namespace Inshapardaz.Api.Middleware
             {
                 libraryConfiguration.LibraryId = libraryId;
                 libraryConfiguration.ConnectionString = library.DatabaseConnection ?? _settings.DefaultConnection;
+                libraryConfiguration.DatabaseConnectionType = library.DatabaseConnectionType ?? _settings.DatabaseConnectionType;
                 libraryConfiguration.FileStoreType = library.FileStoreType ?? _settings.FileStoreType;
                 libraryConfiguration.FileStoreSource = library.FileStoreSource;
             }
-            
+            else
+            {
+                _logger.LogWarning("No Library in context");
+            }
+
             await _next(context);
         }
     }

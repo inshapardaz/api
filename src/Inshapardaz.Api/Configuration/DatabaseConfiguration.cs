@@ -22,22 +22,22 @@ namespace Inshapardaz.Api.Configuration
 
         public static IServiceCollection AddDatabase(this IServiceCollection services)
         {
-            services.AddTransient<IFileRepository, FileRepository>();
-            services.AddTransient<ILibraryRepository, LibraryRepository>();
-            services.AddTransient<IAuthorRepository, AuthorRepository>();
-            services.AddTransient<IArticleRepository, ArticleRepository>();
-            services.AddTransient<ICategoryRepository, CategoryRepository>();
-            services.AddTransient<IBookRepository, BookRepository>();
-            services.AddTransient<IChapterRepository, ChapterRepository>();
-            services.AddTransient<ISeriesRepository, SeriesRepository>();
-            services.AddTransient<IBookPageRepository, BookPageRepository>();
-            services.AddTransient<IPeriodicalRepository, PeriodicalRepository>();
-            services.AddTransient<IIssueRepository, IssueRepository>();
-            services.AddTransient<IIssueArticleRepository, IssueArticleRepository>();
-            services.AddTransient<IAccountRepository, AccountRepository>();
-            services.AddTransient<ICorrectionRepository, CorrectionRepository>();
-            services.AddTransient<IIssuePageRepository, IssuePageRepository>();
-            services.AddTransient<IBookShelfRepository, BookShelfRepository>();
+            services.AddScoped<IFileRepository, FileRepository>();
+            services.AddScoped<ILibraryRepository, LibraryRepository>();
+            services.AddScoped<IAuthorRepository, AuthorRepository>();
+            services.AddScoped<IArticleRepository, ArticleRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IChapterRepository, ChapterRepository>();
+            services.AddScoped<ISeriesRepository, SeriesRepository>();
+            services.AddScoped<IBookPageRepository, BookPageRepository>();
+            services.AddScoped<IPeriodicalRepository, PeriodicalRepository>();
+            services.AddScoped<IIssueRepository, IssueRepository>();
+            services.AddScoped<IIssueArticleRepository, IssueArticleRepository>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<ICorrectionRepository, CorrectionRepository>();
+            services.AddScoped<IIssuePageRepository, IssuePageRepository>();
+            services.AddScoped<IBookShelfRepository, BookShelfRepository>();
             return services;
         }
 

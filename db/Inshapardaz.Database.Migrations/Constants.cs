@@ -3,6 +3,8 @@ namespace Inshapardaz.Database.Migrations
     public static class Schemas
     {
         public const string Dbo = "dbo";
+        public const string Library = "Library";
+        public const string Language = "Language";
     }
 
     public static class Tables

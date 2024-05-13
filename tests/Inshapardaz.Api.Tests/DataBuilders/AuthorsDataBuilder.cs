@@ -6,9 +6,10 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
-using Inshapardaz.Database.SqlServer;
+using Inshapardaz.Adapters.Database.SqlServer;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -132,7 +133,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
                 _articles.AddRange(articles);
 
-                foreach(var article in articles)
+                foreach (var article in articles)
                 {
                     _connection.AddArticleAuthor(article.Id, author.Id);
                 }

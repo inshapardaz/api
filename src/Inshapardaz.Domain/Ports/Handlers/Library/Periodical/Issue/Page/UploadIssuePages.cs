@@ -2,6 +2,7 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 using System;
@@ -50,6 +51,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Page
             _zipOpener = zipOpener;
         }
 
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
         public override async Task<UploadIssuePages> HandleAsync(UploadIssuePages command, CancellationToken cancellationToken = new CancellationToken())
         {
             var pageNumber = await _issuePageRepository.GetLastPageNumberForIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
@@ -87,7 +89,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Page
                     FileName = file.FileName,
                     MimeType = file.MimeType
                 }, cancellationToken);
-                var bookPage = await _issuePageRepository.AddPage(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, pageNumber, string.Empty, fileModel.Id, null, cancellationToken);
+                var bookPage = await _issuePageRepository.AddPage(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, pageNumber, string.Empty, fileModel.Id, null, EditingStatus.Available, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

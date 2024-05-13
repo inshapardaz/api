@@ -1,7 +1,9 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Paramore.Brighter;
 using System.Collections.Generic;
 using System.Threading;
@@ -43,6 +45,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Page
             _issuePageRepository = issuePageRepository;
         }
 
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
         public override async Task<UpdateIssuePageSequenceRequest> HandleAsync(UpdateIssuePageSequenceRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             // No Change in page sequence

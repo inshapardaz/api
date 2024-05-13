@@ -1,7 +1,9 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Paramore.Brighter;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +40,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue
             _articleRepository = articleRepository;
         }
 
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
         public override async Task<UpdateIssueArticleSequenceRequest> HandleAsync(UpdateIssueArticleSequenceRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var articles = await _articleRepository.GetArticlesByIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);

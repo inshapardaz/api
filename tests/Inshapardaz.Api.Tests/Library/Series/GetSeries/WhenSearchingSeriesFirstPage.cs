@@ -14,6 +14,11 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
         private HttpResponseMessage _response;
         private PagingAssert<SeriesView> _assert;
 
+        public WhenSearchingSeriesFirstPage()
+            :base(Domain.Models.Role.Reader)
+        {
+        }
+
         [OneTimeSetUp]
         public async Task Setup()
         {

@@ -1,14 +1,10 @@
 ﻿using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Api.Views;
-using System.Collections.Generic;
 using Inshapardaz.Api.Controllers;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
-using System.Linq;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
-using Microsoft.Extensions.DependencyModel;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Converters
 {

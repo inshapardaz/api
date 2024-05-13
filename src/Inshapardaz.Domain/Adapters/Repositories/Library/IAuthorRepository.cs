@@ -12,7 +12,7 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task UpdateAuthor(int libraryId, AuthorModel author, CancellationToken cancellationToken);
 
-        Task UpdateAuthorImage(int libraryId, int authorId, int imageId, CancellationToken cancellationToken);
+        Task UpdateAuthorImage(int libraryId, int authorId, long imageId, CancellationToken cancellationToken);
 
         Task DeleteAuthor(int libraryId, int authorId, CancellationToken cancellationToken);
 

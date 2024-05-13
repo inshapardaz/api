@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
 
             _contents = RandomData.Bytes;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents", _contents, _file.Language, _newMimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{_file.Id}", _contents, _file.Language, _newMimeType);
             _assert = new BookContentAssert(_response, LibraryId);
         }
 
@@ -45,9 +45,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         }
 
         [Test]
-        public void ShouldHaveCreatedResult()
+        public void ShouldHaveOkResult()
         {
-            _response.ShouldBeCreated();
+            _response.ShouldBeOk();
         }
 
         [Test]

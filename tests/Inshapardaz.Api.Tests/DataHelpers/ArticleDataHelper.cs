@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models.Library;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,11 +11,17 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 {
     public static class ArticleDataHelper
     {
+        private static DatabaseTypes _dbType => TestBase.DatabaseType;
+
         public static void AddArticle(this IDbConnection connection, ArticleDto article)
         {
-            var sql = @"Insert Into Article (LibraryId, Title, IsPublic, ImageId, Type, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SourceId, SourceType, LastModified)
-                        Output Inserted.Id
-                        Values (@LibraryId, @Title, @IsPublic, @ImageId, @Type, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SourceId, @SourceType, @LastModified)";
+            var sql = _dbType == DatabaseTypes.SqlServer 
+                ? @"INSERT INTO Article (LibraryId, Title, IsPublic, ImageId, Type, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SourceId, SourceType, LastModified)
+                        OUTPUT INSERTED.ID
+                        VALUES (@LibraryId, @Title, @IsPublic, @ImageId, @Type, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SourceId, @SourceType, @LastModified)"
+                : @"INSERT INTO Article (LibraryId, `Title`, IsPublic, ImageId, `Type`, `Status`, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SourceId, SourceType, LastModified)
+                        Values (@LibraryId, @Title, @IsPublic, @ImageId, @Type, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SourceId, @SourceType, @LastModified);
+                    SELECT LAST_INSERT_ID()";
             var id = connection.ExecuteScalar<int>(sql, article);
             article.Id = id;
         }
@@ -35,7 +42,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void DeleteArticles(this IDbConnection connection, IEnumerable<ArticleDto> articles)
         {
-            var sql = "Delete From Article Where Id IN @Ids";
+            var sql = "DELETE FROm Article WHERE Id IN @Ids";
             connection.Execute(sql, new { Ids = articles.Select(f => f.Id) });
         }
 
@@ -47,7 +54,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static ArticleContentDto GetArticleContent(this IDbConnection connection, long articleId, string language)
         {
-            return connection.QuerySingleOrDefault<ArticleContentDto>(@"select ac.*
+            return connection.QuerySingleOrDefault<ArticleContentDto>(@"SELECT ac.*
                     FROM Article a
                     LEFT OUTER JOIN ArticleContent ac ON a.Id = ac.ArticleId
                     WHERE a.Id = @ArticleId
@@ -61,7 +68,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static IEnumerable<ArticleContentDto> GetArticleContents(this IDbConnection connection, long articleId)
         {
-            return connection.Query<ArticleContentDto>(@"select *
+            return connection.Query<ArticleContentDto>(@"SELECT *
                     FROM ArticleContent
                     WHERE ArticleId = @Id",
                 new
@@ -72,14 +79,18 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static IEnumerable<IssueArticleContentDto> GetContentByArticle(this IDbConnection connection, long articleId)
         {
-            return connection.Query<IssueArticleContentDto>("Select * From ArticleContent Where ArticleId = @Id", new { Id = articleId });
+            return connection.Query<IssueArticleContentDto>("SELECT * FROM ArticleContent WHERE ArticleId = @Id", new { Id = articleId });
         }
 
         public static int AddArticleContents(this IDbConnection connection, ArticleContentDto content)
         {
-            var sql = @"INSERT INTO ArticleContent (ArticleId, Language, Text, Layout)
+            var sql = _dbType == DatabaseTypes.SqlServer 
+            ? @"INSERT INTO ArticleContent (ArticleId, Language, Text, Layout)
                 OUTPUT Inserted.ID
-                VALUES (@ArticleId, @Language, @Text, @Layout)";
+                VALUES (@ArticleId, @Language, @Text, @Layout)"
+            : @"INSERT INTO ArticleContent (ArticleId, `Language`, `Text`, `Layout`)
+                VALUES (@ArticleId, @Language, @Text, @Layout);
+                SELECT LAST_INSERT_ID();";
             return connection.ExecuteScalar<int>(sql, content);
         }
         public static void AddArticlesToFavorites(this IDbConnection connection, int libraryId, IEnumerable<long> articleIds, int accountId)
@@ -89,14 +100,14 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void AddArticleToFavorites(this IDbConnection connection, int libraryId, long articleId, int accountId, DateTime? timestamp = null)
         {
-            var sql = @"Insert into ArticleFavorite (LibraryId, ArticleId, AccountId)
-                        Values (@LibraryId, @ArticleId, @AccountId)";
+            var sql = @"INSERT INTO ArticleFavorite (LibraryId, ArticleId, AccountId)
+                        VALUES (@LibraryId, @ArticleId, @AccountId)";
             connection.ExecuteScalar<int>(sql, new { LibraryId = libraryId, ArticleId = articleId, AccountId = accountId });
         }
 
 
         public static bool DoesArticleExistsInFavorites(this IDbConnection connection, long articleId, int accountId) =>
-           connection.QuerySingle<bool>(@"Select Count(1) From ArticleFavorite Where ArticleId = @ArticleId And AccountId = @AccountId", new
+           connection.QuerySingle<bool>(@"SELECT COUNT(1) FROM ArticleFavorite WHERE ArticleId = @ArticleId AND AccountId = @AccountId", new
            {
                ArticleId = articleId,
                AccountId = accountId
@@ -110,21 +121,25 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void AddArticleToRecentReads(this IDbConnection connection, RecentArticleDto dto)
         {
-            var sql = @"Insert into ArticleRead (LibraryId, ArticleId, AccountId, DateRead)
-                        Values (@LibraryId, @ArticleId, @AccountId, @DateRead)";
+            var sql = @"INSERT INTO ArticleRead (LibraryId, ArticleId, AccountId, DateRead)
+                        VALUES (@LibraryId, @ArticleId, @AccountId, @DateRead)";
             connection.ExecuteScalar<int>(sql, dto);
         }
 
 
         public static bool DoesArticleExistsInRecent(this IDbConnection connection, long articleId) =>
-            connection.QuerySingle<bool>(@"Select Count(1) From ArticleRead Where ArticleId = @ArticleId", new
+            connection.QuerySingle<bool>(@"SELECT COUNT(1) FROM ArticleRead WHERE ArticleId = @ArticleId", new
             {
                 ArticleId = articleId
             });
 
         public static string GetArticleImageUrl(this IDbConnection connection, long articleId)
         {
-            var sql = @"SELECT f.FilePath FROM [File] f
+            var sql = _dbType == DatabaseTypes.SqlServer 
+                ? @"SELECT f.FilePath FROM [File] f
+                        INNER JOIN Article a ON f.Id = a.ImageId
+                        WHERE a.Id = @Id"
+                : @"SELECT f.FilePath FROM `File` f
                         INNER JOIN Article a ON f.Id = a.ImageId
                         WHERE a.Id = @Id";
             return connection.QuerySingleOrDefault<string>(sql, new { Id = articleId });
@@ -132,9 +147,13 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static FileDto GetArticleImage(this IDbConnection connection, long articleId)
         {
-            var sql = @"Select f.* from [File] f
-                        Inner Join Article a ON f.Id = a.ImageId
-                        Where a.Id = @Id";
+            var sql = _dbType == DatabaseTypes.SqlServer
+                ? @"SELECT f.* FROM [File] f
+                        INNER JOIN Article a ON f.Id = a.ImageId
+                        WHERE a.Id = @Id"
+                : @"SELECT f.* FROM `File` f
+                        INNER JOIN Article a ON f.Id = a.ImageId
+                        WHERE a.Id = @Id";
             return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = articleId });
         }
 

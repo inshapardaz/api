@@ -9,14 +9,14 @@ namespace Inshapardaz.Domain.Models
 {
     public class GetFileQuery : IQuery<FileModel>
     {
-        public GetFileQuery(int imageId, int height, int width)
+        public GetFileQuery(long imageId, int height, int width)
         {
             ImageId = imageId;
             Height = height;
             Width = width;
         }
 
-        public int ImageId { get; private set; }
+        public long ImageId { get; private set; }
         public int Height { get; private set; }
         public int Width { get; private set; }
         public bool IsPublic { get; set; }

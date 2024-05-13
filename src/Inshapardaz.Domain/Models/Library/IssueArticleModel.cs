@@ -5,7 +5,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class IssueArticleModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string Title { get; set; }
         public int SequenceNumber { get; set; }

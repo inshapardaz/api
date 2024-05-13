@@ -21,7 +21,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public bool IsPublic { get; set; }
 
-        public int? ImageId { get; set; }
+        public long? ImageId { get; set; }
 
         public string ImageUrl { get; set; }
 

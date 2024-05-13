@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -45,6 +46,8 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical
             _fileRepository = fileRepository;
             _fileStorage = fileStorage;
         }
+
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
 
         public override async Task<UpdatePeriodicalImageRequest> HandleAsync(UpdatePeriodicalImageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {

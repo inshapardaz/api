@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using System.Collections.Generic;
 using System.Data;
 
@@ -8,6 +9,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 {
     public static class AccountDataHelper
     {
+        private static DatabaseTypes _dbType => TestBase.DatabaseType;
         public static AccountDto GetAccountByEmail(this IDbConnection connection, string email)
         {
             var sql = @"SELECT * FROM Accounts WHERE Email = @Email";
@@ -24,14 +26,18 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         {
             var sql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
                         OUTPUT Inserted.Id VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);";
-            var id = connection.ExecuteScalar<int>(sql, account);
+            var mySql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
+                VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);
+                SELECT LAST_INSERT_ID();";
+            var id = connection.ExecuteScalar<int>(_dbType == DatabaseTypes.SqlServer ? sql : mySql, account);
             account.Id = id;
         }
 
         public static void RevokeRefreshToken(this IDbConnection connection, string refreshToken)
         {
             var sql = @"UPDATE RefreshToken SET REVOKED = GETDATE() WHERE Token = @Token";
-            connection.Execute(sql, new { Token = refreshToken });
+            var mySql = @"UPDATE RefreshToken SET REVOKED = SYSDATE() WHERE Token = @Token";
+            connection.Execute(_dbType == DatabaseTypes.SqlServer ? sql : mySql, new { Token = refreshToken });
         }
 
         public static string GetRefreshToken(this IDbConnection connection, string email)

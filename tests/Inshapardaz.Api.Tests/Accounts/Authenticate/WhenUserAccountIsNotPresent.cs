@@ -1,6 +1,6 @@
-﻿using Inshapardaz.Api.Models.Accounts;
-using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Views.Accounts;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;

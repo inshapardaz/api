@@ -1,11 +1,11 @@
-﻿using Inshapardaz.Api.Models.Accounts;
-using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Views.Accounts;
 
 namespace Inshapardaz.Api.Tests.Accounts.Authenticate
 {

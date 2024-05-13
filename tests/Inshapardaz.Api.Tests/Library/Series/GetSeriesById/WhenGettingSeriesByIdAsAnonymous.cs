@@ -33,43 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
         [Test]
         public void ShouldReturnOk()
         {
-            _response.ShouldBeOk();
-        }
-
-        [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
-
-        [Test]
-        public void ShouldHaveBooksLink()
-        {
-            _assert.ShouldHaveBooksLink();
-        }
-
-        [Test]
-        public void ShouldNotHaveUpdateLink()
-        {
-            _assert.ShouldNotHaveUpdateLink();
-        }
-
-        [Test]
-        public void ShouldNotHaveDeleteLink()
-        {
-            _assert.ShouldNotHaveDeleteLink();
-        }
-
-        [Test]
-        public void ShouldNotHaveImageUploadLink()
-        {
-            _assert.ShouldNotHaveImageUploadLink();
-        }
-
-        [Test]
-        public void ShouldReturnCorrectSeriesData()
-        {
-            _assert.ShouldHaveCorrectSeriesRetunred(_expected, DatabaseConnection);
+            _response.ShouldBeUnauthorized();
         }
     }
 }

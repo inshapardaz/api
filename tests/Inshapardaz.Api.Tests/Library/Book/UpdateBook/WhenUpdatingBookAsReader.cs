@@ -1,7 +1,11 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Bogus;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
@@ -19,10 +23,28 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var book = BookBuilder.WithLibrary(LibraryId).Build();
+            var author = AuthorBuilder.WithLibrary(LibraryId).Build();
+            var book = BookBuilder.WithLibrary(LibraryId).WithAuthor(author).Build();
             book.Title = RandomData.Name;
 
-            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{book.Id}", book);
+            var payload = new BookView
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Description = book.Description,
+                Copyrights = book.Copyrights.ToDescription(),
+                Language = book.Language,
+                YearPublished = book.YearPublished,
+                Status = book.Status.ToDescription(),
+                IsPublic = book.IsPublic,
+                Authors = new [] { new AuthorView { Id = author.Id, Name = author.Name } },
+                SeriesId = book.SeriesId,
+                IsPublished = book.IsPublished,
+                Source = book.Source,
+                Publisher = book.Publisher
+            };
+
+            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{book.Id}", payload);
         }
 
         [OneTimeTearDown]

@@ -3,10 +3,11 @@ using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
-using Inshapardaz.Database.SqlServer;
+using Inshapardaz.Adapters.Database.SqlServer;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {

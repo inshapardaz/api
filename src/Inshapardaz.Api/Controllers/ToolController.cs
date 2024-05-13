@@ -52,7 +52,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("/tools/{language}/corrections/{profile}/{id}", Name = nameof(GetCorrectionById))]
-        [Authorize(Role.Admin)]
         public async Task<IActionResult> GetCorrectionById(string language, string profile, long id, CancellationToken cancellationToken = default(CancellationToken))
         {
             var query = new GetCorrectionQuery() { Id = id, Language = language, Profile = profile };
@@ -67,7 +66,6 @@ namespace Inshapardaz.Api.Controllers
 
 
         [HttpPost("/tools/{language}/corrections/{profile}", Name = nameof(AddCorrection))]
-        [Authorize(Role.Admin)]
         public async Task<IActionResult> AddCorrection(string language, string profile, [FromBody] CorrectionView correction, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -86,7 +84,6 @@ namespace Inshapardaz.Api.Controllers
         }
          
         [HttpPut("/tools/{language}/corrections/{profile}/{id}", Name = nameof(UpdateCorrection))]
-        [Authorize(Role.Admin)]
         public async Task<IActionResult> UpdateCorrection(string language, string profile, long id, [FromBody] CorrectionView correction, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -112,7 +109,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("/tools/{language}/corrections/{profile}/{id}", Name = nameof(DeleteCorrection))]
-        [Authorize(Role.Admin)]
         public async Task<IActionResult> DeleteCorrection(string language, string profile, long id, CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new DeleteCorrectionRequest(language, profile, id);

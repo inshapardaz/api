@@ -5,7 +5,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class ChapterModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public int ChapterNumber { get; set; }
 

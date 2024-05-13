@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var periodical = new PeriodicalView { Title = RandomData.Name, Description = RandomData.Words(20) };
+            var periodical = new PeriodicalView { Title = RandomData.Name, Description = RandomData.Words(20), Frequency = "Weekly", Language = "en" };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals", periodical);
         }

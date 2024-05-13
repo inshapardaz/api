@@ -39,9 +39,9 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticle
             }
 
             [Test]
-            public void ShouldReturnBadRequest()
+            public void ShouldReturnForbidden()
             {
-                _response.ShouldBeBadRequest();
+                _response.ShouldBeForbidden();
             }
         }
 

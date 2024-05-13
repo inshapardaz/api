@@ -1,4 +1,6 @@
-﻿using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Handlers.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -39,6 +41,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue
             _fileStorage = fileStorage;
         }
 
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
         public override async Task<DeleteIssueContentRequest> HandleAsync(DeleteIssueContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var content = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Language, command.MimeType, cancellationToken);

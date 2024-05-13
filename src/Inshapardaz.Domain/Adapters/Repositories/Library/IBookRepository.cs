@@ -30,7 +30,7 @@ namespace Inshapardaz.Domain.Repositories.Library
         Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, StatusType status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
         Task DeleteBookFromFavorites(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
 
-        Task<int> AddBookContent(int bookId, int fileId, string language, string mimeType, CancellationToken cancellationToken);
+        Task<int> AddBookContent(int bookId, long fileId, string language, string mimeType, CancellationToken cancellationToken);
 
         Task DeleteBookContent(int libraryId, int bookId, int contentId, CancellationToken cancellationToken);
 
@@ -39,7 +39,7 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<IEnumerable<BookContentModel>> GetBookContents(int libraryId, int bookId, CancellationToken cancellationToken);
 
-        Task UpdateBookImage(int libraryId, int bookId, int fileId, CancellationToken cancellationToken);
+        Task UpdateBookImage(int libraryId, int bookId, long fileId, CancellationToken cancellationToken);
 
         Task UpdateBookContent(int libraryId, int bookId, int contentId, string language, string mimeType, string url, CancellationToken cancellationToken);
 

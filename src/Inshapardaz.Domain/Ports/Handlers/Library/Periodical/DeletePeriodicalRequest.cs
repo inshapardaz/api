@@ -1,4 +1,6 @@
-﻿using Inshapardaz.Domain.Models.Handlers.Library;
+﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Handlers.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -31,6 +33,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical
             _fileStorage = fileStorage;
         }
 
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
         public override async Task<DeletePeriodicalRequest> HandleAsync(DeletePeriodicalRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var periodical = await _periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);

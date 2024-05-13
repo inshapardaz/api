@@ -281,7 +281,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             {
                 _issuePage.ReviewerAssignTimeStamp.Should().BeNull();
             }
-            _issuePage.ArticleNumber.Should().Be(view.ArticleNumber);
+            _issuePage.ArticleId.Should().Be(view.ArticleId);
             _issuePage.ArticleName.Should().Be(view.ArticleName);
             _issuePage.Status.Should().Be(view.Status);
         }

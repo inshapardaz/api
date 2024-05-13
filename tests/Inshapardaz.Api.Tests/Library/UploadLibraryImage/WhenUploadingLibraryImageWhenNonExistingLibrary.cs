@@ -32,9 +32,9 @@ namespace Inshapardaz.Api.Tests.Library.UploadLibraryImage
         }
 
         [Test]
-        public void ShouldHaveBadRequest()
+        public void ShouldHaveReturnedForbidden()
         {
-            _response.ShouldBeBadRequest();
+            _response.ShouldBeForbidden();
         }
     }
 }

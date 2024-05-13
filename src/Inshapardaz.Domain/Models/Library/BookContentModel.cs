@@ -2,7 +2,7 @@
 {
     public class BookContentModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public int BookId { get; set; }
 
@@ -14,6 +14,6 @@
 
         public string FileName { get; set; }
 
-        public int FileId { get; internal set; }
+        public long FileId { get; internal set; }
     }
 }

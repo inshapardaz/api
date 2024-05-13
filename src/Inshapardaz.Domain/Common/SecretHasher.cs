@@ -4,8 +4,11 @@ namespace Inshapardaz.Domain.Common
 {
     public static class SecretHasher
     {
-        //TODO : Add per user salt
-        public static string GetStringHash(string source) => BCrypt.Net.BCrypt.HashPassword(source);
+        public static string GetStringHash(string source)
+        {
+            var salt = BCrypt.Net.BCrypt.GenerateSalt();
+            return BCrypt.Net.BCrypt.HashPassword(source, salt);
+        }
 
         public static bool Verify(string value, string hash) => BCrypt.Net.BCrypt.Verify(value, hash);
     }

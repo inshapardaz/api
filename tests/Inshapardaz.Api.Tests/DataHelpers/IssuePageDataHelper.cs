@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Domain.Models.Library;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -8,11 +9,17 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 {
     public static class IssuePageDataHelper
     {
+        private static DatabaseTypes _dbType => TestBase.DatabaseType;
+
         public static void AddIssuePage(this IDbConnection connection, IssuePageDto issuePage)
         {
-            var sql = @"Insert Into IssuePage (IssueId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
-                        Output Inserted.Id
-                        Values (@IssueId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status)";
+            var sql = _dbType == DatabaseTypes.SqlServer 
+                ? @"INSERT INTO IssuePage (IssueId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
+                    OUTPUT INSERTED.ID
+                    VALUES (@IssueId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status)"
+                : @"INSERT INTO IssuePage (IssueId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
+                    VALUES (@IssueId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status);
+                    SELECT LAST_INSERT_ID();";
             var id = connection.ExecuteScalar<int>(sql, issuePage);
             issuePage.Id = id;
         }

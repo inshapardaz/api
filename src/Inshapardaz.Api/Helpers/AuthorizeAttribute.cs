@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Inshapardaz.Domain.Models;
@@ -9,6 +5,7 @@ using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Api.Helpers
 {
+    // TODO: Add Authorization
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class AuthorizeAttribute : Attribute, IAuthorizationFilter
     {

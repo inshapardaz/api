@@ -18,7 +18,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         private ChapterView _chapter;
         private HttpResponseMessage _response;
         private ChapterAssert _assert;
-        private ClaimsPrincipal _claim;
 
         public WhenAddingChapterWithPermission(Role role)
             : base(role)

@@ -14,6 +14,11 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
         private SeriesDto _expected;
         private SeriesAssert _assert;
 
+        public WhenGettingSeriesById()
+                    : base(Domain.Models.Role.Reader)
+        {
+        }
+
         [OneTimeSetUp]
         public async Task Setup()
         {

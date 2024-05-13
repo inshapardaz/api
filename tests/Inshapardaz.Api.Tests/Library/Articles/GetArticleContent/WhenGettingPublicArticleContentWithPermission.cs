@@ -19,7 +19,6 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
         private ArticleContentAssert _assert;
         private ArticleDto _article;
         private ArticleContentDto _content;
-        private ClaimsPrincipal _claim;
 
         public WhenGettingPublicArticleContentWithPermission(Role role)
         : base(role)

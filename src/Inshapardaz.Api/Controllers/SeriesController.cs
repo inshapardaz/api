@@ -1,15 +1,9 @@
-﻿using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Converters;
+﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Series;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -64,7 +58,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/series", Name = nameof(SeriesController.CreateSeries))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateSeries(int libraryId, [FromBody]SeriesView series, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -80,7 +73,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.UpdateSeries))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateSeries(int libraryId, int seriesId, [FromBody]SeriesView series, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -105,7 +97,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("libraries/{libraryId}/series/{seriesId}", Name = nameof(SeriesController.DeleteSeries))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteSeries(int libraryId, int seriesId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteSeriesRequest(libraryId, seriesId);
@@ -114,7 +105,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/series/{seriesId}/image", Name = nameof(SeriesController.UpdateSeriesImage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateSeriesImage(int libraryId, int seriesId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];

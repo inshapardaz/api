@@ -16,7 +16,6 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.AddBookShelf
     public class WhenAddingBookShelfWithPermissions
         : TestBase
     {
-        private readonly ClaimsPrincipal _claim;
         private BookShelfAssert _assert;
         private HttpResponseMessage _response;
 

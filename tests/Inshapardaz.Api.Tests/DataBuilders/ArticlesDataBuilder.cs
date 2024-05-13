@@ -9,11 +9,12 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Database.SqlServer;
+using Inshapardaz.Adapters.Database.SqlServer;
 using RandomData = Inshapardaz.Api.Tests.Helpers.RandomData;
 using Inshapardaz.Domain.Models;
 using Bogus;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -290,13 +291,14 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                         Text = RandomData.Words(100),
                         Layout = RandomData.String
                     }).ToList();
-                    contents.ForEach(f => {
+                    contents.ForEach(f =>
+                    {
                         f.Id = _connection.AddArticleContents(f);
                     });
                     _contents.AddRange(contents);
                 }
 
-                
+
 
             }
 

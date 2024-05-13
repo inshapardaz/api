@@ -3,6 +3,7 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.Threading;
@@ -44,6 +45,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Page
             _issuePageRepository = issuePageRepository;
         }
 
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
         public override async Task<AssignIssuePageToUserRequest> HandleAsync(AssignIssuePageToUserRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var page = await _issuePageRepository.GetPageBySequenceNumber(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);

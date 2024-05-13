@@ -1,12 +1,11 @@
 ﻿using Inshapardaz.Domain.Models.Handlers.Library;
-using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Query;
 
 namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article
 {
@@ -40,6 +39,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article
             _articleRepository = articleRepository;
         }
 
+        [LibraryAuthorize(1)]
         public override async Task<IssueArticleContentModel> ExecuteAsync(GetIssueArticleContentQuery command, CancellationToken cancellationToken = new CancellationToken())
         {
             if (string.IsNullOrWhiteSpace(command.Language))

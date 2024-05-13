@@ -9,7 +9,6 @@ namespace Inshapardaz.Database.Migrations
     {
         private readonly string RootUserName = "root@nawishta.co.uk";
         private readonly string RootPassword = "Passw0rd";
-        private readonly string RootPasswordSalt = BCrypt.Net.BCrypt.GenerateSalt();
 
         public override void Up()
         {
@@ -23,15 +22,14 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn(Columns.Id).AsInt32().PrimaryKey("PK_Accounts").Indexed().Identity()
                 .WithColumn("Email").AsString().Nullable()
                 .WithColumn("PasswordHash").AsString().Nullable()
-                .WithColumn("PasswordSalt").AsString().Nullable()
                 .WithColumn("AcceptTerms").AsBoolean().NotNullable()
                 .WithColumn("VerificationToken").AsString().Nullable()
                 .WithColumn("Verified").AsDateTime2().Nullable()
                 .WithColumn("ResetToken").AsString().Nullable()
                 .WithColumn("ResetTokenExpires").AsDateTime2().Nullable()
                 .WithColumn("PasswordReset").AsDateTime2().Nullable()
-                .WithColumn("Created").AsDateTime2().NotNullable()
-                .WithColumn("Updated").AsDateTime2().Nullable()
+                .WithColumn("Created").AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime)
+                .WithColumn("Updated").AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime)
                 .WithColumn("Name").AsString().Nullable()
                 .WithColumn("IsSuperAdmin").AsBoolean().NotNullable().WithDefaultValue(0)
                 .WithColumn("InvitationCode").AsString().Nullable()
@@ -42,8 +40,7 @@ namespace Inshapardaz.Database.Migrations
                 .Row(new
                 {
                     Email = RootUserName,
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(RootPassword, RootPasswordSalt),
-                    PasswordSalt = RootPasswordSalt,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(RootPassword, BCrypt.Net.BCrypt.GenerateSalt()),
                     Verified = DateTime.UtcNow,
                     Created = DateTime.UtcNow,
                     Name = "Root",
@@ -59,7 +56,7 @@ namespace Inshapardaz.Database.Migrations
                     .ForeignKey("FK_RefreshToken_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
                 .WithColumn("Token").AsString().Nullable()
                 .WithColumn("Expires").AsDateTime2().NotNullable()
-                .WithColumn("Created").AsDateTime2().NotNullable()
+                .WithColumn("Created").AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime)
                 .WithColumn("CreatedByIp").AsString().Nullable()
                 .WithColumn("Revoked").AsDateTime2().Nullable()
                 .WithColumn("RevokedByIp").AsString().Nullable()
@@ -72,7 +69,7 @@ namespace Inshapardaz.Database.Migrations
             Create.Table(Tables.File)
                 .InSchema(Schemas.Library)
                 .WithColumn(Columns.Id).AsInt64().PrimaryKey().Identity()
-                .WithColumn(Columns.DateCreated).AsDateTime2()
+                .WithColumn(Columns.DateCreated).AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime)
                 .WithColumn("FileName").AsString(int.MaxValue).Nullable()
                 .WithColumn("MimeType").AsString(int.MaxValue).Nullable()
                 .WithColumn("FilePath").AsString(int.MaxValue).Nullable()
@@ -163,18 +160,18 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn("Title").AsString(512).NotNullable().Indexed("IDX_BookTitle")
                 .WithColumn(Columns.Description).AsString(int.MaxValue).Nullable()
                 .WithColumn(Columns.ImageId).AsInt64().Nullable()
-                    .ForeignKey("FK_Book_Image", Schemas.Library, Tables.File, Columns.Id)
+                    .ForeignKey("FK_Book_Image", Schemas.Library, Tables.File, Columns.Id).OnDelete(System.Data.Rule.SetNull)
                 .WithColumn(Columns.IsPublic).AsBoolean().WithDefaultValue(false).Indexed("IDX_PublicBook")
                 .WithColumn("IsPublished").AsBoolean().WithDefaultValue(false)
                 .WithColumn(Columns.Language).AsString(10)
                 .WithColumn("Status").AsInt32().NotNullable().WithDefaultValue(0)
                 .WithColumn("SeriesId").AsInt32().Nullable().Indexed("IX_Book_SeriesId")
-                    .ForeignKey("FK_Book_Series", Schemas.Library, Tables.Series, Columns.Id)
+                    .ForeignKey("FK_Book_Series", Schemas.Library, Tables.Series, Columns.Id).OnDelete(System.Data.Rule.SetNull)
                 .WithColumn("SeriesIndex").AsInt32().Nullable()
                 .WithColumn("Copyrights").AsInt32().NotNullable().WithDefaultValue(0)
                 .WithColumn("YearPublished").AsInt32().Nullable()
-                .WithColumn("DateAdded").AsDateTime2().NotNullable().WithDefaultValue("0001-01-01T00:00:00.000")
-                .WithColumn("DateUpdated").AsDateTime2().NotNullable().WithDefaultValue("0001-01-01T00:00:00.000")
+                .WithColumn("DateAdded").AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime)
+                .WithColumn("DateUpdated").AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime)
                 .WithColumn("LibraryId").AsInt32()
                     .ForeignKey("FK_Book_Library", Schemas.Library, Tables.Library, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
                 .WithColumn("Source").AsString().Indexed("IDX_Book_Source").Nullable()
@@ -185,7 +182,7 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn("BookId").AsInt32().Indexed("IX_BookAuthor_BookId")
                     .ForeignKey("FK_BookAuthor_Book", Schemas.Library, Tables.Book, Columns.Id).OnDelete(System.Data.Rule.Cascade)
                 .WithColumn("AuthorId").AsInt32().Indexed("IX_BookAuthor_AuthorId")
-                    .ForeignKey("FK_BookAuthor_Author", Schemas.Library, Tables.Author, Columns.Id);
+                    .ForeignKey("FK_BookAuthor_Author", Schemas.Library, Tables.Author, Columns.Id).OnDelete(System.Data.Rule.Cascade);
 
             Create.PrimaryKey("PK_BookAuthor")
                 .OnTable("BookAuthor").WithSchema(Schemas.Library)
@@ -252,6 +249,7 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn("Text").AsString(int.MaxValue).Nullable()
                 .WithColumn("SequenceNumber").AsInt32().Nullable()
                 .WithColumn("ImageId").AsInt64().Nullable()
+                    .ForeignKey("FK_BookPage_Image", Schemas.Library, Tables.File, Columns.Id).OnDelete(System.Data.Rule.SetNull)
                 .WithColumn("Status").AsInt32().WithDefaultValue(0)
                 .WithColumn("WriterAccountId").AsInt32().Nullable()
                     .ForeignKey("FK_BookPage_Writer_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id)
@@ -292,7 +290,7 @@ namespace Inshapardaz.Database.Migrations
                     .ForeignKey("FK_FavoriteBooks_Library", Schemas.Library, Tables.Library, Columns.Id)
                 .WithColumn("AccountId").AsInt32()
                     .ForeignKey("FK_FavoriteBooks_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id)
-                .WithColumn("DateAdded").AsDateTime2();
+                .WithColumn("DateAdded").AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime);
 
             Create.PrimaryKey("PK_FavoriteBooks")
                .OnTable(Tables.FavoriteBooks).WithSchema(Schemas.Library)
@@ -307,7 +305,7 @@ namespace Inshapardaz.Database.Migrations
                     .ForeignKey("FK_RecentBooks_Library", Schemas.Library, Tables.Library, Columns.Id)
                 .WithColumn("AccountId").AsInt32()
                     .ForeignKey("FK_RecentBooks_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id)
-                .WithColumn("DateRead").AsDateTime2();
+                .WithColumn("DateRead").AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime);
 
             Create.PrimaryKey("PK_RecentBooks")
                 .OnTable(Tables.RecentBooks).WithSchema(Schemas.Library)
@@ -323,7 +321,7 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn("LibraryId").AsInt32()
                     .ForeignKey("FK_Article_Library", Schemas.Library, Tables.Library, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
                 .WithColumn("ImageId").AsInt64()
-                    .ForeignKey("FK_Article_File", Schemas.Library, "File", Columns.Id).Nullable()
+                    .ForeignKey("FK_Article_Image", Schemas.Library, "File", Columns.Id).OnDelete(System.Data.Rule.SetNull)
                 .WithColumn("WriterAccountId").AsInt32().Nullable()
                     .ForeignKey("FK_Article_Writer_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id)
                 .WithColumn("WriterAssignTimeStamp").AsDateTime2().Nullable()
@@ -332,7 +330,7 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn("ReviewerAssignTimeStamp").AsDateTime2().Nullable()
                 .WithColumn("SourceType").AsString().Nullable()
                 .WithColumn("SourceId").AsInt32().Nullable()
-                .WithColumn("LastModified").AsDateTime2();
+                .WithColumn("LastModified").AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime);
             //--------------------------------------------------------------------------------
 
             Create.Table("ArticleAuthor").InSchema(Schemas.Library)
@@ -386,7 +384,7 @@ namespace Inshapardaz.Database.Migrations
                     .ForeignKey("FK_ArticleRead_Account", Schemas.Dbo, Tables.Accounts, Columns.Id)
                 .WithColumn("LibraryId").AsInt32()
                     .ForeignKey("FK_ArticleRead_Library", Schemas.Library, Tables.Library, Columns.Id)
-                .WithColumn("DateRead").AsDateTime2();
+                .WithColumn("DateRead").AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime);
 
             Create.PrimaryKey("PK_ArticleRead")
                             .OnTable("ArticleRead").WithSchema(Schemas.Library)
@@ -487,7 +485,7 @@ namespace Inshapardaz.Database.Migrations
                     .ForeignKey("FK_IssuePage_IssueArticle", Schemas.Library, "IssueArticle", Columns.Id)
                 .WithColumn("SequenceNumber").AsInt32().Nullable()
                 .WithColumn("ImageId").AsInt64().Nullable()
-                    .ForeignKey("FK_IssuePage_File", Schemas.Library, Tables.File, Columns.Id)
+                    .ForeignKey("FK_IssuePage_Image", Schemas.Library, Tables.File, Columns.Id).OnDelete(System.Data.Rule.SetNull)
                 .WithColumn("Status").AsInt32().WithDefaultValue(0)
                 .WithColumn("WriterAccountId").AsInt32().Nullable()
                         .ForeignKey("FK_IssuePage_Writer_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id)

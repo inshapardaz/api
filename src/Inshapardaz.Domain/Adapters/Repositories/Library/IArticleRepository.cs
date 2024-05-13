@@ -33,7 +33,7 @@ namespace Inshapardaz.Domain.Adapters.Repositories.Library
         
         Task<ArticleModel> UpdateReviewerAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken);
 
-        Task UpdateArticleImage(int libraryId, long articleId, int imageId, CancellationToken cancellationToken);
+        Task UpdateArticleImage(int libraryId, long articleId, long imageId, CancellationToken cancellationToken);
 
         #region Faviorite 
         Task AddArticleToFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken);

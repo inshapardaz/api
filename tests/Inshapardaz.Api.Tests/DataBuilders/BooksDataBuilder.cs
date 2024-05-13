@@ -9,9 +9,10 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Database.SqlServer;
+using Inshapardaz.Adapters.Database.SqlServer;
 using RandomData = Inshapardaz.Api.Tests.Helpers.RandomData;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -353,6 +354,10 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     var chapters = fixture.Build<ChapterDto>()
                         .With(c => c.BookId, book.Id)
                         .With(c => c.ChapterNumber, () => c++)
+                        .Without(c => c.WriterAccountId)
+                        .Without(c => c.WriterAssignTimeStamp)
+                        .Without(c => c.ReviewerAccountId)
+                        .Without(c => c.ReviewerAssignTimeStamp)
                         .CreateMany(_chapterCount);
 
                     _connection.AddChapters(chapters);

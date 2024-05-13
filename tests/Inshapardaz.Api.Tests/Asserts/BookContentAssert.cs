@@ -37,7 +37,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookContent.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents");
+                  .EndingWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents/{_bookContent.Id}");
 
             return this;
         }
@@ -70,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal void ShouldHaveBookContent(byte[] expected, IDbConnection db, IFileStorage fileStore)
         {
-            var content = db.GetBookContent(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
+            var content = db.GetBookContent(_bookContent.BookId, _bookContent.Id);
             content.Should().NotBeNull();
 
             // TODO: Make sure the contents are correct
@@ -82,7 +82,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookContent.UpdateLink()
                  .ShouldBePut()
-                 .EndingWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents");
+                 .EndingWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents/{_bookContent.Id}");
 
             return this;
         }
@@ -115,7 +115,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
-            location.Should().EndWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents");
+            location.Should().EndWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents/{_bookContent.Id}");
             return this;
         }
 
@@ -161,7 +161,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal BookContentAssert ShouldHaveSavedBookContent(IDbConnection dbConnection)
         {
-            var dbContent = dbConnection.GetBookContent(_bookContent.Id, _bookContent.Language, _bookContent.MimeType);
+            var dbContent = dbConnection.GetBookContent(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
             dbContent.Should().NotBeNull();
             var dbFile = dbConnection.GetFileById(dbContent.FileId);
             _bookContent.BookId.Should().Be(dbContent.BookId);
@@ -175,7 +175,7 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _bookContent.DeleteLink()
                  .ShouldBeDelete()
-                 .EndingWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents");
+                 .EndingWith($"libraries/{_libraryId}/books/{_bookContent.BookId}/contents/{_bookContent.Id}");
 
             return this;
         }

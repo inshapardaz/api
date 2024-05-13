@@ -1,8 +1,10 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
@@ -52,6 +54,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article
             _fileRepository = fileRepository;
         }
 
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
         public override async Task<AddIssueArticleContentRequest> HandleAsync(AddIssueArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             if (string.IsNullOrWhiteSpace(command.Language))

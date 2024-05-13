@@ -16,13 +16,12 @@ namespace Inshapardaz.Api.Mappings
                 IsPublic = source.IsPublic
             };
 
-        public static BookShelfModel Map(this BookShelfView source, int accountId)
+        public static BookShelfModel Map(this BookShelfView source)
             => source == null ? null : new BookShelfModel
             {
                 Id = source.Id,
                 Name = source.Name,
                 Description = source.Description,
-                AccountId = accountId,
                 BookCount = source.BookCount,
                 IsPublic = source.IsPublic
             };

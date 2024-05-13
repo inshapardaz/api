@@ -3,6 +3,7 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Paramore.Brighter;
 using Paramore.Darker;
 using System.Threading;
@@ -41,6 +42,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Page
             _ocr = ocr;
         }
 
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
         public override async Task<IssuePageOcrRequest> HandleAsync(IssuePageOcrRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var issuePage = await _issuePageRepository.GetPageBySequenceNumber(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
@@ -52,7 +54,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Page
                 {
                     var text = await _ocr.PerformOcr(image.Contents, command.ApiKey, cancellationToken);
                     issuePage.Text = text;
-                    await _issuePageRepository.UpdatePage(command.LibraryId, issuePage.PeriodicalId, issuePage.VolumeNumber, issuePage.IssueNumber, issuePage.SequenceNumber, text, issuePage.ImageId.Value, issuePage.ArticleNumber, issuePage.Status, cancellationToken);
+                    await _issuePageRepository.UpdatePage(command.LibraryId, issuePage.PeriodicalId, issuePage.VolumeNumber, issuePage.IssueNumber, issuePage.SequenceNumber, text, issuePage.ImageId.Value, issuePage.ArticleId, issuePage.Status, cancellationToken);
                     return await base.HandleAsync(command, cancellationToken);
                 }
             }

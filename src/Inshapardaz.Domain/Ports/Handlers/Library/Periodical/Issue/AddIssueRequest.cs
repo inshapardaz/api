@@ -1,6 +1,8 @@
 ﻿using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.Threading;
@@ -34,6 +36,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue
                 _periodicalRepository = periodicalRepository;
             }
 
+            [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
             public override async Task<AddIssueRequest> HandleAsync(AddIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
             {
 

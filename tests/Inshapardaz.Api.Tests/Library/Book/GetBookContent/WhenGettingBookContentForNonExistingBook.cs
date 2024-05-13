@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{-RandomData.Number}/content", RandomData.Locale, RandomData.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{-RandomData.Number}/content/{-RandomData.Number}", RandomData.Locale, RandomData.MimeType);
         }
 
         [OneTimeTearDown]

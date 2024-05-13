@@ -1,8 +1,10 @@
 ﻿using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.Threading;
@@ -42,6 +44,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Page
             _issuePageRepository = issuePageRepository;
         }
 
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
         public override async Task<AddIssuePageRequest> HandleAsync(AddIssuePageRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var Issue = await _issueRepository.GetIssue(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, cancellationToken);
@@ -54,12 +57,12 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Page
 
             if (existingIssuePage == null)
             {
-                command.Result = await _issuePageRepository.AddPage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, 0, command.IssuePage.ArticleNumber, cancellationToken);
+                command.Result = await _issuePageRepository.AddPage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, null, command.IssuePage.ArticleId, command.IssuePage.Status, cancellationToken);
                 command.IsAdded = true;
             }
             else
             {
-                command.Result = await _issuePageRepository.UpdatePage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, 0, command.IssuePage.ArticleNumber, command.IssuePage.Status, cancellationToken);
+                command.Result = await _issuePageRepository.UpdatePage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.Text, existingIssuePage.ImageId, command.IssuePage.ArticleId, command.IssuePage.Status, cancellationToken);
             }
 
             return await base.HandleAsync(command, cancellationToken);

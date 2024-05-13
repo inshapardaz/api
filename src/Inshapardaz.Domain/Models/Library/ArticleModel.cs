@@ -15,7 +15,7 @@ namespace Inshapardaz.Domain.Models.Library
         public List<ArticleContentModel> Contents { get; set; } = new List<ArticleContentModel>();
         public bool IsRead { get; set; }
         public bool IsFavorite { get; set; }
-        public int? ImageId { get; set; }
+        public long? ImageId { get; set; }
 
         public ArticleType Type { get; set; }
         public int? WriterAccountId { get; set; }

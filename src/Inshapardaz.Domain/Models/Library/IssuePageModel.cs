@@ -9,7 +9,7 @@ namespace Inshapardaz.Domain.Models.Library
         public int PeriodicalId { get; set; }
         public int VolumeNumber { get; set; }
         public int IssueNumber { get; set; }
-        public int? ImageId { get; set; }
+        public long? ImageId { get; set; }
         public string ImageUrl { get; set; }
         public EditingStatus Status { get; set; }
         public int? WriterAccountId { get; set; }
@@ -20,7 +20,7 @@ namespace Inshapardaz.Domain.Models.Library
         public DateTime? ReviewerAssignTimeStamp { get; set; }
         public IssuePageModel PreviousPage { get; internal set; }
         public IssuePageModel NextPage { get; internal set; }
-        public int? ArticleNumber { get; set; }
+        public long? ArticleId { get; set; }
         public string ArticleName { get; set; }
     }
 }

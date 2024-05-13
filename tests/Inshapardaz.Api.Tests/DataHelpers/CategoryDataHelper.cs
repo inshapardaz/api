@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Domain.Models.Library;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,9 +10,13 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 {
     public static class CategoryDataHelper
     {
+        private static DatabaseTypes _dbType => TestBase.DatabaseType;
+
         public static void AddCategory(this IDbConnection connection, CategoryDto category)
         {
-            var id = connection.ExecuteScalar<int>("Insert Into Category (Name, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @LibraryId)", category);
+            var id = _dbType == DatabaseTypes.SqlServer
+                ? connection.ExecuteScalar<int>("INSERT INTO Category (Name, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @LibraryId)", category)
+                : connection.ExecuteScalar<int>("INSERT INTO Category (`Name`, LibraryId) VALUES (@Name, @LibraryId); SELECT LAST_INSERT_ID();", category);
             category.Id = id;
         }
 
@@ -25,13 +30,13 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void DeleteCategries(this IDbConnection connection, IEnumerable<CategoryDto> categories)
         {
-            var sql = "Delete From Category Where Id IN @Ids";
+            var sql = "DELETE FROM Category WHERE Id IN @Ids";
             connection.Execute(sql, new { Ids = categories.Select(a => a.Id) });
         }
 
         public static CategoryDto GetCategoryById(this IDbConnection connection, int libraryId, int id)
         {
-            return connection.QuerySingleOrDefault<CategoryDto>("Select * From Category Where Id = @Id AND LibraryId = @LibraryId",
+            return connection.QuerySingleOrDefault<CategoryDto>("SELECT * FROM Category WHERE Id = @Id AND LibraryId = @LibraryId",
                 new { Id = id, LibraryId = libraryId });
         }
 
@@ -42,30 +47,30 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static IEnumerable<CategoryDto> GetCategoriesByBook(this IDbConnection connection, int id)
         {
-            return connection.Query<CategoryDto>(@"Select c.* From Category c
-                                Inner Join BookCategory bc ON c.Id = bc.CategoryId
-                                Where bc.BookId = @BookId ", new { BookId = id });
+            return connection.Query<CategoryDto>(@"SELECT c.* FROM Category c
+                                INNER JOIN BookCategory bc ON c.Id = bc.CategoryId
+                                WHERE bc.BookId = @BookId ", new { BookId = id });
         }
 
         public static IEnumerable<CategoryDto> GetCategoriesByPeriodical(this IDbConnection connection, int id)
         {
-            return connection.Query<CategoryDto>(@"Select c.* From Category c
-                                Inner Join PeriodicalCategory pc ON c.Id = pc.CategoryId
-                                Where pc.PeriodicalId = @PeriodicalId", new { PeriodicalId = id });
+            return connection.Query<CategoryDto>(@"SELECT c.* From Category c
+                                INNER JOIN PeriodicalCategory pc ON c.Id = pc.CategoryId
+                                WHERE pc.PeriodicalId = @PeriodicalId", new { PeriodicalId = id });
         }
 
         public static IEnumerable<CategoryDto> GetCategoriesByArticle(this IDbConnection connection, long id)
         {
-            return connection.Query<CategoryDto>(@"Select c.* From Category c
-                                Inner Join ArticleCategory bc ON c.Id = bc.CategoryId
-                                Where bc.ArticleId = @ArticleId ", new { ArticleId = id });
+            return connection.Query<CategoryDto>(@"SELECT c.* FROM Category c
+                                INNER JOIN ArticleCategory bc ON c.Id = bc.CategoryId
+                                WHERE bc.ArticleId = @ArticleId ", new { ArticleId = id });
         }
 
         public static void AddBooksToCategory(this IDbConnection connection, IEnumerable<BookDto> books, CategoryDto category)
         {
             foreach (var book in books)
             {
-                connection.Execute("Insert Into BookCategory (BookId, CategoryId) Values(@BookId, @CategoryId)",
+                connection.Execute("INSERT INTO BookCategory (BookId, CategoryId) VALUES(@BookId, @CategoryId)",
                     new { BookId = book.Id, CategoryId = category.Id });
             }
         }
@@ -74,7 +79,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         {
             foreach (var category in categories)
             {
-                connection.Execute("Insert Into BookCategory (BookId, CategoryId) Values(@BookId, @CategoryId)",
+                connection.Execute("INSERT INTO BookCategory (BookId, CategoryId) VALUES(@BookId, @CategoryId)",
                     new { BookId = bookId, CategoryId = category.Id });
             }
         }
@@ -83,7 +88,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         {
             foreach (var periodical in periodicals)
             {
-                connection.Execute("Insert Into PeriodicalCategory (PeriodicalId, CategoryId) Values(@PeriodicalId, @CategoryId)",
+                connection.Execute("INSERT INTO PeriodicalCategory (PeriodicalId, CategoryId) VALUES(@PeriodicalId, @CategoryId)",
                     new { PeriodicalId = periodical.Id, CategoryId = category.Id });
             }
         }
@@ -92,7 +97,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         {
             foreach (var category in categories)
             {
-                connection.Execute("Insert Into PeriodicalCategory (PeriodicalId, CategoryId) Values(@PeriodicalId, @CategoryId)",
+                connection.Execute("INSERT INTO PeriodicalCategory (PeriodicalId, CategoryId) VALUES(@PeriodicalId, @CategoryId)",
                     new { PeriodicalId = periodicalId, CategoryId = category.Id });
             }
         }
@@ -101,7 +106,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         {
             foreach (var category in categories)
             {
-                connection.Execute("Insert Into ArticleCategory (ArticleId, CategoryId) Values(@ArticleId, @CategoryId)",
+                connection.Execute("INSERT INTO ArticleCategory (ArticleId, CategoryId) VALUES(@ArticleId, @CategoryId)",
                     new { ArticleId = articleId, CategoryId = category.Id });
             }
         }

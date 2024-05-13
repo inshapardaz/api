@@ -2,11 +2,11 @@
 {
     public class ChapterContentModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public int BookId { get; set; }
 
-        public int ChapterId { get; set; }
+        public long ChapterId { get; set; }
 
         public int ChapterNumber { get; set; }
 

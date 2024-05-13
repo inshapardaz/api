@@ -1,5 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers.Library;
+using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 using System.Threading;
@@ -35,6 +37,7 @@ namespace Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Article
             _articleRepository = articleRepository;
         }
 
+        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
         public override async Task<DeleteIssueArticleContentRequest> HandleAsync(DeleteIssueArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
         {
             var content = await _articleRepository.GetArticleContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, cancellationToken);

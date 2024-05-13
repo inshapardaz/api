@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Domain.Models.Library;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -8,11 +9,17 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 {
     public static class IssueArticleDataHelper
     {
+        private static DatabaseTypes _dbType => TestBase.DatabaseType;
+
         public static void AddIssueArticle(this IDbConnection connection, IssueArticleDto issue)
         {
-            var sql = @"Insert Into IssueArticle (Title, IssueId, SequenceNumber, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SeriesName, SeriesIndex)
-                        Output Inserted.Id
-                        Values (@Title, @IssueId, @SequenceNumber, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SeriesName, @SeriesIndex)";
+            var sql = _dbType == DatabaseTypes.SqlServer 
+                ? @"INSERT INTO IssueArticle (Title, IssueId, SequenceNumber, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SeriesName, SeriesIndex)
+                    OUTPUT INSERTED.ID
+                    VALUES (@Title, @IssueId, @SequenceNumber, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SeriesName, @SeriesIndex)"
+                : @"INSERT INTO IssueArticle (Title, IssueId, SequenceNumber, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SeriesName, SeriesIndex)
+                    VALUES (@Title, @IssueId, @SequenceNumber, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SeriesName, @SeriesIndex);
+                    SELECT LAST_INSERT_ID();";
             var id = connection.ExecuteScalar<int>(sql, issue);
             issue.Id = id;
         }
@@ -42,9 +49,9 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             var sql = @"SELECT a.* FROM IssueArticle a
                         INNER JOIN Issue i on i.Id = a.IssueId
                         WHERE i.PeriodicalId = @PeriodicalId
-                        AND i.VolumeNumber = @VolumeNumber
-                        AND i.IssueNumber = @IssueNumber
-                        AND a.SequenceNumber = @SequenceNumber";
+                            AND i.VolumeNumber = @VolumeNumber
+                            AND i.IssueNumber = @IssueNumber
+                            AND a.SequenceNumber = @SequenceNumber";
             return connection.QuerySingleOrDefault<IssueArticleDto>(sql, new {
                 PeriodicalId = periodicalId,
                 VolumeNumber = volumeNumber,
@@ -55,7 +62,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void DeleteIssueArticles(this IDbConnection connection, IEnumerable<IssueArticleDto> articles)
         {
-            var sql = "Delete From IssueArticle Where Id IN @Ids";
+            var sql = "DELETE FROM IssueArticle WHERE Id IN @Ids";
             connection.Execute(sql, new { Ids = articles.Select(f => f.Id) });
         }
 
@@ -75,16 +82,16 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static IssueArticleContentDto GetIssueArticleContent(this IDbConnection connection, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language)
         {
-            return connection.QuerySingleOrDefault<IssueArticleContentDto>(@"select ac.*
+            return connection.QuerySingleOrDefault<IssueArticleContentDto>(@"SELECT ac.*
                     FROM IssueArticle a
-                    INNER JOIN Issue i ON i.Id = a.IssueId
-                    INNER JOIN Periodical p ON p.Id = i.Periodicalid
+                        INNER JOIN Issue i ON i.Id = a.IssueId
+                        INNER JOIN Periodical p ON p.Id = i.Periodicalid
                     LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
                     WHERE i.PeriodicalId = @PeriodicalId
-                    AND i.VolumeNumber = @VolumeNumber
-                    AND i.IssueNumber = @IssueNumber
-                    AND a.SequenceNumber = @SequenceNumber
-                    AND ac.Language = @Language", 
+                        AND i.VolumeNumber = @VolumeNumber
+                        AND i.IssueNumber = @IssueNumber
+                        AND a.SequenceNumber = @SequenceNumber
+                        AND ac.Language = @Language", 
                 new { 
                     PeriodicalId = periodicalId,
                     VolumeNumber = volumeNumber,
@@ -96,7 +103,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static IEnumerable<IssueArticleContentDto> GetIssueArticleContents(this IDbConnection connection, long articleId)
         {
-            return connection.Query<IssueArticleContentDto>(@"select *
+            return connection.Query<IssueArticleContentDto>(@"SELECT *
                     FROM IssueArticleContent
                     WHERE ArticleId = @Id",
                 new
@@ -107,12 +114,12 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static IEnumerable<IssueArticleContentDto> GetContentByIssueArticle(this IDbConnection connection, int articleId)
         {
-            return connection.Query<IssueArticleContentDto>("Select * From IssueArticleContent Where ArticleId = @Id", new { Id = articleId });
+            return connection.Query<IssueArticleContentDto>("SELECT * FROM IssueArticleContent WHERE ArticleId = @Id", new { Id = articleId });
         }
 
         public static IEnumerable<IssueArticleContentDto> GetIssueContentByArticle(this IDbConnection connection, long articleId)
         {
-            return connection.Query<IssueArticleContentDto>("Select * From IssueArticleContent Where ArticleId = @Id", new { Id = articleId });
+            return connection.Query<IssueArticleContentDto>("SELECT * FROM IssueArticleContent WHERE ArticleId = @Id", new { Id = articleId });
         }
 
         public static void AddIssueArticleContents(this IDbConnection connection, IEnumerable<IssueArticleContentDto> contents)

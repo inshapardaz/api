@@ -1,6 +1,6 @@
-using Inshapardaz.Database.SqlServer;
-using Inshapardaz.Database.SqlServer.Repositories;
-using Inshapardaz.Database.SqlServer.Repositories.Library;
+using Inshapardaz.Adapters.Database.SqlServer;
+using Inshapardaz.Adapters.Database.SqlServer.Repositories;
+using Inshapardaz.Adapters.Database.SqlServer.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 
@@ -12,8 +12,8 @@ public class Migrator
 
     public Migrator(string source, string destination)
     {
-        SourceConnectionProvider = new SqlServerConnectionProvider(source, new LibraryConfiguration());
-        DestinationConnectionProvider = new SqlServerConnectionProvider(destination, new LibraryConfiguration());
+        //SourceConnectionProvider = new SqlServerConnectionProvider(source, new LibraryConfiguration());
+        //DestinationConnectionProvider = new SqlServerConnectionProvider(destination, new LibraryConfiguration());
     }
 
     public async Task Migrate(int libraryId, CancellationToken cancellationToken)
@@ -93,9 +93,9 @@ public class Migrator
             {
                 existingAccount = await destinationDb.AddAccount(account, cancellationToken);
             }
-            
+
             await destinationDb.AddAccountToLibrary(newLibraryId, existingAccount.Id, account.Role, cancellationToken);
-            
+
             Console.WriteLine($"{++i} of {accounts.TotalCount} Account(s) migrated.");
 
             accountsMap.Add(account.Id, existingAccount.Id);
@@ -225,12 +225,12 @@ public class Migrator
         return booksMap;
     }
 
-    private async Task<Dictionary<int, int>> MigrateChapters(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
+    private async Task<Dictionary<long, long>> MigrateChapters(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
         var sourceDb = new ChapterRepository(SourceConnectionProvider);
         var destinationDb = new ChapterRepository(DestinationConnectionProvider);
 
-        Dictionary<int, int> chaptersMap = new Dictionary<int, int>();
+        var chaptersMap = new Dictionary<long, long>();
         var chapters = (await sourceDb.GetChaptersByBook(libraryId, bookId, cancellationToken)).ToArray();
         int i = 0;
 
@@ -260,7 +260,7 @@ public class Migrator
         return chaptersMap;
     }
 
-    private async Task MigrateBookPages(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, Dictionary<int, int> chaptersMap, CancellationToken cancellationToken)
+    private async Task MigrateBookPages(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, Dictionary<long, long> chaptersMap, CancellationToken cancellationToken)
     {
         var sourceDb = new BookPageRepository(SourceConnectionProvider);
         var destinationDb = new BookPageRepository(DestinationConnectionProvider);
@@ -347,13 +347,13 @@ public class Migrator
                 content.PeriodicalId = newPeriodicalId;
 
                 var newFile = await CopyFile(content.FileId, cancellationToken);
-                await destinationDb.AddIssueContent(newLibraryId, 
-                    newPeriodicalId, 
-                    content.VolumeNumber, 
-                    content.IssueNumber, 
+                await destinationDb.AddIssueContent(newLibraryId,
+                    newPeriodicalId,
+                    content.VolumeNumber,
+                    content.IssueNumber,
                     newFile.Id,
                     content.Language,
-                    content.MimeType, 
+                    content.MimeType,
                     cancellationToken);
             }
 
@@ -435,7 +435,7 @@ public class Migrator
         return bookshelves.TotalCount;
     }
 
-    public async Task<FileModel> CopyFile(int fileId, CancellationToken cancellationToken)
+    public async Task<FileModel> CopyFile(long fileId, CancellationToken cancellationToken)
     {
         var sourceDb = new FileRepository(SourceConnectionProvider);
         var destinationDb = new FileRepository(DestinationConnectionProvider);

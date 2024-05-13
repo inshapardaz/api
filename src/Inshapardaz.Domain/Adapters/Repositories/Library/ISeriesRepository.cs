@@ -19,6 +19,6 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<SeriesModel> GetSeriesById(int libraryId, int seriesId, CancellationToken cancellationToken);
 
-        Task UpdateSeriesImage(int libraryId, int seriesId, int imageId, CancellationToken cancellationToken);
+        Task UpdateSeriesImage(int libraryId, int seriesId, long imageId, CancellationToken cancellationToken);
     }
 }

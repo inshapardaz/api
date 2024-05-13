@@ -53,7 +53,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/categories", Name = nameof(CategoryController.CreateCategory))]
-        [Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> CreateCategory(int libraryId, [FromBody]CategoryView category, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -69,7 +68,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/categories/{categoryId}", Name = nameof(CategoryController.UpdateCategory))]
-        [Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> UpdateCategory(int libraryId, int categoryId, [FromBody]CategoryView category, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -94,7 +92,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("libraries/{libraryId}/categories/{categoryId}", Name = nameof(CategoryController.DeleteCategory))]
-        [Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> DeleteCategory(int libraryId, int categoryId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteCategoryRequest(libraryId, categoryId);

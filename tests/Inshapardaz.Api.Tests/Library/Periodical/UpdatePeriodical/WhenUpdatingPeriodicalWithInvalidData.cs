@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             public async Task Setup()
             {
 
-                var periodical = new PeriodicalView { Title = RandomData.Name };
+                var periodical = new PeriodicalView { Title = RandomData.Name, Frequency = "Weekly", Language = "en" };
 
                 _response = await Client.PutObject($"/libraries/{-RandomData.Number}/periodicals/{periodical.Id}", periodical);
             }

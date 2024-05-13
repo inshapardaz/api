@@ -2,7 +2,7 @@
 {
     public class IssueArticleContentModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public int PeriodicalId { get; set; }
 

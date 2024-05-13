@@ -2,7 +2,7 @@
 {
     public class ArticleContentModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public long ArticleId { get; set; }
 

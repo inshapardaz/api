@@ -1,14 +1,11 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Inshapardaz.Api.Controllers;
+﻿using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Inshapardaz.Api.Converters
 {

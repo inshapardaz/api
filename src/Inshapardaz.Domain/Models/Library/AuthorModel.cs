@@ -8,7 +8,7 @@
 
         public string Description { get; set; }
 
-        public int? ImageId { get; set; }
+        public long? ImageId { get; set; }
 
         public string ImageUrl { get; set; }
 

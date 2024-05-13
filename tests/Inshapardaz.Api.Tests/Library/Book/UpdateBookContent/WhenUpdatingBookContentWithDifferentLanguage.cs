@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         private HttpResponseMessage _response;
         private string _newLanguage;
         private BookDto _book;
-        private BookContentDto _file;
+        private BookContentDto _content;
         private byte[] _contents;
         private BookContentAssert _assert;
 
@@ -31,11 +31,11 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
             _newLanguage = RandomData.Locale;
 
             _book = BookBuilder.WithLibrary(LibraryId).WithContents(2).WithContentLanguage($"{_newLanguage}_old").Build();
-            _file = BookBuilder.Contents.PickRandom();
+            _content = BookBuilder.Contents.PickRandom();
 
             _contents = new Faker().Image.Random.Bytes(50);
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents", _contents, _newLanguage, _file.MimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{_content.Id}", _contents, _newLanguage, _content.MimeType);
             _assert = new BookContentAssert(_response, LibraryId);
         }
 
@@ -46,9 +46,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         }
 
         [Test]
-        public void ShouldHaveCreatedResult()
+        public void ShouldHaveOkResult()
         {
-            _response.ShouldBeCreated();
+            _response.ShouldBeOk();
         }
 
         [Test]
@@ -69,7 +69,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         [Test]
         public void ShouldHaveCorrectMimeType()
         {
-            _assert.ShouldHaveCorrectMimeType(_file.MimeType);
+            _assert.ShouldHaveCorrectMimeType(_content.MimeType);
         }
 
         [Test]

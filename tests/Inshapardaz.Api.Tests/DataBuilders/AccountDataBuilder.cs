@@ -3,13 +3,14 @@ using System.Data;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
-using Inshapardaz.Api.Models.Accounts;
+using Inshapardaz.Api.Views.Accounts;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Database.SqlServer;
+using Inshapardaz.Adapters.Database.SqlServer;
 using Inshapardaz.Domain.Common;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {

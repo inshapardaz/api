@@ -18,7 +18,6 @@ namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
 
         private IEnumerable<CategoryDto> _categories;
         private CategoryDto _selectedCategory;
-        private readonly ClaimsPrincipal _claim;
 
         public WhenDeletingCategoryWithoutPermissions(Role role)
             : base(role)

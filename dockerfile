@@ -1,39 +1,25 @@
-#BACKEND SERVICE
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
 WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
 
-ARG asp_environment
-ARG build_number
-ENV ASPNETCORE_ENVIRONMENT=$asp_environment
-
-COPY *.sln  ./
-COPY src/**/*.csproj ./
-RUN for file in $(ls *.csproj); do mkdir -p src/${file%.*}/ && mv $file src/${file%.*}/; done
-
-# COPY tests/**/*.csproj  ./
-# RUN for file in $(ls *.csproj); do mkdir -p tests/${file%.*}/ && mv $file tests/${file%.*}/; done
-
-RUN ls
-RUN dotnet restore
-
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["Inshapardaz.Api.csproj", "."]
+RUN dotnet restore "./Inshapardaz.Api.csproj"
 COPY . .
+WORKDIR "/src/."
+RUN dotnet build "./Inshapardaz.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# run the test
-#RUN dotnet test --results-directory /testresults --logger "trx;LogFileName=test_results.xml" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=/testresults/coverage/ /p:Exclude="[Tests.*]" "tests/Dashboards.Api.Tests/Dashboards.Api.Tests.csproj" 
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Inshapardaz.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-RUN dotnet publish src/Inshapardaz.Api/Inshapardaz.Api.csproj -r linux-x64 -c Release
-
-# Build the runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS pubish
+FROM base AS final
 WORKDIR /app
-
-RUN apt-get update
-RUN apt-get install -y libunwind-dev
-
-COPY --from=build /app/src/Inshapardaz.Api/bin/Release/net7.0/linux-x64/publish/ .
-RUN echo "1.0.0.$build_number" >> version.txt
-# Expose the API port
-EXPOSE 80
-
-# Set the entry point for the API
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Inshapardaz.Api.dll"]

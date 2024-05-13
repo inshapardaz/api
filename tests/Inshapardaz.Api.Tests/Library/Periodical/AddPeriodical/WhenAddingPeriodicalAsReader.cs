@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
@@ -21,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var periodical = new PeriodicalView { Title = RandomData.Name, Description = RandomData.Words(20) };
+            var periodical = new PeriodicalView { Title = RandomData.Name, Description = RandomData.Words(20), Frequency = "Weekly", Language = "en" };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals", periodical);
         }

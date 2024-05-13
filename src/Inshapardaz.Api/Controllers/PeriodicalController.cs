@@ -6,13 +6,9 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Periodical;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Controllers
 {
@@ -90,7 +86,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/periodicals", Name = nameof(PeriodicalController.CreatePeriodical))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreatePeriodical(int libraryId, [FromBody]PeriodicalView periodical, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -106,7 +101,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}", Name = nameof(PeriodicalController.UpdatePeriodical))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdatePeriodical(int libraryId, int periodicalId, [FromBody]PeriodicalView periodical, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -131,7 +125,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}", Name = nameof(PeriodicalController.DeletePeriodical))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeletePeriodical(int libraryId, int periodicalId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeletePeriodicalRequest(libraryId, periodicalId);
@@ -140,7 +133,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/image", Name = nameof(PeriodicalController.UpdatePeriodicalImage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdatePeriodicalImage(int libraryId, int periodicalId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -151,7 +143,7 @@ namespace Inshapardaz.Api.Controllers
 
             var request = new UpdatePeriodicalImageRequest(libraryId, periodicalId)
             {
-                Image = new Domain.Models.FileModel
+                Image = new FileModel
                 {
                     FileName = file.FileName,
                     MimeType = file.ContentType,

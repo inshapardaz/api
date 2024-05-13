@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Domain.Models.Library;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -8,11 +9,17 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 {
     public static class BookPageDataHelper
     {
+        private static DatabaseTypes _dbType => TestBase.DatabaseType;
+
         public static void AddBookPage(this IDbConnection connection, BookPageDto bookPage)
         {
-            var sql = @"Insert Into BookPage (BookId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
+            var sql = _dbType == DatabaseTypes.SqlServer 
+                ? @"INSERT INTO BookPage (BookId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
                         Output Inserted.Id
-                        Values (@BookId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status)";
+                        VALUES (@BookId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status)"
+                : @"INSERT INTO BookPage (BookId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
+                        VALUES (@BookId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status);
+                    SELECT LAST_INSERT_ID();";
             var id = connection.ExecuteScalar<int>(sql, bookPage);
             bookPage.Id = id;
         }
@@ -27,7 +34,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void DeleteBookPages(this IDbConnection connection, IEnumerable<BookPageDto> bookPages)
         {
-            var sql = "Delete From BookPage Where Id IN @Ids";
+            var sql = "DELETE FROM BookPage WHERE Id IN @Ids";
             connection.Execute(sql, new { Ids = bookPages.Select(f => f.Id) });
         }
 
@@ -35,7 +42,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         {
             var sql = @"SELECT *
                         FROM BookPage
-                        Where BookId = @BookId AND SequenceNumber = @SequenceNumber";
+                        WHERE BookId = @BookId AND SequenceNumber = @SequenceNumber";
             var command = new CommandDefinition(sql, new { BookId = bookId, SequenceNumber = sequenceNumber });
 
             return connection.QuerySingleOrDefault<BookPageDto>(command);
@@ -45,7 +52,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         {
             var sql = @"SELECT *
                         FROM BookPage
-                        Where BookId = @BookId AND Id = @Id";
+                        WHERE BookId = @BookId AND Id = @Id";
             var command = new CommandDefinition(sql, new { BookId = bookId, id = pageId });
 
             return connection.QuerySingleOrDefault<BookPageDto>(command);
@@ -55,7 +62,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         {
             var sql = @"SELECT Count(*)
                         FROM BookPage
-                        Where BookId = @BookId";
+                        WHERE BookId = @BookId";
             var command = new CommandDefinition(sql, new { BookId = bookId });
 
             return connection.QuerySingleOrDefault<int>(command);

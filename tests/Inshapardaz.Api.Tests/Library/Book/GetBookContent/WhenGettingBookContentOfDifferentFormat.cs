@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
             var _book = BookBuilder.WithLibrary(LibraryId).WithContents(5).Build();
             var _expected = BookBuilder.Contents.PickRandom();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/content", _expected.Language, _expected.MimeType + "2");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/content/{-RandomData.Number}", _expected.Language, _expected.MimeType + "2");
         }
 
         [OneTimeTearDown]

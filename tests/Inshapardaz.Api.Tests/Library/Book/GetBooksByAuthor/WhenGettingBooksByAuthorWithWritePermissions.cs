@@ -21,7 +21,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
         private PagingAssert<BookView> _assert;
         private AuthorDto _author;
         private IEnumerable<BookDto> _authorBooks;
-        private ClaimsPrincipal _claim;
 
         public WhenGettingBooksByAuthorWithWritePermissions(Role role) : base(role)
         {

@@ -1,20 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using DocumentFormat.OpenXml.Bibliography;
-using Inshapardaz.Api.Converters;
+﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Article;
-using Inshapardaz.Domain.Ports.Handlers.Library.Book;
-using Inshapardaz.Domain.Ports.Handlers.Library.Book.Chapter;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -68,7 +60,7 @@ namespace Inshapardaz.Api.Controllers
                 Type = type,
                 AssignmentStatus = assignedFor
             };
-            var articlesQuery = new GetArticlesQuery(libraryId, pageNumber, pageSize, _userHelper.Account?.Id)
+            var articlesQuery = new GetArticlesQuery(libraryId, pageNumber, pageSize, _userHelper.AccountId)
             {
                 Query = query,
                 Filter = filter,
@@ -109,7 +101,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/articles", Name = nameof(ArticleController.CreateArticle))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateArticle(int libraryId, [FromBody] ArticleView article, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -119,7 +110,7 @@ namespace Inshapardaz.Api.Controllers
 
             var request = new AddArticleRequest(libraryId, article.Map())
             {
-                AccountId = _userHelper.Account.Id
+                AccountId = _userHelper.AccountId
             };
 
             await _commandProcessor.SendAsync(request, cancellationToken: token);
@@ -134,7 +125,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/articles/{articleId}", Name = nameof(ArticleController.UpdateArticle))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateArticle(int libraryId, int articleId, [FromBody] ArticleView article, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -146,7 +136,7 @@ namespace Inshapardaz.Api.Controllers
             articleToUpdate.Id = articleId;
             var request = new UpdateArticleRequest(libraryId, articleToUpdate)
             {
-                AccountId = _userHelper.Account.Id
+                AccountId = _userHelper.AccountId
             };
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -161,7 +151,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("libraries/{libraryId}/articles/{articleId}", Name = nameof(ArticleController.DeleteArticle))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteArticle(int libraryId, int articleId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteArticleRequest(libraryId, articleId);
@@ -170,7 +159,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/articles/{articleId}/image", Name = nameof(ArticleController.UpdateArticleImage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateArticleImage(int libraryId, long articleId, IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];
@@ -179,7 +167,7 @@ namespace Inshapardaz.Api.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            var request = new UpdateArticleImageRequest(libraryId, articleId, _userHelper.Account?.Id)
+            var request = new UpdateArticleImageRequest(libraryId, articleId, _userHelper.AccountId)
             {
                 Image = new FileModel
                 {
@@ -202,7 +190,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpGet("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.GetArticleContent))]
-        [Authorize()]
         public async Task<IActionResult> GetArticleContent(int libraryId, int articleId, string language, CancellationToken token = default(CancellationToken))
         {
             var parsedLanguage = Request.Headers["Accept-Language"]; // default to  ""
@@ -220,7 +207,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(CreateArticleContent))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> CreateArticleContent(int libraryId, long articleId, [FromBody] ArticleContentView content, CancellationToken token = default(CancellationToken))
         {
             var contentPayload = content.Map();
@@ -242,7 +228,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.UpdateArticleContent))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateArticleContent(int libraryId, int articleId, [FromBody] ArticleContentView content, CancellationToken token = default(CancellationToken))
         {
             var contentPayload = content.Map();
@@ -264,7 +249,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.DeleteArticleContent))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteArticleContent(int libraryId, int articleId, string language, CancellationToken token = default(CancellationToken))
         {
             var parsedLanguage = Request.Headers["Accept-Language"];
@@ -275,7 +259,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/articles/{articleId}/assign", Name = nameof(ArticleController.AssignArticleToUser))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [Produces(typeof(IssueArticleView))]
         public async Task<IActionResult> AssignArticleToUser(int libraryId, int articleId, [FromBody] AssignmentView assignment, CancellationToken token = default(CancellationToken))
         {
@@ -284,7 +267,7 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new AssignArticleToUserRequest(libraryId, articleId, assignment.AccountId ?? _userHelper.Account.Id, _userHelper.IsAdmin);
+            var request = new AssignArticleToUserRequest(libraryId, articleId, assignment.AccountId);
 
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -294,20 +277,18 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/favorites/articles/{articleId}", Name = nameof(ArticleController.AddArticleToFavorites))]
-        [Authorize]
         public async Task<IActionResult> AddArticleToFavorites(int libraryId, int articleId, CancellationToken token)
         {
-            var request = new AddArticleToFavoriteRequest(libraryId, articleId, _userHelper.Account?.Id);
+            var request = new AddArticleToFavoriteRequest(libraryId, articleId, _userHelper.AccountId);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             return new OkResult();
         }
 
         [HttpDelete("libraries/{libraryId}/favorites/articles/{articleId}", Name = nameof(ArticleController.RemoveArtiucleFromFavorites))]
-        [Authorize]
         public async Task<IActionResult> RemoveArtiucleFromFavorites(int libraryId, int articleId, CancellationToken token)
         {
-            var request = new RemoveArticleFromFavoriteRequest(libraryId, articleId, _userHelper.Account?.Id);
+            var request = new RemoveArticleFromFavoriteRequest(libraryId, articleId, _userHelper.AccountId);
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
             return new OkResult();

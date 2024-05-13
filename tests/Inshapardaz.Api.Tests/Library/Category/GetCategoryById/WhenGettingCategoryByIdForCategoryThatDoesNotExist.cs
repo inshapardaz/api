@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
@@ -10,6 +11,11 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
     public class WhenGettingCategoryByIdForCategoryThatDoesNotExist : TestBase
     {
         private HttpResponseMessage _response;
+
+        public WhenGettingCategoryByIdForCategoryThatDoesNotExist()
+            : base(Role.LibraryAdmin)
+        {
+        }
 
         [OneTimeSetUp]
         public async Task Setup()

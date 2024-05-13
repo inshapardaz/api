@@ -1,8 +1,8 @@
 ﻿using Inshapardaz.Api.Converters;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Book;
@@ -11,10 +11,6 @@ using Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Page;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Controllers
 {
@@ -49,8 +45,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(IEnumerable<UserPageSummaryView>))]
         public async Task<IActionResult> GetUserPublicationSummary(int libraryId, CancellationToken token = default(CancellationToken))
         {
-            var accountId = _userHelper.Account.Id;
-            var getBookPagesQuery = new GetUserPublicationSummary(libraryId, accountId);
+            var getBookPagesQuery = new GetUserPublicationSummary(libraryId, _userHelper.AccountId.Value);
             var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
 
             return new OkObjectResult(result.Select(x => x.Map()));
@@ -65,8 +60,7 @@ namespace Inshapardaz.Api.Controllers
             [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
             CancellationToken token = default(CancellationToken))
         {
-            var accountId = _userHelper.Account.Id;
-            var getBookPagesQuery = new GetBookPagesForUserQuery(libraryId, accountId, pageNumber, pageSize)
+            var getBookPagesQuery = new GetBookPagesForUserQuery(libraryId, _userHelper.AccountId.Value, pageNumber, pageSize)
             {
                 StatusFilter = status,
             };
@@ -92,8 +86,7 @@ namespace Inshapardaz.Api.Controllers
            [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
            CancellationToken token = default(CancellationToken))
         {
-            var accountId = _userHelper.Account.Id;
-            var getBookPagesQuery = new GetIssuePagesForUserQuery(libraryId, accountId, pageNumber, pageSize)
+            var getBookPagesQuery = new GetIssuePagesForUserQuery(libraryId, _userHelper.AccountId.Value, pageNumber, pageSize)
             {
                 StatusFilter = status,
             };
@@ -117,8 +110,7 @@ namespace Inshapardaz.Api.Controllers
             [FromQuery] StatusType status = StatusType.BeingTyped,
             CancellationToken token = default(CancellationToken))
         {
-            var accountId = _userHelper.Account.Id;
-            var getBookPagesQuery = new GetUserBooksQuery(libraryId, accountId, pageNumber, pageSize)
+            var getBookPagesQuery = new GetUserBooksQuery(libraryId, _userHelper.AccountId.Value, pageNumber, pageSize)
             {
                 StatusFilter = status,
             };

@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Domain.Adapters;
+﻿using Inshapardaz.Domain.Adapters.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,7 +11,7 @@ namespace Inshapardaz.Api.Tests.Helpers
     {
         public static string GenerateToken(Settings settings, int accountId)
         {
-            var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.Secret));
+            var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.Security.Secret));
 
             var myIssuer = "http://mysite.com";
             var myAudience = "http://myaudience.com";

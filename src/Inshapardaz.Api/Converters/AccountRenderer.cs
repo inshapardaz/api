@@ -1,13 +1,9 @@
 ﻿using Inshapardaz.Api.Controllers;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
-using Inshapardaz.Api.Models.Accounts;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Accounts;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Inshapardaz.Api.Converters
 {
@@ -113,33 +109,6 @@ namespace Inshapardaz.Api.Converters
                 Rel = RelTypes.Self,
                 Parameters = new { id = model.Id }
             }));
-
-            //view.Links.Add(_linkRenderer.Render(new Link
-            //{
-            //    ActionName = nameof(BookController.GetBooks),
-            //    Method = HttpMethod.Get,
-            //    Rel = RelTypes.Books,
-            //    Parameters = new { libraryId = libraryId },
-            //    QueryString = new Dictionary<string, string>
-            //    {
-            //        { "seriesid", model.Id.ToString() }
-            //    }
-            //}));
-
-            //if (!string.IsNullOrWhiteSpace(model.ImageUrl))
-            //{
-            //    view.Links.Add(new LinkView { Href = model.ImageUrl, Method = "GET", Rel = RelTypes.Image, Accept = MimeTypes.Jpg });
-            //}
-            //else if (model.ImageId.HasValue)
-            //{
-            //    view.Links.Add(_linkRenderer.Render(new Link
-            //    {
-            //        ActionName = nameof(FileController.GetFile),
-            //        Method = HttpMethod.Get,
-            //        Rel = RelTypes.Image,
-            //        Parameters = new { fileId = model.ImageId.Value }
-            //    }));
-            //}
 
             if (_userHelper.IsAdmin)
             {

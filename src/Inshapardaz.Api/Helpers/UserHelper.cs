@@ -1,19 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
-using Inshapardaz.Api.Entities;
-using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Helpers
 {
     public class UserHelper : IUserHelper
     {
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly ILibraryRepository _libraryRepository;
 
-        public UserHelper(IHttpContextAccessor contextAccessor)
+        public UserHelper(IHttpContextAccessor contextAccessor, ILibraryRepository libraryRepository)
         {
             _contextAccessor = contextAccessor;
+            _libraryRepository = libraryRepository;
         }
 
         public bool IsAuthenticated => Account != null;
@@ -33,8 +32,8 @@ namespace Inshapardaz.Api.Helpers
             var account = (AccountModel)_contextAccessor.HttpContext.Items["Account"];
             if (role == Role.Admin && account.IsSuperAdmin) return true;
 
-            var libraries = (IEnumerable<LibraryModel>)_contextAccessor.HttpContext.Items["Libraries"];
-            return libraries.Any(l => l.Id == libraryId && l.Role == role);
+            var libraries = _libraryRepository.GetUserLibraries(account.Id, 1, 100, CancellationToken.None).Result;
+            return libraries.Data.Any(l => l.Id == libraryId && l.Role == role);
         }
     }
 }

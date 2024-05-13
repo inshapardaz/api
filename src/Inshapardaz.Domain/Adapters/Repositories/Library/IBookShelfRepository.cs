@@ -19,7 +19,7 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task<BookShelfModel> GetBookShelfById(int libraryId, int bookshelfId, CancellationToken cancellationToken);
 
-        Task UpdateBookShelfImage(int libraryId, int bookshelfId, int imageId, CancellationToken cancellationToken);
+        Task UpdateBookShelfImage(int libraryId, int bookshelfId, long imageId, CancellationToken cancellationToken);
 
         Task AddBookToBookShelf(int libraryId, int bookshelfId, int bookId, int index, CancellationToken cancellationToken);
 

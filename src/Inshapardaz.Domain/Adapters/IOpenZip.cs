@@ -20,7 +20,6 @@ namespace Inshapardaz.Domain.Adapters
             using (Stream stream = new MemoryStream(pdfContent))
             using (ZipArchive archive = new ZipArchive(stream, ZipArchiveMode.Read))
             {
-                int i = 0;
                 foreach (ZipArchiveEntry entry in archive.Entries)
                 {
                     var extention = Path.GetExtension(entry.FullName);

@@ -37,41 +37,9 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleById
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldReturnunUnauthorized()
         {
-            _response.ShouldBeOk();
-        }
-
-        [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
-
-
-        [Test]
-        public void ShouldNotHaveContentsLink()
-        {
-            _assert.ShouldNotHaveContentsLink();
-        }
-
-        [Test]
-        public void ShouldHaveImageLink()
-        {
-            _assert.ShouldHavePublicImageLink();
-        }
-
-        [Test]
-        public void ShouldNotHaveFavoriteLinks()
-        {
-            _assert.ShouldNotHaveAddFavoriteLink()
-                   .ShouldNotHaveRemoveFavoriteLink();
-        }
-
-        [Test]
-        public void ShouldReturnCorrectArticleData()
-        {
-            _assert.ShouldBeSameAs(_expected, DatabaseConnection);
+            _response.ShouldBeUnauthorized();
         }
     }
 }

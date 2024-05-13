@@ -1,19 +1,13 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Converters;
+﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library.Periodical.Issue.Page;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -60,7 +54,7 @@ namespace Inshapardaz.Api.Controllers
                 StatusFilter = status,
                 AssignmentFilter = assignmentFilter,
                 ReviewerAssignmentFilter = reviewerAssignmentFilter,
-                AccountId = assignmentFilter == AssignmentFilter.AssignedToMe  || reviewerAssignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.Account?.Id : assignmentTo
+                AccountId = assignmentFilter == AssignmentFilter.AssignedToMe  || reviewerAssignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.AccountId : assignmentTo
             };
             var result = await _queryProcessor.ExecuteAsync(query, token);
 
@@ -97,7 +91,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages", Name = nameof(IssuePageController.CreateIssuePage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [Produces(typeof(IssuePageView))]
         public async Task<IActionResult> CreateIssuePage(int libraryId, 
             int periodicalId,
@@ -113,7 +106,7 @@ namespace Inshapardaz.Api.Controllers
 
             var model = page.Map();
 
-            var request = new AddIssuePageRequest(libraryId, periodicalId, volumeNumber, issueNumber, _userHelper.Account?.Id, model);
+            var request = new AddIssuePageRequest(libraryId, periodicalId, volumeNumber, issueNumber, _userHelper.AccountId, model);
 
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -129,7 +122,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{sequenceNumber}/sequenceNumber", Name = nameof(IssuePageController.UpdateIssuePageSequence))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> UpdateIssuePageSequence(int libraryId,
             int periodicalId,
             int volumeNumber,
@@ -150,7 +142,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/upload", Name = nameof(IssuePageController.UploadIssuePages))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [RequestSizeLimit(long.MaxValue)]
         public async Task<IActionResult> UploadIssuePages(int libraryId,
             int periodicalId,
@@ -187,7 +178,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{sequenceNumber}", Name = nameof(IssuePageController.UpdateIssuePage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [Produces(typeof(IssuePageView))]
         public async Task<IActionResult> UpdateIssuePage(int libraryId,
             int periodicalId,
@@ -204,7 +194,7 @@ namespace Inshapardaz.Api.Controllers
 
             var model = page.Map();
 
-            var request = new UpdateIssuePageRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, _userHelper.Account?.Id, model);
+            var request = new UpdateIssuePageRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, _userHelper.AccountId, model);
 
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -219,7 +209,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{sequenceNumber}", Name = nameof(IssuePageController.DeleteIssuePage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteIssuePage(int libraryId,
             int periodicalId,
             int volumeNumber,
@@ -234,7 +223,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{sequenceNumber}/ocr", Name = nameof(IssuePageController.OcrIssuePage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> OcrIssuePage(int libraryId,
             int periodicalId,
             int volumeNumber,
@@ -250,7 +238,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{sequenceNumber}/image", Name = nameof(IssuePageController.UpdateIssuePageImage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [Produces(typeof(IssuePageView))]
         public async Task<IActionResult> UpdateIssuePageImage(int libraryId,
             int periodicalId,
@@ -289,7 +276,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{sequenceNumber}/image", Name = nameof(IssuePageController.DeleteIssuePageImage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         public async Task<IActionResult> DeleteIssuePageImage(int libraryId,
             int periodicalId,
             int volumeNumber,
@@ -304,7 +290,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{sequenceNumber}/assign/me", Name = nameof(IssuePageController.AssignIssuePageToUser))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [Produces(typeof(IssuePageView))]
         public async Task<IActionResult> AssignIssuePageToUser(int libraryId,
             int periodicalId,
@@ -318,7 +303,7 @@ namespace Inshapardaz.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var request = new AssignIssuePageToUserRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, _userHelper.Account.Id);
+            var request = new AssignIssuePageToUserRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, _userHelper.AccountId);
 
             await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -328,7 +313,6 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{sequenceNumber}/assign", Name = nameof(IssuePageController.AssignIssuePage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
         [Produces(typeof(IssuePageView))]
         public async Task<IActionResult> AssignIssuePage(int libraryId,
             int periodicalId,

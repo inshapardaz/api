@@ -7,7 +7,7 @@ namespace Inshapardaz.Domain.Models
     {
         public int LibraryId { get; set; }
 
-        public DatabaseTypes DatabaseConnectionType { get; set; }
+        public DatabaseTypes? DatabaseConnectionType { get; set; }
 
         public string ConnectionString { get; set; }
 

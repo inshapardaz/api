@@ -20,7 +20,7 @@ namespace Inshapardaz.Domain.Repositories.Library
 
         Task DeleteIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken);
 
-        Task AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int fileId, string language, string mimeType, CancellationToken cancellationToken);
+        Task AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long fileId, string language, string mimeType, CancellationToken cancellationToken);
 
         Task<IEnumerable<IssueContentModel>> GetIssueContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken);
 

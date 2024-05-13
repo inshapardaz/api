@@ -100,12 +100,13 @@ namespace Inshapardaz.Api.Tests.Fakes
 
         public TlsCipherSuite? SslCipherSuite => throw new NotImplementedException();
 
+        public bool RequireTLS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public event EventHandler<MessageSentEventArgs> MessageSent;
 
         public event EventHandler<ConnectedEventArgs> Connected;
 
         public event EventHandler<DisconnectedEventArgs> Disconnected;
-
         public event EventHandler<AuthenticatedEventArgs> Authenticated;
 
         public void Authenticate(ICredentials credentials, CancellationToken cancellationToken = default)

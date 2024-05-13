@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Domain.Models.Library;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -9,11 +10,17 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 {
     public static class IssueDataHelper
     {
+        private static DatabaseTypes _dbType => TestBase.DatabaseType;
+
         public static void AddIssue(this IDbConnection connection, IssueDto issue)
         {
-            var sql = @"Insert Into Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate, IsPublic)
-                        Output Inserted.Id
-                        Values (@PeriodicalId, @Volumenumber, @IssueNumber, @ImageId, @IssueDate, @IsPublic)";
+            var sql = _dbType == DatabaseTypes.SqlServer
+                ? @"INSERT INTO Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate, IsPublic)
+                        OUTPUT INSERTED.ID
+                        VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @ImageId, @IssueDate, @IsPublic)"
+                : @"INSERT INTO Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate, IsPublic)
+                        VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @ImageId, @IssueDate, @IsPublic);
+                        SELECT LAST_INSERT_ID();";
             var id = connection.ExecuteScalar<int>(sql, issue);
             issue.Id = id;
         }
@@ -62,9 +69,13 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static void AddIssueFile(this IDbConnection connection, int issueId, IssueContentDto contentDto)
         {
-            var sql = @"Insert Into IssueContent (IssueId, FileId, Language, MimeType)
-                        Output Inserted.Id
-                        Values (@IssueId, @FileId, @Language, @MimeType)";
+            var sql = _dbType == DatabaseTypes.SqlServer
+                ? @"INSERT INTO IssueContent (IssueId, FileId, Language, MimeType)
+                    OUTPUT INSERTED.Id
+                    VALUES (@IssueId, @FileId, @Language, @MimeType)"
+                : @"INSERT INTO IssueContent (IssueId, FileId, Language, MimeType)
+                    VALUES (@IssueId, @FileId, @Language, @MimeType);
+                    SELECT LAST_INSERT_ID();";
             var id = connection.ExecuteScalar<int>(sql, new { IssueId = issueId, FileId = contentDto.FileId, Language = contentDto.Language, MimeType = contentDto.MimeType });
             contentDto.Id = id;
         }
@@ -93,32 +104,45 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         }
         public static string GetIssueImageUrl(this IDbConnection connection, int issueId)
         {
-            var sql = @"SELECT f.FilePath FROM [File] f
-                        INNER JOIN Issue i ON f.Id = i.ImageId
-                        WHERE i.Id = @Id";
+            var sql = _dbType == DatabaseTypes.SqlServer
+                ? @"SELECT f.FilePath FROM [File] f
+                    INNER JOIN Issue i ON f.Id = i.ImageId
+                    WHERE i.Id = @Id"
+                : @"SELECT f.FilePath FROM `File` f
+                    INNER JOIN Issue i ON f.Id = i.ImageId
+                    WHERE i.Id = @Id";
             return connection.QuerySingleOrDefault<string>(sql, new { Id = issueId });
         }
 
         public static FileDto GetIssueImage(this IDbConnection connection, int issueId)
         {
-            var sql = @"Select f.* from [File] f
-                        INNER JOIN Issue i ON f.Id = i.ImageId
-                        WHERE i.Id = @Id";
+            var sql = _dbType == DatabaseTypes.SqlServer
+                ? @"SELECT f.* from [File] f
+                    INNER JOIN Issue i ON f.Id = i.ImageId
+                    WHERE i.Id = @Id"
+                : @"SELECT f.* from `File` f
+                    INNER JOIN Issue i ON f.Id = i.ImageId
+                    WHERE i.Id = @Id";
             return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = issueId });
         }
 
         public static void DeleteIssues(this IDbConnection connection, IEnumerable<IssueDto> issues)
         {
-            var sql = "Delete From Issue Where Id IN @Ids";
+            var sql = "DELETE FROM Issue WHERE Id IN @Ids";
             connection.Execute(sql, new { Ids = issues.Select(f => f.Id) });
         }
 
         public static IEnumerable<IssueContentDto> GetIssueContents(this IDbConnection connection, int issueId)
         {
-            string sql = @"Select ic.*, f.MimeType From IssueContent ic
-                           INNER Join Issue i ON i.Id = ic.IssueId
-                           INNER Join [File] f ON f.Id = ic.FileId
-                           Where i.Id = @IssueId";
+            string sql = _dbType == DatabaseTypes.SqlServer
+                ? @"SELECT ic.*, f.MimeType From IssueContent ic
+                    INNER Join Issue i ON i.Id = ic.IssueId
+                    INNER Join [File] f ON f.Id = ic.FileId
+                    Where i.Id = @IssueId"
+                : @"SELECT ic.*, f.MimeType From IssueContent ic
+                    INNER Join Issue i ON i.Id = ic.IssueId
+                    INNER Join `File` f ON f.Id = ic.FileId
+                    Where i.Id = @IssueId";
 
             return connection.Query<IssueContentDto>(sql, new
             {
@@ -141,27 +165,31 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             });
         }
 
-        public static string GetIssueContentPath(this IDbConnection connection, int id, string language, string mimetype)
+        public static string GetIssueContentPath(this IDbConnection connection, long issueId, string language, string mimetype)
         {
-            string sql = @"Select f.FilePath From IssueContent ic
-                           INNER Join Issue i ON i.Id = ic.IssueId
-                           INNER Join [File] f ON f.Id = ic.FileId
-                           Where ic.Id = @Id AND ic.Language = @Language AND f.MimeType = @MimeType";
+            string sql = @"SELECT f.FilePath 
+                           FROM IssueContent ic
+                               INNER Join Issue i ON i.Id = ic.IssueId
+                               INNER Join `File` f ON f.Id = ic.FileId
+                           WHERE ic.Id = @Id 
+                                AND ic.Language = @Language 
+                                AND f.MimeType = @MimeType";
 
             return connection.QuerySingleOrDefault<string>(sql, new
             {
-                Id = id,
+                Id = issueId,
                 Language = language,
                 MimeType = mimetype
             });
         }
 
-        public static IssueContentDto GetIssueContent(this IDbConnection connection, int issueId)
+        public static IssueContentDto GetIssueContent(this IDbConnection connection, long issueId)
         {
-            string sql = @"Select * From IssueContent ic
-                           INNER Join Issue i ON i.Id = ic.IssueId
-                           INNER Join [File] f ON f.Id = ic.FileId
-                           Where ic.Id = @IssueId";
+            string sql = @"SELECT * 
+                           FROM IssueContent ic
+                               INNER Join Issue i ON i.Id = ic.IssueId
+                               INNER Join `File` f ON f.Id = ic.FileId
+                           WHERE ic.Id = @IssueId";
 
             return connection.QuerySingleOrDefault<IssueContentDto>(sql, new
             {

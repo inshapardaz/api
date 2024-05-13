@@ -5,7 +5,7 @@ namespace Inshapardaz.Domain.Models.Library
 {
     public class IssueContentModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public int PeriodicalId { get; set; }
         public int IssueNumber { get; set; }
@@ -16,12 +16,7 @@ namespace Inshapardaz.Domain.Models.Library
 
         public string Language { get; set; }
 
-        public int FileId { get; internal set; }
+        public long FileId { get; internal set; }
         public int VolumeNumber { get; set; }
-
-        internal List<IssueContentModel> ToList()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -1,6 +1,5 @@
 using AutoMapper;
 using Inshapardaz.Api.Entities;
-using Inshapardaz.Api.Models.Accounts;
 using Inshapardaz.Api.Views.Accounts;
 
 namespace Inshapardaz.Api.Helpers
@@ -27,7 +26,7 @@ namespace Inshapardaz.Api.Helpers
                         if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop)) return false;
 
                         // ignore null role
-                        if (x.DestinationMember.Name == "Role" && src.Role == null) return false;
+                        if (x.DestinationMember.Name == "Role") return false;
 
                         return true;
                     }

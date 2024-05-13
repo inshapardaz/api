@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
@@ -13,6 +14,11 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
     {
         private HttpResponseMessage _response;
         private PagingAssert<AuthorView> _assert;
+
+        public WhenSearchingAuthorsInMiddle()
+            : base(Role.Reader)
+        {
+        }
 
         [OneTimeSetUp]
         public async Task Setup()

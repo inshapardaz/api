@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByYear
                     {
                         new Views.LinkView
                         {
-                            Method = "Get",
+                            Method = "GET",
                             Rel = "self",
                             Href = $"http://localhost/libraries/{LibraryId}/periodicals/{_periodicalId}/issues?year={y.Key}"
                         }

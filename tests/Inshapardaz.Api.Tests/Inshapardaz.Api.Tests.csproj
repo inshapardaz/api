@@ -1,8 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-
+    <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -20,22 +19,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.18.0" />
-    <PackageReference Include="AutoFixture.SeedExtensions" Version="4.18.0" />
-    <PackageReference Include="Bogus" Version="34.0.2" />
+    <PackageReference Include="AutoFixture" Version="4.18.1" />
+    <PackageReference Include="AutoFixture.SeedExtensions" Version="4.18.1" />
+    <PackageReference Include="Bogus" Version="35.5.1" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
-    <PackageReference Include="Microsoft.AspnetCore.Mvc.Testing" Version="7.0.12" />
-    <PackageReference Include="nunit" Version="3.13.3" />
+    <PackageReference Include="Microsoft.AspnetCore.Mvc.Testing" Version="8.0.4" />
+    <PackageReference Include="nunit" Version="4.1.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Inshapardaz.Api\Inshapardaz.Api.csproj" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Library\Articles\UpdateArticleImage\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Inshapardaz.Api\Inshapardaz.Api.csproj" />
   </ItemGroup>
 
 </Project>

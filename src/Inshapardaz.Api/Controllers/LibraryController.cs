@@ -1,16 +1,14 @@
-﻿using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Converters;
+﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Handlers;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.Library;
 using Inshapardaz.Domain.Ports.Handlers.Library;
-using Microsoft.AspNetCore.Http;
+using Inshapardaz.Domain.Ports.Query.Library;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -42,8 +40,7 @@ namespace Inshapardaz.Api.Controllers
         [Produces(typeof(PageView<LibraryView>))]
         public async Task<IActionResult> GetLibraries(string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            Role? role = _userHelper.Account != null && _userHelper.Account.IsSuperAdmin ? Role.Admin : null;
-            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.Account?.Id, role);
+            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.AccountId, _userHelper.Account.IsSuperAdmin);
             var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
 
             var args = new PageRendererArgs<LibraryModel>
@@ -71,7 +68,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPost("libraries", Name = nameof(LibraryController.CreateLibrary))]
-        [Authorize(Role.Admin)]
+        //[Authorize(Role.Admin)]
         public async Task<IActionResult> CreateLibrary([FromBody] LibraryView library, CancellationToken token)
         {
             if (!ModelState.IsValid)
@@ -87,7 +84,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}", Name = nameof(LibraryController.UpdateLibrary))]
-        [Authorize(Role.Admin, Role.LibraryAdmin)]
+        //[Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> UpdateLibrary(int libraryId, [FromBody] LibraryView library, CancellationToken token = default(CancellationToken))
         {
             if (!ModelState.IsValid)
@@ -110,7 +107,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpDelete("libraries/{libraryId}", Name = nameof(LibraryController.DeleteLibrary))]
-        [Authorize(Role.Admin)]
+        //[Authorize(Role.Admin)]
         public async Task<IActionResult> DeleteLibrary(int libraryId, CancellationToken token = default(CancellationToken))
         {
             var request = new DeleteLibraryRequest(libraryId);
@@ -118,12 +115,11 @@ namespace Inshapardaz.Api.Controllers
             return new NoContentResult();
         }
 
-        [Authorize(Role.Admin)]
         [HttpGet("/accounts/{accountId}/libraries", Name = nameof(LibraryController.GetLibrariesByAccount))]
+        //[Authorize(Role.Admin)]
         public async Task<IActionResult> GetLibrariesByAccount(int accountId, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            Role? role = _userHelper.Account != null && _userHelper.Account.IsSuperAdmin ? Role.Admin : null;
-            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, accountId, role);
+            var libQuery = new GetLibrariesQuery(pageNumber, pageSize, accountId, _userHelper.Account.IsSuperAdmin);
             var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
 
             var args = new PageRendererArgs<LibraryModel>
@@ -135,8 +131,8 @@ namespace Inshapardaz.Api.Controllers
             return new OkObjectResult(_libraryRenderer.Render(args));
         }
 
-        [Authorize(Role.Admin)]
         [HttpPost("/accounts/{accountId}/libraries", Name = nameof(LibraryController.AddLibraryToAccount))]
+        //[Authorize(Role.Admin)]
 
         // TODO : Add role to the body
         public async Task<IActionResult> AddLibraryToAccount(int accountId, [FromBody] int libraryId, CancellationToken token = default)
@@ -146,8 +142,8 @@ namespace Inshapardaz.Api.Controllers
             return new NoContentResult();
         }
 
-        [Authorize(Role.Admin)]
         [HttpDelete("/accounts/{accountId}/libraries/{libraryId}", Name = nameof(LibraryController.RemoveLibraryFromAccount))]
+        //[Authorize(Role.Admin)]
         public async Task<IActionResult> RemoveLibraryFromAccount(int accountId, int libraryId, CancellationToken token = default)
         {
             var request = new RemoveLibraryFromAccountRequest(libraryId, accountId);
@@ -156,7 +152,7 @@ namespace Inshapardaz.Api.Controllers
         }
 
         [HttpPut("libraries/{libraryId}/image", Name = nameof(LibraryController.UpdateLibraryImage))]
-        [Authorize(Role.Admin, Role.LibraryAdmin)]
+        //[Authorize(Role.Admin, Role.LibraryAdmin)]
         public async Task<IActionResult> UpdateLibraryImage(int libraryId, [FromForm] IFormFile file, CancellationToken token = default(CancellationToken))
         {
             var content = new byte[file.Length];

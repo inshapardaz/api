@@ -20,7 +20,6 @@ namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
         private HttpResponseMessage _response;
 
         private SeriesDto _expected;
-        private readonly ClaimsPrincipal _claim;
 
         public WhenDeletingSeriesWithPermission(Role role)
             : base(role)

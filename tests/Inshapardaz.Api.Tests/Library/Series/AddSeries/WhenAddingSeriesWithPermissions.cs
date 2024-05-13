@@ -15,7 +15,6 @@ namespace Inshapardaz.Api.Tests.Library.Series.AddSeries
     public class WhenAddingSeriesWithPermissions
         : TestBase
     {
-        private readonly ClaimsPrincipal _claim;
         private SeriesAssert _assert;
         private HttpResponseMessage _response;
 

@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Api.Models.Accounts;
+﻿using Inshapardaz.Api.Views.Accounts;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;

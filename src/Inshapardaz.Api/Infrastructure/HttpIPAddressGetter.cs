@@ -1,5 +1,4 @@
 using Inshapardaz.Domain.Adapters;
-using Microsoft.AspNetCore.Http;
 
 namespace Inshapardaz.Api.Infrastructure
 {

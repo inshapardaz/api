@@ -19,7 +19,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         private ChapterContentAssert _assert;
         private ChapterDto _chapter;
         private ChapterContentDto _content;
-        private ClaimsPrincipal _claim;
 
         public WhenGettingPublicChapterContentWithPermission(Role role)
         : base(role)

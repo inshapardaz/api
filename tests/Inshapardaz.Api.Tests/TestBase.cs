@@ -2,10 +2,9 @@
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Database.SqlServer;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
-using Inshapardaz.Database.SqlServer.Repositories;
+using Inshapardaz.Adapters.Database.SqlServer.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data;
@@ -14,19 +13,25 @@ using System.Net.Http;
 using Inshapardaz.Domain.Models;
 using Microsoft.AspNetCore.TestHost;
 using System;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Api.Tests.Asserts;
 using MailKit.Net.Smtp;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using Inshapardaz.Domain.Adapters.Configuration;
+using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Adapters.Database.MySql;
+using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Adapters.Database.SqlServer;
+using Microsoft.Extensions.Options;
 
 namespace Inshapardaz.Api.Tests
 {
     public class TestBase
     {
+        public static DatabaseTypes DatabaseType => DatabaseTypes.MySql;
         protected readonly bool _periodicalsEnabled;
         protected readonly Role? _role;
-        private WebApplicationFactory<Startup> _factory;
+        private WebApplicationFactory<Program> _factory;
         private AccountDto _account;
 
         protected AccountAssert AccountAssert => Services.GetService<AccountAssert>();
@@ -41,7 +46,7 @@ namespace Inshapardaz.Api.Tests
             var projectDir = Directory.GetCurrentDirectory();
             var configPath = Path.Combine(projectDir, "appsettings.json");
 
-            _factory = new WebApplicationFactory<Startup>()
+            _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
                 builder.ConfigureAppConfiguration((context, conf) =>
@@ -57,7 +62,8 @@ namespace Inshapardaz.Api.Tests
                 builder.ConfigureTestServices(services => ConfigureServices(services));
             });
 
-            var settings = Services.GetService<Settings>();
+            var settings = Services.GetService<IOptions<Settings>>().Value;
+            DatabaseConnection = _factory.Services.GetService<IProvideConnection>().GetConnection();
             AccountBuilder = _factory.Services.GetService<AccountDataBuilder>();
 
             if (role.HasValue)
@@ -86,7 +92,7 @@ namespace Inshapardaz.Api.Tests
         {
             if (services.Any(x => x.ServiceType == typeof(IFileStorage)))
             {
-                services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(DatabaseFileStorage), ServiceLifetime.Transient));
+                services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(SqlServerDatabaseFileStorage), ServiceLifetime.Transient));
                 services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(AzureFileStorage), ServiceLifetime.Transient));
             }
             services.AddSingleton<IFileStorage>(new FakeFileStorage());
@@ -97,19 +103,33 @@ namespace Inshapardaz.Api.Tests
             }
             services.AddSingleton<ISmtpClient>(new FakeSmtpClient());
 
+
+            if (DatabaseType == DatabaseTypes.SqlServer)
+            {
+                services.AddTransient<IProvideConnection, SqlServerConnectionProvider>();
+            }
+            else if (DatabaseType == DatabaseTypes.MySql)
+            {
+                services.AddTransient<IProvideConnection, MySqlConnectionProvider>();
+            }
+            else
+            {
+                throw new Exception($"Database type {DatabaseType} is not supported.");
+            }
+            
             services.AddTransient<LibraryDataBuilder>()
-                .AddTransient<CategoriesDataBuilder>()
-                .AddTransient<SeriesDataBuilder>()
-                .AddTransient<AuthorsDataBuilder>()
-                .AddTransient<BooksDataBuilder>()
-                .AddTransient<ChapterDataBuilder>()
-                .AddTransient<AccountDataBuilder>()
-                .AddTransient<PeriodicalsDataBuilder>()
-                .AddTransient<IssueDataBuilder>()
-                .AddTransient<AccountAssert>()
-                .AddTransient<CorrectionBuilder>()
-                .AddTransient<BookShelfDataBuilder>()
-                .AddTransient<ArticlesDataBuilder>();
+            .AddTransient<CategoriesDataBuilder>()
+            .AddTransient<SeriesDataBuilder>()
+            .AddTransient<AuthorsDataBuilder>()
+            .AddTransient<BooksDataBuilder>()
+            .AddTransient<ChapterDataBuilder>()
+            .AddTransient<AccountDataBuilder>()
+            .AddTransient<PeriodicalsDataBuilder>()
+            .AddTransient<IssueDataBuilder>()
+            .AddTransient<AccountAssert>()
+            .AddTransient<CorrectionBuilder>()
+            .AddTransient<BookShelfDataBuilder>()
+            .AddTransient<ArticlesDataBuilder>();
         }
 
         protected void AuthenticateClientWithToken(string token)
@@ -129,7 +149,7 @@ namespace Inshapardaz.Api.Tests
 
         protected LibraryDto Library { get; }
 
-        protected IDbConnection DatabaseConnection => _factory.Services.GetService<IProvideConnection>().GetConnection();
+        protected IDbConnection DatabaseConnection { get; private set; }
 
         protected FakeFileStorage FileStore => _factory.Services.GetService<IFileStorage>() as FakeFileStorage;
 

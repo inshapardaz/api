@@ -11,6 +11,11 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleById
     {
         private HttpResponseMessage _response;
 
+        public WhenGettingArticleByIdThatDoesNotExist()
+            :base(Domain.Models.Role.Reader)
+        {
+        }
+
         [OneTimeSetUp]
         public async Task Setup()
         {

@@ -106,7 +106,7 @@ namespace Inshapardaz.Api.Tests.Asserts
                     .ShouldBeGet()
                     .ShouldHaveAcceptLanguage(content.Language)
                     .ShouldHaveAccept(content.MimeType)
-                    .EndingWith($"libraries/{_libraryId}/books/{_book.Id}/contents");
+                    .EndingWith($"libraries/{_libraryId}/books/{_book.Id}/contents/{bookContent.Id}");
 
                 bookContent.Link("book")
                     .ShouldBeGet()
@@ -118,12 +118,12 @@ namespace Inshapardaz.Api.Tests.Asserts
                                         .ShouldBePut()
                                         .ShouldHaveAcceptLanguage(content.Language)
                                         .ShouldHaveAccept(content.MimeType)
-                                        .EndingWith($"libraries/{_libraryId}/books/{_book.Id}/contents");
+                                        .EndingWith($"libraries/{_libraryId}/books/{_book.Id}/contents/{bookContent.Id}");
                     bookContent.Link("delete")
                                         .ShouldBeDelete()
                                         .ShouldHaveAcceptLanguage(content.Language)
                                         .ShouldHaveAccept(content.MimeType)
-                                        .EndingWith($"libraries/{_libraryId}/books/{_book.Id}/contents");
+                                        .EndingWith($"libraries/{_libraryId}/books/{_book.Id}/contents/{bookContent.Id}");
                 }
                 else
                 {

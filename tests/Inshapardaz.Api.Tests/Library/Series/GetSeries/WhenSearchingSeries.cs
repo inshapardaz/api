@@ -15,6 +15,11 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
         private readonly string _searchedSeries = "SearchedSeries";
         private PagingAssert<SeriesView> _assert;
 
+        public WhenSearchingSeries()
+            :base(Domain.Models.Role.Reader)
+        {
+        }
+
         [OneTimeSetUp]
         public async Task Setup()
         {

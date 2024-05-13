@@ -17,7 +17,11 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
         public async Task Setup()
         {
             var author = AuthorBuilder.WithLibrary(LibraryId).Build();
-            var book = new BookView { Title = RandomData.Name, Authors = new List<AuthorView> { new AuthorView { Id = author.Id } } };
+            var book = new BookView { 
+                Title = RandomData.Name, 
+                Authors = new List<AuthorView> { new AuthorView { Id = author.Id } },
+                Language = "ur"
+            };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);
         }

@@ -6,7 +6,7 @@ namespace Inshapardaz.Domain.Helpers
 {
     public class ImageHelper
     {
-        public static async Task<string> TryConvertToPublicFile(int imageId, IFileRepository fileRepository, CancellationToken cancellationToken)
+        public static async Task<string> TryConvertToPublicFile(long imageId, IFileRepository fileRepository, CancellationToken cancellationToken)
         {
             var image = await fileRepository.GetFileById(imageId, cancellationToken);
             if (image != null && image.IsPublic == true)

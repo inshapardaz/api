@@ -9,13 +9,14 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Database.SqlServer;
+using Inshapardaz.Adapters.Database.SqlServer;
 using RandomData = Inshapardaz.Api.Tests.Helpers.RandomData;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
-    
+
     public class IssueDataBuilder
     {
         private class AccountItemCountSpec
@@ -128,7 +129,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             _addPageImage = addImage;
             return this;
         }
-        
+
         public IssueDataBuilder WithArticles(int count)
         {
             _articleCount = count;
@@ -216,7 +217,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
             Func<bool> isPublic = () => _isPublic ?? RandomData.Bool;
 
-            
+
             if (!_periodicalId.HasValue)
             {
                 var periodical = fixture.Build<PeriodicalDto>()
@@ -443,7 +444,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                         _connection.AddBookToRecentReads(recent);
                         _recentBooks.Add(recent);
                     }
-                }                
+                }
             }
 
             return _issues;
@@ -455,7 +456,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             _connection.DeleteIssuePages(_pages);
             _connection.DeleteIssues(_issues);
             _connection.DeleteFiles(_files);
-            if(_periodicalId.HasValue) _connection.DeletePeriodical(_periodicalId.Value);
+            if (_periodicalId.HasValue) _connection.DeletePeriodical(_periodicalId.Value);
         }
     }
 }

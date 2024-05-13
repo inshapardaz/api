@@ -6,6 +6,7 @@ using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
@@ -17,6 +18,11 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
         private AuthorDto _searchedAuthor;
         private PagingAssert<AuthorView> _assert;
 
+        public WhenSearchingAuthors()
+            : base(Role.Reader)
+        {
+        }
+        
         [OneTimeSetUp]
         public async Task Setup()
         {

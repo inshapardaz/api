@@ -1,64 +1,62 @@
 ﻿using Inshapardaz.Domain.Common;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports.Handlers.Account
+namespace Inshapardaz.Domain.Ports.Command.Account;
+
+public class ForgetPasswordCommand : RequestBase
 {
-    public class ForgetPasswordCommand : RequestBase
+    public string Email { get; set; }
+    public string Name { get; set; }
+    public string Password { get; set; }
+    public string ConfirmPassword { get; set; }
+    public string InvitationCode { get; set; }
+    public bool AcceptTerms { get; set; }
+}
+
+public class ForgetPasswordCommandHandler : RequestHandlerAsync<ForgetPasswordCommand>
+
+{
+    private readonly IAccountRepository _accountRepository;
+
+    public ForgetPasswordCommandHandler(IAccountRepository accountRepository)
     {
-        public string Email { get; set; }
-        public string Name { get; set; }
-        public string Password { get; set; }
-        public string ConfirmPassword { get; set; }
-        public string InvitationCode { get; set; }
-        public bool AcceptTerms { get; set; }
+        _accountRepository = accountRepository;
     }
 
-    public class ForgetPasswordCommandHandler : RequestHandlerAsync<ForgetPasswordCommand>
-
+    public override async Task<ForgetPasswordCommand> HandleAsync(ForgetPasswordCommand command, CancellationToken cancellationToken = default)
     {
-        private readonly IAccountRepository _accountRepository;
-
-        public ForgetPasswordCommandHandler(IAccountRepository accountRepository)
+        if (!command.AcceptTerms)
         {
-            _accountRepository = accountRepository;
+            throw new BadRequestException("Terms must be accepted");
         }
 
-        public override async Task<ForgetPasswordCommand> HandleAsync(ForgetPasswordCommand command, CancellationToken cancellationToken = default)
+        if (command.Password != command.ConfirmPassword)
         {
-            if (!command.AcceptTerms)
-            {
-                throw new BadRequestException("Terms must be accepted");
-            }
-
-            if (command.Password != command.ConfirmPassword)
-            {
-                throw new BadRequestException("Password and confirm password not matching");
-            }
-
-            var account = await _accountRepository.GetAccountByInvitationCode(command.InvitationCode, cancellationToken);
-
-            if (account == null || account.InvitationCodeExpiry < DateTime.UtcNow)
-            {
-                throw new BadRequestException("Invitation has expired");
-            }
-
-            account.Name = command.Name;
-            account.PasswordHash = SecretHasher.GetStringHash(command.Password);
-            account.Verified = DateTime.UtcNow;
-            account.VerificationToken = RandomGenerator.GenerateRandomString();
-            account.InvitationCode = null;
-            account.InvitationCodeExpiry = null;
-            account.AcceptTerms = true;
-
-            await _accountRepository.UpdateAccount(account, cancellationToken);
-
-            return await base.HandleAsync(command, cancellationToken);
+            throw new BadRequestException("Password and confirm password not matching");
         }
+
+        var account = await _accountRepository.GetAccountByInvitationCode(command.InvitationCode, cancellationToken);
+
+        if (account == null || account.InvitationCodeExpiry < DateTime.UtcNow)
+        {
+            throw new BadRequestException("Invitation has expired");
+        }
+
+        account.Name = command.Name;
+        account.PasswordHash = SecretHasher.GetStringHash(command.Password);
+        account.Verified = DateTime.UtcNow;
+        account.VerificationToken = RandomGenerator.GenerateRandomString();
+        account.InvitationCode = null;
+        account.InvitationCodeExpiry = null;
+        account.AcceptTerms = true;
+
+        await _accountRepository.UpdateAccount(account, cancellationToken);
+
+        return await base.HandleAsync(command, cancellationToken);
     }
 }

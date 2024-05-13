@@ -1,6 +1,4 @@
-﻿using BCrypt.Net;
-
-namespace Inshapardaz.Domain.Common
+﻿namespace Inshapardaz.Domain.Common
 {
     public static class SecretHasher
     {

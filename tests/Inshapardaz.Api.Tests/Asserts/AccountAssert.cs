@@ -4,7 +4,6 @@ using System.Linq;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Adapters.Database.SqlServer;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Adapters;
 

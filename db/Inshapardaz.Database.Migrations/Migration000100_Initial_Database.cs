@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.Design;
 using FluentMigrator;
 
 namespace Inshapardaz.Database.Migrations

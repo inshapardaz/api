@@ -3,18 +3,17 @@ using Inshapardaz.Adapters.Database.SqlServer;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models.Library;
 
-namespace Inshapardaz.Api.Infrastructure.Factories
+namespace Inshapardaz.Api.Infrastructure.Factories;
+
+public class DatabaseMigrationFactory
 {
-    public class DatabaseMigrationFactory
+    public IMigrateDatabase CreateMigrator(DatabaseTypes? types)
     {
-        public IMigrateDatabase CreateMigrator(DatabaseTypes? types)
+        return types switch
         {
-            return types switch
-            {
-                DatabaseTypes.MySql => new MySqlDatabaseMigration(),
-                DatabaseTypes.SqlServer => new SqlServerDatabaseMigration(),
-                _ => throw new ArgumentOutOfRangeException(nameof(types)),
-            };
-        }
+            DatabaseTypes.MySql => new MySqlDatabaseMigration(),
+            DatabaseTypes.SqlServer => new SqlServerDatabaseMigration(),
+            _ => throw new ArgumentOutOfRangeException(nameof(types)),
+        };
     }
 }

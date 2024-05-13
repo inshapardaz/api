@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Repositories;
 using System;
 using System.Threading;

@@ -7,7 +7,6 @@ using Inshapardaz.Api.Views.Accounts;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Adapters.Database.SqlServer;
 using Inshapardaz.Domain.Common;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Adapters;

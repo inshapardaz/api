@@ -11,8 +11,6 @@ namespace Inshapardaz.Domain.Adapters
 
         bool IsWriter(int libraryId);
 
-        bool IsReader(int libraryId);
-
         AccountModel Account { get; }
 
         int? AccountId => Account?.Id;

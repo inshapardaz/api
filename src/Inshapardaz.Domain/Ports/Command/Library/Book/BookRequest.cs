@@ -1,15 +1,12 @@
-﻿using Inshapardaz.Domain.Models.Handlers.Library;
+﻿namespace Inshapardaz.Domain.Ports.Command.Library.Book;
 
-namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
+public abstract class BookRequest : LibraryBaseCommand
 {
-    public abstract class BookRequest : LibraryBaseCommand
+    protected BookRequest(int libraryId, int bookId)
+        : base(libraryId)
     {
-        protected BookRequest(int libraryId, int bookId)
-            : base(libraryId)
-        {
-            BookId = bookId;
-        }
-
-        public int BookId { get; set; }
+        BookId = bookId;
     }
+
+    public int BookId { get; set; }
 }

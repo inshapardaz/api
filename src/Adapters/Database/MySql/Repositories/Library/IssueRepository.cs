@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
@@ -129,7 +128,7 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                     i.Periodical = p;
                     i.Frequency = p.Frequency;
                     i.ArticleCount = (int)ac;
-                    i.PageCount = (int) pc;
+                    i.PageCount = (int)pc;
                     i.ImageUrl = iUrl;
                     return i;
                 }, splitOn: "Id, ImageUrl, ArticleCount, PageCount");
@@ -352,8 +351,8 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                 var result = await connection.QueryAsync<IssueModel, PeriodicalModel, string, long, long, IssueModel>(command, (i, p, iUrl, ac, pc) =>
                 {
                     i.Periodical = p;
-                    i.ArticleCount = (int) ac;
-                    i.PageCount = (int) pc;
+                    i.ArticleCount = (int)ac;
+                    i.PageCount = (int)pc;
                     i.ImageUrl = iUrl;
                     return i;
                 }, splitOn: "Id, ImageUrl, ArticleCount, PageCount");

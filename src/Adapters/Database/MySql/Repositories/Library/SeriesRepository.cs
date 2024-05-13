@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
@@ -79,7 +78,9 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                             ORDER BY s.Name
                             LIMIT @PageSize OFFSET @Offset";
                 var command = new CommandDefinition(sql,
-                                                    new { LibraryId = libraryId, 
+                                                    new
+                                                    {
+                                                        LibraryId = libraryId,
                                                         PageSize = pageSize,
                                                         Offset = pageSize * (pageNumber - 1)
                                                     },
@@ -113,8 +114,10 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                             ORDER BY s.Name
                             LIMIT @PageSize OFFSET @Offset";
                 var command = new CommandDefinition(sql,
-                                                    new { LibraryId = libraryId, 
-                                                        Query = $"%{query}%", 
+                                                    new
+                                                    {
+                                                        LibraryId = libraryId,
+                                                        Query = $"%{query}%",
                                                         PageSize = pageSize,
                                                         Offset = pageSize * (pageNumber - 1)
                                                     },

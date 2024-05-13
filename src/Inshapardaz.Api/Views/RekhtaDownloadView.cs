@@ -1,8 +1,7 @@
-﻿namespace Inshapardaz.Api.Views
+﻿namespace Inshapardaz.Api.Views;
+
+public class RekhtaDownloadView
 {
-    public class RekhtaDownloadView
-    {
-        public string BookUrl { get; set; }
-        public bool ConvertToPdf { get; set; }
-    }
+    public string BookUrl { get; set; }
+    public bool ConvertToPdf { get; set; }
 }

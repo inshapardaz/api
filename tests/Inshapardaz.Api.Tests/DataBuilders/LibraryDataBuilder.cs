@@ -5,7 +5,6 @@ using AutoFixture;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
-using Inshapardaz.Adapters.Database.SqlServer;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
 using RandomData = Inshapardaz.Api.Tests.Helpers.RandomData;

@@ -1,12 +1,11 @@
-﻿namespace Inshapardaz.Domain.Models.Handlers.Library
-{
-    public abstract class LibraryBaseCommand : RequestBase
-    {
-        public LibraryBaseCommand(int libraryId)
-        {
-            LibraryId = libraryId;
-        }
+﻿namespace Inshapardaz.Domain.Ports.Command.Library;
 
-        public int LibraryId { get; private set; }
+public abstract class LibraryBaseCommand : RequestBase
+{
+    public LibraryBaseCommand(int libraryId)
+    {
+        LibraryId = libraryId;
     }
+
+    public int LibraryId { get; private set; }
 }

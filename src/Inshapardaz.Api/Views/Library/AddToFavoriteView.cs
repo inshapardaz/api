@@ -1,7 +1,6 @@
-﻿namespace Inshapardaz.Api.Views.Library
+﻿namespace Inshapardaz.Api.Views.Library;
+
+public class AddToFavoriteView
 {
-    public class AddToFavoriteView
-    {
-        public int BookId { get; set; }
-    }
+    public int BookId { get; set; }
 }

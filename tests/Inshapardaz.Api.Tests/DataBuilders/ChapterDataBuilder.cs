@@ -4,7 +4,6 @@ using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Adapters.Database.SqlServer;
 using Inshapardaz.Api.Tests.Helpers;
 using System;
 using Inshapardaz.Domain.Models;

@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Repositories.Library;
@@ -150,13 +149,14 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                             ORDER BY a.Name
                             LIMIT @PageSize
                             OFFSET @Offset";
-                var command = new CommandDefinition(sql, new { 
-                                                        LibraryId = libraryId, 
-                                                        Query = $"%{query}%", 
-                                                        AuthorType = authorType, 
-                                                        PageSize = pageSize,
-                                                        Offset = pageSize * (pageNumber - 1)
-                                                    },
+                var command = new CommandDefinition(sql, new
+                {
+                    LibraryId = libraryId,
+                    Query = $"%{query}%",
+                    AuthorType = authorType,
+                    PageSize = pageSize,
+                    Offset = pageSize * (pageNumber - 1)
+                },
                                                     cancellationToken: cancellationToken);
 
                 var authors = await connection.QueryAsync<AuthorModel>(command);

@@ -1,12 +1,10 @@
-﻿using Bogus;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;

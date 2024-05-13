@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using DocumentFormat.OpenXml;
@@ -12,7 +11,7 @@ namespace Inshapardaz.Domain.Adapters
 {
     public interface IWriteWordDocument
     {
-        byte[] ConvertMarkdownToWord(IEnumerable<string >chapters);
+        byte[] ConvertMarkdownToWord(IEnumerable<string> chapters);
     }
 
     public class WordDocumentWriter : IWriteWordDocument

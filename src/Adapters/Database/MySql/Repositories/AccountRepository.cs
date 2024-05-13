@@ -1,9 +1,6 @@
 ﻿using Dapper;
-using DocumentFormat.OpenXml.InkML;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Repositories;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

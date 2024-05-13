@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Inshapardaz.Api.Views
+namespace Inshapardaz.Api.Views;
+
+public class OcrRequest
 {
-    public class OcrRequest
-    {
-        [Required]
-        public string Key { get; set; }
-    }
+    [Required]
+    public string Key { get; set; }
 }

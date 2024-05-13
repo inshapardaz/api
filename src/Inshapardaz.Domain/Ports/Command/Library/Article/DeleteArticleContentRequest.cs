@@ -1,46 +1,43 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Models.Handlers.Library;
-using Inshapardaz.Domain.Ports.Command;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports.Handlers.Library.Article
-{
-    public class DeleteArticleContentRequest : LibraryBaseCommand
-    {
-        public DeleteArticleContentRequest(int libraryId, int articleId, string language)
-            : base(libraryId)
-        {
-            ArticleId = articleId;
-            Language = language;
-        }
+namespace Inshapardaz.Domain.Ports.Command.Library.Article;
 
-        public int ArticleId { get; }
-        public string Language { get; }
+public class DeleteArticleContentRequest : LibraryBaseCommand
+{
+    public DeleteArticleContentRequest(int libraryId, int articleId, string language)
+        : base(libraryId)
+    {
+        ArticleId = articleId;
+        Language = language;
     }
 
-    public class DeleteArticleContentRequestHandler : RequestHandlerAsync<DeleteArticleContentRequest>
+    public int ArticleId { get; }
+    public string Language { get; }
+}
+
+public class DeleteArticleContentRequestHandler : RequestHandlerAsync<DeleteArticleContentRequest>
+{
+    private readonly IArticleRepository _articleRepository;
+
+    public DeleteArticleContentRequestHandler(IArticleRepository articleRepository)
     {
-        private readonly IArticleRepository _articleRepository;
+        _articleRepository = articleRepository;
+    }
 
-        public DeleteArticleContentRequestHandler(IArticleRepository articleRepository)
+    [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
+    public override async Task<DeleteArticleContentRequest> HandleAsync(DeleteArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
+    {
+        var content = await _articleRepository.GetArticleContent(command.LibraryId, command.ArticleId, command.Language, cancellationToken);
+
+        if (content != null)
         {
-            _articleRepository = articleRepository;
+            await _articleRepository.DeleteArticleContent(command.LibraryId, command.ArticleId, command.Language, cancellationToken);
         }
 
-        [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
-        public override async Task<DeleteArticleContentRequest> HandleAsync(DeleteArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
-        {
-            var content = await _articleRepository.GetArticleContent(command.LibraryId, command.ArticleId, command.Language, cancellationToken);
-
-            if (content != null)
-            {
-                await _articleRepository.DeleteArticleContent(command.LibraryId, command.ArticleId, command.Language, cancellationToken);
-            }
-
-            return await base.HandleAsync(command, cancellationToken);
-        }
+        return await base.HandleAsync(command, cancellationToken);
     }
 }

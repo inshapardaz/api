@@ -1,6 +1,4 @@
-﻿using Inshapardaz.Domain.Adapters;
-
-namespace Inshapardaz.Domain.Adapters.Configuration
+﻿namespace Inshapardaz.Domain.Adapters.Configuration
 {
     public record Storage
     {

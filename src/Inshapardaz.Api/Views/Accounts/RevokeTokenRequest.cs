@@ -1,7 +1,6 @@
-namespace Inshapardaz.Api.Views.Accounts
+namespace Inshapardaz.Api.Views.Accounts;
+
+public class RevokeTokenRequest
 {
-    public class RevokeTokenRequest
-    {
-        public string Token { get; set; }
-    }
+    public string Token { get; set; }
 }

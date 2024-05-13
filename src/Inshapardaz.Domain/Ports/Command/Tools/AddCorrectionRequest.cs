@@ -1,37 +1,36 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Ports.Command;
+using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Models.Library
-{
-    public class AddCorrectionRequest : RequestBase
-    {
-        public AddCorrectionRequest(CorrectionModel correctionModel)
-        {
-            Correction = correctionModel;
-        }
+namespace Inshapardaz.Domain.Ports.Command.Tools;
 
-        public CorrectionModel Correction { get; }
-        public CorrectionModel Result { get; set; }
+public class AddCorrectionRequest : RequestBase
+{
+    public AddCorrectionRequest(CorrectionModel correctionModel)
+    {
+        Correction = correctionModel;
     }
 
-    public class AddCorrectionRequestHandler : RequestHandlerAsync<AddCorrectionRequest>
+    public CorrectionModel Correction { get; }
+    public CorrectionModel Result { get; set; }
+}
+
+public class AddCorrectionRequestHandler : RequestHandlerAsync<AddCorrectionRequest>
+{
+    private readonly ICorrectionRepository _correctionRepository;
+
+    public AddCorrectionRequestHandler(ICorrectionRepository correctionRepository)
     {
-        private readonly ICorrectionRepository _correctionRepository;
+        _correctionRepository = correctionRepository;
+    }
 
-        public AddCorrectionRequestHandler(ICorrectionRepository correctionRepository)
-        {
-            _correctionRepository = correctionRepository;
-        }
+    [AuthorizeAdmin(1)]
+    public override async Task<AddCorrectionRequest> HandleAsync(AddCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
+    {
+        command.Result = await _correctionRepository.AddCorrection(command.Correction, cancellationToken);
 
-        [AuthorizeAdmin(1)]
-        public override async Task<AddCorrectionRequest> HandleAsync(AddCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
-        {
-            command.Result =  await _correctionRepository.AddCorrection(command.Correction, cancellationToken);
-
-            return await base.HandleAsync(command, cancellationToken);
-        }
+        return await base.HandleAsync(command, cancellationToken);
     }
 }

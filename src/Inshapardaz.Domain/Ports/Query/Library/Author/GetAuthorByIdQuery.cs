@@ -1,46 +1,45 @@
 ﻿using Inshapardaz.Domain.Helpers;
-using Inshapardaz.Domain.Models.Handlers.Library;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Query.Library;
 using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports.Handlers.Library.Author
-{
-    public class GetAuthorByIdQuery : LibraryBaseQuery<AuthorModel>
-    {
-        public GetAuthorByIdQuery(int libraryId, int authorId)
-            : base(libraryId)
-        {
-            AuthorId = authorId;
-        }
+namespace Inshapardaz.Domain.Ports.Query.Library.Author;
 
-        public int AuthorId { get; }
+public class GetAuthorByIdQuery : LibraryBaseQuery<AuthorModel>
+{
+    public GetAuthorByIdQuery(int libraryId, int authorId)
+        : base(libraryId)
+    {
+        AuthorId = authorId;
     }
 
-    public class GetAuthorByIdQueryHandler : QueryHandlerAsync<GetAuthorByIdQuery, AuthorModel>
+    public int AuthorId { get; }
+}
+
+public class GetAuthorByIdQueryHandler : QueryHandlerAsync<GetAuthorByIdQuery, AuthorModel>
+{
+    private readonly IAuthorRepository _authorRepository;
+    private readonly IFileRepository _fileRepository;
+
+    public GetAuthorByIdQueryHandler(IAuthorRepository authorRepository, IFileRepository fileRepository)
     {
-        private readonly IAuthorRepository _authorRepository;
-        private readonly IFileRepository _fileRepository;
+        _authorRepository = authorRepository;
+        _fileRepository = fileRepository;
+    }
 
-        public GetAuthorByIdQueryHandler(IAuthorRepository authorRepository, IFileRepository fileRepository)
+    public override async Task<AuthorModel> ExecuteAsync(GetAuthorByIdQuery query, CancellationToken cancellationToken = new CancellationToken())
+    {
+        var author = await _authorRepository.GetAuthorById(query.LibraryId, query.AuthorId, cancellationToken);
+
+        if (author != null && author.ImageUrl == null && author.ImageId.HasValue)
         {
-            _authorRepository = authorRepository;
-            _fileRepository = fileRepository;
+            author.ImageUrl = await ImageHelper.TryConvertToPublicFile(author.ImageId.Value, _fileRepository, cancellationToken);
         }
 
-        public override async Task<AuthorModel> ExecuteAsync(GetAuthorByIdQuery query, CancellationToken cancellationToken = new CancellationToken())
-        {
-            var author = await _authorRepository.GetAuthorById(query.LibraryId, query.AuthorId, cancellationToken);
-
-            if (author != null && author.ImageUrl == null && author.ImageId.HasValue)
-            {
-                author.ImageUrl = await ImageHelper.TryConvertToPublicFile(author.ImageId.Value, _fileRepository, cancellationToken);
-            }
-
-            return author;
-        }
+        return author;
     }
 }

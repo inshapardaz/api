@@ -6,7 +6,6 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
-using Inshapardaz.Adapters.Database.SqlServer;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Adapters;
 

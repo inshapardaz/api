@@ -1,50 +1,48 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Ports.Command;
 using Paramore.Brighter;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports.Handlers.Library.Book
-{
-    public class BindBookRequest : RequestBase
-    {
-        public BindBookRequest(int libraryId, int bookId)
-        {
-            LibraryId = libraryId;
-            BookId = bookId;
-        }
+namespace Inshapardaz.Domain.Ports.Command.Library.Book;
 
-        public string Result { get; set; }
-        public int LibraryId { get; }
-        public int BookId { get; }
+public class BindBookRequest : RequestBase
+{
+    public BindBookRequest(int libraryId, int bookId)
+    {
+        LibraryId = libraryId;
+        BookId = bookId;
     }
 
-    public class BindBookRequestHandler : RequestHandlerAsync<BindBookRequest>
+    public string Result { get; set; }
+    public int LibraryId { get; }
+    public int BookId { get; }
+}
+
+public class BindBookRequestHandler : RequestHandlerAsync<BindBookRequest>
+{
+    private readonly IBookPageRepository _bookPageRepository;
+
+    public BindBookRequestHandler(IBookPageRepository bookPageRepository)
     {
-        private readonly IBookPageRepository _bookPageRepository;
+        _bookPageRepository = bookPageRepository;
+    }
 
-        public BindBookRequestHandler(IBookPageRepository bookPageRepository)
+    [LibraryAuthorize(1, Role.LibraryAdmin)]
+    public override async Task<BindBookRequest> HandleAsync(BindBookRequest command, CancellationToken cancellationToken = new CancellationToken())
+    {
+        var pages = await _bookPageRepository.GetAllPagesByBook(command.LibraryId, command.BookId, cancellationToken);
+
+        var builder = new StringBuilder();
+        foreach (var page in pages.OrderBy(p => p.SequenceNumber))
         {
-            _bookPageRepository = bookPageRepository;
+            builder.AppendLine(page.Text);
         }
 
-        [LibraryAuthorize(1, Role.LibraryAdmin)]
-        public override async Task<BindBookRequest> HandleAsync(BindBookRequest command, CancellationToken cancellationToken = new CancellationToken())
-        {
-            var pages = await _bookPageRepository.GetAllPagesByBook(command.LibraryId, command.BookId, cancellationToken);
+        command.Result = builder.ToString();
 
-            var builder = new StringBuilder();
-            foreach (var page in pages.OrderBy(p => p.SequenceNumber))
-            {
-                builder.AppendLine(page.Text);
-            }
-
-            command.Result = builder.ToString();
-
-            return await base.HandleAsync(command, cancellationToken);
-        }
+        return await base.HandleAsync(command, cancellationToken);
     }
 }

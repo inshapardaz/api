@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using DocumentFormat.OpenXml.Drawing;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
@@ -29,7 +28,7 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                             LIMIT @PageSize
                             OFFSET @Offset";
                 var command = new CommandDefinition(sql,
-                                                    new { PageSize = pageSize, Offset = pageSize * (pageNumber -1)},
+                                                    new { PageSize = pageSize, Offset = pageSize * (pageNumber - 1) },
                                                     cancellationToken: cancellationToken);
 
                 var series = await connection.QueryAsync<LibraryModel>(command);
@@ -59,7 +58,7 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                             LIMIT @PageSize
                             OFFSET @Offset";
                 var command = new CommandDefinition(sql,
-                                                    new { Query = $"%{query}%", PageSize = pageSize, Offset = pageSize * (pageNumber -1) },
+                                                    new { Query = $"%{query}%", PageSize = pageSize, Offset = pageSize * (pageNumber - 1) },
                                                     cancellationToken: cancellationToken);
 
                 var series = await connection.QueryAsync<LibraryModel>(command);

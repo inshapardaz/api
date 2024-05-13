@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
-using Bogus;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Asserts;
 using Inshapardaz.Api.Tests.Helpers;
@@ -37,7 +35,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 YearPublished = book.YearPublished,
                 Status = book.Status.ToDescription(),
                 IsPublic = book.IsPublic,
-                Authors = new [] { new AuthorView { Id = author.Id, Name = author.Name } },
+                Authors = new[] { new AuthorView { Id = author.Id, Name = author.Name } },
                 SeriesId = book.SeriesId,
                 IsPublished = book.IsPublished,
                 Source = book.Source,

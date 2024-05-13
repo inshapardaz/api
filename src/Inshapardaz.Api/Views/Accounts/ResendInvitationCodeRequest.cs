@@ -1,7 +1,6 @@
-﻿namespace Inshapardaz.Api.Views.Accounts
+﻿namespace Inshapardaz.Api.Views.Accounts;
+
+public class ResendInvitationCodeRequest
 {
-    public class ResendInvitationCodeRequest
-    {
-        public string Email { get; set; }
-    }
+    public string Email { get; set; }
 }

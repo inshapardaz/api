@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Inshapardaz.Domain.Models
+﻿namespace Inshapardaz.Domain.Models
 {
     public class UserPageSummaryItem
     {

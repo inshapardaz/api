@@ -7,7 +7,6 @@ using MailKit.Net.Smtp;
 using Microsoft.Net.Http.Headers;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using Inshapardaz.Api.Configuration;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Inshapardaz.Adapter.Ocr.Google;
 using Inshapardaz.Api.Helpers;
@@ -17,11 +16,12 @@ using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Repositories.Library;
 using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Api.Middleware;
 using Inshapardaz.Adapters.Database.MySql;
 using Inshapardaz.Adapters.Database.SqlServer;
-using Microsoft.Extensions.DependencyInjection;
 using Inshapardaz.Domain.Ports.Query;
+using Inshapardaz.Api.Infrastructure.Configuration;
+using Inshapardaz.Api.Infrastructure.Middleware;
+using Inshapardaz.Domain.Ports.Query.Library;
 
 var builder = WebApplication.CreateBuilder(args);
 

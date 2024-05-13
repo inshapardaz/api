@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Inshapardaz.Api.Views.Accounts
+namespace Inshapardaz.Api.Views.Accounts;
+
+public class VerifyEmailRequest
 {
-    public class VerifyEmailRequest
-    {
-        [Required]
-        public string Token { get; set; }
-    }
+    [Required]
+    public string Token { get; set; }
 }

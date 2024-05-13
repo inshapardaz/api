@@ -1,10 +1,9 @@
-﻿namespace Inshapardaz.Api.Converters
-{
-    public interface IRenderPage
-    {
-    }
+﻿namespace Inshapardaz.Api.Converters;
 
-    public class PageRenderer : IRenderPage
-    {
-    }
+public interface IRenderPage
+{
+}
+
+public class PageRenderer : IRenderPage
+{
 }

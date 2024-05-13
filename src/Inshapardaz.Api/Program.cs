@@ -62,9 +62,6 @@ builder.Services.AddTransient<ISmtpClient, SmtpClient>()
     .AddTransient<IGenerateToken, TokenGenerator>();
 //------------------------------------------------------------------
 
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
-//------------------------------------------------------------------
-
 builder.Services.AddBrighterCommand();
 builder.Services.AddDarkerQuery();
 //------------------------------------------------------------------

@@ -16,7 +16,6 @@ public class RevokeTokenCommand : RequestBase
         Token = token;
     }
 
-    public int? Revoker { get; set; }
     public string Token { get; }
 
     public TokenResponse Response { get; set; }
@@ -28,13 +27,15 @@ public class RevokeTokenCommandHandler : RequestHandlerAsync<RevokeTokenCommand>
     private readonly IAccountRepository _accountRepository;
     private readonly IGetIPAddress _ipAddressGetter;
     private readonly ILogger<RevokeTokenCommandHandler> _logger;
+    private readonly IUserHelper _userHelper;
 
     public RevokeTokenCommandHandler(IAccountRepository accountRepository,
-        IGetIPAddress ipAddressGetter, ILogger<RevokeTokenCommandHandler> logger)
+        IGetIPAddress ipAddressGetter, ILogger<RevokeTokenCommandHandler> logger, IUserHelper userHelper)
     {
         _accountRepository = accountRepository;
         _ipAddressGetter = ipAddressGetter;
         _logger = logger;
+        _userHelper = userHelper;
     }
 
     public override async Task<RevokeTokenCommand> HandleAsync(RevokeTokenCommand command, CancellationToken cancellationToken = default)
@@ -45,13 +46,13 @@ public class RevokeTokenCommandHandler : RequestHandlerAsync<RevokeTokenCommand>
             throw new BadRequestException("Token is required");
         }
 
-        if (command.Revoker == null)
+        if (!_userHelper.IsAuthenticated)
         {
             return await base.HandleAsync(command, cancellationToken);
         }
 
         var refreshToken = await _accountRepository.GetRefreshToken(command.Token, cancellationToken);
-        var revoker = await _accountRepository.GetAccountById(command.Revoker.Value, cancellationToken);
+        var revoker = await _accountRepository.GetAccountById(_userHelper.AccountId.Value, cancellationToken);
 
         if (refreshToken != null)
         {

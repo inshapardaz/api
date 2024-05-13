@@ -24,6 +24,7 @@ public class DeleteFileRequestHandler : RequestHandlerAsync<DeleteFileRequest>
         _fileRepository = fileRepository;
     }
 
+    [Authorize(1)]
     public override async Task<DeleteFileRequest> HandleAsync(DeleteFileRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         await _fileRepository.DeleteFile(command.ImageId, cancellationToken);

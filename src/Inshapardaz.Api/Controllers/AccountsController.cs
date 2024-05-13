@@ -1,13 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Inshapardaz.Api.Helpers;
+﻿using Microsoft.AspNetCore.Mvc;
 using Inshapardaz.Domain.Models;
 using Paramore.Darker;
 using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Views.Accounts;
 using Paramore.Brighter;
 using Inshapardaz.Api.Views;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Ports.Command.Account;
 using Inshapardaz.Domain.Ports.Query.Account;
 
@@ -18,23 +15,17 @@ namespace Inshapardaz.Api.Controllers;
 public class AccountsController : Controller
 {
     private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IMapper _mapper;
     private readonly IQueryProcessor _queryProcessor;
     private readonly IRenderAccount _accountRenderer;
-    private readonly IUserHelper _userHelper;
 
     public AccountsController(
         IAmACommandProcessor commandProcessor,
         IQueryProcessor queryProcessor,
-        IMapper mapper,
-        IRenderAccount accountRenderer,
-        IUserHelper userHelper)
+        IRenderAccount accountRenderer)
     {
         _commandProcessor = commandProcessor;
         _queryProcessor = queryProcessor;
         _accountRenderer = accountRenderer;
-        _mapper = mapper;
-        _userHelper = userHelper;
     }
 
 
@@ -72,7 +63,7 @@ public class AccountsController : Controller
     public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model, CancellationToken cancellationToken)
     {
         var token = model.Token ?? Request.Cookies["refreshToken"];
-        var command = new RevokeTokenCommand(token) { Revoker = _userHelper.AccountId };
+        var command = new RevokeTokenCommand(token);
         await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         return Ok();
     }
@@ -114,7 +105,6 @@ public class AccountsController : Controller
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    //[Authorize(Role.Admin, Role.LibraryAdmin)]
     [HttpPost("invite")]
     [HttpPost("invite/library/{libraryId}", Name = nameof(AccountsController.InviteUser))]
     public async Task<IActionResult> InviteUser(int libraryId, [FromBody] InviteUserRequest model, CancellationToken cancellationToken)
@@ -176,13 +166,11 @@ public class AccountsController : Controller
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Authorize]
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePassword(ChangePasswordRequest model, CancellationToken cancellationToken)
     {
         var command = new ChangePasswordCommand()
         {
-            AccountId = _userHelper.AccountId,
             Password = model.Password,
             OldPassword = model.OldPassword
         };
@@ -191,7 +179,6 @@ public class AccountsController : Controller
         return Ok();
     }
 
-    //[Authorize(Role.Admin)]
     [HttpGet(Name = nameof(AccountsController.GetAll))]
     public async Task<IActionResult> GetAll(string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
     {
@@ -207,7 +194,6 @@ public class AccountsController : Controller
         return new OkObjectResult(_accountRenderer.Render(args));
     }
 
-    //[Authorize(Role.Admin, Role.LibraryAdmin)]
     [HttpGet("libraries/{libraryId}/users", Name = nameof(AccountsController.GetLibraryUsers))]
     [Produces(typeof(PageView<AccountView>))]
     public async Task<IActionResult> GetLibraryUsers(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
@@ -224,7 +210,6 @@ public class AccountsController : Controller
         return new OkObjectResult(_accountRenderer.Render(args, libraryId));
     }
 
-    //[Authorize(Role.Admin, Role.LibraryAdmin)]
     [HttpGet("/libraries/{libraryId}/writers", Name = nameof(AccountsController.GetWriters))]
     public async Task<IActionResult> GetWriters(int libraryId, string query, CancellationToken token = default(CancellationToken))
     {
@@ -234,40 +219,25 @@ public class AccountsController : Controller
         return new OkObjectResult(_accountRenderer.RenderLookup(writers));
     }
 
-    [Authorize]
     [HttpGet("{id:int}", Name = nameof(AccountsController.GetById))]
     public async Task<ActionResult<AccountView>> GetById(int id, CancellationToken cancellationToken)
     {
-        // users can get their own account and admins can get any account
-        if (id != Account.Id && Account.IsSuperAdmin)
-            return Unauthorized(new { message = "Unauthorized" });
-
         var account = await _queryProcessor.ExecuteAsync(new GetAccountByIdQuery(id), cancellationToken);
         return Ok(_accountRenderer.Render(account));
     }
 
-    [Authorize]
     [HttpGet("/libraries/{libraryId}/users/{id:int}", Name = nameof(AccountsController.GetLibraryUserById))]
     public async Task<ActionResult<AccountView>> GetLibraryUserById(int libraryId, int id, CancellationToken cancellationToken)
     {
-        if (id != Account.Id)
-        {
-            return Unauthorized(new { message = "Unauthorized" });
-        }
-
         var query = new GetAccountByIdQuery(id) { LibraryId = libraryId };
         var account = await _queryProcessor.ExecuteAsync(query, cancellationToken);
         return Ok(_accountRenderer.Render(account, libraryId));
     }
 
-    [Authorize]
     [HttpPut("{id:int}", Name = nameof(AccountsController.Update))]
     public async Task<ActionResult> Update(int id, UpdateRequest model, CancellationToken cancellationToken)
     {
-        if (id != Account.Id)
-            return Unauthorized(new { message = "Unauthorized" });
-
-        var command = new UpdateUserCommand
+        var command = new UpdateUserCommand(id)
         {
             Email = model.Email,
             LibraryId = null,
@@ -278,27 +248,21 @@ public class AccountsController : Controller
         return Ok(model);
     }
 
-    [Authorize]
     [HttpPut("/libraries/{libraryId}/users/{id:int}", Name = nameof(AccountsController.UpdateLibraryUser))]
     public async Task<ActionResult> UpdateLibraryUser(int libraryId, int id, UpdateRequest model, CancellationToken cancellationToken)
     {
-        if (id != Account.Id)
-        {
-            return Unauthorized(new { message = "Unauthorized" });
-        }
-
-        var command = new UpdateUserCommand
+        var command = new UpdateUserCommand(id)
         {
             Email = model.Email,
             LibraryId = libraryId,
             Name = model.Name,
             Role = model.Role,
         };
+
         await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         return Ok(model);
     }
 
-    [Authorize]
     [HttpDelete("{id:int}", Name = nameof(AccountsController.Delete))]
     public IActionResult Delete(int id)
     {
@@ -326,6 +290,4 @@ public class AccountsController : Controller
         };
         Response.Cookies.Append("refreshToken", token, cookieOptions);
     }
-
-    private AccountModel Account => (AccountModel)HttpContext.Items["Account"];
 }

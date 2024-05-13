@@ -7,16 +7,16 @@ namespace Inshapardaz.Domain.Ports.Command.Tools;
 
 public class DeleteCorrectionRequest : RequestBase
 {
-    public DeleteCorrectionRequest(string language, string profile, long id)
+    public DeleteCorrectionRequest(string language, string profile, long correctionId)
     {
         Language = language;
         Profile = profile;
-        Id = id;
+        CorrectionId = correctionId;
     }
 
     public string Language { get; }
     public string Profile { get; }
-    public long Id { get; }
+    public long CorrectionId { get; }
 }
 
 public class DeleteCorrectionRequestHandler : RequestHandlerAsync<DeleteCorrectionRequest>
@@ -31,10 +31,10 @@ public class DeleteCorrectionRequestHandler : RequestHandlerAsync<DeleteCorrecti
     [AuthorizeAdmin(1)]
     public override async Task<DeleteCorrectionRequest> HandleAsync(DeleteCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var author = await _corretionRepository.GetCorrection(command.Language, command.Profile, command.Id, cancellationToken);
+        var author = await _corretionRepository.GetCorrection(command.Language, command.Profile, command.CorrectionId, cancellationToken);
         if (author != null)
         {
-            await _corretionRepository.DeleteCorrection(command.Id, cancellationToken);
+            await _corretionRepository.DeleteCorrection(command.CorrectionId, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

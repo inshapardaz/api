@@ -15,10 +15,17 @@ namespace Inshapardaz.Domain.Ports.Command.Account;
 
 public class UpdateUserCommand : RequestBase
 {
+
+    public UpdateUserCommand(int userId)
+    {
+        UserId = userId;
+    }
+
     public string Email { get; set; }
     public string Name { get; set; }
     public int? LibraryId { get; set; }
     public Role Role { get; set; }
+    public int UserId { get; set; }
 }
 
 public class UpdateUserCommandHandler : RequestHandlerAsync<UpdateUserCommand>
@@ -28,18 +35,23 @@ public class UpdateUserCommandHandler : RequestHandlerAsync<UpdateUserCommand>
     private readonly ILibraryRepository _libraryRepository;
     private readonly ISendEmail _emailService;
     private readonly Settings _settings;
+    private readonly IUserHelper _userHelper;
 
-    public UpdateUserCommandHandler(IAccountRepository accountRepository, ILibraryRepository libraryRepository, ISendEmail emailService, IOptions<Settings> settings)
+    public UpdateUserCommandHandler(IAccountRepository accountRepository, ILibraryRepository libraryRepository, ISendEmail emailService, IOptions<Settings> settings, IUserHelper userHelper)
     {
         _accountRepository = accountRepository;
         _libraryRepository = libraryRepository;
         _emailService = emailService;
         _settings = settings.Value;
+        _userHelper = userHelper;
     }
 
-    [LibraryAuthorize(1, Role.Admin, Role.LibraryAdmin)]
+    [Authorize(1)]
     public override async Task<UpdateUserCommand> HandleAsync(UpdateUserCommand command, CancellationToken cancellationToken = default)
     {
+        if (command.UserId != _userHelper.AccountId)
+            throw new UnauthorizedException();
+
         var account = await _accountRepository.GetAccountByEmail(command.Email, cancellationToken);
 
         if (account != null && command.LibraryId.HasValue)

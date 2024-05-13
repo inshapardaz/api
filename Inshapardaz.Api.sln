@@ -48,7 +48,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.FileSys
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.S3", "src\Adapters\Storage\S3\Inshapardaz.Storage.S3.csproj", "{CD9D42F0-B551-438A-A38B-AE4A04607D45}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapradaz.Storage.SqlServer", "src\Adapters\Storage\SqlServer\Inshapradaz.Storage.SqlServer.csproj", "{876548DF-9C68-47BD-A828-EE5537010F24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.SqlServer", "src\Adapters\Storage\SqlServer\Inshapardaz.Storage.SqlServer.csproj", "{876548DF-9C68-47BD-A828-EE5537010F24}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Adapter.Ocr.Google", "src\Adapters\Ocr.Google\Inshapardaz.Adapter.Ocr.Google.csproj", "{3E2689A9-A99B-4C92-9F4B-A1F7153BEBE2}"
 EndProject

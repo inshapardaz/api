@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Common;
 using Inshapardaz.Domain.Exception;
 using Paramore.Brighter;
@@ -10,7 +11,6 @@ namespace Inshapardaz.Domain.Ports.Command.Account;
 
 public class ChangePasswordCommand : RequestBase
 {
-    public int? AccountId { get; set; }
     public string Password { get; set; }
     public string OldPassword { get; set; }
 }
@@ -19,15 +19,18 @@ public class ChangePasswordCommandHandler : RequestHandlerAsync<ChangePasswordCo
 
 {
     private readonly IAccountRepository _accountRepository;
+    private readonly IUserHelper _userHelper;
 
-    public ChangePasswordCommandHandler(IAccountRepository accountRepository)
+    public ChangePasswordCommandHandler(IAccountRepository accountRepository, IUserHelper userHelper)
     {
         _accountRepository = accountRepository;
+        _userHelper = userHelper;
     }
 
+    [Authorize(1)]
     public override async Task<ChangePasswordCommand> HandleAsync(ChangePasswordCommand command, CancellationToken cancellationToken = default)
     {
-        var account = await _accountRepository.GetAccountById(command.AccountId.Value, cancellationToken);
+        var account = await _accountRepository.GetAccountById(_userHelper.AccountId.Value, cancellationToken);
 
         if (!SecretHasher.Verify(command.OldPassword, account.PasswordHash))
         {

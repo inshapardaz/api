@@ -319,7 +319,7 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn("Type").AsInt32().WithDefaultValue(0)
                 .WithColumn("LibraryId").AsInt32()
                     .ForeignKey("FK_Article_Library", Schemas.Library, Tables.Library, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
-                .WithColumn("ImageId").AsInt64()
+                .WithColumn("ImageId").AsInt64().Nullable()
                     .ForeignKey("FK_Article_Image", Schemas.Library, "File", Columns.Id).OnDelete(System.Data.Rule.SetNull)
                 .WithColumn("WriterAccountId").AsInt32().Nullable()
                     .ForeignKey("FK_Article_Writer_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id)

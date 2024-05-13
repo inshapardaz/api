@@ -6,52 +6,52 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
+namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library;
+
+public class IssuePageRepository : IIssuePageRepository
 {
-    public class IssuePageRepository : IIssuePageRepository
+    private readonly MySqlConnectionProvider _connectionProvider;
+
+    public IssuePageRepository(MySqlConnectionProvider connectionProvider)
     {
-        private readonly MySqlConnectionProvider _connectionProvider;
+        _connectionProvider = connectionProvider;
+    }
 
-        public IssuePageRepository(MySqlConnectionProvider connectionProvider)
+    public async Task<IssuePageModel> AddPage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string text, long? imageId, long? articleId, EditingStatus status, CancellationToken cancellationToken)
+    {
+        int pageId;
+        using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            _connectionProvider = connectionProvider;
-        }
-
-        public async Task<IssuePageModel> AddPage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string text, long? imageId, long? articleId, EditingStatus status, CancellationToken cancellationToken)
-        {
-            int pageId;
-            using (var connection = _connectionProvider.GetLibraryConnection())
-            {
-                var sql = @"INSERT INTO IssuePage(IssueId, SequenceNumber, Text, ImageId, ArticleId, `Status`)
+            var sql = @"INSERT INTO IssuePage(IssueId, SequenceNumber, Text, ImageId, ArticleId, `Status`)
                             SELECT Id, @SequenceNumber, @Text, @ImageId, @ArticleId, @Status
                             FROM Issue 
                             WHERE PeriodicalId = @PeriodicalId 
                                 AND Volumenumber = @VolumeNumber 
                                 AND IssueNumber = @IssueNumber;
                             SELECT LAST_INSERT_ID();";
-                var command = new CommandDefinition(sql, new
-                {
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                    SequenceNumber = sequenceNumber,
-                    Text = text,
-                    ImageId = imageId,
-                    Status = status,
-                    ArticleId = articleId
-                }, cancellationToken: cancellationToken);
-                pageId = await connection.ExecuteScalarAsync<int>(command);
-            }
-
-            await ReorderPages(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
-            return await GetPageById(pageId, cancellationToken);
+            var command = new CommandDefinition(sql, new
+            {
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                SequenceNumber = sequenceNumber,
+                Text = text,
+                ImageId = imageId,
+                Status = status,
+                ArticleId = articleId
+            }, cancellationToken: cancellationToken);
+            pageId = await connection.ExecuteScalarAsync<int>(command);
         }
 
-        public async Task<IssuePageModel> GetPageBySequenceNumber(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+        await ReorderPages(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
+        return await GetPageById(pageId, cancellationToken);
+    }
+
+    public async Task<IssuePageModel> GetPageBySequenceNumber(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            using (var connection = _connectionProvider.GetLibraryConnection())
-            {
-                var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
+            var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
                                 f.Id As ImageId, f.FilePath AS ImageUrl, ia.Id As ArticleId, ia.Title As ArticleTitle
                             FROM IssuePage AS p
@@ -66,26 +66,26 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber 
                                 AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql,
-                                                    new
-                                                    {
-                                                        LibraryId = libraryId,
-                                                        PeriodicalId = periodicalId,
-                                                        VolumeNumber = volumeNumber,
-                                                        IssueNumber = issueNumber,
-                                                        SequenceNumber = sequenceNumber
-                                                    },
-                                                    cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql,
+                                                new
+                                                {
+                                                    LibraryId = libraryId,
+                                                    PeriodicalId = periodicalId,
+                                                    VolumeNumber = volumeNumber,
+                                                    IssueNumber = issueNumber,
+                                                    SequenceNumber = sequenceNumber
+                                                },
+                                                cancellationToken: cancellationToken);
 
-                return await connection.QuerySingleOrDefaultAsync<IssuePageModel>(command);
-            }
+            return await connection.QuerySingleOrDefaultAsync<IssuePageModel>(command);
         }
+    }
 
-        public async Task DeletePage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+    public async Task DeletePage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            using (var connection = _connectionProvider.GetLibraryConnection())
-            {
-                var sql = @"DELETE p 
+            var sql = @"DELETE p 
                             FROM IssuePage p
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr ON pr.Id = i.PeriodicalId
@@ -94,24 +94,24 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber 
                                 AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                    SequenceNumber = sequenceNumber
-                }, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(command);
-                await ReorderPages(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
-            }
-        }
-
-        public async Task<IssuePageModel> UpdatePage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string text, long? imageId, long? articleId, EditingStatus status, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
+            var command = new CommandDefinition(sql, new
             {
-                var sql = @"UPDATE IssuePage p
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                SequenceNumber = sequenceNumber
+            }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+            await ReorderPages(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
+        }
+    }
+
+    public async Task<IssuePageModel> UpdatePage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string text, long? imageId, long? articleId, EditingStatus status, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"UPDATE IssuePage p
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr ON pr.Id = i.PeriodicalId
                             SET p.Text = @Text, 
@@ -123,30 +123,30 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber 
                                 AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    Text = text,
-                    ImageId = imageId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                    SequenceNumber = sequenceNumber,
-                    Status = status,
-                    ArticleId = articleId
-                }, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(command);
-            }
-
-            return await GetPageBySequenceNumber(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
-
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId,
+                Text = text,
+                ImageId = imageId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                SequenceNumber = sequenceNumber,
+                Status = status,
+                ArticleId = articleId
+            }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
         }
 
-        public async Task<IssuePageModel> UpdatePageImage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, long imageId, CancellationToken cancellationToken)
+        return await GetPageBySequenceNumber(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
+
+    }
+
+    public async Task<IssuePageModel> UpdatePageImage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, long imageId, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            using (var connection = _connectionProvider.GetLibraryConnection())
-            {
-                var sql = @"UPDATE IssuePage p
+            var sql = @"UPDATE IssuePage p
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr ON pr.Id = i.PeriodicalId
                             SET p.ImageId = @ImageId
@@ -155,26 +155,26 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber 
                                 AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                    SequenceNumber = sequenceNumber,
-                    ImageId = imageId
-                }, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(command);
-
-                return await GetPageBySequenceNumber(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
-            }
-        }
-
-        public async Task DeletePageImage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
+            var command = new CommandDefinition(sql, new
             {
-                var sql = @"UPDATE IssuePage p
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                SequenceNumber = sequenceNumber,
+                ImageId = imageId
+            }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+
+            return await GetPageBySequenceNumber(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
+        }
+    }
+
+    public async Task DeletePageImage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"UPDATE IssuePage p
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr ON pr.Id = i.PeriodicalId
                             SET p.ImageId = NULL
@@ -183,24 +183,24 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber 
                                 AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                    SequenceNumber = sequenceNumber
-                }, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(command);
-            }
-        }
-
-        public async Task<int> GetPageCount(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
-
+            var command = new CommandDefinition(sql, new
             {
-                var sql = @"SELECT COUNT(p.*)
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                SequenceNumber = sequenceNumber
+            }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
+
+    public async Task<int> GetPageCount(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+
+        {
+            var sql = @"SELECT COUNT(p.*)
                             FROM IssuePage p
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr ON pr.Id = i.PeriodicalId
@@ -209,23 +209,23 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber 
                                 AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                    SequenceNumber = sequenceNumber
-                }, cancellationToken: cancellationToken);
-                return await connection.ExecuteScalarAsync<int>(command);
-            }
-        }
-
-        public async Task<Page<IssuePageModel>> GetPagesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int pageNumber, int pageSize, EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
+            var command = new CommandDefinition(sql, new
             {
-                var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber,
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                SequenceNumber = sequenceNumber
+            }, cancellationToken: cancellationToken);
+            return await connection.ExecuteScalarAsync<int>(command);
+        }
+    }
+
+    public async Task<Page<IssuePageModel>> GetPagesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int pageNumber, int pageSize, EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber,
                                    p.SequenceNumber, p.Status, 
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
@@ -257,25 +257,25 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                             ORDER BY p.SequenceNumber
                             LIMIT @PageSize
                             OFFSET @Offset";
-                var command = new CommandDefinition(sql,
-                                                    new
-                                                    {
-                                                        LibraryId = libraryId,
-                                                        PeriodicalId = periodicalId,
-                                                        VolumeNumber = volumeNumber,
-                                                        IssueNumber = issueNumber,
-                                                        Status = status,
-                                                        PageSize = pageSize,
-                                                        Offset = pageSize * (pageNumber - 1),
-                                                        AssignmentFilter = assignmentFilter,
-                                                        ReviewerAssignmentFilter = reviewerAssignmentFilter,
-                                                        AccountId = assignedTo
-                                                    },
-                                                    cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql,
+                                                new
+                                                {
+                                                    LibraryId = libraryId,
+                                                    PeriodicalId = periodicalId,
+                                                    VolumeNumber = volumeNumber,
+                                                    IssueNumber = issueNumber,
+                                                    Status = status,
+                                                    PageSize = pageSize,
+                                                    Offset = pageSize * (pageNumber - 1),
+                                                    AssignmentFilter = assignmentFilter,
+                                                    ReviewerAssignmentFilter = reviewerAssignmentFilter,
+                                                    AccountId = assignedTo
+                                                },
+                                                cancellationToken: cancellationToken);
 
-                var pages = await connection.QueryAsync<IssuePageModel>(command);
+            var pages = await connection.QueryAsync<IssuePageModel>(command);
 
-                var sqlCount = @"SELECT Count(*)
+            var sqlCount = @"SELECT Count(*)
                                 FROM IssuePage p 
                                     INNER JOIN Issue i ON i.Id = p.IssueId
                                     INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
@@ -296,35 +296,35 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                     ( @ReviewerAssignmentFilter = 2 AND p.ReviewerAccountId IS NULL) OR
                                     ( (@ReviewerAssignmentFilter = 3  OR @ReviewerAssignmentFilter = 4) AND p.ReviewerAccountId = @AccountId)
                                 )";
-                var commandCount = new CommandDefinition(sqlCount, new
-                {
-                    LibraryId = libraryId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                    Status = status,
-                    AssignmentFilter = assignmentFilter,
-                    ReviewerAssignmentFilter = reviewerAssignmentFilter,
-                    AccountId = assignedTo
-                },
-                    cancellationToken: cancellationToken);
-
-                var pagesCount = await connection.QuerySingleAsync<int>(commandCount);
-                return new Page<IssuePageModel>
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    TotalCount = pagesCount,
-                    Data = pages
-                };
-            }
-        }
-
-        public async Task<IssuePageModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
+            var commandCount = new CommandDefinition(sqlCount, new
             {
-                var sql = @"UPDATE IssuePage p
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                Status = status,
+                AssignmentFilter = assignmentFilter,
+                ReviewerAssignmentFilter = reviewerAssignmentFilter,
+                AccountId = assignedTo
+            },
+                cancellationToken: cancellationToken);
+
+            var pagesCount = await connection.QuerySingleAsync<int>(commandCount);
+            return new Page<IssuePageModel>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = pagesCount,
+                Data = pages
+            };
+        }
+    }
+
+    public async Task<IssuePageModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"UPDATE IssuePage p
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr ON pr.Id = i.PeriodicalId
                             SET p.WriterAccountId = @WriterAccountId, p.WriterAssignTimeStamp = UTC_TIMESTAMP()
@@ -333,26 +333,26 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber 
                                 AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                    SequenceNumber = sequenceNumber,
-                    WriterAccountId = assignedAccountId
-                }, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(command);
-
-                return await GetPageBySequenceNumber(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
-            }
-        }
-
-        public async Task<IssuePageModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
+            var command = new CommandDefinition(sql, new
             {
-                var sql = @"UPDATE IssuePage p
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                SequenceNumber = sequenceNumber,
+                WriterAccountId = assignedAccountId
+            }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+
+            return await GetPageBySequenceNumber(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
+        }
+    }
+
+    public async Task<IssuePageModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"UPDATE IssuePage p
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr ON pr.Id = i.PeriodicalId
                             SET p.ReviewerAccountId = @ReviewerAccountId, p.ReviewerAssignTimeStamp = UTC_TIMESTAMP()
@@ -361,26 +361,26 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber 
                                 AND p.SequenceNumber = @SequenceNumber";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                    SequenceNumber = sequenceNumber,
-                    ReviewerAccountId = assignedAccountId
-                }, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(command);
-
-                return await GetPageBySequenceNumber(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
-            }
-        }
-
-        public async Task<int> GetLastPageNumberForIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
+            var command = new CommandDefinition(sql, new
             {
-                var sql = @"SELECT Max(p.SequenceNumber)
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                SequenceNumber = sequenceNumber,
+                ReviewerAccountId = assignedAccountId
+            }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+
+            return await GetPageBySequenceNumber(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
+        }
+    }
+
+    public async Task<int> GetLastPageNumberForIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT Max(p.SequenceNumber)
                             FROM IssuePage AS p
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr ON pr.Id = i.PeriodicalId
@@ -388,25 +388,25 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.PeriodicalId = @PeriodicalId 
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber";
-                var command = new CommandDefinition(sql,
-                                                    new
-                                                    {
-                                                        LibraryId = libraryId,
-                                                        PeriodicalId = periodicalId,
-                                                        VolumeNumber = volumeNumber,
-                                                        IssueNumber = issueNumber
-                                                    },
-                                                    cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql,
+                                                new
+                                                {
+                                                    LibraryId = libraryId,
+                                                    PeriodicalId = periodicalId,
+                                                    VolumeNumber = volumeNumber,
+                                                    IssueNumber = issueNumber
+                                                },
+                                                cancellationToken: cancellationToken);
 
-                return await connection.ExecuteScalarAsync<int>(command);
-            }
+            return await connection.ExecuteScalarAsync<int>(command);
         }
+    }
 
-        public async Task<IEnumerable<IssuePageModel>> GetAllPagesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
+    public async Task<IEnumerable<IssuePageModel>> GetAllPagesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            using (var connection = _connectionProvider.GetLibraryConnection())
-            {
-                var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Status, 
+            var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Status, 
                                 p.WriterAccountId, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, p.ReviewerAssignTimeStamp, 
                                 f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ArticleId, ia.Title As ArticleTitle
@@ -420,23 +420,23 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber
                             ORDER BY p.SequenceNumber";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber
-                }, cancellationToken: cancellationToken);
-
-                return await connection.QueryAsync<IssuePageModel>(command);
-            }
-        }
-
-        public async Task<Page<IssuePageModel>> GetPagesByUser(int libraryId, int accountId, EditingStatus statusFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
+            var command = new CommandDefinition(sql, new
             {
-                var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Status, 
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber
+            }, cancellationToken: cancellationToken);
+
+            return await connection.QueryAsync<IssuePageModel>(command);
+        }
+    }
+
+    public async Task<Page<IssuePageModel>> GetPagesByUser(int libraryId, int accountId, EditingStatus statusFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Status, 
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
                                    f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ArticleId, ia.Title As ArticleTitle
@@ -452,20 +452,20 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND (@Status = -1 OR p.Status = @Status )
                             ORDER BY i.IssueId, p.SequenceNumber
                             LIMIT @PageSize OFFSET @Offset";
-                var command = new CommandDefinition(sql,
-                                                    new
-                                                    {
-                                                        LibraryId = libraryId,
-                                                        Status = statusFilter,
-                                                        PageSize = pageSize,
-                                                        Offset = pageSize * (pageNumber - 1),
-                                                        AccountId = accountId
-                                                    },
-                                                    cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql,
+                                                new
+                                                {
+                                                    LibraryId = libraryId,
+                                                    Status = statusFilter,
+                                                    PageSize = pageSize,
+                                                    Offset = pageSize * (pageNumber - 1),
+                                                    AccountId = accountId
+                                                },
+                                                cancellationToken: cancellationToken);
 
-                var pages = await connection.QueryAsync<IssuePageModel>(command);
+            var pages = await connection.QueryAsync<IssuePageModel>(command);
 
-                var sqlCount = @"SELECT Count(*)
+            var sqlCount = @"SELECT Count(*)
                                 FROM IssuePage p 
                                     INNER JOIN Issue i ON i.Id = p.IssueId
                                     INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
@@ -473,30 +473,30 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                     AND p.ReviewerAccountId = @AccountId
                                     OR p.WriterAccountId = @AccountId
                                     AND (@Status = -1 OR p.Status = @Status )";
-                var commandCount = new CommandDefinition(sqlCount, new
-                {
-                    LibraryId = libraryId,
-                    Status = statusFilter,
-                    AccountId = accountId
-                },
-                    cancellationToken: cancellationToken);
-
-                var pagesCount = await connection.QuerySingleAsync<int>(commandCount);
-                return new Page<IssuePageModel>
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    TotalCount = pagesCount,
-                    Data = pages
-                };
-            }
-        }
-
-        public async Task ReorderPages(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
+            var commandCount = new CommandDefinition(sqlCount, new
             {
-                var sql = @"SELECT p.Id, row_number() OVER (ORDER BY p.SequenceNumber) AS 'SequenceNumber'
+                LibraryId = libraryId,
+                Status = statusFilter,
+                AccountId = accountId
+            },
+                cancellationToken: cancellationToken);
+
+            var pagesCount = await connection.QuerySingleAsync<int>(commandCount);
+            return new Page<IssuePageModel>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = pagesCount,
+                Data = pages
+            };
+        }
+    }
+
+    public async Task ReorderPages(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT p.Id, row_number() OVER (ORDER BY p.SequenceNumber) AS 'SequenceNumber'
                             FROM IssuePage p
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
@@ -505,29 +505,29 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 AND i.VolumeNumber = @VolumeNumber 
                                 AND i.IssueNumber = @IssueNumber
                             ORDER BY p.SequenceNumber";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                }, cancellationToken: cancellationToken);
-                var newOrder = await connection.QueryAsync(command);
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+            }, cancellationToken: cancellationToken);
+            var newOrder = await connection.QueryAsync(command);
 
-                var sql2 = @"UPDATE IssuePage
+            var sql2 = @"UPDATE IssuePage
                             SET SequenceNumber = @SequenceNumber
                             WHERE Id = @Id";
-                var command2 = new CommandDefinition(sql2, newOrder, cancellationToken: cancellationToken);
-                await connection.ExecuteAsync(command2);
-            }
+            var command2 = new CommandDefinition(sql2, newOrder, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command2);
         }
+    }
 
-        public async Task UpdatePageSequenceNumber(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int oldSequenceNumber, int newSequenceNumber, CancellationToken cancellationToken)
+    public async Task UpdatePageSequenceNumber(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int oldSequenceNumber, int newSequenceNumber, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            using (var connection = _connectionProvider.GetLibraryConnection())
-            {
 
-                var sql = @"DECLARE @maxPosition INT;
+            var sql = @"DECLARE @maxPosition INT;
                             DECLARE @Id INT;
 
                             SELECT @Id = ip.Id
@@ -572,26 +572,26 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                     CASE WHEN @oldPosition < @newPosition THEN @oldPosition ELSE @newPosition END AND
                                     CASE WHEN @oldPosition > @newPosition THEN @oldPosition ELSE @newPosition END;
 ";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    PeriodicalId = periodicalId,
-                    VolumeNumber = volumeNumber,
-                    IssueNumber = issueNumber,
-                    oldPosition = oldSequenceNumber,
-                    newPosition = newSequenceNumber,
-
-                }, cancellationToken: cancellationToken);
-
-                await connection.ExecuteAsync(command);
-            }
-        }
-
-        public async Task<IEnumerable<UserPageSummaryItem>> GetUserPageSummary(int libraryId, int accountId, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
+            var command = new CommandDefinition(sql, new
             {
-                var sql = @"SELECT 1 As Status, Count(p.Id) As Count 
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                oldPosition = oldSequenceNumber,
+                newPosition = newSequenceNumber,
+
+            }, cancellationToken: cancellationToken);
+
+            await connection.ExecuteAsync(command);
+        }
+    }
+
+    public async Task<IEnumerable<UserPageSummaryItem>> GetUserPageSummary(int libraryId, int accountId, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT 1 As Status, Count(p.Id) As Count 
                             FROM IsseuPage p 
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
@@ -622,20 +622,20 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                             WHERE pr.LibraryId = @LibraryId
                                 AND p.`Status` = 4
                                 AND p.ReviewerAccountId = @AccountId";
-                var command = new CommandDefinition(sql, new
-                {
-                    LibraryId = libraryId,
-                    AccountId = accountId
-                }, cancellationToken: cancellationToken);
-                return await connection.QueryAsync<UserPageSummaryItem>(command);
-            }
-        }
-
-        public async Task<IssuePageModel> GetPageById(int pageId, CancellationToken cancellationToken)
-        {
-            using (var connection = _connectionProvider.GetLibraryConnection())
+            var command = new CommandDefinition(sql, new
             {
-                var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
+                LibraryId = libraryId,
+                AccountId = accountId
+            }, cancellationToken: cancellationToken);
+            return await connection.QueryAsync<UserPageSummaryItem>(command);
+        }
+    }
+
+    public async Task<IssuePageModel> GetPageById(int pageId, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
                                 f.Id As ImageId, f.FilePath AS ImageUrl, ia.Id As ArticleId, ia.Title As ArticleTitle
                             FROM IssuePage AS p
@@ -646,10 +646,9 @@ namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library
                                 LEFT OUTER JOIN Accounts a ON a.Id = p.WriterAccountId
                                 LEFT OUTER JOIN Accounts ar ON ar.Id = p.ReviewerAccountId
                             WHERE p.Id = @Id";
-                var command = new CommandDefinition(sql, new { Id = pageId }, cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql, new { Id = pageId }, cancellationToken: cancellationToken);
 
-                return await connection.QuerySingleOrDefaultAsync<IssuePageModel>(command);
-            }
+            return await connection.QuerySingleOrDefaultAsync<IssuePageModel>(command);
         }
     }
 }

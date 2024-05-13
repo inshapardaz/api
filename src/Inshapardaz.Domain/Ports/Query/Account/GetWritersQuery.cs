@@ -28,7 +28,7 @@ public class GetWritersQueryHandler : QueryHandlerAsync<GetWritersQuery, IEnumer
         _accountRepository = accountRepository;
     }
 
-    [LibraryAuthorize(1, Role.Admin, Role.LibraryAdmin)]
+    [LibraryAuthorize(1, Role.Admin, Role.LibraryAdmin, Role.Writer)]
     public override async Task<IEnumerable<AccountModel>> ExecuteAsync(GetWritersQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
         if (string.IsNullOrWhiteSpace(query.Query))

@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.DataBuilders;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using NUnit.Framework;
@@ -16,7 +15,6 @@ namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
 
         private IEnumerable<CategoryDto> _categories;
         private CategoryDto _selectedCategory;
-        private CategoriesDataBuilder _dataBuilder;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -30,7 +28,6 @@ namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
         [OneTimeTearDown]
         public void Teardown()
         {
-            _dataBuilder.CleanUp();
             Cleanup();
         }
 

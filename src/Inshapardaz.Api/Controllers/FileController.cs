@@ -1,6 +1,4 @@
-﻿using Inshapardaz.Api.Helpers;
-using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Ports.Command.File;
+﻿using Inshapardaz.Domain.Ports.Command.File;
 using Inshapardaz.Domain.Ports.Query.File;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -48,7 +46,6 @@ public class FileController : Controller
     }
 
     [HttpDelete("files/{fileId}", Name = nameof(FileController.DeleteFile))]
-    [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
     public async Task<IActionResult> DeleteFile(int fileId, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteFileRequest(fileId);

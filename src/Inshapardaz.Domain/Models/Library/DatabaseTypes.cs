@@ -1,8 +1,7 @@
-namespace Inshapardaz.Domain.Models.Library
+namespace Inshapardaz.Domain.Models.Library;
+
+public enum DatabaseTypes
 {
-    public enum DatabaseTypes
-    {
-        SqlServer = 0,
-        MySql
-    }
+    SqlServer = 0,
+    MySql
 }

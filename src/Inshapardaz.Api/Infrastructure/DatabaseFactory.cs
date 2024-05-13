@@ -3,8 +3,6 @@ using SqlServerRepoisotires = Inshapardaz.Adapters.Database.SqlServer.Repositori
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Domain.Repositories.Library;
 using Inshapardaz.Domain.Adapters.Configuration;
 using Microsoft.Extensions.Options;
 

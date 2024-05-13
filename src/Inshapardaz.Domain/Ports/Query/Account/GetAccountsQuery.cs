@@ -1,5 +1,5 @@
-﻿using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Repositories;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Models;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;

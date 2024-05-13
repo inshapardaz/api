@@ -4,7 +4,7 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -517,7 +517,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             _article.IsPublic.Should().Be(_expected.IsPublic);
             _article.Status.Should().Be(_expected.Status.ToString());
             _article.Type.Should().Be(_expected.Type.ToString());
-            _article.LastModified.Should().BeCloseTo(_expected.LastModified,TimeSpan.FromSeconds(2));
+            _article.LastModified.Should().BeCloseTo(_expected.LastModified, TimeSpan.FromSeconds(2));
             _article.WriterAccountId.Should().Be(_expected.WriterAccountId);
             if (_expected.WriterAssignTimeStamp.HasValue)
             {
@@ -570,7 +570,7 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal ArticleAssert ShouldBeSameCategories(IEnumerable<CategoryDto> categories)
         {
-            foreach(var category in categories)
+            foreach (var category in categories)
             {
                 var actual = _article.Categories.SingleOrDefault(x => x.Id == category.Id);
 

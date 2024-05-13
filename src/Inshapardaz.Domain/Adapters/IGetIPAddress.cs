@@ -1,7 +1,6 @@
-﻿namespace Inshapardaz.Domain.Adapters
+﻿namespace Inshapardaz.Domain.Adapters;
+
+public interface IGetIPAddress
 {
-    public interface IGetIPAddress
-    {
-        string GetIPAddressFromRequest();
-    }
+    string GetIPAddressFromRequest();
 }

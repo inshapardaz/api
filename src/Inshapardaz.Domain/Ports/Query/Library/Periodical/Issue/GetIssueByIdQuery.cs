@@ -1,6 +1,5 @@
-﻿using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Query.Library;
-using Inshapardaz.Domain.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
 using System.Linq;
 using System.Threading;

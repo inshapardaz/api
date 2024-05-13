@@ -1,7 +1,7 @@
 ﻿using Inshapardaz.Adapters.Database.MySql.Repositories;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
 using Inshapardaz.Storage.FileSystem;
 using Inshapardaz.Storage.S3;

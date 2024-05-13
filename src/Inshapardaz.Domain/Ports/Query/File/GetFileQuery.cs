@@ -1,6 +1,6 @@
-﻿using Inshapardaz.Domain.Exception;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Repositories;
 using Paramore.Darker;
 using System.IO;
 using System.Threading;

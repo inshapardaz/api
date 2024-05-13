@@ -1,6 +1,6 @@
-﻿using Inshapardaz.Domain.Common;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Common;
 using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Repositories;
 using Paramore.Brighter;
 using System;
 using System.Threading;

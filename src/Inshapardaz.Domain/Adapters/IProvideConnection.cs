@@ -1,10 +1,9 @@
 ﻿using System.Data;
 
-namespace Inshapardaz.Domain.Adapters
+namespace Inshapardaz.Domain.Adapters;
+
+public interface IProvideConnection
 {
-    public interface IProvideConnection
-    {
-        IDbConnection GetConnection();
-        IDbConnection GetLibraryConnection();
-    }
+    IDbConnection GetConnection();
+    IDbConnection GetLibraryConnection();
 }

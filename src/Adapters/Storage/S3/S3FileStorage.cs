@@ -1,6 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
-using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories;
 using System;
 using System.IO;
 using System.Threading;

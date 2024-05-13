@@ -1,8 +1,8 @@
 ﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Brighter;
 using System.IO;
 using System.Threading;

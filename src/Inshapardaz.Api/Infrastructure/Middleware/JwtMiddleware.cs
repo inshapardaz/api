@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Inshapardaz.Domain.Adapters.Configuration;
 using Microsoft.Extensions.Options;
-using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Infrastructure.Middleware;
 

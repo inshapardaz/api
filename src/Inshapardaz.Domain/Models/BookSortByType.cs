@@ -1,9 +1,8 @@
-﻿namespace Inshapardaz.Domain.Models.Library
+﻿namespace Inshapardaz.Domain.Models;
+
+public enum BookSortByType
 {
-    public enum BookSortByType
-    {
-        Title,
-        DateCreated,
-        seriesIndex
-    }
+    Title,
+    DateCreated,
+    seriesIndex
 }

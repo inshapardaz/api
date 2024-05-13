@@ -1,25 +1,24 @@
 ﻿using System.ComponentModel;
 
-namespace Inshapardaz.Domain.Models
+namespace Inshapardaz.Domain.Models;
+
+public enum EditingStatus
 {
-    public enum EditingStatus
-    {
-        [Description("All")]
-        All = 0,
+    [Description("All")]
+    All = 0,
 
-        [Description("Available")]
-        Available,
+    [Description("Available")]
+    Available,
 
-        [Description("Typing")]
-        Typing,
+    [Description("Typing")]
+    Typing,
 
-        [Description("Typed")]
-        Typed,
+    [Description("Typed")]
+    Typed,
 
-        [Description("InReview")]
-        InReview,
+    [Description("InReview")]
+    InReview,
 
-        [Description("Completed")]
-        Completed
-    }
+    [Description("Completed")]
+    Completed
 }

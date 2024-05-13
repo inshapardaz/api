@@ -3,7 +3,7 @@ using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories;
 using System;
 using System.Data;
 using System.Linq;
@@ -184,7 +184,7 @@ namespace Inshapardaz.Api.Tests.Asserts
                    .EndingWith($"libraries/{_libraryId}/periodicals/{_view.PeriodicalId}/volumes/{_view.VolumeNumber}/issues/{_view.IssueNumber}/image");
             return this;
         }
-        
+
         public IssueAssert ShouldNotHaveImageUpdateLink()
         {
             _view.Link("image-upload").Should().BeNull();
@@ -337,7 +337,7 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal static void ShouldNotHaveUpdatedIssueImage(IDbConnection dbConnection, IFileStorage fileStorage, int  issueId, byte[] oldImage)
+        internal static void ShouldNotHaveUpdatedIssueImage(IDbConnection dbConnection, IFileStorage fileStorage, int issueId, byte[] oldImage)
         {
             var imageUrl = dbConnection.GetIssueImageUrl(issueId);
             imageUrl.Should().NotBeNull();

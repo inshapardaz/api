@@ -2,7 +2,6 @@
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
-using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Storage.Azure;
 using Inshapardaz.Adapters.Database.SqlServer.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -23,6 +22,7 @@ using Inshapardaz.Adapters.Database.MySql;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Adapters.Database.SqlServer;
 using Microsoft.Extensions.Options;
+using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests
 {
@@ -116,7 +116,7 @@ namespace Inshapardaz.Api.Tests
             {
                 throw new Exception($"Database type {DatabaseType} is not supported.");
             }
-            
+
             services.AddTransient<LibraryDataBuilder>()
             .AddTransient<CategoriesDataBuilder>()
             .AddTransient<SeriesDataBuilder>()

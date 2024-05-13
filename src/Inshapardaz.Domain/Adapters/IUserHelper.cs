@@ -1,18 +1,17 @@
 ﻿using Inshapardaz.Domain.Models;
 
-namespace Inshapardaz.Domain.Adapters
+namespace Inshapardaz.Domain.Adapters;
+
+public interface IUserHelper
 {
-    public interface IUserHelper
-    {
-        bool IsAuthenticated { get; }
-        bool IsAdmin { get; }
+    bool IsAuthenticated { get; }
+    bool IsAdmin { get; }
 
-        bool IsLibraryAdmin(int libraryId);
+    bool IsLibraryAdmin(int libraryId);
 
-        bool IsWriter(int libraryId);
+    bool IsWriter(int libraryId);
 
-        AccountModel Account { get; }
+    AccountModel Account { get; }
 
-        int? AccountId => Account?.Id;
-    }
+    int? AccountId => Account?.Id;
 }

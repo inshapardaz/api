@@ -1,13 +1,12 @@
 ﻿using Inshapardaz.Domain.Models;
 
-namespace Inshapardaz.Domain.Adapters
+namespace Inshapardaz.Domain.Adapters;
+
+public interface IGenerateToken
 {
-    public interface IGenerateToken
-    {
-        string GenerateAccessToken(AccountModel account);
+    string GenerateAccessToken(AccountModel account);
 
-        RefreshTokenModel GenerateRefreshToken(string ipAddress);
+    RefreshTokenModel GenerateRefreshToken(string ipAddress);
 
-        string GenerateResetToken();
-    }
+    string GenerateResetToken();
 }

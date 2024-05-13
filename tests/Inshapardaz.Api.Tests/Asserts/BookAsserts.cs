@@ -5,7 +5,7 @@ using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Data;

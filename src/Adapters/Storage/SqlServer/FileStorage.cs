@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Domain.Repositories;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

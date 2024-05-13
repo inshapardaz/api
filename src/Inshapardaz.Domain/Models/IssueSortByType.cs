@@ -1,12 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Inshapardaz.Domain.Models.Library
+namespace Inshapardaz.Domain.Models;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum IssueSortByType
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum IssueSortByType
-    {
-        IssueDate,
-        VolumeNumber,
-        VolumeNumberAndIssueNumber
-    }
+    IssueDate,
+    VolumeNumber,
+    VolumeNumberAndIssueNumber
 }

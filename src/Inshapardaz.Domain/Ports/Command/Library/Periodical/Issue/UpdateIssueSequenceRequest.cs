@@ -1,7 +1,6 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Command.Library;
 using Paramore.Brighter;
 using System.Collections.Generic;
 using System.Threading;

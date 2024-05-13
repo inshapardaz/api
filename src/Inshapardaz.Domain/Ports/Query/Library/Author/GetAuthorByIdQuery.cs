@@ -1,8 +1,7 @@
-﻿using Inshapardaz.Domain.Helpers;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Query.Library;
-using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;

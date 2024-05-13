@@ -1,7 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using System.Threading;

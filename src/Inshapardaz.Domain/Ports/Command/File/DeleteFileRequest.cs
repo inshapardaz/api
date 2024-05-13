@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Domain.Repositories;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;

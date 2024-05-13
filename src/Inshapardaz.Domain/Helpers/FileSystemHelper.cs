@@ -1,54 +1,53 @@
 ﻿using System.IO;
 using System.Linq;
 
-namespace Inshapardaz.Domain.Helpers
+namespace Inshapardaz.Domain.Helpers;
+
+public static class FileSystemHelper
 {
-    public static class FileSystemHelper
+    public static void EnsureEmptyDirectory(this string path)
     {
-        public static void EnsureEmptyDirectory(this string path)
+        if (Directory.Exists(path)) Directory.Delete(path, true);
+        Directory.CreateDirectory(path);
+    }
+
+    public static void CreateIfDirectoryDoesNotExists(this string path)
+    {
+        if (!Directory.Exists(path))
         {
-            if (Directory.Exists(path)) Directory.Delete(path, true);
             Directory.CreateDirectory(path);
         }
+    }
 
-        public static void CreateIfDirectoryDoesNotExists(this string path)
+    public static void MakeSureFileDoesNotExist(this string path)
+    {
+        if (File.Exists(path)) File.Delete(path);
+    }
+
+    public static string ToSafeFilename(this string filename)
+    {
+        return Path.GetInvalidFileNameChars().Aggregate(filename, (current, c) => current.Replace(c.ToString(), string.Empty));
+    }
+
+    public static void TryDeleteDirectory(this string path)
+    {
+        try
         {
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
+            Directory.Delete(path, true);
         }
-
-        public static void MakeSureFileDoesNotExist(this string path)
+        catch
         {
-            if (File.Exists(path)) File.Delete(path);
         }
+    }
 
-        public static string ToSafeFilename(this string filename)
+    public static void TryDeleteFile(this string path)
+    {
+        try
         {
-            return Path.GetInvalidFileNameChars().Aggregate(filename, (current, c) => current.Replace(c.ToString(), string.Empty));
+            File.Delete(path);
         }
-
-        public static void TryDeleteDirectory(this string path)
+        catch
         {
-            try
-            {
-                Directory.Delete(path, true);
-            }
-            catch
-            {
-            }
-        }
-
-        public static void TryDeleteFile(this string path)
-        {
-            try
-            {
-                File.Delete(path);
-            }
-            catch
-            {
-            }
         }
     }
 }

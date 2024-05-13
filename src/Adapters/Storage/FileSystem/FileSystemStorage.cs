@@ -1,6 +1,6 @@
-﻿using Inshapardaz.Domain.Exception;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
-using Inshapardaz.Domain.Repositories;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;

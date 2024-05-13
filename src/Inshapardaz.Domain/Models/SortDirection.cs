@@ -1,11 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Inshapardaz.Domain.Models.Library
+namespace Inshapardaz.Domain.Models;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum SortDirection
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum SortDirection
-    {
-        Ascending,
-        Descending
-    }
+    Ascending,
+    Descending
 }

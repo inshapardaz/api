@@ -1,7 +1,6 @@
-﻿namespace Inshapardaz.Domain.Adapters.Repositories
+﻿namespace Inshapardaz.Domain.Adapters.Repositories;
+
+public interface IMigrateDatabase
 {
-    public interface IMigrateDatabase
-    {
-        public void UpdateDatabase(string connectionString, long? version = null);
-    }
+    public void UpdateDatabase(string connectionString, long? version = null);
 }

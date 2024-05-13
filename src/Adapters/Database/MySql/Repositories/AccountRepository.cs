@@ -1,6 +1,6 @@
 ﻿using Dapper;
+using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Repositories;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

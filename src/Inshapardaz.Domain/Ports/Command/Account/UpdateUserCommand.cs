@@ -1,11 +1,11 @@
 ﻿using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Configuration;
+using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.Library;
-using Inshapardaz.Domain.Repositories;
 using Microsoft.Extensions.Options;
 using Paramore.Brighter;
 using System.Threading;

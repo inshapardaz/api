@@ -1,19 +1,18 @@
 ﻿using System.ComponentModel;
 
-namespace Inshapardaz.Domain.Models
+namespace Inshapardaz.Domain.Models;
+
+public enum CopyrightStatuses
 {
-    public enum CopyrightStatuses
-    {
-        [Description("Copyright")]
-        Copyright = 0,
+    [Description("Copyright")]
+    Copyright = 0,
 
-        [Description("PublicDomain")]
-        PublicDomain,
+    [Description("PublicDomain")]
+    PublicDomain,
 
-        [Description("Open")]
-        Open,
+    [Description("Open")]
+    Open,
 
-        [Description("CreativeCommons")]
-        CreativeCommons
-    }
+    [Description("CreativeCommons")]
+    CreativeCommons
 }

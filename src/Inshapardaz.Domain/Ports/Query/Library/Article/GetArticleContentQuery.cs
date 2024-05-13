@@ -4,9 +4,6 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Command.Library;
-using Inshapardaz.Domain.Ports.Query.Library;
-using LibraryAuthorizeAttribute = Inshapardaz.Domain.Ports.Query.Library.LibraryAuthorizeAttribute;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Article;
 

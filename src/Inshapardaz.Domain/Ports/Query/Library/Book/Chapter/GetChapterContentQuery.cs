@@ -1,13 +1,10 @@
 ﻿using Inshapardaz.Domain.Exception;
-using Inshapardaz.Domain.Repositories.Library;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Query;
 using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Ports.Query.Library;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Book.Chapter;
 

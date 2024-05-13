@@ -1,13 +1,12 @@
 ﻿using Common;
 using Inshapardaz.Domain.Adapters.Configuration;
+using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.Library.Book;
 using Inshapardaz.Domain.Ports.Command.Library.Book.Page;
-using Inshapardaz.Domain.Repositories;
-using Inshapardaz.Domain.Repositories.Library;
 using Microsoft.Extensions.Options;
 using Paramore.Brighter;
 using RekhtaDownloader.Models;

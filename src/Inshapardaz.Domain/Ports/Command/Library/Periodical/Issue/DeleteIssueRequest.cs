@@ -1,6 +1,5 @@
-﻿using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Ports.Command.Library;
-using Inshapardaz.Domain.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;

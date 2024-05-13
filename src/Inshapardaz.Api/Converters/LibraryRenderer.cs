@@ -3,8 +3,8 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Repositories;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Converters;
 

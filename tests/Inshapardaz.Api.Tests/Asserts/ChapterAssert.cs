@@ -313,7 +313,12 @@ namespace Inshapardaz.Api.Tests.Asserts
         {
             _chapter.Title.Should().Be(view.Title);
             _chapter.BookId.Should().Be(view.BookId);
+            _chapter.Status.Should().Be(view.Status);
             _chapter.ChapterNumber.Should().Be(view.ChapterNumber);
+            _chapter.WriterAccountId.Should().Be(view.WriterAccountId);
+            _chapter.WriterAssignTimeStamp.Should().BeCloseTo(view.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(3));
+            _chapter.ReviewerAccountId.Should().Be(view.ReviewerAccountId);
+            _chapter.ReviewerAssignTimeStamp.Should().BeCloseTo(view.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(3));
         }
 
         internal void ShouldMatch(ChapterDto dto)

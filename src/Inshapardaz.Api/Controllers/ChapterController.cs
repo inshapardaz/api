@@ -142,9 +142,9 @@ public class ChapterController : Controller
     [Produces(typeof(ChapterContentView))]
     public async Task<IActionResult> GetChapterContent(int libraryId, int bookId, int chapterNumber, string language, CancellationToken token = default(CancellationToken))
     {
-        //var language = Request.Headers["Accept-Language"];
+        var finalLanguage = language ?? Request.Headers["Accept-Language"];
 
-        var query = new GetChapterContentQuery(libraryId, bookId, chapterNumber, language);
+        var query = new GetChapterContentQuery(libraryId, bookId, chapterNumber, finalLanguage);
 
         var chapterContents = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 

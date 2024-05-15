@@ -11,7 +11,7 @@ public class LibraryConfiguration
 
     public string ConnectionString { get; set; }
 
-    public FileStoreTypes FileStoreType { get; set; }
+    public FileStoreTypes? FileStoreType { get; set; }
 
     public string FileStoreSource { get; set; }
 }

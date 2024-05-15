@@ -1,10 +1,12 @@
 ﻿using Inshapardaz.Adapters.Database.MySql.Repositories;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Configuration;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Storage.Azure;
 using Inshapardaz.Storage.FileSystem;
 using Inshapardaz.Storage.S3;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace Inshapardaz.Api.Helpers;
@@ -13,10 +15,11 @@ public static class FileStorageFactory
 {
     public static IFileStorage GetFileStore(IServiceProvider provider)
     {
+        var settings = provider.GetRequiredService<IOptions<Settings>>().Value;
         var configuration = provider.GetRequiredService<LibraryConfiguration>();
         var webHostEnvironment = provider.GetRequiredService<IWebHostEnvironment>();
 
-        switch (configuration.FileStoreType)
+        switch (configuration.FileStoreType ?? settings.Storage.FileStoreType)
         {
             case FileStoreTypes.Database:
                 if (configuration.DatabaseConnectionType == Domain.Models.Library.DatabaseTypes.MySql)

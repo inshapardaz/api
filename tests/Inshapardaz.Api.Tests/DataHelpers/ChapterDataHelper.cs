@@ -66,7 +66,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
 
         public static IEnumerable<ChapterDto> GetChaptersByBook(this IDbConnection connection, int id)
         {
-            return connection.Query<ChapterDto>("SELECT * FROM Chapter WHERE BookId = @Id", new { Id = id });
+            return connection.Query<ChapterDto>("SELECT * FROM Chapter WHERE BookId = @Id ORDER BY ChapterNumber", new { Id = id });
         }
 
         public static ChapterContentDto GetChapterContentById(this IDbConnection connection, long id)

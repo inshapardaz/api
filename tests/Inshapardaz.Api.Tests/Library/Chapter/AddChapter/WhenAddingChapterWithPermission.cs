@@ -1,4 +1,6 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Extensions;
+using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -26,9 +28,20 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         [OneTimeSetUp]
         public async Task Setup()
         {
+            var writer = AccountBuilder.InLibrary(LibraryId).Build();
+            var reviewer = AccountBuilder.InLibrary(LibraryId).Build();
             var book = BookBuilder.WithLibrary(LibraryId).Build();
 
-            _chapter = new ChapterView { Title = RandomData.Name, ChapterNumber = 1, BookId = book.Id };
+            _chapter = new ChapterView {
+                Title = RandomData.Name,
+                ChapterNumber = 1,
+                BookId = book.Id, Status =
+                EditingStatus.Typing.ToDescription(),
+                WriterAccountId = writer.Id,
+                WriterAssignTimeStamp = RandomData.Date,
+                ReviewerAccountId = reviewer.Id,
+                ReviewerAssignTimeStamp = RandomData.Date
+        };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{book.Id}/chapters", _chapter);
 

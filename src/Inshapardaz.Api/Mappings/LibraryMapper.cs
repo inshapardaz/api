@@ -17,7 +17,7 @@ public static class LibraryMapper
             PrimaryColor = source.PrimaryColor,
             SecondaryColor = source.SecondaryColor,
             Public = source.Public,
-            DatabaseConnection = null,
+            DatabaseConnection = source.DatabaseConnection,
             FileStoreSource = source.FileStoreSource,
             FileStoreType = source.FileStoreType.ToDescription()
         };

@@ -23,10 +23,20 @@ public class ChapterRepository : IChapterRepository
         int id;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO Chapter (Title, BookId, ChapterNumber) 
-                            VALUES (@Title, @BookId, @ChapterNumber);
+            var sql = @"INSERT INTO Chapter (Title, BookId, ChapterNumber, `Status`, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp ) 
+                            VALUES (@Title, @BookId, @ChapterNumber, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp);
                             SELECT LAST_INSERT_ID();";
-            var command = new CommandDefinition(sql, new { Title = chapter.Title, BookId = bookId, ChapterNumber = chapter.ChapterNumber }, cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql, new
+            {
+                Title = chapter.Title,
+                BookId = bookId,
+                ChapterNumber = chapter.ChapterNumber,
+                Status = chapter.Status,
+                WriterAccountId = chapter.WriterAccountId,
+                WriterAssignTimeStamp = chapter.WriterAssignTimeStamp,
+                ReviewerAccountId = chapter.ReviewerAccountId,
+                ReviewerAssignTimeStamp = chapter.ReviewerAssignTimeStamp
+            }, cancellationToken: cancellationToken) ;
             id = await connection.ExecuteScalarAsync<int>(command);
         }
 
@@ -66,12 +76,12 @@ public class ChapterRepository : IChapterRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"UPDATE C Set C.ChapterNumber = @ChapterNumber
-                            FROM Chapter C
-                                INNER JOIN Book b ON b.Id = C.BookId
-                                WHERE C.Id = @Id 
-                                    AND C.BookId = @BookId 
-                                    AND b.LibraryId = @LibraryId";
+            var sql = @"UPDATE Chapter C
+                            INNER JOIN Book b ON b.Id = C.BookId
+                            SET C.ChapterNumber = @ChapterNumber
+                            WHERE C.Id = @Id 
+                                AND C.BookId = @BookId 
+                                AND b.LibraryId = @LibraryId";
             var args = chapters.Select(c => new
             {
                 LibraryId = libraryId,

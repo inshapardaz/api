@@ -204,7 +204,7 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn(Columns.BookId).AsInt32()
                     .ForeignKey("FK_BookCategory_Book_BookId", Schemas.Library, Tables.Book, Columns.Id).OnDelete(System.Data.Rule.Cascade)
                 .WithColumn("CategoryId").AsInt32().Indexed("IX_BookCategory_CategoryId")
-                    .ForeignKey("FK_BookCategory_Category", Schemas.Library, Tables.Category, Columns.Id);
+                    .ForeignKey("FK_BookCategory_Category", Schemas.Library, Tables.Category, Columns.Id).OnDelete(System.Data.Rule.Cascade);
             ;
 
             Create.PrimaryKey("PK_BookCategory")

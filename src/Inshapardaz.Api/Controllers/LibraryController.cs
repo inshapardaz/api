@@ -38,7 +38,7 @@ public class LibraryController : Controller
     [Produces(typeof(PageView<LibraryView>))]
     public async Task<IActionResult> GetLibraries(string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.AccountId, _userHelper.Account.IsSuperAdmin);
+        var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.AccountId, _userHelper.Account?.IsSuperAdmin ?? false);
         var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
 
         var args = new PageRendererArgs<LibraryModel>

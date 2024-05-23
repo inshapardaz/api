@@ -121,6 +121,13 @@ builder.Services.AddSqlServer()
 //=====================================================================
 var app = builder.Build();
 
+var basePath = Environment.GetEnvironmentVariable("BASE_PATH");
+if (!string.IsNullOrEmpty(basePath))
+{
+    Console.WriteLine($"Using base path {basePath}");
+    app.UsePathBase(basePath);
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

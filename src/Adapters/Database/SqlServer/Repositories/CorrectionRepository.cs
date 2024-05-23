@@ -139,4 +139,17 @@ public class CorrectionRepository : ICorrectionRepository
             await connection.ExecuteAsync(command);
         }
     }
+
+    #region for migration
+    public async Task<IEnumerable<CorrectionModel>> GetAllCorrections(CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetConnection())
+        {
+            var sql = @"SELECT * FROM corrections ";
+            var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
+
+            return await connection.QueryAsync<CorrectionModel>(command);
+        }
+    }
+    #endregion
 }

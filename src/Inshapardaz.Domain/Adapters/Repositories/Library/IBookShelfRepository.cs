@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,4 +28,9 @@ public interface IBookShelfRepository
 
     Task RemoveBookFromBookShelf(int libraryId, int bookshelfId, int bookId, CancellationToken cancellationToken);
     Task<BookShelfBook> GetBookFromBookShelfById(int libraryId, int bookShelfId, int bookId, CancellationToken cancellationToken);
+
+    #region for Migration
+    Task<Page<BookShelfModel>> GetAllBookShelves(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+    Task<IEnumerable<BookShelfBook>> GetBookShelfBooks(int libraryId, int bookShelfId, CancellationToken cancellationToken);
+    #endregion region
 }

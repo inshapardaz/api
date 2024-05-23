@@ -4,6 +4,7 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.Library.Book.Chapter;
 using Paramore.Brighter;
 using System;
 using System.Collections.Generic;
@@ -35,13 +36,15 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
     private readonly IWriteWordDocument _wordDocumentWriter;
     private readonly IFileStorage _fileStorage;
     private readonly IFileRepository _fileRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
 
     public PublishBookRequestHandler(IBookRepository bookRepository,
         IChapterRepository chapterRepository,
         IBookPageRepository bookPageRepository,
         IWriteWordDocument wordDocumentWriter,
         IFileStorage fileStorage,
-        IFileRepository fileRepository)
+        IFileRepository fileRepository,
+        IAmACommandProcessor commandProcessor)
     {
         _bookRepository = bookRepository;
         _chapterRepository = chapterRepository;
@@ -49,6 +52,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
         _wordDocumentWriter = wordDocumentWriter;
         _fileStorage = fileStorage;
         _fileRepository = fileRepository;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin)]
@@ -64,18 +68,13 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
             chapterText.Add(finalText);
             if (chapter.Contents.Any(cc => cc.Language == book.Language))
             {
-                await _chapterRepository.UpdateChapterContent(command.LibraryId, command.BookId, chapter.ChapterNumber, book.Language, finalText, cancellationToken);
+                var cmd = new UpdateChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber, finalText, book.Language);               
+                await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
             }
             else
             {
-                await _chapterRepository.AddChapterContent(command.LibraryId, new ChapterContentModel
-                {
-                    BookId = command.BookId,
-                    ChapterId = chapter.Id,
-                    Language = book.Language,
-                    ChapterNumber = chapter.ChapterNumber,
-                    Text = finalText
-                }, cancellationToken);
+                var cmd = new AddChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber, finalText, book.Language); ;
+                await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
             }
         }
 

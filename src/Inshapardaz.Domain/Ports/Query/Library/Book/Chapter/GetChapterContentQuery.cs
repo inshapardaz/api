@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Book.Chapter;
 
@@ -30,14 +31,18 @@ public class GetChapterContentQueryHandler : QueryHandlerAsync<GetChapterContent
     private readonly ILibraryRepository _libraryRepository;
     private readonly IBookRepository _bookRepository;
     private readonly IChapterRepository _chapterRepository;
+    private readonly IFileRepository _fileRepository;
+    private readonly IFileStorage _fileStorage;
     private readonly IUserHelper _userHelper;
 
-    public GetChapterContentQueryHandler(ILibraryRepository libraryRepository, IBookRepository bookRepository, IChapterRepository chapterRepository, IUserHelper userHelper)
+    public GetChapterContentQueryHandler(ILibraryRepository libraryRepository, IBookRepository bookRepository, IChapterRepository chapterRepository, IUserHelper userHelper, IFileRepository fileRepository, IFileStorage fileStorage)
     {
         _libraryRepository = libraryRepository;
         _bookRepository = bookRepository;
         _chapterRepository = chapterRepository;
         _userHelper = userHelper;
+        _fileRepository = fileRepository;
+        _fileStorage = fileStorage;
     }
 
     [LibraryAuthorize(1)]
@@ -68,6 +73,15 @@ public class GetChapterContentQueryHandler : QueryHandlerAsync<GetChapterContent
         var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, cancellationToken);
         if (chapterContent != null)
         {
+            if (chapterContent.FileId.HasValue)
+            {
+                var file = await _fileRepository.GetFileById(chapterContent.FileId.Value, cancellationToken);
+                if (file != null)
+                {
+                    var fc = await _fileStorage.GetTextFile(file.FilePath, cancellationToken);
+                    chapterContent.Text = fc;
+                }
+            }
             if (_userHelper.AccountId.HasValue)
             {
                 await _bookRepository.AddRecentBook(command.LibraryId, _userHelper.AccountId.Value, command.BookId, cancellationToken);

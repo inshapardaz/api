@@ -46,4 +46,9 @@ public interface IAccountRepository
     Task<AccountModel> GetAccountByResetToken(string token, CancellationToken cancellationToken);
 
     Task UpdateAccount(AccountModel account, CancellationToken cancellationToken);
+
+    #region for migration
+    Task AddAccountToLibrary(int libraryId, int accountId, Role role, CancellationToken cancellationToken);
+    Task<AccountModel> AddAccount(AccountModel account, CancellationToken cancellationToken);
+    #endregion
 }

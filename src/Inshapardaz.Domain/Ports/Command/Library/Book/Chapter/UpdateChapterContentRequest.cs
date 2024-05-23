@@ -1,8 +1,12 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
+using System;
+using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,11 +42,15 @@ public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChap
 {
     private readonly IChapterRepository _chapterRepository;
     private readonly ILibraryRepository _libraryRepository;
+    private readonly IFileRepository _fileRepository;
+    private readonly IFileStorage _fileStorage;
 
-    public UpdateChapterContentRequestHandler(IChapterRepository chapterRepository, ILibraryRepository libraryRepository)
+    public UpdateChapterContentRequestHandler(IChapterRepository chapterRepository, ILibraryRepository libraryRepository, IFileStorage fileStorage, IFileRepository fileRepository)
     {
         _chapterRepository = chapterRepository;
         _libraryRepository = libraryRepository;
+        _fileStorage = fileStorage;
+        _fileRepository = fileRepository;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -69,13 +77,16 @@ public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChap
 
         if (content == null)
         {
+            var fileName = $"chapter-{chapter.ChapterNumber}.md";
+            var url = await StoreFile($"books/{command.BookId}/{fileName}", command.Contents, cancellationToken);
+            var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
             var chapterContent = new ChapterContentModel
             {
                 BookId = command.BookId,
                 ChapterId = chapter.Id,
                 ChapterNumber = command.ChapterNumber,
                 Language = command.Language,
-                Text = command.Contents
+                FileId = file.Id
             };
 
             command.Result.ChapterContent = await _chapterRepository.AddChapterContent(command.LibraryId,
@@ -85,15 +96,48 @@ public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChap
         }
         else
         {
+            long fileId;
+            if (content.FileId.HasValue)
+            {
+                var file = await _fileRepository.GetFileById(content.FileId.Value, cancellationToken);
+                await _fileStorage.TryDeleteFile(file.FilePath, cancellationToken);
+                fileId = file.Id;
+            } 
+            else
+            {
+                var fileName = $"chapter-{chapter.ChapterNumber}.md";
+                var url = await StoreFile($"books/{command.BookId}/{fileName}", command.Contents, cancellationToken);
+                var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
+                fileId = file.Id;
+            }
+
             await _chapterRepository.UpdateChapterContent(command.LibraryId,
                                                           command.BookId,
                                                           command.ChapterNumber,
                                                           command.Language,
                                                           command.Contents,
+                                                          fileId,
                                                           cancellationToken);
             command.Result.ChapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);
+    }
+
+    private async Task<string> StoreFile(string filePath, string contents, CancellationToken cancellationToken)
+    {
+        return await _fileStorage.StoreTextFile(filePath, contents, cancellationToken);
+    }
+
+    private async Task<FileModel> AddFile(string fileName, string filePath, string mimeType, CancellationToken cancellationToken)
+    {
+        return await _fileRepository.AddFile(new FileModel
+        {
+            FileName = fileName,
+            FilePath = filePath,
+            MimeType = mimeType,
+            DateCreated = DateTime.Now,
+            IsPublic = false
+        }, cancellationToken);
     }
 }

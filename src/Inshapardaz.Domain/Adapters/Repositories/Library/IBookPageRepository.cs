@@ -32,4 +32,8 @@ public interface IBookPageRepository
     Task<BookPageModel> UpdateWriterAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken);
     Task UpdatePageSequenceNumber(int libraryId, int bookId, int oldSequenceNumber, int newSequenceNumber, CancellationToken cancellationToken);
     Task<BookPageModel> UpdateReviewerAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken);
+
+    #region for migration
+    Task<int> AddPage(int libraryId, BookPageModel page, CancellationToken cancellationToken);
+    #endregion for migration
 }

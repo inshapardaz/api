@@ -39,4 +39,8 @@ public interface IArticleRepository
     Task AddArticleToFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken);
     Task RemoveArticleFromFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken);
     #endregion
+
+    #region for migration
+    Task<IEnumerable<ArticleModel>> GetAllArticles(int libraryId, CancellationToken cancellationToken);
+    #endregion
 }

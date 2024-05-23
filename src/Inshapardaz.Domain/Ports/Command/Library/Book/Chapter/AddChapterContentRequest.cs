@@ -1,8 +1,10 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,11 +33,15 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
 {
     private readonly IChapterRepository _chapterRepository;
     private readonly ILibraryRepository _libraryRepository;
+    private readonly IFileRepository _fileRepository;
+    private readonly IFileStorage _fileStorage;
 
-    public AddChapterContentRequestHandler(IChapterRepository chapterRepository, ILibraryRepository libraryRepository)
+    public AddChapterContentRequestHandler(IChapterRepository chapterRepository, ILibraryRepository libraryRepository, IFileRepository fileRepository, IFileStorage fileStorage)
     {
         _chapterRepository = chapterRepository;
         _libraryRepository = libraryRepository;
+        _fileRepository = fileRepository;
+        _fileStorage = fileStorage;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -55,18 +61,39 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
         var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
         if (chapter != null)
         {
+            var fileName = $"chapter-{chapter.ChapterNumber}.md";
+            var url = await StoreFile($"books/{command.BookId}/{fileName}", command.Contents, cancellationToken);
+            var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
+
             var chapterContent = new ChapterContentModel
             {
                 BookId = command.BookId,
                 ChapterId = chapter.Id,
                 ChapterNumber = chapter.ChapterNumber,
                 Language = command.Language,
-                Text = command.Contents
+                FileId = file?.Id
             };
 
             command.Result = await _chapterRepository.AddChapterContent(command.LibraryId, chapterContent, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);
+    }
+
+    private async Task<string> StoreFile(string filePath, string contents, CancellationToken cancellationToken)
+    {
+        return await _fileStorage.StoreTextFile(filePath, contents, cancellationToken);
+    }
+
+    private async Task<FileModel> AddFile(string fileName, string filePath, string mimeType, CancellationToken cancellationToken)
+    {
+        return await _fileRepository.AddFile(new FileModel
+        {
+            FileName = fileName,
+            FilePath = filePath,
+            MimeType = mimeType,
+            DateCreated = DateTime.Now,
+            IsPublic = false
+        }, cancellationToken);
     }
 }

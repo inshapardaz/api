@@ -251,7 +251,7 @@ public class AccountRepository : IAccountRepository
                     @InvitationCodeExpiry, 
                     @Created,
                     @AcceptTerms, 
-                    @Updated, 
+                    UTC_TIMESTAMP(), 
                     @PasswordHash,
                     @PasswordReset,
                     @ResetToken,

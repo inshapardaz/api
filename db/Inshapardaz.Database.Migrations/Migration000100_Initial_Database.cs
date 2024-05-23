@@ -234,7 +234,9 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn("ChapterId").AsInt64().Indexed("IX_ChapterContent_ChapterId")
                     .ForeignKey("FK_ChapterContent_Chapter", Schemas.Library, Tables.Chapter, Columns.Id).OnDelete(System.Data.Rule.Cascade)
                 .WithColumn("Language").AsString().Nullable()
-                .WithColumn("Text").AsString(int.MaxValue).Nullable();
+                .WithColumn("Text").AsString(int.MaxValue).Nullable()
+                .WithColumn(Columns.FileId).AsInt64().Nullable()
+                    .ForeignKey("FK_ChapterContent_File", Schemas.Library, Tables.File, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade);
 
             Create.UniqueConstraint("UQ_ChapterId_Language")
                   .OnTable(Tables.ChapterContent).WithSchema(Schemas.Library).Columns("ChapterId", "Language");
@@ -246,6 +248,8 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn(Columns.BookId).AsInt32().NotNullable().Indexed("IX_BookPage_BookId")
                     .ForeignKey("FK_BookPage_Book", Schemas.Library, Tables.Book, Columns.Id).OnDelete(System.Data.Rule.Cascade)
                 .WithColumn("Text").AsString(int.MaxValue).Nullable()
+                .WithColumn(Columns.FileId).AsInt64().Nullable()
+                    .ForeignKey("FK_BookPage_File", Schemas.Library, Tables.File, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
                 .WithColumn("SequenceNumber").AsInt32().Nullable()
                 .WithColumn("ImageId").AsInt64().Nullable()
                     .ForeignKey("FK_BookPage_Image", Schemas.Library, Tables.File, Columns.Id).OnDelete(System.Data.Rule.SetNull)
@@ -359,7 +363,9 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn("ArticleId").AsInt64().Indexed("IX_ArticleContent_ArticleId")
                     .ForeignKey("FK_ArticleContent_Article", Schemas.Library, Tables.Article, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
                 .WithColumn(Columns.Language).AsString().Nullable()
-                .WithColumn("Text").AsString(int.MaxValue).NotNullable()
+                .WithColumn("Text").AsString(int.MaxValue).Nullable()
+                .WithColumn(Columns.FileId).AsInt64().Nullable()
+                    .ForeignKey("FK_ArticleContent_File", Schemas.Library, Tables.File, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
                 .WithColumn("Layout").AsString().Nullable();
             //--------------------------------------------------------------------------------
 
@@ -469,7 +475,7 @@ namespace Inshapardaz.Database.Migrations
                     .ForeignKey("FK_IssueContent_Issue", Schemas.Library, Tables.Issue, Columns.Id).OnDelete(System.Data.Rule.Cascade)
                 .WithColumn(Columns.Language).AsString().Nullable()
                 .WithColumn("MimeType").AsString().Nullable()
-                .WithColumn(Columns.FileId).AsInt64().Indexed("IX_IssueContent_FileId")
+                .WithColumn(Columns.FileId).AsInt64()
                     .ForeignKey("FK_IssueContent_File", Schemas.Library, Tables.File, Columns.Id).OnDelete(System.Data.Rule.Cascade);
 
             //--------------------------------------------------------------------------------
@@ -480,6 +486,8 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn("IssueId").AsInt32().NotNullable().Indexed("IX_IssuePage_IssueId")
                     .ForeignKey("FK_IssuePage_Issue", Schemas.Library, Tables.Issue, Columns.Id).OnDelete(System.Data.Rule.Cascade)
                 .WithColumn("Text").AsString(int.MaxValue).Nullable()
+                .WithColumn(Columns.FileId).AsInt64().Nullable()
+                    .ForeignKey("FK_IssuePageContent_File", Schemas.Library, Tables.File, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
                 .WithColumn("ArticleId").AsInt64().Nullable()
                     .ForeignKey("FK_IssuePage_IssueArticle", Schemas.Library, "IssueArticle", Columns.Id)
                 .WithColumn("SequenceNumber").AsInt32().Nullable()
@@ -497,6 +505,8 @@ namespace Inshapardaz.Database.Migrations
             Create.Table("IssueArticleContent").InSchema(Schemas.Library)
                     .WithColumn(Columns.Id).AsInt64().PrimaryKey().Identity()
                     .WithColumn("Text").AsString(int.MaxValue).Nullable()
+                    .WithColumn(Columns.FileId).AsInt64().Nullable()
+                        .ForeignKey("FK_IssueArticleContent_File", Schemas.Library, Tables.File, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
                     .WithColumn("ArticleId").AsInt64().Nullable()
                         .ForeignKey("FK_IssueArticleContent_IssueArticle", Schemas.Library, "IssueArticle", Columns.Id).OnDelete(System.Data.Rule.Cascade)
                     .WithColumn(Columns.Language).AsString(10).Nullable();

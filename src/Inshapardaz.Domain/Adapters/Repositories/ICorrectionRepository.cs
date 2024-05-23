@@ -13,4 +13,5 @@ public interface ICorrectionRepository
     Task<CorrectionModel> AddCorrection(CorrectionModel correction, CancellationToken cancellationToken);
     Task<CorrectionModel> UpdateCorrection(CorrectionModel correction, CancellationToken cancellationToken);
     Task DeleteCorrection(long id, CancellationToken cancellationToken);
+    Task<IEnumerable<CorrectionModel>> GetAllCorrections(CancellationToken cancellationToken);
 }

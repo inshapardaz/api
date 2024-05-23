@@ -514,4 +514,59 @@ public class ArticleRepository : IArticleRepository
             await connection.ExecuteAsync(command);
         }
     }
+
+    public async Task<IEnumerable<ArticleModel>> GetAllArticles(int libraryId, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT at.*, fl.FilePath AS ImageUrl,
+                            CASE WHEN af.ArticleId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
+                            a.*, c.*, con.*
+                        FROM Article at
+                            LEFT OUTER JOIN ArticleAuthor ara ON ara.ArticleId = at.Id
+                            LEFT OUTER JOIN Author a On ara.AuthorId = a.Id
+                            LEFT OUTER JOIN ArticleFavorite af On at.Id = af.ArticleId 
+                                AND (af.AccountId = @AccountId OR @AccountId Is Null)
+                            LEFT OUTER JOIN ArticleRead ar On at.Id = ar.ArticleId 
+                                AND (ar.AccountId = @AccountId OR @AccountId Is Null)
+                            LEFT OUTER JOIN ArticleCategory ac ON at.Id = ac.ArticleId
+                            LEFT OUTER JOIN Category c ON ac.CategoryId = c.Id
+                            LEFT OUTER JOIN `File` fl ON fl.Id = at.ImageId
+                            LEFT JOIN ArticleContent con ON con.ArticleId = at.Id
+                        WHERE at.LibraryId = @LibraryId";
+
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId,
+            }, 
+            cancellationToken: cancellationToken);
+
+            var articles = new Dictionary<long, ArticleModel>();
+
+            await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, ArticleModel>(command, (at, a, c, con) =>
+            {
+                if (!articles.TryGetValue(at.Id, out ArticleModel article))
+                    articles.Add(at.Id, article = at);
+
+                if (!article.Authors.Any(x => x.Id == a.Id))
+                {
+                    article.Authors.Add(a);
+                }
+
+                if (c != null && !article.Categories.Any(x => x.Id == c.Id))
+                {
+                    article.Categories.Add(c);
+                }
+
+                if (con != null && !article.Contents.Any(x => x.Id == con.Id))
+                {
+                    article.Contents.Add(con);
+                }
+
+                return article;
+            });
+
+            return articles.Values.ToList();
+        }
+    }
 }

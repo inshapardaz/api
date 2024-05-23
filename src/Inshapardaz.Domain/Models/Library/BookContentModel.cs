@@ -14,5 +14,5 @@ public class BookContentModel
 
     public string FileName { get; set; }
 
-    public long FileId { get; internal set; }
+    public long FileId { get; set; }
 }

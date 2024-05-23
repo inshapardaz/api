@@ -114,7 +114,7 @@ public class ChapterRepository : IChapterRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var chapters = new Dictionary<long, ChapterModel>();
+            var chapters = new Dictionary<int, ChapterModel>();
 
             var sql = @"Select c.*, cc.Id as ContentId, cc.Language As ContentLanguage,
                             a.Name As WriterAccountName, ar.Name As ReviewerAccountName
@@ -126,17 +126,17 @@ public class ChapterRepository : IChapterRepository
                             Where b.Id = @BookId AND b.LibraryId = @LibraryId
                             Order By c.ChapterNumber";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
-            await connection.QueryAsync<ChapterModel, long?, string, string, string, ChapterModel>(command, (c, contentId, contentLangugage, WriterAccountName, ReviewerAccountName) =>
+            await connection.QueryAsync<ChapterModel, int?, string, string, string, ChapterModel>(command, (c, contentId, contentLangugage, WriterAccountName, ReviewerAccountName) =>
             {
-                if (!chapters.TryGetValue(c.Id, out ChapterModel chapter))
+                if (!chapters.TryGetValue((int)c.Id, out ChapterModel chapter))
                 {
                     c.WriterAccountName = WriterAccountName;
                     c.ReviewerAccountName = ReviewerAccountName;
 
-                    chapters.Add(c.Id, chapter = c);
+                    chapters.Add((int)c.Id, chapter = c);
                 }
 
-                chapter = chapters[c.Id];
+                chapter = chapters[(int)c.Id];
                 if (contentId != null)
                 {
                     var content = chapter.Contents.SingleOrDefault(x => x.Id == contentId);
@@ -238,7 +238,7 @@ public class ChapterRepository : IChapterRepository
         }
     }
 
-    public async Task UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, string text, CancellationToken cancellationToken)
+    public async Task UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, string text, long? fileId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {

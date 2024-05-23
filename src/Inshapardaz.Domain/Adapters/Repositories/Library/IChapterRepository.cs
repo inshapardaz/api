@@ -23,10 +23,14 @@ public interface IChapterRepository
 
     Task<ChapterContentModel> AddChapterContent(int libraryId, ChapterContentModel content, CancellationToken cancellationToken);
 
-    Task UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, string text, CancellationToken cancellationToken);
+    Task UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, string text, long? fileId, CancellationToken cancellationToken);
 
     Task DeleteChapterContentById(int libraryId, int bookId, int chapterNumber, string language, CancellationToken cancellationToken);
     Task<ChapterModel> UpdateWriterAssignment(int libraryId, int bookId, int chapterNumber, int? assignedAccountId, CancellationToken cancellationToken);
 
     Task<ChapterModel> UpdateReviewerAssignment(int libraryId, int bookId, int chapterNumber, int? assignedAccountId, CancellationToken cancellationToken);
+
+    #region for migration
+    Task<IEnumerable<ChapterContentModel>> GetChapterContents(int libraryId, int bookId, int chapterNumber, CancellationToken cancellationToken);
+    #endregion
 }

@@ -1,23 +1,33 @@
-using Inshapardaz.Adapters.Database.SqlServer;
-using Inshapardaz.Adapters.Database.SqlServer.Repositories;
-using Inshapardaz.Adapters.Database.SqlServer.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Storage.FileSystem;
 
 namespace Inshapardaz.LibraryMigrator;
+
 public class Migrator
 {
-    SqlServerConnectionProvider SourceConnectionProvider { get; init; }
-    SqlServerConnectionProvider DestinationConnectionProvider { get; init; }
+    RepositoryFactory SourceRepositoryFactory { get; init; }
+    RepositoryFactory DestinationRepositoryFactory { get; init; }
 
-    public Migrator(string source, string destination)
+    public Migrator(string source, DatabaseTypes sourceType, string destination, DatabaseTypes destinationType)
     {
-        //SourceConnectionProvider = new SqlServerConnectionProvider(source, new LibraryConfiguration());
-        //DestinationConnectionProvider = new SqlServerConnectionProvider(destination, new LibraryConfiguration());
+        SourceRepositoryFactory = new RepositoryFactory(source, sourceType);
+        DestinationRepositoryFactory = new RepositoryFactory(destination, destinationType);
     }
 
-    public async Task Migrate(int libraryId, CancellationToken cancellationToken)
+    public async Task Migrate(int libraryId, bool correctionsOnly, CancellationToken cancellationToken)
     {
+        if (correctionsOnly)
+        {
+            Console.WriteLine("Migration of correction started.");
+
+            await MigrateCorrections(cancellationToken);
+
+            Console.WriteLine("Migration of correction finished.");
+
+            return;
+        }
+
         Dictionary<int, int> _authorMap;
         Dictionary<int, int> _seriesMap;
         Dictionary<int, int> _categoriesMap;
@@ -25,8 +35,8 @@ public class Migrator
         Dictionary<int, int> _periodicalsMap;
         Dictionary<int, int> _accountsMap;
 
-        var sourceLibraryDb = new LibraryRepository(SourceConnectionProvider);
-        var destinationLibraryDb = new LibraryRepository(DestinationConnectionProvider);
+        var sourceLibraryDb = SourceRepositoryFactory.LibraryRepository;
+        var destinationLibraryDb = DestinationRepositoryFactory.LibraryRepository;
 
         //TransactionManager.ImplicitDistributedTransactions = true;
 
@@ -70,16 +80,35 @@ public class Migrator
         var bookshelfCount = await MigrateBookShelves(libraryId, newLibrary.Id, _accountsMap, _booksMap, cancellationToken);
         Console.WriteLine($"-----------------------------------------------------------");
 
+        await MigrateArticles(libraryId, newLibrary.Id, _accountsMap, _authorMap, _categoriesMap, cancellationToken);
+        Console.WriteLine($"-----------------------------------------------------------");
+
+        // Migrate read and favorites
         //scope.Complete();
 
         Console.WriteLine($"Migration Completed.");
         //}
     }
 
+    public async Task MigrateCorrections(CancellationToken cancellationToken)
+    {
+        var sourceDb = SourceRepositoryFactory.CorrectionRepository;
+        var destinationDb = DestinationRepositoryFactory.CorrectionRepository;
+
+        var corrections = await sourceDb.GetAllCorrections(cancellationToken);
+
+        Console.WriteLine($"Migrating {corrections.Count()} correction.");
+
+        foreach (var correction in corrections)
+        {
+            await destinationDb.AddCorrection(correction, cancellationToken);
+        }
+    }
+
     private async Task<Dictionary<int, int>> MigrateAccounts(int libraryId, int newLibraryId, CancellationToken cancellationToken)
     {
-        var sourceDb = new AccountRepository(SourceConnectionProvider);
-        var destinationDb = new AccountRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.AccountRepository;
+        var destinationDb = DestinationRepositoryFactory.AccountRepository;
 
         Dictionary<int, int> accountsMap = new Dictionary<int, int>();
         var accounts = await sourceDb.GetAccounts(1, int.MaxValue, cancellationToken);
@@ -108,8 +137,8 @@ public class Migrator
 
     private async Task<Dictionary<int, int>> MigrateAuthors(int libraryId, int newLibraryId, CancellationToken cancellationToken)
     {
-        var sourceDb = new AuthorRepository(SourceConnectionProvider);
-        var destinationDb = new AuthorRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.AuthorRepository;
+        var destinationDb = DestinationRepositoryFactory.AuthorRepository;
 
         Dictionary<int, int> authorMap = new Dictionary<int, int>();
         var authors = await sourceDb.GetAuthors(libraryId, null, 1, int.MaxValue, cancellationToken);
@@ -136,8 +165,8 @@ public class Migrator
 
     private async Task<Dictionary<int, int>> MigrateSeries(int libraryId, int newLibraryId, CancellationToken cancellationToken)
     {
-        var sourceDb = new SeriesRepository(SourceConnectionProvider);
-        var destinationDb = new SeriesRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.SeriesRepository;
+        var destinationDb = DestinationRepositoryFactory.SeriesRepository;
 
         Dictionary<int, int> seriesMap = new Dictionary<int, int>();
         var series = await sourceDb.GetSeries(libraryId, 1, int.MaxValue, cancellationToken);
@@ -164,8 +193,8 @@ public class Migrator
 
     private async Task<Dictionary<int, int>> MigrateCategories(int libraryId, int newLibraryId, CancellationToken cancellationToken)
     {
-        var sourceDb = new CategoryRepository(SourceConnectionProvider);
-        var destinationDb = new CategoryRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.CategoryRepository;
+        var destinationDb = DestinationRepositoryFactory.CategoryRepository;
 
         Dictionary<int, int> categoriesMap = new Dictionary<int, int>();
         var categories = (await sourceDb.GetCategories(libraryId, cancellationToken)).ToArray();
@@ -185,40 +214,57 @@ public class Migrator
 
     private async Task<Dictionary<int, int>> MigrateBooks(int libraryId, int newLibraryId, Dictionary<int, int> authorMap, Dictionary<int, int> seriesMap, Dictionary<int, int> categoriesMap, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
-        var sourceDb = new BookRepository(SourceConnectionProvider);
-        var destinationDb = new BookRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.BookRepository;
+        var destinationDb = DestinationRepositoryFactory.BookRepository;
 
         Dictionary<int, int> booksMap = new Dictionary<int, int>();
-        var books = await sourceDb.GetBooks(libraryId, 1, int.MaxValue, cancellationToken);
+
+        var pageNumber = 1;
+        var page = await sourceDb.GetBooks(libraryId, pageNumber++, 100, cancellationToken);
         int i = 0;
 
-        foreach (var book in books.Data)
+        do
         {
-            if (book.ImageId.HasValue)
+            foreach (var book in page.Data)
             {
-                var bookImage = await CopyFile(book.ImageId.Value, cancellationToken);
-                book.ImageId = bookImage.Id;
+                if (book.ImageId.HasValue)
+                {
+                    var bookImage = await CopyFile(book.ImageId.Value, cancellationToken);
+                    book.ImageId = bookImage.Id;
+                }
+
+                book.Authors = book.Authors
+                                      .Select(a => new AuthorModel { Id = authorMap[a.Id] })
+                                      .ToList();
+
+                book.Categories = book.Categories
+                                      .Select(c => new CategoryModel { Id = categoriesMap[c.Id] })
+                                      .ToList();
+
+                book.SeriesId = book.SeriesId.HasValue ? seriesMap[book.SeriesId.Value] : null;
+
+                var newBook = await destinationDb.AddBook(newLibraryId, book, null, cancellationToken);
+                booksMap.Add(book.Id, newBook.Id);
+
+                var chaptersMap = await MigrateChapters(libraryId, newLibraryId, book.Id, newBook.Id, accountsMap, cancellationToken);
+                await MigrateBookPages(libraryId, newLibraryId, book.Id, newBook.Id, accountsMap, chaptersMap, cancellationToken);
+
+                foreach (var content in book.Contents)
+                {
+                    var bookContent = await CopyFile(content.FileId, cancellationToken);
+                    content.BookId = newBook.Id;
+                    content.FileId = bookContent.Id;
+
+                    await destinationDb.AddBookContent(newLibraryId, bookContent.Id, content.Language, content.MimeType, cancellationToken);
+                }
+
+                Console.WriteLine($"{++i} of {page.TotalCount} Book(s) migrated.");
+
             }
 
-            book.Authors = book.Authors
-                                  .Select(a => new AuthorModel { Id = authorMap[a.Id] })
-                                  .ToList();
-
-            book.Categories = book.Categories
-                                  .Select(c => new CategoryModel { Id = categoriesMap[c.Id] })
-                                  .ToList();
-
-            book.SeriesId = book.SeriesId.HasValue ? seriesMap[book.SeriesId.Value] : null;
-
-            var newBook = await destinationDb.AddBook(newLibraryId, book, null, cancellationToken);
-            booksMap.Add(book.Id, newBook.Id);
-
-            var chaptersMap = await MigrateChapters(libraryId, newLibraryId, book.Id, newBook.Id, accountsMap, cancellationToken);
-            await MigrateBookPages(libraryId, newLibraryId, book.Id, newBook.Id, accountsMap, chaptersMap, cancellationToken);
-
-            Console.WriteLine($"{++i} of {books.TotalCount} Book(s) migrated.");
-
+            page = await sourceDb.GetBooks(libraryId, pageNumber++, 100, cancellationToken);
         }
+        while (page.Data.Count() > 0);
 
         Console.WriteLine($"{booksMap.Count} Book(s) migrated.");
 
@@ -227,8 +273,9 @@ public class Migrator
 
     private async Task<Dictionary<long, long>> MigrateChapters(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
-        var sourceDb = new ChapterRepository(SourceConnectionProvider);
-        var destinationDb = new ChapterRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.ChapterRepository;
+        var destinationDb = DestinationRepositoryFactory.ChapterRepository;
+        var fileStore = new FileSystemStorage("../FileStore");
 
         var chaptersMap = new Dictionary<long, long>();
         var chapters = (await sourceDb.GetChaptersByBook(libraryId, bookId, cancellationToken)).ToArray();
@@ -237,8 +284,23 @@ public class Migrator
         foreach (var chapter in chapters)
         {
             chapter.BookId = newBookId;
-            chapter.ReviewerAccountId = chapter.ReviewerAccountId.HasValue ? accountsMap[chapter.ReviewerAccountId.Value] : null;
-            chapter.WriterAccountId = chapter.WriterAccountId.HasValue ? accountsMap[chapter.WriterAccountId.Value] : null;
+            if (chapter.ReviewerAccountId.HasValue && accountsMap.ContainsKey(chapter.ReviewerAccountId.Value))
+            {
+                chapter.ReviewerAccountId = accountsMap[chapter.ReviewerAccountId.Value];
+            }
+            else
+            {
+                chapter.ReviewerAccountId = null;
+            }
+
+            if (chapter.WriterAccountId.HasValue && accountsMap.ContainsKey(chapter.WriterAccountId.Value))
+            {
+                chapter.WriterAccountId = accountsMap[chapter.WriterAccountId.Value];
+            }
+            else
+            {
+                chapter.WriterAccountId = null;
+            }
 
             var newChapter = await destinationDb.AddChapter(newLibraryId, newBookId, chapter, cancellationToken);
 
@@ -250,20 +312,30 @@ public class Migrator
             {
                 content.BookId = newBookId;
                 content.ChapterId = newChapter.Id;
+
+               var filePath = await fileStore.StoreTextFile($"books/{bookId}/chapter-{newChapter.ChapterNumber}.md", content.Text, cancellationToken);
+                var file = await AddFile($"chapter-{newChapter.Id}.md", filePath, MimeTypes.Markdown, cancellationToken);
+                content.Text = string.Empty;
+                content.FileId = file.Id;
                 await destinationDb.AddChapterContent(newLibraryId, content, cancellationToken);
             }
 
-            Console.WriteLine($"{++i} of {chapters.Length} Chapter(s) copies.");
+            Console.WriteLine($"{++i} of {chapters.Length} Chapter(s) copied.");
 
         }
 
         return chaptersMap;
     }
 
+    private static string GetChapterFileName(int bookId, long chapterId)
+    {
+        return $"books/{bookId}/chapter-{chapterId}.md";
+    }
+
     private async Task MigrateBookPages(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, Dictionary<long, long> chaptersMap, CancellationToken cancellationToken)
     {
-        var sourceDb = new BookPageRepository(SourceConnectionProvider);
-        var destinationDb = new BookPageRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.BookPageRepository;
+        var destinationDb = DestinationRepositoryFactory.BookPageRepository;
 
         var pages = (await sourceDb.GetAllPagesByBook(libraryId, bookId, cancellationToken)).ToArray();
         int i = 0;
@@ -279,18 +351,35 @@ public class Migrator
                 page.ImageId = pageImage.Id;
             }
 
-            page.ReviewerAccountId = page.ReviewerAccountId.HasValue ? accountsMap[page.ReviewerAccountId.Value] : null;
-            page.WriterAccountId = page.WriterAccountId.HasValue ? accountsMap[page.WriterAccountId.Value] : null;
+            if (page.ReviewerAccountId.HasValue && accountsMap.ContainsKey(page.ReviewerAccountId.Value))
+            {
+                page.ReviewerAccountId = accountsMap[page.ReviewerAccountId.Value];
+            } 
+            else
+            {
+                page.ReviewerAccountId = null;
+            }
+
+            if (page.WriterAccountId.HasValue && accountsMap.ContainsKey(page.WriterAccountId.Value))
+            {
+                page.WriterAccountId = accountsMap[page.WriterAccountId.Value];
+            }
+            else
+            {
+                page.WriterAccountId = null;
+            }
+            
             Console.WriteLine($"{++i} of {pages.Length} Pages(s) copies.");
 
+            //TODO: Copy page contents to file
             await destinationDb.AddPage(newLibraryId, page, cancellationToken);
         }
     }
 
     private async Task<Dictionary<int, int>> MigratePeriodicals(int libraryId, int newLibraryId, Dictionary<int, int> authorMap, Dictionary<int, int> categoriesMap, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
-        var sourceDb = new PeriodicalRepository(SourceConnectionProvider);
-        var destinationDb = new PeriodicalRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.PeriodicalRepository;
+        var destinationDb = DestinationRepositoryFactory.PeriodicalRepository;
         var periodicalMap = new Dictionary<int, int>();
 
         var periodicals = await sourceDb.GetPeriodicals(libraryId, null, 1, int.MaxValue, new PeriodicalFilter(), PeriodicalSortByType.DateCreated, SortDirection.Ascending, cancellationToken);
@@ -323,8 +412,8 @@ public class Migrator
 
     private async Task<Dictionary<int, int>> MigrateIssue(int libraryId, int newLibraryId, int periodicalId, int newPeriodicalId, Dictionary<int, int> authorMap, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
-        var sourceDb = new IssueRepository(SourceConnectionProvider);
-        var destinationDb = new IssueRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.IssueRepository;
+        var destinationDb = DestinationRepositoryFactory.IssueRepository;
         var issueMap = new Dictionary<int, int>();
 
         var issues = await sourceDb.GetIssues(libraryId, periodicalId, 1, int.MaxValue, new IssueFilter(), IssueSortByType.VolumeNumberAndIssueNumber, SortDirection.Ascending, cancellationToken);
@@ -357,6 +446,7 @@ public class Migrator
                     cancellationToken);
             }
 
+            //TODO:  migrate pages and move to files from content
             await IssueMigrateArticle(libraryId, newLibraryId, periodicalId, newPeriodicalId, newIssue.Id, newIssue.VolumeNumber, newIssue.IssueNumber, authorMap, accountsMap, cancellationToken);
             Console.WriteLine($"{++i} of {issues.TotalCount} Issues(s) migrated for periodical {periodicalId}.");
 
@@ -368,8 +458,8 @@ public class Migrator
 
     private async Task<Dictionary<int, int>> IssueMigrateArticle(int libraryId, int newLibraryId, int periodicalId, int newPeriodicalId, int newIssueId, int volumeNumber, int issueNumber, Dictionary<int, int> authorMap, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
-        var sourceDb = new IssueArticleRepository(SourceConnectionProvider);
-        var destinationDb = new IssueArticleRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.IssueArticleRepository;
+        var destinationDb = DestinationRepositoryFactory.IssueArticleRepository;
         var articleMap = new Dictionary<int, int>();
 
         var articles = await sourceDb.GetArticlesByIssue(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
@@ -392,6 +482,7 @@ public class Migrator
             {
                 content.PeriodicalId = periodicalId;
 
+                // TODO: Migrate the content to file
                 await destinationDb.AddArticleContent(newLibraryId,
                     newPeriodicalId,
                     content.VolumeNumber,
@@ -408,8 +499,8 @@ public class Migrator
 
     private async Task<long> MigrateBookShelves(int libraryId, int newLibraryId, Dictionary<int, int> accountsMap, Dictionary<int, int> booksMap, CancellationToken cancellationToken)
     {
-        var sourceDb = new BookShelfRepository(SourceConnectionProvider);
-        var destinationDb = new BookShelfRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.BookShelfRepository;
+        var destinationDb = DestinationRepositoryFactory.BookShelfRepository;
 
         var bookshelves = await sourceDb.GetAllBookShelves(libraryId, 1, int.MaxValue, cancellationToken);
 
@@ -435,10 +526,69 @@ public class Migrator
         return bookshelves.TotalCount;
     }
 
+    private async Task<Dictionary<long, long>> MigrateArticles(int libraryId, int newLibraryId, Dictionary<int, int> accountsMap, Dictionary<int, int> authorMap, Dictionary<int, int> categoriesMap, CancellationToken cancellationToken)
+    {
+        var sourceDb = SourceRepositoryFactory.ArticleRepository;
+        var destinationDb = DestinationRepositoryFactory.ArticleRepository;
+
+        Dictionary<long, long> articlesMap = new Dictionary<long, long>();
+        var articles = await sourceDb.GetAllArticles(libraryId, cancellationToken);
+        int i = 0;
+
+        foreach (var article in articles)
+        {
+            if (article.ImageId.HasValue)
+            {
+                var articleImage = await CopyFile(article.ImageId.Value, cancellationToken);
+                article.ImageId = articleImage.Id;
+            }
+
+            article.Authors = article.Authors
+                                  .Select(a => new AuthorModel { Id = authorMap[a.Id] })
+                                  .ToList();
+
+            article.Categories = article.Categories
+                                  .Select(c => new CategoryModel { Id = categoriesMap[c.Id] })
+                                  .ToList();
+
+            var newArticle = await destinationDb.AddArticle(newLibraryId, article, null, cancellationToken);
+            articlesMap.Add(article.Id, newArticle.Id);
+
+            foreach (var content in article.Contents)
+            {
+                content.ArticleId = newArticle.Id;
+
+                // TODO: Migrate contents to file
+                await destinationDb.AddArticleContent(newLibraryId, content, cancellationToken);
+            }
+
+            Console.WriteLine($"{++i} of {articles.Count()} Article(s) migrated.");
+
+        }
+
+        Console.WriteLine($"{articlesMap.Count} Book(s) migrated.");
+
+        return articlesMap;
+    }
+
+    private async Task<FileModel> AddFile(string fileName, string filePath, string mimeType, CancellationToken cancellationToken)
+    {
+        var destinationDb = DestinationRepositoryFactory.FileRepository;
+
+        return await destinationDb.AddFile(new FileModel
+        {
+            FileName = fileName,
+            FilePath = filePath,
+            MimeType = mimeType,
+            DateCreated = DateTime.Now,
+            IsPublic = false
+        }, cancellationToken);
+    }
+
     public async Task<FileModel> CopyFile(long fileId, CancellationToken cancellationToken)
     {
-        var sourceDb = new FileRepository(SourceConnectionProvider);
-        var destinationDb = new FileRepository(DestinationConnectionProvider);
+        var sourceDb = SourceRepositoryFactory.FileRepository;
+        var destinationDb = DestinationRepositoryFactory.FileRepository;
 
         var file = await sourceDb.GetFileById(fileId, cancellationToken);
         return await destinationDb.AddFile(file, cancellationToken);

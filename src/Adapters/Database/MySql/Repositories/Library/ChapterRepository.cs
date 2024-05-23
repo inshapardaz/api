@@ -257,23 +257,28 @@ public class ChapterRepository : IChapterRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO ChapterContent (ChapterId, `Language`, Text)
-                            VALUES (@ChapterId, @Language, @Text)";
-            var command = new CommandDefinition(sql, new { ChapterId = content.ChapterId, Language = content.Language, Text = content.Text }, cancellationToken: cancellationToken);
+            var sql = @"INSERT INTO ChapterContent (ChapterId, `Language`, Text, FileId)
+                            VALUES (@ChapterId, @Language, @Text, @FileId)";
+            var command = new CommandDefinition(sql, new { 
+                ChapterId = content.ChapterId, 
+                Language = content.Language, 
+                Text = content.Text,
+                FileId = content.FileId,
+            }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
 
             return await GetChapterContent(libraryId, content.BookId, content.ChapterNumber, content.Language, cancellationToken);
         }
     }
 
-    public async Task UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, string text, CancellationToken cancellationToken)
+    public async Task UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, string text, long? fileId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE ChapterContent cc
                                 INNER JOIN Chapter c ON c.Id = cc.ChapterId
                                 INNER JOIN Book b ON b.Id = c.BookId
-                            SET Text = @Text
+                            SET Text = @Text, FileId = @FileId
                             WHERE c.ChapterNumber = @ChapterNumber 
                                 AND b.LibraryId = @LibraryId 
                                 AND b.Id = @BookId 
@@ -284,7 +289,8 @@ public class ChapterRepository : IChapterRepository
                 BookId = bookId,
                 ChapterNumber = chapterNumber,
                 Language = language,
-                Text = text
+                Text = text,
+                FileId = fileId
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }

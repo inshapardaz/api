@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
+﻿namespace Inshapardaz.Api.Views.Library;
 
-namespace Inshapardaz.Api.Views.Library
+public class IssueYearlyView : ViewWithLinks
 {
-    public class IssueYearlyView : ViewWithLinks
-    {
-        public IEnumerable<IssueYearView> Data { get; set; }
-    }
+    public IEnumerable<IssueYearView> Data { get; set; }
+}
 
-    public class IssueYearView : ViewWithLinks
-    {
-        public int Year { get; set; }
+public class IssueYearView : ViewWithLinks
+{
+    public int Year { get; set; }
 
-        public int Count { get; set; }
-    }
+    public int Count { get; set; }
 }

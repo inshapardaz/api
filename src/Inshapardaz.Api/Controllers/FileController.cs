@@ -1,60 +1,55 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Helpers;
-using Inshapardaz.Domain.Models;
+﻿using Inshapardaz.Domain.Ports.Command.File;
+using Inshapardaz.Domain.Ports.Query.File;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using Paramore.Brighter;
 using Paramore.Darker;
 
-namespace Inshapardaz.Api.Controllers
+namespace Inshapardaz.Api.Controllers;
+
+public class FileController : Controller
 {
-    public class FileController : Controller
+    private readonly IAmACommandProcessor _commandProcessor;
+    private readonly IQueryProcessor _queryProcessor;
+
+    public FileController(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor)
     {
-        private readonly IAmACommandProcessor _commandProcessor;
-        private readonly IQueryProcessor _queryProcessor;
+        _commandProcessor = commandProcessor;
+        _queryProcessor = queryProcessor;
+    }
 
-        public FileController(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor)
+    [HttpGet("files/{fileId}", Name = nameof(FileController.GetFile))]
+    public async Task<IActionResult> GetFile(int fileId, CancellationToken token = default(CancellationToken))
+    {
+        var query = new GetFileQuery(fileId, 200, 200);
+        var file = await _queryProcessor.ExecuteAsync(query, token);
+
+        if (file == null)
         {
-            _commandProcessor = commandProcessor;
-            _queryProcessor = queryProcessor;
+            return new NotFoundResult();
         }
 
-        [HttpGet("files/{fileId}", Name = nameof(FileController.GetFile))]
-        public async Task<IActionResult> GetFile(int fileId, CancellationToken token = default(CancellationToken))
+        return File(file.Contents, file.MimeType);
+    }
+
+    [HttpGet("libraries/{libraryId}/files/{fileId}", Name = nameof(FileController.GetLibraryFile))]
+    public async Task<IActionResult> GetLibraryFile(int libraryId, int fileId, CancellationToken token = default(CancellationToken))
+    {
+        var query = new GetFileQuery(fileId, 200, 200);
+        var file = await _queryProcessor.ExecuteAsync(query, token);
+
+        if (file == null)
         {
-            var query = new GetFileQuery(fileId, 200, 200);
-            var file = await _queryProcessor.ExecuteAsync(query, token);
-
-            if (file == null)
-            {
-                return new NotFoundResult();
-            }
-
-            return File(file.Contents, file.MimeType);
+            return new NotFoundResult();
         }
 
-        [HttpGet("libraries/{libraryId}/files/{fileId}", Name = nameof(FileController.GetLibraryFile))]
-        public async Task<IActionResult> GetLibraryFile(int libraryId, int fileId, CancellationToken token = default(CancellationToken))
-        {
-            var query = new GetFileQuery(fileId, 200, 200);
-            var file = await _queryProcessor.ExecuteAsync(query, token);
+        return File(file.Contents, file.MimeType);
+    }
 
-            if (file == null)
-            {
-                return new NotFoundResult();
-            }
-
-            return File(file.Contents, file.MimeType);
-        }
-
-        [HttpDelete("files/{fileId}", Name = nameof(FileController.DeleteFile))]
-        [Authorize(Role.Admin, Role.LibraryAdmin, Role.Writer)]
-        public async Task<IActionResult> DeleteFile(int fileId, CancellationToken token = default(CancellationToken))
-        {
-            var request = new DeleteFileRequest(fileId);
-            await _commandProcessor.SendAsync(request, cancellationToken: token);
-            return new NoContentResult();
-        }
+    [HttpDelete("files/{fileId}", Name = nameof(FileController.DeleteFile))]
+    public async Task<IActionResult> DeleteFile(int fileId, CancellationToken token = default(CancellationToken))
+    {
+        var request = new DeleteFileRequest(fileId);
+        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        return new NoContentResult();
     }
 }

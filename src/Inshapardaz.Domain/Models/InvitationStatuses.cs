@@ -1,9 +1,8 @@
-﻿namespace Inshapardaz.Domain.Models
+﻿namespace Inshapardaz.Domain.Models;
+
+public enum InvitationStatuses
 {
-    public enum InvitationStatuses
-    {
-        Valid = 0,
-        Expired = 1,
-        NotFound = 2
-    }
+    Valid = 0,
+    Expired = 1,
+    NotFound = 2
 }

@@ -1,6 +1,5 @@
-namespace Inshapardaz.Domain
+namespace Inshapardaz.Domain;
+
+public static class DomainModule
 {
-    public static class DomainModule
-    {
-    }
 }

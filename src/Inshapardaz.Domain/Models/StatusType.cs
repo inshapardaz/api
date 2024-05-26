@@ -1,25 +1,24 @@
 ﻿using System.ComponentModel;
 
-namespace Inshapardaz.Domain.Models
+namespace Inshapardaz.Domain.Models;
+
+public enum StatusType
 {
-    public enum StatusType
-    {
-        [Description("Unknown")]
-        Unknown = 0,
+    [Description("Unknown")]
+    Unknown = 0,
 
-        [Description("Published")]
-        Published = 1,
+    [Description("Published")]
+    Published = 1,
 
-        [Description("AvailableForTyping")]
-        AvailableForTyping,
+    [Description("AvailableForTyping")]
+    AvailableForTyping,
 
-        [Description("BeingTyped")]
-        BeingTyped,
+    [Description("BeingTyped")]
+    BeingTyped,
 
-        [Description("ReadyForProofRead")]
-        ReadyForProofRead,
+    [Description("ReadyForProofRead")]
+    ReadyForProofRead,
 
-        [Description("ProofRead")]
-        ProofRead,
-    }
+    [Description("ProofRead")]
+    ProofRead,
 }

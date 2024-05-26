@@ -1,9 +1,8 @@
-﻿namespace Inshapardaz.Api.Views.Library
-{
-    public class SequenceView : ViewWithLinks
-    {
-        public int Id { get; set; }
+﻿namespace Inshapardaz.Api.Views.Library;
 
-        public int SequenceNumber { get; set; }
-    }
+public class SequenceView : ViewWithLinks
+{
+    public int Id { get; set; }
+
+    public int SequenceNumber { get; set; }
 }

@@ -1,8 +1,7 @@
-namespace Inshapardaz.Domain.Models.Library
+namespace Inshapardaz.Domain.Models.Library;
+
+public enum ArticleSortByType
 {
-    public enum ArticleSortByType
-    {
-        Title,
-        LastModified
-    }
+    Title,
+    LastModified
 }

@@ -3,19 +3,18 @@ using Inshapardaz.Domain.Models.Library;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Repositories.Library
+namespace Inshapardaz.Domain.Adapters.Repositories.Library;
+
+public interface IPeriodicalRepository
 {
-    public interface IPeriodicalRepository
-    {
-        Task<PeriodicalModel> GetPeriodicalById(int libraryId, int periodicalId, CancellationToken cancellationToken);
+    Task<PeriodicalModel> GetPeriodicalById(int libraryId, int periodicalId, CancellationToken cancellationToken);
 
-        Task<Page<PeriodicalModel>> GetPeriodicals(int libraryId, string query, int pageNumber, int pageSize, PeriodicalFilter filter, PeriodicalSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
+    Task<Page<PeriodicalModel>> GetPeriodicals(int libraryId, string query, int pageNumber, int pageSize, PeriodicalFilter filter, PeriodicalSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
 
-        Task<PeriodicalModel> AddPeriodical(int libraryId, PeriodicalModel periodical, CancellationToken cancellationToken);
+    Task<PeriodicalModel> AddPeriodical(int libraryId, PeriodicalModel periodical, CancellationToken cancellationToken);
 
-        Task<PeriodicalModel> UpdatePeriodical(int libraryId, PeriodicalModel periodical, CancellationToken cancellationToken);
+    Task<PeriodicalModel> UpdatePeriodical(int libraryId, PeriodicalModel periodical, CancellationToken cancellationToken);
 
-        Task DeletePeriodical(int libraryId, int periodicalId, CancellationToken cancellationToken);
-        Task UpdatePeriodicalImage(int libraryId, int periodicalId, int imageId, CancellationToken cancellationToken);
-    }
+    Task DeletePeriodical(int libraryId, int periodicalId, CancellationToken cancellationToken);
+    Task UpdatePeriodicalImage(int libraryId, int periodicalId, long imageId, CancellationToken cancellationToken);
 }

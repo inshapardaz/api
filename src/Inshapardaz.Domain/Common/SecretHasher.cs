@@ -1,12 +1,12 @@
-﻿using BCrypt.Net;
+﻿namespace Inshapardaz.Domain.Common;
 
-namespace Inshapardaz.Domain.Common
+public static class SecretHasher
 {
-    public static class SecretHasher
+    public static string GetStringHash(string source)
     {
-        //TODO : Add per user salt
-        public static string GetStringHash(string source) => BCrypt.Net.BCrypt.HashPassword(source);
-
-        public static bool Verify(string value, string hash) => BCrypt.Net.BCrypt.Verify(value, hash);
+        var salt = BCrypt.Net.BCrypt.GenerateSalt();
+        return BCrypt.Net.BCrypt.HashPassword(source, salt);
     }
+
+    public static bool Verify(string value, string hash) => BCrypt.Net.BCrypt.Verify(value, hash);
 }

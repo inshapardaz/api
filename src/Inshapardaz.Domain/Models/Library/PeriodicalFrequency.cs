@@ -1,13 +1,12 @@
-namespace Inshapardaz.Domain.Models.Library
+namespace Inshapardaz.Domain.Models.Library;
+
+public enum PeriodicalFrequency
 {
-    public enum PeriodicalFrequency
-    {
-        Unknown = 0,
-        Annually,
-        Quarterly,
-        Monthly,
-        Fortnightly,
-        Weekly,
-        Daily,
-    }
+    Unknown = 0,
+    Annually,
+    Quarterly,
+    Monthly,
+    Fortnightly,
+    Weekly,
+    Daily,
 }

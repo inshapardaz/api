@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Inshapardaz.Api.Controllers
+namespace Inshapardaz.Api.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    [HttpGet("health/check")]
+    public IActionResult GetHeathCheck()
     {
-        [HttpGet("health/check")]
-        public IActionResult GetHeathCheck()
-        {
-            return Ok();
-        }
+        return Ok();
     }
-    
 }
+

@@ -1,8 +1,7 @@
-﻿namespace Inshapardaz.Domain.Models.Library
+﻿namespace Inshapardaz.Domain.Models;
+
+public enum PeriodicalSortByType
 {
-    public enum PeriodicalSortByType
-    {
-        Title,
-        DateCreated
-    }
+    Title,
+    DateCreated
 }

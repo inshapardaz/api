@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Inshapardaz.Domain.Models.Library;
 
-namespace Inshapardaz.Domain.Models.Library
+public enum AuthorTypes
 {
-    public enum AuthorTypes
-    {
-        Writer = 1,
-        Poet = 2
-    }
+    Writer = 1,
+    Poet = 2
 }

@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Controllers;
+﻿using DocumentFormat.OpenXml.Office2019.Word.Cid;
+using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
@@ -247,7 +248,8 @@ public class IssueRenderer : IRenderIssue
                 Parameters = new {  libraryId = libraryId,
                     periodicalId = source.PeriodicalId,
                     volumeNumber = source.VolumeNumber,
-                    issueNumber = source.IssueNumber
+                    issueNumber = source.IssueNumber,
+                    contentId = source.Id
                 }
             }),
             _linkRenderer.Render(new Link {
@@ -304,7 +306,13 @@ public class IssueRenderer : IRenderIssue
                 Rel = RelTypes.Update,
                 Language = source.Language,
                 MimeType = source.MimeType,
-                Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
+                Parameters = new { 
+                    libraryId = libraryId, 
+                    periodicalId = source.PeriodicalId, 
+                    volumeNumber = source.VolumeNumber, 
+                    issueNumber = source.IssueNumber,
+                    contentId = source.Id
+                }
             }));
 
             links.Add(_linkRenderer.Render(new Link
@@ -314,7 +322,13 @@ public class IssueRenderer : IRenderIssue
                 Rel = RelTypes.Delete,
                 Language = source.Language,
                 MimeType = source.MimeType,
-                Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
+                Parameters = new { 
+                    libraryId = libraryId, 
+                    periodicalId = source.PeriodicalId, 
+                    volumeNumber = source.VolumeNumber, 
+                    issueNumber = source.IssueNumber,
+                    contentId = source.Id
+                }
             }));
         }
 

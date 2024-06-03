@@ -3,6 +3,7 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -201,15 +202,17 @@ public class IssueRepository : IIssueRepository
         }
     }
 
-    public async Task AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long fileId, string language, string mimeType, CancellationToken cancellationToken)
+    public async Task<IssueContentModel> AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long fileId, string language, string mimeType, CancellationToken cancellationToken)
     {
         var issue = await GetIssue(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO IssueContent (IssueId, FileId, Language, MimeType)
-                            VALUES (@IssueId, @FileId, @Language, @MimeType)";
+                        OUTPUT Inserted.Id
+                        VALUES (@IssueId, @FileId, @Language, @MimeType)";
             var command = new CommandDefinition(sql, new { FileId = fileId, IssueId = issue.Id, Language = language, MimeType = mimeType }, cancellationToken: cancellationToken);
-            await connection.ExecuteAsync(command);
+            var id = await connection.ExecuteScalarAsync<long>(command);
+            return await GetIssueContentById(connection, id, cancellationToken);
         }
     }
 
@@ -237,7 +240,7 @@ public class IssueRepository : IIssueRepository
         }
     }
 
-    public async Task<IssueContentModel> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, CancellationToken cancellationToken)
+    public async Task<IssueContentModel> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -252,22 +255,20 @@ public class IssueRepository : IIssueRepository
                             AND i.VolumeNumber = @VolumeNumber 
                             AND i.IssueNumber = @IssueNumber 
                             AND i.PeriodicalId = @PeriodicalId 
-                            AND ic.Language = @Language 
-                            AND f.MimeType = @MimeType";
+                            AND ic.Id = @ContentId";
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
                 PeriodicalId = periodicalId,
                 VolumeNumber = volumeNumber,
                 IssueNumber = issueNumber,
-                Language = language,
-                MimeType = mimeType
+                ContentId = contentId
             }, cancellationToken: cancellationToken);
             return await connection.QuerySingleOrDefaultAsync<IssueContentModel>(command);
         }
     }
 
-    public async Task UpdateIssueContentUrl(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, string url, CancellationToken cancellationToken)
+    public async Task UpdateIssueContentUrl(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, string url, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -280,23 +281,21 @@ public class IssueRepository : IIssueRepository
                             AND i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
-                            AND f.MimeType  = @MimeType 
-                            AND ic.Language = @Language";
+                            AND ic.Id= @ContentId";
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
                 PeriodicalId = periodicalId,
                 VolumeNumber = volumeNumber,
                 IssueNumber = issueNumber,
-                Language = language,
-                MimeType = mimeType,
+                ContentId = contentId,
                 ContentUrl = url
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
     }
 
-    public async Task DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, CancellationToken cancellationToken)
+    public async Task DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -309,17 +308,45 @@ public class IssueRepository : IIssueRepository
                             AND p.Id = @PeriodicalId 
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
-                            AND f.MimeType = @MimeType 
-                            AND ic.Language = @Language";
-            var command = new CommandDefinition(sql, new { LibraryId = libraryId, PeriodicalId = periodicalId, Language = language, MimeType = mimeType, VolumeNumber = volumeNumber, IssueNumber = issueNumber },
-                            cancellationToken: cancellationToken);
+                            AND ic.Id = @ContentId";
+            var command = new CommandDefinition(sql, new { 
+                    LibraryId = libraryId, 
+                    PeriodicalId = periodicalId,
+                    ContentId = contentId, 
+                    VolumeNumber = volumeNumber, 
+                    IssueNumber = issueNumber 
+                },
+                cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
     }
 
-    public Task UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language, string mimeType, string actualUrl, CancellationToken cancellationToken)
+    public async Task UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string mimetype, string language, long contentId, CancellationToken cancellationToken)
     {
-        throw new System.NotImplementedException();
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"UPDATE IssueContent
+                        INNER JOIN Issue i ON i.Id = ic.IssueId
+                            INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                        SET Language = @Language,
+                            MimeType = @MimeType
+                        WHERE p.LibraryId = @LibraryId 
+                            AND i.PeriodicalId = @PeriodicalId
+                            AND i.VolumeNumber = @VolumeNumber
+                            AND i.IssueNumber = @IssueNumber
+                            AND ic.id = @ContentId";
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber,
+                IssueNumber = issueNumber,
+                ContentId = contentId,
+                Language = language,
+                MimeType = mimetype
+            }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
     }
 
     private async Task<IssueModel> GetIssueById(int libraryId, int periodicalId, int issueId, CancellationToken cancellationToken)
@@ -354,6 +381,23 @@ public class IssueRepository : IIssueRepository
 
             return result.SingleOrDefault();
         }
+    }
+
+    private async Task<IssueContentModel> GetIssueContentById(IDbConnection connection, long id, CancellationToken cancellationToken)
+    {
+        var sql = @"SELECT ic.Id, ic.IssueId, ic.Language, 
+                                p.Id As PeriodicalId, i.VolumeNumber As VolumeNumber, i.IssueNumber As IssueNumber,
+                                f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl
+                            FROM IssueContent ic
+                                INNER JOIN Issue i ON i.Id = ic.IssueId
+                                INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                                INNER JOIN `File` f ON ic.FileId = f.Id
+                            WHERE ic.Id = @Id";
+        var command = new CommandDefinition(sql, new
+        {
+            Id = id
+        }, cancellationToken: cancellationToken);
+        return await connection.QuerySingleOrDefaultAsync<IssueContentModel>(command);
     }
 
     private static string GetSortByQuery(IssueSortByType sortBy)

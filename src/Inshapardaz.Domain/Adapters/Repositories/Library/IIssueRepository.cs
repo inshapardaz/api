@@ -20,15 +20,15 @@ public interface IIssueRepository
 
     Task DeleteIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken);
 
-    Task AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long fileId, string language, string mimeType, CancellationToken cancellationToken);
+    Task<IssueContentModel> AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long fileId, string language, string mimeType, CancellationToken cancellationToken);
 
     Task<IEnumerable<IssueContentModel>> GetIssueContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken);
 
-    Task<IssueContentModel> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, CancellationToken cancellationToken);
+    Task<IssueContentModel> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, CancellationToken cancellationToken);
 
-    Task UpdateIssueContentUrl(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, string url, CancellationToken cancellationToken);
+    Task UpdateIssueContentUrl(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentid, string url, CancellationToken cancellationToken);
 
-    Task DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, CancellationToken cancellationToken);
+    Task DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, CancellationToken cancellationToken);
 
-    Task UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, string language, string mimeType, string actualUrl, CancellationToken cancellationToken);
+    Task UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string mimetype, string language, long contentid, CancellationToken cancellationToken);
 }

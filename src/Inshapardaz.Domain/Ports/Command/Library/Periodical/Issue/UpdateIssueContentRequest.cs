@@ -12,12 +12,13 @@ namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue;
 
 public class UpdateIssueContentRequest : LibraryBaseCommand
 {
-    public UpdateIssueContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType)
+    public UpdateIssueContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, string language, string mimeType)
         : base(libraryId)
     {
         PeriodicalId = periodicalId;
         VolumeNumber = volumeNumber;
         IssueNumber = issueNumber;
+        ContentId = contentId;
         Language = language;
         MimeType = mimeType;
     }
@@ -25,9 +26,10 @@ public class UpdateIssueContentRequest : LibraryBaseCommand
     public int PeriodicalId { get; }
     public int VolumeNumber { get; }
     public int IssueNumber { get; }
-
+    public long ContentId { get; }
     public string Language { get; }
     public string MimeType { get; }
+    
     public FileModel Content { get; set; }
 
     public RequestResult Result { get; set; } = new RequestResult();
@@ -59,7 +61,7 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
         var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
         if (issue != null)
         {
-            var issueContent = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Language, command.MimeType, cancellationToken);
+            var issueContent = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
             if (issueContent != null)
             {
                 if (!string.IsNullOrWhiteSpace(issueContent.ContentUrl))
@@ -73,8 +75,7 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
                                                         command.PeriodicalId,
                                                         command.VolumeNumber,
                                                         command.IssueNumber,
-                                                        command.Language,
-                                                        command.MimeType,
+                                                        command.ContentId,
                                                         url, cancellationToken);
 
                 command.Result.Content = issueContent;
@@ -85,10 +86,8 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
                 command.Content.FilePath = url;
                 command.Content.IsPublic = issue.IsPublic;
                 var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-                await _issueRepository.AddIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, file.Id, command.Language, command.MimeType, cancellationToken);
-
+                command.Result.Content = await _issueRepository.AddIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, file.Id, command.Language, command.MimeType, cancellationToken);
                 command.Result.HasAddedNew = true;
-                command.Result.Content = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Language, command.MimeType, cancellationToken); ;
             }
         }
 

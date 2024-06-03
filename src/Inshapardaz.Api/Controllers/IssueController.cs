@@ -194,13 +194,11 @@ public class IssueController : Controller
         return new OkResult();
     }
 
-    [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents", Name = nameof(IssueController.GetIssueContent))]
-    public async Task<IActionResult> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default(CancellationToken))
+    [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents/{contentId}", Name = nameof(IssueController.GetIssueContent))]
+    public async Task<IActionResult> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int contentId, CancellationToken token = default(CancellationToken))
     {
-        var mimeType = Request.Headers["Accept"];
-        var language = Request.Headers["Accept-Language"];
 
-        var request = new GetIssueContentQuery(libraryId, periodicalId, volumeNumber, issueNumber, language, mimeType, _userHelper.AccountId);
+        var request = new GetIssueContentQuery(libraryId, periodicalId, volumeNumber, issueNumber, contentId, _userHelper.AccountId);
         var content = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
         if (content != null)
         {
@@ -243,8 +241,8 @@ public class IssueController : Controller
         return new BadRequestResult();
     }
 
-    [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents", Name = nameof(IssueController.UpdateIssueContent))]
-    public async Task<IActionResult> UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IFormFile file, CancellationToken token = default(CancellationToken))
+    [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents/{contentId}", Name = nameof(IssueController.UpdateIssueContent))]
+    public async Task<IActionResult> UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int contentId, IFormFile file, CancellationToken token = default(CancellationToken))
     {
         var content = new byte[file.Length];
         using (var stream = new MemoryStream(content))
@@ -254,7 +252,7 @@ public class IssueController : Controller
         var language = Request.Headers["Accept-Language"];
         var mimeType = file.ContentType;
 
-        var request = new UpdateIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, language, mimeType)
+        var request = new UpdateIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, contentId, language, mimeType)
         {
             Content = new FileModel
             {
@@ -284,13 +282,10 @@ public class IssueController : Controller
         return new BadRequestResult();
     }
 
-    [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents", Name = nameof(IssueController.DeleteIssueContent))]
-    public async Task<IActionResult> DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default(CancellationToken))
+    [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents/{contentId}", Name = nameof(IssueController.DeleteIssueContent))]
+    public async Task<IActionResult> DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int contentId, CancellationToken token = default(CancellationToken))
     {
-        var mimeType = Request.Headers["Accept"];
-        var language = Request.Headers["Accept-Language"];
-
-        var request = new DeleteIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, language, mimeType);
+        var request = new DeleteIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, contentId);
         await _commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }

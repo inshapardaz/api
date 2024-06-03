@@ -9,21 +9,19 @@ namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue;
 
 public class DeleteIssueContentRequest : LibraryBaseCommand
 {
-    public DeleteIssueContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType)
+    public DeleteIssueContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId)
         : base(libraryId)
     {
         PeriodicalId = periodicalId;
         VolumeNumber = volumeNumber;
         IssueNumber = issueNumber;
-        Language = language;
-        MimeType = mimeType;
+        ContentId = contentId;
     }
 
     public int PeriodicalId { get; }
     public int VolumeNumber { get; }
     public int IssueNumber { get; }
-    public string Language { get; }
-    public string MimeType { get; }
+    public long ContentId { get; }
 }
 
 public class DeleteIssueContentRequestHandler : RequestHandlerAsync<DeleteIssueContentRequest>
@@ -42,11 +40,11 @@ public class DeleteIssueContentRequestHandler : RequestHandlerAsync<DeleteIssueC
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<DeleteIssueContentRequest> HandleAsync(DeleteIssueContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var content = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Language, command.MimeType, cancellationToken);
+        var content = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
         if (content != null)
         {
             await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
-            await _issueRepository.DeleteIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Language, command.MimeType, cancellationToken);
+            await _issueRepository.DeleteIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
             await _fileRepository.DeleteFile(content.FileId, cancellationToken);
         }
 

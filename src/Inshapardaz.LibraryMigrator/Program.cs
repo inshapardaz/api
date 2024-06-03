@@ -55,9 +55,9 @@ internal class Program
         rootCommand.SetHandler(async (context) =>
         {
             var source = context.ParseResult.GetValueForOption(sourceOption);
-            var sourceType = Enum.Parse<DatabaseTypes>(context.ParseResult.GetValueForOption(sourceTypeOption));
+            var sourceType = Enum.Parse<DatabaseTypes>(context.ParseResult.GetValueForOption(sourceTypeOption), true);
             var destination = context.ParseResult.GetValueForOption(destinationOption);
-            var destinationType = Enum.Parse<DatabaseTypes>(context.ParseResult.GetValueForOption(destinationTypeOption));
+            var destinationType = Enum.Parse<DatabaseTypes>(context.ParseResult.GetValueForOption(destinationTypeOption), true);
             int libraryId = context.ParseResult.GetValueForOption(libraryIdOption);
             bool corrections = context.ParseResult.GetValueForOption(correctionOption);
 

@@ -10,24 +10,22 @@ namespace Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue;
 
 public class GetIssueContentQuery : LibraryBaseQuery<IssueContentModel>
 {
-    public GetIssueContentQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string language, string mimeType, int? accountId)
+    public GetIssueContentQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int contentId, int? accountId)
         : base(libraryId)
     {
         PeriodicalId = periodicalId;
         VolumeNumber = volumeNumber;
         IssueNumber = issueNumber;
-        MimeType = mimeType;
         AccountId = accountId;
-        Language = language;
+        ContentId = contentId;
     }
 
     public int PeriodicalId { get; set; }
     public int VolumeNumber { get; set; }
     public int IssueNumber { get; set; }
 
-    public string MimeType { get; set; }
+    public int ContentId { get; set; }
     public int? AccountId { get; }
-    public string Language { get; set; }
 }
 
 public class GetIssueContentQueryHandler : QueryHandlerAsync<GetIssueContentQuery, IssueContentModel>
@@ -56,18 +54,7 @@ public class GetIssueContentQueryHandler : QueryHandlerAsync<GetIssueContentQuer
             throw new UnauthorizedException();
         }
 
-        if (string.IsNullOrWhiteSpace(command.Language))
-        {
-            var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
-            if (library == null)
-            {
-                throw new BadRequestException();
-            }
-
-            command.Language = library.Language;
-        }
-
-        var bookContent = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Language, command.MimeType, cancellationToken);
+        var issueContent = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
 
         //if (bookContent != null)
         //{
@@ -82,6 +69,6 @@ public class GetIssueContentQueryHandler : QueryHandlerAsync<GetIssueContentQuer
         //    }
         //}
 
-        return bookContent;
+        return issueContent;
     }
 }

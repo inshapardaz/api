@@ -3,11 +3,11 @@ using FluentMigrator;
 
 namespace Inshapardaz.Database.Migrations
 {
-    [Migration(000100)]
-    public class Migration000100_Initial_Database : Migration
+    [Migration(000001)]
+    public class Migration000001_Initial_Database : Migration
     {
-        private readonly string RootUserName = "root@nawishta.co.uk";
-        private readonly string RootPassword = "Passw0rd";
+        private readonly string RootUserName = Environment.GetEnvironmentVariable("NAWISHTA_ROOT_USER") ?? "root@nawishta.co.uk";
+        private readonly string RootPassword = Environment.GetEnvironmentVariable("NAWISHTA_ROOT_PASSWORD") ?? "Passw0rd";
 
         public override void Up()
         {

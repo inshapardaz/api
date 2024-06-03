@@ -52,8 +52,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Storage.SqlServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Adapter.Ocr.Google", "src\Adapters\Ocr.Google\Inshapardaz.Adapter.Ocr.Google.csproj", "{3E2689A9-A99B-4C92-9F4B-A1F7153BEBE2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "8.0", "8.0", "{32D054E3-64CF-480C-9158-1EE0EF08EA40}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inshapardaz.Api", "src\Inshapardaz.Api\Inshapardaz.Api.csproj", "{022D6B56-D44B-4AE2-8FAA-D20A61F9FAE3}"
 EndProject
 Global

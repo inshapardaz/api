@@ -57,9 +57,7 @@ public class AddIssueContentRequestHandler : RequestHandlerAsync<AddIssueContent
             command.Content.FilePath = url;
             command.Content.IsPublic = true;
             var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-            await _issueRepository.AddIssueContent(command.LibraryId, issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, file.Id, command.Language, command.MimeType, cancellationToken);
-
-            command.Result = await _issueRepository.GetIssueContent(command.LibraryId, issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, command.Language, command.MimeType, cancellationToken);
+            command.Result = await _issueRepository.AddIssueContent(command.LibraryId, issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, file.Id, command.Language, command.MimeType, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

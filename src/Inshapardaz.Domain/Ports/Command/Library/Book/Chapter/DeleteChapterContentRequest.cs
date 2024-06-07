@@ -32,6 +32,7 @@ public class DeleteChapterContentRequestHandler : RequestHandlerAsync<DeleteChap
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<DeleteChapterContentRequest> HandleAsync(DeleteChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
+        // TODO : Delete the content file
         await _chapterRepository.DeleteChapterContentById(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);

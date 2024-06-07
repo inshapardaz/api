@@ -53,6 +53,17 @@ public class DeleteBookPageRequestHandler : RequestHandlerAsync<DeleteBookPageRe
                 await _bookPageRepository.DeletePageImage(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
             }
 
+            if (bookPage.ContentId.HasValue)
+            {
+                var existingImage = await _fileRepository.GetFileById(bookPage.ContentId.Value, cancellationToken);
+                if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
+                {
+                    await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
+                }
+
+                await _fileRepository.DeleteFile(existingImage.Id, cancellationToken);
+            }
+
             await _bookPageRepository.DeletePage(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
         }
 

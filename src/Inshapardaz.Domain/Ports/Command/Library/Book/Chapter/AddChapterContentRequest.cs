@@ -36,7 +36,11 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
     private readonly IFileRepository _fileRepository;
     private readonly IFileStorage _fileStorage;
 
-    public AddChapterContentRequestHandler(IChapterRepository chapterRepository, ILibraryRepository libraryRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+    public AddChapterContentRequestHandler(
+        ILibraryRepository libraryRepository, 
+        IChapterRepository chapterRepository, 
+        IFileRepository fileRepository, 
+        IFileStorage fileStorage)
     {
         _chapterRepository = chapterRepository;
         _libraryRepository = libraryRepository;
@@ -61,8 +65,8 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
         var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
         if (chapter != null)
         {
-            var fileName = $"chapter-{chapter.ChapterNumber}.md";
-            var url = await StoreFile($"books/{command.BookId}/{fileName}", command.Contents, cancellationToken);
+            var fileName = $"{Guid.NewGuid().ToString("N")}.md";
+            var url = await StoreFile($"books/{command.BookId}/chapters/{fileName}", command.Contents, cancellationToken);
             var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
 
             var chapterContent = new ChapterContentModel

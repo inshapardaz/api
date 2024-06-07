@@ -18,68 +18,34 @@ public class BookPageRepository : IBookPageRepository
         _connectionProvider = connectionProvider;
     }
 
-    public async Task<BookPageModel> AddPage(int libraryId, int bookId, int sequenceNumber, string text, long imageId, long? chapterId, CancellationToken cancellationToken)
+    public async Task<BookPageModel> AddPage(int libraryId, BookPageModel bookPage, CancellationToken cancellationToken)
     {
         int pageId;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO BookPage(BookId, SequenceNumber, `Text`, `Status`, ImageId, ChapterId)
-                            VALUES(@BookId, @SequenceNumber, @Text, @Status, @ImageId, @ChapterId);
+            var sql = @"INSERT INTO BookPage(BookId, SequenceNumber, ContentId, `Status`, ImageId, ChapterId)
+                            VALUES(@BookId, @SequenceNumber, @ContentId, @Status, @ImageId, @ChapterId);
                             SELECT LAST_INSERT_ID();";
             var command = new CommandDefinition(sql, new
             {
-                BookId = bookId,
-                SequenceNumber = sequenceNumber,
-                Text = text,
-                ImageId = imageId,
-                ChapterId = chapterId,
+                BookId = bookPage.BookId,
+                SequenceNumber = bookPage.SequenceNumber,
+                ImageId = bookPage.ImageId,
+                ChapterId = bookPage.ChapterId,
+                ContentId = bookPage.ContentId,
                 Status = EditingStatus.Available
             }, cancellationToken: cancellationToken);
             pageId = await connection.ExecuteScalarAsync<int>(command);
         }
 
-        await ReorderPages(libraryId, bookId, cancellationToken);
+        await ReorderPages(libraryId, bookPage.BookId, cancellationToken);
         return await GetPageById(pageId, cancellationToken);
     }
-
-    public async Task<int> AddPage(int libraryId, BookPageModel page, CancellationToken cancellationToken)
-    {
-        using (var connection = _connectionProvider.GetLibraryConnection())
-        {
-            var sql = @"INSERT INTO BookPage(
-                                `Text`,
-                                SequenceNumber,
-                                BookId,
-                                ImageId,
-                                `Status`,
-                                WriterAccountId,
-                                WriterAssignTimeStamp,
-                                ReviewerAccountId,
-                                ReviewerAssignTimeStamp,
-                                ChapterId
-                             )
-                            VALUES(
-                                @Text,
-                                @SequenceNumber,
-                                @BookId,
-                                @ImageId,
-                                @Status,
-                                @WriterAccountId,
-                                @WriterAssignTimeStamp,
-                                @ReviewerAccountId,
-                                @ReviewerAssignTimeStamp,
-                                @ChapterId);
-                            SELECT LAST_INSERT_ID();";
-            var command = new CommandDefinition(sql, page, cancellationToken: cancellationToken);
-            return await connection.ExecuteScalarAsync<int>(command);
-        }
-    }
-
     public async Task<BookPageModel> GetPageBySequenceNumber(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
+            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
                                 f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
@@ -193,10 +159,10 @@ public class BookPageRepository : IBookPageRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
+            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status,
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
-                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ChapterId, c.Title As ChapterTitle
+                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.ContentId, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId
@@ -330,10 +296,10 @@ public class BookPageRepository : IBookPageRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
+            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId,
                                 p.WriterAccountId, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, p.ReviewerAssignTimeStamp, 
-                                f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ChapterId, c.Title As ChapterTitle
+                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId
@@ -351,10 +317,10 @@ public class BookPageRepository : IBookPageRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
+            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId,
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
-                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ChapterId, c.Title As ChapterTitle
+                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId
@@ -411,10 +377,10 @@ public class BookPageRepository : IBookPageRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
+            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId,
                                 p.WriterAccountId, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, p.ReviewerAssignTimeStamp, 
-                                f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ChapterId, c.Title As ChapterTitle
+                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId
@@ -529,7 +495,7 @@ public class BookPageRepository : IBookPageRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
+            var sql = @"SELECT p.BookId, p.SequenceNumber, p.ContentId, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
                                 f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p 

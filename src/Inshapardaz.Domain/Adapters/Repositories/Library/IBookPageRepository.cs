@@ -12,7 +12,7 @@ public interface IBookPageRepository
 
     Task<int> GetLastPageNumberForBook(int libraryId, int bookId, CancellationToken cancellationToken);
 
-    Task<BookPageModel> AddPage(int libraryId, int bookId, int sequenceNumber, string text, long imageId, long? chapterId, CancellationToken cancellationToken);
+    Task<BookPageModel> AddPage(int libraryId, BookPageModel bookpage, CancellationToken cancellationToken);
 
     Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, long imageId, EditingStatus status, long? chapterId, CancellationToken cancellationToken);
 
@@ -32,8 +32,4 @@ public interface IBookPageRepository
     Task<BookPageModel> UpdateWriterAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken);
     Task UpdatePageSequenceNumber(int libraryId, int bookId, int oldSequenceNumber, int newSequenceNumber, CancellationToken cancellationToken);
     Task<BookPageModel> UpdateReviewerAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken);
-
-    #region for migration
-    Task<int> AddPage(int libraryId, BookPageModel page, CancellationToken cancellationToken);
-    #endregion for migration
 }

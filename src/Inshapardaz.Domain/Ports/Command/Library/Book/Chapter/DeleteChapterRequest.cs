@@ -31,6 +31,7 @@ public class DeleteChapterRequestHandler : RequestHandlerAsync<DeleteChapterRequ
     {
         await _chapterRepository.DeleteChapter(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
 
+        // TODO : Delete all contents for chapter
         return await base.HandleAsync(command, cancellationToken);
     }
 }

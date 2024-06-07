@@ -21,4 +21,5 @@ public class BookPageModel
     public string ChapterTitle { get; set; }
     public BookPageModel PreviousPage { get; internal set; }
     public BookPageModel NextPage { get; internal set; }
+    public long? ContentId { get; internal set; }
 }

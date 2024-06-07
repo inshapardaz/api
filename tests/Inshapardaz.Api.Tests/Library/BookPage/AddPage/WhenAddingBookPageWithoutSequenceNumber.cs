@@ -52,5 +52,12 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
             _assert.ShouldHavePageNumber(bookPageCount);
         }
 
+
+        [Test]
+        public void ShouldHaveSavedTheContentFile()
+        {
+            _assert.ShouldHaveBookPageContent(_page.Text, DatabaseConnection, FileStore);
+        }
+
     }
 }

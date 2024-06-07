@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using FluentAssertions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Fakes;
@@ -6,6 +7,7 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using System;
 using System.Data;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 
@@ -265,6 +267,23 @@ namespace Inshapardaz.Api.Tests.Asserts
             _bookPage.BookId.Should().Be(dto.BookId);
             _bookPage.SequenceNumber.Should().Be(dto.SequenceNumber);
             return this;
+        }
+
+        internal void ShouldHaveBookPageContent(string text, IDbConnection db, FakeFileStorage fileStore)
+        {
+            var page = db.GetBookPageByNumber(_bookPage.BookId, _bookPage.SequenceNumber);
+            page.ContentId.Should().NotBeNull();
+
+            var file = db.GetFileById(page.ContentId.Value);
+            var fileContents = fileStore.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            fileContents.Should().BeEquivalentTo(text);
+        }
+
+        public static void ShouldHaveNoBookPageContent(int contentId, string filePath, IDbConnection db, FakeFileStorage fileStore)
+        {
+            var file = db.GetFileById(contentId);
+            file.Should().BeNull();
+            fileStore.DoesFileExists(filePath).Should().BeFalse();
         }
     }
 

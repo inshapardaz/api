@@ -28,6 +28,7 @@ namespace Inshapardaz.Api.Tests.Dto
         public int BookId { get; set; }
 
         public string Text { get; set; }
+        public int? ContentId { get; set; }
 
         public int SequenceNumber { get; set; }
 

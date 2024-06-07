@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DocumentFormat.OpenXml.Office2019.Word.Cid;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
@@ -18,61 +19,28 @@ public class BookPageRepository : IBookPageRepository
         _connectionProvider = connectionProvider;
     }
 
-    public async Task<BookPageModel> AddPage(int libraryId, int bookId, int sequenceNumber, string text, long imageId, long? chapterId, CancellationToken cancellationToken)
+    public async Task<BookPageModel> AddPage(int libraryId, BookPageModel bookPage, CancellationToken cancellationToken)
     {
         int pageId;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"Insert Into BookPage(BookId, SequenceNumber, Text, Status, ImageId, ChapterId)
+            var sql = @"Insert Into BookPage(BookId, SequenceNumber, ContentId, Status, ImageId, ChapterId)
                             OUTPUT Inserted.Id
-                            VALUES(@BookId, @SequenceNumber, @Text, @Status, @ImageId, @ChapterId);";
+                            VALUES(@BookId, @SequenceNumber, @ContentId, @Status, @ImageId, @ChapterId);";
             var command = new CommandDefinition(sql, new
             {
-                BookId = bookId,
-                SequenceNumber = sequenceNumber,
-                Text = text,
-                ImageId = imageId,
-                ChapterId = chapterId,
+                BookId = bookPage.BookId,
+                SequenceNumber = bookPage.SequenceNumber,
+                ImageId = bookPage.ImageId,
+                ChapterId = bookPage.ChapterId,
+                ContentId = bookPage.ContentId,
                 Status = EditingStatus.Available
             }, cancellationToken: cancellationToken);
             pageId = await connection.ExecuteScalarAsync<int>(command);
         }
 
-        await ReorderPages(libraryId, bookId, cancellationToken);
+        await ReorderPages(libraryId, bookPage.BookId, cancellationToken);
         return await GetPageById(pageId, cancellationToken);
-    }
-
-    public async Task<int> AddPage(int libraryId, BookPageModel page, CancellationToken cancellationToken)
-    {
-        using (var connection = _connectionProvider.GetLibraryConnection())
-        {
-            var sql = @"Insert Into BookPage(
-                                Text,
-                                SequenceNumber,
-                                BookId,
-                                ImageId,
-                                Status,
-                                WriterAccountId,
-                                WriterAssignTimeStamp,
-                                ReviewerAccountId,
-                                ReviewerAssignTimeStamp,
-                                ChapterId
-                             )
-                            OUTPUT Inserted.Id
-                            VALUES(
-                                @Text,
-                                @SequenceNumber,
-                                @BookId,
-                                @ImageId,
-                                @Status,
-                                @WriterAccountId,
-                                @WriterAssignTimeStamp,
-                                @ReviewerAccountId,
-                                @ReviewerAssignTimeStamp,
-                                @ChapterId)";
-            var command = new CommandDefinition(sql, page, cancellationToken: cancellationToken);
-            return await connection.ExecuteScalarAsync<int>(command);
-        }
     }
 
     public async Task<BookPageModel> GetPageBySequenceNumber(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken)

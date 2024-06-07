@@ -5,8 +5,6 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
 using System;
-using System.IO;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -77,8 +75,8 @@ public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChap
 
         if (content == null)
         {
-            var fileName = $"chapter-{chapter.ChapterNumber}.md";
-            var url = await StoreFile($"books/{command.BookId}/{fileName}", command.Contents, cancellationToken);
+            var fileName = $"{Guid.NewGuid().ToString("N")}.md";
+            var url = await StoreFile($"books/{command.BookId}/chapters/{fileName}", command.Contents, cancellationToken);
             var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
             var chapterContent = new ChapterContentModel
             {
@@ -100,13 +98,13 @@ public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChap
             if (content.FileId.HasValue)
             {
                 var file = await _fileRepository.GetFileById(content.FileId.Value, cancellationToken);
-                await _fileStorage.TryDeleteFile(file.FilePath, cancellationToken);
+                var url = await StoreFile(file.FilePath, command.Contents, cancellationToken);
                 fileId = file.Id;
             } 
             else
             {
-                var fileName = $"chapter-{chapter.ChapterNumber}.md";
-                var url = await StoreFile($"books/{command.BookId}/{fileName}", command.Contents, cancellationToken);
+                var fileName = $"{Guid.NewGuid().ToString("N")}.md";
+                var url = await StoreFile($"books/{command.BookId}/chapters/{fileName}", command.Contents, cancellationToken);
                 var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
                 fileId = file.Id;
             }

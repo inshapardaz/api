@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
@@ -31,14 +32,34 @@ public class GetBookPagesQuery : LibraryBaseQuery<Page<BookPageModel>>
 public class GetBookPagesQueryHandler : QueryHandlerAsync<GetBookPagesQuery, Page<BookPageModel>>
 {
     private readonly IBookPageRepository _bookPageRepository;
+    private readonly IFileRepository _fileRepository;
+    private readonly IFileStorage _fileStorage;
 
-    public GetBookPagesQueryHandler(IBookPageRepository bookPageRepository)
+    public GetBookPagesQueryHandler(IBookPageRepository bookPageRepository,
+        IFileRepository fileRepository,
+        IFileStorage fileStorage)
     {
         _bookPageRepository = bookPageRepository;
+        _fileRepository = fileRepository;
+        _fileStorage = fileStorage;
     }
 
     public override async Task<Page<BookPageModel>> ExecuteAsync(GetBookPagesQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
-        return await _bookPageRepository.GetPagesByBook(query.LibraryId, query.BookId, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.ReviewerAssignmentFilter, query.AccountId, cancellationToken);
+        var pages = await _bookPageRepository.GetPagesByBook(query.LibraryId, query.BookId, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.ReviewerAssignmentFilter, query.AccountId, cancellationToken);
+
+        foreach (var page in pages.Data)
+        {
+            if (page.ContentId.HasValue)
+            {
+                var file = await _fileRepository.GetFileById(page.ContentId.Value, cancellationToken);
+                if (file != null)
+                {
+                    var fc = await _fileStorage.GetTextFile(file.FilePath, cancellationToken);
+                    page.Text = fc;
+                }
+            }
+        }
+        return pages;
     }
 }

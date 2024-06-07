@@ -1,8 +1,11 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,12 +33,18 @@ public class AddBookPageRequestHandler : RequestHandlerAsync<AddBookPageRequest>
 {
     private readonly IBookRepository _bookRepository;
     private readonly IBookPageRepository _bookPageRepository;
+    private readonly IFileRepository _fileRepository;
+    private readonly IFileStorage _fileStorage;
 
     public AddBookPageRequestHandler(IBookRepository bookRepository,
-                                     IBookPageRepository bookPageRepository)
+                                     IBookPageRepository bookPageRepository,
+                                     IFileRepository fileRepository, 
+                                     IFileStorage fileStorage)
     {
         _bookRepository = bookRepository;
         _bookPageRepository = bookPageRepository;
+        _fileRepository = fileRepository;
+        _fileStorage = fileStorage;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -51,9 +60,19 @@ public class AddBookPageRequestHandler : RequestHandlerAsync<AddBookPageRequest>
 
         if (existingBookPage == null)
         {
-
+            var bookText = command.BookPage.Text;
             var pageSequenceNumber = command.BookPage.SequenceNumber == 0 ? book.PageCount + 1 : command.BookPage.SequenceNumber;
-            command.Result = await _bookPageRepository.AddPage(command.LibraryId, command.BookPage.BookId, pageSequenceNumber, command.BookPage.Text, 0, command.BookPage.ChapterId, cancellationToken);
+
+            var fileName = FilePathHelper.BookPageContentFileName;
+            var url = await StoreFile(FilePathHelper.GetBookPageContentPath(command.BookPage.BookId, fileName), bookText, cancellationToken);
+            var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
+            command.BookPage.ContentId = file?.Id;
+
+            command.BookPage.Text = string.Empty;
+            if (command.BookPage.SequenceNumber == 0) command.BookPage.SequenceNumber = int.MaxValue;
+            command.Result = await _bookPageRepository.AddPage(command.LibraryId, command.BookPage, cancellationToken);
+            command.Result.Text = bookText;
+
             command.IsAdded = true;
         }
         else
@@ -62,5 +81,22 @@ public class AddBookPageRequestHandler : RequestHandlerAsync<AddBookPageRequest>
         }
 
         return await base.HandleAsync(command, cancellationToken);
+    }
+
+    private async Task<string> StoreFile(string filePath, string contents, CancellationToken cancellationToken)
+    {
+        return await _fileStorage.StoreTextFile(filePath, contents, cancellationToken);
+    }
+
+    private async Task<FileModel> AddFile(string fileName, string filePath, string mimeType, CancellationToken cancellationToken)
+    {
+        return await _fileRepository.AddFile(new FileModel
+        {
+            FileName = fileName,
+            FilePath = filePath,
+            MimeType = mimeType,
+            DateCreated = DateTime.Now,
+            IsPublic = false
+        }, cancellationToken);
     }
 }

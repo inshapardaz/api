@@ -382,15 +382,29 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                             _connection.AddFile(pageImage);
                         }
 
-                        pages.Add(fixture.Build<BookPageDto>()
+                        var bookPageContent = fixture.Build<FileDto>()
+                                    .With(a => a.FilePath, RandomData.BlobUrl)
+                                    .With(a => a.IsPublic, false)
+                                    .Create();
+                        _connection.AddFile(bookPageContent);
+
+                        _files.Add(bookPageContent);
+                        var bookPageContentData = RandomData.Text;
+                        _fileStorage.SetupFileContents(bookPageContent.FilePath, bookPageContentData);
+                        _connection.AddFile(bookPageContent);
+                        
+                        var bookPage = fixture.Build<BookPageDto>()
                             .With(p => p.BookId, book.Id)
                             .With(p => p.SequenceNumber, i + 1)
-                            .With(p => p.Text, RandomData.Text)
                             .With(p => p.ImageId, pageImage?.Id)
+                            .With(p => p.ContentId, bookPageContent?.Id)
                             .With(p => p.WriterAccountId, (int?)null)
                             .With(p => p.ReviewerAccountId, (int?)null)
                             .With(p => p.Status, EditingStatus.All)
-                            .Create());
+                            .With(p => p.Text, bookPageContentData)
+                            .Create();
+                        
+                        pages.Add(bookPage);
                     }
 
                     if (_writerAssignments.Any())

@@ -14,11 +14,11 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         public static void AddBookPage(this IDbConnection connection, BookPageDto bookPage)
         {
             var sql = _dbType == DatabaseTypes.SqlServer 
-                ? @"INSERT INTO BookPage (BookId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
+                ? @"INSERT INTO BookPage (BookId, ContentId, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
                         Output Inserted.Id
-                        VALUES (@BookId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status)"
-                : @"INSERT INTO BookPage (BookId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
-                        VALUES (@BookId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status);
+                        VALUES (@BookId, @ContentId, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status)"
+                : @"INSERT INTO BookPage (BookId, ContentId, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
+                        VALUES (@BookId, @ContentId, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status);
                     SELECT LAST_INSERT_ID();";
             var id = connection.ExecuteScalar<int>(sql, bookPage);
             bookPage.Id = id;

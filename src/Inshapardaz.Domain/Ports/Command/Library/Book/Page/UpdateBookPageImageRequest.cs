@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
 using System.IO;
@@ -91,13 +92,8 @@ public class UpdateBookPageImageRequestHandler : RequestHandlerAsync<UpdateBookP
 
     private async Task<string> AddImageToFileStore(int bookId, int sequenceNumber, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
     {
-        var filePath = GetUniqueFileName(bookId, sequenceNumber, fileName);
+        var newFileName = FilePathHelper.GetBookPageFileName(fileName);
+        var filePath = FilePathHelper.GetBookPageFilePath(bookId, fileName);
         return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
-    }
-
-    private static string GetUniqueFileName(int bookId, int sequenceNumber, string fileName)
-    {
-        var extension = Path.GetExtension(fileName).Trim('.');
-        return $"books/{bookId}/pages/page_{sequenceNumber:0000}.{extension}";
     }
 }

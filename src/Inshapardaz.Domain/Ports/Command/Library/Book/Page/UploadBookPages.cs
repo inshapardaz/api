@@ -1,7 +1,9 @@
 ﻿using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using System;
@@ -75,9 +77,9 @@ public class UploadBookPagesHandler : RequestHandlerAsync<UploadBookPagesRequest
 
         foreach (var file in files)
         {
-            var extension = Path.GetExtension(file.FileName).Trim('.');
+            var fileName = FilePathHelper.GetBookPageFileName(file.FileName);
             var sequenceNumber = ++pageNumber;
-            var url = await AddImageToFileStore(command.BookId, $"{sequenceNumber:0000}.{extension}", file.Contents, file.MimeType, cancellationToken);
+            var url = await AddImageToFileStore(command.BookId, fileName, file.Contents, file.MimeType, cancellationToken);
             _logger.LogInformation("Added Image {Url} to filestore for book {bookId}", url, command.BookId);
             var fileModel = await _fileRepository.AddFile(new FileModel
             {
@@ -88,7 +90,13 @@ public class UploadBookPagesHandler : RequestHandlerAsync<UploadBookPagesRequest
                 MimeType = file.MimeType
             }, cancellationToken);
             _logger.LogInformation("Added FileModel {id} for book {bookId} with path {FilePath}", fileModel.Id, command.BookId, file.FilePath);
-            var bookPage = await _bookPageRepository.AddPage(command.LibraryId, command.BookId, pageNumber, string.Empty, fileModel.Id, null, cancellationToken);
+            var newBookPage = new BookPageModel
+            {
+                BookId = command.BookId, 
+                SequenceNumber = pageNumber,
+                ContentId = fileModel.Id
+            };
+            var bookPage = await _bookPageRepository.AddPage(command.LibraryId, newBookPage, cancellationToken);
             _logger.LogInformation("Added Book page {id} for book {bookId}", bookPage.ImageId, bookPage.BookId);
 
         }
@@ -98,12 +106,7 @@ public class UploadBookPagesHandler : RequestHandlerAsync<UploadBookPagesRequest
 
     private async Task<string> AddImageToFileStore(int bookId, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
     {
-        var filePath = GetUniqueFileName(bookId, fileName);
+        var filePath = FilePathHelper.GetBookPageFilePath(bookId, fileName);
         return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
-    }
-
-    private static string GetUniqueFileName(int bookId, string fileName)
-    {
-        return $"books/{bookId}/pages/{fileName}";
     }
 }

@@ -72,5 +72,11 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
                    .ShouldHaveUpdateLink()
                    .ShouldHaveDeleteLink();
         }
+
+        [Test]
+        public void ShouldHaveSavedTheContentFile()
+        {
+            _assert.ShouldHaveBookPageContent(_page.Text, DatabaseConnection, FileStore);
+        }
     }
 }

@@ -71,7 +71,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         [Test]
         public void ShouldHaveUpdatedContents()
         {
-            _assert.ShouldHaveSavedCorrectText(_newContents, DatabaseConnection);
+            _assert.ShouldHaveSavedCorrectText(_newContents, DatabaseConnection, FileStore);
         }
     }
 }

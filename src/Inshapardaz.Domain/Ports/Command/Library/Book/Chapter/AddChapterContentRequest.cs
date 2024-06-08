@@ -79,6 +79,7 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
             };
 
             command.Result = await _chapterRepository.AddChapterContent(command.LibraryId, chapterContent, cancellationToken);
+            command.Result.Text = command.Contents;
         }
 
         return await base.HandleAsync(command, cancellationToken);

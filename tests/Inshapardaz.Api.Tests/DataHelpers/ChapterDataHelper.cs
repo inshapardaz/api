@@ -35,8 +35,8 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         public static void AddChapterContent(this IDbConnection connection, ChapterContentDto content)
         {
             var sql = _dbType == DatabaseTypes.SqlServer
-                ? "INSERT INTO ChapterContent (ChapterId, Language, Text) OUTPUT Inserted.Id VALUES (@ChapterId, @Language, @Text)"
-                : @"INSERT INTO ChapterContent (ChapterId, `Language`, `Text`) VALUES (@ChapterId, @Language, @Text);
+                ? "INSERT INTO ChapterContent (ChapterId, Language, FileId) OUTPUT Inserted.Id VALUES (@ChapterId, @Language, @FileId)"
+                : @"INSERT INTO ChapterContent (ChapterId, `Language`, FileId) VALUES (@ChapterId, @Language, @FileId);
                     SELECT LAST_INSERT_ID();";
             var id = connection.ExecuteScalar<int>(sql, content);
             content.Id = id;

@@ -44,8 +44,9 @@ public class ChapterRepository : IChapterRepository
         return await GetChapterByChapterId(id, cancellationToken);
     }
 
-    public async Task UpdateChapter(int libraryId, int bookId, int oldChapterNumber, ChapterModel chapter, CancellationToken cancellationToken)
+    public async Task<ChapterModel> UpdateChapter(int libraryId, int bookId, int oldChapterNumber, ChapterModel chapter, CancellationToken cancellationToken)
     {
+        long chapterId = 0;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE Chapter C
@@ -67,9 +68,18 @@ public class ChapterRepository : IChapterRepository
             };
             var command = new CommandDefinition(sql, args, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
+
+            var sql2 = @"SELECT Id FROM Chapter WHERE BookId = @BookId AND ChapterNumber = @ChapterNumber";
+            chapterId = await connection.ExecuteScalarAsync<long>(sql2, new {
+                BookId = chapter.BookId,
+                ChapterNumber = chapter.ChapterNumber
+            } );
+
         }
 
+
         await ReorderChapters(libraryId, bookId, cancellationToken);
+        return await GetChapterByChapterId(chapterId, cancellationToken);
     }
 
     public async Task UpdateChaptersSequence(int libraryId, int bookId, IEnumerable<ChapterModel> chapters, CancellationToken cancellationToken)
@@ -378,7 +388,7 @@ public class ChapterRepository : IChapterRepository
         }
     }
 
-    private async Task<ChapterModel> GetChapterByChapterId(int chapterId, CancellationToken cancellationToken)
+    private async Task<ChapterModel> GetChapterByChapterId(long chapterId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {

@@ -1,9 +1,15 @@
-﻿using FluentAssertions;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using FluentAssertions;
+using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Adapters.Repositories;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
@@ -117,6 +123,27 @@ namespace Inshapardaz.Api.Tests.Asserts
             dbChapter.Should().NotBeNull();
             _chapter.Title.Should().Be(dbChapter.Title);
             _chapter.BookId.Should().Be(dbChapter.BookId);
+            _chapter.Status.Should().Be(dbChapter.Status.ToDescription());
+            _chapter.ChapterNumber.Should().Be(dbChapter.ChapterNumber);
+            _chapter.WriterAccountId.Should().Be(dbChapter.WriterAccountId);
+            if (_chapter.WriterAssignTimeStamp.HasValue)
+            {
+                _chapter.WriterAssignTimeStamp.Should().BeCloseTo(dbChapter.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(3));
+            }
+            else
+            {
+                dbChapter.WriterAssignTimeStamp.Should().BeNull();
+            }
+            _chapter.ReviewerAccountId.Should().Be(dbChapter.ReviewerAccountId);
+
+            if (_chapter.ReviewerAssignTimeStamp.HasValue)
+            {
+                _chapter.ReviewerAssignTimeStamp.Should().BeCloseTo(dbChapter.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(3));
+            }
+            else
+            {
+                dbChapter.ReviewerAssignTimeStamp.Should().BeNull();
+            }
             return this;
         }
 
@@ -126,10 +153,16 @@ namespace Inshapardaz.Api.Tests.Asserts
             chapter.Should().BeNull();
         }
 
-        internal static void ThatContentsAreDeletedForChapter(int chapterId, IDbConnection databaseConnection)
+        internal static void ThatContentsAreDeletedForChapter(int chapterId, IEnumerable<string> filePaths, IDbConnection databaseConnection, FakeFileStorage fileStore)
         {
             var contents = databaseConnection.GetContentByChapter(chapterId);
             contents.Should().BeNullOrEmpty();
+
+            foreach (var filePath in filePaths)
+            {
+                fileStore.DoesFileExists(filePath).Should().BeFalse();
+            }
+
         }
 
         internal ChapterAssert ShouldHaveSelfLink()
@@ -316,9 +349,24 @@ namespace Inshapardaz.Api.Tests.Asserts
             _chapter.Status.Should().Be(view.Status);
             _chapter.ChapterNumber.Should().Be(view.ChapterNumber);
             _chapter.WriterAccountId.Should().Be(view.WriterAccountId);
-            _chapter.WriterAssignTimeStamp.Should().BeCloseTo(view.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(3));
+            if (_chapter.WriterAssignTimeStamp.HasValue)
+            {
+                _chapter.WriterAssignTimeStamp.Should().BeCloseTo(view.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(3));
+            }
+            else
+            {
+                view.WriterAssignTimeStamp.Should().BeNull();
+            }
             _chapter.ReviewerAccountId.Should().Be(view.ReviewerAccountId);
-            _chapter.ReviewerAssignTimeStamp.Should().BeCloseTo(view.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(3));
+
+            if (_chapter.ReviewerAssignTimeStamp.HasValue)
+            {
+                _chapter.ReviewerAssignTimeStamp.Should().BeCloseTo(view.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(3));
+            }
+            else
+            {
+                view.ReviewerAssignTimeStamp.Should().BeNull();
+            }
         }
 
         internal void ShouldMatch(ChapterDto dto)

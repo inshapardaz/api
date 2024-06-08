@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Api.Tests.DataHelpers;
+using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
 {
@@ -81,7 +83,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         [Test]
         public void ShouldHaveTextReturened()
         {
-            _assert.ShouldHaveText(_content.Text);
+            var file = DatabaseConnection.GetFileById(_content.FileId);
+            var contents = FileStore.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            _assert.ShouldHaveText(contents);
         }
 
         [Test]

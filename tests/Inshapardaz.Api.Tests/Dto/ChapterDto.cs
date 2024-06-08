@@ -32,6 +32,6 @@ namespace Inshapardaz.Api.Tests.Dto
 
         public string Language { get; set; }
 
-        public string Text { get; set; }
+        public int FileId { get; set; }
     }
 }

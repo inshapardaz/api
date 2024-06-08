@@ -1,11 +1,13 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Net.Http;
+using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Asserts
 {
@@ -91,18 +93,24 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ChapterContentAssert ShouldHaveSavedCorrectText(string expected, IDbConnection dbConnection)
+        internal ChapterContentAssert ShouldHaveSavedCorrectText(string expected, IDbConnection dbConnection, FakeFileStorage fileStore)
         {
             var content = dbConnection.GetChapterContentById(_chapterContent.Id);
-            content.Text.Should().NotBeNull().And.Be(expected);
+
+            var file = dbConnection.GetFileById(content.FileId);
+            var fileContents = fileStore.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            fileContents.Should().NotBeNull().And.Be(expected);
             return this;
         }
 
-        internal ChapterContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, IDbConnection dbConnection)
+        internal ChapterContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, IDbConnection dbConnection, FakeFileStorage fileStore)
         {
             var content = dbConnection.GetChapterContentById(_chapterContent.Id);
-            content.Text.Should().NotBeNull().Should().NotBe(expected);
             content.Language.Should().Be(language);
+
+            var file = dbConnection.GetFileById(content.FileId);
+            var fileContents = fileStore.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            fileContents.Should().NotBeNull().And.Be(expected);
             return this;
         }
 

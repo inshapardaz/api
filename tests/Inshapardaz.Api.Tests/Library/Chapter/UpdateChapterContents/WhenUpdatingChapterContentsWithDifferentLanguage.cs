@@ -69,7 +69,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         [Test]
         public void ShouldHaveUpdatedContents()
         {
-            _assert.ShouldHaveMatechingTextForLanguage(_newContents, _content.Language + "1", DatabaseConnection);
+            _assert.ShouldHaveMatechingTextForLanguage(_newContents, _content.Language + "1", DatabaseConnection, FileStore);
         }
     }
 }

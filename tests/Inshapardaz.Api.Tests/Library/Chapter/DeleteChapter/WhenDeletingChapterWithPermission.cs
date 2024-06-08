@@ -1,7 +1,9 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -16,6 +18,8 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
         private HttpResponseMessage _response;
         private ChapterDto _expected;
 
+        private List<string> _filePaths = new();
+
         public WhenDeletingChapterWithPermission(Role role)
             : base(role)
         {
@@ -25,6 +29,12 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
         public async Task Setup()
         {
             _expected = ChapterBuilder.WithLibrary(LibraryId).WithContents().WithPages().Build();
+            var contents = DatabaseConnection.GetContentByChapter(_expected.Id);
+
+            foreach (var content in contents)
+            {
+                _filePaths.Add(DatabaseConnection.GetFileById(content.FileId)?.FilePath);
+            }
 
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{_expected.BookId}/chapters/{_expected.ChapterNumber}");
         }
@@ -50,7 +60,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
         [Test]
         public void ShouldHaveDeletedTheChapterContents()
         {
-            ChapterAssert.ThatContentsAreDeletedForChapter(_expected.Id, DatabaseConnection);
+            ChapterAssert.ThatContentsAreDeletedForChapter(_expected.Id, _filePaths, DatabaseConnection, FileStore);
         }
     }
 }

@@ -88,8 +88,9 @@ public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChap
             };
 
             command.Result.ChapterContent = await _chapterRepository.AddChapterContent(command.LibraryId,
-                                                                                       chapterContent,
+                                                                                      chapterContent,
                                                                                        cancellationToken);
+            command.Result.ChapterContent.Text = command.Contents;
             command.Result.HasAddedNew = true;
         }
         else
@@ -117,6 +118,7 @@ public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChap
                                                           fileId,
                                                           cancellationToken);
             command.Result.ChapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, command.BookId, command.ChapterNumber, command.Language, cancellationToken);
+            command.Result.ChapterContent.Text = command.Contents;
         }
 
         return await base.HandleAsync(command, cancellationToken);

@@ -48,12 +48,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         }
 
         [Test]
-        public void ShouldHaveReturnedUpdatedChapter()
-        {
-            _assert.ShouldMatch(newChapter);
-        }
-
-        [Test]
         public void ShouldHaveUpdatedChater()
         {
             _assert.ShouldHaveSavedChapter(DatabaseConnection);

@@ -16,19 +16,20 @@ namespace Inshapardaz.Api.Tests.Fakes
 
         public bool SupportsPublicLink => false;
 
-        public void SetupFileContents(string filePath, string content)
-        {
+        public string  SetupFileContents(string filePath, string content)
+         =>
             SetupFileContents(filePath, System.Text.Encoding.UTF8.GetBytes(content));
-        }
 
-        public void SetupFileContents(string filePath, byte[] content)
+        public string SetupFileContents(string filePath, byte[] content)
         {
             lock (_lock)
             {
-                if (!_contents.TryAdd(filePath, content))
+                var url = GetUrl(filePath);
+                if (!_contents.TryAdd(url, content))
                 {
-                    _contents[filePath] = content;
+                    _contents[url] = content;
                 }
+                return filePath;
             }
         }
 
@@ -44,9 +45,10 @@ namespace Inshapardaz.Api.Tests.Fakes
 
         public async Task<string> GetTextFile(string filePath, CancellationToken cancellationToken)
         {
-            if (_contents.ContainsKey(filePath))
+            var url = GetUrl(filePath);
+            if (_contents.ContainsKey(url))
             {
-                return await Task.FromResult(System.Text.Encoding.UTF8.GetString(_contents[filePath]));
+                return await Task.FromResult(System.Text.Encoding.UTF8.GetString(_contents[url]));
             }
 
             return null;
@@ -56,16 +58,12 @@ namespace Inshapardaz.Api.Tests.Fakes
 
         public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
         {
-            var url = GetUrl(name);
-            SetupFileContents(url, content);
-            return await Task.FromResult(url);
+            return await Task.FromResult(SetupFileContents(name, content));
         }
 
         public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
         {
-            var url = GetUrl(name);
-            SetupFileContents(url, content);
-            return await Task.FromResult(url);
+            return await Task.FromResult(SetupFileContents(name, content));
         }
 
         public Task DeleteFile(string filePath, CancellationToken cancellationToken)
@@ -90,9 +88,7 @@ namespace Inshapardaz.Api.Tests.Fakes
 
         public async Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
         {
-            var url = GetUrl(name);
-            SetupFileContents(url, content);
-            return await Task.FromResult(url);
+            return await Task.FromResult(SetupFileContents(name, content));
         }
 
         public Task DeleteImage(string filePath, CancellationToken cancellationToken) => DeleteFile(filePath, cancellationToken);

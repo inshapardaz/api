@@ -58,8 +58,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
+            _newChapter.Status = "Available";
+            _newChapter.ChapterNumber = 1;
             _chapterAssert.ShouldMatch(_newChapter);
         }
 

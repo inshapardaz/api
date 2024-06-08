@@ -389,9 +389,9 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                         _connection.AddFile(bookPageContent);
 
                         _files.Add(bookPageContent);
+
                         var bookPageContentData = RandomData.Text;
                         _fileStorage.SetupFileContents(bookPageContent.FilePath, bookPageContentData);
-                        _connection.AddFile(bookPageContent);
                         
                         var bookPage = fixture.Build<BookPageDto>()
                             .With(p => p.BookId, book.Id)

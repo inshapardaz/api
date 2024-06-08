@@ -8,6 +8,8 @@ using Inshapardaz.Api.Tests.Helpers;
 using System;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Api.Tests.Fakes;
+using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -16,8 +18,10 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         private readonly List<ChapterDto> _chapters = new List<ChapterDto>();
         private readonly List<ChapterContentDto> _contents = new List<ChapterContentDto>();
         private readonly List<BookPageDto> _pages = new List<BookPageDto>();
+        private readonly List<FileDto> _files = new List<FileDto>();
         private readonly IDbConnection _connection;
         private readonly BooksDataBuilder _booksBuilder;
+        private readonly FakeFileStorage _fileStorage;
         private int _contentCount;
         private int _libraryId;
         private bool _public;
@@ -30,10 +34,12 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         public IEnumerable<ChapterDto> Chapters => _chapters;
 
         public ChapterDataBuilder(IProvideConnection connectionProvider,
-                                    BooksDataBuilder booksBuilder)
+                                    BooksDataBuilder booksBuilder,
+                                     IFileStorage fileStorage)
         {
             _connection = connectionProvider.GetConnection();
             _booksBuilder = booksBuilder;
+            _fileStorage = fileStorage as FakeFileStorage;
         }
 
         internal ChapterDataBuilder Public()
@@ -114,15 +120,25 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
                 for (int j = 0; j < _contentCount; j++)
                 {
-                    var content = fixture.Build<ChapterContentDto>()
+                    var chapterContentFile = fixture.Build<FileDto>()
+                                    .With(a => a.FilePath, RandomData.FilePath)
+                                    .With(a => a.IsPublic, false)
+                                    .Create();
+                    _connection.AddFile(chapterContentFile);
+                    _files.Add(chapterContentFile);
+
+                    var chapterContentData = RandomData.Text;
+                    _fileStorage.SetupFileContents(chapterContentFile.FilePath, chapterContentData);
+
+                    var chapterContent = fixture.Build<ChapterContentDto>()
                         .With(c => c.ChapterId, chapter.Id)
-                        .With(c => c.Text, RandomData.String)
                         .With(c => c.Language, _language ?? $"locale-{j}")
+                        .With(c => c.FileId, chapterContentFile.Id)
                         .Create();
 
-                    _contents.Add(content);
+                    _contents.Add(chapterContent);
 
-                    _connection.AddChapterContent(content);
+                    _connection.AddChapterContent(chapterContent);
                 }
 
                 if (_addPages)
@@ -137,6 +153,20 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                         .Without(x => x.ImageId)
                         .CreateMany(2);
 
+                    foreach (var page in pages)
+                    {
+                        var bookPageContent = fixture.Build<FileDto>()
+                                    .With(a => a.FilePath, RandomData.FilePath)
+                                    .With(a => a.IsPublic, false)
+                                    .Create();
+                        _connection.AddFile(bookPageContent);
+
+                        _files.Add(bookPageContent);
+
+                        var bookPageContentData = RandomData.Text;
+                        _fileStorage.SetupFileContents(bookPageContent.FilePath, bookPageContentData);
+                        page.ContentId = bookPageContent.Id;
+                    }
                     _pages.AddRange(pages);
                     _connection.AddBookPages(pages);
                 }
@@ -147,6 +177,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
         public void CleanUp()
         {
+            _connection.DeleteFiles(_files);
+            _connection.DeleteChapterContents(_contents);
             _connection.DeleteBookPages(_pages);
             _connection.DeleteChapterContents(_contents);
             _connection.DeleteChapters(_chapters);

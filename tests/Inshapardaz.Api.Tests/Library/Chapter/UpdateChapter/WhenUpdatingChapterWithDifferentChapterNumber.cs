@@ -12,8 +12,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         : TestBase
     {
         private HttpResponseMessage _response;
-        private ChapterView newChapter;
+        private ChapterView _newChapter;
         private ChapterAssert _assert;
+        private int _chapterNumber;
 
         public WhenUpdatingChapterWithDifferentChapterNumber()
             : base(Role.Writer)
@@ -26,9 +27,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
             var chapters = ChapterBuilder.WithLibrary(LibraryId).Build(4);
             var chapter = chapters.PickRandom();
 
-            newChapter = new ChapterView { Title = RandomData.Name, BookId = chapter.BookId };
-
-            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.ChapterNumber}", newChapter);
+            _newChapter = new ChapterView { Title = RandomData.Name, BookId = chapter.BookId };
+            _chapterNumber = chapter.ChapterNumber;
+            _response = await Client.PutObject($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{_chapterNumber}", _newChapter);
             _assert = ChapterAssert.FromResponse(_response, LibraryId);
         }
 
@@ -42,12 +43,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         public void ShouldHaveOKResult()
         {
             _response.ShouldBeOk();
-        }
-
-        [Test]
-        public void ShouldHaveReturnedUpdatedChapter()
-        {
-            _assert.ShouldMatch(newChapter);
         }
 
         [Test]

@@ -54,8 +54,7 @@ public class UpdateChapterRequestHandler : RequestHandlerAsync<UpdateChapterRequ
         else
         {
             command.Chapter.Id = result.Id;
-            await _chapterRepository.UpdateChapter(command.LibraryId, command.BookId, command.ChapterNumber, command.Chapter, cancellationToken);
-            command.Result.Chapter = command.Chapter;
+            command.Result.Chapter = await _chapterRepository.UpdateChapter(command.LibraryId, command.BookId, command.ChapterNumber, command.Chapter, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

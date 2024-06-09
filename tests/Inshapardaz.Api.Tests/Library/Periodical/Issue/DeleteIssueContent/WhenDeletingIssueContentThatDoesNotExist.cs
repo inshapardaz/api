@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents", RandomData.Locale, RandomData.MimeType);
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents?language={RandomData.Locale}", RandomData.MimeType);
         }
 
         [OneTimeTearDown]

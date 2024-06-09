@@ -326,6 +326,7 @@ namespace Inshapardaz.Api.Tests
             _bookshelfDataBuilder?.CleanUp();
             _libraryBuilder?.CleanUp();
             _correctionBuilder?.Cleanup();
+            DatabaseConnection.Dispose();
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
             _article = RandomData.PickRandom(articles);
             _contents = RandomData.String;
 
-            _response = await Client.PostString($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_article.SequenceNumber}/contents", _contents, RandomData.Locale);
+            _response = await Client.PostString($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_article.SequenceNumber}/contents?language={RandomData.Locale}", _contents);
             _assert = new IssueArticleContentAssert(_response, Library, issue);
         }
 

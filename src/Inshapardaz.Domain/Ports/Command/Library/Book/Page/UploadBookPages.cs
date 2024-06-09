@@ -94,7 +94,7 @@ public class UploadBookPagesHandler : RequestHandlerAsync<UploadBookPagesRequest
             {
                 BookId = command.BookId, 
                 SequenceNumber = pageNumber,
-                ContentId = fileModel.Id
+                ImageId = fileModel.Id
             };
             var bookPage = await _bookPageRepository.AddPage(command.LibraryId, newBookPage, cancellationToken);
             _logger.LogInformation("Added Book page {id} for book {bookId}", bookPage.ImageId, bookPage.BookId);

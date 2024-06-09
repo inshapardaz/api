@@ -17,7 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).WithContents(5).IsPublic(false).Build();
             var expected = IssueBuilder.Contents.PickRandom();
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents", expected.Language, expected.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents?language={expected.Language}", expected.MimeType);
         }
 
         [OneTimeTearDown]

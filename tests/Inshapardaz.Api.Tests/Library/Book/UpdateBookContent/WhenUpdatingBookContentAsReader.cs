@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
             var file = BookBuilder.Contents.PickRandom();
             _expected = new Faker().Image.Random.Bytes(50);
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{-RandomData.Number}", _expected, file.Language, file.MimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{-RandomData.Number}?language={file.Language}", _expected, file.MimeType);
         }
 
         [OneTimeTearDown]

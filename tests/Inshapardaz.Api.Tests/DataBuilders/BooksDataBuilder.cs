@@ -284,7 +284,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 if (_hasImage)
                 {
                     bookImage = fixture.Build<FileDto>()
-                                         .With(a => a.FilePath, RandomData.BlobUrl)
+                                         .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
                     _connection.AddFile(bookImage);
@@ -305,10 +305,9 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 {
                     var mimeType = _contentMimeType ?? RandomData.MimeType;
                     files = fixture.Build<FileDto>()
-                                         .With(f => f.FilePath, RandomData.BlobUrl)
+                                         .With(f => f.FilePath, RandomData.FilePath)
                                          .With(f => f.IsPublic, false)
                                          .With(f => f.MimeType, mimeType)
-                                         .With(f => f.FilePath, RandomData.BlobUrl)
                                          .CreateMany(_contentCount)
                                          .ToList();
                     _files.AddRange(files);
@@ -372,7 +371,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                         if (_addPageImage)
                         {
                             pageImage = fixture.Build<FileDto>()
-                                         .With(a => a.FilePath, RandomData.BlobUrl)
+                                         .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
                             _connection.AddFile(pageImage);
@@ -383,7 +382,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                         }
 
                         var bookPageContent = fixture.Build<FileDto>()
-                                    .With(a => a.FilePath, RandomData.BlobUrl)
+                                    .With(a => a.FilePath, RandomData.FilePath)
                                     .With(a => a.IsPublic, false)
                                     .Create();
                         _connection.AddFile(bookPageContent);

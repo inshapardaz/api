@@ -115,7 +115,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
         var existingDocx = await _fileRepository.GetFileById(fileId, cancellationToken);
         if (existingDocx != null && !string.IsNullOrWhiteSpace(existingDocx.FilePath))
         {
-            await _fileStorage.TryDeleteFile(existingDocx.FilePath, cancellationToken);
+            await _fileStorage.DeleteFile(existingDocx.FilePath, cancellationToken);
         }
 
         existingDocx.FilePath = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", file, cancellationToken);

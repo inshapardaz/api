@@ -28,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
             var articles = IssueBuilder.GetArticles(issue.Id);
             _article = RandomData.PickRandom(articles);
 
-            _response = await Client.PostString($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_article.SequenceNumber}/contents", RandomData.String, null);
+            _response = await Client.PostString($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_article.SequenceNumber}/contents", RandomData.String);
             _assert = new IssueArticleContentAssert(_response, Library, issue);
         }
 

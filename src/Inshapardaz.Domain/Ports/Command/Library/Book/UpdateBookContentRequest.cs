@@ -62,15 +62,17 @@ public class UpdateBookFileRequestHandler : RequestHandlerAsync<UpdateBookConten
             var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
             if (bookContent != null)
             {
+                var existingfile = await _fileRepository.GetFileById(bookContent.FileId, cancellationToken);
                 if (!string.IsNullOrWhiteSpace(bookContent.ContentUrl))
                 {
-                    await _fileStorage.TryDeleteFile(bookContent.ContentUrl, cancellationToken);
+                    await _fileStorage.DeleteFile(existingfile.FilePath, cancellationToken);
                 }
 
-                var url = await StoreFile(command.BookId, command.Content.FileName, command.Content.Contents, cancellationToken);
+                var url =  await _fileStorage.StoreFile(existingfile.FilePath, command.Content.Contents, cancellationToken);
                 bookContent.ContentUrl = url;
                 bookContent.MimeType = command.MimeType;
                 bookContent.Language = command.Language;
+                
                 await _bookRepository.UpdateBookContent(command.LibraryId,
                                                         command.BookId,
                                                         command.ContentId,

@@ -18,8 +18,6 @@ namespace Inshapardaz.Api.Tests.Helpers
         public static string Name => new Faker().Name.FullName();
         public static byte[] Bytes => new Faker().Random.Bytes(10);
 
-        public static string BlobUrl => new Faker().Internet.Url();
-
         public static T PickRandom<T>(this IEnumerable<T> source) =>
             new Faker().PickRandom<T>(source);
 

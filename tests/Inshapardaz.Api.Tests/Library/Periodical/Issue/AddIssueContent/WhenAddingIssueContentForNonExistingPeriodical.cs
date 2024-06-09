@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssueContent
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).Build();
 
-            _response = await Client.PostContent($"/libraries/{LibraryId}/periodicals/{-RandomData.Number}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents", RandomData.Bytes, "pn", "text/plain");
+            _response = await Client.PostContent($"/libraries/{LibraryId}/periodicals/{-RandomData.Number}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents?language=pn", RandomData.Bytes, "text/plain");
         }
 
         [OneTimeTearDown]

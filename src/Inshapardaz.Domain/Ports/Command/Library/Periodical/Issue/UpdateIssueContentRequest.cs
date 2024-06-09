@@ -66,7 +66,7 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
             {
                 if (!string.IsNullOrWhiteSpace(issueContent.ContentUrl))
                 {
-                    await _fileStorage.TryDeleteFile(issueContent.ContentUrl, cancellationToken);
+                    await _fileStorage.DeleteFile(issueContent.ContentUrl, cancellationToken);
                 }
 
                 var url = await StoreFile(command.PeriodicalId, command.IssueNumber, command.Content.FileName, command.Content.Contents, cancellationToken);

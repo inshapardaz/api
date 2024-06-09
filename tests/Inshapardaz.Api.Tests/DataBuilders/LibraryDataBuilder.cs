@@ -70,7 +70,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
             if (_withImage)
             {
                 libraryImage = fixture.Build<FileDto>()
-                                     .With(a => a.FilePath, Helpers.RandomData.BlobUrl)
+                                     .With(a => a.FilePath, Helpers.RandomData.FilePath)
                                      .With(a => a.IsPublic, true)
                                      .Create();
                 _connection.AddFile(libraryImage);

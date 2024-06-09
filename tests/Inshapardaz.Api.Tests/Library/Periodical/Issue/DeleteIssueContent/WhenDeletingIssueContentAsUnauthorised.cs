@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
             var issue = IssueBuilder.WithLibrary(LibraryId).WithContent().Build();
             _expected = IssueBuilder.Contents.PickRandom();
 
-            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents", _expected.Language, _expected.MimeType);
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents?language={_expected.Language}", _expected.MimeType);
         }
 
         [OneTimeTearDown]

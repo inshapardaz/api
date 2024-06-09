@@ -122,11 +122,9 @@ public class IssueArticleController : Controller
     }
 
     [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/articles/{sequenceNumber}/contents", Name = nameof(IssueArticleController.GetIssueArticleContent))]
-    public async Task<IActionResult> GetIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string langauge, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> GetIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, [FromQuery] string langauge, CancellationToken token = default(CancellationToken))
     {
-        var parsedLanguage = Request.Headers["Accept-Language"]; // default to  ""
-
-        var query = new GetIssueArticleContentQuery(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, langauge ?? parsedLanguage);
+        var query = new GetIssueArticleContentQuery(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, langauge);
 
         var chapterContents = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
@@ -139,10 +137,9 @@ public class IssueArticleController : Controller
     }
 
     [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/articles/{sequenceNumber}/contents", Name = nameof(IssueArticleController.CreateIssueArticleContent))]
-    public async Task<IActionResult> CreateIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> CreateIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, [FromQuery] string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
     {
-        var parsedLanguage = Request.Headers["Content-Language"];
-        var request = new AddIssueArticleContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, content, language ?? parsedLanguage);
+        var request = new AddIssueArticleContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, content, language);
         await _commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result != null)
@@ -156,11 +153,9 @@ public class IssueArticleController : Controller
     }
 
     [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/articles/{sequenceNumber}/contents", Name = nameof(IssueArticleController.UpdateIssueArticleContent))]
-    public async Task<IActionResult> UpdateIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> UpdateIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, [FromQuery] string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
     {
-        var parsedLanguage = Request.Headers["Content-Language"];
-
-        var request = new UpdateIssueArticleContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, content, language ?? parsedLanguage);
+        var request = new UpdateIssueArticleContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, content, language);
         await _commandProcessor.SendAsync(request, cancellationToken: token);
 
         var renderResult = _issueArticleRenderer.Render(request.Result.Content, libraryId);
@@ -173,11 +168,9 @@ public class IssueArticleController : Controller
     }
 
     [HttpDelete("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/articles/{sequenceNumber}/contents", Name = nameof(IssueArticleController.DeleteIssueArticleContent))]
-    public async Task<IActionResult> DeleteIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> DeleteIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, [FromQuery] string language, CancellationToken token = default(CancellationToken))
     {
-        var parsedLanguage = Request.Headers["Accept-Language"];
-
-        var request = new DeleteIssueArticleContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, language ?? parsedLanguage);
+        var request = new DeleteIssueArticleContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, language);
         await _commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }

@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
+﻿using DocumentFormat.OpenXml.Vml.Spreadsheet;
+using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
@@ -77,7 +78,19 @@ public class AddBookPageRequestHandler : RequestHandlerAsync<AddBookPageRequest>
         }
         else
         {
-            command.Result = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, command.BookPage.Text, 0, command.BookPage.Status, command.BookPage.ChapterId, cancellationToken);
+            if (existingBookPage.ContentId.HasValue)
+            {
+                var existingfile = await _fileRepository.GetFileById(existingBookPage.ContentId.Value, cancellationToken);
+                await _fileStorage.DeleteFile(existingfile.FilePath, cancellationToken);
+            }
+
+            var fileName = FilePathHelper.BookPageContentFileName;
+            var url = await StoreFile(FilePathHelper.GetBookPageContentPath(command.BookPage.BookId, fileName), command.BookPage.Text, cancellationToken);
+            var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
+
+            command.Result = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, file.Id, existingBookPage.ImageId ?? 0, command.BookPage.Status, command.BookPage.ChapterId, cancellationToken);
+            command.Result.Text = command.BookPage.Text;
+
         }
 
         return await base.HandleAsync(command, cancellationToken);

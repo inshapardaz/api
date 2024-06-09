@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
+using PDFiumSharp.Types;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -19,6 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
         private BookPageDto _page;
         private BookPageView _updatedPage;
         private int _bookId;
+        private string _text;
 
         public WhenUpdatingBookPageWithPermissions(Role role)
             : base(role)
@@ -31,10 +33,11 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
             var book = BookBuilder.WithLibrary(LibraryId).WithPages(3, true).Build();
             _page = BookBuilder.GetPages(book.Id).PickRandom();
 
+            _text = RandomData.Text;
             _updatedPage = new BookPageView
             {
                 BookId = book.Id,
-                Text = RandomData.Text,
+                Text = _text,
                 SequenceNumber = _page.SequenceNumber
             };
 
@@ -65,6 +68,12 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
         public void ShouldHaveSavedBookPage()
         {
             _assert.ShouldHaveSavedPage(DatabaseConnection);
+        }
+
+        [Test]
+        public void ShouldHaveSavedContents()
+        {
+            _assert.ShouldHaveBookPageContent(_text, DatabaseConnection, FileStore);
         }
     }
 }

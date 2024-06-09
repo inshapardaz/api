@@ -42,9 +42,8 @@ public class DeleteChapterRequestHandler : RequestHandlerAsync<DeleteChapterRequ
         {
             foreach (var chapterContent in chapterContents)
             {
-                //TODO : convert to long
-                var file = await _fileRepository.GetFileById((long)chapterContent.FileId, cancellationToken);
-                await _fileStore.TryDeleteFile(file.FilePath, cancellationToken);
+                var file = await _fileRepository.GetFileById(chapterContent.FileId.Value, cancellationToken);
+                await _fileStore.DeleteFile(file.FilePath, cancellationToken);
                 await _fileRepository.DeleteFile(file.Id, cancellationToken);
             }
         }

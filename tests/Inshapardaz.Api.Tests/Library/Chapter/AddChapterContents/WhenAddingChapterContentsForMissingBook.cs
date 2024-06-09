@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _response = await Client.PostString($"/libraries/{LibraryId}/books/{-RandomData.Number}/chapters/{RandomData.Number}/contents?language={RandomData.Locale}", RandomData.String, RandomData.Locale);
+            _response = await Client.PostString($"/libraries/{LibraryId}/books/{-RandomData.Number}/chapters/{RandomData.Number}/contents?language={RandomData.Locale}", RandomData.String);
         }
 
         [OneTimeTearDown]

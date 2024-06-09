@@ -29,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
             _issue = IssueBuilder.WithLibrary(LibraryId).WithContents(1).WithContentLanguage(Library.Language).Build();
             _expected = IssueBuilder.Contents.Single(x => x.Language == Library.Language);
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents", null, _expected.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents", _expected.MimeType);
             _assert = new IssueContentAssert(_response, LibraryId);
         }
 

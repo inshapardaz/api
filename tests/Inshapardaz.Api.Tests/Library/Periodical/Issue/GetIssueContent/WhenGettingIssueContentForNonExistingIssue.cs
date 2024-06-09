@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).WithContent().Build();
             var content = IssueBuilder.Contents.First();
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{-RandomData.Number}/contents", content.Language, content.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{-RandomData.Number}/contents?language={content.Language}", content.MimeType);
         }
 
         [OneTimeTearDown]

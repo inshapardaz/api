@@ -183,10 +183,9 @@ public class BookController : Controller
     }
 
     [HttpGet("libraries/{libraryId}/books/{bookId}/contents/{contentId}", Name = nameof(BookController.GetBookContent))]
-    public async Task<IActionResult> GetBookContent(int libraryId, int bookId, int contentId, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> GetBookContent(int libraryId, int bookId, int contentId, [FromQuery] string language, CancellationToken token = default(CancellationToken))
     {
         var mimeType = Request.Headers["Accept"];
-        var language = Request.Headers["Accept-Language"];
 
         var request = new GetBookContentQuery(libraryId, bookId, contentId, language, mimeType, _userHelper.AccountId);
         var content = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
@@ -199,14 +198,14 @@ public class BookController : Controller
     }
 
     [HttpPost("libraries/{libraryId}/books/{bookId}/contents", Name = nameof(BookController.CreateBookContent))]
-    public async Task<IActionResult> CreateBookContent(int libraryId, int bookId, IFormFile file, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> CreateBookContent(int libraryId, int bookId, [FromQuery] string language, IFormFile file, CancellationToken token = default(CancellationToken))
     {
         var content = new byte[file.Length];
         using (var stream = new MemoryStream(content))
         {
             await file.CopyToAsync(stream);
         }
-        var language = Request.Headers["Accept-Language"];
+
         var mimeType = file.ContentType;
 
         var request = new AddBookContentRequest(libraryId, bookId, language, mimeType, _userHelper.AccountId)
@@ -232,14 +231,14 @@ public class BookController : Controller
     }
 
     [HttpPut("libraries/{libraryId}/books/{bookId}/contents/{contentId}", Name = nameof(BookController.UpdateBookContent))]
-    public async Task<IActionResult> UpdateBookContent(int libraryId, int bookId, int contentId, IFormFile file, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> UpdateBookContent(int libraryId, int bookId, int contentId, [FromQuery] string language, IFormFile file, CancellationToken token = default(CancellationToken))
     {
         var content = new byte[file.Length];
         using (var stream = new MemoryStream(content))
         {
             await file.CopyToAsync(stream);
         }
-        var language = Request.Headers["Accept-Language"];
+
         var mimeType = file.ContentType;
 
         var request = new UpdateBookContentRequest(libraryId, bookId, contentId, language, mimeType, _userHelper.AccountId)

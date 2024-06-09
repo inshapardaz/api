@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using DocumentFormat.OpenXml.Office2019.Word.Cid;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
@@ -78,22 +77,22 @@ public class BookPageRepository : IBookPageRepository
         }
     }
 
-    public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, long imageId, EditingStatus status, long? chapterId, CancellationToken cancellationToken)
+    public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, long? contentId, long? imageId, EditingStatus status, long? chapterId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
-                            SET p.Text = @Text, 
-                                p.ImageId = @ImageId, 
+                            SET p.ImageId = @ImageId, 
                                 Status = @Status,
-                                ChapterId = @ChapterId
+                                ChapterId = @ChapterId,
+                                ContentId = @ContentId 
                             FROM BookPage p
                             INNER JOIN Book b ON b.Id = p.BookId
                             WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId AND p.SequenceNumber = @SequenceNumber";
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
-                Text = text,
+                ContentId = contentId,
                 ImageId = imageId,
                 BookId = bookId,
                 SequenceNumber = sequenceNumber,

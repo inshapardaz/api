@@ -29,13 +29,21 @@ public class BookPageOcrRequestHandler : RequestHandlerAsync<BookPageOcrRequest>
 {
     private readonly IBookPageRepository _bookPageRepository;
     private readonly IQueryProcessor _queryProcessor;
+    private readonly IAmACommandProcessor _commandProcessor;
     private readonly IProvideOcr _ocr;
+    private readonly IUserHelper _userHelper;
 
-    public BookPageOcrRequestHandler(IBookPageRepository bookPageRepository, IQueryProcessor queryProcessor, IProvideOcr ocr)
+    public BookPageOcrRequestHandler(IAmACommandProcessor commandProcessor,
+        IQueryProcessor queryProcessor,
+        IBookPageRepository bookPageRepository,
+        IProvideOcr ocr, 
+        IUserHelper userHelper)
     {
         _bookPageRepository = bookPageRepository;
         _queryProcessor = queryProcessor;
         _ocr = ocr;
+        _userHelper = userHelper;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -44,13 +52,18 @@ public class BookPageOcrRequestHandler : RequestHandlerAsync<BookPageOcrRequest>
         var bookPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
         if (bookPage != null && bookPage.ImageId.HasValue)
         {
-            var image = await _queryProcessor.ExecuteAsync(new GetFileQuery(bookPage.ImageId.Value, 0, 0));
+            var image = await _queryProcessor.ExecuteAsync(new GetFileQuery(bookPage.ImageId.Value, 0, 0), cancellationToken);
 
             if (image != null)
             {
                 var text = await _ocr.PerformOcr(image.Contents, command.ApiKey, cancellationToken);
                 bookPage.Text = text;
-                await _bookPageRepository.UpdatePage(command.LibraryId, bookPage.BookId, bookPage.SequenceNumber, text, bookPage.ImageId.Value, bookPage.Status, bookPage.ChapterId, cancellationToken);
+
+                var updateBookPageRequest = new UpdateBookPageRequest(command.LibraryId, bookPage.BookId, _userHelper.AccountId.Value, bookPage.SequenceNumber, bookPage);
+                await _commandProcessor.SendAsync(updateBookPageRequest, cancellationToken: cancellationToken);
+                
+                //await _bookPageRepository.UpdatePage(command.LibraryId, bookPage.BookId, bookPage.SequenceNumber, text, bookPage.ImageId.Value, bookPage.Status, bookPage.ChapterId, cancellationToken);
+                
                 return await base.HandleAsync(command, cancellationToken);
             }
         }

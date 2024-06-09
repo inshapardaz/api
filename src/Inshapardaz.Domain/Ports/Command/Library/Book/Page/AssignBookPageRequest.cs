@@ -2,7 +2,9 @@
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Query.Library.Book.Page;
 using Paramore.Brighter;
+using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,10 +29,12 @@ public class AssignBookPageToUserRequest : LibraryBaseCommand
 public class AssignBookPageToUserRequestHandler : RequestHandlerAsync<AssignBookPageToUserRequest>
 {
     private readonly IBookPageRepository _bookPageRepository;
+    private readonly IQueryProcessor _queryProcessor;
 
-    public AssignBookPageToUserRequestHandler(IBookPageRepository bookPageRepository)
+    public AssignBookPageToUserRequestHandler(IBookPageRepository bookPageRepository, IQueryProcessor queryProcessor)
     {
         _bookPageRepository = bookPageRepository;
+        _queryProcessor = queryProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -44,18 +48,18 @@ public class AssignBookPageToUserRequestHandler : RequestHandlerAsync<AssignBook
 
         if (page.Status == EditingStatus.Available || page.Status == EditingStatus.Typing)
         {
-            command.Result = await _bookPageRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
+            await _bookPageRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
         }
         else if (page.Status == EditingStatus.Typed || page.Status == EditingStatus.InReview)
         {
-            command.Result = await _bookPageRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
+            await _bookPageRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.SequenceNumber, command.AccountId, cancellationToken);
         }
         else
         {
             throw new BadRequestException("Page status does not allow it to be assigned");
         }
 
-
+        command.Result = await _queryProcessor.ExecuteAsync(new GetBookPageByNumberQuery(command.LibraryId, command.BookId, command.SequenceNumber), cancellationToken);
         return await base.HandleAsync(command, cancellationToken);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters.Repositories;
@@ -68,14 +69,15 @@ namespace Inshapardaz.Api.Tests.Asserts
             content.Should().NotBeNull();
         }
 
-        internal void ShouldHaveBookContent(byte[] expected, IDbConnection db, IFileStorage fileStore)
+        internal void ShouldHaveBookContent(byte[] expected, IDbConnection db, FakeFileStorage fileStore)
         {
             var content = db.GetBookContent(_bookContent.BookId, _bookContent.Id);
             content.Should().NotBeNull();
 
             // TODO: Make sure the contents are correct
-            //var file = fileStore.GetFile(content.FilePath, CancellationToken.None).Result;
-            //file.Should().NotBeNull().And.Should().Be(expected);
+            fileStore.DoesFileExists(content.FilePath).Should().BeTrue();
+            var file = fileStore.GetFile(content.FilePath, CancellationToken.None).Result;
+            file.Should().BeEquivalentTo(expected);
         }
 
         internal BookContentAssert ShouldHaveUpdateLink()

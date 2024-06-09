@@ -43,7 +43,7 @@ public class DeleteIssueContentRequestHandler : RequestHandlerAsync<DeleteIssueC
         var content = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
         if (content != null)
         {
-            await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
+            await _fileStorage.DeleteFile(content.ContentUrl, cancellationToken);
             await _issueRepository.DeleteIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
             await _fileRepository.DeleteFile(content.FileId, cancellationToken);
         }

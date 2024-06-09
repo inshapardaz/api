@@ -124,7 +124,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 if (_hasImage)
                 {
                     bookImage = fixture.Build<FileDto>()
-                                         .With(a => a.FilePath, RandomData.BlobUrl)
+                                         .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
                     _connection.AddFile(bookImage);

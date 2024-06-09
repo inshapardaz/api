@@ -140,11 +140,9 @@ public class ChapterController : Controller
 
     [HttpGet("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.GetChapterContent))]
     [Produces(typeof(ChapterContentView))]
-    public async Task<IActionResult> GetChapterContent(int libraryId, int bookId, int chapterNumber, string language, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> GetChapterContent(int libraryId, int bookId, int chapterNumber, [FromQuery] string language, CancellationToken token = default(CancellationToken))
     {
-        var finalLanguage = language ?? Request.Headers["Accept-Language"];
-
-        var query = new GetChapterContentQuery(libraryId, bookId, chapterNumber, finalLanguage);
+        var query = new GetChapterContentQuery(libraryId, bookId, chapterNumber, language);
 
         var chapterContents = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
@@ -157,12 +155,9 @@ public class ChapterController : Controller
     }
 
     [HttpPost("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.CreateChapterContent))]
-    // TODO: Remove language
-    public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterNumber, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterNumber, [FromQuery] string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
     {
-        var contentLanguage = Request.Headers["Content-Language"];
-
-        var request = new AddChapterContentRequest(libraryId, bookId, chapterNumber, content, language ?? contentLanguage);
+        var request = new AddChapterContentRequest(libraryId, bookId, chapterNumber, content, language);
         await _commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result != null)
@@ -175,10 +170,8 @@ public class ChapterController : Controller
     }
 
     [HttpPut("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.UpdateChapterContent))]
-    public async Task<IActionResult> UpdateChapterContent(int libraryId, int bookId, int chapterNumber, string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> UpdateChapterContent(int libraryId, int bookId, int chapterNumber, [FromQuery] string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
     {
-        //var language = Request.Headers["Content-Language"];
-
         var request = new UpdateChapterContentRequest(libraryId, bookId, chapterNumber, content, language);
         await _commandProcessor.SendAsync(request, cancellationToken: token);
 
@@ -193,10 +186,8 @@ public class ChapterController : Controller
     }
 
     [HttpDelete("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/contents", Name = nameof(ChapterController.DeleteChapterContent))]
-    public async Task<IActionResult> DeleteChapterContent(int libraryId, int bookId, int chapterNumber, string language, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> DeleteChapterContent(int libraryId, int bookId, int chapterNumber, [FromQuery] string language, CancellationToken token = default(CancellationToken))
     {
-        //var language = Request.Headers["Accept-Language"];
-
         var request = new DeleteChapterContentRequest(libraryId, bookId, chapterNumber, language);
         await _commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();

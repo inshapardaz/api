@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
             _issue = IssueBuilder.WithLibrary(LibraryId).WithContents(5).Build();
             _expected = IssueBuilder.Contents.PickRandom();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents", _expected.Language, _expected.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents?language={_expected.Language}", _expected.MimeType);
             _assert = new IssueContentAssert(_response, LibraryId);
         }
 

@@ -37,7 +37,7 @@ public class DeleteBookContentRequestHandler : RequestHandlerAsync<DeleteBookCon
         var content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
         if (content != null)
         {
-            await _fileStorage.TryDeleteFile(content.ContentUrl, cancellationToken);
+            await _fileStorage.DeleteFile(content.ContentUrl, cancellationToken);
             await _bookRepository.DeleteBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
             await _fileRepository.DeleteFile(content.FileId, cancellationToken);
         }

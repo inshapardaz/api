@@ -14,7 +14,7 @@ public interface IBookPageRepository
 
     Task<BookPageModel> AddPage(int libraryId, BookPageModel bookpage, CancellationToken cancellationToken);
 
-    Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, long imageId, EditingStatus status, long? chapterId, CancellationToken cancellationToken);
+    Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, long? contentId, long? imageId, EditingStatus status, long? chapterId, CancellationToken cancellationToken);
 
     Task DeletePage(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken);
 

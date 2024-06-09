@@ -81,22 +81,22 @@ public class BookPageRepository : IBookPageRepository
         }
     }
 
-    public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, string text, long imageId, EditingStatus status, long? chapterId, CancellationToken cancellationToken)
+    public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, long? contentId, long? imageId, EditingStatus status, long? chapterId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE BookPage p
                                 INNER JOIN Book b ON b.Id = p.BookId
-                            SET p.`Text` = @Text, 
-                                p.ImageId = @ImageId, 
+                            SET p.ImageId = @ImageId, 
                                 p.`Status` = @Status,
-                                ChapterId = @ChapterId
+                                ChapterId = @ChapterId,
+                                ContentId = @ContentId   
                             WHERE b.LibraryId = @LibraryId 
                                 AND p.BookId = @BookId AND p.SequenceNumber = @SequenceNumber";
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
-                Text = text,
+                ContentId = contentId,
                 ImageId = imageId,
                 BookId = bookId,
                 SequenceNumber = sequenceNumber,
@@ -247,7 +247,8 @@ public class BookPageRepository : IBookPageRepository
         {
             var sql = @"UPDATE BookPage p
                                 INNER JOIN Book b ON b.Id = p.BookId
-                            SET p.WriterAccountId = @WriterAccountId, p.WriterAssignTimeStamp = UTC_TIMESTAMP()
+                            SET p.WriterAccountId = @WriterAccountId, 
+                                p.WriterAssignTimeStamp = UTC_TIMESTAMP()
                             WHERE b.LibraryId = @LibraryId 
                                 AND p.BookId = @BookId 
                                 AND p.SequenceNumber = @SequenceNumber";

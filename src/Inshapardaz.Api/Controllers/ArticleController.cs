@@ -190,11 +190,9 @@ public class ArticleController : Controller
     }
 
     [HttpGet("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.GetArticleContent))]
-    public async Task<IActionResult> GetArticleContent(int libraryId, int articleId, string language, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> GetArticleContent(int libraryId, int articleId, [FromQuery] string language, CancellationToken token = default(CancellationToken))
     {
-        var parsedLanguage = Request.Headers["Accept-Language"]; // default to  ""
-
-        var query = new GetArticleContentQuery(libraryId, articleId, language ?? parsedLanguage);
+        var query = new GetArticleContentQuery(libraryId, articleId, language);
 
         var articleContents = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
@@ -249,11 +247,9 @@ public class ArticleController : Controller
     }
 
     [HttpDelete("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.DeleteArticleContent))]
-    public async Task<IActionResult> DeleteArticleContent(int libraryId, int articleId, string language, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> DeleteArticleContent(int libraryId, int articleId, [FromQuery] string language, CancellationToken token = default(CancellationToken))
     {
-        var parsedLanguage = Request.Headers["Accept-Language"];
-
-        var request = new DeleteArticleContentRequest(libraryId, articleId, language ?? parsedLanguage);
+        var request = new DeleteArticleContentRequest(libraryId, articleId, language);
         await _commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }

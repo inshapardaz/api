@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
 
             _contents = new Faker().Image.Random.Bytes(50);
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{_content.Id}", _contents, _newLanguage, _content.MimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{_content.Id}?language={_newLanguage}", _contents, _content.MimeType, "test.md");
             _assert = new BookContentAssert(_response, LibraryId);
         }
 

@@ -209,14 +209,14 @@ public class IssueController : Controller
 
     }
     [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents", Name = nameof(IssueController.CreateIssueContent))]
-    public async Task<IActionResult> CreateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IFormFile file, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> CreateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, [FromQuery] string language, IFormFile file, CancellationToken token = default(CancellationToken))
     {
         var content = new byte[file.Length];
         using (var stream = new MemoryStream(content))
         {
             await file.CopyToAsync(stream);
         }
-        var language = Request.Headers["Accept-Language"];
+
         var mimeType = file.ContentType;
 
         var request = new AddIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, language, mimeType)
@@ -242,14 +242,14 @@ public class IssueController : Controller
     }
 
     [HttpPut("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/contents/{contentId}", Name = nameof(IssueController.UpdateIssueContent))]
-    public async Task<IActionResult> UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int contentId, IFormFile file, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int contentId, [FromQuery] string language, IFormFile file, CancellationToken token = default(CancellationToken))
     {
         var content = new byte[file.Length];
         using (var stream = new MemoryStream(content))
         {
             await file.CopyToAsync(stream);
         }
-        var language = Request.Headers["Accept-Language"];
+
         var mimeType = file.ContentType;
 
         var request = new UpdateIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, contentId, language, mimeType)

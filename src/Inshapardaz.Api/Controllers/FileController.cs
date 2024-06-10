@@ -48,7 +48,7 @@ public class FileController : Controller
     [HttpDelete("files/{fileId}", Name = nameof(FileController.DeleteFile))]
     public async Task<IActionResult> DeleteFile(int fileId, CancellationToken token = default(CancellationToken))
     {
-        var request = new DeleteFileRequest(fileId);
+        var request = new DeleteFileCommand(fileId);
         await _commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }

@@ -4,6 +4,7 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System;
 using System.Threading;
@@ -40,17 +41,15 @@ public class UpdateBookPageRequestHandler : RequestHandlerAsync<UpdateBookPageRe
 {
     private readonly IBookRepository _bookRepository;
     private readonly IBookPageRepository _bookPageRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
+
     public UpdateBookPageRequestHandler(IBookRepository bookRepository,
                                      IBookPageRepository bookPageRepository,
-                                     IFileRepository fileRepository,
-                                     IFileStorage fileStorage)
+                                     IAmACommandProcessor commandProcessor)
     {
         _bookRepository = bookRepository;
         _bookPageRepository = bookPageRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -64,14 +63,22 @@ public class UpdateBookPageRequestHandler : RequestHandlerAsync<UpdateBookPageRe
 
         var existingBookPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, cancellationToken);
 
+        var fileName = FilePathHelper.BookPageContentFileName;
+        var filePath = FilePathHelper.GetBookPageContentPath(command.BookPage.BookId, fileName);
+        var bookText = command.BookPage.Text;
+
+        var saveContentCommand = new SaveTextFileCommand(fileName, filePath, bookText)
+        {
+            MimeType = MimeTypes.Markdown,
+            ExistingFileId = existingBookPage?.ContentId
+        };
+
+        await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
+        command.BookPage.ContentId = saveContentCommand.Result.Id;
+
         if (existingBookPage == null)
         {
             var pageSequenceNumber = command.BookPage.SequenceNumber == 0 ? book.PageCount + 1 : command.BookPage.SequenceNumber;
-
-            var fileName = FilePathHelper.BookPageContentFileName;
-            var url = await StoreFile(FilePathHelper.GetBookPageContentPath(command.BookPage.BookId, fileName), command.BookPage.Text, cancellationToken);
-            var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
-            command.BookPage.ContentId = file?.Id;
 
             command.Result.BookPage = await _bookPageRepository.AddPage(command.LibraryId, command.BookPage, cancellationToken);
             command.Result.BookPage.Text = command.BookPage.Text;
@@ -79,18 +86,7 @@ public class UpdateBookPageRequestHandler : RequestHandlerAsync<UpdateBookPageRe
         }
         else
         {
-
-            if (existingBookPage.ContentId.HasValue)
-            {
-                var existingfile = await _fileRepository.GetFileById(existingBookPage.ContentId.Value, cancellationToken);
-                await _fileStorage.DeleteFile(existingfile.FilePath, cancellationToken);
-            }
-            
-            var fileName = FilePathHelper.BookPageContentFileName;
-            var url = await StoreFile(FilePathHelper.GetBookPageContentPath(command.BookPage.BookId, fileName), command.BookPage.Text, cancellationToken);
-            var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
-
-            command.Result.BookPage = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, file.Id, existingBookPage.ImageId ?? 0, command.BookPage.Status, command.BookPage.ChapterId, cancellationToken);
+            command.Result.BookPage = await _bookPageRepository.UpdatePage(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, saveContentCommand.Result.Id, existingBookPage.ImageId ?? 0, command.BookPage.Status, command.BookPage.ChapterId, cancellationToken);
             command.Result.BookPage.Text = command.BookPage.Text;
         }
 
@@ -101,22 +97,5 @@ public class UpdateBookPageRequestHandler : RequestHandlerAsync<UpdateBookPageRe
         command.Result.BookPage.NextPage = nextPage;
 
         return await base.HandleAsync(command, cancellationToken);
-    }
-
-    private async Task<string> StoreFile(string filePath, string contents, CancellationToken cancellationToken)
-    {
-        return await _fileStorage.StoreTextFile(filePath, contents, cancellationToken);
-    }
-
-    private async Task<FileModel> AddFile(string fileName, string filePath, string mimeType, CancellationToken cancellationToken)
-    {
-        return await _fileRepository.AddFile(new FileModel
-        {
-            FileName = fileName,
-            FilePath = filePath,
-            MimeType = mimeType,
-            DateCreated = DateTime.Now,
-            IsPublic = false
-        }, cancellationToken);
     }
 }

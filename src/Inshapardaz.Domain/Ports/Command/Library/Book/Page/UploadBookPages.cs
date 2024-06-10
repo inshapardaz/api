@@ -4,12 +4,14 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Microsoft.Extensions.Logging;
 using Paramore.Brighter;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,21 +33,22 @@ public class UploadBookPagesRequest : LibraryBaseCommand
 public class UploadBookPagesHandler : RequestHandlerAsync<UploadBookPagesRequest>
 {
     private readonly IBookPageRepository _bookPageRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
     private readonly IConvertPdf _pdfConverter;
     private readonly IOpenZip _zipOpener;
     private readonly ILogger<UploadBookPagesHandler> _logger;
 
-    public UploadBookPagesHandler(IBookPageRepository bookPageRepository, IFileRepository fileRepository,
-        IFileStorage fileStorage, IConvertPdf pdfConverter, IOpenZip zipOpener, ILogger<UploadBookPagesHandler> logger)
+    public UploadBookPagesHandler(IBookPageRepository bookPageRepository,
+        IConvertPdf pdfConverter,
+        IOpenZip zipOpener,
+        ILogger<UploadBookPagesHandler> logger,
+        IAmACommandProcessor commandProcessor)
     {
         _bookPageRepository = bookPageRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
         _pdfConverter = pdfConverter;
         _zipOpener = zipOpener;
         _logger = logger;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -77,24 +80,23 @@ public class UploadBookPagesHandler : RequestHandlerAsync<UploadBookPagesRequest
 
         foreach (var file in files)
         {
-            var fileName = FilePathHelper.GetBookPageFileName(file.FileName);
             var sequenceNumber = ++pageNumber;
-            var url = await AddImageToFileStore(command.BookId, fileName, file.Contents, file.MimeType, cancellationToken);
-            _logger.LogInformation("Added Image {Url} to filestore for book {bookId}", url, command.BookId);
-            var fileModel = await _fileRepository.AddFile(new FileModel
+            var fileName = FilePathHelper.GetBookPageFileName(file.FileName);
+            var filePath = FilePathHelper.GetBookPageFilePath(command.BookId, fileName);
+
+            var saveImageCommand = new SaveFileCommand(fileName, filePath, file.Contents)
             {
-                IsPublic = false,
-                FilePath = url,
-                DateCreated = DateTime.UtcNow,
-                FileName = file.FileName,
                 MimeType = file.MimeType
-            }, cancellationToken);
-            _logger.LogInformation("Added FileModel {id} for book {bookId} with path {FilePath}", fileModel.Id, command.BookId, file.FilePath);
+            };
+
+            await _commandProcessor.SendAsync(saveImageCommand, cancellationToken: cancellationToken);
+
+            _logger.LogInformation("Added FileModel {id} for book {bookId} with path {FilePath}", saveImageCommand.Result.Id, command.BookId, saveImageCommand.Result.FilePath);
             var newBookPage = new BookPageModel
             {
                 BookId = command.BookId, 
                 SequenceNumber = pageNumber,
-                ImageId = fileModel.Id
+                ImageId = saveImageCommand.Result.Id
             };
             var bookPage = await _bookPageRepository.AddPage(command.LibraryId, newBookPage, cancellationToken);
             _logger.LogInformation("Added Book page {id} for book {bookId}", bookPage.ImageId, bookPage.BookId);
@@ -102,11 +104,5 @@ public class UploadBookPagesHandler : RequestHandlerAsync<UploadBookPagesRequest
         }
 
         return await base.HandleAsync(command, cancellationToken);
-    }
-
-    private async Task<string> AddImageToFileStore(int bookId, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
-    {
-        var filePath = FilePathHelper.GetBookPageFilePath(bookId, fileName);
-        return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
     }
 }

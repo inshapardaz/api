@@ -3,6 +3,7 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.IO;
 using System.Threading;
@@ -38,14 +39,13 @@ public class UpdateBookPageImageRequest : LibraryBaseCommand
 public class UpdateBookPageImageRequestHandler : RequestHandlerAsync<UpdateBookPageImageRequest>
 {
     private readonly IBookPageRepository _bookPageRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public UpdateBookPageImageRequestHandler(IBookPageRepository bookPageRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+    public UpdateBookPageImageRequestHandler(IBookPageRepository bookPageRepository, 
+        IAmACommandProcessor commandProcessor)
     {
         _bookPageRepository = bookPageRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -58,42 +58,22 @@ public class UpdateBookPageImageRequestHandler : RequestHandlerAsync<UpdateBookP
             throw new NotFoundException();
         }
 
-        if (bookPage.ImageId.HasValue)
+        var fileName = FilePathHelper.GetBookPageFileName(command.Image.FileName);
+        var filePath = FilePathHelper.GetBookPageFilePath(command.BookId, fileName);
+
+        var saveContentCommand = new SaveFileCommand(fileName, filePath, command.Image.Contents)
         {
-            command.Image.Id = bookPage.ImageId.Value;
-            var existingImage = await _fileRepository.GetFileById(bookPage.ImageId.Value, cancellationToken);
-            if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
-            {
-                await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
-            }
+            MimeType = command.Image.MimeType,
+            ExistingFileId = bookPage.ImageId
+        };
 
-            var url = await AddImageToFileStore(command.BookId, command.SequenceNumber, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
+        await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
+        command.Image = saveContentCommand.Result;
 
-            command.Image.FilePath = url;
-            command.Image.IsPublic = true;
-            await _fileRepository.UpdateFile(command.Image, cancellationToken);
-            command.Result.File = command.Image;
-            command.Result.File.Id = bookPage.ImageId.Value;
-        }
-        else
-        {
-            command.Image.Id = default;
-            var url = await AddImageToFileStore(command.BookId, command.SequenceNumber, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
-            command.Image.FilePath = url;
-            command.Image.IsPublic = true;
-            command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
-            command.Result.HasAddedNew = true;
-
-            await _bookPageRepository.UpdatePageImage(command.LibraryId, command.BookId, command.SequenceNumber, command.Result.File.Id, cancellationToken);
-        }
+        await _bookPageRepository.UpdatePageImage(command.LibraryId, command.BookId, command.SequenceNumber, saveContentCommand.Result.Id, cancellationToken);
+        command.Result.File = saveContentCommand.Result;
+        command.Result.HasAddedNew = !bookPage.ImageId.HasValue;
 
         return await base.HandleAsync(command, cancellationToken);
-    }
-
-    private async Task<string> AddImageToFileStore(int bookId, int sequenceNumber, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
-    {
-        var newFileName = FilePathHelper.GetBookPageFileName(fileName);
-        var filePath = FilePathHelper.GetBookPageFilePath(bookId, fileName);
-        return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
     }
 }

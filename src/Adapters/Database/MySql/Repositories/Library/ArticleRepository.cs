@@ -62,8 +62,8 @@ public class ArticleRepository : IArticleRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"Insert Into ArticleContent (ArticleId, `Language`, `Text`, Layout)
-                            VALUES (@ArticleId, @Language, @Text, @Layout)";
+            var sql = @"Insert Into ArticleContent (ArticleId, `Language`, FileId , Layout)
+                            VALUES (@ArticleId, @Language, @FileId, @Layout)";
             var command = new CommandDefinition(sql, content, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
 
@@ -295,7 +295,7 @@ public class ArticleRepository : IArticleRepository
             var sql = @"UPDATE ArticleContent ac
                                 INNER JOIN Article a ON a.Id = ac.ArticleId 
                             SET 
-                                `Text` = @Text,
+                                FileId = @FileId,
                                 Layout = @Layout
                             WHERE a.Id= @ArticleId
                                 AND a.LibraryId = @LibraryId 
@@ -305,7 +305,7 @@ public class ArticleRepository : IArticleRepository
                 LibraryId = libraryId,
                 ArticleId = content.ArticleId,
                 Language = content.Language,
-                Text = content.Text,
+                FileId = content.FileId,
                 Layout = content.Layout
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);

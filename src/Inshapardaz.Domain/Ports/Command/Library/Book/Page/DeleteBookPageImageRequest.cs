@@ -1,6 +1,8 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,14 +26,13 @@ public class DeleteBookPageImageRequest : LibraryBaseCommand
 public class DeleteBookPageImageRequestHandler : RequestHandlerAsync<DeleteBookPageImageRequest>
 {
     private readonly IBookPageRepository _bookPageRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public DeleteBookPageImageRequestHandler(IBookPageRepository bookPageRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+    public DeleteBookPageImageRequestHandler(IBookPageRepository bookPageRepository, 
+        IAmACommandProcessor commandProcessor)
     {
         _bookPageRepository = bookPageRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -39,15 +40,9 @@ public class DeleteBookPageImageRequestHandler : RequestHandlerAsync<DeleteBookP
     {
         var bookPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
 
-        if (bookPage != null && bookPage.ImageId.HasValue)
+        if (bookPage != null)
         {
-            var existingImage = await _fileRepository.GetFileById(bookPage.ImageId.Value, cancellationToken);
-            if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
-            {
-                await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
-            }
-
-            await _fileRepository.DeleteFile(existingImage.Id, cancellationToken);
+            await _commandProcessor.SendAsync(new DeleteFileCommand(bookPage.ImageId), cancellationToken: cancellationToken);
             await _bookPageRepository.DeletePageImage(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
         }
 

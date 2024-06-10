@@ -1,10 +1,10 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,19 +33,16 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
 {
     private readonly IChapterRepository _chapterRepository;
     private readonly ILibraryRepository _libraryRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
 
     public AddChapterContentRequestHandler(
-        ILibraryRepository libraryRepository, 
-        IChapterRepository chapterRepository, 
-        IFileRepository fileRepository, 
-        IFileStorage fileStorage)
+        ILibraryRepository libraryRepository,
+        IChapterRepository chapterRepository,
+        IAmACommandProcessor commandProcessor)
     {
         _chapterRepository = chapterRepository;
         _libraryRepository = libraryRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -65,9 +62,14 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
         var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
         if (chapter != null)
         {
-            var fileName = $"{Guid.NewGuid().ToString("N")}.md";
-            var url = await StoreFile($"books/{command.BookId}/chapters/{fileName}", command.Contents, cancellationToken);
-            var file = await AddFile(fileName, url, MimeTypes.Markdown, cancellationToken);
+            var fileName = FilePathHelper.BookChapterContentFileName;
+
+            var saveFileCommand = new SaveTextFileCommand(fileName, FilePathHelper.GetBookChapterContentPath(command.BookId, fileName), command.Contents)
+            {
+                MimeType = MimeTypes.Markdown
+            };
+
+            await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
 
             var chapterContent = new ChapterContentModel
             {
@@ -75,7 +77,7 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
                 ChapterId = chapter.Id,
                 ChapterNumber = chapter.ChapterNumber,
                 Language = command.Language,
-                FileId = file?.Id
+                FileId = saveFileCommand.Result?.Id
             };
 
             command.Result = await _chapterRepository.AddChapterContent(command.LibraryId, chapterContent, cancellationToken);
@@ -83,22 +85,5 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
         }
 
         return await base.HandleAsync(command, cancellationToken);
-    }
-
-    private async Task<string> StoreFile(string filePath, string contents, CancellationToken cancellationToken)
-    {
-        return await _fileStorage.StoreTextFile(filePath, contents, cancellationToken);
-    }
-
-    private async Task<FileModel> AddFile(string fileName, string filePath, string mimeType, CancellationToken cancellationToken)
-    {
-        return await _fileRepository.AddFile(new FileModel
-        {
-            FileName = fileName,
-            FilePath = filePath,
-            MimeType = mimeType,
-            DateCreated = DateTime.Now,
-            IsPublic = false
-        }, cancellationToken);
     }
 }

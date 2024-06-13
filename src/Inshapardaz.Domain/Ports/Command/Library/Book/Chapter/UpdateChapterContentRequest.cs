@@ -78,7 +78,7 @@ public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChap
 
         var fileName = FilePathHelper.BookChapterContentFileName;
 
-        var saveFileCommand = new SaveTextFileCommand(fileName, FilePathHelper.GetBookChapterContentPath(command.BookId, fileName), command.Contents)
+        var saveFileCommand = new SaveTextFileCommand(fileName, FilePathHelper.GetBookChapterContentPath(command.LibraryId, command.BookId, fileName), command.Contents)
         {
             MimeType = MimeTypes.Markdown,
             ExistingFileId = content?.FileId

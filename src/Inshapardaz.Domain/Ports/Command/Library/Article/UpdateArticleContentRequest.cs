@@ -1,7 +1,9 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,11 +34,15 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateArti
 {
     private readonly IArticleRepository _articleRepository;
     private readonly ILibraryRepository _libraryRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public UpdateArticleContentRequestHandler(IArticleRepository articleRepository, ILibraryRepository libraryRepository)
+    public UpdateArticleContentRequestHandler(IArticleRepository articleRepository, 
+        ILibraryRepository libraryRepository, 
+        IAmACommandProcessor commandProcessor)
     {
         _articleRepository = articleRepository;
         _libraryRepository = libraryRepository;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -62,6 +68,19 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateArti
 
         var content = await _articleRepository.GetArticleContent(command.LibraryId, command.Content.ArticleId, command.Content.Language, cancellationToken);
 
+        var fileName = FilePathHelper.GetArticleContentFileName(command.Content.Language);
+        var saveFileCommand = new SaveTextFileCommand(
+            fileName,
+            FilePathHelper.GetArticleContentPath(command.LibraryId, command.Content.ArticleId, fileName),
+            command.Content.Text)
+        {
+            MimeType = MimeTypes.Markdown,
+            ExistingFileId = content?.FileId
+        }; 
+
+        await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+        command.Content.FileId = saveFileCommand.Result.Id;
+
         if (content == null)
         {
             command.Result.Content = await _articleRepository.AddArticleContent(
@@ -75,6 +94,11 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateArti
             command.Result.Content = await _articleRepository.UpdateArticleContent(command.LibraryId,
                                                     command.Content,
                                                     cancellationToken);
+        }
+
+        if (command.Result.Content != null)
+        {
+            command.Result.Content.Text = command.Content.Text;
         }
 
         return await base.HandleAsync(command, cancellationToken);

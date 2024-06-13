@@ -1,8 +1,10 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,16 +26,16 @@ public class AddArticleContentRequest : LibraryBaseCommand
 public class AddArticleContentRequestHandler : RequestHandlerAsync<AddArticleContentRequest>
 {
     private readonly IArticleRepository _articleRepository;
-    private readonly IFileStorage _fileStorage;
     private readonly ILibraryRepository _libraryRepository;
-    private readonly IFileRepository _fileRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public AddArticleContentRequestHandler(IArticleRepository articleRepository, IFileStorage fileStorage, ILibraryRepository libraryRepository, IFileRepository fileRepository)
+    public AddArticleContentRequestHandler(IArticleRepository articleRepository,
+        ILibraryRepository libraryRepository,
+        IAmACommandProcessor commandProcessor)
     {
         _articleRepository = articleRepository;
-        _fileStorage = fileStorage;
         _libraryRepository = libraryRepository;
-        _fileRepository = fileRepository;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -52,13 +54,27 @@ public class AddArticleContentRequestHandler : RequestHandlerAsync<AddArticleCon
 
         var article = await _articleRepository.GetArticle(command.LibraryId, command.Content.ArticleId, cancellationToken);
 
-        if (article != null)
+        if (article == null)
         {
-            command.Result = await _articleRepository.AddArticleContent(
-                command.LibraryId,
-                command.Content,
-                cancellationToken);
+            throw new BadRequestException();
         }
+
+        var fileName = FilePathHelper.GetArticleContentFileName(command.Content.Language);
+        var saveFileCommand = new SaveTextFileCommand(
+            fileName,
+            FilePathHelper.GetArticleContentPath(command.LibraryId, command.Content.ArticleId, fileName),
+            command.Content.Text)
+        {
+            MimeType = MimeTypes.Markdown
+        };
+
+        await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+        command.Content.FileId = saveFileCommand.Result.Id;
+
+        command.Result = await _articleRepository.AddArticleContent(
+            command.LibraryId,
+            command.Content,
+            cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);
     }

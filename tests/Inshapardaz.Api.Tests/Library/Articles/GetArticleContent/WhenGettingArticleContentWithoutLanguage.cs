@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
         {
             _article = ArticleBuilder.WithLibrary(LibraryId).WithContent().WithContentLanguage(Library.Language).Build();
             _content = ArticleBuilder.Contents.Single(x => x.ArticleId == _article.Id);
-
+            
             _response = await Client.GetAsync($"/libraries/{LibraryId}/articles/{_article.Id}/contents");
             _assert = new ArticleContentAssert(_response, Library);
         }
@@ -65,7 +65,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
         [Test]
         public void ShouldHaveTextReturened()
         {
-            _assert.ShouldHaveText(_content.Text);
+            _assert.ShouldHaveText(_content, DatabaseConnection, FileStore);
         }
 
         [Test]

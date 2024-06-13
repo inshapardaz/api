@@ -47,7 +47,7 @@ public class IssuePageOcrRequestHandler : RequestHandlerAsync<IssuePageOcrReques
         var issuePage = await _issuePageRepository.GetPageBySequenceNumber(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
         if (issuePage != null && issuePage.ImageId.HasValue)
         {
-            var image = await _queryProcessor.ExecuteAsync(new GetFileQuery(issuePage.ImageId.Value, 0, 0));
+            var image = await _queryProcessor.ExecuteAsync(new GetFileQuery(issuePage.ImageId.Value));
 
             if (image != null)
             {

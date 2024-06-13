@@ -10,4 +10,5 @@ public class ArticleContentModel
     public string Language { get; set; }
     public string Layout { get; set; }
     public long? FileId { get; set; }
+    public long? ImageId { get; set; }
 }

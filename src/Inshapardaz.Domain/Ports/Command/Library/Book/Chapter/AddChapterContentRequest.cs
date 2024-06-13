@@ -64,7 +64,7 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
         {
             var fileName = FilePathHelper.BookChapterContentFileName;
 
-            var saveFileCommand = new SaveTextFileCommand(fileName, FilePathHelper.GetBookChapterContentPath(command.BookId, fileName), command.Contents)
+            var saveFileCommand = new SaveTextFileCommand(fileName, FilePathHelper.GetBookChapterContentPath(command.LibraryId, command.BookId, fileName), command.Contents)
             {
                 MimeType = MimeTypes.Markdown
             };

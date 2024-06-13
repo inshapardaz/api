@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,16 +22,13 @@ public class DeleteChapterRequest : BookRequest
 public class DeleteChapterRequestHandler : RequestHandlerAsync<DeleteChapterRequest>
 {
     private readonly IChapterRepository _chapterRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStore;
+    private readonly IAmACommandProcessor _commandProcessor;
 
     public DeleteChapterRequestHandler(IChapterRepository chapterRepository,
-        IFileRepository fileRepository,
-        IFileStorage fileStore)
+        IAmACommandProcessor commandProcessor)
     {
         _chapterRepository = chapterRepository;
-        _fileRepository = fileRepository;
-        _fileStore = fileStore;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -42,9 +40,7 @@ public class DeleteChapterRequestHandler : RequestHandlerAsync<DeleteChapterRequ
         {
             foreach (var chapterContent in chapterContents)
             {
-                var file = await _fileRepository.GetFileById(chapterContent.FileId.Value, cancellationToken);
-                await _fileStore.DeleteFile(file.FilePath, cancellationToken);
-                await _fileRepository.DeleteFile(file.Id, cancellationToken);
+                await _commandProcessor.SendAsync(new DeleteTextFileCommand(chapterContent.FileId), cancellationToken: cancellationToken);
             }
         }
 

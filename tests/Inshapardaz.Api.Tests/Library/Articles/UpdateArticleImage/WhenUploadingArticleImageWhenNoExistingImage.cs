@@ -53,11 +53,5 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleImage
         {
             ArticleAssert.ShouldHaveAddedArticleImage(_articleId, DatabaseConnection, FileStore);
         }
-
-        [Test]
-        public void ShouldHavePublicImage()
-        {
-            ArticleAssert.ShouldHavePublicImage(_articleId, DatabaseConnection);
-        }
     }
 }

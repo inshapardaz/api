@@ -10,16 +10,14 @@ namespace Inshapardaz.Domain.Ports.Query.File;
 
 public class GetFileQuery : IQuery<FileModel>
 {
-    public GetFileQuery(long imageId, int height, int width)
+    public GetFileQuery(long fileId)
     {
-        ImageId = imageId;
-        Height = height;
-        Width = width;
+        FileId = fileId;
     }
 
-    public long ImageId { get; private set; }
-    public int Height { get; private set; }
-    public int Width { get; private set; }
+    public long FileId { get; private set; }
+    public int Height { get; set; }
+    public int Width { get; set; }
     public bool IsPublic { get; set; }
 }
 
@@ -36,7 +34,7 @@ public class GetFileRequestHandler : QueryHandlerAsync<GetFileQuery, FileModel>
 
     public override async Task<FileModel> ExecuteAsync(GetFileQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
-        var file = await _fileRepository.GetFileById(query.ImageId, cancellationToken);
+        var file = await _fileRepository.GetFileById(query.FileId, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(file.FilePath))
         {

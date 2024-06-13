@@ -450,28 +450,6 @@ namespace Inshapardaz.Database.Migrations
                     .ForeignKey("FK_IssueContent_File", Schemas.Library, Tables.File, Columns.Id).OnDelete(System.Data.Rule.Cascade);
             //--------------------------------------------------------------------------------
 
-            Create.Table(Tables.IssuePage)
-                .InSchema(Schemas.Library)
-                .WithColumn(Columns.Id).AsInt64().PrimaryKey().Identity()
-                .WithColumn("IssueId").AsInt32().NotNullable().Indexed("IX_IssuePage_IssueId")
-                    .ForeignKey("FK_IssuePage_Issue", Schemas.Library, Tables.Issue, Columns.Id).OnDelete(System.Data.Rule.Cascade)
-                .WithColumn("Text").AsString(int.MaxValue).Nullable()
-                .WithColumn(Columns.FileId).AsInt64().Nullable()
-                    .ForeignKey("FK_IssuePageContent_File", Schemas.Library, Tables.File, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
-                .WithColumn("ArticleId").AsInt64().Nullable()
-                    .ForeignKey("FK_IssuePage_IssueArticle", Schemas.Library, "IssueArticle", Columns.Id)
-                .WithColumn("SequenceNumber").AsInt32().Nullable()
-                .WithColumn("ImageId").AsInt64().Nullable()
-                    .ForeignKey("FK_IssuePage_Image", Schemas.Library, Tables.File, Columns.Id).OnDelete(System.Data.Rule.SetNull)
-                .WithColumn("Status").AsInt32().WithDefaultValue(0)
-                .WithColumn("WriterAccountId").AsInt32().Nullable()
-                        .ForeignKey("FK_IssuePage_Writer_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id)
-                .WithColumn("WriterAssignTimeStamp").AsDateTime2().Nullable()
-                .WithColumn("ReviewerAccountId").AsInt32().Nullable()
-                        .ForeignKey("FK_IssuePage_Reviewer_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id)
-                .WithColumn("ReviewerAssignTimeStamp").AsDateTime2().Nullable();
-            //--------------------------------------------------------------------------------
-
             Create.Table("IssueArticle")
                     .InSchema(Schemas.Library)
                     .WithColumn(Columns.Id).AsInt64().PrimaryKey("PK_IssueArticle").Identity()
@@ -501,6 +479,28 @@ namespace Inshapardaz.Database.Migrations
             Create.PrimaryKey("PK_IssueArticleAuthor")
                 .OnTable("IssueArticleAuthor").WithSchema(Schemas.Library)
                 .Columns("IssueArticleId", "AuthorId");
+            //--------------------------------------------------------------------------------
+
+            Create.Table(Tables.IssuePage)
+                .InSchema(Schemas.Library)
+                .WithColumn(Columns.Id).AsInt64().PrimaryKey().Identity()
+                .WithColumn("IssueId").AsInt32().NotNullable().Indexed("IX_IssuePage_IssueId")
+                    .ForeignKey("FK_IssuePage_Issue", Schemas.Library, Tables.Issue, Columns.Id).OnDelete(System.Data.Rule.Cascade)
+                .WithColumn("Text").AsString(int.MaxValue).Nullable()
+                .WithColumn(Columns.FileId).AsInt64().Nullable()
+                    .ForeignKey("FK_IssuePageContent_File", Schemas.Library, Tables.File, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
+                .WithColumn("ArticleId").AsInt64().Nullable()
+                    .ForeignKey("FK_IssuePage_IssueArticle", Schemas.Library, "IssueArticle", Columns.Id)
+                .WithColumn("SequenceNumber").AsInt32().Nullable()
+                .WithColumn("ImageId").AsInt64().Nullable()
+                    .ForeignKey("FK_IssuePage_Image", Schemas.Library, Tables.File, Columns.Id).OnDelete(System.Data.Rule.SetNull)
+                .WithColumn("Status").AsInt32().WithDefaultValue(0)
+                .WithColumn("WriterAccountId").AsInt32().Nullable()
+                        .ForeignKey("FK_IssuePage_Writer_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id)
+                .WithColumn("WriterAssignTimeStamp").AsDateTime2().Nullable()
+                .WithColumn("ReviewerAccountId").AsInt32().Nullable()
+                        .ForeignKey("FK_IssuePage_Reviewer_Accounts", Schemas.Dbo, Tables.Accounts, Columns.Id)
+                .WithColumn("ReviewerAssignTimeStamp").AsDateTime2().Nullable();
             //--------------------------------------------------------------------------------
 
             Create.Table("IssueArticleContent").InSchema(Schemas.Library)

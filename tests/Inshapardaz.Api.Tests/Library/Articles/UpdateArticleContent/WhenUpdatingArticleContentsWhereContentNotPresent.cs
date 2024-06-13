@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
         [Test]
         public void ShouldSaveTheArticleContent()
         {
-            _assert.ShouldHaveSavedArticleContent(DatabaseConnection);
+            _assert.ShouldHaveSavedArticleContent(DatabaseConnection, FileStore);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
         [Test]
         public void ShouldHaveCorrectContentSaved()
         {
-            _assert.ShouldHaveSavedCorrectText(_newContents, DatabaseConnection);
+            _assert.ShouldHaveSavedCorrectText(_newContents, DatabaseConnection, FileStore);
         }
 
         [Test]

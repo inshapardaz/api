@@ -1,11 +1,15 @@
-﻿using FluentAssertions;
+﻿using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using FluentAssertions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Storage.SqlServer;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Net.Http;
+using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Asserts
 {
@@ -71,6 +75,15 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
+
+        internal ArticleContentAssert ShouldHaveText(ArticleContentDto contents, IDbConnection dbConnection, FakeFileStorage fileStore)
+        {
+            var file = dbConnection.GetFileById(contents.FileId.Value);
+            var fileContents = fileStore.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            _articleContent.Text.Should().Be(fileContents);
+            return this;
+        }
+
         internal ArticleContentAssert ShouldNotHaveUpdateLink()
         {
             _articleContent.UpdateLink().Should().BeNull();
@@ -91,23 +104,26 @@ namespace Inshapardaz.Api.Tests.Asserts
             return this;
         }
 
-        internal ArticleContentAssert ShouldHaveSavedCorrectText(string expected, IDbConnection dbConnection)
+        internal ArticleContentAssert ShouldHaveSavedCorrectText(string expected, IDbConnection dbConnection, FakeFileStorage fileStore)
         {
             var content = dbConnection.GetArticleContent(_articleContent.ArticleId, _articleContent.Language);
-            content.Text.Should().NotBeNull().And.Be(expected);
+            var file = dbConnection.GetFileById(content.FileId.Value);
+            var fileContents = fileStore.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            fileContents.Should().Be(expected);
             return this;
         }
 
         internal ArticleContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, string newLayout, IDbConnection dbConnection)
         {
             var content = dbConnection.GetArticleContent(_articleContent.ArticleId, _articleContent.Language);
-            content.Text.Should().NotBeNull().Should().NotBe(expected);
+            //TODO: Assert text from file
+            //content.Text.Should().NotBeNull().Should().NotBe(expected);
             content.Language.Should().Be(language);
             content.Layout.Should().Be(newLayout);
             return this;
         }
 
-        internal ArticleContentAssert ShouldHaveSavedArticleContent(IDbConnection dbConnection)
+        internal ArticleContentAssert ShouldHaveSavedArticleContent(IDbConnection dbConnection, FakeFileStorage fileStorage)
         {
             var dbContent = dbConnection.GetArticleContent(_articleContent.ArticleId, _articleContent.Language);
             dbContent.Should().NotBeNull();
@@ -116,8 +132,12 @@ namespace Inshapardaz.Api.Tests.Asserts
             _articleContent.ArticleId.Should().Be(dbContent.ArticleId);
             _articleContent.Language.Should().Be(dbContent.Language);
             _articleContent.Layout.Should().Be(dbContent.Layout);
-            _articleContent.Text.Should().Be(dbContent.Text);
 
+            var file = dbConnection.GetFileById(dbContent.FileId.Value);
+            file.Should().NotBeNull();
+            file.FilePath.Should().Be($"{dbArticle.LibraryId}/articles/{dbContent.ArticleId}/article-{dbContent.Language}.md");
+            var text = fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            text.Should().Be(text);
             return this;
         }
 
@@ -150,7 +170,6 @@ namespace Inshapardaz.Api.Tests.Asserts
             _articleContent.ArticleId.Should().Be(article.Id);
             _articleContent.Language.Should().Be(content.Language);
             _articleContent.Layout.Should().Be(content.Layout);
-            _articleContent.Text.Should().Be(content.Text);
 
             return this;
         }

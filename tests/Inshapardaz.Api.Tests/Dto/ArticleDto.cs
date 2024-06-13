@@ -53,9 +53,9 @@ namespace Inshapardaz.Api.Tests.Dto
 
         public string Language { get; set; }
 
-        public string Text { get; set; }
-
         public string Layout { get; set; }
+
+        public long? FileId { get; set; }
     }
 
     public class RecentArticleDto

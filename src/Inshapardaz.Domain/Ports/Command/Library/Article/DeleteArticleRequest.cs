@@ -1,5 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Command.File;
+using Org.BouncyCastle.Asn1.Cms;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,16 +22,32 @@ public class DeleteArticleRequest : LibraryBaseCommand
 public class DeleteArticleRequestHandler : RequestHandlerAsync<DeleteArticleRequest>
 {
     private readonly IArticleRepository _articleRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public DeleteArticleRequestHandler(IArticleRepository articleRepository)
+    public DeleteArticleRequestHandler(IArticleRepository articleRepository, IAmACommandProcessor commandProcessor)
     {
         _articleRepository = articleRepository;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<DeleteArticleRequest> HandleAsync(DeleteArticleRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        await _articleRepository.DeleteArticle(command.LibraryId, command.ArticleId, cancellationToken);
+        var article = await _articleRepository.GetArticle(command.LibraryId, command.ArticleId, cancellationToken);
+        if (article is not null)
+        {
+            foreach (var content in article.Contents)
+            {
+                await _commandProcessor.SendAsync(new DeleteTextFileCommand(content.FileId), cancellationToken: cancellationToken);
+            }
+
+            if (article.ImageId.HasValue)
+            {
+                await _commandProcessor.SendAsync(new DeleteFileCommand(article.ImageId), cancellationToken: cancellationToken);
+            }
+
+            await _articleRepository.DeleteArticle(command.LibraryId, command.ArticleId, cancellationToken);
+        }
 
         return await base.HandleAsync(command, cancellationToken);
     }

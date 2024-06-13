@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Tests.DataHelpers
             connection.Execute(_dbType == DatabaseTypes.SqlServer ? sql : mySql, new { Ids = files.Select(f => f.Id) });
         }
 
-        public static FileDto GetFileById(this IDbConnection connection, int fileId)
+        public static FileDto GetFileById(this IDbConnection connection, long fileId)
         {
             var sql = "Select * From [File] Where Id = @Id";
             var mySql = "Select * From `File` Where Id = @Id";

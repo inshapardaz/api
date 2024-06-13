@@ -52,7 +52,7 @@ public class BookPageOcrRequestHandler : RequestHandlerAsync<BookPageOcrRequest>
         var bookPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
         if (bookPage != null && bookPage.ImageId.HasValue)
         {
-            var image = await _queryProcessor.ExecuteAsync(new GetFileQuery(bookPage.ImageId.Value, 0, 0), cancellationToken);
+            var image = await _queryProcessor.ExecuteAsync(new GetFileQuery(bookPage.ImageId.Value), cancellationToken);
 
             if (image != null)
             {

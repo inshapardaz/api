@@ -67,7 +67,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleContent
         [Test]
         public void ShouldHaceCorrectContentSaved()
         {
-            _assert.ShouldHaveSavedArticleContent(DatabaseConnection);
+            _assert.ShouldHaveSavedArticleContent(DatabaseConnection, FileStore);
         }
     }
 }

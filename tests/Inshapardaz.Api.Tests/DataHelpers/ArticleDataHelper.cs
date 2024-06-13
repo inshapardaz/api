@@ -85,11 +85,11 @@ namespace Inshapardaz.Api.Tests.DataHelpers
         public static int AddArticleContents(this IDbConnection connection, ArticleContentDto content)
         {
             var sql = _dbType == DatabaseTypes.SqlServer 
-            ? @"INSERT INTO ArticleContent (ArticleId, Language, Text, Layout)
+            ? @"INSERT INTO ArticleContent (ArticleId, Language, FileId, Layout)
                 OUTPUT Inserted.ID
-                VALUES (@ArticleId, @Language, @Text, @Layout)"
-            : @"INSERT INTO ArticleContent (ArticleId, `Language`, `Text`, `Layout`)
-                VALUES (@ArticleId, @Language, @Text, @Layout);
+                VALUES (@ArticleId, @Language, @FileId, @Layout)"
+            : @"INSERT INTO ArticleContent (ArticleId, `Language`, FileId, `Layout`)
+                VALUES (@ArticleId, @Language, @FileId, @Layout);
                 SELECT LAST_INSERT_ID();";
             return connection.ExecuteScalar<int>(sql, content);
         }

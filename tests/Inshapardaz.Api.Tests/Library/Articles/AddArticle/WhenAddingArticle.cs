@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticle
             var article = new ArticleView
             {
                 Title = RandomData.Name,
-                Authors = new List<AuthorView> { new AuthorView { Id = author.Id } },
+                Authors = new List<AuthorView> { new AuthorView { Id = author.Id } }
             };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/articles", article);

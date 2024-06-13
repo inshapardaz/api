@@ -58,6 +58,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
         public IEnumerable<ArticleDto> Articles => _articles;
         public IEnumerable<FavoriteArticleDto> FavoriteArticles => _favoriteArticles;
         public IEnumerable<ArticleContentDto> Contents => _contents;
+        public IEnumerable<FileDto> Files => _files;
         public IEnumerable<RecentArticleDto> RecentReads => _recentArticles;
 
         public ArticlesDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage,
@@ -287,12 +288,23 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                     {
                         ArticleId = article.Id,
                         Language = _language ?? RandomData.NextLocale(),
-                        Text = RandomData.Words(100),
                         Layout = RandomData.String
                     }).ToList();
-                    contents.ForEach(f =>
+                    contents.ForEach(ac =>
                     {
-                        f.Id = _connection.AddArticleContents(f);
+                        var articleContentFile = fixture.Build<FileDto>()
+                                    .With(a => a.FilePath, RandomData.FilePath)
+                                    .With(a => a.IsPublic, false)
+                                    .With(a => a.MimeType, MimeTypes.Markdown)
+                                    .Create();
+                        _connection.AddFile(articleContentFile);
+                        _files.Add(articleContentFile);
+
+                        var articleContentData = RandomData.Text;
+                        _fileStorage.SetupFileContents(articleContentFile.FilePath, articleContentData);
+                        ac.FileId = articleContentFile.Id;
+
+                        ac.Id = _connection.AddArticleContents(ac);
                     });
                     _contents.AddRange(contents);
                 }

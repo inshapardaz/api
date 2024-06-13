@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,10 +23,13 @@ public class DeleteArticleContentRequest : LibraryBaseCommand
 public class DeleteArticleContentRequestHandler : RequestHandlerAsync<DeleteArticleContentRequest>
 {
     private readonly IArticleRepository _articleRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public DeleteArticleContentRequestHandler(IArticleRepository articleRepository)
+    public DeleteArticleContentRequestHandler(IArticleRepository articleRepository, 
+        IAmACommandProcessor commandProcessor)
     {
         _articleRepository = articleRepository;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -35,6 +39,7 @@ public class DeleteArticleContentRequestHandler : RequestHandlerAsync<DeleteArti
 
         if (content != null)
         {
+            await _commandProcessor.SendAsync(new DeleteTextFileCommand(content.FileId), cancellationToken: cancellationToken);
             await _articleRepository.DeleteArticleContent(command.LibraryId, command.ArticleId, command.Language, cancellationToken);
         }
 

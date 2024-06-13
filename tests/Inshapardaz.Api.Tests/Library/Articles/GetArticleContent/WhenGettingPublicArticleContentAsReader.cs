@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
         [Test]
         public void ShouldHaveTextReturened()
         {
-            _assert.ShouldHaveText(_content.Text);
+            _assert.ShouldHaveText(_content, DatabaseConnection, FileStore);
         }
 
         [Test]

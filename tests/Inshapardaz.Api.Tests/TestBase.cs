@@ -129,7 +129,8 @@ namespace Inshapardaz.Api.Tests
             .AddTransient<AccountAssert>()
             .AddTransient<CorrectionBuilder>()
             .AddTransient<BookShelfDataBuilder>()
-            .AddTransient<ArticlesDataBuilder>();
+            .AddTransient<ArticlesDataBuilder>()
+            .AddTransient<FileStoreAssert>();
         }
 
         protected void AuthenticateClientWithToken(string token)
@@ -165,6 +166,7 @@ namespace Inshapardaz.Api.Tests
         protected CorrectionBuilder _correctionBuilder;
         private BookShelfDataBuilder _bookshelfDataBuilder;
         private ArticlesDataBuilder _articleBuilder;
+        private FileStoreAssert _fileStoreAssert;
 
         protected Role? CurrentAuthenticationLevel => _role;
 
@@ -312,6 +314,20 @@ namespace Inshapardaz.Api.Tests
                 return _correctionBuilder;
             }
         }
+
+        protected FileStoreAssert FileAssert
+        {
+            get
+            {
+                if (_fileStoreAssert == null)
+                {
+                    _fileStoreAssert = _factory.Services.GetService<FileStoreAssert>();
+                }
+
+                return _fileStoreAssert;
+            }
+        }
+
         protected virtual void Cleanup()
         {
             _booksDataBuilder?.CleanUp();

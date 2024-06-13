@@ -48,5 +48,12 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticleContent
         {
             ArticleContentAssert.ShouldHaveDeletedContent(DatabaseConnection, _content);
         }
+
+        [Test]
+        public void ShouldHaveDeletedArticleContentFiles()
+        {
+            var file = ArticleBuilder.Files.Single(x => x.Id == _content.FileId);
+            FileAssert.FileDoesnotExist(file);
+        }
     }
 }

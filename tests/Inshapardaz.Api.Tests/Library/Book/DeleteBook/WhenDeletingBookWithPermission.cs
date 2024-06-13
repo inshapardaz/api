@@ -18,7 +18,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         private HttpResponseMessage _response;
 
         private BookDto _expected;
-
+        private string _imageFilePath;
         private int _authorId;
 
         public WhenDeletingBookWithPermission(Role role) : base(role)
@@ -38,6 +38,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
             _authorId = BookBuilder.Authors.First().Id;
             _expected = books.PickRandom();
 
+            
+            _imageFilePath = DatabaseConnection.GetFileById(_expected.ImageId.Value).FilePath;
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{_expected.Id}");
         }
 
@@ -62,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         [Test]
         public void ShouldHaveDeletedTheBookImage()
         {
-            BookAssert.ShouldHaveDeletedBookImage(_expected.Id, DatabaseConnection);
+            BookAssert.ShouldHaveDeletedBookImage(_expected.Id, _expected.ImageId, _imageFilePath, DatabaseConnection, FileStore);
         }
 
         [Test]
@@ -80,6 +82,20 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         [Test]
         public void ShouldNotHaveDeletedTheCategory()
         {
+            var cats = DatabaseConnection.GetCategoriesByBook(_expected.Id);
+            cats.ForEach(cat => CategoryAssert.ShouldNotHaveDeletedCategory(LibraryId, cat.Id, DatabaseConnection));
+        }
+
+        [Test]
+        public void ShouldNotHaveDeletedAllChapters()
+        {
+            var chapters = BookBuilder.Chapters.Where(c => c.BookId == _expected.Id).ToList();
+
+            foreach (var chapter in chapters)
+            {
+                ChapterAssert.ShouldHaveDeletedChapter(chapter.Id, DatabaseConnection);
+            }
+
             var cats = DatabaseConnection.GetCategoriesByBook(_expected.Id);
             cats.ForEach(cat => CategoryAssert.ShouldNotHaveDeletedCategory(LibraryId, cat.Id, DatabaseConnection));
         }

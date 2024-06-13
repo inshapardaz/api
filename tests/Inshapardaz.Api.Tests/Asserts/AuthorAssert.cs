@@ -1,11 +1,13 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
 using System.Data;
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 
@@ -188,16 +190,21 @@ namespace Inshapardaz.Api.Tests.Asserts
 
         internal static void ShouldHaveAddedAuthorImage(int authorId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
         {
-            var imageUrl = dbConnection.GetAuthorImageUrl(authorId);
-            imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var author = dbConnection.GetAuthorById(authorId);
+            author.ImageId.Should().NotBeNull();
+            var file = dbConnection.GetFileById(author.ImageId.Value);
+            file.FilePath.Should().Be($"{author.LibraryId}/authors/{author.Id}/image{Path.GetExtension(file.FileName)}");
+            var image = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty().And.Equal(newImage);
         }
 
-        internal static void ShouldHaveDeletedAuthorImage(int authorId, IDbConnection dbConnection)
+        internal static void ShouldHaveDeletedAuthorImage(int authorId, long imageId, string filePath, IDbConnection dbConnection, FakeFileStorage fileStorage)
         {
             var image = dbConnection.GetAuthorImage(authorId);
             image.Should().BeNull();
+            var file = dbConnection.GetFileById(imageId);
+            file.Should().BeNull();
+            fileStorage.DoesFileExists(filePath).Should().BeFalse();
         }
 
         internal static void ShouldHaveDeletedAuthor(int authorId, IDbConnection dbConnection)

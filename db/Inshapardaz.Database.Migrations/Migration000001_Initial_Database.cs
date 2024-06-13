@@ -69,6 +69,7 @@ namespace Inshapardaz.Database.Migrations
                 .InSchema(Schemas.Library)
                 .WithColumn(Columns.Id).AsInt64().PrimaryKey().Identity()
                 .WithColumn(Columns.DateCreated).AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime)
+                .WithColumn("DateUpdated").AsDateTime2().WithDefaultValue(SystemMethods.CurrentDateTime)
                 .WithColumn("FileName").AsString(int.MaxValue).Nullable()
                 .WithColumn("MimeType").AsString(int.MaxValue).Nullable()
                 .WithColumn("FilePath").AsString(int.MaxValue).Nullable()

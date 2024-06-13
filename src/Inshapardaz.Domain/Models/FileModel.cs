@@ -17,4 +17,5 @@ public class FileModel
     public byte[] Contents { get; set; }
 
     public string FilePath { get; set; }
+    public DateTime DateUpdated { get; set; }
 }

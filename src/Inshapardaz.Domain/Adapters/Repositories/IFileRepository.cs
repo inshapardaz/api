@@ -10,7 +10,7 @@ public interface IFileRepository
 
     Task<FileModel> AddFile(FileModel file, CancellationToken cancellationToken);
 
-    Task UpdateFile(FileModel file, CancellationToken cancellationToken);
+    Task<FileModel> UpdateFile(FileModel file, CancellationToken cancellationToken);
 
     Task DeleteFile(long id, CancellationToken cancellationToken);
 }

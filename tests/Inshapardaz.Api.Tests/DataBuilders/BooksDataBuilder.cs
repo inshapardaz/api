@@ -12,6 +12,8 @@ using RandomData = Inshapardaz.Api.Tests.Helpers.RandomData;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;
+using System.Runtime.CompilerServices;
+using Inshapardaz.Domain.Helpers;
 
 namespace Inshapardaz.Api.Tests.DataBuilders
 {
@@ -62,6 +64,8 @@ namespace Inshapardaz.Api.Tests.DataBuilders
 
         public IEnumerable<AuthorDto> Authors => _authors;
         public IEnumerable<BookDto> Books => _books;
+        public IEnumerable<ChapterDto> Chapters => _chapters;
+        public IEnumerable<FileDto> Files => _files;
         public IEnumerable<BookContentDto> Contents => _contents;
         public IEnumerable<RecentBookDto> RecentReads => _recentBooks;
 
@@ -304,8 +308,9 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 if (_contentCount > 0)
                 {
                     var mimeType = _contentMimeType ?? RandomData.MimeType;
+                    var filePath = FilePathHelper.GetBookChapterContentPath(_libraryId, book.Id, FilePathHelper.GetBookContentFileName(RandomData.FileName(mimeType)));
                     files = fixture.Build<FileDto>()
-                                         .With(f => f.FilePath, RandomData.FilePath)
+                                         .With(f => f.FilePath, filePath)
                                          .With(f => f.IsPublic, false)
                                          .With(f => f.MimeType, mimeType)
                                          .CreateMany(_contentCount)

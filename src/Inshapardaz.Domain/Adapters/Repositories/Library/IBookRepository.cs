@@ -30,18 +30,18 @@ public interface IBookRepository
     Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, StatusType status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
     Task DeleteBookFromFavorites(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
 
-    Task<int> AddBookContent(int bookId, long fileId, string language, string mimeType, CancellationToken cancellationToken);
+    Task<int> AddBookContent(int bookId, long fileId, string language, CancellationToken cancellationToken);
 
     Task DeleteBookContent(int libraryId, int bookId, int contentId, CancellationToken cancellationToken);
 
     Task<BookContentModel> GetBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken);
-    Task<BookContentModel> GetBookContent(int libraryId, int bookId, int conetntId, CancellationToken cancellationToken);
+    Task<BookContentModel> GetBookContent(int libraryId, int bookId, long conetntId, CancellationToken cancellationToken);
 
     Task<IEnumerable<BookContentModel>> GetBookContents(int libraryId, int bookId, CancellationToken cancellationToken);
 
     Task UpdateBookImage(int libraryId, int bookId, long fileId, CancellationToken cancellationToken);
 
-    Task UpdateBookContent(int libraryId, int bookId, int contentId, string language, string mimeType, string url, CancellationToken cancellationToken);
+    Task UpdateBookContent(int libraryId, int bookId, int contentId, string language, CancellationToken cancellationToken);
 
     Task<IEnumerable<BookPageSummaryModel>> GetBookPageSummary(int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken);
 

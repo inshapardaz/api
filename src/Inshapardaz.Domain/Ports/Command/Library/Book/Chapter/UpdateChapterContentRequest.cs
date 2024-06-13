@@ -99,7 +99,7 @@ public class UpdateChapterContentRequestHandler : RequestHandlerAsync<UpdateChap
 
             command.Result.ChapterContent = await _chapterRepository.AddChapterContent(command.LibraryId,
                                                                                       chapterContent,
-                                                                                       cancellationToken);
+                                                                                      cancellationToken);
             command.Result.ChapterContent.Text = command.Contents;
             command.Result.HasAddedNew = true;
         }

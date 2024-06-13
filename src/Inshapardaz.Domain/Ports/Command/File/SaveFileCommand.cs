@@ -45,8 +45,16 @@ public class SaveFileCommandHandler : RequestHandlerAsync<SaveFileCommand>
         if (command.ExistingFileId.HasValue)
         {
             var file = await _fileRepository.GetFileById(command.ExistingFileId.Value, cancellationToken);
-            var url = await _fileStorage.StoreFile(file.FilePath, command.Contents, cancellationToken);
-            command.Result = file;
+            await _fileStorage.DeleteFile(file.FilePath, cancellationToken);
+            var url = await _fileStorage.StoreFile(command.Path, command.Contents, cancellationToken);
+            command.Result = await _fileRepository.UpdateFile(new FileModel
+            {
+                Id = command.ExistingFileId.Value,
+                FileName = command.FileName,
+                FilePath = command.Path,
+                MimeType = command.MimeType,
+                IsPublic = command.IsPublic
+            }, cancellationToken);
         }
         else 
         {
@@ -56,7 +64,6 @@ public class SaveFileCommandHandler : RequestHandlerAsync<SaveFileCommand>
                 FileName = command.FileName,
                 FilePath = command.Path,
                 MimeType = command.MimeType,
-                DateCreated = DateTime.Now,
                 IsPublic = command.IsPublic
             }, cancellationToken);
         }

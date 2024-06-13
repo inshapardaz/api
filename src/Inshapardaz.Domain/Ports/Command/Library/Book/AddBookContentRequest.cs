@@ -1,10 +1,9 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,14 +34,12 @@ public class AddBookContentRequest : LibraryBaseCommand
 public class AddBookFileRequestHandler : RequestHandlerAsync<AddBookContentRequest>
 {
     private readonly IBookRepository _bookRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public AddBookFileRequestHandler(IBookRepository bookRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+    public AddBookFileRequestHandler(IBookRepository bookRepository,  IAmACommandProcessor commandProcessor)
     {
         _bookRepository = bookRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -69,27 +66,21 @@ public class AddBookFileRequestHandler : RequestHandlerAsync<AddBookContentReque
                 }
             }
 
-            var url = await StoreFile(book.Id, command.Content.FileName, command.Content.Contents, cancellationToken);
-            command.Content.FilePath = url;
-            command.Content.IsPublic = true;
-            var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-            var contentId = await _bookRepository.AddBookContent(book.Id, file.Id, command.Language, command.MimeType, cancellationToken);
+            var fileName = FilePathHelper.GetBookContentFileName(command.Content.FileName);
+
+            var saveFileCommand = new SaveFileCommand(fileName, FilePathHelper.GetBookContentPath(command.LibraryId, command.BookId, fileName), command.Content.Contents)
+            {
+                MimeType = command.Content.MimeType,
+                IsPublic = command.Content.IsPublic
+            };
+
+            await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+
+            var contentId = await _bookRepository.AddBookContent(book.Id, saveFileCommand.Result.Id, book.Language, cancellationToken);
 
             command.Result = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, contentId, cancellationToken); ;
         }
 
         return await base.HandleAsync(command, cancellationToken);
-    }
-
-    private async Task<string> StoreFile(int bookId, string fileName, byte[] contents, CancellationToken cancellationToken)
-    {
-        var filePath = GetUniqueFileName(bookId, fileName);
-        return await _fileStorage.StoreFile(filePath, contents, cancellationToken);
-    }
-
-    private static string GetUniqueFileName(int bookId, string fileName)
-    {
-        var fileNameWithoutExtension = Path.GetExtension(fileName).Trim('.');
-        return $"books/{bookId}/{Guid.NewGuid():N}.{fileNameWithoutExtension}";
     }
 }

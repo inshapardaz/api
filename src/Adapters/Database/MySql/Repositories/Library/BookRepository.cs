@@ -599,7 +599,7 @@ public class BookRepository : IBookRepository
         }
     }
 
-    public async Task<BookContentModel> GetBookContent(int libraryId, int bookId, int contentId, CancellationToken cancellationToken)
+    public async Task<BookContentModel> GetBookContent(int libraryId, int bookId, long contentId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -630,33 +630,28 @@ public class BookRepository : IBookRepository
         }
     }
 
-    public async Task UpdateBookContent(int libraryId, int bookId, int contentId, string language, string mimeType, string contentUrl, CancellationToken cancellationToken)
+    public async Task UpdateBookContent(int libraryId, int bookId, int contentId, string language, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"UPDATE `File` f
-                                INNER JOIN BookContent bc ON bc.FileId = f.Id
-                                INNER JOIN Book b ON b.Id = bc.BookId
-                            SET FilePath = @ContentUrl
+            var sql = @"UPDATE BookContent bc 
+                               INNER JOIN Book b ON b.Id = bc.BookId
+                            SET bc.Language = @Language
                             WHERE b.LibraryId = @LibraryId 
                                 AND b.Id = @BookId 
-                                AND bc.Id = @Id
-                                AND f.MimeType  = @MimeType 
-                                AND bc.Language = @Language";
+                                AND bc.Id = @Id";
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
                 BookId = bookId,
                 Id = contentId,
                 Language = language,
-                MimeType = mimeType,
-                ContentUrl = contentUrl
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
     }
 
-    public async Task<int> AddBookContent(int bookId, long fileId, string language, string mimeType, CancellationToken cancellationToken)
+    public async Task<int> AddBookContent(int bookId, long fileId, string language, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {

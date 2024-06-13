@@ -74,7 +74,6 @@ namespace Inshapardaz.Api.Tests.Asserts
             var content = db.GetBookContent(_bookContent.BookId, _bookContent.Id);
             content.Should().NotBeNull();
 
-            // TODO: Make sure the contents are correct
             fileStore.DoesFileExists(content.FilePath).Should().BeTrue();
             var file = fileStore.GetFile(content.FilePath, CancellationToken.None).Result;
             file.Should().BeEquivalentTo(expected);

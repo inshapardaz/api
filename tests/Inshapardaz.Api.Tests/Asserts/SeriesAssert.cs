@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters.Repositories;
@@ -246,10 +247,13 @@ namespace Inshapardaz.Api.Tests.Asserts
             image.Should().NotBeNullOrEmpty();
         }
 
-        internal static void ShouldHaveDeletedSeriesImage(int seriesId, IDbConnection dbConnection)
+        internal static void ShouldHaveDeletedSeriesImage(int seriesId, long imageId, string filePath, IDbConnection dbConnection, FakeFileStorage fileStorage)
         {
             var image = dbConnection.GetSeriesImage(seriesId);
             image.Should().BeNull();
+            var file = dbConnection.GetFileById(imageId);
+            file.Should().BeNull();
+            fileStorage.DoesFileExists(filePath).Should().BeFalse();
         }
     }
 

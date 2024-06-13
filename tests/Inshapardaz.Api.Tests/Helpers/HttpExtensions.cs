@@ -84,7 +84,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             using (var content = new StreamContent(stream))
             using (var formData = new MultipartFormDataContent())
             {
-                formData.Add(content, "file", $"{RandomData.Name}.jpg");
+                formData.Add(content, "file", $"{RandomData.Name}{Path.GetExtension(fileName)}");
 
                 return await client.PutAsync(url, formData);
             }
@@ -97,7 +97,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             using (var formData = new MultipartFormDataContent())
             {
                 content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-                formData.Add(content, "file", $"{RandomData.Name}.jpg");
+                formData.Add(content, "file", $"{RandomData.Name}{Path.GetExtension(fileName)}");
 
                 return await client.PutAsync(url, formData);
             }
@@ -110,7 +110,7 @@ namespace Inshapardaz.Api.Tests.Helpers
             using (var formData = new MultipartFormDataContent())
             {
                 content.Headers.ContentType = new MediaTypeHeaderValue(mimetype);
-                formData.Add(content, "file", $"{RandomData.Name}.jpg");
+                formData.Add(content, "file", $"{RandomData.Name}{mimetype.GetExtentionForMimeType()}");
 
                 return await client.PutAsync(url, formData);
             }

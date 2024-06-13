@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,14 +22,12 @@ public class DeleteBookContentRequest : BookRequest
 public class DeleteBookContentRequestHandler : RequestHandlerAsync<DeleteBookContentRequest>
 {
     private readonly IBookRepository _bookRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public DeleteBookContentRequestHandler(IBookRepository bookRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+    public DeleteBookContentRequestHandler(IBookRepository bookRepository, IAmACommandProcessor commandProcessor)
     {
         _bookRepository = bookRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -37,9 +36,8 @@ public class DeleteBookContentRequestHandler : RequestHandlerAsync<DeleteBookCon
         var content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
         if (content != null)
         {
-            await _fileStorage.DeleteFile(content.ContentUrl, cancellationToken);
+            await _commandProcessor.SendAsync(new DeleteFileCommand(command.ContentId), cancellationToken: cancellationToken);
             await _bookRepository.DeleteBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
-            await _fileRepository.DeleteFile(content.FileId, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

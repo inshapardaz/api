@@ -19,6 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookShelf
         private HttpResponseMessage _response;
 
         private SeriesDto _expected;
+        private string _filePath;
 
         public WhenDeletingSeriesWithPermission(Role role)
             : base(role)
@@ -30,6 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookShelf
         {
             var series = SeriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
             _expected = series.PickRandom();
+            _filePath = DatabaseConnection.GetFileById(_expected.ImageId.Value)?.FilePath;
 
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/series/{_expected.Id}");
         }
@@ -55,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookShelf
         [Test]
         public void ShouldHaveDeletedTheSeriesImage()
         {
-            SeriesAssert.ShouldHaveDeletedSeriesImage(_expected.Id, DatabaseConnection);
+            SeriesAssert.ShouldHaveDeletedSeriesImage(_expected.Id, _expected.ImageId.Value, _filePath, DatabaseConnection, FileStore);
         }
 
         [Test]

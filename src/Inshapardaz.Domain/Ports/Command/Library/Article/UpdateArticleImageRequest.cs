@@ -65,8 +65,11 @@ public class UpdateArticleImageRequestHandler : RequestHandlerAsync<UpdateArticl
         await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
         command.Result.File = saveContentCommand.Result;
                 
-        await _articleRepository.UpdateArticleImage(command.LibraryId, command.ArticleId, command.Result.File.Id, cancellationToken);
-        command.Result.HasAddedNew = !article.ImageId.HasValue;
+        if (!article.ImageId.HasValue)
+        {
+            await _articleRepository.UpdateArticleImage(command.LibraryId, command.ArticleId, command.Result.File.Id, cancellationToken);
+            command.Result.HasAddedNew = true;
+        }
 
         return await base.HandleAsync(command, cancellationToken);
     }

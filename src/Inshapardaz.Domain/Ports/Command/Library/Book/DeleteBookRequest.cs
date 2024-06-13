@@ -1,7 +1,11 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Command.File;
+using Inshapardaz.Domain.Ports.Command.Library.Book.Chapter;
+using Inshapardaz.Domain.Ports.Command.Library.Book.Page;
 using Paramore.Brighter;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,14 +25,19 @@ public class DeleteBookRequest : BookRequest
 public class DeleteBookRequestHandler : RequestHandlerAsync<DeleteBookRequest>
 {
     private readonly IBookRepository _bookRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IChapterRepository _chapterRepository;
+    private readonly IBookPageRepository _bookPageRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public DeleteBookRequestHandler(IBookRepository bookRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+    public DeleteBookRequestHandler(IBookRepository bookRepository,
+        IAmACommandProcessor commandProcessor,
+        IChapterRepository chapterRepository,
+        IBookPageRepository bookPageRepository)
     {
         _bookRepository = bookRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
+        _chapterRepository = chapterRepository;
+        _bookPageRepository = bookPageRepository;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -37,14 +46,17 @@ public class DeleteBookRequestHandler : RequestHandlerAsync<DeleteBookRequest>
         var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.AccountId, cancellationToken);
         if (book != null)
         {
-            if (book.ImageId.HasValue)
+            await _commandProcessor.SendAsync(new DeleteFileCommand(book.ImageId), cancellationToken: cancellationToken);
+            var chapters = await _chapterRepository.GetChaptersByBook(command.LibraryId, command.BookId, cancellationToken);
+            foreach (var chapter in chapters)
             {
-                var image = await _fileRepository.GetFileById(book.ImageId.Value, cancellationToken);
-                if (image != null && !string.IsNullOrWhiteSpace(image.FilePath))
-                {
-                    await _fileStorage.TryDeleteImage(image.FilePath, cancellationToken);
-                    await _fileRepository.DeleteFile(image.Id, cancellationToken);
-                }
+                await _commandProcessor.SendAsync(new DeleteChapterRequest(command.LibraryId, command.BookId, chapter.ChapterNumber), cancellationToken: cancellationToken);
+            }
+
+            var pages = await _bookPageRepository.GetAllPagesByBook(command.LibraryId, command.BookId, cancellationToken);
+            foreach (var page in pages.OrderByDescending(x => x.SequenceNumber))
+            {
+                await _commandProcessor.SendAsync(new DeleteBookPageRequest(command.LibraryId, command.BookId, page.SequenceNumber), cancellationToken: cancellationToken);
             }
             await _bookRepository.DeleteBook(command.LibraryId, command.BookId, cancellationToken);
         }

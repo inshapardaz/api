@@ -43,7 +43,7 @@ public class FileRepository : IFileRepository
         return await GetFileById(id, cancellationToken);
     }
 
-    public async Task UpdateFile(FileModel file, CancellationToken cancellationToken)
+    public async Task<FileModel> UpdateFile(FileModel file, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -52,10 +52,11 @@ public class FileRepository : IFileRepository
                                 MimeType = @MimeType,
                                 FilePath = @FilePath,
                                 IsPublic = @IsPublic,
-                                DateCreated = GETDATE()
+                                DateUpdated = GETDATE()
                             Where Id = @Id";
             var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);
-            await connection.ExecuteScalarAsync<int>(command);
+            await connection.ExecuteAsync(command);
+            return await GetFileById(file.Id, cancellationToken);
         }
     }
 

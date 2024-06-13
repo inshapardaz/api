@@ -310,7 +310,7 @@ public class Migrator
                         content.BookId = newBook.Id;
                         content.FileId = bookContent.Id;
 
-                        await destinationDb.AddBookContent(newLibraryId, bookContent.Id, content.Language, content.MimeType, cancellationToken);
+                        await destinationDb.AddBookContent(newLibraryId, bookContent.Id, content.Language, cancellationToken);
                     }
 
                     child.Tick($"{++i} of {page.TotalCount} Book(s) migrated.");

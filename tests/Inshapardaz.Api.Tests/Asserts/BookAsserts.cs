@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
+using Inshapardaz.Api.Tests.Fakes;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
@@ -427,9 +428,9 @@ namespace Inshapardaz.Api.Tests.Asserts
             databaseConnection.GetBookById(id).Should().BeNull();
         }
 
-        internal static void ShouldHaveDeletedBookImage(int id, IDbConnection databaseConnection)
+        internal static void ShouldHaveDeletedBookImage(int bookId, long? imageId, string fileName, IDbConnection databaseConnection, FakeFileStorage fileStorage)
         {
-            var image = databaseConnection.GetBookImage(id);
+            var image = databaseConnection.GetBookImage(bookId);
             image.Should().BeNull();
         }
 

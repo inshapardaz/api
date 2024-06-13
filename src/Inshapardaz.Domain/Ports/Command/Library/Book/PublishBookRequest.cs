@@ -85,7 +85,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
         if (bookContent == null)
         {
             FileModel file = await SaveFileToStorage(book, wordDocument, cancellationToken);
-            await _bookRepository.AddBookContent(command.BookId, file.Id, book.Language, MimeTypes.MsWord, cancellationToken);
+            await _bookRepository.AddBookContent(command.BookId, file.Id, book.Language, cancellationToken);
         }
         else
         {

@@ -53,5 +53,6 @@ namespace Inshapardaz.Api.Tests.Helpers
         internal static DateTime Date => new Faker().Date.Past();
 
         internal static string FilePath => new Faker().System.FilePath();
+        internal static string FileName(string mimetype) => new Faker().System.FileName(mimetype.GetExtentionForMimeType());
     }
 }

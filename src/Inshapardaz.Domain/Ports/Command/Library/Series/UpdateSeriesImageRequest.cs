@@ -1,7 +1,9 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.IO;
 using System.Threading;
@@ -34,14 +36,12 @@ public class UpdateSeriesImageRequest : LibraryBaseCommand
 public class UpdateSeriesImageRequestHandler : RequestHandlerAsync<UpdateSeriesImageRequest>
 {
     private readonly ISeriesRepository _seriesRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public UpdateSeriesImageRequestHandler(ISeriesRepository seriesRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+    public UpdateSeriesImageRequestHandler(ISeriesRepository seriesRepository, IAmACommandProcessor commandProcessor)
     {
         _seriesRepository = seriesRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -54,47 +54,23 @@ public class UpdateSeriesImageRequestHandler : RequestHandlerAsync<UpdateSeriesI
             throw new NotFoundException();
         }
 
-        if (series.ImageId.HasValue)
-        {
-            command.Image.Id = series.ImageId.Value;
+        var fileName = FilePathHelper.GetSeriesImageFileName(command.Image.FileName);
+        var filePath = FilePathHelper.GetSeriesImagePath(command.LibraryId, command.SeriesId, fileName);
 
-            var existingImage = await _fileRepository.GetFileById(series.ImageId.Value, cancellationToken);
-            if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
-            {
-                await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
-            }
-
-            var url = await AddImageToFileStore(series.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
-            command.Image.FilePath = url;
-            command.Image.IsPublic = true;
-            await _fileRepository.UpdateFile(command.Image, cancellationToken);
-            command.Result.File = command.Image;
-            command.Result.File.Id = series.ImageId.Value;
-        }
-        else
+        var saveContentCommand = new SaveFileCommand(fileName, filePath, command.Image.Contents)
         {
-            command.Image.Id = default;
-            var url = await AddImageToFileStore(series.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
-            command.Image.FilePath = url;
-            command.Image.IsPublic = true;
-            command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
+            MimeType = command.Image.MimeType,
+            ExistingFileId = series.ImageId,
+            IsPublic = true,
+        };
+
+        await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
+        command.Result.File = saveContentCommand.Result;
+        if (!series.ImageId.HasValue)
+        {
             command.Result.HasAddedNew = true;
-
             await _seriesRepository.UpdateSeriesImage(command.LibraryId, command.SeriesId, command.Result.File.Id, cancellationToken);
         }
-
         return await base.HandleAsync(command, cancellationToken);
-    }
-
-    private async Task<string> AddImageToFileStore(int seriesId, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
-    {
-        var filePath = GetUniqueFileName(seriesId, fileName);
-        return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
-    }
-
-    private static string GetUniqueFileName(int seriesId, string fileName)
-    {
-        var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-        return $"series/{seriesId}/title.{fileNameWithourExtension}";
     }
 }

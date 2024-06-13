@@ -560,7 +560,7 @@ public class BookRepository : IBookRepository
         }
     }
 
-    public async Task DeleteBookContent(int libraryId, int bookId, int contentId, CancellationToken cancellationToken)
+    public async Task DeleteBookContent(int libraryId, int bookId, long contentId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {

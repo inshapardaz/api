@@ -10,13 +10,13 @@ namespace Inshapardaz.Domain.Ports.Command.Library.Book;
 
 public class DeleteBookContentRequest : BookRequest
 {
-    public DeleteBookContentRequest(int libraryId, int bookId, int contentId)
+    public DeleteBookContentRequest(int libraryId, int bookId, long contentId)
         : base(libraryId, bookId)
     {
         ContentId = contentId;
     }
 
-    public int ContentId { get; }
+    public long ContentId { get; }
 }
 
 public class DeleteBookContentRequestHandler : RequestHandlerAsync<DeleteBookContentRequest>
@@ -36,7 +36,7 @@ public class DeleteBookContentRequestHandler : RequestHandlerAsync<DeleteBookCon
         var content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
         if (content != null)
         {
-            await _commandProcessor.SendAsync(new DeleteFileCommand(command.ContentId), cancellationToken: cancellationToken);
+            await _commandProcessor.SendAsync(new DeleteFileCommand(content.FileId), cancellationToken: cancellationToken);
             await _bookRepository.DeleteBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
         }
 

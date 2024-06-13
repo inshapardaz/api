@@ -95,9 +95,17 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
             {
                 ChapterAssert.ShouldHaveDeletedChapter(chapter.Id, DatabaseConnection);
             }
+        }
 
-            var cats = DatabaseConnection.GetCategoriesByBook(_expected.Id);
-            cats.ForEach(cat => CategoryAssert.ShouldNotHaveDeletedCategory(LibraryId, cat.Id, DatabaseConnection));
+        [Test]
+        public void ShouldNotHaveDeletedAllContents()
+        {
+            var contents = BookBuilder.Contents.Where(c => c.BookId == _expected.Id).ToList();
+
+            foreach (var content in contents)
+            {
+                FileAssert.FileDoesnotExist(content.Id, content.FilePath);
+            }
         }
 
         [Test]

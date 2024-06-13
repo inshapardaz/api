@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Api.Tests.Asserts;
+using Inshapardaz.Api.Tests.DataHelpers;
 using Inshapardaz.Api.Tests.Dto;
 using Inshapardaz.Api.Tests.Helpers;
 using Inshapardaz.Domain.Models;
@@ -27,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
         {
             var book = BookBuilder.WithLibrary(LibraryId).WithContents(3).Build();
             _expected = BookBuilder.Contents.PickRandom();
-
+            //_filePath = DatabaseConnection.GetFileById(_expected.FileId).FilePath;
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{book.Id}/contents/{_expected.Id}?language={_expected.Language}", _expected.MimeType);
         }
 
@@ -47,6 +48,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
         public void ShouldHaveDeletedBookFile()
         {
             BookContentAssert.ShouldNotHaveBookContent(_expected.BookId, _expected.Language, _expected.MimeType, DatabaseConnection);
+            FileAssert.FileDoesnotExist(_expected.FileId, _expected.FilePath);
         }
 
         [Test]

@@ -308,9 +308,11 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 if (_contentCount > 0)
                 {
                     var mimeType = _contentMimeType ?? RandomData.MimeType;
-                    var filePath = FilePathHelper.GetBookChapterContentPath(_libraryId, book.Id, FilePathHelper.GetBookContentFileName(RandomData.FileName(mimeType)));
+                    var fileName = RandomData.FileName(mimeType);
+                    var filePath = FilePathHelper.GetBookChapterContentPath(_libraryId, book.Id, FilePathHelper.GetBookContentFileName(fileName));
                     files = fixture.Build<FileDto>()
                                          .With(f => f.FilePath, filePath)
+                                         .With(f => f.FileName, fileName)
                                          .With(f => f.IsPublic, false)
                                          .With(f => f.MimeType, mimeType)
                                          .CreateMany(_contentCount)

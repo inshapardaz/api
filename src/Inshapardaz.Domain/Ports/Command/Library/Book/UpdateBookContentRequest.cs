@@ -64,7 +64,7 @@ public class UpdateBookFileRequestHandler : RequestHandlerAsync<UpdateBookConten
             var fileName = FilePathHelper.GetBookContentFileName(command.Content.FileName);
             var filePath = FilePathHelper.GetBookContentPath(command.LibraryId, command.BookId, fileName);
 
-            var saveFileCommand = new SaveFileCommand(fileName, filePath, command.Content.Contents)
+            var saveFileCommand = new SaveFileCommand(command.Content.FileName, filePath, command.Content.Contents)
             {
                 MimeType = command.Content.MimeType,
                 ExistingFileId = bookContent?.FileId

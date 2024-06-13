@@ -36,7 +36,7 @@ public class GetFileRequestHandler : QueryHandlerAsync<GetFileQuery, FileModel>
     {
         var file = await _fileRepository.GetFileById(query.FileId, cancellationToken);
 
-        if (string.IsNullOrWhiteSpace(file.FilePath))
+        if (string.IsNullOrWhiteSpace(file?.FilePath))
         {
             throw new NotFoundException();
         }

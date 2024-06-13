@@ -69,14 +69,16 @@ namespace Inshapardaz.Api.Tests.Asserts
             content.Should().NotBeNull();
         }
 
-        internal void ShouldHaveBookContent(byte[] expected, IDbConnection db, FakeFileStorage fileStore)
+        internal void ShouldHaveBookContent(byte[] expected, string fileName, IDbConnection db, FakeFileStorage fileStore)
         {
             var content = db.GetBookContent(_bookContent.BookId, _bookContent.Id);
             content.Should().NotBeNull();
 
-            fileStore.DoesFileExists(content.FilePath).Should().BeTrue();
-            var file = fileStore.GetFile(content.FilePath, CancellationToken.None).Result;
-            file.Should().BeEquivalentTo(expected);
+            var file = db.GetFileById(content.FileId);
+            file.FileName.Should().Be(fileName);
+            fileStore.DoesFileExists(file.FilePath).Should().BeTrue();
+            var fileContent = fileStore.GetFile(file.FilePath, CancellationToken.None).Result;
+            fileContent.Should().BeEquivalentTo(expected);
         }
 
         internal BookContentAssert ShouldHaveUpdateLink()

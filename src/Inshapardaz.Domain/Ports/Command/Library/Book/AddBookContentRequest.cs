@@ -68,7 +68,7 @@ public class AddBookFileRequestHandler : RequestHandlerAsync<AddBookContentReque
 
             var fileName = FilePathHelper.GetBookContentFileName(command.Content.FileName);
 
-            var saveFileCommand = new SaveFileCommand(fileName, FilePathHelper.GetBookContentPath(command.LibraryId, command.BookId, fileName), command.Content.Contents)
+            var saveFileCommand = new SaveFileCommand(command.Content.FileName, FilePathHelper.GetBookContentPath(command.LibraryId, command.BookId, fileName), command.Content.Contents)
             {
                 MimeType = command.Content.MimeType,
                 IsPublic = command.Content.IsPublic
@@ -76,9 +76,9 @@ public class AddBookFileRequestHandler : RequestHandlerAsync<AddBookContentReque
 
             await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
 
-            var contentId = await _bookRepository.AddBookContent(book.Id, saveFileCommand.Result.Id, book.Language, cancellationToken);
+            var contentId = await _bookRepository.AddBookContent(book.Id, saveFileCommand.Result.Id, command.Language, cancellationToken);
 
-            command.Result = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, contentId, cancellationToken); ;
+            command.Result = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, contentId, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

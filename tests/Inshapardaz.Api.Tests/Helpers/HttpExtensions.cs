@@ -38,14 +38,14 @@ namespace Inshapardaz.Api.Tests.Helpers
             return await client.PostAsync(url, content);
         }
 
-        public static async Task<HttpResponseMessage> PostContent(this HttpClient client, string url, byte[] payload, string mimetype)
+        public static async Task<HttpResponseMessage> PostContent(this HttpClient client, string url, byte[] payload, string mimetype, string fileName = null)
         {
             using (var stream = new MemoryStream(payload))
             using (var content = new StreamContent(stream))
             using (var formData = new MultipartFormDataContent())
             {
                 content.Headers.ContentType = new MediaTypeHeaderValue(mimetype);
-                formData.Add(content, "file", $"{RandomData.Name}.jpg");
+                formData.Add(content, "file", fileName ??  $"{RandomData.Name}.jpg");
 
                 return await client.PostAsync(url, formData);
             }
@@ -60,7 +60,7 @@ namespace Inshapardaz.Api.Tests.Helpers
                 var jsonContent = new StringContent(Serialize(data), Encoding.UTF8, "application/json");
 
                 formData.Add(jsonContent, "json");
-                formData.Add(content, "image", $"{RandomData.Name}.jpg");
+                formData.Add(content, "image", fileName);
 
                 return await client.PostAsync(url, formData);
             }
@@ -90,14 +90,14 @@ namespace Inshapardaz.Api.Tests.Helpers
             }
         }
 
-        public static async Task<HttpResponseMessage> PutFile(this HttpClient client, string url, byte[] payload, string mimeType, string fileName = "image.jpg")
+        public static async Task<HttpResponseMessage> PutFile(this HttpClient client, string url, byte[] payload, string mimeType, string fileName = null)
         {
             using (var stream = new MemoryStream(payload))
             using (var content = new StreamContent(stream))
             using (var formData = new MultipartFormDataContent())
             {
                 content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-                formData.Add(content, "file", $"{RandomData.Name}{Path.GetExtension(fileName)}");
+                formData.Add(content, "file", fileName ?? $"{RandomData.Name}{Path.GetExtension(fileName)}");
 
                 return await client.PutAsync(url, formData);
             }

@@ -27,5 +27,15 @@ namespace Inshapardaz.Api.Tests.Asserts
                 _fileStore.DoesFileExists(imageFile.FilePath);
             }
         }
+
+        internal void FileDoesnotExist(long fileId, string filePath)
+        {
+            using (var databaseConnection = _connectionProvider.GetConnection())
+            {
+                var file = databaseConnection.GetFileById(fileId);
+                file.Should().BeNull();
+                _fileStore.DoesFileExists(filePath);
+            }
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         private BookDto _book;
         private string _mimeType;
         private string _locale;
+        private string _fileName;
         private byte[] _contents;
 
         public WhenUpdatingBookContentWithNoExistingContent()
@@ -29,11 +30,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         {
             _mimeType = RandomData.MimeType;
             _locale = RandomData.Locale;
+            _fileName = RandomData.FileName(_mimeType);
 
             _book = BookBuilder.WithLibrary(LibraryId).Build();
             _contents = RandomData.Bytes;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{-RandomData.Number}?language={_locale}", _contents, _mimeType, "test.md");
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{-RandomData.Number}?language={_locale}", _contents, _mimeType, _fileName);
             _assert = new BookContentAssert(_response, LibraryId);
         }
 
@@ -73,7 +75,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         [Test]
         public void ShouldHaceCorrectContentSaved()
         {
-            _assert.ShouldHaveBookContent(_contents, DatabaseConnection, FileStore);
+            _assert.ShouldHaveBookContent(_contents, _fileName, DatabaseConnection, FileStore);
         }
     }
 }

@@ -32,7 +32,7 @@ public interface IBookRepository
 
     Task<int> AddBookContent(int bookId, long fileId, string language, CancellationToken cancellationToken);
 
-    Task DeleteBookContent(int libraryId, int bookId, int contentId, CancellationToken cancellationToken);
+    Task DeleteBookContent(int libraryId, int bookId, long contentId, CancellationToken cancellationToken);
 
     Task<BookContentModel> GetBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken);
     Task<BookContentModel> GetBookContent(int libraryId, int bookId, long conetntId, CancellationToken cancellationToken);

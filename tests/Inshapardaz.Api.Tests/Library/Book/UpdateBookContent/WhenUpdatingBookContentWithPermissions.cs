@@ -21,6 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         private BookContentDto _file;
         private byte[] _expected;
         private BookContentAssert _assert;
+        private string _fileName;
 
         public WhenUpdatingBookContentWithPermissions(Role role)
             : base(role)
@@ -34,8 +35,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
             _file = BookBuilder.Contents.PickRandom();
 
             _expected = new Faker().Image.Random.Bytes(50);
-
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{_file.Id}?language={_file.Language}", _expected, _file.MimeType);
+            _fileName = RandomData.FileName(_file.MimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{_file.Id}?language={_file.Language}", _expected, _file.MimeType, _fileName);
             _assert = new BookContentAssert(_response, LibraryId);
         }
 
@@ -54,7 +55,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         [Test]
         public void ShouldHaveUpdatedFileContents()
         {
-            _assert.ShouldHaveBookContent(_expected, DatabaseConnection, FileStore);
+            _assert.ShouldHaveBookContent(_expected, _fileName, DatabaseConnection, FileStore);
         }
     }
 }

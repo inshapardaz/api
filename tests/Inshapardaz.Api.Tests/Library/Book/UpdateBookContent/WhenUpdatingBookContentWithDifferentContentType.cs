@@ -13,7 +13,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         : TestBase
     {
         private HttpResponseMessage _response;
-        private string _newMimeType;
+        private string _newMimeType  = "text/markdown";
+        private string _fileName;
         private BookDto _book;
         private BookContentDto _file;
         private byte[] _contents;
@@ -27,14 +28,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _newMimeType = "text/markdown";
-
+            _fileName = RandomData.FileName(_newMimeType);
             _book = BookBuilder.WithLibrary(LibraryId).WithContents(2, "application/pdf").Build();
             _file = BookBuilder.Contents.PickRandom();
 
             _contents = RandomData.Bytes;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{_file.Id}?language={_file.Language}", _contents, _newMimeType, "test.md");
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{_file.Id}?language={_file.Language}", _contents, _newMimeType, _fileName);
             _assert = new BookContentAssert(_response, LibraryId);
         }
 
@@ -74,7 +74,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         [Test]
         public void ShouldHaceCorrectContentSaved()
         {
-            _assert.ShouldHaveBookContent(_contents, DatabaseConnection, FileStore);
+            _assert.ShouldHaveBookContent(_contents, _fileName, DatabaseConnection, FileStore);
         }
     }
 }

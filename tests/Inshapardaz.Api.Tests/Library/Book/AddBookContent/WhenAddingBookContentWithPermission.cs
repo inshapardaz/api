@@ -14,8 +14,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
         : TestBase
     {
         private HttpResponseMessage _response;
-        private string _mimeType;
-        private string _locale;
+        private readonly string _mimeType = RandomData.MimeType;
+        private readonly string _locale = RandomData.Locale;
+        private string _fileName;
         private BookContentAssert _assert;
         private byte[] _contents;
 
@@ -27,13 +28,11 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _mimeType = RandomData.MimeType;
-            _locale = RandomData.Locale;
-
+            _fileName = RandomData.FileName(_mimeType);
             var book = BookBuilder.WithLibrary(LibraryId).Build();
             _contents = RandomData.Bytes;
 
-            _response = await Client.PostContent($"/libraries/{LibraryId}/books/{book.Id}/contents?language={_locale}", _contents, _mimeType);
+            _response = await Client.PostContent($"/libraries/{LibraryId}/books/{book.Id}/contents?language={_locale}", _contents, _mimeType, _fileName);
 
             _assert = new BookContentAssert(_response, LibraryId);
         }
@@ -75,7 +74,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
         [Test]
         public void ShouldHaceCorrectContentSaved()
         {
-            _assert.ShouldHaveBookContent(_contents, DatabaseConnection, FileStore);
+            _assert.ShouldHaveBookContent(_contents, _fileName ,DatabaseConnection, FileStore);
         }
     }
 }

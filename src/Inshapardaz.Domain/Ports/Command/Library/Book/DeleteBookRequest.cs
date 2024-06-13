@@ -58,6 +58,12 @@ public class DeleteBookRequestHandler : RequestHandlerAsync<DeleteBookRequest>
             {
                 await _commandProcessor.SendAsync(new DeleteBookPageRequest(command.LibraryId, command.BookId, page.SequenceNumber), cancellationToken: cancellationToken);
             }
+
+            var contents = await _bookRepository.GetBookContents(command.LibraryId, command.BookId, cancellationToken);
+            foreach (var content in contents)
+            {
+                await _commandProcessor.SendAsync(new DeleteBookContentRequest(command.LibraryId, command.BookId, content.Id), cancellationToken: cancellationToken);
+            }
             await _bookRepository.DeleteBook(command.LibraryId, command.BookId, cancellationToken);
         }
 

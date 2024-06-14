@@ -48,7 +48,12 @@ public class MySqlDatabaseFileStorage : IFileStorage
     public async Task<string> GetTextFile(string filePath, CancellationToken cancellationToken)
     {
         var content = await GetFile(filePath, cancellationToken);
-        return System.Text.Encoding.Default.GetString(content);
+        if (content is not null && content.Length != 0)
+        { 
+            return System.Text.Encoding.Default.GetString(content);
+        }
+
+        return string.Empty;
     }
 
     public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)

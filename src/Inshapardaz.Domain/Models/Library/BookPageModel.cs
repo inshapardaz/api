@@ -9,7 +9,7 @@ public class BookPageModel
     public int BookId { get; set; }
     public long? ImageId { get; set; }
     public string ImageUrl { get; set; }
-    public EditingStatus Status { get; set; }
+    public EditingStatus Status { get; set; } = EditingStatus.Available;
     public int? WriterAccountId { get; set; }
     public string WriterAccountName { get; set; }
     public DateTime? WriterAssignTimeStamp { get; set; }

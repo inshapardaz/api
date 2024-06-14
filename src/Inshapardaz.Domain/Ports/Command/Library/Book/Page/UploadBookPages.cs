@@ -82,7 +82,7 @@ public class UploadBookPagesHandler : RequestHandlerAsync<UploadBookPagesRequest
         {
             var sequenceNumber = ++pageNumber;
             var fileName = FilePathHelper.GetBookPageFileName(file.FileName);
-            var filePath = FilePathHelper.GetBookPageFilePath(command.LibraryId, command.BookId, fileName);
+            var filePath = FilePathHelper.GetBookPageFilePath(command.BookId, fileName);
 
             var saveImageCommand = new SaveFileCommand(fileName, filePath, file.Contents)
             {

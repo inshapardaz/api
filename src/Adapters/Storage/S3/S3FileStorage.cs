@@ -23,7 +23,7 @@ public class S3FileStorage : IFileStorage
     public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
     {
         var client = GetClient();
-        var request = new Amazon.S3.Model.GetObjectRequest();
+        var request = new GetObjectRequest();
         request.Key = $"{_configuration.FolderName}/{filePath}";
         request.BucketName = _configuration.BucketName;
         var response = await client.GetObjectAsync(request, cancellationToken);
@@ -33,7 +33,7 @@ public class S3FileStorage : IFileStorage
     public async Task<string> GetTextFile(string filePath, CancellationToken cancellationToken)
     {
         var client = GetClient();
-        var request = new Amazon.S3.Model.GetObjectRequest();
+        var request = new GetObjectRequest();
         request.Key = $"{_configuration.FolderName}/{filePath}";
         request.BucketName = _configuration.BucketName;
         var response = await client.GetObjectAsync(request, cancellationToken);
@@ -43,7 +43,7 @@ public class S3FileStorage : IFileStorage
     public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
     {
         var client = GetClient();
-        var request = new Amazon.S3.Model.PutObjectRequest();
+        var request = new PutObjectRequest();
         request.BucketName = _configuration.BucketName;
         request.ContentType = "";
         request.InputStream = new MemoryStream(content);
@@ -56,7 +56,7 @@ public class S3FileStorage : IFileStorage
     public async Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
     {
         var client = GetClient();
-        var request = new Amazon.S3.Model.PutObjectRequest();
+        var request = new PutObjectRequest();
         request.BucketName = _configuration.BucketName;
         request.ContentType = mimeType;
         request.InputStream = new MemoryStream(content);
@@ -69,7 +69,7 @@ public class S3FileStorage : IFileStorage
     public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
     {
         var client = GetClient();
-        var request = new Amazon.S3.Model.PutObjectRequest();
+        var request = new PutObjectRequest();
         request.BucketName = _configuration.BucketName;
         request.ContentType = "";
         request.ContentBody = content;
@@ -82,7 +82,7 @@ public class S3FileStorage : IFileStorage
     public async Task DeleteFile(string filePath, CancellationToken cancellationToken)
     {
         var client = GetClient();
-        var request = new Amazon.S3.Model.DeleteObjectRequest();
+        var request = new DeleteObjectRequest();
         request.BucketName = _configuration.BucketName;
         request.Key = $"{_configuration.FolderName}/{filePath}";
         await client.DeleteObjectAsync(request, cancellationToken);
@@ -91,7 +91,7 @@ public class S3FileStorage : IFileStorage
     public async Task DeleteImage(string filePath, CancellationToken cancellationToken)
     {
         var client = GetClient();
-        var request = new Amazon.S3.Model.DeleteObjectRequest();
+        var request = new DeleteObjectRequest();
         request.BucketName = _configuration.BucketName;
         request.Key = $"{_configuration.FolderName}/{filePath}";
         await client.DeleteObjectAsync(request, cancellationToken);
@@ -102,7 +102,7 @@ public class S3FileStorage : IFileStorage
         var client = GetClient();
         try
         {
-            var request = new Amazon.S3.Model.GetObjectMetadataRequest();
+            var request = new GetObjectMetadataRequest();
             request.BucketName = _configuration.BucketName;
             request.Key = $"{_configuration.FolderName}/{filePath}";
             await client.GetObjectMetadataAsync(request, cancellationToken);
@@ -118,7 +118,7 @@ public class S3FileStorage : IFileStorage
         var client = GetClient();
         try
         {
-            var request = new Amazon.S3.Model.DeleteObjectRequest();
+            var request = new DeleteObjectRequest();
             request.BucketName = _configuration.BucketName;
             request.Key = $"{_configuration.FolderName}/{filePath}";
             await client.DeleteObjectAsync(request, cancellationToken);

@@ -71,7 +71,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateArti
         var fileName = FilePathHelper.GetArticleContentFileName(command.Content.Language);
         var saveFileCommand = new SaveTextFileCommand(
             fileName,
-            FilePathHelper.GetArticleContentPath(command.LibraryId, command.Content.ArticleId, fileName),
+            FilePathHelper.GetArticleContentPath(command.Content.ArticleId, fileName),
             command.Content.Text)
         {
             MimeType = MimeTypes.Markdown,

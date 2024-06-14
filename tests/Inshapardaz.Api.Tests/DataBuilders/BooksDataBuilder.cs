@@ -309,7 +309,7 @@ namespace Inshapardaz.Api.Tests.DataBuilders
                 {
                     var mimeType = _contentMimeType ?? RandomData.MimeType;
                     var fileName = RandomData.FileName(mimeType);
-                    var filePath = FilePathHelper.GetBookChapterContentPath(_libraryId, book.Id, FilePathHelper.GetBookContentFileName(fileName));
+                    var filePath = FilePathHelper.GetBookChapterContentPath(book.Id, FilePathHelper.GetBookContentFileName(fileName));
                     files = fixture.Build<FileDto>()
                                          .With(f => f.FilePath, filePath)
                                          .With(f => f.FileName, fileName)

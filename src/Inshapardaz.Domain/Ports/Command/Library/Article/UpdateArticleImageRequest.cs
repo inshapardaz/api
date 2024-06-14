@@ -54,7 +54,7 @@ public class UpdateArticleImageRequestHandler : RequestHandlerAsync<UpdateArticl
         }
 
         var fileName = FilePathHelper.GetArticleImageFileName(command.Image.FileName);
-        var filePath = FilePathHelper.GetArticleImagePath(command.LibraryId, command.ArticleId, fileName);
+        var filePath = FilePathHelper.GetArticleImagePath(command.ArticleId, fileName);
 
         var saveContentCommand = new SaveFileCommand(fileName, filePath, command.Image.Contents)
         {

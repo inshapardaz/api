@@ -375,7 +375,7 @@ public class Migrator
                     content.ChapterId = newChapter.Id;
 
                     var fileName = FilePathHelper.BookChapterContentFileName;
-                    var filePath = await fileStore.StoreTextFile(FilePathHelper.GetBookChapterContentPath(libraryId, bookId, fileName), content.Text, cancellationToken);
+                    var filePath = await fileStore.StoreTextFile(FilePathHelper.GetBookChapterContentPath(bookId, fileName), content.Text, cancellationToken);
                     var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                     content.Text = string.Empty;
                     content.FileId = file.Id;
@@ -424,6 +424,7 @@ public class Migrator
                 if (page.ReviewerAccountId.HasValue && accountsMap.ContainsKey(page.ReviewerAccountId.Value))
                 {
                     page.ReviewerAccountId = accountsMap[page.ReviewerAccountId.Value];
+                    page.ReviewerAssignTimeStamp = page.ReviewerAssignTimeStamp;
                 }
                 else
                 {
@@ -433,6 +434,7 @@ public class Migrator
                 if (page.WriterAccountId.HasValue && accountsMap.ContainsKey(page.WriterAccountId.Value))
                 {
                     page.WriterAccountId = accountsMap[page.WriterAccountId.Value];
+                    page.WriterAssignTimeStamp = page.WriterAssignTimeStamp;
                 }
                 else
                 {
@@ -440,7 +442,7 @@ public class Migrator
                 }
 
                 var fileName = FilePathHelper.BookPageContentFileName;
-                var filePath = await fileStore.StoreTextFile(FilePathHelper.GetBookContentPath(newLibraryId, bookId, fileName), page.Text, cancellationToken);
+                var filePath = await fileStore.StoreTextFile(FilePathHelper.GetBookContentPath(bookId, fileName), page.Text, cancellationToken);
                 var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                 page.Text = string.Empty;
                 page.ContentId = file.Id;
@@ -695,7 +697,7 @@ public class Migrator
                     content.ArticleId = newArticle.Id;
 
                     var fileName = FilePathHelper.GetArticleContentFileName(content.Language);
-                    var filePath = await fileStore.StoreTextFile(FilePathHelper.GetArticleContentPath(newLibraryId, newArticle.Id, fileName), content.Text, cancellationToken);
+                    var filePath = await fileStore.StoreTextFile(FilePathHelper.GetArticleContentPath(newArticle.Id, fileName), content.Text, cancellationToken);
                     var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                     content.Text = string.Empty;
                     content.FileId = file.Id;

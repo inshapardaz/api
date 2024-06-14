@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using DocumentFormat.OpenXml.Drawing.ChartDrawing;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
@@ -24,9 +23,11 @@ public class BookPageRepository : IBookPageRepository
         int pageId;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO BookPage(BookId, SequenceNumber, ContentId, `Status`, ImageId, ChapterId)
-                            VALUES(@BookId, @SequenceNumber, @ContentId, @Status, @ImageId, @ChapterId);
-                            SELECT LAST_INSERT_ID();";
+            var sql = @"INSERT INTO BookPage(BookId, SequenceNumber, ContentId, `Status`, ImageId, ChapterId, 
+                            WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp)
+                        VALUES(@BookId, @SequenceNumber, @ContentId, @Status, @ImageId, @ChapterId,
+                            @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp);
+                        SELECT LAST_INSERT_ID();";
             var command = new CommandDefinition(sql, new
             {
                 BookId = bookPage.BookId,
@@ -34,7 +35,11 @@ public class BookPageRepository : IBookPageRepository
                 ImageId = bookPage.ImageId,
                 ChapterId = bookPage.ChapterId,
                 ContentId = bookPage.ContentId,
-                Status = EditingStatus.Available
+                Status = bookPage.Status,
+                WriterAccountId = bookPage.WriterAccountId,
+                WriterAssignTimeStamp = bookPage.WriterAssignTimeStamp,
+                ReviewerAccountId = bookPage.ReviewerAccountId,
+                ReviewerAssignTimeStamp = bookPage.ReviewerAssignTimeStamp
             }, cancellationToken: cancellationToken);
             pageId = await connection.ExecuteScalarAsync<int>(command);
         }
@@ -171,7 +176,7 @@ public class BookPageRepository : IBookPageRepository
                                 LEFT OUTER JOIN Accounts a ON a.Id = p.WriterAccountId
                                 LEFT OUTER JOIN Accounts ar ON ar.Id = p.ReviewerAccountId
                             WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId
-                            AND (@Status = -1 OR p.Status = @Status )
+                            AND (@Status = 0 OR p.Status = @Status )
                             AND (
                                 ( @AssignmentFilter = 0 ) OR
                                 ( @AssignmentFilter = 1 AND p.WriterAccountId IS NOT NULL) OR

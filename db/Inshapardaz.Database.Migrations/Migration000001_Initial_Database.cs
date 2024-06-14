@@ -251,8 +251,6 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn("Text").AsString(int.MaxValue).Nullable()
                 .WithColumn("ContentId").AsInt64().Nullable()
                     .ForeignKey("FK_PageContent_File", Schemas.Library, Tables.File, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
-                .WithColumn(Columns.FileId).AsInt64().Nullable()
-                    .ForeignKey("FK_BookPage_File", Schemas.Library, Tables.File, Columns.Id).OnDeleteOrUpdate(System.Data.Rule.Cascade)
                 .WithColumn("SequenceNumber").AsInt32().Nullable()
                 .WithColumn("ImageId").AsInt64().Nullable()
                     .ForeignKey("FK_BookPage_Image", Schemas.Library, Tables.File, Columns.Id).OnDelete(System.Data.Rule.SetNull)

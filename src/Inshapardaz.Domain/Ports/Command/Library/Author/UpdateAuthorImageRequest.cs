@@ -54,7 +54,7 @@ public class UpdateAuthorImageRequestHandler : RequestHandlerAsync<UpdateAuthorI
         }
 
         var fileName = FilePathHelper.GetAuthorImageFileName(command.Image.FileName);
-        var filePath = FilePathHelper.GetAuthorImagePath(command.LibraryId, command.AuthorId, fileName);
+        var filePath = FilePathHelper.GetAuthorImagePath(command.AuthorId, fileName);
 
         var saveContentCommand = new SaveFileCommand(fileName, filePath, command.Image.Contents)
         {

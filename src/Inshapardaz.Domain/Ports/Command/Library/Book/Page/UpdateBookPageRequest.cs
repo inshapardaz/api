@@ -64,7 +64,7 @@ public class UpdateBookPageRequestHandler : RequestHandlerAsync<UpdateBookPageRe
         var existingBookPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookPage.BookId, command.BookPage.SequenceNumber, cancellationToken);
 
         var fileName = FilePathHelper.BookPageContentFileName;
-        var filePath = FilePathHelper.GetBookPageContentPath(command.LibraryId, command.BookPage.BookId, fileName);
+        var filePath = FilePathHelper.GetBookPageContentPath(command.BookPage.BookId, fileName);
         var bookText = command.BookPage.Text;
 
         var saveContentCommand = new SaveTextFileCommand(fileName, filePath, bookText)

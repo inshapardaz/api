@@ -1,13 +1,33 @@
 {
   "profiles": {
-    "Inshapardaz.LibraryMigrator": {
+    "Common": {
       "commandName": "Project",
       "commandLineArgs": "-s \"data source=.;Database=Nawishta;integrated security=True;\" -st \"SqlServer\" -d \"Server=127.0.0.1;Database=nawishta;Uid=root;Pwd=Passw0rd;SslMode=none;\" -dt \"MySql\" -c -l 1",
       "hotReloadEnabled": false
     },
-    "Profile 1": {
+    "Adab-E-Alia": {
+      "commandName": "Project",
+      "commandLineArgs": "-s \"data source=.;Database=db_a9426d_adabealia;integrated security=True;\" -st \"SqlServer\" -d \"Server=127.0.0.1;Database=nawishta;Uid=root;Pwd=Passw0rd;SslMode=none;\" -dt \"MySql\" -l 3",
+      "hotReloadEnabled": false
+    },
+    "Kids Library": {
       "commandName": "Project",
       "commandLineArgs": "-s \"data source=.;Database=db_a9426d_kidslibrary;integrated security=True;\" -st \"SqlServer\" -d \"Server=127.0.0.1;Database=nawishta;Uid=root;Pwd=Passw0rd;SslMode=none;\" -dt \"MySql\" -l 2",
+      "hotReloadEnabled": false
+    },
+    "Jasoosi Duniya": {
+      "commandName": "Project",
+      "commandLineArgs": "-s \"data source=.;Database=db_a9426d_jasoosiduniya;integrated security=True;\" -st \"SqlServer\" -d \"Server=127.0.0.1;Database=nawishta;Uid=root;Pwd=Passw0rd;SslMode=none;\" -dt \"MySql\" -l 6",
+      "hotReloadEnabled": false
+    },
+    "Kids Jasoosi Adab": {
+      "commandName": "Project",
+      "commandLineArgs": "-s \"data source=.;Database=db_a9426d_kidsbooks;integrated security=True;\" -st \"SqlServer\" -d \"Server=127.0.0.1;Database=nawishta;Uid=root;Pwd=Passw0rd;SslMode=none;\" -dt \"MySql\" -l 5",
+      "hotReloadEnabled": false
+    },
+    "Urdu Library": {
+      "commandName": "Project",
+      "commandLineArgs": "-s \"data source=.;Database=db_a9426d_urdulibrary;integrated security=True;\" -st \"SqlServer\" -d \"Server=127.0.0.1;Database=nawishta;Uid=root;Pwd=Passw0rd;SslMode=none;\" -dt \"MySql\" -l 1",
       "hotReloadEnabled": false
     }
   }

@@ -57,7 +57,7 @@ public class UpdateBookImageRequestHandler : RequestHandlerAsync<UpdateBookImage
         }
 
         var fileName = FilePathHelper.GetBookImageFileName(command.Image.FileName);
-        var filePath = FilePathHelper.GetBookImageFilePath(command.LibraryId, command.BookId, fileName);
+        var filePath = FilePathHelper.GetBookImageFilePath(command.BookId, fileName);
 
         var saveContentCommand = new SaveFileCommand(fileName, filePath, command.Image.Contents)
         {

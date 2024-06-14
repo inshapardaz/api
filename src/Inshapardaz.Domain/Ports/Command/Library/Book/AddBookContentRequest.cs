@@ -68,7 +68,7 @@ public class AddBookFileRequestHandler : RequestHandlerAsync<AddBookContentReque
 
             var fileName = FilePathHelper.GetBookContentFileName(command.Content.FileName);
 
-            var saveFileCommand = new SaveFileCommand(command.Content.FileName, FilePathHelper.GetBookContentPath(command.LibraryId, command.BookId, fileName), command.Content.Contents)
+            var saveFileCommand = new SaveFileCommand(command.Content.FileName, FilePathHelper.GetBookContentPath(command.BookId, fileName), command.Content.Contents)
             {
                 MimeType = command.Content.MimeType,
                 IsPublic = command.Content.IsPublic

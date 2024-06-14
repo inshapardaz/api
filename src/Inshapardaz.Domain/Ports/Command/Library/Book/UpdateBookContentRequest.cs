@@ -62,7 +62,7 @@ public class UpdateBookFileRequestHandler : RequestHandlerAsync<UpdateBookConten
             var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
             long contentId = 0;
             var fileName = FilePathHelper.GetBookContentFileName(command.Content.FileName);
-            var filePath = FilePathHelper.GetBookContentPath(command.LibraryId, command.BookId, fileName);
+            var filePath = FilePathHelper.GetBookContentPath(command.BookId, fileName);
 
             var saveFileCommand = new SaveFileCommand(command.Content.FileName, filePath, command.Content.Contents)
             {

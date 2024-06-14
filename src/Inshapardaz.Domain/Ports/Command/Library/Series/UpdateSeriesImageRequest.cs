@@ -55,7 +55,7 @@ public class UpdateSeriesImageRequestHandler : RequestHandlerAsync<UpdateSeriesI
         }
 
         var fileName = FilePathHelper.GetSeriesImageFileName(command.Image.FileName);
-        var filePath = FilePathHelper.GetSeriesImagePath(command.LibraryId, command.SeriesId, fileName);
+        var filePath = FilePathHelper.GetSeriesImagePath(command.SeriesId, fileName);
 
         var saveContentCommand = new SaveFileCommand(fileName, filePath, command.Image.Contents)
         {

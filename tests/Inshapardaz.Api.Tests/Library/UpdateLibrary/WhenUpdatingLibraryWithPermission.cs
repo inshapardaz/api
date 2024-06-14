@@ -1,6 +1,6 @@
 ﻿using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;

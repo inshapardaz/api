@@ -1,8 +1,8 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
 

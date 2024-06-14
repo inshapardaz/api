@@ -1,6 +1,6 @@
 ﻿using Inshapardaz.Api.Views.Accounts;
-using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;
@@ -12,8 +12,8 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
     public class WhenInvitingUserWhoIsAlreadyInvitedToAnotherLibrary : TestBase
     {
         private HttpResponseMessage _response;
-        private Dto.LibraryDto _library1, _library2;
-        private Dto.AccountDto _account;
+        private Framework.Dto.LibraryDto _library1, _library2;
+        private Framework.Dto.AccountDto _account;
 
         public WhenInvitingUserWhoIsAlreadyInvitedToAnotherLibrary() : base(Role.Admin)
         {

@@ -1,5 +1,5 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.Helpers;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Linq;

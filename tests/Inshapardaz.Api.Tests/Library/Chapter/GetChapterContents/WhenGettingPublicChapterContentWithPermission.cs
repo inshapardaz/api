@@ -1,11 +1,11 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.Dto;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.Dto;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Api.Tests.DataHelpers;
+using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents

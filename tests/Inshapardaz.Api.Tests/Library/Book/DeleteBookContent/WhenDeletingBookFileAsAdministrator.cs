@@ -1,7 +1,7 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.DataHelpers;
-using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Api.Tests.Helpers;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.DataHelpers;
+using Inshapardaz.Api.Tests.Framework.Dto;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 using System.Net.Http;

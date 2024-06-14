@@ -4,10 +4,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.DataHelpers;
-using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.DataHelpers;
+using Inshapardaz.Api.Tests.Framework.Dto;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
@@ -47,7 +47,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
                 Id = selectedPeriodical.Id,
                 Title = fake.Name.FullName(),
                 Description = fake.Random.Words(5),
-                Language = Helpers.RandomData.Locale,
+                Language = Framework.Helpers.RandomData.Locale,
                 Frequency = new Faker().PickRandom<PeriodicalFrequency>().ToDescription(),
                 Categories = _categoriesToUpdate.Select(c => new CategoryView { Id = c.Id })
             };

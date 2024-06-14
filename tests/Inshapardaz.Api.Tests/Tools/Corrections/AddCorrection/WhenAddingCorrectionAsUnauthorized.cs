@@ -1,7 +1,7 @@
 ﻿using Inshapardaz.Api.Tests;
-using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.DataBuilders;
-using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.DataBuilders;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;

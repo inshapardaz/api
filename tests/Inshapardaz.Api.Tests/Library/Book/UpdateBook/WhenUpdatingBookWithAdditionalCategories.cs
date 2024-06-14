@@ -4,10 +4,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Api.Extensions;
-using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.DataHelpers;
-using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Api.Tests.Helpers;
+using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.DataHelpers;
+using Inshapardaz.Api.Tests.Framework.Dto;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -52,7 +52,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 Title = fake.Name.FullName(),
                 Description = fake.Random.Words(5),
                 Copyrights = fake.PickRandom<CopyrightStatuses>().ToDescription(),
-                Language = Helpers.RandomData.Locale,
+                Language = Framework.Helpers.RandomData.Locale,
                 YearPublished = fake.Date.Past().Year,
                 Status = fake.PickRandom<StatusType>().ToDescription(),
                 IsPublic = fake.Random.Bool(),

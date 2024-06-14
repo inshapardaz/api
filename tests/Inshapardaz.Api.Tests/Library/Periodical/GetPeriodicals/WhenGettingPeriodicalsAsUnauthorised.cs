@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
 using System.Linq;

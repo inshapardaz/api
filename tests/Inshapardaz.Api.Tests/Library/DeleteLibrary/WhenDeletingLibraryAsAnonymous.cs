@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;

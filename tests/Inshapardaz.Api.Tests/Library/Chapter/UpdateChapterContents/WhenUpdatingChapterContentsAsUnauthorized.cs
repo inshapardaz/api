@@ -1,6 +1,6 @@
-﻿using Inshapardaz.Api.Tests.Asserts;
-using Inshapardaz.Api.Tests.Dto;
-using Inshapardaz.Api.Tests.Helpers;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.Dto;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;

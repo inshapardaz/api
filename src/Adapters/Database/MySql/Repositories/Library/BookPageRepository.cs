@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DocumentFormat.OpenXml.Drawing.ChartDrawing;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
@@ -425,39 +426,33 @@ public class BookPageRepository : IBookPageRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
+            var sql = @"SELECT @Id = Id
+                        FROM BookPage
+                        WHERE BookId = @BookId AND SequenceNumber = @oldPosition;
 
-            var sql = @"DECLARE @maxPosition INT;
-                            DECLARE @Id INT;
+                        SELECT @maxPosition = MAX(SequenceNumber) 
+                        FROM BookPage 
+                        WHERE BookId = @BookId;
 
-                            SELECT @Id = Id
-                            FROM BookPage
-                            WHERE BookId = @BookId AND SequenceNumber = @oldPosition;
+                        SET @newPosition = IF(@newPosition < 1, 1, @newPosition);
+                        SET @newPosition = IF(@newPosition > @maxPosition, @maxPosition, @newPosition);
 
-                            SELECT @maxPosition = MAX(SequenceNumber) 
-                            FROM BookPage 
-                            WHERE BookId = @BookId
-
-                            IF (@newPosition < 1)
-                             SET @newPosition = 1
- 
-                            IF (@newPosition > @maxPosition)
-                             SET @newPosition = @maxPosition
-
-                            UPDATE BookPage SET SequenceNumber = CASE
-                                WHEN Id = @Id THEN @newPosition
-                                WHEN @oldPosition < @newPosition THEN SequenceNumber - 1
-                                WHEN @oldPosition > @newPosition THEN SequenceNumber + 1
-                            END
-                            WHERE BookId = @BookId AND SequenceNumber BETWEEN
-                                CASE WHEN @oldPosition < @newPosition THEN @oldPosition ELSE @newPosition END AND
-                                CASE WHEN @oldPosition > @newPosition THEN @oldPosition ELSE @newPosition END;
-";
+                        UPDATE BookPage 
+                        SET SequenceNumber = CASE
+                            WHEN Id = @Id THEN @newPosition
+                            WHEN @oldPosition < @newPosition THEN SequenceNumber - 1
+                            WHEN @oldPosition > @newPosition THEN SequenceNumber + 1
+                        END
+                        WHERE BookId = @BookId AND SequenceNumber BETWEEN
+                            LEAST(@oldPosition, @newPosition) AND
+                            GREATEST(@oldPosition, @newPosition);";
             var command = new CommandDefinition(sql, new
             {
                 BookId = bookId,
                 oldPosition = oldSequenceNumber,
                 newPosition = newSequenceNumber,
-
+                maxPosition = 0,
+                Id = 0
             }, cancellationToken: cancellationToken);
 
             await connection.ExecuteAsync(command);

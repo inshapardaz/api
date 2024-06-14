@@ -1,5 +1,4 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using System.IO;
 using System.Threading;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 namespace Inshapardaz.Storage.FileSystem;
 
 public class FileSystemStorage : IFileStorage
-{
+{ 
     private readonly string _basePath;
 
     public FileSystemStorage(string basePath)
@@ -23,14 +22,15 @@ public class FileSystemStorage : IFileStorage
     public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
     {
         var fullPath = GetFullPath(filePath);
-        if (!File.Exists(fullPath)) { throw new NotFoundException(); }
+        if (!File.Exists(fullPath)) { return System.Array.Empty<byte>(); }
+
         return await File.ReadAllBytesAsync(fullPath);
     }
 
     public async Task<string> GetTextFile(string filePath, CancellationToken cancellationToken)
     {
         var fullPath = GetFullPath(filePath);
-        if (!File.Exists(fullPath)) { throw new NotFoundException(); }
+        if (!File.Exists(fullPath)) { return string.Empty; }
         return await File.ReadAllTextAsync(fullPath);
     }
 

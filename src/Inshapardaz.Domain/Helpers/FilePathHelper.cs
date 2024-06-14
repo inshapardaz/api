@@ -17,9 +17,9 @@ public static class FilePathHelper
     public static string GetSeriesImagePath(int libararyId, int seriesId, string fileName) => $"{libararyId}/series/{seriesId}/{fileName}";
 
     // book image
-    internal static string GetBookImageFileName(string fileName) => $"title{Path.GetExtension(fileName)}";
+    public static string GetBookImageFileName(string fileName) => $"title{Path.GetExtension(fileName)}";
 
-    internal static string GetBookImageFilePath(int libararyId, int bookId, string fileName) => $"{libararyId}/books/{bookId}/{fileName}";
+    public static string GetBookImageFilePath(int libararyId, int bookId, string fileName) => $"{libararyId}/books/{bookId}/{fileName}";
 
     // book content
     public static string GetBookContentFileName(string fileName) => $"{Guid.NewGuid().ToString("N")}{Path.GetExtension(fileName)}";
@@ -36,9 +36,9 @@ public static class FilePathHelper
 
     public static string GetBookPageContentPath(int libararyId, int bookId, string fileName) => $"{libararyId}/books/{bookId}/pages/{fileName}";
 
-    internal static string GetBookPageFileName(string fileName) => $"page-image-{Guid.NewGuid().ToString("N")}{Path.GetExtension(fileName)}";
+    public static string GetBookPageFileName(string fileName) => $"page-image-{Guid.NewGuid().ToString("N")}{Path.GetExtension(fileName)}";
 
-    internal static string GetBookPageFilePath(int libararyId, int bookId, string fileName) => $"{libararyId}/books/{bookId}/pages/{fileName}";
+    public static string GetBookPageFilePath(int libararyId, int bookId, string fileName) => $"{libararyId}/books/{bookId}/pages/{fileName}";
 
     // Article
     public static string GetArticleContentFileName(string language) => $"article-{language}.md";

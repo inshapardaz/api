@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using DocumentFormat.OpenXml.Spreadsheet;
+﻿using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Storage.FileSystem;
@@ -376,8 +374,9 @@ public class Migrator
                     content.BookId = newBookId;
                     content.ChapterId = newChapter.Id;
 
-                    var filePath = await fileStore.StoreTextFile($"books/{bookId}/chapter-{newChapter.ChapterNumber}.md", content.Text, cancellationToken);
-                    var file = await AddFile($"chapter-{newChapter.Id}.md", filePath, MimeTypes.Markdown, cancellationToken);
+                    var fileName = FilePathHelper.BookChapterContentFileName;
+                    var filePath = await fileStore.StoreTextFile(FilePathHelper.GetBookChapterContentPath(libraryId, bookId, fileName), content.Text, cancellationToken);
+                    var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                     content.Text = string.Empty;
                     content.FileId = file.Id;
                     await destinationDb.AddChapterContent(newLibraryId, content, cancellationToken);
@@ -391,15 +390,11 @@ public class Migrator
         return chaptersMap;
     }
 
-    private static string GetChapterFileName(int bookId, long chapterId)
-    {
-        return $"books/{bookId}/chapter-{chapterId}.md";
-    }
-
     private async Task MigrateBookPages(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, Dictionary<long, long> chaptersMap, ChildProgressBar pbar, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.BookPageRepository;
         var destinationDb = DestinationRepositoryFactory.BookPageRepository;
+        var fileStore = new FileSystemStorage("../FileStore");
 
         var pages = (await sourceDb.GetAllPagesByBook(libraryId, bookId, cancellationToken)).ToArray();
         var options = new ProgressBarOptions
@@ -444,7 +439,12 @@ public class Migrator
                     page.WriterAccountId = null;
                 }
 
-                //TODO: Copy page contents to file
+                var fileName = FilePathHelper.BookPageContentFileName;
+                var filePath = await fileStore.StoreTextFile(FilePathHelper.GetBookContentPath(newLibraryId, bookId, fileName), page.Text, cancellationToken);
+                var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
+                page.Text = string.Empty;
+                page.ContentId = file.Id;
+
                 await destinationDb.AddPage(newLibraryId, page, cancellationToken);
 
                 child.Tick($"{++i} of {pages.Length} Pages(s) migrated for book {newBookId}.");
@@ -656,6 +656,7 @@ public class Migrator
     {
         var sourceDb = SourceRepositoryFactory.ArticleRepository;
         var destinationDb = DestinationRepositoryFactory.ArticleRepository;
+        var fileStore = new FileSystemStorage("../FileStore");
 
         Dictionary<long, long> articlesMap = new Dictionary<long, long>();
         var articles = await sourceDb.GetAllArticles(libraryId, cancellationToken);
@@ -693,7 +694,11 @@ public class Migrator
                 {
                     content.ArticleId = newArticle.Id;
 
-                    // TODO: Migrate contents to file
+                    var fileName = FilePathHelper.GetArticleContentFileName(content.Language);
+                    var filePath = await fileStore.StoreTextFile(FilePathHelper.GetArticleContentPath(newLibraryId, newArticle.Id, fileName), content.Text, cancellationToken);
+                    var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
+                    content.Text = string.Empty;
+                    content.FileId = file.Id;
                     await destinationDb.AddArticleContent(newLibraryId, content, cancellationToken);
                 }
 

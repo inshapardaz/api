@@ -19,7 +19,7 @@ public class BookPageModel
     public long? ChapterId { get; set; }
 
     public string ChapterTitle { get; set; }
-    public BookPageModel PreviousPage { get; internal set; }
-    public BookPageModel NextPage { get; internal set; }
-    public long? ContentId { get; internal set; }
+    public BookPageModel PreviousPage { get; set; }
+    public BookPageModel NextPage { get; set; }
+    public long? ContentId { get; set; }
 }

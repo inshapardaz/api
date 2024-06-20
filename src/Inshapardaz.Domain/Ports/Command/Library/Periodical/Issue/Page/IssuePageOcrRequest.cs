@@ -31,14 +31,19 @@ public class IssuePageOcrRequest : LibraryBaseCommand
 public class IssuePageOcrRequestHandler : RequestHandlerAsync<IssuePageOcrRequest>
 {
     private readonly IIssuePageRepository _issuePageRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
     private readonly IQueryProcessor _queryProcessor;
     private readonly IProvideOcr _ocr;
 
-    public IssuePageOcrRequestHandler(IIssuePageRepository issuePageRepository, IQueryProcessor queryProcessor, IProvideOcr ocr)
+    public IssuePageOcrRequestHandler(IIssuePageRepository issuePageRepository, 
+        IQueryProcessor queryProcessor, 
+        IAmACommandProcessor commandProcessor,
+        IProvideOcr ocr)
     {
         _issuePageRepository = issuePageRepository;
         _queryProcessor = queryProcessor;
         _ocr = ocr;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -51,9 +56,10 @@ public class IssuePageOcrRequestHandler : RequestHandlerAsync<IssuePageOcrReques
 
             if (image != null)
             {
-                var text = await _ocr.PerformOcr(image.Contents, command.ApiKey, cancellationToken);
-                issuePage.Text = text;
-                await _issuePageRepository.UpdatePage(command.LibraryId, issuePage.PeriodicalId, issuePage.VolumeNumber, issuePage.IssueNumber, issuePage.SequenceNumber, text, issuePage.ImageId.Value, issuePage.ArticleId, issuePage.Status, cancellationToken);
+                issuePage.Text = await _ocr.PerformOcr(image.Contents, command.ApiKey, cancellationToken);
+
+                var cmd = new UpdateIssuePageRequest(command.LibraryId, issuePage);
+                await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
                 return await base.HandleAsync(command, cancellationToken);
             }
         }

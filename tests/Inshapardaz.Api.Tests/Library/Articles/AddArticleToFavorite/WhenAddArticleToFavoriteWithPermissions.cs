@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleToFavorite
@@ -15,6 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleToFavorite
     public class WhenAddArticleToFavoriteWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
+        private ArticleAssert _assert;
         private ArticleDto _article;
 
         public WhenAddArticleToFavoriteWithPermissions(Role role) : base(role)
@@ -31,6 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleToFavorite
             _article = articles.PickRandom();
 
             _response = await Client.PostObject<object>($"/libraries/{LibraryId}/favorites/articles/{_article.Id}", new object());
+            _assert = Services.GetService<ArticleAssert>().ForLibrary(LibraryId).ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -48,7 +51,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleToFavorite
         [Test]
         public void ShouldBeAddedToFavorites()
         {
-            ArticleAssert.ShouldBeAddedToFavorite(_article.Id, AccountId, DatabaseConnection);
+            _assert.ShouldBeAddedToFavorite(_article.Id, AccountId);
         }
     }
 }

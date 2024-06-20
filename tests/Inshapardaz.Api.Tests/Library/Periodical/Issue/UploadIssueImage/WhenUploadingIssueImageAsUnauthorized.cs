@@ -1,6 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading;
@@ -12,6 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
     public class WhenUploadingIssueImageAsUnauthorized : TestBase
     {
         private HttpResponseMessage _response;
+        private IssueAssert _assert;
         private int _issueId;
         private byte[] _oldImage;
 
@@ -20,10 +21,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).Build();
             _issueId = issue.Id;
-            var imageUrl = DatabaseConnection.GetIssueImageUrl(_issueId);
+            var imageUrl = IssueTestRepository.GetIssueImageUrl(_issueId);
             _oldImage = await FileStore.GetFile(imageUrl, CancellationToken.None);
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/image", RandomData.Bytes);
+            _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -41,7 +43,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
         [Test]
         public void ShouldNotHaveUpdatedIssueImage()
         {
-            IssueAssert.ShouldNotHaveUpdatedIssueImage(DatabaseConnection, FileStore, _issueId, _oldImage);
+            _assert.ShouldNotHaveUpdatedIssueImage(_issueId, _oldImage);
         }
     }
 }

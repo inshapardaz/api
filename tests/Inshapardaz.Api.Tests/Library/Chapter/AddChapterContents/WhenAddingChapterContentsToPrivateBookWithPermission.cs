@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
             _contents = RandomData.String;
 
             _response = await Client.PostString($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents?language={locale}", _contents);
-            _assert = new ChapterContentAssert(_response, LibraryId);
+            _assert = Services.GetService<ChapterContentAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -56,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         [Test]
         public void ShouldSaveTheChapterContent()
         {
-            _assert.ShouldHaveSavedChapterContent(DatabaseConnection);
+            _assert.ShouldHaveSavedChapterContent();
         }
 
         [Test]
@@ -68,7 +69,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         [Test]
         public void ShouldHaveCorrectTextSaved()
         {
-            _assert.ShouldHaveSavedCorrectText(_contents, DatabaseConnection, FileStore);
+            _assert.ShouldHaveSavedCorrectText(_contents);
         }
 
         [Test]

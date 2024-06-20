@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
@@ -30,7 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
             _expected = bookShelf.PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/bookshelves/{_expected.Id}");
-            _assert = BookShelfAssert.WithResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<BookShelfAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -78,7 +79,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
         [Test]
         public void ShouldReturnCorrectBookShelfData()
         {
-            _assert.ShouldHaveCorrectBookShelfRetunred(_expected, DatabaseConnection);
+            _assert.ShouldHaveCorrectBookShelfRetunred(_expected);
         }
     }
 }

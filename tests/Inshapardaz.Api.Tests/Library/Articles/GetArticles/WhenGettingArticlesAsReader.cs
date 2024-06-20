@@ -7,6 +7,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
@@ -34,7 +35,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/articles");
 
-            _assert = new PagingAssert<ArticleView>(_response);
+            _assert = Services.GetService<PagingAssert<ArticleView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -86,18 +87,19 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
             {
                 var actual = _assert.Data.ElementAt(i);
                 var expected = expectedItems[i];
-                actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
-                            .ShouldHaveSelfLink()
-                            .WithReadOnlyLinks()
-                            .ShouldNotHaveImageUpdateLink()
-                            .ShouldNotHaveAddContentLink()
-                            .ShouldBeSameCategories(_categories)
-                            .ShouldHavePublicImageLink()
-                            .ShouldHaveAddFavoriteLink()
-                            .ShouldHaveContents(
-                                ArticleBuilder.Contents.Where(c => c.ArticleId == actual.Id).ToList(),
-                                false)
-                            .ShouldBeSameAs(expected, DatabaseConnection);
+                Services.GetService<ArticleAssert>().ForArticleView(actual).ForLibrary(LibraryId)
+                        .ShouldMatch(expected)
+                        .ShouldHaveSelfLink()
+                        .WithReadOnlyLinks()
+                        .ShouldNotHaveImageUpdateLink()
+                        .ShouldNotHaveAddContentLink()
+                        .ShouldBeSameCategories(_categories)
+                        .ShouldHavePublicImageLink()
+                        .ShouldHaveAddFavoriteLink()
+                        .ShouldHaveContents(
+                            ArticleBuilder.Contents.Where(c => c.ArticleId == actual.Id).ToList(),
+                            false)
+                        .ShouldBeSameAs(expected);
             };
         }
     }

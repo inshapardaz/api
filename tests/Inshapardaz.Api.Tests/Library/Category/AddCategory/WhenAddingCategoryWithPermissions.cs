@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.AddCategory
@@ -27,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.AddCategory
             _category = new CategoryView { Name = RandomData.Name };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/categories", _category);
-            _assert = CategoryAssert.FromResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<CategoryAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -51,7 +52,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.AddCategory
         [Test]
         public void ShouldHaveCreatedCategoryInDataStore()
         {
-            _assert.ShouldHaveCreatedCategory(DatabaseConnection);
+            _assert.ShouldHaveCreatedCategory();
         }
 
         [Test]

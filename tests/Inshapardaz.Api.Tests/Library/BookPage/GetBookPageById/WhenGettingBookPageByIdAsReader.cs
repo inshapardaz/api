@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
             _expected = BookBuilder.GetPages(book.Id).PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_expected.BookId}/pages/{_expected.SequenceNumber}");
-            _assert = BookPageAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<BookPageAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]

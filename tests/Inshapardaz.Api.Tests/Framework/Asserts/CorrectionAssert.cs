@@ -3,7 +3,6 @@ using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
-using System.Data;
 using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
@@ -11,26 +10,30 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
     internal class CorrectionAssert
     {
         private CorrectionView _correction;
-
         public HttpResponseMessage _response;
-
         public CorrectionView View => _correction;
-        private CorrectionAssert(HttpResponseMessage response)
+
+        public readonly ICorrectionTestRepository _correctionRepository;
+
+        public CorrectionAssert(ICorrectionTestRepository correctionRepository)
+        {
+            _correctionRepository = correctionRepository;
+        }
+
+
+        public CorrectionAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _correction = response.GetContent<CorrectionView>().Result;
+            return this;
         }
 
-        private CorrectionAssert(CorrectionView view)
+        public CorrectionAssert ForView(CorrectionView view)
         {
             _correction = view;
+            return this;
         }
-
-        public static CorrectionAssert WithResponse(HttpResponseMessage response)
-        {
-            return new CorrectionAssert(response);
-        }
-
+        
         internal CorrectionAssert ShouldBeSameAs(CorrectionDto expected)
         {
             _correction.Should().NotBeNull();
@@ -53,21 +56,18 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static CorrectionAssert FromObject(CorrectionView correction)
+        internal CorrectionAssert ShouldHaveDeletedCorrection(long correctionId)
         {
-            return new CorrectionAssert(correction);
-        }
-
-        internal static void ShouldHaveDeletedCorrection(long correctionId, IDbConnection dbConnection)
-        {
-            var correction = dbConnection.GetCorrectionById(correctionId);
+            var correction = _correctionRepository.GetCorrectionById(correctionId);
             correction.Should().BeNull();
+            return this;
         }
 
-        internal static void ShouldNotHaveDeletedCorrection(long correctionId, IDbConnection dbConnection)
+        internal CorrectionAssert ShouldNotHaveDeletedCorrection(long correctionId)
         {
-            var correction = dbConnection.GetCorrectionById(correctionId);
+            var correction = _correctionRepository.GetCorrectionById(correctionId);
             correction.Should().NotBeNull();
+            return this;
         }
 
         public CorrectionAssert ShouldNotHaveDeleteLink()
@@ -77,9 +77,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public CorrectionAssert ShouldHaveSavedCorrection(IDbConnection dbConnection)
+        public CorrectionAssert ShouldHaveSavedCorrection()
         {
-            var dbCorrection = dbConnection.GetCorrectionById(_correction.Id);
+            var dbCorrection = _correctionRepository.GetCorrectionById(_correction.Id);
             dbCorrection.Should().NotBeNull();
             _correction.Language.Should().Be(dbCorrection.Language);
             _correction.Profile.Should().Be(dbCorrection.Profile);
@@ -89,9 +89,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public CorrectionAssert ShouldMatchSavedCorrection(IDbConnection dbConnection, CorrectionDto correction)
+        public CorrectionAssert ShouldMatchSavedCorrection(CorrectionDto correction)
         {
-            var dbCorrection = dbConnection.GetCorrectionById(correction.Id);
+            var dbCorrection = _correctionRepository.GetCorrectionById(correction.Id);
             dbCorrection.Should().NotBeNull();
             correction.Language.Should().Be(dbCorrection.Language);
             correction.Profile.Should().Be(dbCorrection.Profile);
@@ -109,15 +109,6 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _correction.CorrectText.Should().Be(correction.CorrectText);
             _correction.CompleteWord.Should().Be(correction.CompleteWord);
             return this;
-        }
-    }
-
-    internal static class CorrectionAssertionExtensions
-    {
-        internal static CorrectionAssert ShouldMatch(this CorrectionView view, CorrectionDto dto)
-        {
-            return CorrectionAssert.FromObject(view)
-                               .ShouldBeSameAs(dto);
         }
     }
 }

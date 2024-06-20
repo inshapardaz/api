@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/pages");
 
-            _assert = new PagingAssert<BookPageView>(_response);
+            _assert = Services.GetService<PagingAssert<BookPageView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -69,15 +70,15 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.SequenceNumber == item.SequenceNumber);
-                actual.ShouldMatch(item)
-                    .InLibrary(LibraryId)
-                            .ShouldHaveSelfLink()
-                            .ShouldHaveBookLink()
-                            .ShouldNotHaveImageLink()
-                            .ShouldNotHaveUpdateLink()
-                            .ShouldNotHaveDeleteLink()
-                            .ShouldNotHaveImageUpdateLink()
-                            .ShouldNotHaveImageDeleteLink();
+                Services.GetService<BookPageAssert>().ForView(actual).ForLibrary(LibraryId)
+                    .ShouldMatch(item)
+                    .ShouldHaveSelfLink()
+                    .ShouldHaveBookLink()
+                    .ShouldNotHaveImageLink()
+                    .ShouldNotHaveUpdateLink()
+                    .ShouldNotHaveDeleteLink()
+                    .ShouldNotHaveImageUpdateLink()
+                    .ShouldNotHaveImageDeleteLink();
             }
         }
     }

@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -29,8 +30,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
             _issue = IssueBuilder.WithLibrary(LibraryId).WithContents(1).WithContentLanguage(Library.Language).Build();
             _expected = IssueBuilder.Contents.Single(x => x.Language == Library.Language);
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents", _expected.MimeType);
-            _assert = new IssueContentAssert(_response, LibraryId);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents/{_expected.Id}", _expected.MimeType);
+            _assert = Services.GetService<IssueContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -80,7 +81,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
         [Test]
         public void ShouldReturnCorrectContentData()
         {
-            _assert.ShouldMatch(_expected, _expected.Id, DatabaseConnection);
+            _assert.ShouldMatch(_expected, _expected.Id);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
@@ -38,14 +39,33 @@ public class GetIssuePagesQuery : LibraryBaseQuery<Page<IssuePageModel>>
 public class GetIssuePagesQueryHandler : QueryHandlerAsync<GetIssuePagesQuery, Page<IssuePageModel>>
 {
     private readonly IIssuePageRepository _issuePageRepository;
+    private readonly IFileRepository _fileRepository;
+    private readonly IFileStorage _fileStorage;
 
-    public GetIssuePagesQueryHandler(IIssuePageRepository issuePageRepository)
+    public GetIssuePagesQueryHandler(IIssuePageRepository issuePageRepository, IFileRepository fileRepository, IFileStorage fileStorage)
     {
         _issuePageRepository = issuePageRepository;
+        _fileRepository = fileRepository;
+        _fileStorage = fileStorage;
     }
 
     public override async Task<Page<IssuePageModel>> ExecuteAsync(GetIssuePagesQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
-        return await _issuePageRepository.GetPagesByIssue(query.LibraryId, query.PeriodicalId, query.VolumeNumber, query.IssueNumber, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.ReviewerAssignmentFilter, query.AccountId, cancellationToken);
+        var pages = await _issuePageRepository.GetPagesByIssue(query.LibraryId, query.PeriodicalId, query.VolumeNumber, query.IssueNumber, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.ReviewerAssignmentFilter, query.AccountId, cancellationToken);
+
+        foreach (var page in pages.Data)
+        {
+            if (page.FileId.HasValue)
+            {
+                var file = await _fileRepository.GetFileById(page.FileId.Value, cancellationToken);
+                if (file != null)
+                {
+                    var fc = await _fileStorage.GetTextFile(file.FilePath, cancellationToken);
+                    page.Text = fc;
+                }
+            }
+        }
+
+        return pages;
     }
 }

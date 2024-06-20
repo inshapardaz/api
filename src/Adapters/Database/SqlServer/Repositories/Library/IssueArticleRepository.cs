@@ -252,7 +252,7 @@ public class IssueArticleRepository : IIssueArticleRepository
         }
     }
 
-    public async Task<IssueArticleContentModel> GetArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken)
+    public async Task<IssueArticleContentModel> GetArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -269,12 +269,11 @@ public class IssueArticleRepository : IIssueArticleRepository
                                 AND ac.Language = @Language";
             var command = new CommandDefinition(sql, new
             {
-                LibraryId = libraryId,
-                PeriodicalId = periodicalId,
-                VolumeNumber = volumeNumber,
-                IssueNumber = issueNumber,
-                SequenceNumber = sequenceNumber,
-                Language = language
+                PeriodicalId = content.PeriodicalId,
+                VolumeNumber = content.VolumeNumber,
+                IssueNumber = content.IssueNumber,
+                SequenceNumber = content.SequenceNumber,
+                Language = content.Language
             }, cancellationToken: cancellationToken);
             return await connection.QuerySingleOrDefaultAsync<IssueArticleContentModel>(command);
         }
@@ -307,7 +306,7 @@ public class IssueArticleRepository : IIssueArticleRepository
         }
     }
 
-    public async Task<IssueArticleContentModel> AddArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string content, CancellationToken cancellationToken)
+    public async Task<IssueArticleContentModel> AddArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -324,47 +323,43 @@ public class IssueArticleRepository : IIssueArticleRepository
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
-                PeriodicalId = periodicalId,
-                VolumeNumber = volumeNumber,
-                IssueNumber = issueNumber,
-                SequenceNumber = sequenceNumber,
-                Language = language,
-                Text = content
+                PeriodicalId = content.PeriodicalId,
+                VolumeNumber = content.VolumeNumber,
+                IssueNumber = content.IssueNumber,
+                SequenceNumber = content.SequenceNumber,
+                Language = content.Language,
+                FileId = content.FileId
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
-            return await GetArticleContentById(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, language, cancellationToken);
+            return await GetArticleContentById(libraryId, content.PeriodicalId, content.VolumeNumber, content.IssueNumber, content.SequenceNumber, content.Language, cancellationToken);
         }
     }
 
-    public async Task<IssueArticleContentModel> UpdateArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string content, CancellationToken cancellationToken)
+    public async Task<IssueArticleContentModel> UpdateArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"Update ac SET Text = @Text
+            var sql = @"Update ac SET FileId = @FileId, Language = @Language
                             FROM IssueArticleContent ac
                             INNER JOIN IssueArticle a ON a.Id = ac.Articleid
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
-                            WHERE p.LibraryId =  @LibraryId
+                        WHERE p.LibraryId =  @LibraryId && 
                             AND i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
-                            AND a.SequenceNumber = @SequenceNumber
-                            AND ac.Language = @Language";
+                            AND i.Id = @id";
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
-                PeriodicalId = periodicalId,
-                VolumeNumber = volumeNumber,
-                IssueNumber = issueNumber,
-                SequenceNumber = sequenceNumber,
-                Language = language,
-                Text = content
+                Id = content.Id,
+                Language = content.Language,
+                FileId = content.FileId
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
 
-        return await GetArticleContent(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, language, cancellationToken);
+        return await GetArticleContentById(libraryId, content.PeriodicalId, content.VolumeNumber, content.IssueNumber, content.SequenceNumber, content.Language, cancellationToken);
     }
 
     public async Task DeleteArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)

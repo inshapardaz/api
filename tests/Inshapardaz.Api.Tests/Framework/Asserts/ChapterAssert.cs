@@ -1,51 +1,52 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters.Repositories;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    internal class ChapterAssert
+    public class ChapterAssert
     {
         private HttpResponseMessage _response;
-        private readonly int _libraryId;
+        private int _libraryId;
         private ChapterView _chapter;
 
-        public ChapterAssert(ChapterView view, int libraryId)
+        private readonly IChapterTestRepository _chapterRepository;
+        private readonly FakeFileStorage _fileStorage;
+
+        public ChapterAssert(IChapterTestRepository chapterRepository, FakeFileStorage fileStorage)
         {
-            _libraryId = libraryId;
-            _chapter = view;
+            _fileStorage = fileStorage;
+            _chapterRepository = chapterRepository;
         }
 
-        public ChapterAssert(HttpResponseMessage response, int libraryId)
+        public ChapterAssert ForView(ChapterView view)
+        {
+            _chapter = view;
+            return this;
+        }
+
+        public ChapterAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
-            _libraryId = libraryId;
             _chapter = response.GetContent<ChapterView>().Result;
+            return this;
         }
 
-        internal static ChapterAssert FromResponse(HttpResponseMessage response, int libraryId)
+        public ChapterAssert ForLibrary(int libraryId)
         {
-            return new ChapterAssert(response, libraryId);
+            _libraryId = libraryId;
+            return this;
         }
 
-        internal static ChapterAssert FromObject(ChapterView view, int libraryId)
-        {
-            return new ChapterAssert(view, libraryId);
-        }
-
-        internal ChapterAssert ShouldHaveCorrectLocationHeader()
+        public ChapterAssert ShouldHaveCorrectLocationHeader()
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
@@ -53,7 +54,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldBeAssignedToUserForWriting(AccountDto account)
+        public ChapterAssert ShouldBeAssignedToUserForWriting(AccountDto account)
         {
             _chapter.WriterAccountId.Should().Be(account.Id);
             _chapter.WriterAccountName.Should().Be(account.Name);
@@ -61,7 +62,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldNotBeAssignedForWriting()
+        public ChapterAssert ShouldNotBeAssignedForWriting()
         {
             _chapter.WriterAccountId.Should().BeNull();
             _chapter.WriterAccountName.Should().BeNull();
@@ -69,23 +70,23 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldBeSavedAssignmentForWriting(IDbConnection dbConnection, AccountDto account)
+        public ChapterAssert ShouldBeSavedAssignmentForWriting(AccountDto account)
         {
-            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            var dbChapter = _chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.WriterAccountId.Should().Be(account.Id);
             dbChapter.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
-        internal ChapterAssert ShouldBeSavedNoAssignmentForWriting(IDbConnection dbConnection)
+        public ChapterAssert ShouldBeSavedNoAssignmentForWriting()
         {
-            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            var dbChapter = _chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.WriterAccountId.Should().BeNull();
             dbChapter.WriterAssignTimeStamp.Should().BeNull();
             return this;
         }
 
-        internal ChapterAssert ShouldBeAssignedToUserForReviewing(AccountDto account)
+        public ChapterAssert ShouldBeAssignedToUserForReviewing(AccountDto account)
         {
             _chapter.ReviewerAccountId.Should().Be(account.Id);
             _chapter.ReviewerAccountName.Should().Be(account.Name);
@@ -93,7 +94,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldNotBeAssignedForReviewing()
+        public ChapterAssert ShouldNotBeAssignedForReviewing()
         {
             _chapter.ReviewerAccountId.Should().BeNull();
             _chapter.ReviewerAccountName.Should().BeNull();
@@ -101,25 +102,25 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldBeSavedAssignmentForReviewing(IDbConnection dbConnection, AccountDto account)
+        public ChapterAssert ShouldBeSavedAssignmentForReviewing(AccountDto account)
         {
-            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            var dbChapter = _chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.ReviewerAccountId.Should().Be(account.Id);
             dbChapter.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
-        internal ChapterAssert ShouldBeSavedNoAssignmentForReviewing(IDbConnection dbConnection)
+        public ChapterAssert ShouldBeSavedNoAssignmentForReviewing()
         {
-            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            var dbChapter = _chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.ReviewerAccountId.Should().BeNull();
             dbChapter.ReviewerAssignTimeStamp.Should().BeNull();
             return this;
         }
 
-        internal ChapterAssert ShouldHaveSavedChapter(IDbConnection dbConnection)
+        public ChapterAssert ShouldHaveSavedChapter()
         {
-            var dbChapter = dbConnection.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            var dbChapter = _chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.Should().NotBeNull();
             _chapter.Title.Should().Be(dbChapter.Title);
             _chapter.BookId.Should().Be(dbChapter.BookId);
@@ -147,25 +148,26 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static void ShouldHaveDeletedChapter(int chapterId, IDbConnection databaseConnection)
+        public ChapterAssert ShouldHaveDeletedChapter(int chapterId)
         {
-            var chapter = databaseConnection.GetChapterById(chapterId);
+            var chapter = _chapterRepository.GetChapterById(chapterId);
             chapter.Should().BeNull();
+            return this;
         }
 
-        internal static void ThatContentsAreDeletedForChapter(int chapterId, IEnumerable<string> filePaths, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public ChapterAssert ThatContentsAreDeletedForChapter(int chapterId, IEnumerable<string> filePaths)
         {
-            var contents = databaseConnection.GetContentByChapter(chapterId);
+            var contents = _chapterRepository.GetContentByChapter(chapterId);
             contents.Should().BeNullOrEmpty();
 
             foreach (var filePath in filePaths)
             {
-                fileStore.DoesFileExists(filePath).Should().BeFalse();
+                _fileStorage.DoesFileExists(filePath).Should().BeFalse();
             }
-
+            return this;
         }
 
-        internal ChapterAssert ShouldHaveSelfLink()
+        public ChapterAssert ShouldHaveSelfLink()
         {
             _chapter.SelfLink()
                   .ShouldBeGet()
@@ -174,7 +176,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert WithReadOnlyLinks()
+        public ChapterAssert WithReadOnlyLinks()
         {
             ShouldNotHaveAddChapterContentLink();
             ShouldNotHaveUpdateLink();
@@ -183,7 +185,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert WithWriteableLinks()
+        public ChapterAssert WithWriteableLinks()
         {
             ShouldHaveAddChapterContentLink();
             ShouldHaveUpdateLink();
@@ -192,7 +194,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal void ShouldHaveContentLink(ChapterContentDto content)
+        public void ShouldHaveContentLink(ChapterContentDto content)
         {
             var actual = _chapter.Contents.Single(x => x.Id == content.Id);
             actual.SelfLink()
@@ -200,12 +202,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                   .ShouldHaveAcceptLanguage(content.Language);
         }
 
-        internal void ShouldHaveNoCorrectContents()
+        public ChapterAssert ShouldHaveNoCorrectContents()
         {
             _chapter.Link("content").Should().BeNull();
+            return this;    
         }
 
-        internal ChapterAssert ShouldHaveBookLink()
+        public ChapterAssert ShouldHaveBookLink()
         {
             _chapter.Link("book")
                   .ShouldBeGet()
@@ -214,7 +217,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldHaveAssignmentLink()
+        public ChapterAssert ShouldHaveAssignmentLink()
         {
             _chapter.Link("assign")
                   .ShouldBePost()
@@ -222,16 +225,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldNotHaveAssignmentLink()
+        public ChapterAssert ShouldNotHaveAssignmentLink()
         {
             _chapter.Link("assign")
                   .Should().BeNull();
             return this;
         }
 
-        internal void ShouldHaveCorrectContents(IDbConnection db)
+        public ChapterAssert ShouldHaveCorrectContents()
         {
-            var contents = db.GetContentByChapter(_chapter.Id);
+            var contents = _chapterRepository.GetContentByChapter(_chapter.Id);
 
             contents.Should().HaveSameCount(_chapter.Contents);
 
@@ -239,9 +242,11 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             {
                 ShouldHaveContentLink(content);
             }
+
+            return this;
         }
 
-        internal ChapterAssert ShouldHaveUpdateLink()
+        public ChapterAssert ShouldHaveUpdateLink()
         {
             _chapter.UpdateLink()
                  .ShouldBePut()
@@ -250,13 +255,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldNotHaveUpdateLink()
+        public ChapterAssert ShouldNotHaveUpdateLink()
         {
             _chapter.UpdateLink().Should().BeNull();
             return this;
         }
 
-        internal ChapterAssert ShouldHaveDeleteLink()
+        public ChapterAssert ShouldHaveDeleteLink()
         {
             _chapter.DeleteLink()
                  .ShouldBeDelete()
@@ -265,13 +270,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldNotHaveDeleteLink()
+        public ChapterAssert ShouldNotHaveDeleteLink()
         {
             _chapter.DeleteLink().Should().BeNull();
             return this;
         }
 
-        internal ChapterAssert ShouldHaveAddChapterContentLink()
+        public ChapterAssert ShouldHaveAddChapterContentLink()
         {
             _chapter.Link("add-content")
                  .ShouldBePost()
@@ -280,13 +285,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldNotHaveAddChapterContentLink()
+        public ChapterAssert ShouldNotHaveAddChapterContentLink()
         {
             _chapter.Link("add-content").Should().BeNull();
             return this;
         }
 
-        internal ChapterAssert ShouldHaveUpdateChapterContentLink(ChapterContentDto content)
+        public ChapterAssert ShouldHaveUpdateChapterContentLink(ChapterContentDto content)
         {
             var actual = _chapter.Contents.Single(x => x.Id == content.Id);
             actual.UpdateLink()
@@ -297,7 +302,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldHaveDeleteChapterContentLink(ChapterContentDto content)
+        public ChapterAssert ShouldHaveDeleteChapterContentLink(ChapterContentDto content)
         {
             var actual = _chapter.Contents.Single(x => x.Id == content.Id);
             actual.DeleteLink()
@@ -308,19 +313,19 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldNotHaveContentsLink()
+        public ChapterAssert ShouldNotHaveContentsLink()
         {
             _chapter.Link("content").Should().BeNull();
             return this;
         }
 
-        internal ChapterAssert ShouldHaveNotNextLink()
+        public ChapterAssert ShouldHaveNotNextLink()
         {
             _chapter.Link("next").Should().BeNull();
             return this;
         }
 
-        internal ChapterAssert ShouldHaveNextLink(int chapterNumber)
+        public ChapterAssert ShouldHaveNextLink(int chapterNumber)
         {
             _chapter.Link("next")
                     .ShouldBeGet()
@@ -328,13 +333,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal ChapterAssert ShouldHaveNotPreviousLink()
+        public ChapterAssert ShouldHaveNotPreviousLink()
         {
             _chapter.Link("previous").Should().BeNull();
             return this;
         }
 
-        internal ChapterAssert ShouldHavePreviousLink(int chapterNumber)
+        public ChapterAssert ShouldHavePreviousLink(int chapterNumber)
         {
             _chapter.Link("previous")
                     .ShouldBeGet()
@@ -342,7 +347,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal void ShouldMatch(ChapterView view)
+        public void ShouldMatch(ChapterView view)
         {
             _chapter.Title.Should().Be(view.Title);
             _chapter.BookId.Should().Be(view.BookId);
@@ -369,28 +374,20 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             }
         }
 
-        internal void ShouldMatch(ChapterDto dto)
+        public void ShouldMatch(ChapterDto dto)
         {
             _chapter.Title.Should().Be(dto.Title);
             _chapter.BookId.Should().Be(dto.BookId);
             _chapter.ChapterNumber.Should().Be(dto.ChapterNumber);
         }
 
-        internal ChapterAssert ShouldBeSameAs(ChapterDto dto)
+        public ChapterAssert ShouldBeSameAs(ChapterDto dto)
         {
             _chapter.Title.Should().Be(dto.Title);
             _chapter.ChapterNumber.Should().Be(dto.ChapterNumber);
             _chapter.BookId.Should().Be(dto.BookId);
 
             return this;
-        }
-    }
-
-    internal static class ChapterAssertExtensions
-    {
-        internal static ChapterAssert ShouldMatch(this ChapterView view, ChapterDto dto, int libraryId)
-        {
-            return ChapterAssert.FromObject(view, libraryId).ShouldBeSameAs(dto);
         }
     }
 }

@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
@@ -37,7 +38,7 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
             };
 
             _response = await Client.PutObject($"/tools/{_correction.Language}/corrections/{_correction.Profile}/{_correction.Id}", _update);
-            _assert = CorrectionAssert.WithResponse(_response);
+            _assert = Services.GetService<CorrectionAssert>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -55,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
         [Test]
         public void ShouldHaveNotUpdatedCorrection()
         {
-            _assert.ShouldMatchSavedCorrection(DatabaseConnection, _correction);
+            _assert.ShouldMatchSavedCorrection(_correction);
         }
     }
 }

@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
@@ -31,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/categories/{_selectedCategory.Id}");
 
-            _assert = CategoryAssert.FromResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<CategoryAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]

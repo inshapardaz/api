@@ -1,9 +1,9 @@
 ﻿using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{book.Id}/chapters", _chapter);
 
-            _assert = ChapterAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<ChapterAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -69,7 +69,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         [Test]
         public void ShouldSaveTheChapter()
         {
-            _assert.ShouldHaveSavedChapter(DatabaseConnection);
+            _assert.ShouldHaveSavedChapter();
         }
 
         [Test]

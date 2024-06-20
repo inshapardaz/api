@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -23,7 +24,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals");
 
-            _assert = new PagingAssert<PeriodicalView>(_response);
+            _assert = Services.GetService<PagingAssert<PeriodicalView>>()
+                .ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -65,14 +67,14 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
             {
                 var actual = _assert.Data.ElementAt(i);
                 var expected = expectedItems[i];
-                actual.ShouldMatch(expected, 2, DatabaseConnection, LibraryId)
-                            .InLibrary(LibraryId)
-                            .ShouldHaveSelfLink()
-                            .ShouldNotHaveEditLinks()
-                            .ShouldHaveIssuesLink()
-                            .ShouldHaveImageLink()
-                            .ShouldNotHaveImageUpdateLink()
-                            .ShouldNotHaveCreateIssueLink();
+                Services.GetService<PeriodicalAssert>().ForView(actual).ForLibrary(LibraryId)
+                    .ShouldBeSameAs(expected, 2)
+                    .ShouldHaveSelfLink()
+                    .ShouldNotHaveEditLinks()
+                    .ShouldHaveIssuesLink()
+                    .ShouldHaveImageLink()
+                    .ShouldNotHaveImageUpdateLink()
+                    .ShouldNotHaveCreateIssueLink();
             };
         }
     }

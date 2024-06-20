@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
@@ -19,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals?pageNumber=3&pageSize=10");
 
-            _assert = new PagingAssert<PeriodicalView>(_response);
+            _assert = Services.GetService<PagingAssert<PeriodicalView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
 
             var selectedArticle = articles.PickRandom();
 
-            _categoriesToUpdate = DatabaseConnection.GetCategoriesByArticle(selectedArticle.Id).ToList();
+            _categoriesToUpdate = CategoryTestRepository.GetCategoriesByArticle(selectedArticle.Id).ToList();
             _categoriesToUpdate.AddRange(newCategories);
 
             var fake = new Faker();
@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/articles/{selectedArticle.Id}", _expected);
-            _assert = ArticleAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<ArticleAssert>().ForLibrary(LibraryId).ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -73,7 +73,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         [Test]
         public void ShouldHaveUpdatedTheArticle()
         {
-           _assert.ShouldBeSameAs(_expected, DatabaseConnection);
+           _assert.ShouldBeSameAs(_expected);
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         [Test]
         public void ShouldSaveCorrectCategories()
         {
-            _assert.ShouldHaveCategories(_categoriesToUpdate, DatabaseConnection);
+            _assert.ShouldHaveCategories(_categoriesToUpdate);
         }
     }
 }

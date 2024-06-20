@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Query.File;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue.Article;
 
@@ -30,11 +31,13 @@ public class GetArticleContentQueryHandler : QueryHandlerAsync<GetIssueArticleCo
 {
     private readonly ILibraryRepository _libraryRepository;
     private readonly IIssueArticleRepository _articleRepository;
+    private readonly IQueryProcessor _queryProcessor;
 
-    public GetArticleContentQueryHandler(ILibraryRepository libraryRepository, IIssueArticleRepository articleRepository)
+    public GetArticleContentQueryHandler(ILibraryRepository libraryRepository, IIssueArticleRepository articleRepository, IQueryProcessor queryProcessor)
     {
         _libraryRepository = libraryRepository;
         _articleRepository = articleRepository;
+        _queryProcessor = queryProcessor;
     }
 
     [LibraryAuthorize(1)]
@@ -50,6 +53,12 @@ public class GetArticleContentQueryHandler : QueryHandlerAsync<GetIssueArticleCo
 
             command.Language = library.Language;
         }
-        return await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, command.Language, cancellationToken);
+        var articleContent = await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, command.Language, cancellationToken);
+        if (articleContent is not null && articleContent.FileId.HasValue)
+        {
+            articleContent.Text = await _queryProcessor.ExecuteAsync(new GetTextFileQuery(articleContent.FileId.Value), cancellationToken);
+        }
+
+        return articleContent;
     }
 }

@@ -10,9 +10,7 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using RandomData = Inshapardaz.Api.Tests.Framework.Helpers.RandomData;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;
-using System.Runtime.CompilerServices;
 using Inshapardaz.Domain.Helpers;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
@@ -26,7 +24,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             public int? Count { get; set; }
         }
 
-        private readonly IDbConnection _connection;
         private readonly AuthorsDataBuilder _authorBuilder;
         private readonly SeriesDataBuilder _seriesBuilder;
         private readonly CategoriesDataBuilder _categoriesBuilder;
@@ -69,15 +66,31 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IEnumerable<BookContentDto> Contents => _contents;
         public IEnumerable<RecentBookDto> RecentReads => _recentBooks;
 
-        public BooksDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage,
-                                AuthorsDataBuilder authorBuilder, SeriesDataBuilder seriesDataBuilder,
-                                CategoriesDataBuilder categoriesBuilder)
+        public IBookTestRepository _bookRepository;
+        public IBookPageTestRepository _bookPageRepository;
+        public IFileTestRepository _fileRepository;
+        public IChapterTestRepository _chapterRepository;
+        public ICategoryTestRepository _categoryRepository;
+
+        public BooksDataBuilder(IFileStorage fileStorage,
+                                AuthorsDataBuilder authorBuilder,
+                                SeriesDataBuilder seriesDataBuilder,
+                                CategoriesDataBuilder categoriesBuilder,
+                                IBookTestRepository bookRepository,
+                                IFileTestRepository fileRepository,
+                                IChapterTestRepository chapterRepository,
+                                IBookPageTestRepository bookPageRepository,
+                                ICategoryTestRepository categoryRepository)
         {
-            _connection = connectionProvider.GetConnection();
             _fileStorage = fileStorage as FakeFileStorage;
             _authorBuilder = authorBuilder;
             _seriesBuilder = seriesDataBuilder;
             _categoriesBuilder = categoriesBuilder;
+            _bookRepository = bookRepository;
+            _fileRepository = fileRepository;
+            _chapterRepository = chapterRepository;
+            _bookPageRepository = bookPageRepository;
+            _categoryRepository = categoryRepository;
         }
 
         public BooksDataBuilder HavingSeries()
@@ -291,11 +304,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                    _connection.AddFile(bookImage);
+                    _fileRepository.AddFile(bookImage);
 
                     _files.Add(bookImage);
                     _fileStorage.SetupFileContents(bookImage.FilePath, RandomData.Bytes);
-                    _connection.AddFile(bookImage);
 
                     book.ImageId = bookImage.Id;
                 }
@@ -319,25 +331,25 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .ToList();
                     _files.AddRange(files);
                     files.ForEach(f => _fileStorage.SetupFileContents(f.FilePath, RandomData.Bytes));
-                    _connection.AddFiles(files);
+                    _fileRepository.AddFiles(files);
                 }
 
-                _connection.AddBook(book);
+                _bookRepository.AddBook(book);
 
                 if (Author != null)
                 {
-                    _connection.AddBookAuthor(book.Id, Author.Id);
+                    _bookRepository.AddBookAuthor(book.Id, Author.Id);
                 }
                 else
                 {
                     foreach (var author in _authors)
                     {
-                        _connection.AddBookAuthor(book.Id, author.Id);
+                        _bookRepository.AddBookAuthor(book.Id, author.Id);
                     }
                 }
 
                 if (categories != null && categories.Any())
-                    _connection.AddBookToCategories(book.Id, categories);
+                    _categoryRepository.AddBookToCategories(book.Id, categories);
 
                 if (files != null)
                 {
@@ -349,7 +361,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         MimeType = f.MimeType,
                         FilePath = f.FilePath
                     }).ToList();
-                    _connection.AddBookFiles(book.Id, contents);
+                    _bookRepository.AddBookFiles(book.Id, contents);
                     _contents.AddRange(contents);
                 }
 
@@ -365,7 +377,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         .Without(c => c.ReviewerAssignTimeStamp)
                         .CreateMany(_chapterCount);
 
-                    _connection.AddChapters(chapters);
+                    _chapterRepository.AddChapters(chapters);
                     _chapters.AddRange(chapters);
                 }
                 if (_pageCount > 0)
@@ -381,24 +393,23 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                            _connection.AddFile(pageImage);
+                            _fileRepository.AddFile(pageImage);
 
                             _files.Add(pageImage);
                             _fileStorage.SetupFileContents(pageImage.FilePath, RandomData.Bytes);
-                            _connection.AddFile(pageImage);
                         }
 
                         var bookPageContent = fixture.Build<FileDto>()
                                     .With(a => a.FilePath, RandomData.FilePath)
                                     .With(a => a.IsPublic, false)
                                     .Create();
-                        _connection.AddFile(bookPageContent);
+                        _fileRepository.AddFile(bookPageContent);
 
                         _files.Add(bookPageContent);
 
                         var bookPageContentData = RandomData.Text;
                         _fileStorage.SetupFileContents(bookPageContent.FilePath, bookPageContentData);
-                        
+
                         var bookPage = fixture.Build<BookPageDto>()
                             .With(p => p.BookId, book.Id)
                             .With(p => p.SequenceNumber, i + 1)
@@ -409,7 +420,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                             .With(p => p.Status, EditingStatus.All)
                             .With(p => p.Text, bookPageContentData)
                             .Create();
-                        
+
                         pages.Add(bookPage);
                     }
 
@@ -449,7 +460,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         }
                     }
 
-                    _connection.AddBookPages(pages);
+                    _bookPageRepository.AddBookPages(pages);
                     _pages.AddRange(pages);
                 }
             }
@@ -460,7 +471,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 {
                     var booksToAddToFavorite = f.Count.HasValue ? _books.PickRandom(f.Count.Value) : _books;
                     if (f.AccountId != 0)
-                        _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), f.AccountId);
+                        _bookRepository.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), f.AccountId);
                 }
             }
 
@@ -474,7 +485,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         if (r.AccountId != 0)
                         {
                             RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, AccountId = r.AccountId, DateRead = RandomData.Date };
-                            _connection.AddBookToRecentReads(recent);
+                            _bookRepository.AddBookToRecentReads(recent);
                             _recentBooks.Add(recent);
                         }
                     }
@@ -486,10 +497,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _connection.DeleteBooks(_books);
-            _connection.DeleteFiles(_files);
-            _connection.DeleteBookPages(_pages);
-            _connection.DeleteChapters(_chapters);
+            _bookRepository.DeleteBooks(_books);
+            _fileRepository.DeleteFiles(_files);
+            _bookPageRepository.DeleteBookPages(_pages);
+            _chapterRepository.DeleteChapters(_chapters);
             _seriesBuilder.CleanUp();
             _authorBuilder.CleanUp();
         }

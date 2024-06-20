@@ -6,14 +6,12 @@ using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
     public class SeriesDataBuilder
     {
-        private readonly IDbConnection _connection;
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<BookDto> _books = new List<BookDto>();
         private List<SeriesDto> _series = new List<SeriesDto>();
@@ -26,11 +24,22 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public IEnumerable<BookDto> Books => _books;
         public IEnumerable<SeriesDto> Series => _series;
+        private IAuthorTestRepository _authorRepository;
+        private IFileTestRepository _fileRepository;
+        private ISeriesTestRepository _seriesRepository;
+        private IBookTestRepository _bookRepository;
 
-        public SeriesDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage)
+        public SeriesDataBuilder(IFileStorage fileStorage,
+                IAuthorTestRepository authorRepository,
+                IFileTestRepository fileRepository,
+                ISeriesTestRepository seriesRepository,
+                IBookTestRepository bookRepository)
         {
-            _connection = connectionProvider.GetConnection();
             _fileStorage = fileStorage as FakeFileStorage;
+            _authorRepository = authorRepository;
+            _fileRepository = fileRepository;
+            _seriesRepository = seriesRepository;
+            _bookRepository = bookRepository;
         }
 
         public SeriesDataBuilder WithBooks(int bookCount)
@@ -71,7 +80,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                      .Without(a => a.ImageId)
                                      .Create();
 
-                _connection.AddAuthor(author);
+                _authorRepository.AddAuthor(author);
                 _authors.Add(author);
 
                 FileDto seriesImage = null;
@@ -81,11 +90,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.FilePath, Framework.Helpers.RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                    _connection.AddFile(seriesImage);
+                    _fileRepository.AddFile(seriesImage);
 
                     _files.Add(seriesImage);
                     _fileStorage.SetupFileContents(seriesImage.FilePath, Framework.Helpers.RandomData.Bytes);
-                    _connection.AddFile(seriesImage);
                 }
 
                 var series = fixture.Build<SeriesDto>()
@@ -94,7 +102,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                 .With(a => a.ImageId, seriesImage?.Id)
                                 .Create();
 
-                _connection.AddSeries(series);
+                _seriesRepository.AddSeries(series);
                 seriesList.Add(series);
 
                 var books = fixture.Build<BookDto>()
@@ -104,8 +112,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                    .With(b => b.SeriesId, series.Id)
                                    .CreateMany(_bookCount);
                 _books.AddRange(books);
-                _connection.AddBooks(books);
-                _connection.AddBooksAuthor(books.Select(b => b.Id), author.Id);
+                _bookRepository.AddBooks(books);
+                _bookRepository.AddBooksAuthor(books.Select(b => b.Id), author.Id);
             }
 
             _series.AddRange(seriesList);
@@ -114,10 +122,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _connection.DeleteAuthors(_authors);
-            _connection.DeleteSeries(_series);
-            _connection.DeleteBooks(_books);
-            _connection.DeleteFiles(_files);
+            _seriesRepository.DeleteSeries(_series);
+            _fileRepository.DeleteFiles(_files);
+            _bookRepository.DeleteBooks(_books);
+            _authorRepository.DeleteAuthors(_authors);
         }
     }
 }

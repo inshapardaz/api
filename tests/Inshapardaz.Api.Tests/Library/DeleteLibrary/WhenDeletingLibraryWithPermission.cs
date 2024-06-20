@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace Inshapardaz.Api.Tests.Library.DeleteLibrary
     public class WhenDeletingLibraryWithPermission : TestBase
     {
         private HttpResponseMessage _response;
+        private LibraryAssert _assert;
 
         public WhenDeletingLibraryWithPermission()
             : base(Role.Admin)
@@ -20,6 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.DeleteLibrary
         public async Task Setup()
         {
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}");
+            _assert = Services.GetService<LibraryAssert>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -37,13 +40,13 @@ namespace Inshapardaz.Api.Tests.Library.DeleteLibrary
         [Test]
         public void ShouldHaveDeletedLibrary()
         {
-            LibraryAssert.ShouldHaveDeletedLibrary(LibraryId, DatabaseConnection);
+            _assert.ShouldHaveDeletedLibrary(LibraryId);
         }
 
         [Test]
         public void ShouldDeleteUnVerifiedOwner()
         {
-            AccountAssert.AccountShouldNotExist(Library.OwnerEmail, DatabaseConnection);
+            Services.GetService<AccountAssert>().AccountShouldNotExist(Library.OwnerEmail);
         }
     }
 }

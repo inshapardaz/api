@@ -6,6 +6,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
@@ -33,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=2&pageSize=10&query=itle");
 
-            _assert = new PagingAssert<BookView>(_response);
+            _assert = Services.GetService<PagingAssert<BookView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -76,8 +77,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
             {
                 var actual = _assert.Data.ElementAt(i);
                 var expected = expectedItems[i];
-                actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
-                            .InLibrary(LibraryId)
+                Services.GetService<BookAssert>().ForView(actual).ForLibrary(LibraryId)
+                            .ShouldBeSameAs(expected)
                             .ShouldHaveCorrectLinks()
                             .ShouldNotHaveEditLinks()
                             .ShouldNotHaveImageUpdateLink()

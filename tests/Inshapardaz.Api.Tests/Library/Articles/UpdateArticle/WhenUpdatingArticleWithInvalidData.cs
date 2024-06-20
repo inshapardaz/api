@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.DataBuilders;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
@@ -88,7 +87,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var authors = DatabaseConnection.GetAuthorsByArticle(_articleToUpdate.Id);
+                var authors = AuthorTestRepository.GetAuthorsByArticle(_articleToUpdate.Id);
                 authors.Should().Contain(a => a.Id == _author.Id);
             }
         }
@@ -138,7 +137,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var authors = DatabaseConnection.GetAuthorsByArticle(_articleToUpdate.Id);
+                var authors = AuthorTestRepository.GetAuthorsByArticle(_articleToUpdate.Id);
                 authors.Should().Contain(a => a.Id == _author.Id);
             }
         }
@@ -182,7 +181,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var categories = DatabaseConnection.GetCategoriesByArticle(_articleToUpdate.Id);
+                var categories = CategoryTestRepository.GetCategoriesByArticle(_articleToUpdate.Id);
                 categories.Should().HaveCount(1);
                 categories.First().Id.Should().Be(_category.Id);
             }
@@ -233,7 +232,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var categories = DatabaseConnection.GetCategoriesByArticle(_articleToUpdate.Id);
+                var categories = CategoryTestRepository.GetCategoriesByArticle(_articleToUpdate.Id);
                 categories.Should().HaveCount(1);
                 categories.First().Id.Should().Be(_category.Id);
             }

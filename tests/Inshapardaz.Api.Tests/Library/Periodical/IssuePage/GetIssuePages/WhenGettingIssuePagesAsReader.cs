@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages");
 
-            _assert = new PagingAssert<IssuePageView>(_response);
+            _assert = Services.GetService<PagingAssert<IssuePageView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -69,16 +70,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.SequenceNumber == item.SequenceNumber);
-                actual.ShouldMatch(item)
-                    .InLibrary(LibraryId)
-                            .ShouldHaveSelfLink()
-                            .ShouldHavePeriodicalLink()
-                            .ShouldHaveIssueLink()
-                            .ShouldNotHaveImageLink()
-                            .ShouldNotHaveUpdateLink()
-                            .ShouldNotHaveDeleteLink()
-                            .ShouldNotHaveImageUpdateLink()
-                            .ShouldNotHaveImageDeleteLink();
+                Services.GetService<IssuePageAssert>().ForResponse(_response).ForLibrary(LibraryId)
+                        .ShouldMatch(item)
+                        .ShouldHaveSelfLink()
+                        .ShouldHavePeriodicalLink()
+                        .ShouldHaveIssueLink()
+                        .ShouldNotHaveImageLink()
+                        .ShouldNotHaveUpdateLink()
+                        .ShouldNotHaveDeleteLink()
+                        .ShouldNotHaveImageUpdateLink()
+                        .ShouldNotHaveImageDeleteLink();
             }
         }
     }

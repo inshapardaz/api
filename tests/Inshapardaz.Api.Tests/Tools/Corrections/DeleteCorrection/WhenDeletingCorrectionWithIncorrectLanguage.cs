@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Tools.Corrections.DeleteCorrection
@@ -11,7 +12,7 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.DeleteCorrection
     public class WhenDeletingCorrectionWithIncorrectLanguage : TestBase
     {
         private HttpResponseMessage _response;
-
+        private CorrectionAssert _assert;
         private CorrectionDto _correction;
 
         public WhenDeletingCorrectionWithIncorrectLanguage() 
@@ -25,6 +26,7 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.DeleteCorrection
             _correction = CorrectionBuilder.Build();
 
             _response = await Client.DeleteAsync($"/tools/{_correction.Language}-2/corrections/{_correction.Profile}/{_correction.Id}");
+            _assert = Services.GetService<CorrectionAssert>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -42,7 +44,7 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.DeleteCorrection
         [Test]
         public void ShouldHaveDeletedAuthor()
         {
-            CorrectionAssert.ShouldNotHaveDeletedCorrection(_correction.Id, DatabaseConnection);
+            _assert.ShouldNotHaveDeletedCorrection(_correction.Id);
         }
     }
 }

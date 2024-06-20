@@ -10,6 +10,7 @@ public class IssuePageModel
     public int VolumeNumber { get; set; }
     public int IssueNumber { get; set; }
     public long? ImageId { get; set; }
+    public long? FileId { get; set; }
     public string ImageUrl { get; set; }
     public EditingStatus Status { get; set; }
     public int? WriterAccountId { get; set; }

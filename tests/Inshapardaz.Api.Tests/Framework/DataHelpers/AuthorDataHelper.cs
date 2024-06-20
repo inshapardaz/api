@@ -1,87 +1,216 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Framework.Dto;
-using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Adapters;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
-    public static class AuthorDataHelper
+    public interface IAuthorTestRepository
     {
-        private static DatabaseTypes _dbType => TestBase.DatabaseType;
+        void AddAuthor(AuthorDto author);
+        void AddAuthors(IEnumerable<AuthorDto> authors);
+        void DeleteAuthor(int authorId);
+        void DeleteAuthors(IEnumerable<AuthorDto> authors);
+        AuthorDto GetAuthorById(int id);
+        string GetAuthorImageUrl(int id);
+        FileDto GetAuthorImage(int id);
+        IEnumerable<AuthorDto> GetAuthorsByBook(int bookId);
+        IEnumerable<AuthorDto> GetAuthorsByArticle(long articleId);
+    }
+    public class MySqlAuthorTestRepository : IAuthorTestRepository
+    {
+        private IProvideConnection _connectionProvider;
 
-        public static void AddAuthor(this IDbConnection connection, AuthorDto author)
+        public MySqlAuthorTestRepository(IProvideConnection connectionProvider)
         {
-            var id = _dbType == DatabaseTypes.SqlServer
-                ? connection.ExecuteScalar<int>("Insert Into Author (Name, ImageId, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @ImageId, @LibraryId)", author)
-                : connection.ExecuteScalar<int>("INSERT INTO Author (`Name`, `ImageId`, LibraryId) VALUES (@Name, @ImageId, @LibraryId); SELECT LAST_INSERT_ID();", author); ;
-            author.Id = id;
+            _connectionProvider = connectionProvider;
         }
 
-        public static void AddAuthors(this IDbConnection connection, IEnumerable<AuthorDto> authors)
+        public void AddAuthor(AuthorDto author)
         {
-            foreach (var author in authors)
+            using (var connection = _connectionProvider.GetConnection())
             {
-                AddAuthor(connection, author);
+                var id = connection.ExecuteScalar<int>("INSERT INTO Author (`Name`, `ImageId`, LibraryId) VALUES (@Name, @ImageId, @LibraryId); SELECT LAST_INSERT_ID();", author); ;
+                author.Id = id;
             }
         }
 
-        public static void DeleteAuthor(this IDbConnection connection, int authorId)
+        public void AddAuthors(IEnumerable<AuthorDto> authors)
         {
-            var sql = "DELETE FROM Author WHERE Id = @Id";
-            connection.Execute(sql, new { Id = authorId });
+            foreach (var author in authors)
+            {
+                AddAuthor(author);
+            }
         }
 
-        public static void DeleteAuthors(this IDbConnection connection, IEnumerable<AuthorDto> authors)
+        public void DeleteAuthor(int authorId)
         {
-            var sql = "DELETE FROM Author WHERE Id IN @Ids";
-            connection.Execute(sql, new { Ids = authors.Select(a => a.Id) });
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = "DELETE FROM Author WHERE Id = @Id";
+                connection.Execute(sql, new { Id = authorId });
+            }
         }
 
-        public static AuthorDto GetAuthorById(this IDbConnection connection, int id)
+        public void DeleteAuthors(IEnumerable<AuthorDto> authors)
         {
-            return connection.QuerySingleOrDefault<AuthorDto>("SELECT * FROM Author WHERE Id = @Id", new { Id = id });
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = "DELETE FROM Author WHERE Id IN @Ids";
+                connection.Execute(sql, new { Ids = authors.Select(a => a.Id) });
+            }
         }
 
-        public static string GetAuthorImageUrl(this IDbConnection connection, int id)
+        public AuthorDto GetAuthorById(int id)
         {
-            var sql = _dbType == DatabaseTypes.SqlServer ? 
-                @"SELECT f.FilePath from [File] f
-                    INNER JOIN Author a ON f.Id = a.ImageId
-                    Where a.Id = @Id"
-                : @"SELECT f.FilePath from `File` f
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                return connection.QuerySingleOrDefault<AuthorDto>("SELECT * FROM Author WHERE Id = @Id", new { Id = id });
+            }
+        }
+
+        public string GetAuthorImageUrl(int id)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT f.FilePath from `File` f
                     INNER JOIN Author a ON f.Id = a.ImageId
                     WHERE a.Id = @Id";
-            return connection.QuerySingleOrDefault<string>(sql, new { Id = id });
+                return connection.QuerySingleOrDefault<string>(sql, new { Id = id });
+            }
         }
 
-        public static FileDto GetAuthorImage(this IDbConnection connection, int id)
+        public FileDto GetAuthorImage(int id)
         {
-            var sql = _dbType == DatabaseTypes.SqlServer ? 
-                @"SELECT f.* from [File] f
-                    INNER JOIN Author a ON f.Id = a.ImageId
-                    WHERE a.Id = @Id"
-                : @"SELECT f.* from `File` f
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT f.* from `File` f
                     INNER JOIN Author a ON f.Id = a.ImageId
                     WHERE a.Id = @Id";
-            return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = id });
+                return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = id });
+            }
         }
 
-        public static IEnumerable<AuthorDto> GetAuthorsByBook(this IDbConnection connection, int bookId)
+        public IEnumerable<AuthorDto> GetAuthorsByBook(int bookId)
         {
-            var query = @"SELECT * From Author
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var query = @"SELECT * From Author
                     INNER JOIN BookAuthor ba ON Id = ba.AuthorId
                     WHERE ba.BookId = @Id";
-            return connection.Query<AuthorDto>(query, new { Id = bookId });
+                return connection.Query<AuthorDto>(query, new { Id = bookId });
+            }
         }
 
-        public static IEnumerable<AuthorDto> GetAuthorsByArticle(this IDbConnection connection, long articleId)
+        public IEnumerable<AuthorDto> GetAuthorsByArticle(long articleId)
         {
-            var query = @"SELECT a.* From ArticleAuthor
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var query = @"SELECT a.* From ArticleAuthor
                     INNER JOIN Author a ON a.Id = ArticleAuthor.AuthorId
                     WHERE ArticleAuthor.ArticleId = @Id";
-            return connection.Query<AuthorDto>(query, new { Id = articleId });
+                return connection.Query<AuthorDto>(query, new { Id = articleId });
+            }
         }
     }
+
+    public class SqlServerAuthorTestRepository : IAuthorTestRepository
+    {
+        private IProvideConnection _connectionProvider;
+
+        public SqlServerAuthorTestRepository(IProvideConnection connectionProvider)
+        {
+            _connectionProvider = connectionProvider;
+        }
+
+        public void AddAuthor(AuthorDto author)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var id = connection.ExecuteScalar<int>("Insert Into Author (Name, ImageId, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @ImageId, @LibraryId)", author);
+                author.Id = id;
+            }
+        }
+
+        public void AddAuthors(IEnumerable<AuthorDto> authors)
+        {
+            foreach (var author in authors)
+            {
+                AddAuthor(author);
+            }
+        }
+
+        public void DeleteAuthor(int authorId)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = "DELETE FROM Author WHERE Id = @Id";
+                connection.Execute(sql, new { Id = authorId });
+            }
+        }
+
+        public void DeleteAuthors(IEnumerable<AuthorDto> authors)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = "DELETE FROM Author WHERE Id IN @Ids";
+                connection.Execute(sql, new { Ids = authors.Select(a => a.Id) });
+            }
+        }
+
+        public AuthorDto GetAuthorById(int id)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                return connection.QuerySingleOrDefault<AuthorDto>("SELECT * FROM Author WHERE Id = @Id", new { Id = id });
+            }
+        }
+
+        public string GetAuthorImageUrl(int id)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT f.FilePath from [File] f
+                    INNER JOIN Author a ON f.Id = a.ImageId
+                    Where a.Id = @Id";
+                return connection.QuerySingleOrDefault<string>(sql, new { Id = id });
+            }
+        }
+
+        public FileDto GetAuthorImage(int id)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT f.* from [File] f
+                    INNER JOIN Author a ON f.Id = a.ImageId
+                    WHERE a.Id = @Id";
+                return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = id });
+            }
+        }
+
+        public IEnumerable<AuthorDto> GetAuthorsByBook(int bookId)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var query = @"SELECT * From Author
+                    INNER JOIN BookAuthor ba ON Id = ba.AuthorId
+                    WHERE ba.BookId = @Id";
+                return connection.Query<AuthorDto>(query, new { Id = bookId });
+            }
+        }
+
+        public IEnumerable<AuthorDto> GetAuthorsByArticle(long articleId)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var query = @"SELECT a.* From ArticleAuthor
+                    INNER JOIN Author a ON a.Id = ArticleAuthor.AuthorId
+                    WHERE ArticleAuthor.ArticleId = @Id";
+                return connection.Query<AuthorDto>(query, new { Id = articleId });
+            }
+        }
+    }
+
 }

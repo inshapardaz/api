@@ -12,7 +12,6 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
     {
         private HttpResponseMessage _response;
         private BookShelfDto _expected;
-        private BookShelfAssert _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -22,7 +21,6 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
             _expected = series.PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/bookshelves/{_expected.Id}");
-            _assert = BookShelfAssert.WithResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]

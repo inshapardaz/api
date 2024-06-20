@@ -4,34 +4,47 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters.Repositories;
-using System.Data;
 using System.Net.Http;
 using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    internal class SeriesAssert
+    public class SeriesAssert
     {
         private SeriesView _series;
         private int _libraryId;
 
         public HttpResponseMessage _response;
+        private readonly ISeriesTestRepository _seriesRepository;
+        private readonly IFileTestRepository _fileRepository;
+        private readonly IAuthorTestRepository _authorRepository;
+        private readonly ICategoryTestRepository _categoryRepository;
+        private readonly FakeFileStorage _fileStorage;
 
-        private SeriesAssert(HttpResponseMessage response)
+        public SeriesAssert(ISeriesTestRepository seriesRepository,
+            IFileTestRepository fileRepository,
+            IAuthorTestRepository authorRepository,
+            ICategoryTestRepository categoryRepository,
+            FakeFileStorage fileStorage)
+        {
+            _fileRepository = fileRepository;
+            _authorRepository = authorRepository;
+            _categoryRepository = categoryRepository;
+            _fileStorage = fileStorage;
+            _seriesRepository = seriesRepository;
+        }
+
+        public SeriesAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _series = response.GetContent<SeriesView>().Result;
+            return this;
         }
 
-        private SeriesAssert(SeriesView view)
+        public SeriesAssert ForView(SeriesView view)
         {
             _series = view;
-        }
-
-        public static SeriesAssert WithResponse(HttpResponseMessage response)
-        {
-            return new SeriesAssert(response);
+            return this;
         }
 
         public SeriesAssert InLibrary(int libraryId)
@@ -82,7 +95,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal SeriesAssert ShouldHaveCorrectImageLocationHeader(int seriesId)
+        public SeriesAssert ShouldHaveCorrectImageLocationHeader(int seriesId)
         {
             _response.Headers.Location.Should().NotBeNull();
             _response.Headers.Location.AbsolutePath.Should().Contain($"/files/");
@@ -109,7 +122,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal SeriesAssert ShouldHavePublicImageLink()
+        public SeriesAssert ShouldHavePublicImageLink()
         {
             _series.Link("image")
                 .ShouldBeGet();
@@ -133,20 +146,20 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal SeriesAssert WithBookCount(int count)
+        public SeriesAssert WithBookCount(int count)
         {
             _series.BookCount.Should().Be(count);
             return this;
         }
 
-        internal SeriesAssert ShouldBeSameAs(SeriesDto expected)
+        public SeriesAssert ShouldBeSameAs(SeriesDto expected)
         {
             _series.Should().NotBeNull();
             _series.Name.Should().Be(expected.Name);
             return this;
         }
 
-        internal SeriesAssert WithReadOnlyLinks()
+        public SeriesAssert WithReadOnlyLinks()
         {
             ShouldHaveSelfLink();
             ShouldHaveBooksLink();
@@ -157,7 +170,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal SeriesAssert WithEditableLinks()
+        public SeriesAssert WithEditableLinks()
         {
             ShouldHaveSelfLink();
             ShouldHaveBooksLink();
@@ -168,21 +181,18 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static SeriesAssert FromObject(SeriesView series)
+        public SeriesAssert ShouldHaveDeletedSeries(int seriesId)
         {
-            return new SeriesAssert(series);
-        }
-
-        internal static void ShouldHaveDeletedSeries(int seriesId, IDbConnection dbConnection)
-        {
-            var series = dbConnection.GetSeriesById(seriesId);
+            var series = _seriesRepository.GetSeriesById(seriesId);
             series.Should().BeNull();
+            return this;
         }
 
-        internal static void ShouldNotHaveDeletedSeries(int seriesId, IDbConnection dbConnection)
+        public SeriesAssert ShouldNotHaveDeletedSeries(int seriesId)
         {
-            var series = dbConnection.GetSeriesById(seriesId);
+            var series = _seriesRepository.GetSeriesById(seriesId);
             series.Should().NotBeNull();
+            return this;
         }
 
         public SeriesAssert ShouldNotHaveDeleteLink()
@@ -192,77 +202,73 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal SeriesAssert ShouldHaveCorrectLocationHeader()
+        public SeriesAssert ShouldHaveCorrectLocationHeader()
         {
             _response.Headers.Location.Should().NotBeNull();
             _response.Headers.Location.AbsolutePath.Should().EndWith($"libraries/{_libraryId}/series/{_series.Id}");
             return this;
         }
 
-        public SeriesAssert ShouldHaveSavedSeries(IDbConnection dbConnection)
+        public SeriesAssert ShouldHaveSavedSeries()
         {
-            var dbSeries = dbConnection.GetSeriesById(_series.Id);
+            var dbSeries = _seriesRepository.GetSeriesById(_series.Id);
             dbSeries.Should().NotBeNull();
             _series.Name.Should().Be(dbSeries.Name);
             return this;
         }
 
-        public SeriesAssert ShouldHaveCorrectSeriesRetunred(SeriesDto series, IDbConnection dbConnection)
+        public SeriesAssert ShouldHaveCorrectSeriesRetunred(SeriesDto series)
         {
             _series.Should().NotBeNull();
             _series.Id.Should().Be(series.Id);
             _series.Name.Should().Be(series.Name);
-            _series.BookCount.Should().Be(dbConnection.GetBookCountBySeries(_series.Id));
+            _series.BookCount.Should().Be(_seriesRepository.GetBookCountBySeries(_series.Id));
             return this;
         }
 
-        internal static void ShouldHaveUpdatedSeriesImage(int seriesId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        public SeriesAssert ShouldHaveUpdatedSeriesImage(int seriesId, byte[] newImage)
         {
-            var imageUrl = dbConnection.GetSeriesImageUrl(seriesId);
+            var imageUrl = _seriesRepository.GetSeriesImageUrl(seriesId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
+            return this;
         }
 
-        internal static void ShouldHavePublicImage(int seriesId, IDbConnection dbConnection)
+        public SeriesAssert ShouldHavePublicImage(int seriesId)
         {
-            var image = dbConnection.GetSeriesImage(seriesId);
+            var image = _seriesRepository.GetSeriesImage(seriesId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
+            return this;
         }
 
-        internal static void ShouldNotHaveUpdatedSeriesImage(int seriesId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        public SeriesAssert ShouldNotHaveUpdatedSeriesImage(int seriesId, byte[] newImage)
         {
-            var imageUrl = dbConnection.GetSeriesImageUrl(seriesId);
+            var imageUrl = _seriesRepository.GetSeriesImageUrl(seriesId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotEqual(newImage);
+            return this;
         }
 
-        internal static void ShouldHaveAddedSeriesImage(int seriesId, IDbConnection dbConnection, IFileStorage fileStorage)
+        public SeriesAssert ShouldHaveAddedSeriesImage(int seriesId)
         {
-            var imageUrl = dbConnection.GetSeriesImageUrl(seriesId);
+            var imageUrl = _seriesRepository.GetSeriesImageUrl(seriesId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty();
+            return this;
         }
 
-        internal static void ShouldHaveDeletedSeriesImage(int seriesId, long imageId, string filePath, IDbConnection dbConnection, FakeFileStorage fileStorage)
+        public SeriesAssert ShouldHaveDeletedSeriesImage(int seriesId, long imageId, string filePath)
         {
-            var image = dbConnection.GetSeriesImage(seriesId);
+            var image = _seriesRepository.GetSeriesImage(seriesId);
             image.Should().BeNull();
-            var file = dbConnection.GetFileById(imageId);
+            var file = _fileRepository.GetFileById(imageId);
             file.Should().BeNull();
-            fileStorage.DoesFileExists(filePath).Should().BeFalse();
-        }
-    }
-
-    internal static class SeriesAssertionExtensions
-    {
-        internal static SeriesAssert ShouldMatch(this SeriesView view, SeriesDto dto)
-        {
-            return SeriesAssert.FromObject(view)
-                               .ShouldBeSameAs(dto);
+            _fileStorage.DoesFileExists(filePath).Should().BeFalse();
+            return this;
         }
     }
 }

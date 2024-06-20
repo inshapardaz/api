@@ -4,12 +4,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using Inshapardaz.Api.Views.Accounts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Common;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Api.Tests.Framework.DataHelpers;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
@@ -25,12 +24,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         private int? _libraryId;
         private string _resetToken = null;
         private DateTime? _resetTokenExpiry = null;
+        private readonly IAccountTestRepository _accountTestRepository;
 
         public AccountDto Account { get; private set; }
 
-        public AccountDataBuilder(IProvideConnection connectionProvider)
+        public AccountDataBuilder(IAccountTestRepository accountTestRepository)
         {
-            _connection = connectionProvider.GetConnection();
+            _accountTestRepository = accountTestRepository;
         }
 
         internal AccountDataBuilder WithPassword(string password)
@@ -104,11 +104,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                  .With(a => a.ResetTokenExpires, _resetTokenExpiry)
                                  .Create();
 
-            _connection.AddAccount(Account);
+            _accountTestRepository.AddAccount(Account);
 
             if (_role.HasValue && _role != Role.Admin && _libraryId.HasValue)
             {
-                _connection.AddAccountToLibrary(Account, _libraryId.Value, _role.Value);
+                _accountTestRepository.AddAccountToLibrary(Account, _libraryId.Value, _role.Value);
             }
 
             return Account;
@@ -127,7 +127,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _connection.DeleteAccount(Account.Id);
+            _accountTestRepository.DeleteAccount(Account.Id);
         }
     }
 }

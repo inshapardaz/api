@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.DataBuilders;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
@@ -89,7 +88,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var authors = DatabaseConnection.GetAuthorsByBook(_bookToUpdate.Id);
+                var authors = AuthorTestRepository.GetAuthorsByBook(_bookToUpdate.Id);
                 authors.Should().Contain(a => a.Id == _author.Id);
             }
         }
@@ -139,7 +138,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var authors = DatabaseConnection.GetAuthorsByBook(_bookToUpdate.Id);
+                var authors = AuthorTestRepository.GetAuthorsByBook(_bookToUpdate.Id);
                 authors.Should().Contain(a => a.Id == _author.Id);
             }
         }
@@ -183,7 +182,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var book = DatabaseConnection.GetBookById(_bookToUpdate.Id);
+                var book = BookTestRepository.GetBookById(_bookToUpdate.Id);
                 book.SeriesId.Should().Be(_series.Id);
             }
         }
@@ -232,7 +231,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var book = DatabaseConnection.GetBookById(_bookToUpdate.Id);
+                var book = BookTestRepository.GetBookById(_bookToUpdate.Id);
                 book.SeriesId.Should().Be(_series.Id);
             }
         }
@@ -276,7 +275,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var categories = DatabaseConnection.GetCategoriesByBook(_bookToUpdate.Id);
+                var categories = CategoryTestRepository.GetCategoriesByBook(_bookToUpdate.Id);
                 categories.Should().HaveCount(1);
                 categories.First().Id.Should().Be(_category.Id);
             }
@@ -327,7 +326,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             [Test]
             public void ShouldNotUpdateTheAuthor()
             {
-                var categories = DatabaseConnection.GetCategoriesByBook(_bookToUpdate.Id);
+                var categories = CategoryTestRepository.GetCategoriesByBook(_bookToUpdate.Id);
                 categories.Should().HaveCount(1);
                 categories.First().Id.Should().Be(_category.Id);
             }

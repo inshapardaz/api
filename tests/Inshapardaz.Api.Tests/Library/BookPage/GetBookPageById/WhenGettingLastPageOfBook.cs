@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -29,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
             _expected = BookBuilder.GetPages(book.Id).Last();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{book.Id}/pages/{_expected.SequenceNumber}");
-            _assert = BookPageAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<BookPageAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]

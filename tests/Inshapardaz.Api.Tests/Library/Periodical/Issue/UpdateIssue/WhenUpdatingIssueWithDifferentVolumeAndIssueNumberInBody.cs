@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
             _newIssue = new IssueView { IssueDate = RandomData.Date, VolumeNumber = _oldIssue.VolumeNumber + 3, IssueNumber = _oldIssue.IssueNumber + 5 };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_oldIssue.PeriodicalId}/volumes/{_oldIssue.VolumeNumber}/issues/{_oldIssue.IssueNumber}", _newIssue); _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_oldIssue.PeriodicalId}/volumes/{_oldIssue.VolumeNumber}/issues/{_oldIssue.IssueNumber}", _newIssue);
-            _assert = IssueAssert.FromResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -58,13 +59,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
                 
             };
             
-            _assert.ShouldBeSameAs(DatabaseConnection, issue);
+            _assert.ShouldBeSameAs(issue);
         }
 
         [Test]
         public void ShouldHaveUpdatedChater()
         {
-            _assert.ShouldHaveSavedIssue(DatabaseConnection);
+            _assert.ShouldHaveSavedIssue();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
@@ -23,8 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
             ArticleBuilder.WithLibrary(LibraryId).IsPublic().Build(20);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/articles?pageNumber=5&pageSize=10");
-
-            _assert = new PagingAssert<ArticleView>(_response);
+            _assert = Services.GetService<PagingAssert<ArticleView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]

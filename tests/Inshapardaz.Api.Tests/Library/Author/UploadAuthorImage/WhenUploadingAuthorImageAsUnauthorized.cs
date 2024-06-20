@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
@@ -10,6 +11,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
     public class WhenUploadingAuthorImageAsUnauthorized : TestBase
     {
         private HttpResponseMessage _response;
+        private AuthorAssert _assert;
         private int _authorId;
         private byte[] _newImage;
 
@@ -20,6 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
             _authorId = author.Id;
             _newImage = RandomData.Bytes;
             _response = await Client.PutFile($"/libraries/{LibraryId}/authors/{_authorId}/image", _newImage);
+            _assert = Services.GetService<AuthorAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -37,7 +40,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
         [Test]
         public void ShouldNotHaveUpdatedAuthorImage()
         {
-            AuthorAssert.ShouldNotHaveUpdatedAuthorImage(_authorId, _newImage, DatabaseConnection, FileStore);
+            _assert.ShouldNotHaveUpdatedAuthorImage(_authorId, _newImage);
         }
     }
 }

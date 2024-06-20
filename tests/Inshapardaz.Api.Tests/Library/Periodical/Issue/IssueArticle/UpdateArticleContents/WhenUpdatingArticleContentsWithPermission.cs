@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleCo
 
             _response = await Client.PutString($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}/contents", _newContents, "en");
 
-            _assert = new IssueArticleContentAssert(_response, LibraryId, _issue);
+            _assert = Services.GetService<IssueArticleContentAssert>().ForResponse(_response).ForIssue(_issue).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -70,7 +71,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleCo
         [Test]
         public void ShouldHaveUpdatedContents()
         {
-            _assert.ShouldHaveSavedCorrectText(_newContents, DatabaseConnection);
+            _assert.ShouldHaveSavedCorrectText(_newContents);
         }
     }
 }

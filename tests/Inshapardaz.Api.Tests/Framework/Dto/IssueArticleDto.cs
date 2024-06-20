@@ -51,5 +51,7 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
         public string Language { get; set; }
 
         public string Text { get; set; }
+
+        public long? FileId { get; set; }
     }
 }

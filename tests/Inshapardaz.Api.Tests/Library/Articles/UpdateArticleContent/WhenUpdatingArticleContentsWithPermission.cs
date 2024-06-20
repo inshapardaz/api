@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -45,7 +46,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
                     Layout = _newLayout
                 });
 
-            _assert = new ArticleContentAssert(_response, LibraryId);
+            _assert = Services.GetService<ArticleContentAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -78,7 +79,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
         [Test]
         public void ShouldHaveUpdatedContents()
         {
-            _assert.ShouldHaveSavedCorrectText(_newContents, DatabaseConnection, FileStore);
+            _assert.ShouldHaveSavedCorrectText(_newContents);
         }
     }
 }

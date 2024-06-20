@@ -10,6 +10,7 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
@@ -54,7 +55,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{selectedPeriodical.Id}", _expected);
-            _periodicalAssert = PeriodicalAssert.WithResponse(_response).InLibrary(LibraryId);
+            _periodicalAssert = Services.GetService<PeriodicalAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -72,7 +73,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
         [Test]
         public void ShouldHaveUpdatedThePeriodical()
         {
-            _periodicalAssert.ShouldBeSameAs(_expected, 4, DatabaseConnection);
+            _periodicalAssert.ShouldBeSameAs(_expected, 4);
         }
 
         [Test]

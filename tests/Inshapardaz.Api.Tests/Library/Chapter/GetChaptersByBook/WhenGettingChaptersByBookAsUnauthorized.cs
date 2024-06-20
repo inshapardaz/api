@@ -1,10 +1,10 @@
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
         public async Task Setup()
         {
             _chapters = ChapterBuilder.WithLibrary(LibraryId).WithContents().Build(4);
-            _book = DatabaseConnection.GetBookById(_chapters.PickRandom().BookId);
+            _book = BookTestRepository.GetBookById(_chapters.PickRandom().BookId);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/chapters");
             _view = _response.GetContent<ListView<ChapterView>>().Result;
@@ -70,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
             foreach (var item in _chapters.Where(c => c.BookId == _book.Id))
             {
                 var actual = _view.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item, LibraryId)
+                Services.GetService<ChapterAssert>().ForView(actual).ForLibrary(LibraryId)
                       .WithReadOnlyLinks()
                       .ShouldNotHaveContentsLink();
             }

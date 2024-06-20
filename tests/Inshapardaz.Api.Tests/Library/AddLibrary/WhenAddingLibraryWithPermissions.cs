@@ -1,8 +1,8 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
 using System.Net.Http;
@@ -38,15 +38,15 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
 
             _response = await Client.PostObject($"/libraries", _library);
             _returnedView = await _response.GetContent<LibraryView>();
-            _assert = LibraryAssert.FromResponse(_response, DatabaseConnection);
+            _assert = Services.GetService<LibraryAssert>().ForResponse(_response).ForLibrary(_returnedView.Id);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
             Cleanup();
-            DatabaseConnection.DeleteLibrary(_returnedView.Id);
-            DatabaseConnection.DeleteAccountByEmail(_library.OwnerEmail);
+            LibraryTestRepository.DeleteLibrary(_returnedView.Id);
+            AccountTestRepository.DeleteAccountByEmail(_library.OwnerEmail);
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         [Test]
         public void ShouldHaveCreatedLibraryInDataStore()
         {
-            _assert.ShouldHaveCreatedLibraryWithConfiguration(DatabaseConnection);
+            _assert.ShouldHaveCreatedLibraryWithConfiguration();
         }
 
         [Test]
@@ -139,7 +139,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         [Test]
         public void ShouldHaveSentEmailToAdministrator()
         {
-            var dbAccount = DatabaseConnection.GetAccountByEmail(_library.OwnerEmail);
+            var dbAccount = AccountTestRepository.GetAccountByEmail(_library.OwnerEmail);
             SmtpClient.AssertEmailSentTo(_library.OwnerEmail)
                 .WithSubject($"Welcome to {_library.Name}")
                 .WithBodyContainting($"Hi, Welcome to your library {_library.Name}")

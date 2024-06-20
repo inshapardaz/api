@@ -1,10 +1,10 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Author.DeleteAuthor
@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.DeleteAuthor
     public class WhenDeletingAuthorAsAdmin : TestBase
     {
         private HttpResponseMessage _response;
-
+        private AuthorAssert _authorAssert;
         private AuthorDto _expected;
         private string _filePath;
 
@@ -29,8 +29,9 @@ namespace Inshapardaz.Api.Tests.Library.Author.DeleteAuthor
             var authors = AuthorBuilder.WithLibrary(LibraryId).WithBooks(0).Build(4);
             _expected = authors.PickRandom();
 
-            _filePath = DatabaseConnection.GetFileById(_expected.ImageId.Value)?.FilePath;
+            _filePath = FileTestRepository.GetFileById(_expected.ImageId.Value)?.FilePath;
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/authors/{_expected.Id}");
+            _authorAssert = Services.GetService<AuthorAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -48,13 +49,13 @@ namespace Inshapardaz.Api.Tests.Library.Author.DeleteAuthor
         [Test]
         public void ShouldHaveDeletedAuthor()
         {
-            AuthorAssert.ShouldHaveDeletedAuthor(_expected.Id, DatabaseConnection);
+            _authorAssert.ShouldHaveDeletedAuthor(_expected.Id);
         }
 
         [Test]
         public void ShouldHaveDeletedTheAuthorImage()
         {
-            AuthorAssert.ShouldHaveDeletedAuthorImage(_expected.Id, _expected.ImageId.Value, _filePath, DatabaseConnection, FileStore);
+            _authorAssert.ShouldHaveDeletedAuthorImage(_expected.Id, _expected.ImageId.Value, _filePath);
         }
 
         [Test]

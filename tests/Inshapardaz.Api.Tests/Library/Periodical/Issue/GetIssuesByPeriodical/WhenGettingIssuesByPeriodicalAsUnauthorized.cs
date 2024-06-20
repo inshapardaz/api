@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,16 +71,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
             foreach (var expected in _issues)
             {
                 var actual = _view.Data.FirstOrDefault(x => x.Id == expected.Id);
-                var assert = new IssueAssert(actual).InLibrary(LibraryId);
-                assert.ShouldBeSameAs(DatabaseConnection, expected)
-                   .ShouldHaveSelfLink()
-                   .ShouldHavePeriodicalLink()
-                   .ShouldHaveArticlesLink()
-                   .ShouldHavePagesLink()
-                   .ShouldNotHaveUpdateLink()
-                   .ShouldNotHaveDeleteLink()
-                   .ShouldNotHaveCreateArticleLink()
-                   .ShouldNotHaveCreatePageLink();
+                var assert = Services.GetService<IssueAssert>().ForView(actual).ForLibrary(LibraryId)
+                    .ShouldBeSameAs(expected)
+                    .ShouldHaveSelfLink()
+                    .ShouldHavePeriodicalLink()
+                    .ShouldHaveArticlesLink()
+                    .ShouldHavePagesLink()
+                    .ShouldNotHaveUpdateLink()
+                    .ShouldNotHaveDeleteLink()
+                    .ShouldNotHaveCreateArticleLink()
+                    .ShouldNotHaveCreatePageLink();
             }
         }
 

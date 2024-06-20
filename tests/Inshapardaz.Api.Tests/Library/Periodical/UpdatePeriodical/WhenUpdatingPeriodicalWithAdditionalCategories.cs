@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Bogus;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
@@ -38,7 +38,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
 
             var selectedPeriodical = periodicals.PickRandom();
 
-            _categoriesToUpdate = DatabaseConnection.GetCategoriesByPeriodical(selectedPeriodical.Id).ToList();
+            _categoriesToUpdate = CategoryTestRepository.GetCategoriesByPeriodical(selectedPeriodical.Id).ToList();
             _categoriesToUpdate.AddRange(newCategories);
 
             var fake = new Faker();
@@ -53,7 +53,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{selectedPeriodical.Id}", _expected);
-            _periodicalAssert = PeriodicalAssert.WithResponse(_response).InLibrary(LibraryId);
+            _periodicalAssert = Services.GetService<PeriodicalAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -77,7 +77,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
         [Test]
         public void ShouldSaveCorrectCategories()
         {
-            _periodicalAssert.ShouldHaveCategories(_categoriesToUpdate, DatabaseConnection);
+            _periodicalAssert.ShouldHaveCategories(_categoriesToUpdate);
         }
     }
 }

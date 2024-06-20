@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.RemoveArtiucleFromFavorites
@@ -11,6 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.RemoveArtiucleFromFavorites
     public class WhenRemoveArticleFromFavoriteThatDoesNotExist : TestBase
     {
         private HttpResponseMessage _response;
+        private ArticleAssert _assert;
         private int _articleId = -RandomData.Number;
 
         public WhenRemoveArticleFromFavoriteThatDoesNotExist()
@@ -22,6 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.RemoveArtiucleFromFavorites
         public async Task Setup()
         {
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/favorites/articles/{_articleId}");
+            _assert = Services.GetService<ArticleAssert>().ForLibrary(LibraryId).ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -39,7 +42,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.RemoveArtiucleFromFavorites
         [Test]
         public void ShouldNotBeInFavorites()
         {
-            ArticleAssert.ShouldNotBeInFavorites(_articleId, AccountId, DatabaseConnection);
+            _assert.ShouldNotBeInFavorites(_articleId, AccountId);
         }
     }
 }

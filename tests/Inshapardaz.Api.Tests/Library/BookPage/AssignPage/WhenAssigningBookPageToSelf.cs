@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
             };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{book.Id}/pages/{_page.SequenceNumber}/assign", assignment);
-            _assert = BookPageAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<BookPageAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]

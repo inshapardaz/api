@@ -6,10 +6,8 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -20,26 +18,45 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
     {
         private BookView _book;
         private int _libraryId;
-
         public HttpResponseMessage _response;
+        
+        private readonly IBookTestRepository _bookRepository;
+        private readonly IFileTestRepository _fileRepository;
+        private readonly IAuthorTestRepository _authorRepository;
+        private readonly ICategoryTestRepository _categoryRepository;
+        private readonly ISeriesTestRepository _seriesRepository;
+        private readonly FakeFileStorage _fileStorage;
 
-        public BookAssert(HttpResponseMessage response)
+        public BookAssert(IBookTestRepository bookRepository,
+            IFileTestRepository fileRepository,
+            IAuthorTestRepository authorRepository,
+            ICategoryTestRepository categoryRepository,
+            FakeFileStorage fileStorage,
+            ISeriesTestRepository seriesRepository)
+        {
+            _bookRepository = bookRepository;
+            _fileRepository = fileRepository;
+            _authorRepository = authorRepository;
+            _categoryRepository = categoryRepository;
+            _fileStorage = fileStorage;
+            _seriesRepository = seriesRepository;
+        }
+
+        public BookAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _book = response.GetContent<BookView>().Result;
+            return this;
         }
 
-        public BookAssert(BookView view)
+        public BookAssert ForView(BookView view)
         {
             _book = view;
+            return this;
         }
 
-        internal static BookAssert WithResponse(HttpResponseMessage response)
-        {
-            return new BookAssert(response);
-        }
 
-        public BookAssert InLibrary(int libraryId)
+        public BookAssert ForLibrary(int libraryId)
         {
             _libraryId = libraryId;
             return this;
@@ -93,9 +110,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public BookAssert ShouldHaveContents(IDbConnection db, bool haveEditableLinks = false)
+        public BookAssert ShouldHaveContents(bool haveEditableLinks = false)
         {
-            var bookContents = db.GetBookContents(_book.Id);
+            var bookContents = _bookRepository.GetBookContents(_book.Id);
             _book.Contents.Should().NotBeEmpty();
             _book.Contents.Should().HaveSameCount(bookContents);
 
@@ -136,35 +153,36 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookAssert ShouldHaveEditLinks()
+        public BookAssert ShouldHaveEditLinks()
         {
             return ShouldHaveUpdateLink()
                    .ShouldHaveDeleteLink();
         }
 
-        internal BookAssert ShouldNotHaveEditLinks()
+        public BookAssert ShouldNotHaveEditLinks()
         {
             return ShouldNotHaveUpdateLink()
                    .ShouldNotHaveDeleteLink();
         }
 
-        internal BookAssert ShouldHaveCorrectLinks()
+        public BookAssert ShouldHaveCorrectLinks()
         {
             ShouldHaveSelfLink();
             return this;
         }
 
-        internal BookAssert ShouldHaveCorrectImageLocationHeader(int bookId)
+        public BookAssert ShouldHaveCorrectImageLocationHeader(int bookId)
         {
             _response.Headers.Location.AbsoluteUri.Should().NotBeEmpty();
             return this;
         }
 
-        internal static void ShouldHavePublicImage(int bookId, IDbConnection dbConnection)
+        public BookAssert ShouldHavePublicImage(int bookId)
         {
-            var image = dbConnection.GetBookImage(bookId);
+            var image = _bookRepository.GetBookImage(bookId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
+            return this;
         }
 
         public BookAssert ShouldHaveSeriesLink()
@@ -271,7 +289,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookAssert ShouldHavePublicImageLink()
+        public BookAssert ShouldHavePublicImageLink()
         {
             _book.Link("image")
                 .ShouldBeGet();
@@ -280,35 +298,38 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookAssert ShouldHaveCorrectLocationHeader()
+        public BookAssert ShouldHaveCorrectLocationHeader()
         {
             _response.Headers.Location.Should().NotBeNull();
             _response.Headers.Location.AbsoluteUri.Should().EndWith($"libraries/{_libraryId}/books/{_book.Id}");
             return this;
         }
 
-        public BookAssert ShouldHaveSavedBook(IDbConnection dbConnection)
+        public BookAssert ShouldHaveSavedBook()
         {
-            var dbbook = dbConnection.GetBookById(_book.Id);
-            return ShouldBeSameAs(dbbook, dbConnection);
+            var dbbook = _bookRepository.GetBookById(_book.Id);
+            return ShouldBeSameAs(dbbook);
         }
 
-        public static void ShouldBeAddedToFavorite(int bookId, int accountId, IDbConnection dbConnection)
+        public BookAssert ShouldBeAddedToFavorite(int bookId, int accountId)
         {
-            dbConnection.DoesBookExistsInFavorites(bookId, accountId).Should().BeTrue();
+            _bookRepository.DoesBookExistsInFavorites(bookId, accountId).Should().BeTrue();
+            return this;
         }
 
-        public static void ShouldNotBeInFavorites(int bookId, int accountId, IDbConnection dbConnection)
+        public BookAssert ShouldNotBeInFavorites(int bookId, int accountId)
         {
-            dbConnection.DoesBookExistsInFavorites(bookId, accountId).Should().BeFalse();
+            _bookRepository.DoesBookExistsInFavorites(bookId, accountId).Should().BeFalse();
+            return this;
         }
 
-        internal static void ShouldHaveDeletedBookFromRecentReads(int bookId, IDbConnection dbConnection)
+        public BookAssert ShouldHaveDeletedBookFromRecentReads(int bookId)
         {
-            dbConnection.DoesBookExistsInRecent(bookId).Should().BeFalse();
+            _bookRepository.DoesBookExistsInRecent(bookId).Should().BeFalse();
+            return this;
         }
 
-        internal BookAssert ShouldBeSameAs(BookDto expected, IDbConnection db)
+        public BookAssert ShouldBeSameAs(BookDto expected)
         {
             _book.Should().NotBeNull();
             _book.Title.Should().Be(expected.Title);
@@ -327,11 +348,11 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _book.Publisher.Should().Be(expected.Publisher);
             if (_book.SeriesId.HasValue)
             {
-                _book.SeriesName.Should().Be(db.GetSeriesById(expected.SeriesId.Value).Name);
+                _book.SeriesName.Should().Be(_seriesRepository.GetSeriesById(expected.SeriesId.Value).Name);
                 _book.SeriesIndex.Should().Be(expected.SeriesIndex);
             }
 
-            var authors = db.GetAuthorsByBook(expected.Id);
+            var authors = _authorRepository.GetAuthorsByBook(expected.Id);
             _book.Authors.Should().HaveSameCount(authors);
             foreach (var author in authors)
             {
@@ -345,7 +366,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 return this;
             }
 
-            var catergories = db.GetCategoriesByBook(expected.Id);
+            var catergories = _categoryRepository.GetCategoriesByBook(expected.Id);
             _book.Categories.Should().HaveSameCount(catergories);
             foreach (var catergory in catergories)
             {
@@ -362,7 +383,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookAssert ShouldBeSameAs(BookView expected, IDbConnection db)
+        public BookAssert ShouldBeSameAs(BookView expected)
         {
             _book.Should().NotBeNull();
             _book.Title.Should().Be(expected.Title);
@@ -377,12 +398,12 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _book.Status.Should().Be(expected.Status);
             _book.YearPublished.Should().Be(expected.YearPublished);
             _book.SeriesId.Should().Be(expected.SeriesId);
-            _book.SeriesName.Should().Be(db.GetSeriesById(expected.SeriesId.Value).Name);
+            _book.SeriesName.Should().Be(_seriesRepository.GetSeriesById(expected.SeriesId.Value).Name);
             _book.SeriesIndex.Should().Be(expected.SeriesIndex);
             _book.Source.Should().Be(expected.Source);
             _book.Publisher.Should().Be(expected.Publisher);
 
-            var authors = db.GetAuthorsByBook(expected.Id);
+            var authors = _authorRepository.GetAuthorsByBook(expected.Id);
             _book.Authors.Should().HaveSameCount(authors);
             foreach (var author in authors)
             {
@@ -398,21 +419,22 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookAssert ShouldBeSameCategories(IEnumerable<CategoryDto> expectedCategories)
+        public BookAssert ShouldBeSameCategories(IEnumerable<CategoryDto> expectedCategories)
         {
             expectedCategories.Should().HaveSameCount(_book.Categories);
             foreach (var expectedCategory in expectedCategories)
             {
                 var category = _book.Categories.SingleOrDefault(c => c.Id == expectedCategory.Id);
                 category.Should().NotBeNull();
-                category.ShouldMatch(expectedCategory);
+                category.Id.Should().Be(expectedCategory.Id);
+                category.Name.Should().Be(expectedCategory.Name);
             }
             return this;
         }
 
-        internal BookAssert ShouldHaveCategories(IEnumerable<CategoryDto> expectedCategories, IDbConnection dbConnection)
+        public BookAssert ShouldHaveCategories(IEnumerable<CategoryDto> expectedCategories)
         {
-            var bookCategories = dbConnection.GetCategoriesByBook(_book.Id);
+            var bookCategories = _categoryRepository.GetCategoriesByBook(_book.Id);
             bookCategories.Should().HaveSameCount(expectedCategories);
             foreach (var expectedCategory in expectedCategories)
             {
@@ -423,54 +445,44 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static void ShouldHaveDeletedBook(int id, IDbConnection databaseConnection)
+        public BookAssert ShouldHaveDeletedBook(int id)
         {
-            databaseConnection.GetBookById(id).Should().BeNull();
+            _bookRepository.GetBookById(id).Should().BeNull();
+            return this;
         }
 
-        internal static void ShouldHaveDeletedBookImage(int bookId, long? imageId, string fileName, IDbConnection databaseConnection, FakeFileStorage fileStorage)
+        public BookAssert ShouldHaveDeletedBookImage(int bookId, long? imageId, string fileNamee)
         {
-            var image = databaseConnection.GetBookImage(bookId);
+            var image = _bookRepository.GetBookImage(bookId);
             image.Should().BeNull();
+            return this;
         }
 
-        internal static void ShouldNotHaveUpdatedBookImage(int bookId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        public BookAssert ShouldNotHaveUpdatedBookImage(int bookId, byte[] oldImage)
         {
-            var imageUrl = dbConnection.GetBookImageUrl(bookId);
+            var imageUrl = _bookRepository.GetBookImageUrl(bookId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().Equal(oldImage);
+            return this;
         }
 
-        internal static void ShouldHaveAddedBookImage(int bookId, IDbConnection dbConnection, IFileStorage fileStorage)
+        public BookAssert ShouldHaveAddedBookImage(int bookId)
         {
-            var imageUrl = dbConnection.GetBookImageUrl(bookId);
+            var imageUrl = _bookRepository.GetBookImageUrl(bookId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty();
+            return this;
         }
 
-        internal static void ShouldHaveUpdatedBookImage(int bookId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        public BookAssert ShouldHaveUpdatedBookImage(int bookId, byte[] newImage )
         {
-            var imageUrl = dbConnection.GetBookImageUrl(bookId);
+            var imageUrl = _bookRepository.GetBookImageUrl(bookId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
-        }
-    }
-
-    public static class BookAssertionExtensions
-    {
-        public static BookAssert ShouldMatch(this BookView view, BookDto dto, IDbConnection dbConnection, int? libraryId = null)
-        {
-            if (libraryId.HasValue)
-            {
-                return new BookAssert(view)
-                            .InLibrary(libraryId.Value)
-                           .ShouldBeSameAs(dto, dbConnection);
-            }
-            return new BookAssert(view)
-                               .ShouldBeSameAs(dto, dbConnection);
+            return this;
         }
     }
 }

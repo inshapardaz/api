@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
                                     .First();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_expected.PeriodicalId}/volumes/{_expected.VolumeNumber}/issues/{_expected.IssueNumber}");
-            _assert = IssueAssert.FromResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -46,7 +47,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         [Test]
         public void ShouldHaveCorrectObjectRetured()
         {
-            _assert.ShouldBeSameAs(DatabaseConnection, _expected, 3, 10);
+            _assert.ShouldBeSameAs(_expected, 3, 10);
         }
 
         [Test]

@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
         : TestBase
     {
         private HttpResponseMessage _response;
+        private IssueAssert _assert;
         private IssueDto _expected;
 
         public WhenDeletingIssueWithPermission(Role role)
@@ -31,6 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
                 .Build();
 
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{_expected.PeriodicalId}/volumes/{_expected.VolumeNumber}/issues/{_expected.IssueNumber}");
+            _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -48,25 +51,25 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
         [Test]
         public void ShouldHaveDeletedIssue()
         {
-            IssueAssert.ShouldHaveDeletedIssue(DatabaseConnection, _expected.Id);
+            _assert.ShouldHaveDeletedIssue(_expected.Id);
         }
 
         [Test]
         public void ShouldHaveDeletedThePages()
         {
-            IssueAssert.ShouldHaveDeletedPagesForIssue(DatabaseConnection, _expected.Id);
+            _assert.ShouldHaveDeletedPagesForIssue(_expected.Id);
         }
 
         [Test]
         public void ShouldHaveDeletedTheArticles()
         {
-            IssueAssert.ShouldHaveDeletedArticlesForIssue(DatabaseConnection, _expected.Id);
+            _assert.ShouldHaveDeletedArticlesForIssue(_expected.Id);
         }
 
         [Test]
         public void ShouldHaveDeletedTheImage()
         {
-            IssueAssert.ShouldHaveDeletedIssueImage(DatabaseConnection, _expected.Id);
+            _assert.ShouldHaveDeletedIssueImage(_expected.Id);
         }
     }
 }

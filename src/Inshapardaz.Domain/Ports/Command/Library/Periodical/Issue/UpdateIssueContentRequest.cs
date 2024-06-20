@@ -1,10 +1,10 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,14 +45,14 @@ public class UpdateIssueContentRequest : LibraryBaseCommand
 public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueContentRequest>
 {
     private readonly IIssueRepository _issueRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public UpdateIssueContentRequestHandler(IIssueRepository issueRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+
+    public UpdateIssueContentRequestHandler(IIssueRepository issueRepository, 
+        IAmACommandProcessor commandProcessor)
     {
         _issueRepository = issueRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -62,47 +62,30 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
         if (issue != null)
         {
             var issueContent = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
-            if (issueContent != null)
+
+            var fileName = FilePathHelper.GetIssueContentFileName(command.Content.FileName);
+            var filePath = FilePathHelper.GetIssueContentPath(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, fileName);
+
+            var saveContentCommand = new SaveFileCommand(fileName, filePath, command.Content.Contents)
             {
-                if (!string.IsNullOrWhiteSpace(issueContent.ContentUrl))
-                {
-                    await _fileStorage.DeleteFile(issueContent.ContentUrl, cancellationToken);
-                }
+                MimeType = MimeTypes.Markdown,
+                ExistingFileId = issueContent?.FileId
+            };
 
-                var url = await StoreFile(command.PeriodicalId, command.IssueNumber, command.Content.FileName, command.Content.Contents, cancellationToken);
-                issueContent.ContentUrl = url;
-                await _issueRepository.UpdateIssueContentUrl(command.LibraryId,
-                                                        command.PeriodicalId,
-                                                        command.VolumeNumber,
-                                                        command.IssueNumber,
-                                                        command.ContentId,
-                                                        url, cancellationToken);
+            await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
 
-                command.Result.Content = issueContent;
+            if (issueContent == null)
+            {
+                command.Result.Content = await _issueRepository.AddIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, saveContentCommand.Result.Id, command.Language, command.MimeType, cancellationToken);
+                command.Result.HasAddedNew = true;
             }
             else
             {
-                var url = await StoreFile(command.PeriodicalId, command.IssueNumber, command.Content.FileName, command.Content.Contents, cancellationToken);
-                command.Content.FilePath = url;
-                command.Content.IsPublic = issue.IsPublic;
-                var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-                command.Result.Content = await _issueRepository.AddIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, file.Id, command.Language, command.MimeType, cancellationToken);
-                command.Result.HasAddedNew = true;
+                await _issueRepository.UpdateIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.MimeType, command.Language, saveContentCommand.Result.Id, cancellationToken);
+                command.Result.Content = issueContent;
             }
         }
 
         return await base.HandleAsync(command, cancellationToken);
-    }
-
-    private async Task<string> StoreFile(int periodicalId, int issueId, string fileName, byte[] contents, CancellationToken cancellationToken)
-    {
-        var filePath = GetUniqueFileName(periodicalId, issueId, fileName);
-        return await _fileStorage.StoreFile(filePath, contents, cancellationToken);
-    }
-
-    private static string GetUniqueFileName(int periodicalId, int issueId, string fileName)
-    {
-        var fileNameWithoutExtension = Path.GetExtension(fileName).Trim('.');
-        return $"periodicals/{periodicalId}/issues/{issueId}/{Guid.NewGuid():N}.{fileNameWithoutExtension}";
     }
 }

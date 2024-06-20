@@ -4,146 +4,154 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using System;
-using System.Data;
 using System.Linq;
 using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    internal class IssueArticleAssert
+    public class IssueArticleAssert
     {
         private HttpResponseMessage _response;
-        private readonly int _libraryId;
-        private readonly IssueDto _issue;
-        private IssueArticleView _article;
+        private int _libraryId;
+        private IssueDto _issue;
+        private IssueArticleView _issueArticle;
 
-        public IssueArticleAssert(IssueArticleView view, int libraryId, IssueDto issue)
+        private readonly IIssueArticleTestRepository _issueArticleRepository;
+
+        public IssueArticleAssert(IIssueArticleTestRepository issueArticleRepository)
         {
-            _libraryId = libraryId;
-            _issue = issue;
-            _article = view;
+            _issueArticleRepository = issueArticleRepository;
         }
 
-        public IssueArticleAssert(HttpResponseMessage response, int libraryId, IssueDto issue)
+        public IssueArticleAssert ForView(IssueArticleView view)
+        {
+            _issueArticle = view;
+            return this;
+        }
+        
+        public IssueArticleAssert ForLibrary(int libraryId)
+        {
+            _libraryId = libraryId;
+            return this;
+        }
+
+        public IssueArticleAssert ForDto(IssueDto issue)
+        {
+            _issue = issue;
+            return this;
+        }
+
+        public IssueArticleAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
-            _libraryId = libraryId;
-            _issue = issue;
-            _article = response.GetContent<IssueArticleView>().Result;
+            _issueArticle = response.GetContent<IssueArticleView>().Result;
+            return this;
         }
 
-        internal static IssueArticleAssert FromResponse(HttpResponseMessage response, int libraryId, IssueDto issue)
-        {
-            return new IssueArticleAssert(response, libraryId, issue);
-        }
-
-        internal static IssueArticleAssert FromObject(IssueArticleView view, int libraryId, IssueDto issue)
-        {
-            return new IssueArticleAssert(view, libraryId, issue);
-        }
-
-        internal IssueArticleAssert ShouldHaveCorrectLocationHeader()
+        public IssueArticleAssert ShouldHaveCorrectLocationHeader()
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
-            location.Should().EndWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}");
+            location.Should().EndWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_issueArticle.SequenceNumber}");
             return this;
         }
 
-        internal IssueArticleAssert ShouldBeAssignedToUserForWriting(AccountDto account)
+        public IssueArticleAssert ShouldBeAssignedToUserForWriting(AccountDto account)
         {
-            _article.WriterAccountId.Should().Be(account.Id);
-            _article.WriterAccountName.Should().Be(account.Name);
-            _article.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
+            _issueArticle.WriterAccountId.Should().Be(account.Id);
+            _issueArticle.WriterAccountName.Should().Be(account.Name);
+            _issueArticle.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
-        internal IssueArticleAssert ShouldNotBeAssignedForWriting()
+        public IssueArticleAssert ShouldNotBeAssignedForWriting()
         {
-            _article.WriterAccountId.Should().BeNull();
-            _article.WriterAccountName.Should().BeNull();
-            _article.WriterAssignTimeStamp.Should().BeNull();
+            _issueArticle.WriterAccountId.Should().BeNull();
+            _issueArticle.WriterAccountName.Should().BeNull();
+            _issueArticle.WriterAssignTimeStamp.Should().BeNull();
             return this;
         }
 
-        internal IssueArticleAssert ShouldBeSavedAssignmentForWriting(IDbConnection dbConnection, AccountDto account)
+        public IssueArticleAssert ShouldBeSavedAssignmentForWriting(AccountDto account)
         {
-            var dbArticle = dbConnection.GetIssueArticleById(_article.Id);
+            var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.WriterAccountId.Should().Be(account.Id);
             dbArticle.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
-        internal IssueArticleAssert ShouldBeSavedNoAssignmentForWriting(IDbConnection dbConnection)
+        public IssueArticleAssert ShouldBeSavedNoAssignmentForWriting()
         {
-            var dbArticle = dbConnection.GetIssueArticleById(_article.Id);
+            var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.WriterAccountId.Should().BeNull();
             dbArticle.WriterAssignTimeStamp.Should().BeNull();
             return this;
         }
 
-        internal IssueArticleAssert ShouldBeAssignedToUserForReviewing(AccountDto account)
+        public IssueArticleAssert ShouldBeAssignedToUserForReviewing(AccountDto account)
         {
-            _article.ReviewerAccountId.Should().Be(account.Id);
-            _article.ReviewerAccountName.Should().Be(account.Name);
-            _article.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
+            _issueArticle.ReviewerAccountId.Should().Be(account.Id);
+            _issueArticle.ReviewerAccountName.Should().Be(account.Name);
+            _issueArticle.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
-        internal IssueArticleAssert ShouldNotBeAssignedForReviewing()
+        public IssueArticleAssert ShouldNotBeAssignedForReviewing()
         {
-            _article.ReviewerAccountId.Should().BeNull();
-            _article.ReviewerAccountName.Should().BeNull();
-            _article.ReviewerAssignTimeStamp.Should().BeNull();
+            _issueArticle.ReviewerAccountId.Should().BeNull();
+            _issueArticle.ReviewerAccountName.Should().BeNull();
+            _issueArticle.ReviewerAssignTimeStamp.Should().BeNull();
             return this;
         }
 
-        internal IssueArticleAssert ShouldBeSavedAssignmentForReviewing(IDbConnection dbConnection, AccountDto account)
+        public IssueArticleAssert ShouldBeSavedAssignmentForReviewing(AccountDto account)
         {
-            var dbArticle = dbConnection.GetIssueArticleById(_article.Id);
+            var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.ReviewerAccountId.Should().Be(account.Id);
             dbArticle.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
         }
 
-        internal IssueArticleAssert ShouldBeSavedNoAssignmentForReviewing(IDbConnection dbConnection)
+        public IssueArticleAssert ShouldBeSavedNoAssignmentForReviewing()
         {
-            var dbArticle = dbConnection.GetIssueArticleById(_article.Id);
+            var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.ReviewerAccountId.Should().BeNull();
             dbArticle.ReviewerAssignTimeStamp.Should().BeNull();
             return this;
         }
 
-        internal IssueArticleAssert ShouldHaveSavedArticle(IDbConnection dbConnection)
+        public IssueArticleAssert ShouldHaveSavedArticle()
         {
-            var dbArticle = dbConnection.GetIssueArticleById(_article.Id);
+            var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.Should().NotBeNull();
-            _article.Title.Should().Be(dbArticle.Title);
+            _issueArticle.Title.Should().Be(dbArticle.Title);
             return this;
         }
 
-        internal static void ShouldHaveDeletedArticle(int articleId, IDbConnection databaseConnection)
+        public IssueArticleAssert ShouldHaveDeletedArticle(int articleId)
         {
-            var article = databaseConnection.GetIssueArticleById(articleId);
+            var article = _issueArticleRepository.GetIssueArticleById(articleId);
             article.Should().BeNull();
+            return this;
         }
 
-        internal static void ThatContentsAreDeletedForArticle(int articleId, IDbConnection databaseConnection)
+        public IssueArticleAssert ThatContentsAreDeletedForArticle(int articleId)
         {
-            var contents = databaseConnection.GetContentByIssueArticle(articleId);
+            var contents = _issueArticleRepository.GetContentByIssueArticle(articleId);
             contents.Should().BeNullOrEmpty();
+            return this;
         }
 
-        internal IssueArticleAssert ShouldHaveSelfLink()
+        public IssueArticleAssert ShouldHaveSelfLink()
         {
-            _article.SelfLink()
+            _issueArticle.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}");
+                  .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_issueArticle.SequenceNumber}");
 
             return this;
         }
 
-        internal IssueArticleAssert WithReadOnlyLinks()
+        public IssueArticleAssert WithReadOnlyLinks()
         {
             ShouldHaveSelfLink()
             .ShouldHavePeriodicalLink()
@@ -155,7 +163,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal IssueArticleAssert WithWriteableLinks()
+        public IssueArticleAssert WithWriteableLinks()
         {
             ShouldHaveAddIssueContentLink()
             .ShouldHaveUpdateLink()
@@ -164,234 +172,240 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal void ShouldHaveContentLink(ChapterContentDto content)
+        public IssueArticleAssert ShouldHaveContentLink(IssueArticleContentDto content)
         {
-            var actual = _article.Contents.Single(x => x.Id == content.Id);
+            var actual = _issueArticle.Contents.Single(x => x.Id == content.Id);
             actual.SelfLink()
                   .ShouldBeGet()
                   .ShouldHaveAcceptLanguage(content.Language);
+            return this;
         }
 
-        internal void ShouldHaveNoCorrectContents()
+        public IssueArticleAssert ShouldHaveNoCorrectContents()
         {
-            _article.Link("content").Should().BeNull();
+            _issueArticle.Link("content").Should().BeNull();
+            return this;
         }
-        internal IssueArticleAssert ShouldHaveIssueLink()
+
+        public IssueArticleAssert ShouldHaveIssueLink()
         {
-            _article.Link("issue")
+            _issueArticle.Link("issue")
                   .ShouldBeGet()
                   .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}");
 
             return this;
         }
 
-        internal IssueArticleAssert ShouldHavePeriodicalLink()
+        public IssueArticleAssert ShouldHavePeriodicalLink()
         {
-            _article.Link("periodical")
+            _issueArticle.Link("periodical")
                   .ShouldBeGet()
                   .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}");
 
             return this;
         }
 
-        internal IssueArticleAssert ShouldHaveAssignmentLink()
+        public IssueArticleAssert ShouldHaveAssignmentLink()
         {
-            _article.Link("assign")
+            _issueArticle.Link("assign")
                   .ShouldBePost()
-                  .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}/assign");
+                  .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_issueArticle.SequenceNumber}/assign");
             return this;
         }
 
-        internal IssueArticleAssert ShouldNotHaveAssignmentLink()
+        public IssueArticleAssert ShouldNotHaveAssignmentLink()
         {
-            _article.Link("assign")
+            _issueArticle.Link("assign")
                   .Should().BeNull();
             return this;
         }
 
-        internal void ShouldHaveCorrectContents(IDbConnection db)
+        public IssueArticleAssert ShouldHaveCorrectContents()
         {
-            var contents = db.GetContentByChapter(_article.Id);
+            var contents = _issueArticleRepository.GetIssueArticleContents(_issueArticle.Id);
 
-            contents.Should().HaveSameCount(_article.Contents);
+            contents.Should().HaveSameCount(_issueArticle.Contents);
 
             foreach (var content in contents)
             {
                 ShouldHaveContentLink(content);
             }
+            return this;
         }
 
-        internal IssueArticleAssert ShouldHaveUpdateLink()
+        public IssueArticleAssert ShouldHaveUpdateLink()
         {
-            _article.UpdateLink()
+            _issueArticle.UpdateLink()
                  .ShouldBePut()
-                 .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}");
+                 .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_issueArticle.SequenceNumber}");
 
             return this;
         }
 
-        internal IssueArticleAssert ShouldNotHaveUpdateLink()
+        public IssueArticleAssert ShouldNotHaveUpdateLink()
         {
-            _article.UpdateLink().Should().BeNull();
+            _issueArticle.UpdateLink().Should().BeNull();
             return this;
         }
 
-        internal IssueArticleAssert ShouldHaveDeleteLink()
+        public IssueArticleAssert ShouldHaveDeleteLink()
         {
-            _article.DeleteLink()
+            _issueArticle.DeleteLink()
                  .ShouldBeDelete()
-                 .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}");
+                 .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_issueArticle.SequenceNumber}");
 
             return this;
         }
 
-        internal IssueArticleAssert ShouldNotHaveDeleteLink()
+        public IssueArticleAssert ShouldNotHaveDeleteLink()
         {
-            _article.DeleteLink().Should().BeNull();
+            _issueArticle.DeleteLink().Should().BeNull();
             return this;
         }
 
-        internal IssueArticleAssert ShouldHaveAddIssueContentLink()
+        public IssueArticleAssert ShouldHaveAddIssueContentLink()
         {
-            _article.Link("add-content")
+            _issueArticle.Link("add-content")
                  .ShouldBePost()
-                 .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}/contents");
+                 .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_issueArticle.SequenceNumber}/contents");
 
             return this;
         }
 
-        internal IssueArticleAssert ShouldNotHaveAddArticleContentLink()
+        public IssueArticleAssert ShouldNotHaveAddArticleContentLink()
         {
-            _article.Link("add-content").Should().BeNull();
+            _issueArticle.Link("add-content").Should().BeNull();
             return this;
         }
 
-        internal IssueArticleAssert ShouldHaveUpdateArticleContentLink(IssueContentDto content)
+        public IssueArticleAssert ShouldHaveUpdateArticleContentLink(IssueContentDto content)
         {
-            var actual = _article.Contents.Single(x => x.Id == content.Id);
+            var actual = _issueArticle.Contents.Single(x => x.Id == content.Id);
             actual.UpdateLink()
                   .ShouldBePut()
-                  .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}/contents")
+                  .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_issueArticle.SequenceNumber}/contents")
                   .ShouldHaveAcceptLanguage(content.Language);
 
             return this;
         }
 
-        internal IssueArticleAssert ShouldHaveDeleteIssueContentLink(IssueContentDto content)
+        public IssueArticleAssert ShouldHaveDeleteIssueContentLink(IssueContentDto content)
         {
-            var actual = _article.Contents.Single(x => x.Id == content.Id);
+            var actual = _issueArticle.Contents.Single(x => x.Id == content.Id);
             actual.DeleteLink()
                   .ShouldBeDelete()
-                  .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}/contents")
+                  .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_issueArticle.SequenceNumber}/contents")
                   .ShouldHaveAcceptLanguage(actual.Language);
 
             return this;
         }
 
-        internal IssueArticleAssert ShouldNotHaveContentsLink()
+        public IssueArticleAssert ShouldNotHaveContentsLink()
         {
-            _article.Link("content").Should().BeNull();
+            _issueArticle.Link("content").Should().BeNull();
             return this;
         }
 
-        internal IssueArticleAssert ShouldHaveNotNextLink()
+        public IssueArticleAssert ShouldHaveNotNextLink()
         {
-            _article.Link("next").Should().BeNull();
+            _issueArticle.Link("next").Should().BeNull();
             return this;
         }
 
-        internal IssueArticleAssert ShouldHaveNextLink(int sequenceNumber)
+        public IssueArticleAssert ShouldHaveNextLink(int sequenceNumber)
         {
-            _article.Link("next")
+            _issueArticle.Link("next")
                     .ShouldBeGet()
                     .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{sequenceNumber}");
             return this;
         }
 
-        internal IssueArticleAssert ShouldHaveNotPreviousLink()
+        public IssueArticleAssert ShouldHaveNotPreviousLink()
         {
-            _article.Link("previous").Should().BeNull();
+            _issueArticle.Link("previous").Should().BeNull();
             return this;
         }
 
-        internal IssueArticleAssert ShouldHavePreviousLink(int sequenceNumber)
+        public IssueArticleAssert ShouldHavePreviousLink(int sequenceNumber)
         {
-            _article.Link("previous")
+            _issueArticle.Link("previous")
                     .ShouldBeGet()
                     .EndingWith($"libraries/{_libraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{sequenceNumber}");
             return this;
         }
 
-        internal void ShouldMatch(IssueArticleView view)
+        public IssueArticleAssert ShouldMatch(IssueArticleView view)
         {
-            _article.Title.Should().Be(view.Title);
-            _article.SequenceNumber.Should().Be(view.SequenceNumber);
-            _article.WriterAccountId.Should().Be(view.WriterAccountId);
-            _article.WriterAccountName.Should().Be(view.WriterAccountName);
+            _issueArticle.Title.Should().Be(view.Title);
+            _issueArticle.SequenceNumber.Should().Be(view.SequenceNumber);
+            _issueArticle.WriterAccountId.Should().Be(view.WriterAccountId);
+            _issueArticle.WriterAccountName.Should().Be(view.WriterAccountName);
             if (view.WriterAssignTimeStamp.HasValue)
             {
-                _article.WriterAssignTimeStamp.Should().BeCloseTo(view.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+                _issueArticle.WriterAssignTimeStamp.Should().BeCloseTo(view.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
-                _article.WriterAssignTimeStamp.Should().Be(view.WriterAssignTimeStamp);
+                _issueArticle.WriterAssignTimeStamp.Should().Be(view.WriterAssignTimeStamp);
             }
-            _article.ReviewerAccountId.Should().Be(view.ReviewerAccountId);
+            _issueArticle.ReviewerAccountId.Should().Be(view.ReviewerAccountId);
             if (view.ReviewerAssignTimeStamp.HasValue)
             {
-                _article.ReviewerAssignTimeStamp.Should().BeCloseTo(view.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+                _issueArticle.ReviewerAssignTimeStamp.Should().BeCloseTo(view.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
-                _article.ReviewerAssignTimeStamp.Should().Be(view.ReviewerAssignTimeStamp);
+                _issueArticle.ReviewerAssignTimeStamp.Should().Be(view.ReviewerAssignTimeStamp);
             }
-            _article.ReviewerAccountName.Should().Be(view.ReviewerAccountName);
-            _article.SeriesName.Should().Be(view.SeriesName);
-            _article.SeriesIndex.Should().Be(view.SeriesIndex);
-            _article.Status.Should().Be(view.Status);
+            _issueArticle.ReviewerAccountName.Should().Be(view.ReviewerAccountName);
+            _issueArticle.SeriesName.Should().Be(view.SeriesName);
+            _issueArticle.SeriesIndex.Should().Be(view.SeriesIndex);
+            _issueArticle.Status.Should().Be(view.Status);
+            return this;
         }
 
-        internal void ShouldMatch(IssueArticleDto dto)
+        public IssueArticleAssert ShouldMatch(IssueArticleDto dto)
         {
-            _article.Title.Should().Be(dto.Title);
-            _article.SequenceNumber.Should().Be(dto.SequenceNumber);
-            _article.WriterAccountId.Should().Be(dto.WriterAccountId);
+            _issueArticle.Title.Should().Be(dto.Title);
+            _issueArticle.SequenceNumber.Should().Be(dto.SequenceNumber);
+            _issueArticle.WriterAccountId.Should().Be(dto.WriterAccountId);
             if (dto.WriterAssignTimeStamp.HasValue)
             {
-                _article.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+                _issueArticle.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
-                _article.WriterAssignTimeStamp.Should().Be(dto.WriterAssignTimeStamp);
+                _issueArticle.WriterAssignTimeStamp.Should().Be(dto.WriterAssignTimeStamp);
             }
 
-            _article.ReviewerAccountId.Should().Be(dto.ReviewerAccountId);
+            _issueArticle.ReviewerAccountId.Should().Be(dto.ReviewerAccountId);
             if (dto.ReviewerAssignTimeStamp.HasValue)
             {
-                _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+                _issueArticle.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
             }
             else
             {
-                _article.ReviewerAssignTimeStamp.Should().Be(dto.ReviewerAssignTimeStamp);
+                _issueArticle.ReviewerAssignTimeStamp.Should().Be(dto.ReviewerAssignTimeStamp);
 
             }
 
-            _article.SeriesName.Should().Be(dto.SeriesName);
-            _article.SeriesIndex.Should().Be(dto.SeriesIndex);
-            _article.Status.Should().Be(dto.Status.ToString());
+            _issueArticle.SeriesName.Should().Be(dto.SeriesName);
+            _issueArticle.SeriesIndex.Should().Be(dto.SeriesIndex);
+            _issueArticle.Status.Should().Be(dto.Status.ToString());
+            return this;
         }
 
-        internal IssueArticleAssert ShouldBeSameAs(IssueArticleDto dto)
+        public IssueArticleAssert ShouldBeSameAs(IssueArticleDto dto)
         {
-            _article.Title.Should().Be(dto.Title);
-            _article.SequenceNumber.Should().Be(dto.SequenceNumber);
-            _article.WriterAccountId.Should().Be(dto.WriterAccountId);
-            _article.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
-            _article.ReviewerAccountId.Should().Be(dto.ReviewerAccountId);
-            _article.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
-            _article.SeriesName.Should().Be(dto.SeriesName);
-            _article.SeriesIndex.Should().Be(dto.SeriesIndex);
-            _article.Status.Should().Be(dto.Status.ToString());
+            _issueArticle.Title.Should().Be(dto.Title);
+            _issueArticle.SequenceNumber.Should().Be(dto.SequenceNumber);
+            _issueArticle.WriterAccountId.Should().Be(dto.WriterAccountId);
+            _issueArticle.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+            _issueArticle.ReviewerAccountId.Should().Be(dto.ReviewerAccountId);
+            _issueArticle.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+            _issueArticle.SeriesName.Should().Be(dto.SeriesName);
+            _issueArticle.SeriesIndex.Should().Be(dto.SeriesIndex);
+            _issueArticle.Status.Should().Be(dto.Status.ToString());
 
             return this;
         }

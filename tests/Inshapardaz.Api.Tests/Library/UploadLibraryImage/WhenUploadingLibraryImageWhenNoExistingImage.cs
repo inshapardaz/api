@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.UploadLibraryImage
@@ -11,6 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.UploadLibraryImage
     public class WhenUploadingLibraryImageWhenNoExistingImage : TestBase
     {
         private HttpResponseMessage _response;
+        private LibraryAssert _assert;
         private int _libraryId;
 
         private byte[] _newImage;
@@ -28,6 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.UploadLibraryImage
             _newImage = RandomData.Bytes;
 
             _response = await Client.PutFile($"/libraries/{_libraryId}/image", _newImage);
+            _assert = Services.GetService<LibraryAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -45,13 +48,13 @@ namespace Inshapardaz.Api.Tests.Library.UploadLibraryImage
         [Test]
         public void ShouldHaveAddedImageToLibrary()
         {
-            LibraryAssert.ShouldHaveAddedLibraryImage(_libraryId, _newImage, DatabaseConnection, FileStore);
+            _assert.ShouldHaveAddedLibraryImage(_libraryId, _newImage);
         }
 
         [Test]
         public void ShouldSavePublicImage()
         {
-            LibraryAssert.ShouldHavePublicImage(_libraryId, DatabaseConnection);
+            _assert.ShouldHavePublicImage(_libraryId);
         }
     }
 }

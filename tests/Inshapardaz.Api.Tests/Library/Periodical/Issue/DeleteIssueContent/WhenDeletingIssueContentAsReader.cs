@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
         : TestBase
     {
         private HttpResponseMessage _response;
+        private IssueContentAssert _assert;
         private IssueContentDto _expected;
 
         public WhenDeletingIssueContentAsReader()
@@ -26,7 +28,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
             var issue = IssueBuilder.WithLibrary(LibraryId).WithContents(2).Build();
             _expected = IssueBuilder.Contents.PickRandom();
 
-            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents?language={_expected.Language}", _expected.MimeType);
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents/{_expected.Id}?language={_expected.Language}", _expected.MimeType);
+            _assert = Services.GetService<IssueContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -44,7 +47,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
         [Test]
         public void ShouldNotDeletedContent()
         {
-            IssueContentAssert.ShouldHaveIssueContent(_expected.Id, _expected.Language, _expected.MimeType, DatabaseConnection);
+            _assert.ShouldHaveIssueContent(_expected.Id, _expected.Language, _expected.MimeType);
         }
     }
 }

@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         private HttpResponseMessage _response;
 
         private IssueDto _issue;
-        private IssueContentDto _file;
+        private IssueContentDto _content;
         private byte[] _expected;
         private IssueContentAssert _assert;
 
@@ -31,11 +32,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         public async Task Setup()
         {
             _issue = IssueBuilder.WithLibrary(LibraryId).WithContents(2).Build();
-            _file = IssueBuilder.Contents.PickRandom();
+            _content = IssueBuilder.Contents.PickRandom();
 
             _expected = new Faker().Image.Random.Bytes(50);
-            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents", _expected, _file.Language, _file.MimeType);
-            _assert = new IssueContentAssert(_response, LibraryId);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents/ {_content.Id} ?language={_content.Language}", _expected, _content.MimeType);
+            _assert = Services.GetService<IssueContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -53,7 +54,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         [Test]
         public void ShouldHaveUpdatedFileContents()
         {
-            _assert.ShouldHaveIssueContent(_expected, DatabaseConnection, FileStore);
+            _assert.ShouldHaveIssueContent(_expected);
         }
     }
 }

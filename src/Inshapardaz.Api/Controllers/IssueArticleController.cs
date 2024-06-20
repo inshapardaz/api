@@ -122,9 +122,9 @@ public class IssueArticleController : Controller
     }
 
     [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/articles/{sequenceNumber}/contents", Name = nameof(IssueArticleController.GetIssueArticleContent))]
-    public async Task<IActionResult> GetIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, [FromQuery] string langauge, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> GetIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, [FromQuery] string language, CancellationToken token = default(CancellationToken))
     {
-        var query = new GetIssueArticleContentQuery(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, langauge);
+        var query = new GetIssueArticleContentQuery(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, language);
 
         var chapterContents = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
 

@@ -77,7 +77,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
                 };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_periodicalToUpdate.Id}", periodical);
-                _assert = PeriodicalAssert.WithResponse(_response);
+                _assert = Services.GetService<PeriodicalAssert>().ForResponse(_response).ForLibrary(LibraryId);
             }
 
             [OneTimeTearDown]
@@ -95,7 +95,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             [Test]
             public void ShouldNotUpdateTheCategories()
             {
-                _assert.ShouldHaveCategories(new List<CategoryDto> { _category }, DatabaseConnection, _periodicalToUpdate.Id);
+                _assert.ShouldHaveCategories(new List<CategoryDto> { _category }, _periodicalToUpdate.Id);
             }
         }
 
@@ -131,7 +131,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
                     Categories = new[] { new CategoryView { Id = category.Id } } };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_periodicalToUpdate.Id}", periodical);
-                _assert = PeriodicalAssert.WithResponse(_response);
+                _assert = Services.GetService<PeriodicalAssert>().ForResponse(_response);
             }
 
             [OneTimeTearDown]
@@ -150,7 +150,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             [Test]
             public void ShouldNotUpdateTheCategoroes()
             {
-                _assert.ShouldHaveCategories(new List<CategoryDto> { _category }, DatabaseConnection, _periodicalToUpdate.Id);
+                _assert.ShouldHaveCategories(new List<CategoryDto> { _category }, _periodicalToUpdate.Id);
             }
         }
     }

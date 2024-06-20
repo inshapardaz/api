@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
@@ -21,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
             _expected = authors.First();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/authors/{_expected.Id}");
-            _assert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<AuthorAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -69,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
         [Test]
         public void ShouldReturnCorrectAuthorData()
         {
-            _assert.ShouldHaveCorrectAuthorRetunred(_expected, DatabaseConnection);
+            _assert.ShouldHaveCorrectAuthorRetunred(_expected);
         }
     }
 }

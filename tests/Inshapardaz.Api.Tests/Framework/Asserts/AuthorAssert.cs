@@ -4,9 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
-using System.Data;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -19,24 +17,39 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         private int _libraryId;
 
         public HttpResponseMessage _response;
+        private readonly IAuthorTestRepository _authorRepository;
+        private readonly IBookTestRepository _bookRepository;
+        private readonly IArticleTestRepository _articleRepository;
+        private readonly FakeFileStorage _fileStorage;
+        private readonly IFileTestRepository _fileRepository;
 
-        private AuthorAssert(HttpResponseMessage response)
+        public AuthorAssert(IAuthorTestRepository authorRepository, 
+            IBookTestRepository bookRepository, 
+            IArticleTestRepository articleRepository, 
+            FakeFileStorage fileStorage, 
+            IFileTestRepository fileRepository)
+        {
+            _authorRepository = authorRepository;
+            _bookRepository = bookRepository;
+            _articleRepository = articleRepository;
+            _fileStorage = fileStorage;
+            _fileRepository = fileRepository;
+        }
+
+        public AuthorAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _author = response.GetContent<AuthorView>().Result;
+            return this;
         }
 
-        private AuthorAssert(AuthorView view)
+        public AuthorAssert ForView(AuthorView view)
         {
             _author = view;
+            return this;
         }
 
-        public static AuthorAssert WithResponse(HttpResponseMessage response)
-        {
-            return new AuthorAssert(response);
-        }
-
-        public AuthorAssert InLibrary(int libraryId)
+        public AuthorAssert ForLibrary(int libraryId)
         {
             _libraryId = libraryId;
             return this;
@@ -76,7 +89,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal AuthorAssert ShouldHaveCorrectImageLocationHeader(int authorId)
+        public AuthorAssert ShouldHaveCorrectImageLocationHeader(int authorId)
         {
             _response.Headers.Location.Should().NotBeNull();
             return this;
@@ -96,18 +109,21 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal void ShouldHavePublicImageLink()
+        public AuthorAssert ShouldHavePublicImageLink()
         {
             _author.Link("image")
                 .ShouldBeGet()
                 .Href.Should()
                 .NotBeNullOrEmpty();
             //.StartWith(Settings.CDNAddress);
+
+            return this;
         }
 
-        internal void ShouldNotHaveImageLink()
+        public AuthorAssert ShouldNotHaveImageLink()
         {
             _author.Link("image").Should().BeNull();
+            return this;
         }
 
         public AuthorAssert ShouldHaveDeleteLink()
@@ -118,20 +134,20 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal AuthorAssert WithBookCount(int count)
+        public AuthorAssert WithBookCount(int count)
         {
             _author.BookCount.Should().Be(count);
             return this;
         }
 
-        internal AuthorAssert ShouldBeSameAs(AuthorDto expected)
+        public AuthorAssert ShouldBeSameAs(AuthorDto expected)
         {
             _author.Should().NotBeNull();
             _author.Name.Should().Be(expected.Name);
             return this;
         }
 
-        internal AuthorAssert WithReadOnlyLinks()
+        public AuthorAssert WithReadOnlyLinks()
         {
             ShouldHaveSelfLink();
             ShouldHaveBooksLink();
@@ -142,7 +158,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal AuthorAssert WithEditableLinks(Role role)
+        public AuthorAssert WithEditableLinks(Role role)
         {
             ShouldHaveSelfLink();
             ShouldHaveBooksLink();
@@ -160,63 +176,67 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static AuthorAssert FromObject(AuthorView author)
-        {
-            return new AuthorAssert(author);
-        }
 
-        internal static void ShouldHaveUpdatedAuthorImage(int authorId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
+
+        public AuthorAssert ShouldHaveUpdatedAuthorImage(int authorId, byte[] newImage)
         {
-            var imageUrl = dbConnection.GetAuthorImageUrl(authorId);
+            var imageUrl = _authorRepository.GetAuthorImageUrl(authorId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
+            return this;
         }
 
-        internal static void ShouldHavePublicImage(int authorId, IDbConnection dbConnection)
+        public AuthorAssert ShouldHavePublicImage(int authorId)
         {
-            var image = dbConnection.GetAuthorImage(authorId);
+            var image = _authorRepository.GetAuthorImage(authorId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
+            return this;
         }
 
-        internal static void ShouldNotHaveUpdatedAuthorImage(int authorId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        public AuthorAssert ShouldNotHaveUpdatedAuthorImage(int authorId, byte[] newImage)
         {
-            var imageUrl = dbConnection.GetAuthorImageUrl(authorId);
+            var imageUrl = _authorRepository.GetAuthorImageUrl(authorId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotEqual(newImage);
+            return this;
         }
 
-        internal static void ShouldHaveAddedAuthorImage(int authorId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        public AuthorAssert ShouldHaveAddedAuthorImage(int authorId, byte[] newImage)
         {
-            var author = dbConnection.GetAuthorById(authorId);
+            var author = _authorRepository.GetAuthorById(authorId);
             author.ImageId.Should().NotBeNull();
-            var file = dbConnection.GetFileById(author.ImageId.Value);
-            file.FilePath.Should().Be($"{author.LibraryId}/authors/{author.Id}/image{Path.GetExtension(file.FileName)}");
-            var image = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
+            var file = _fileRepository.GetFileById(author.ImageId.Value);
+            file.FilePath.Should().Be($"authors/{author.Id}/image{Path.GetExtension(file.FileName)}");
+            var image = _fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty().And.Equal(newImage);
+            return this;
         }
 
-        internal static void ShouldHaveDeletedAuthorImage(int authorId, long imageId, string filePath, IDbConnection dbConnection, FakeFileStorage fileStorage)
+        public AuthorAssert ShouldHaveDeletedAuthorImage(int authorId, long imageId, string filePath)
         {
-            var image = dbConnection.GetAuthorImage(authorId);
+            var image = _authorRepository.GetAuthorImage(authorId);
             image.Should().BeNull();
-            var file = dbConnection.GetFileById(imageId);
+            var file = _fileRepository.GetFileById(imageId);
             file.Should().BeNull();
-            fileStorage.DoesFileExists(filePath).Should().BeFalse();
+            _fileStorage.DoesFileExists(filePath).Should().BeFalse();
+            return this;
         }
 
-        internal static void ShouldHaveDeletedAuthor(int authorId, IDbConnection dbConnection)
+        public AuthorAssert ShouldHaveDeletedAuthor(int authorId)
         {
-            var author = dbConnection.GetAuthorById(authorId);
+            var author = _authorRepository.GetAuthorById(authorId);
             author.Should().BeNull();
+            return this;
         }
 
-        internal static void ShouldNotHaveDeletedAuthor(int authorId, IDbConnection dbConnection)
+        public AuthorAssert ShouldNotHaveDeletedAuthor(int authorId)
         {
-            var author = dbConnection.GetAuthorById(authorId);
+            var author = _authorRepository.GetAuthorById(authorId);
             author.Should().NotBeNull();
+            return this;
         }
 
         public AuthorAssert ShouldNotHaveDeleteLink()
@@ -242,7 +262,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal AuthorAssert ShouldHaveCorrectLocationHeader()
+        public AuthorAssert ShouldHaveCorrectLocationHeader()
         {
             var location = _response.Headers.Location;
             location.Should().NotBeNull();
@@ -250,31 +270,22 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public AuthorAssert ShouldHaveSavedAuthor(IDbConnection dbConnection)
+        public AuthorAssert ShouldHaveSavedAuthor()
         {
-            var dbAuthor = dbConnection.GetAuthorById(_author.Id);
+            var dbAuthor = _authorRepository.GetAuthorById(_author.Id);
             dbAuthor.Should().NotBeNull();
             _author.Name.Should().Be(dbAuthor.Name);
             return this;
         }
 
-        public AuthorAssert ShouldHaveCorrectAuthorRetunred(AuthorDto author, IDbConnection dbConnection)
+        public AuthorAssert ShouldHaveCorrectAuthorRetunred(AuthorDto author)
         {
             _author.Should().NotBeNull();
             _author.Id.Should().Be(author.Id);
             _author.Name.Should().Be(author.Name);
-            _author.BookCount.Should().Be(dbConnection.GetBookCountByAuthor(_author.Id));
-            _author.ArticleCount.Should().Be(dbConnection.GetArticleCountByAuthor(_author.Id));
+            _author.BookCount.Should().Be(_bookRepository.GetBookCountByAuthor(_author.Id));
+            _author.ArticleCount.Should().Be(_articleRepository.GetArticleCountByAuthor(_author.Id));
             return this;
-        }
-    }
-
-    public static class AuthorAssertionExtensions
-    {
-        public static AuthorAssert ShouldMatch(this AuthorView view, AuthorDto dto)
-        {
-            return AuthorAssert.FromObject(view)
-                               .ShouldBeSameAs(dto);
         }
     }
 }

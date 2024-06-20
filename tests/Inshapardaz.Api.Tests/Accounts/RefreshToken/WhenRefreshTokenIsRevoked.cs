@@ -1,6 +1,5 @@
 ﻿using Inshapardaz.Api.Views.Accounts;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
 using System.Net.Http;
@@ -20,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
             var auth = await AccountBuilder.Authenticate(Client, account.Email);
             AuthenticateClientWithToken(auth.AccessToken);
             var _oldToken = auth.RefreshToken;
-            DatabaseConnection.RevokeRefreshToken(_oldToken);
+            AccountTestRepository.RevokeRefreshToken(_oldToken);
             _response = await Client.PostObject("/accounts/refresh-token", new RefreshTokenRequest { RefreshToken = RandomData.String });
         }
 

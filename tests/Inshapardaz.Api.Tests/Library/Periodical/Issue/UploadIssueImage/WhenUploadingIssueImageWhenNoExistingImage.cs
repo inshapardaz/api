@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
     public class WhenUploadingIssueImageWhenNoExistingImage : TestBase
     {
         private HttpResponseMessage _response;
-        private IssueAssert _issueAssert;
+        private IssueAssert _assert;
         private int _issueId;
 
         public WhenUploadingIssueImageWhenNoExistingImage()
@@ -26,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
             _issueId = issue.Id;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/image", RandomData.Bytes);
-            _issueAssert = IssueAssert.FromResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -45,19 +46,19 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            _issueAssert.ShouldHaveCorrectImageLocationHeader(_issueId);
+            _assert.ShouldHaveCorrectImageLocationHeader(_issueId);
         }
 
         [Test]
         public void ShouldHaveAddedImageToIssue()
         {
-            IssueAssert.ShouldHaveAddedIssueImage(DatabaseConnection, FileStore, _issueId);
+            _assert.ShouldHaveAddedIssueImage(_issueId);
         }
 
         [Test]
         public void ShouldHavePublicImage()
         {
-            IssueAssert.ShouldHavePublicImage(DatabaseConnection, _issueId);
+            _assert.ShouldHavePublicImage(_issueId);
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.DependencyModel;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using Microsoft.Extensions.DependencyModel;
 using System;
 using System.IO;
+using System.Net;
 
 namespace Inshapardaz.Domain.Helpers;
 
@@ -49,4 +51,20 @@ public static class FilePathHelper
 
     public static string GetArticleImagePath(long articleId, string fileName) => $"articles/{articleId}/{fileName}";
 
+    // Issue
+
+    public static string GetIssueContentFileName(string fileName) => $"{Guid.NewGuid().ToString("N")}{Path.GetExtension(fileName)}";
+
+    public static string GetIssueContentPath(int periodicalId, int volumeNumber, int issueNumber, string fileName)
+         => $"periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/files/{fileName}";
+
+    public static string IssuePageContentFileName => $"page-content-{Guid.NewGuid().ToString("N")}.md";
+
+    internal static string GetIssuePageContentPath(int periodicalId, int volumeNumber, int issueNumber, string fileName) 
+        => $"periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{fileName}";
+    // Issue Article
+
+    public static string GetIssueArticleContentFileName(string language) => $"article-{language}.md";
+
+    public static string GetIssueArticleContentPath(int periodicalId, int volumeNumber, int issueNumber, long articleId, string fileName) => $"periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/articles/{articleId}/{fileName}";
 }

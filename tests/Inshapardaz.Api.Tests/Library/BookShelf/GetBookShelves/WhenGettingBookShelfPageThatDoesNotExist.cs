@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
@@ -24,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
             BookShelfBuilder.WithLibrary(LibraryId).WithBooks(3).ForAccount(AccountId).Build(20);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/bookshelves?pageNumber=100&pageSize=10");
-            _assert = new PagingAssert<BookShelfView>(_response);
+            _assert = Services.GetService<PagingAssert<BookShelfView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]

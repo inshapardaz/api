@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -31,7 +32,8 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AssignArticleToUser
                 .WithStatus(EditingStatus.InReview)
                 .Build();
             _response = await Client.PostObject($"/libraries/{LibraryId}/articles/ {_article.Id}/assign", new { Type = "review" });
-            _assert = ArticleAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<ArticleAssert>().ForLibrary(LibraryId).ForResponse(_response);
+
         }
 
         [OneTimeTearDown]
@@ -58,8 +60,8 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AssignArticleToUser
         public void ShouldUpdateDatabaseWithAssignment()
         {
             _assert
-                .ShouldBeSavedNoAssignmentForWriting(DatabaseConnection)
-                .ShouldBeSavedAssignmentForReviewing(DatabaseConnection, Account);
+                .ShouldBeSavedNoAssignmentForWriting()
+                .ShouldBeSavedAssignmentForReviewing(Account);
         }
     }
 }

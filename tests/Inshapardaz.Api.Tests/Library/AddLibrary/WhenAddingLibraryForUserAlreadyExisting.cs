@@ -1,8 +1,8 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -34,14 +34,14 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
 
             _response = await Client.PostObject($"/libraries", _library);
             _returnedView = await _response.GetContent<LibraryView>();
-            _assert = LibraryAssert.FromResponse(_response, DatabaseConnection);
+            _assert = Services.GetService<LibraryAssert>().ForResponse(_response).ForLibrary(_returnedView.Id);
         }
 
         [OneTimeTearDown]
         public void Teardown()
         {
             Cleanup();
-            DatabaseConnection.DeleteLibrary(_returnedView.Id);
+            LibraryTestRepository.DeleteLibrary(_returnedView.Id);
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         [Test]
         public void ShouldHaveCreatedLibraryInDataStore()
         {
-            _assert.ShouldHaveCreatedLibrary(DatabaseConnection);
+            _assert.ShouldHaveCreatedLibrary();
         }
 
         [Test]

@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
             _newIssue = new IssueView { IssueDate = RandomData.Date };
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/volumes/1/issues/1", _newIssue);
 
-            _assert = IssueAssert.FromResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
             _newIssue.VolumeNumber = _newIssue.IssueNumber = 1;
         }
 
@@ -56,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
         [Test]
         public void ShouldSaveTheChapter()
         {
-            _assert.ShouldHaveSavedIssue(DatabaseConnection);
+            _assert.ShouldHaveSavedIssue();
         }
 
         [Test]

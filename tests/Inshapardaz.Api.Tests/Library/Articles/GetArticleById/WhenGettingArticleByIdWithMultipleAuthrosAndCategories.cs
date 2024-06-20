@@ -6,6 +6,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleById
@@ -36,7 +37,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleById
             _expected = article.PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/articles/{_expected.Id}");
-            _assert = ArticleAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<ArticleAssert>().ForLibrary(LibraryId).ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -97,7 +98,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleById
         [Test]
         public void ShouldReturnCorrectArticleData()
         {
-            _assert.ShouldBeSameAs(_expected, DatabaseConnection);
+            _assert.ShouldBeSameAs(_expected);
         }
     }
 }

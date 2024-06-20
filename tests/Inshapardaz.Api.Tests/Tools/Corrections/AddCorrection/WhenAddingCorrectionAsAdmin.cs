@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.DataBuilders;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Tools.Corrections.AddCorrection
             _correction = CorrectionBuilder.BuildCorrection();
 
             _response = await Client.PostObject($"/tools/{_correction.Language}/corrections/{_correction.Profile}", _correction);
-            _assert = CorrectionAssert.WithResponse(_response);
+            _assert = Services.GetService<CorrectionAssert>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -52,7 +53,7 @@ namespace Inshapardaz.Api.Tools.Corrections.AddCorrection
         [Test]
         public void ShouldHaveSavedCorrection()
         {
-            _assert.ShouldHaveSavedCorrection(DatabaseConnection);
+            _assert.ShouldHaveSavedCorrection();
         }
     }
 }

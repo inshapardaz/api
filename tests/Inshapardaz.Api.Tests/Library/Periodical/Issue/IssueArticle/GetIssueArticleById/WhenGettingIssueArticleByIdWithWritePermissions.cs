@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
             _expected = RandomData.PickRandom(articles);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_expected.SequenceNumber}");
-            _assert = IssueArticleAssert.FromResponse(_response, LibraryId, issue);
+            _assert = Services.GetService<IssueArticleAssert>().ForResponse(_response).ForLibrary(LibraryId).ForDto(issue);
         }
 
         [OneTimeTearDown]

@@ -6,6 +6,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
@@ -32,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals?category={_category.Id}&pageNumber=2&pageSize=10&query=itle");
 
-            _assert = new PagingAssert<PeriodicalView>(_response);
+            _assert = Services.GetService<PagingAssert<PeriodicalView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -74,8 +75,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
             {
                 var actual = _assert.Data.ElementAt(i);
                 var expected = expectedItems[i];
-                actual.ShouldMatch(expected, null, DatabaseConnection, LibraryId)
-                            .InLibrary(LibraryId);
+                Services.GetService<PeriodicalAssert>().ForView(actual).ForLibrary(LibraryId)
+                    .ShouldBeSameAs(expected);
             };
         }
     }

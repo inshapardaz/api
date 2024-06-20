@@ -1,8 +1,8 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -16,6 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
         : TestBase
     {
         private HttpResponseMessage _response;
+        private BookContentAssert _assert;
         private BookContentDto _expected;
 
         public WhenDeletingBookFileWithPermissions(Role role)
@@ -30,6 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
             _expected = BookBuilder.Contents.PickRandom();
             //_filePath = DatabaseConnection.GetFileById(_expected.FileId).FilePath;
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{book.Id}/contents/{_expected.Id}?language={_expected.Language}", _expected.MimeType);
+            _assert = Services.GetService<BookContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -47,7 +49,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
         [Test]
         public void ShouldHaveDeletedBookFile()
         {
-            BookContentAssert.ShouldNotHaveBookContent(_expected.BookId, _expected.Language, _expected.MimeType, DatabaseConnection);
+            _assert.ShouldNotHaveBookContent(_expected.BookId, _expected.Language, _expected.MimeType);
             FileAssert.FileDoesnotExist(_expected.FileId, _expected.FilePath);
         }
 
@@ -61,7 +63,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
                     continue;
                 }
 
-                BookContentAssert.ShouldHaveBookContent(item.BookId, item.Language, item.MimeType, DatabaseConnection);
+                _assert.ShouldHaveBookContent(item.BookId, item.Language, item.MimeType);
             }
         }
     }

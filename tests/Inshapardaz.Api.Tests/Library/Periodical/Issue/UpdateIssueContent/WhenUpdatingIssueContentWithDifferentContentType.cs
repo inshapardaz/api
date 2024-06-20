@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         private HttpResponseMessage _response;
         private string _newMimeType;
         private IssueDto _issue;
-        private IssueContentDto _file;
+        private IssueContentDto _content;
         private byte[] _contents;
         private IssueContentAssert _assert;
 
@@ -30,11 +31,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
             _newMimeType = "text/markdown";
 
             _issue = IssueBuilder.WithLibrary(LibraryId).WithContents(2, "application/pdf").Build();
-            _file = IssueBuilder.Contents.PickRandom();
+            _content = IssueBuilder.Contents.PickRandom();
 
             _contents = RandomData.Bytes;
-            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents", _contents, _file.Language, _newMimeType);
-            _assert = new IssueContentAssert(_response, LibraryId);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents/{_content.Id}?language={_content.Language}", _contents, _newMimeType);
+            _assert = Services.GetService<IssueContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -44,9 +45,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         }
 
         [Test]
-        public void ShouldHaveCreatedResult()
+        public void ShouldHaveOkResult()
         {
-            _response.ShouldBeCreated();
+            _response.ShouldBeOk();
         }
 
         [Test]
@@ -62,7 +63,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         [Test]
         public void ShouldHaveCorrectLanguage()
         {
-            _assert.ShouldHaveCorrectLanguage(_file.Language);
+            _assert.ShouldHaveCorrectLanguage(_content.Language);
         }
 
         [Test]
@@ -74,7 +75,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         [Test]
         public void ShouldHaveCorrectContentSaved()
         {
-            _assert.ShouldHaveCorrectContents(_contents, FileStore, DatabaseConnection, newMimeType: _newMimeType);
+            _assert.ShouldHaveCorrectContents(_contents, newMimeType: _newMimeType);
         }
     }
 }

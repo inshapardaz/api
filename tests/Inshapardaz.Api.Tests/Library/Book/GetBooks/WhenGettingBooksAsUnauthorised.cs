@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books");
 
-            _assert = new PagingAssert<BookView>(_response);
+            _assert = Services.GetService<PagingAssert<BookView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -73,8 +74,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
             {
                 var actual = _assert.Data.ElementAt(i);
                 var expected = expectedItems[i];
-                actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
-                            .InLibrary(LibraryId)
+                Services.GetService<BookAssert>().ForView(actual).ForLibrary(LibraryId)
+                            .ShouldBeSameAs(expected)
                             .ShouldHaveCorrectLinks()
                             .ShouldNotHaveEditLinks()
                             .ShouldNotHaveImageUpdateLink()
@@ -86,7 +87,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
                             .ShouldHavePublicImageLink()
                             .ShouldNotHaveAddFavoriteLink()
                             .ShouldNotHaveRemoveFavoriteLink()
-                            .ShouldHaveContents(DatabaseConnection, false);
+                            .ShouldHaveContents(false);
             }
         }
     }

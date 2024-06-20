@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
@@ -25,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
             SeriesBuilder.WithLibrary(LibraryId).WithBooks(3).WithNamePattern("SearchSeries").Build(20);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/series?query=SearchSeries&pageNumber=1&pageSize=10");
-            _assert = new PagingAssert<SeriesView>(_response);
+            _assert = Services.GetService<PagingAssert<SeriesView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -71,11 +72,12 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item)
-                      .InLibrary(LibraryId)
-                      .WithBookCount(3)
-                      .WithReadOnlyLinks()
-                      .ShouldHavePublicImageLink();
+                Services.GetService<SeriesAssert>().ForView(actual)
+                    .InLibrary(LibraryId)
+                    .ShouldBeSameAs(item)
+                    .WithBookCount(3)
+                    .WithReadOnlyLinks()
+                    .ShouldHavePublicImageLink();
             }
         }
     }

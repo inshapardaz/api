@@ -26,10 +26,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         public async Task Setup()
         {
             _issue = IssueBuilder.WithLibrary(LibraryId).WithContent().Build();
-            var file = IssueBuilder.Contents.PickRandom();
+            var content = IssueBuilder.Contents.PickRandom();
             _expected = new Faker().Image.Random.Bytes(50);
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents", _expected, file.Language, file.MimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents/{content.Id}?language={content.Language}", _expected, content.MimeType);
         }
 
         [OneTimeTearDown]

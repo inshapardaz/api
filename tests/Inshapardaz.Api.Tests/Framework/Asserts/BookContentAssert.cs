@@ -4,37 +4,46 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using System.Net.Http;
 using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    internal class BookContentAssert
+    public class BookContentAssert
     {
         private HttpResponseMessage _response;
-        private readonly int _libraryId;
+        private int _libraryId;
         private BookContentView _bookContent;
         private LibraryDto _library;
+        private readonly IBookTestRepository _bookRepository;
+        private readonly IFileTestRepository _fileRepository;
+        private readonly FakeFileStorage _fileStorage;
 
-        public BookContentAssert(HttpResponseMessage response, int libraryId)
+        public BookContentAssert(IBookTestRepository bookRepository,
+            IFileTestRepository fileRepository,
+            FakeFileStorage fileStorage)
         {
-            _response = response;
-            _libraryId = libraryId;
-            _bookContent = response.GetContent<BookContentView>().Result;
+            _bookRepository = bookRepository;
+            _fileRepository = fileRepository;
+            _fileStorage = fileStorage;
         }
 
-        public BookContentAssert(HttpResponseMessage response, LibraryDto library)
+        public BookContentAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
-            _libraryId = library.Id;
+            _bookContent = response.GetContent<BookContentView>().Result;
+            return this;
+        }
+
+        public BookContentAssert ForLibrary(LibraryDto library)
+        {
             _library = library;
-            _bookContent = response.GetContent<BookContentView>().Result;
+            _libraryId = library.Id;
+            return this;
         }
 
-        internal BookContentAssert ShouldHaveSelfLink()
+        public BookContentAssert ShouldHaveSelfLink()
         {
             _bookContent.SelfLink()
                   .ShouldBeGet()
@@ -43,45 +52,48 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookContentAssert WithReadOnlyLinks()
+        public BookContentAssert WithReadOnlyLinks()
         {
             ShouldNotHaveUpdateLink();
             ShouldNotHaveDeleteLink();
             return this;
         }
 
-        internal BookContentAssert WithWriteableLinks()
+        public BookContentAssert WithWriteableLinks()
         {
             ShouldHaveUpdateLink();
             ShouldHaveDeleteLink();
             return this;
         }
 
-        internal static void ShouldNotHaveBookContent(int bookId, string language, string mimeType, IDbConnection db)
+        public BookContentAssert ShouldNotHaveBookContent(int bookId, string language, string mimeType)
         {
-            var content = db.GetBookContent(bookId, language, mimeType);
+            var content = _bookRepository.GetBookContent(bookId, language, mimeType);
             content.Should().BeNull();
+            return this;
         }
 
-        internal static void ShouldHaveBookContent(int bookId, string language, string mimeType, IDbConnection db)
+        public BookContentAssert ShouldHaveBookContent(int bookId, string language, string mimeType)
         {
-            var content = db.GetBookContent(bookId, language, mimeType);
+            var content = _bookRepository.GetBookContent(bookId, language, mimeType);
             content.Should().NotBeNull();
+            return this;
         }
 
-        internal void ShouldHaveBookContent(byte[] expected, string fileName, IDbConnection db, FakeFileStorage fileStore)
+        public BookContentAssert ShouldHaveBookContent(byte[] expected, string fileName)
         {
-            var content = db.GetBookContent(_bookContent.BookId, _bookContent.Id);
+            var content = _bookRepository.GetBookContent(_bookContent.BookId, _bookContent.Id);
             content.Should().NotBeNull();
 
-            var file = db.GetFileById(content.FileId);
+            var file = _fileRepository.GetFileById(content.FileId);
             file.FileName.Should().Be(fileName);
-            fileStore.DoesFileExists(file.FilePath).Should().BeTrue();
-            var fileContent = fileStore.GetFile(file.FilePath, CancellationToken.None).Result;
+            _fileStorage.DoesFileExists(file.FilePath).Should().BeTrue();
+            var fileContent = _fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
             fileContent.Should().BeEquivalentTo(expected);
+            return this;
         }
 
-        internal BookContentAssert ShouldHaveUpdateLink()
+        public BookContentAssert ShouldHaveUpdateLink()
         {
             _bookContent.UpdateLink()
                  .ShouldBePut()
@@ -90,31 +102,31 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookContentAssert ShouldHaveCorrectLanguage(string locale)
+        public BookContentAssert ShouldHaveCorrectLanguage(string locale)
         {
             _bookContent.Language.Should().Be(locale);
             return this;
         }
 
-        internal BookContentAssert ShouldHaveCorrectMimeType(string mimeType)
+        public BookContentAssert ShouldHaveCorrectMimeType(string mimeType)
         {
             _bookContent.MimeType.Should().Be(mimeType);
             return this;
         }
 
-        internal BookContentAssert ShouldNotHaveUpdateLink()
+        public BookContentAssert ShouldNotHaveUpdateLink()
         {
             _bookContent.UpdateLink().Should().BeNull();
             return this;
         }
 
-        internal BookContentAssert ShouldHaveDefaultLibraryLanguage()
+        public BookContentAssert ShouldHaveDefaultLibraryLanguage()
         {
             _bookContent.Language.Should().Be(_library.Language);
             return this;
         }
 
-        internal BookContentAssert ShouldHaveCorrectLocationHeader()
+        public BookContentAssert ShouldHaveCorrectLocationHeader()
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
@@ -122,31 +134,31 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookContentAssert ShouldHaveCorrectContents(byte[] expected, IFileStorage fileStorage, IDbConnection dbConnection)
+        public BookContentAssert ShouldHaveCorrectContents(byte[] expected)
         {
-            var filePath = dbConnection.GetBookContentPath(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
-            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = _bookRepository.GetBookContentPath(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
+            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.NotEqual(expected);
             return this;
         }
 
-        internal BookContentAssert ShouldHaveCorrectContentsForMimeType(byte[] expected, string mimeType, IFileStorage fileStorage, IDbConnection dbConnection)
+        public BookContentAssert ShouldHaveCorrectContentsForMimeType(byte[] expected, string mimeType)
         {
-            var filePath = dbConnection.GetBookContentPath(_bookContent.BookId, _bookContent.Language, mimeType);
-            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = _bookRepository.GetBookContentPath(_bookContent.BookId, _bookContent.Language, mimeType);
+            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.NotEqual(expected);
             return this;
         }
 
-        internal BookContentAssert ShouldHaveCorrectContentsForLanguage(byte[] expected, string language, IFileStorage fileStorage, IDbConnection dbConnection)
+        public BookContentAssert ShouldHaveCorrectContentsForLanguage(byte[] expected, string language)
         {
-            var filePath = dbConnection.GetBookContentPath(_bookContent.BookId, language, _bookContent.MimeType);
-            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = _bookRepository.GetBookContentPath(_bookContent.BookId, language, _bookContent.MimeType);
+            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.NotEqual(expected);
             return this;
         }
 
-        internal BookContentAssert ShouldHavePrivateDownloadLink()
+        public BookContentAssert ShouldHavePrivateDownloadLink()
         {
             _bookContent.Link("download")
                            .ShouldBeGet();
@@ -154,7 +166,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookContentAssert ShouldHavePublicDownloadLink()
+        public BookContentAssert ShouldHavePublicDownloadLink()
         {
             _bookContent.Link("download")
                            .ShouldBeGet();
@@ -162,11 +174,11 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookContentAssert ShouldHaveSavedBookContent(IDbConnection dbConnection)
+        public BookContentAssert ShouldHaveSavedBookContent()
         {
-            var dbContent = dbConnection.GetBookContent(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
+            var dbContent = _bookRepository.GetBookContent(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
             dbContent.Should().NotBeNull();
-            var dbFile = dbConnection.GetFileById(dbContent.FileId);
+            var dbFile = _fileRepository.GetFileById(dbContent.FileId);
             _bookContent.BookId.Should().Be(dbContent.BookId);
             _bookContent.Language.Should().Be(dbContent.Language);
             _bookContent.MimeType.Should().Be(dbFile.MimeType);
@@ -174,7 +186,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookContentAssert ShouldHaveDeleteLink()
+        public BookContentAssert ShouldHaveDeleteLink()
         {
             _bookContent.DeleteLink()
                  .ShouldBeDelete()
@@ -183,13 +195,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal BookContentAssert ShouldNotHaveDeleteLink()
+        public BookContentAssert ShouldNotHaveDeleteLink()
         {
             _bookContent.DeleteLink().Should().BeNull();
             return this;
         }
 
-        internal BookContentAssert ShouldHaveBookLink()
+        public BookContentAssert ShouldHaveBookLink()
         {
             _bookContent.Link("book")
                 .ShouldBeGet()
@@ -198,40 +210,34 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        //internal BookContentAssert ShouldMatch( request, BookDto bookDto)
-        //{
-        //    _bookContent.BookId.Should().Be(bookDto.Id);
-        //    _bookContent.MimeType.Should().Be(request.MimeType());
-        //    _bookContent.Language.Should().Be(request.Language());
-        //    return this;
-        //}
-
-        internal BookContentAssert ShouldMatch(BookContentDto content, int bookId, IDbConnection dbConnection)
+        public BookContentAssert ShouldMatch(BookContentDto content, int bookId)
         {
             _bookContent.BookId.Should().Be(content.BookId);
             _bookContent.BookId.Should().Be(bookId);
             _bookContent.Language.Should().Be(content.Language);
 
-            var dbFile = dbConnection.GetFileById(content.FileId);
+            var dbFile = _fileRepository.GetFileById(content.FileId);
             _bookContent.MimeType.Should().Be(dbFile.MimeType);
 
             return this;
         }
 
-        internal static void ShouldHaveDeletedContent(IDbConnection dbConnection, BookFileDto content, string mimeType)
+        public BookContentAssert ShouldHaveDeletedContent(BookFileDto content, string mimeType)
         {
-            var dbContent = dbConnection.GetBookContent(content.Id, content.Language, mimeType);
+            var dbContent = _bookRepository.GetBookContent(content.Id, content.Language, mimeType);
             dbContent.Should().BeNull("Book contnet should be deleted");
 
-            var dbFile = dbConnection.GetFileById(content.FileId);
+            var dbFile = _fileRepository.GetFileById(content.FileId);
             dbFile.Should().BeNull("Files for content should be deleted");
+            return this;
         }
 
-        internal static void ShouldHaveLocationHeader(RedirectResult result, int libraryId, int bookId, BookFileDto content)
+        public BookContentAssert ShouldHaveLocationHeader(RedirectResult result, int libraryId, int bookId, BookFileDto content)
         {
             var response = result as RedirectResult;
             response.Url.Should().NotBeNull();
             response.Url.Should().EndWith($"libraries/{libraryId}/books/{bookId}/files");
+            return this;
         }
     }
 }

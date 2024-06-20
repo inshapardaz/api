@@ -4,7 +4,7 @@ using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public static class ResponseAsserts
+    public static class ResponseAssertExtensions
     {
         public static void ShouldBeOk(this HttpResponseMessage result)
         {

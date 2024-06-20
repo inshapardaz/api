@@ -5,6 +5,7 @@ using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
@@ -30,8 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
                 .Build(4);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/articles");
-
-            _assert = new PagingAssert<ArticleView>(_response);
+            _assert = Services.GetService<PagingAssert<ArticleView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -74,7 +74,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
             {
                 var actual = _assert.Data.ElementAt(i);
                 var expected = expectedItems[i];
-                actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
+                Services.GetService<ArticleAssert>().ForArticleView(actual).ForLibrary(LibraryId)
                             .ShouldHaveSelfLink()
                             .WithWriteableLinks()
                             .ShouldHaveImageUpdateLink()
@@ -82,7 +82,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
                             .ShouldHavePublicImageLink()
                             .ShouldHaveAddFavoriteLink()
                             .ShouldHaveContents(ArticleBuilder.Contents.Where(c => c.ArticleId == actual.Id).ToList(), true)
-                            .ShouldBeSameAs(expected, DatabaseConnection);
+                            .ShouldBeSameAs(expected);
             }
         }
     }

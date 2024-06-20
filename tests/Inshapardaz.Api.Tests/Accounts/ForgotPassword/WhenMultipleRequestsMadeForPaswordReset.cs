@@ -1,6 +1,5 @@
 ﻿using Inshapardaz.Api.Views.Accounts;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using FluentAssertions;
@@ -24,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ForgotPassword
 
             _response = await Client.PostObject("/accounts/forgot-password", new ForgotPasswordRequest() { Email = _account.Email });
 
-            _firstResetToken = DatabaseConnection.GetAccountById(_account.Id).ResetToken;
+            _firstResetToken = AccountTestRepository.GetAccountById(_account.Id).ResetToken;
 
             _response = await Client.PostObject("/accounts/forgot-password", new ForgotPasswordRequest() { Email = _account.Email });
         }
@@ -39,7 +38,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ForgotPassword
         public void ShouldCreateNewResetTokenForSecondRequest()
         {
             AccountAssert.AssertAccountHasResetToken(_account);
-            var dbToken = DatabaseConnection.GetAccountById(_account.Id).ResetToken;
+            var dbToken = AccountTestRepository.GetAccountById(_account.Id).ResetToken;
             dbToken.Should().NotBe(_firstResetToken);
         }
     }

@@ -2,9 +2,11 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticleContents
@@ -32,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
             _content = IssueBuilder.ArticleContents.Where(x => x.ArticleId == _article.Id).PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_article.SequenceNumber}/contents");
-            _assert = new IssueArticleContentAssert(_response, Library, _issue);
+            _assert = Services.GetService<IssueArticleContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -81,7 +83,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         [Test]
         public void ShouldHaveTextReturened()
         {
-            _assert.ShouldHaveText(_content.Text);
+            var file = FileTestRepository.GetFileById(_content.FileId.Value);
+            var fileText = FileStore.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            _assert.ShouldHaveText(fileText);
         }
 
         [Test]

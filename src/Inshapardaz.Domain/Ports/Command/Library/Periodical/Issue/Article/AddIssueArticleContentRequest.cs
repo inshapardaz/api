@@ -1,8 +1,10 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,17 +39,18 @@ public class AddArticleContentRequestHandler : RequestHandlerAsync<AddIssueArtic
 {
     private readonly IIssueRepository _issueRepository;
     private readonly IIssueArticleRepository _articleRepository;
-    private readonly IFileStorage _fileStorage;
     private readonly ILibraryRepository _libraryRepository;
-    private readonly IFileRepository _fileRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public AddArticleContentRequestHandler(IIssueRepository issueRepository, IIssueArticleRepository chapterRepository, IFileStorage fileStorage, ILibraryRepository libraryRepository, IFileRepository fileRepository)
+    public AddArticleContentRequestHandler(IIssueRepository issueRepository, 
+        IIssueArticleRepository chapterRepository, 
+        ILibraryRepository libraryRepository, 
+        IAmACommandProcessor commandProcessor)
     {
         _issueRepository = issueRepository;
         _articleRepository = chapterRepository;
-        _fileStorage = fileStorage;
         _libraryRepository = libraryRepository;
-        _fileRepository = fileRepository;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -74,15 +77,30 @@ public class AddArticleContentRequestHandler : RequestHandlerAsync<AddIssueArtic
 
         if (article != null)
         {
+            var fileName = FilePathHelper.GetIssueArticleContentFileName(command.Language);
+            var saveFileCommand = new SaveTextFileCommand(
+                fileName,
+                FilePathHelper.GetIssueArticleContentPath(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, article.Id, fileName),
+                command.Content)
+            {
+                MimeType = MimeTypes.Markdown,
+            };
+            await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+
             command.Result = await _articleRepository.AddArticleContent(
                 command.LibraryId,
-                command.PeriodicalId,
-                command.VolumeNumber,
-                command.IssueNumber,
-                command.SequenceNumber,
-                command.Language,
-                command.Content,
+                new IssueArticleContentModel
+                {
+                    PeriodicalId = command.PeriodicalId,
+                    VolumeNumber = command.VolumeNumber,
+                    IssueNumber = command.IssueNumber,
+                    SequenceNumber = command.SequenceNumber,
+                    Language = command.Language,
+                    FileId = saveFileCommand.Result.Id,
+                },
                 cancellationToken);
+
+            command.Result.Text = command.Content;
         }
 
         return await base.HandleAsync(command, cancellationToken);

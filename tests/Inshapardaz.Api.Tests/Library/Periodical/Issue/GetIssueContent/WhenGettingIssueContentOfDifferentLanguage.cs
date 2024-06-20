@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).WithContents(2).Build();
             var expected = IssueBuilder.Contents.PickRandom();
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents?language={expected.Language + "1"}", expected.MimeType);
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents//{expected.Id}?language={expected.Language + "1"}", expected.MimeType);
         }
 
         [OneTimeTearDown]

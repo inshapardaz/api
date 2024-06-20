@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
 using System.Threading;
@@ -30,10 +31,14 @@ public class GetIssuePageByNumberQuery : LibraryBaseQuery<IssuePageModel>
 public class GetIssuePageByNumberQueryHandler : QueryHandlerAsync<GetIssuePageByNumberQuery, IssuePageModel>
 {
     private readonly IIssuePageRepository _issuePageRepository;
+    private readonly IFileRepository _fileRepository;
+    private readonly IFileStorage _fileStorage;
 
-    public GetIssuePageByNumberQueryHandler(IIssuePageRepository issuePageRepository)
+    public GetIssuePageByNumberQueryHandler(IIssuePageRepository issuePageRepository, IFileRepository fileRepository, IFileStorage fileStorage)
     {
         _issuePageRepository = issuePageRepository;
+        _fileRepository = fileRepository;
+        _fileStorage = fileStorage;
     }
 
     public override async Task<IssuePageModel> ExecuteAsync(GetIssuePageByNumberQuery command, CancellationToken cancellationToken = new CancellationToken())
@@ -41,6 +46,16 @@ public class GetIssuePageByNumberQueryHandler : QueryHandlerAsync<GetIssuePageBy
         var page = await _issuePageRepository.GetPageBySequenceNumber(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
         if (page != null)
         {
+            if (page.FileId.HasValue)
+            {
+                var file = await _fileRepository.GetFileById(page.FileId.Value, cancellationToken);
+                if (file != null)
+                {
+                    var fc = await _fileStorage.GetTextFile(file.FilePath, cancellationToken);
+                    page.Text = fc;
+                }
+            }
+
             var previousPage = await _issuePageRepository.GetPageBySequenceNumber(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber - 1, cancellationToken);
             var nextPage = await _issuePageRepository.GetPageBySequenceNumber(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber + 1, cancellationToken);
 

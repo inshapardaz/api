@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
@@ -10,6 +11,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
     public class WhenUploadingBookShelfImageAsUnauthorized : TestBase
     {
         private HttpResponseMessage _response;
+        private BookShelfAssert _assert;
         private int _booKShelfId;
         private byte[] _newImage;
 
@@ -22,6 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
             _newImage = RandomData.Bytes;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/bookshelves/{_booKShelfId}/image", _newImage);
+            _assert = Services.GetService<BookShelfAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -39,7 +42,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
         [Test]
         public void ShouldNotHaveUpdatedBookShelfImage()
         {
-            BookShelfAssert.ShouldNotHaveUpdatedBookShelfImage(_booKShelfId, _newImage, DatabaseConnection, FileStore);
+            _assert.ShouldNotHaveUpdatedBookShelfImage(_booKShelfId, _newImage);
         }
     }
 }

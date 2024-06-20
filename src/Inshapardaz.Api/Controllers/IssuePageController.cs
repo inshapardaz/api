@@ -194,7 +194,7 @@ public class IssuePageController : Controller
 
         var model = page.Map();
 
-        var request = new UpdateIssuePageRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, _userHelper.AccountId, model);
+        var request = new UpdateIssuePageRequest(libraryId, model);
 
         await _commandProcessor.SendAsync(request, cancellationToken: token);
 

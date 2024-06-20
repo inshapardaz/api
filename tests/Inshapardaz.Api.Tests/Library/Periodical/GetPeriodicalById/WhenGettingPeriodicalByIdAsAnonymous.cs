@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicalById
@@ -24,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicalById
             _expected = periodicals.PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_expected.Id}");
-            _assert = PeriodicalAssert.WithResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<PeriodicalAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -69,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicalById
         [Test]
         public void ShouldReturnCorrectPeriodicalData()
         {
-            _assert.ShouldBeSameAs(_expected, 3, DatabaseConnection);
+            _assert.ShouldBeSameAs(_expected, 3);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -26,7 +27,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UploadPeriodicalImage
             _periodicalId = periodical.Id;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_periodicalId}/image", RandomData.Bytes);
-            _assert = PeriodicalAssert.WithResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<PeriodicalAssert>().ForResponse(_response)
+                    .ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -51,13 +53,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UploadPeriodicalImage
         [Test]
         public void ShouldHaveAddedImageToPeriodical()
         {
-            PeriodicalAssert.ShouldHaveAddedPeriodicalImage(_periodicalId, DatabaseConnection, FileStore);
+            _assert.ShouldHaveAddedPeriodicalImage(_periodicalId);
         }
 
         [Test]
         public void ShouldHaveImage()
         {
-            PeriodicalAssert.ShouldHavePublicImage(_periodicalId, DatabaseConnection);
+            _assert.ShouldHavePublicImage(_periodicalId);
         }
     }
 }

@@ -2,6 +2,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
             _issues = IssueBuilder.WithLibrary(LibraryId).WithPeriodical(_periodical.Id).WithContent().Build(15);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/issues?sortBy=VolumeNumberAndIssueNumber&sortdirection=descending&pageNumber=2&pageSize=5");
-            _assert = new PagingAssert<IssueView>(_response);
+            _assert = Services.GetService<PagingAssert<IssueView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -87,15 +88,14 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
                 var expected = expectedItems[i];
                 var pages = IssueBuilder.GetPages(expected.Id);
                 var articles = IssueBuilder.GetArticles(expected.Id);
-                var assert = new IssueAssert(actual).InLibrary(LibraryId);
-                assert.ShouldBeSameAs(DatabaseConnection, expected, articles.Count(), pages.Count())
-                   .ShouldHaveUpdateLink()
-                   .ShouldHaveDeleteLink()
-                   .ShouldHaveCreateArticlesLink()
-                   .ShouldHaveCreatePageLink()
-                   .ShouldHaveAddContentLink();
-
-                assert.ShouldHaveCorrectContents(DatabaseConnection);
+                var assert = Services.GetService<IssueAssert>().ForView(actual).ForLibrary(LibraryId)
+                    .ShouldBeSameAs(expected, articles.Count(), pages.Count())
+                    .ShouldHaveUpdateLink()
+                    .ShouldHaveDeleteLink()
+                    .ShouldHaveCreateArticlesLink()
+                    .ShouldHaveCreatePageLink()
+                    .ShouldHaveAddContentLink()
+                    .ShouldHaveCorrectContents();
             }
         }
 

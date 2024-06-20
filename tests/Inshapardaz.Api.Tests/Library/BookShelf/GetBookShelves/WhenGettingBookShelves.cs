@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
@@ -24,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
             BookShelfBuilder.WithLibrary(LibraryId).WithBooks(3).ForAccount(AccountId).Build(4);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/bookshelves");
-            _assert = new PagingAssert<BookShelfView>(_response);
+            _assert = Services.GetService<PagingAssert<BookShelfView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -65,11 +66,11 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item)
-                            .InLibrary(LibraryId)
-                            .WithBookCount(3)
-                            .WithEditableLinks()
-                            .ShouldHavePublicImageLink();
+                Services.GetService<BookShelfAssert>().ForView(actual).ForLibrary(LibraryId)
+                    .ShouldBeSameAs(item)
+                    .WithBookCount(3)
+                    .WithEditableLinks()
+                    .ShouldHavePublicImageLink();
             }
         }
     }

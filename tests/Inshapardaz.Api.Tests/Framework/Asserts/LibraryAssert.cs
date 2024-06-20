@@ -6,7 +6,6 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters;
-using System.Data;
 using System.Net.Http;
 using System.Threading;
 
@@ -17,38 +16,55 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         private HttpResponseMessage _response;
         private LibraryView _view;
         private int _libraryId;
+        private readonly ILibraryTestRepository _libraryRepository;
+        private readonly IFileTestRepository _fileRepository;
+        private readonly IAuthorTestRepository _authorRepository;
+        private readonly ICategoryTestRepository _categoryRepository;
+        private readonly ISeriesTestRepository _seriesRepository;
+        private readonly FakeFileStorage _fileStorage;
 
-        public LibraryAssert(HttpResponseMessage response, int libraryId)
+        public LibraryAssert(ILibraryTestRepository libraryRepository,
+            IFileTestRepository fileRepository,
+            IAuthorTestRepository authorRepository,
+            ICategoryTestRepository categoryRepository,
+            FakeFileStorage fileStorage,
+            ISeriesTestRepository seriesRepository)
+        {
+            _libraryRepository = libraryRepository;
+            _fileRepository = fileRepository;
+            _authorRepository = authorRepository;
+            _categoryRepository = categoryRepository;
+            _fileStorage = fileStorage;
+            _seriesRepository = seriesRepository;
+        }
+        public LibraryAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _view = _response.GetContent<LibraryView>().Result;
-            _libraryId = libraryId;
+            return this;
         }
 
-        public LibraryAssert(LibraryView view, int libraryId)
+        public LibraryAssert ForView(LibraryView view)
         {
-            _libraryId = libraryId;
             _view = view;
+            return this;
         }
 
-        public static LibraryAssert FromResponse(HttpResponseMessage response, IDbConnection databaseConnection)
+        public LibraryAssert ForLibrary(int libraryId)
         {
-            var view = response.GetContent<LibraryView>().Result;
-            return new LibraryAssert(response, databaseConnection.GetLibrary(view).Id);
+            _libraryId = libraryId;
+            return this;
         }
 
-        public static LibraryAssert FromResponse(HttpResponseMessage response, int libraryId)
-        {
-            return new LibraryAssert(response, libraryId);
-        }
 
-        internal static void ShouldHaveDeletedLibrary(int libraryId, IDbConnection databaseConnection)
+        public LibraryAssert ShouldHaveDeletedLibrary(int libraryId)
         {
-            var dbLibrary = databaseConnection.GetLibraryById(libraryId);
+            var dbLibrary = _libraryRepository.GetLibraryById(libraryId);
             dbLibrary.Should().BeNull();
+            return this;
         }
 
-        internal LibraryAssert ShouldHaveCorrectLocationHeader()
+        public LibraryAssert ShouldHaveCorrectLocationHeader()
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
@@ -56,9 +72,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal LibraryAssert ShouldHaveCreatedLibrary(IDbConnection databaseConnection)
+        public LibraryAssert ShouldHaveCreatedLibrary()
         {
-            var library = databaseConnection.GetLibrary(_view);
+            var library = _libraryRepository.GetLibrary(_view);
             library.Name.Should().Be(_view.Name);
             library.Language.Should().Be(_view.Language);
             library.SupportsPeriodicals.Should().Be(_view.SupportsPeriodicals);
@@ -71,9 +87,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal LibraryAssert ShouldHaveCreatedLibraryWithConfiguration(IDbConnection databaseConnection)
+        public LibraryAssert ShouldHaveCreatedLibraryWithConfiguration()
         {
-            var library = databaseConnection.GetLibrary(_view);
+            var library = _libraryRepository.GetLibrary(_view);
             library.Name.Should().Be(_view.Name);
             library.Language.Should().Be(_view.Language);
             library.SupportsPeriodicals.Should().Be(_view.SupportsPeriodicals);
@@ -86,15 +102,15 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal LibraryAssert WithWritableLinks()
+        public LibraryAssert WithWritableLinks()
         {
             return ShouldHaveUpdateLink()
                 .ShouldHaveDeleteLink();
         }
 
-        internal void ShouldHaveUpdatedLibrary(IDbConnection databaseConnection)
+        public LibraryAssert ShouldHaveUpdatedLibrary()
         {
-            var dbLibrary = databaseConnection.GetLibraryById(_libraryId);
+            var dbLibrary = _libraryRepository.GetLibraryById(_libraryId);
             _view.Name.Should().Be(dbLibrary.Name);
             _view.Language.Should().Be(dbLibrary.Language);
             _view.SupportsPeriodicals.Should().Be(dbLibrary.SupportsPeriodicals);
@@ -102,31 +118,34 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _view.SecondaryColor.Should().Be(dbLibrary.SecondaryColor);
             _view.FileStoreType.ToEnum<FileStoreTypes>(FileStoreTypes.Unknown).Should().Be(dbLibrary.FileStoreType.ToEnum<FileStoreTypes>(FileStoreTypes.Unknown));
             _view.FileStoreSource.Should().Be(dbLibrary.FileStoreSource);
+            return this;
         }
 
-        internal void ShouldHaveUpdatedLibraryWithoutConfiguration(IDbConnection databaseConnection)
+        public LibraryAssert ShouldHaveUpdatedLibraryWithoutConfiguration()
         {
-            var dbLibrary = databaseConnection.GetLibraryById(_libraryId);
+            var dbLibrary = _libraryRepository.GetLibraryById(_libraryId);
             _view.Name.Should().Be(dbLibrary.Name);
             _view.Language.Should().Be(dbLibrary.Language);
             _view.SupportsPeriodicals.Should().Be(dbLibrary.SupportsPeriodicals);
             _view.PrimaryColor.Should().Be(dbLibrary.PrimaryColor);
             _view.SecondaryColor.Should().Be(dbLibrary.SecondaryColor);
+            return this;
         }
 
-        public void ShouldBeSameAs(LibraryView expectedLibrary)
+        public LibraryAssert ShouldBeSameAs(LibraryView expectedLibrary)
         {
             _view.Name.Should().Be(expectedLibrary.Name);
             _view.Language.Should().Be(expectedLibrary.Language);
             _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
             _view.PrimaryColor.Should().Be(expectedLibrary.PrimaryColor);
             _view.SecondaryColor.Should().Be(expectedLibrary.SecondaryColor);
-            _view.DatabaseConnection.Should().Be("*****");
+            _view.DatabaseConnection.Should().Be(expectedLibrary.DatabaseConnection);
             _view.FileStoreType.Should().Be(expectedLibrary.FileStoreType);
             _view.FileStoreSource.Should().Be(expectedLibrary.FileStoreSource);
+            return this;
         }
 
-        public void ShouldBeSameWithNoConfiguration(LibraryView expectedLibrary)
+        public LibraryAssert ShouldBeSameWithNoConfiguration(LibraryView expectedLibrary)
         {
             _view.Name.Should().Be(expectedLibrary.Name);
             _view.Language.Should().Be(expectedLibrary.Language);
@@ -136,6 +155,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _view.DatabaseConnection.Should().BeNull();
             _view.FileStoreType.Should().BeNull();
             _view.FileStoreSource.Should().BeNull();
+            return this;
         }
 
         public LibraryAssert ShouldBeSameAs(LibraryDto expectedLibrary)
@@ -336,61 +356,46 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static LibraryAssert FromObject(LibraryView view, int libraryId)
+        public LibraryAssert ShouldNotHaveUpdatedLibraryImage(int libraryId, byte[] newImage)
         {
-            return new LibraryAssert(view, libraryId);
-        }
-
-        internal static void ShouldNotHaveUpdatedLibraryImage(int libraryId, byte[] newImage, IDbConnection databaseConnection, FakeFileStorage fileStore)
-        {
-            var imageUrl = databaseConnection.GetLibraryImageUrl(libraryId);
+            var imageUrl = _libraryRepository.GetLibraryImageUrl(libraryId);
             imageUrl.Should().NotBeNull();
-            var image = fileStore.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotEqual(newImage);
+            return this;
         }
 
-        internal void ShouldHaveCorrectImageLocationHeader(int libraryId)
+        public LibraryAssert ShouldHaveCorrectImageLocationHeader(int libraryId)
         {
             _response.Headers.Location.Should().NotBeNull();
+            return this;
         }
 
-        internal static void ShouldHaveAddedLibraryImage(int libraryId, byte[] newImage, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public LibraryAssert ShouldHaveAddedLibraryImage(int libraryId, byte[] newImage)
         {
-            var imageUrl = databaseConnection.GetLibraryImageUrl(libraryId);
+            var imageUrl = _libraryRepository.GetLibraryImageUrl(libraryId);
             imageUrl.Should().NotBeNull();
-            var image = fileStore.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty().And.Equal(newImage);
+            return this;
         }
 
-        internal static void ShouldHavePublicImage(int libraryId, IDbConnection databaseConnection)
+        public LibraryAssert ShouldHavePublicImage(int libraryId)
         {
-            var image = databaseConnection.GetLibraryImage(libraryId);
+            var image = _libraryRepository.GetLibraryImage(libraryId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
+            return this;
         }
 
-        internal static void ShouldHaveUpdatedImage(int libraryId, byte[] newImage, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public LibraryAssert ShouldHaveUpdatedImage(int libraryId, byte[] newImage)
         {
-            var imageUrl = databaseConnection.GetLibraryImageUrl(libraryId);
+            var imageUrl = _libraryRepository.GetLibraryImageUrl(libraryId);
             imageUrl.Should().NotBeNull();
-            var image = fileStore.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
+            return this;
         }
 
-    }
-
-    internal static class LibraryAssertionExtensions
-    {
-        internal static LibraryAssert ShouldMatch(this LibraryView view, LibraryDto dto)
-        {
-            return LibraryAssert.FromObject(view, dto.Id)
-                               .ShouldBeSameAs(dto);
-        }
-
-        internal static LibraryAssert ShouldMatchWithNoConfiguration(this LibraryView view, LibraryDto dto)
-        {
-            return LibraryAssert.FromObject(view, dto.Id)
-                               .ShouldBeSameWithNoConfiguration(dto);
-        }
     }
 }

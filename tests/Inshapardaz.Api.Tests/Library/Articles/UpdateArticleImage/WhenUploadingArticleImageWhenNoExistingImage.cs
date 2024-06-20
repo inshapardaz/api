@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleImage
     public class WhenUploadingArticleImageWhenNoExistingImage : TestBase
     {
         private HttpResponseMessage _response;
-        private ArticleAssert _articleAssert;
+        private ArticleAssert _assert;
         private long _articleId;
 
         public WhenUploadingArticleImageWhenNoExistingImage()
@@ -26,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleImage
             _articleId = article.Id;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/articles/{_articleId}/image", RandomData.Bytes);
-            _articleAssert = ArticleAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<ArticleAssert>().ForLibrary(LibraryId).ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -45,13 +46,13 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleImage
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            _articleAssert.ShouldHaveCorrectImageLocationHeader(_articleId);
+            _assert.ShouldHaveCorrectImageLocationHeader(_articleId);
         }
 
         [Test]
         public void ShouldHaveAddedImageToArticle()
         {
-            ArticleAssert.ShouldHaveAddedArticleImage(_articleId, DatabaseConnection, FileStore);
+            _assert.ShouldHaveAddedArticleImage(_articleId);
         }
     }
 }

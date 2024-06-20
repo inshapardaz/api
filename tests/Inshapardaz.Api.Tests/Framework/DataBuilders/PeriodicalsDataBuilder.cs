@@ -9,7 +9,6 @@ using Inshapardaz.Api.Views.Library;
 using RandomData = Inshapardaz.Api.Tests.Framework.Helpers.RandomData;
 using Inshapardaz.Domain.Models.Library;
 using Bogus;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
@@ -17,7 +16,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
     public class PeriodicalsDataBuilder
     {
-        private readonly IDbConnection _connection;
         private readonly CategoriesDataBuilder _categoriesBuilder;
 
         private readonly FakeFileStorage _fileStorage;
@@ -37,12 +35,24 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public IEnumerable<PeriodicalDto> Periodicals => _periodicals;
 
-        public PeriodicalsDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage,
-                                CategoriesDataBuilder categoriesBuilder)
+        private IFileTestRepository _fileRepository;
+        private IPeriodicalTestRepository _periodicalRepository;
+        private IIssueTestRepository _issueRepository;
+        private ICategoryTestRepository _categoryRepository;
+
+        public PeriodicalsDataBuilder(IFileStorage fileStorage,
+                                CategoriesDataBuilder categoriesBuilder,
+                                IFileTestRepository fileRepository,
+                                IPeriodicalTestRepository periodicalRepository,
+                                IIssueTestRepository issueRepository,
+                                ICategoryTestRepository categoryRepository)
         {
-            _connection = connectionProvider.GetConnection();
             _fileStorage = fileStorage as FakeFileStorage;
             _categoriesBuilder = categoriesBuilder;
+            _fileRepository = fileRepository;
+            _periodicalRepository = periodicalRepository;
+            _issueRepository = issueRepository;
+            _categoryRepository = categoryRepository;
         }
 
         public PeriodicalsDataBuilder WithCategories(int categoriesCount = 1)
@@ -127,11 +137,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                    _connection.AddFile(bookImage);
+                    _fileRepository.AddFile(bookImage);
 
                     _files.Add(bookImage);
                     _fileStorage.SetupFileContents(bookImage.FilePath, RandomData.Bytes);
-                    _connection.AddFile(bookImage);
 
                     periodical.ImageId = bookImage.Id;
                 }
@@ -140,13 +149,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                     periodical.ImageId = null;
                 }
 
-                _connection.AddPeriodical(periodical);
+                _periodicalRepository.AddPeriodical(periodical);
 
 
                 var issues = fixture.Build<IssueDto>()
                     .With(x => x.PeriodicalId, periodical.Id)
                     .CreateMany(_issueCount);
-                _connection.AddIssues(issues);
+                _issueRepository.AddIssues(issues);
                 _issues.AddRange(issues);
 
                 IEnumerable<CategoryDto> categories;
@@ -161,7 +170,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 }
 
                 if (categories != null && categories.Any())
-                    _connection.AddPeriodicalToCategories(periodical.Id, categories);
+                    _categoryRepository.AddPeriodicalToCategories(periodical.Id, categories);
             }
 
             return _periodicals;
@@ -169,9 +178,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _connection.DeletePeriodicals(_periodicals);
-            _connection.DeleteIssues(_issues);
-            _connection.DeleteFiles(_files);
+            _issueRepository.DeleteIssues(_issues);
+            _fileRepository.DeleteFiles(_files);
+            _periodicalRepository.DeletePeriodicals(_periodicals);
             _categoriesBuilder.CleanUp();
         }
     }

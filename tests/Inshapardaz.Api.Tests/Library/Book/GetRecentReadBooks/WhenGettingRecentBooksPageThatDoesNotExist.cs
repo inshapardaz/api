@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -29,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
                                        .Build(25);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=3&pageSize=10&read=true");
-            _assert = new PagingAssert<BookView>(_response);
+            _assert = Services.GetService<PagingAssert<BookView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]

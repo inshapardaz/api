@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
             _contents = RandomData.String;
 
             _response = await Client.PostString($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_article.SequenceNumber}/contents?language={RandomData.Locale}", _contents);
-            _assert = new IssueArticleContentAssert(_response, Library, issue);
+            _assert = Services.GetService<IssueArticleContentAssert>().ForResponse(_response).ForIssue(issue).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -58,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
         [Test]
         public void ShouldSaveTheArticleContent()
         {
-            _assert.ShouldHaveSavedArticleContent(DatabaseConnection);
+            _assert.ShouldHaveSavedArticleContent();
         }
 
         [Test]
@@ -70,7 +71,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
         [Test]
         public void ShouldHaveCorrectTextSaved()
         {
-            _assert.ShouldHaveSavedCorrectText(_contents, DatabaseConnection);
+            _assert.ShouldHaveSavedCorrectText(_contents);
         }
 
         [Test]

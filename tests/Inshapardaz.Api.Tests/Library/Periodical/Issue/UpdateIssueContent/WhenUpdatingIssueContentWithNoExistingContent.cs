@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -33,8 +34,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
             _issue = IssueBuilder.WithLibrary(LibraryId).Build();
             _contents = RandomData.Bytes;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents", _contents, _locale, _mimeType);
-            _assert = new IssueContentAssert(_response, LibraryId);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents/{-RandomData.Number}?language={_locale}", _contents, _mimeType);
+            _assert = Services.GetService<IssueContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -74,7 +75,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         [Test]
         public void ShouldHaveCorrectContentSaved()
         {
-            _assert.ShouldHaveCorrectContents(_contents, FileStore, DatabaseConnection, _locale, _mimeType);
+            _assert.ShouldHaveCorrectContents(_contents, _locale, _mimeType);
         }
     }
 }

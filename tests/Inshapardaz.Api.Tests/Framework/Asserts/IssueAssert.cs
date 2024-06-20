@@ -1,11 +1,10 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
+using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters.Repositories;
 using System;
-using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -18,23 +17,36 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         private IssueView _view;
         private int _libraryId;
 
-        public IssueAssert(HttpResponseMessage response)
+        private readonly IIssueTestRepository _issueRepository;
+        private readonly IIssuePageTestRepository _issuePageRepository;
+        private readonly IIssueArticleTestRepository _articleRepository;
+        private readonly FakeFileStorage _fileStorage;
+
+        public IssueAssert(IIssueTestRepository issueRepository,
+            IIssueArticleTestRepository articleRepository,
+            IIssuePageTestRepository pageRepository,
+            FakeFileStorage fileStorage)
+        {
+            _issueRepository = issueRepository;
+            _articleRepository = articleRepository;
+            _fileStorage = fileStorage;
+            _issuePageRepository = pageRepository;
+        }
+
+        public IssueAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _view = response.GetContent<IssueView>().Result;
+            return this;
         }
 
-        public IssueAssert(IssueView view)
+        public IssueAssert ForView(IssueView view)
         {
             _view = view;
+            return this;
         }
 
-        public static IssueAssert FromResponse(HttpResponseMessage response)
-        {
-            return new IssueAssert(response);
-        }
-
-        public IssueAssert InLibrary(int libraryId)
+        public IssueAssert ForLibrary(int libraryId)
         {
             _libraryId = libraryId;
             return this;
@@ -58,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal IssueAssert ShouldHaveCorrectImageLocationHeader(int issueId)
+        public IssueAssert ShouldHaveCorrectImageLocationHeader(int issueId)
         {
             _response.Headers.Location.AbsoluteUri.Should().NotBeEmpty();
             return this;
@@ -171,7 +183,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal IssueAssert ShouldHaveImageLink()
+        public IssueAssert ShouldHaveImageLink()
         {
             _view.Link("image").ShouldBeGet();
             return this;
@@ -207,9 +219,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssueAssert ShouldHaveCorrectContentsLink(IDbConnection db)
+        public IssueAssert ShouldHaveCorrectContentsLink()
         {
-            var contents = db.GetIssueContents(_view.Id);
+            var contents = _issueRepository.GetIssueContents(_view.Id);
 
             contents.Should().HaveSameCount(_view.Contents);
 
@@ -221,9 +233,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssueAssert ShouldHaveCorrectContents(IDbConnection db)
+        public IssueAssert ShouldHaveCorrectContents()
         {
-            var contents = db.GetIssueContents(_view.Id);
+            var contents = _issueRepository.GetIssueContents(_view.Id);
 
             contents.Should().HaveSameCount(_view.Contents);
 
@@ -241,12 +253,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         }
 
 
-        internal void ShouldHaveContentLink(IssueContentDto content)
+        public IssueAssert ShouldHaveContentLink(IssueContentDto content)
         {
             var actual = _view.Contents.Single(x => x.Id == content.Id);
             actual.SelfLink()
                   .ShouldBeGet()
                   .ShouldHaveAcceptLanguage(content.Language);
+            return this;
         }
 
 
@@ -258,15 +271,15 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal IssueAssert ShouldHaveImageLocationHeader()
+        public IssueAssert ShouldHaveImageLocationHeader()
         {
             _response.Headers.Location.AbsoluteUri.Should().NotBeEmpty();
             return this;
         }
 
-        internal IssueAssert ShouldHaveSavedIssue(IDbConnection dbConnection)
+        public IssueAssert ShouldHaveSavedIssue()
         {
-            var dbIssue = dbConnection.GetIssueById(_view.Id);
+            var dbIssue = _issueRepository.GetIssueById(_view.Id);
             dbIssue.Should().NotBeNull();
             _view.VolumeNumber.Should().Be(dbIssue.VolumeNumber);
             _view.IssueNumber.Should().Be(dbIssue.IssueNumber);
@@ -275,31 +288,35 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static void ShouldHaveDeletedIssue(IDbConnection dbConnection, int issueId)
+        public IssueAssert ShouldHaveDeletedIssue(int issueId)
         {
-            var dbIssue = dbConnection.GetIssueById(issueId);
+            var dbIssue = _issueRepository.GetIssueById(issueId);
             dbIssue.Should().BeNull();
+            return this;
         }
 
-        internal static void ShouldHaveDeletedIssueImage(IDbConnection dbConnection, int issueId)
+        public IssueAssert ShouldHaveDeletedIssueImage(int issueId)
         {
-            var issueImage = dbConnection.GetIssueImage(issueId);
+            var issueImage = _issueRepository.GetIssueImage(issueId);
             issueImage.Should().BeNull();
+            return this;
         }
 
-        internal static void ShouldHaveDeletedArticlesForIssue(IDbConnection dbConnection, int issueId)
+        public IssueAssert ShouldHaveDeletedArticlesForIssue(int issueId)
         {
-            var articles = dbConnection.GetIssueArticlesByIssue(issueId);
+            var articles = _articleRepository.GetIssueArticlesByIssue(issueId);
             articles.Should().BeNullOrEmpty();
+            return this;
         }
 
-        internal static void ShouldHaveDeletedPagesForIssue(IDbConnection dbConnection, int issueId)
+        public IssueAssert ShouldHaveDeletedPagesForIssue(int issueId)
         {
-            var pages = dbConnection.GetIssuePagesByIssue(issueId);
+            var pages = _issuePageRepository.GetIssuePagesByIssue(issueId);
             pages.Should().BeNullOrEmpty();
+            return this;
         }
 
-        internal IssueAssert ShouldMatch(IssueView expected, int? articleCount = null, int? pageCount = null)
+        public IssueAssert ShouldMatch(IssueView expected, int? articleCount = null, int? pageCount = null)
         {
             _view.Should().NotBeNull();
             _view.VolumeNumber.Should().Be(expected.VolumeNumber);
@@ -318,7 +335,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal IssueAssert ShouldBeSameAs(IDbConnection db, IssueDto expected, int? articleCount = null, int? pageCount = null)
+        public IssueAssert ShouldBeSameAs(IssueDto expected, int? articleCount = null, int? pageCount = null)
         {
             _view.Should().NotBeNull();
             _view.VolumeNumber.Should().Be(expected.VolumeNumber);
@@ -337,50 +354,39 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static void ShouldNotHaveUpdatedIssueImage(IDbConnection dbConnection, IFileStorage fileStorage, int issueId, byte[] oldImage)
+        public IssueAssert ShouldNotHaveUpdatedIssueImage(int issueId, byte[] oldImage)
         {
-            var imageUrl = dbConnection.GetIssueImageUrl(issueId);
+            var imageUrl = _issueRepository.GetIssueImageUrl(issueId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().Equal(oldImage);
+            return this;
         }
 
-        internal static void ShouldHaveAddedIssueImage(IDbConnection dbConnection, IFileStorage fileStorage, int issueId)
+        public IssueAssert ShouldHaveAddedIssueImage(int issueId)
         {
-            var imageUrl = dbConnection.GetIssueImageUrl(issueId);
+            var imageUrl = _issueRepository.GetIssueImageUrl(issueId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty();
+            return this;
         }
 
-        internal static void ShouldHaveUpdatedIssueImage(IDbConnection dbConnection, IFileStorage fileStorage, int issueId, byte[] newImage)
+        public IssueAssert ShouldHaveUpdatedIssueImage(int issueId, byte[] newImage)
         {
-            var imageUrl = dbConnection.GetIssueImageUrl(issueId);
+            var imageUrl = _issueRepository.GetIssueImageUrl(issueId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
+            return this;
         }
 
-        internal static void ShouldHavePublicImage(IDbConnection dbConnection, int issueId)
+        public IssueAssert ShouldHavePublicImage(int issueId)
         {
-            var image = dbConnection.GetIssueImage(issueId);
+            var image = _issueRepository.GetIssueImage(issueId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
-        }
-    }
-
-    public static class IssueAssertionExtensions
-    {
-        public static IssueAssert ShouldMatch(this IssueView view, IssueDto dto, IDbConnection dbConnection, int? libraryId = null, int? chapterCount = null, int? pageCount = null)
-        {
-            if (libraryId.HasValue)
-            {
-                return new IssueAssert(view)
-                            .InLibrary(libraryId.Value)
-                           .ShouldBeSameAs(dbConnection, dto, chapterCount, pageCount);
-            }
-            return new IssueAssert(view)
-                               .ShouldBeSameAs(dbConnection, dto, chapterCount, pageCount);
+            return this;
         }
     }
 }

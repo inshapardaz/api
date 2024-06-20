@@ -13,7 +13,6 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleById
     {
         private HttpResponseMessage _response;
         private ArticleDto _expected;
-        private ArticleAssert _assert;
         private IEnumerable<CategoryDto> _categories;
 
         [OneTimeSetUp]
@@ -27,7 +26,6 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleById
             _expected = articles.PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/articles/{_expected.Id}");
-            _assert = ArticleAssert.FromResponse(_response, LibraryId);
         }
 
         [OneTimeTearDown]

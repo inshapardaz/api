@@ -1,7 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -16,6 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
         : TestBase
     {
         private HttpResponseMessage _response;
+        private ChapterAssert _assert;
         private ChapterDto _expected;
 
         private List<string> _filePaths = new();
@@ -29,14 +30,15 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
         public async Task Setup()
         {
             _expected = ChapterBuilder.WithLibrary(LibraryId).WithContents().WithPages().Build();
-            var contents = DatabaseConnection.GetContentByChapter(_expected.Id);
+            var contents = ChapterTestRepository.GetContentByChapter(_expected.Id);
 
             foreach (var content in contents)
             {
-                _filePaths.Add(DatabaseConnection.GetFileById(content.FileId)?.FilePath);
+                _filePaths.Add(FileTestRepository.GetFileById(content.FileId)?.FilePath);
             }
 
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{_expected.BookId}/chapters/{_expected.ChapterNumber}");
+            _assert = Services.GetService<ChapterAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -54,13 +56,13 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.DeleteChapter
         [Test]
         public void ShouldHaveDeletedChapter()
         {
-            ChapterAssert.ShouldHaveDeletedChapter(_expected.Id, DatabaseConnection);
+            _assert.ShouldHaveDeletedChapter(_expected.Id);
         }
 
         [Test]
         public void ShouldHaveDeletedTheChapterContents()
         {
-            ChapterAssert.ThatContentsAreDeletedForChapter(_expected.Id, _filePaths, DatabaseConnection, FileStore);
+            _assert.ThatContentsAreDeletedForChapter(_expected.Id, _filePaths);
         }
     }
 }

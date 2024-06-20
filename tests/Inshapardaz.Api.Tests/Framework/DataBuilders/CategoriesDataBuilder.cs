@@ -5,24 +5,31 @@ using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
-using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
     public class CategoriesDataBuilder
     {
-        private readonly IDbConnection _connection;
-        private int _bookCount, _priodicalCount;
+        private int _bookCount, _periodicalCount;
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<CategoryDto> _categories = new List<CategoryDto>();
         private int _libraryId;
         private IEnumerable<BookDto> _books;
         private IEnumerable<PeriodicalDto> _periodicals;
 
-        public CategoriesDataBuilder(IProvideConnection connectionProvider)
+        private ICategoryTestRepository _categoryRepository;
+        private IAuthorTestRepository _authorRepository;
+        private IBookTestRepository _bookRepository;
+        private IPeriodicalTestRepository _periodicalRepository;
+        public CategoriesDataBuilder(ICategoryTestRepository categoryRepository,
+            IAuthorTestRepository authorRepository,
+            IBookTestRepository bookRepository,
+            IPeriodicalTestRepository periodicalRepository)
         {
-            _connection = connectionProvider.GetConnection();
+            _categoryRepository = categoryRepository;
+            _authorRepository = authorRepository;
+            _bookRepository = bookRepository;
+            _periodicalRepository = periodicalRepository;
         }
 
         public CategoriesDataBuilder WithBooks(int bookCount)
@@ -33,7 +40,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public CategoriesDataBuilder WithPeriodicals(int count)
         {
-            _priodicalCount = count;
+            _periodicalCount = count;
             return this;
         }
 
@@ -53,7 +60,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                               .With(c => c.LibraryId, _libraryId)
                                .CreateMany(count);
 
-            _connection.AddCategories(cats);
+            _categoryRepository.AddCategories(cats);
             _categories.AddRange(cats);
 
             foreach (var cat in cats)
@@ -63,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                      .Without(a => a.ImageId)
                                      .Create();
 
-                _connection.AddAuthor(author);
+                _authorRepository.AddAuthor(author);
                 _authors.Add(author);
 
                 _books = fixture.Build<BookDto>()
@@ -72,19 +79,19 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);
-                _connection.AddBooks(_books);
+                _bookRepository.AddBooks(_books);
 
                 _periodicals = fixture.Build<PeriodicalDto>()
                                    .With(b => b.LibraryId, _libraryId)
                                    .With(b => b.Language, RandomData.Locale)
-                                   .CreateMany(_priodicalCount);
-                _connection.AddPeriodicals(_periodicals);
+                                   .CreateMany(_periodicalCount);
+                _periodicalRepository.AddPeriodicals(_periodicals);
 
-                _connection.AddBooksAuthor(_books.Select(b => b.Id), author.Id);
+                _bookRepository.AddBooksAuthor(_books.Select(b => b.Id), author.Id);
 
-                _connection.AddBooksToCategory(_books, cat);
+                _categoryRepository.AddBooksToCategory(_books, cat);
 
-                _connection.AddPeriodicalToCategory(_periodicals, cat);
+                _categoryRepository.AddPeriodicalToCategory(_periodicals, cat);
             }
 
             return cats;
@@ -92,19 +99,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _connection.DeleteAuthors(_authors);
-            _connection.DeleteCategries(_categories);
-            _connection.DeleteBooks(_books);
-            _connection.DeletePeriodicals(_periodicals);
+            _periodicalRepository.DeletePeriodicals(_periodicals);
+            _bookRepository.DeleteBooks(_books);
+            _authorRepository.DeleteAuthors(_authors);
+            _categoryRepository.DeleteCategories(_categories);
         }
-    }
-
-    public static class CategoriesDataExtenstions
-    {
-        public static CategoryView ToView(this CategoryDto dto) => new CategoryView
-        {
-            Id = dto.Id,
-            Name = dto.Name
-        };
     }
 }

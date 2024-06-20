@@ -2,6 +2,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByAuthor
             AuthorBuilder.WithLibrary(LibraryId).WithBooks(3).Build();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=20&pageSize=10&authorId={_author.Id}");
-            _assert = new PagingAssert<BookView>(_response);
+            _assert = Services.GetService<PagingAssert<BookView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]

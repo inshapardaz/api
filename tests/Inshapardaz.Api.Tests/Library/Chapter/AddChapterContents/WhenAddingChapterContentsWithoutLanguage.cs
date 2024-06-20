@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
             _chapter = ChapterBuilder.WithLibrary(LibraryId).Build();
 
             _response = await Client.PostString($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents", RandomData.String);
-            _assert = new ChapterContentAssert(_response, Library);
+            _assert = Services.GetService<ChapterContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]

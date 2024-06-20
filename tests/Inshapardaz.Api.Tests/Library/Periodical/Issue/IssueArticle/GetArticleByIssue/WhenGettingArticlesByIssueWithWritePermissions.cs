@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -75,9 +76,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIss
             foreach (var expected in IssueBuilder.GetArticles(_issue.Id))
             {
                 var actual = _view.Data.FirstOrDefault(x => x.Id == expected.Id);
-                var assert = new IssueArticleAssert(actual, LibraryId, _issue);
-                assert.ShouldBeSameAs(expected)
-                      .WithWriteableLinks();
+                var assert = Services.GetService<IssueArticleAssert>().ForView(actual).ForDto(_issue).ForLibrary(LibraryId)
+                    .ShouldBeSameAs(expected)
+                    .WithWriteableLinks();
 
                 //var contents = ChapterBuilder.Contents.Where(c => c.ChapterId == expected.Id);
                 //foreach (var content in contents)

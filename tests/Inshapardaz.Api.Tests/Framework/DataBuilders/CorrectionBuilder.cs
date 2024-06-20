@@ -4,20 +4,20 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
     public class CorrectionBuilder
     {
         private List<CorrectionDto> _corrections = new List<CorrectionDto>();
-        private IDbConnection _connection;
 
-        public CorrectionBuilder(IProvideConnection connectionProvider)
+        private ICorrectionTestRepository _correctionRepository;
+
+        public CorrectionBuilder(ICorrectionTestRepository correctionRepository)
         {
-            _connection = connectionProvider.GetConnection();
+            _correctionRepository = correctionRepository;
+
         }
 
         public CorrectionDto Build() => Build(1).First();
@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 .CreateMany(count);
 
             _corrections.AddRange(corrections);
-            _connection.AddCorrections(corrections);
+            _correctionRepository.AddCorrections(corrections);
 
             return corrections;
         }
@@ -46,7 +46,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void Cleanup()
         {
-            _connection.DeleteCorrections(_corrections);
+            _correctionRepository.DeleteCorrections(_corrections);
         }
     }
 }

@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
@@ -34,7 +35,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_expected.Id}", _expected);
-            _bookAssert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
+            _bookAssert = Services.GetService<BookAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -58,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         [Test]
         public void ShouldSaveTheBook()
         {
-            _bookAssert.ShouldHaveSavedBook(DatabaseConnection);
+            _bookAssert.ShouldHaveSavedBook();
         }
 
         [Test]

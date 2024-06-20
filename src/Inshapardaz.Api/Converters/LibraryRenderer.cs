@@ -331,7 +331,7 @@ public class LibraryRenderer : IRenderLibrary
             SecondaryColor = model.SecondaryColor,
             Public = model.Public,
             Links = links,
-            DatabaseConnection = model.DatabaseConnection,
+            DatabaseConnection = _userHelper.IsAdmin ? model.DatabaseConnection : null,
             FileStoreType = _userHelper.IsAdmin ? model.FileStoreType.ToDescription() : null,
             FileStoreSource = _userHelper.IsAdmin ? model.FileStoreSource : null
         };

@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals", periodical);
 
-            _assert = PeriodicalAssert.WithResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<PeriodicalAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -62,7 +63,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
         [Test]
         public void ShouldSaveThePeriodical()
         {
-            _assert.ShouldHaveSavedPeriodical(DatabaseConnection);
+            _assert.ShouldHaveSavedPeriodical();
         }
 
         [Test]

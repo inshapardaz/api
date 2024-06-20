@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Author.AddAuthor
@@ -27,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.AddAuthor
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/authors", author);
 
-            _authorAssert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);
+            _authorAssert = Services.GetService<AuthorAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -51,7 +52,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.AddAuthor
         [Test]
         public void ShouldSaveTheAuthor()
         {
-            _authorAssert.ShouldHaveSavedAuthor(DatabaseConnection);
+            _authorAssert.ShouldHaveSavedAuthor();
         }
 
         [Test]

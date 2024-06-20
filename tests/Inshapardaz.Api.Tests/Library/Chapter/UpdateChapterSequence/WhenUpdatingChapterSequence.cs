@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
@@ -64,7 +63,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapterSequence
         public void ShouldHaveChangedTheOrderOfChapters()
         {
             var expectedChapters = _chapters.Reverse();
-            var actualChapters = DatabaseConnection.GetChaptersByBook(_bookId);
+            var actualChapters = ChapterTestRepository.GetChaptersByBook(_bookId);
             int i = 1;
             foreach (var expected in expectedChapters)
             {

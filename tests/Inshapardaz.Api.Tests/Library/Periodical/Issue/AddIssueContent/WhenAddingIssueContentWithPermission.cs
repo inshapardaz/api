@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssueContent
 
             _response = await Client.PostContent($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/contents?language={_locale}", _contents, _mimeType);
 
-            _assert = new IssueContentAssert(_response, LibraryId);
+            _assert = Services.GetService<IssueContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -75,7 +76,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssueContent
         [Test]
         public void ShouldHaceCorrectContentSaved()
         {
-            _assert.ShouldHaveIssueContent(_contents, DatabaseConnection, FileStore);
+            _assert.ShouldHaveIssueContent(_contents);
         }
     }
 }

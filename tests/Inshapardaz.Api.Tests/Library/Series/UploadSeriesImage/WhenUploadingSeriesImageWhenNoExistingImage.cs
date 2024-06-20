@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
@@ -11,6 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
     public class WhenUploadingSeriesImageWhenNoExistingImage : TestBase
     {
         private HttpResponseMessage _response;
+        private SeriesAssert _assert;
         private int _seriesId;
 
         public WhenUploadingSeriesImageWhenNoExistingImage()
@@ -25,6 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
             _seriesId = series.Id;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/series/{series.Id}/image", RandomData.Bytes);
+            _assert = Services.GetService<SeriesAssert>().ForResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -42,20 +45,19 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            var seriesAssert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
-            seriesAssert.ShouldHaveCorrectImageLocationHeader(_seriesId);
+            _assert.ShouldHaveCorrectImageLocationHeader(_seriesId);
         }
 
         [Test]
         public void ShouldHaveAddedImageToSeries()
         {
-            SeriesAssert.ShouldHaveAddedSeriesImage(_seriesId, DatabaseConnection, FileStore);
+            _assert.ShouldHaveAddedSeriesImage(_seriesId);
         }
 
         [Test]
         public void ShouldSavePublicImage()
         {
-            SeriesAssert.ShouldHavePublicImage(_seriesId, DatabaseConnection);
+            _assert.ShouldHavePublicImage(_seriesId);
         }
     }
 }

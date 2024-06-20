@@ -2,6 +2,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksSortedByDateAdded
             _books = BookBuilder.WithLibrary(LibraryId).WithCategories(_categories).WithAuthors(_authors).IsPublic().Build(12);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&sortby=DateCreated&sort=Ascending");
-            _assert = new PagingAssert<BookView>(_response);
+            _assert = Services.GetService<PagingAssert<BookView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -88,11 +89,11 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksSortedByDateAdded
         public void ShouldReturnExpectedBooks()
         {
             var expectedItems = _books.OrderBy(a => a.DateAdded).Take(10);
-            foreach (var item in expectedItems)
+            foreach (var expected in expectedItems)
             {
-                var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item, DatabaseConnection, LibraryId)
-                            .InLibrary(LibraryId)
+                var actual = _assert.Data.FirstOrDefault(x => x.Id == expected.Id);
+                Services.GetService<BookAssert>().ForView(actual).ForLibrary(LibraryId)
+                            .ShouldBeSameAs(expected)
                             .ShouldHaveCorrectLinks()
                             .ShouldNotHaveEditLinks()
                             .ShouldNotHaveImageUpdateLink()

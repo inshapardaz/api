@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
             _expected = BookBuilder.Contents.PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_book.Id}/contents/{_expected.Id}", _expected.MimeType);
-            _assert = new BookContentAssert(_response, LibraryId);
+            _assert = Services.GetService<BookContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -79,7 +80,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
         [Test]
         public void ShouldReturnCorrectChapterData()
         {
-            _assert.ShouldMatch(_expected, _book.Id, DatabaseConnection);
+            _assert.ShouldMatch(_expected, _book.Id);
         }
     }
 }

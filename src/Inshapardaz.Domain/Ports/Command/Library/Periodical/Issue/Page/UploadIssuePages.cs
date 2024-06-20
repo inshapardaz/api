@@ -87,7 +87,7 @@ public class UploadIssuePagesHandler : RequestHandlerAsync<UploadIssuePages>
                 FileName = file.FileName,
                 MimeType = file.MimeType
             }, cancellationToken);
-            var bookPage = await _issuePageRepository.AddPage(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, pageNumber, string.Empty, fileModel.Id, null, EditingStatus.Available, cancellationToken);
+            var bookPage = await _issuePageRepository.AddPage(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, pageNumber, null, fileModel.Id, null, EditingStatus.Available, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

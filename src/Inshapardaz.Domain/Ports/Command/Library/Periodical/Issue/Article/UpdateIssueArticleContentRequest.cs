@@ -1,8 +1,10 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,27 +45,26 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssu
 {
     private readonly IIssueArticleRepository _articleRepository;
     private readonly IIssueRepository _issueRepository;
-    private readonly IFileStorage _fileStorage;
-    private readonly IFileRepository _fileRepository;
     private readonly ILibraryRepository _libraryRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public UpdateArticleContentRequestHandler(IIssueArticleRepository articleRepository, IIssueRepository issueRepository, IFileStorage fileStorage,
-                                              IFileRepository fileRepository, ILibraryRepository libraryRepository)
+    public UpdateArticleContentRequestHandler(IIssueArticleRepository articleRepository,
+        IIssueRepository issueRepository, 
+        ILibraryRepository libraryRepository, 
+        IAmACommandProcessor commandProcessor)
     {
         _articleRepository = articleRepository;
         _issueRepository = issueRepository;
-        _fileStorage = fileStorage;
-        _fileRepository = fileRepository;
         _libraryRepository = libraryRepository;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateIssueArticleContentRequest> HandleAsync(UpdateIssueArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
-        var article = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, command.SequenceNumber, cancellationToken);
+        var article = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
 
-        if (issue == null || article == null)
+        if (article == null)
         {
             throw new BadRequestException();
         }
@@ -79,31 +80,55 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssu
             command.Language = library.Language;
         }
 
-        var contentUrl = await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, cancellationToken);
+        var content = await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, cancellationToken);
 
-        if (contentUrl == null)
+        var fileName = FilePathHelper.GetIssueArticleContentFileName(command.Language);
+        var saveFileCommand = new SaveTextFileCommand(
+            fileName,
+            FilePathHelper.GetIssueArticleContentPath(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, article.Id, fileName),
+            command.Content)
+        {
+            MimeType = MimeTypes.Markdown,
+            ExistingFileId = content?.FileId
+        };
+        await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+
+
+        if (content == null)
         {
             command.Result.Content = await _articleRepository.AddArticleContent(
                 command.LibraryId,
-                command.PeriodicalId,
-                command.VolumeNumber,
-                command.IssueNumber,
-                command.SequenceNumber,
-                command.Language,
-                command.Content,
+                new IssueArticleContentModel
+                {
+                    PeriodicalId = command.PeriodicalId,
+                    VolumeNumber = command.VolumeNumber,
+                    IssueNumber = command.IssueNumber,
+                    SequenceNumber = command.SequenceNumber,
+                    Language = command.Language,
+                    FileId = saveFileCommand.Result.Id,
+                },
                 cancellationToken);
             command.Result.HasAddedNew = true;
         }
         else
         {
             command.Result.Content = await _articleRepository.UpdateArticleContent(command.LibraryId,
-                                                    command.PeriodicalId,
-                                                    command.VolumeNumber,
-                                                    command.IssueNumber,
-                                                    command.SequenceNumber,
-                                                    command.Language,
-                                                    command.Content,
+                                                    new IssueArticleContentModel
+                                                    {
+                                                        Id = content.Id,
+                                                        PeriodicalId = command.PeriodicalId,
+                                                        VolumeNumber = command.VolumeNumber,
+                                                        IssueNumber = command.IssueNumber,
+                                                        SequenceNumber = command.SequenceNumber,
+                                                        Language = command.Language,
+                                                        FileId = content.FileId,
+                                                    },
                                                     cancellationToken);
+        }
+
+        if (command.Result.Content != null)
+        {
+            command.Result.Content.Text = command.Content;
         }
 
         return await base.HandleAsync(command, cancellationToken);

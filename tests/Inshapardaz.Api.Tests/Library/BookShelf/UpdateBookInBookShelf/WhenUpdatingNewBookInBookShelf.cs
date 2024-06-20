@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
@@ -51,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UpdateBookInBookShelf
         [Test]
         public void ShouldAddBookToBookShelf()
         {
-            var bookShelfbooks = DatabaseConnection.GetBookShelfBooks(_bookShelf.Id);
+            var bookShelfbooks = BookShelfTestRepository.GetBookShelfBooks(_bookShelf.Id);
             bookShelfbooks.Should().Contain(b => b.BookId == _book.Id && b.Index == 2);
         }
     }

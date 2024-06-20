@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages?pageSize=10&pageNumber=3");
 
-            _assert = new PagingAssert<IssuePageView>(_response);
+            _assert = Services.GetService<PagingAssert<IssuePageView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]

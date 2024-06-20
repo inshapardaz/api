@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
 {
@@ -29,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
             _content = ArticleBuilder.Contents.Single(x => x.ArticleId == _article.Id);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/articles/{_article.Id}/contents?language={_content.Language}");
-            _assert = new ArticleContentAssert(_response, LibraryId);
+            _assert = Services.GetService<ArticleContentAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -59,7 +60,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
         [Test]
         public void ShouldHaveTextReturened()
         {
-            _assert.ShouldHaveText(_content, DatabaseConnection, FileStore);
+            _assert.ShouldHaveText(_content);
         }
 
         [Test]

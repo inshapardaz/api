@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -6,17 +7,16 @@ using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
     public class BookShelfDataBuilder
     {
-        private readonly IDbConnection _connection;
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<BookDto> _books = new List<BookDto>();
         private List<BookShelfDto> _bookShelf = new List<BookShelfDto>();
+        private Dictionary<int, List<BookDto>> _bookShelfBookList = new ();
         private List<FileDto> _files = new List<FileDto>();
         private readonly FakeFileStorage _fileStorage;
         private bool _withImage = true;
@@ -29,11 +29,24 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IEnumerable<BookDto> Books => _books;
 
         public IEnumerable<BookShelfDto> BookShelves => _bookShelf;
+        public Dictionary<int, List<BookDto>> BookShelvesBookList => _bookShelfBookList;
 
-        public BookShelfDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage)
+        public IAuthorTestRepository _authorRepository;
+        public IFileTestRepository _fileRepository;
+        public IBookTestRepository _bookRepository;
+        public IBookShelfTestRepository _bookShelfRepository;
+
+        public BookShelfDataBuilder(IFileStorage fileStorage,
+            IAuthorTestRepository authorRepository,
+            IFileTestRepository fileRepository,
+            IBookShelfTestRepository bookShelfRepository,
+            IBookTestRepository bookRepository)
         {
-            _connection = connectionProvider.GetConnection();
             _fileStorage = fileStorage as FakeFileStorage;
+            _authorRepository = authorRepository;
+            _fileRepository = fileRepository;
+            _bookShelfRepository = bookShelfRepository;
+            _bookRepository = bookRepository;
         }
 
         public BookShelfDataBuilder WithBooks(int bookCount)
@@ -76,6 +89,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public IEnumerable<BookShelfDto> Build(int count)
         {
+            if (_accountId == 0) throw new Exception("Please specify accountid in bookshelf setup");
             var bookShelfList = new List<BookShelfDto>();
             var fixture = new Fixture();
 
@@ -86,7 +100,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                      .Without(a => a.ImageId)
                                      .Create();
 
-                _connection.AddAuthor(author);
+                _authorRepository.AddAuthor(author);
                 _authors.Add(author);
 
                 FileDto bookShelfImage = null;
@@ -96,11 +110,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                    _connection.AddFile(bookShelfImage);
+                    _fileRepository.AddFile(bookShelfImage);
 
                     _files.Add(bookShelfImage);
                     _fileStorage.SetupFileContents(bookShelfImage.FilePath, RandomData.Bytes);
-                    _connection.AddFile(bookShelfImage);
+                    _fileRepository.AddFile(bookShelfImage);
                 }
 
                 var bookShelf = fixture.Build<BookShelfDto>()
@@ -111,7 +125,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                 .With(s => s.AccountId, _accountId)
                                 .Create();
 
-                _connection.AddBookShelf(bookShelf);
+                _bookShelfRepository.AddBookShelf(bookShelf);
 
                 bookShelfList.Add(bookShelf);
 
@@ -123,9 +137,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                    .Without(b => b.SeriesIndex)
                                    .Without(b => b.Id)
                                    .CreateMany(_bookCount);
-                _connection.AddBooks(books);
-                _connection.AddBookstToBookShelf(bookShelf.Id, books.Select(b => b.Id));
-                _connection.AddBooksAuthor(books.Select(b => b.Id), author.Id);
+                _bookRepository.AddBooks(books);
+                _bookShelfRepository.AddBooksToBookShelf(bookShelf.Id, books.Select(b => b.Id));
+                _bookShelfBookList.Add(bookShelf.Id, books.ToList());
+                _bookRepository.AddBooksAuthor(books.Select(b => b.Id), author.Id);
                 _books.AddRange(books);
             }
 
@@ -135,10 +150,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _connection.DeleteAuthors(_authors);
-            _connection.DeleteBooks(_books);
-            _connection.DeleteFiles(_files);
-            _connection.DeleteBookShelf(_bookShelf);
+            _authorRepository.DeleteAuthors(_authors);
+            _bookRepository.DeleteBooks(_books);
+            _fileRepository.DeleteFiles(_files);
+            _bookShelfRepository.DeleteBookShelf(_bookShelf);
         }
     }
 }

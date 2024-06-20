@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePageImage
     public class WhenDeletingBookPageImageWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
+        private BookPageAssert _assert;
         private BookPageDto _page;
         private int _bookId;
 
@@ -29,6 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePageImage
             _page = BookBuilder.GetPages(book.Id).PickRandom();
             _bookId = book.Id;
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}/image");
+            _assert = Services.GetService<BookPageAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -46,7 +49,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePageImage
         [Test]
         public void ShouldHaveDeletedPageImage()
         {
-            BookPageAssert.ShouldHaveNoBookPageImage(_bookId, _page.SequenceNumber, _page.ImageId.Value, DatabaseConnection, FileStore);
+            _assert.ShouldHaveNoBookPageImage(_bookId, _page.SequenceNumber, _page.ImageId.Value);
         }
     }
 }

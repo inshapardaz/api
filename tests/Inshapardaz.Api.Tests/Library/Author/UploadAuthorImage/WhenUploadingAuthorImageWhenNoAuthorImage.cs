@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
@@ -11,6 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
     public class WhenUploadingAuthorImageWhenNoAuthorImage : TestBase
     {
         private HttpResponseMessage _response;
+        private AuthorAssert _assert;
         private int _authorId;
 
         private byte[] _newImage;
@@ -28,6 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
             _newImage = RandomData.Bytes;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/authors/{_authorId}/image", _newImage);
+            _assert = Services.GetService<AuthorAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -45,20 +48,19 @@ namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            var authorAssert = AuthorAssert.WithResponse(_response).InLibrary(LibraryId);
-            authorAssert.ShouldHaveCorrectImageLocationHeader(_authorId);
+            _assert.ShouldHaveCorrectImageLocationHeader(_authorId);
         }
 
         [Test]
         public void ShouldHaveAddedImageToAuthor()
         {
-            AuthorAssert.ShouldHaveAddedAuthorImage(_authorId, _newImage, DatabaseConnection, FileStore);
+            _assert.ShouldHaveAddedAuthorImage(_authorId, _newImage);
         }
 
         [Test]
         public void ShouldSavePublicImage()
         {
-            AuthorAssert.ShouldHavePublicImage(_authorId, DatabaseConnection);
+            _assert.ShouldHavePublicImage(_authorId);
         }
     }
 }

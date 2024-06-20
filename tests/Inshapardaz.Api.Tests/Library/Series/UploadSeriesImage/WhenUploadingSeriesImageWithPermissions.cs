@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
@@ -13,6 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
     public class WhenUploadingSeriesImageWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
+        private SeriesAssert _assert;
         private int _seriesId;
         private byte[] _newImage;
 
@@ -28,6 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
             _seriesId = series.Id;
             _newImage = RandomData.Bytes;
             _response = await Client.PutFile($"/libraries/{LibraryId}/series/{series.Id}/image", _newImage);
+            _assert = Services.GetService<SeriesAssert>().ForResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -45,7 +48,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
         [Test]
         public void ShouldHaveUpdatedSeriesImage()
         {
-            SeriesAssert.ShouldHaveUpdatedSeriesImage(_seriesId, _newImage, DatabaseConnection, FileStore);
+            _assert.ShouldHaveUpdatedSeriesImage(_seriesId, _newImage);
         }
     }
 }

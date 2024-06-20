@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
@@ -12,6 +13,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
     public class WhenAddBookToFavoriteAlreadyInFavorite : TestBase
     {
         private HttpResponseMessage _response;
+        private BookAssert _bookAssert;
         private BookDto _book;
 
         public WhenAddBookToFavoriteAlreadyInFavorite()
@@ -31,6 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
             _book = books.PickRandom();
 
             _response = await Client.PostObject<object>($"/libraries/{LibraryId}/favorites/books/{_book.Id}", new object());
+            _bookAssert = Services.GetService<BookAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -48,7 +51,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBookToFavorite
         [Test]
         public void ShouldBeAddedToFavorites()
         {
-            BookAssert.ShouldBeAddedToFavorite(_book.Id, AccountId, DatabaseConnection);
+            _bookAssert.ShouldBeAddedToFavorite(_book.Id, AccountId);
         }
     }
 }

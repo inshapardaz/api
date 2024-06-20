@@ -12,7 +12,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         : TestBase
     {
         private HttpResponseMessage _response;
-        private ChapterContentAssert _assert;
         private ChapterDto _chapter;
         private ChapterContentDto _content;
 
@@ -23,7 +22,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
             _content = ChapterBuilder.Contents.Single(x => x.ChapterId == _chapter.Id);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.Id}/contents?language={_content.Language}");
-            _assert = new ChapterContentAssert(_response, LibraryId);
         }
 
         [OneTimeTearDown]

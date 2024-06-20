@@ -1,86 +1,101 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
+using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using System.Net.Http;
 using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    internal class IssueContentAssert
+    public class IssueContentAssert
     {
         private HttpResponseMessage _response;
-        private readonly int _libraryId;
+        private int _libraryId;
         private IssueContentView _issueContent;
         private LibraryDto _library;
 
-        public IssueContentAssert(HttpResponseMessage response, int libraryId)
+        private readonly IIssueTestRepository _issueRepository;
+        private readonly IFileTestRepository _fileRepository;
+        private readonly FakeFileStorage _fileStorage;
+
+        public IssueContentAssert(IIssueTestRepository issueRepository,
+            IFileTestRepository fileRepository,
+            FakeFileStorage fileStorage)
         {
-            _response = response;
-            _libraryId = libraryId;
-            _issueContent = response.GetContent<IssueContentView>().Result;
+            _issueRepository = issueRepository;
+            _fileRepository = fileRepository;
+            _fileStorage = fileStorage;
         }
 
-        public IssueContentAssert(HttpResponseMessage response, LibraryDto library)
+        public IssueContentAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
+            _issueContent = response.GetContent<IssueContentView>().Result;
+            return this;
+        }
+
+        public IssueContentAssert ForLibrary(LibraryDto library)
+        {
             _libraryId = library.Id;
             _library = library;
-            _issueContent = response.GetContent<IssueContentView>().Result;
+            return this;
         }
 
-        internal IssueContentAssert ShouldHaveSelfLink()
+        public IssueContentAssert ShouldHaveSelfLink()
         {
             _issueContent.SelfLink()
                   .ShouldBeGet()
-                  .EndingWith($"/libraries/{_libraryId}/periodicals/{_issueContent.PeriodicalId}/volumes/{_issueContent.VolumeNumber}/issues/{_issueContent.IssueNumber}/contents");
+                  .EndingWith($"/libraries/{_libraryId}/periodicals/{_issueContent.PeriodicalId}/volumes/{_issueContent.VolumeNumber}/issues/{_issueContent.IssueNumber}/contents/{_issueContent.Id}");
 
             return this;
         }
 
-        internal IssueContentAssert WithReadOnlyLinks()
+        public IssueContentAssert WithReadOnlyLinks()
         {
             ShouldNotHaveUpdateLink();
             ShouldNotHaveDeleteLink();
             return this;
         }
 
-        internal IssueContentAssert WithWriteableLinks()
+        public IssueContentAssert WithWriteableLinks()
         {
             ShouldHaveUpdateLink();
             ShouldHaveDeleteLink();
             return this;
         }
 
-        internal static void ShouldNotHaveIssueContent(int id, IDbConnection db)
+        public IssueContentAssert ShouldNotHaveIssueContent(int id)
         {
-            var content = db.GetIssueContent(id);
+            var content = _issueRepository.GetIssueContent(id);
             content.Should().BeNull();
+            return this;
         }
 
-        internal void ShouldHaveIssueContent(int id, IDbConnection db)
+        public IssueContentAssert ShouldHaveIssueContent(int id)
         {
-            var content = db.GetIssueContent(id);
+            var content = _issueRepository.GetIssueContent(id);
             content.Should().NotBeNull();
             content.Language.Should().Be(_issueContent.Language);
             content.MimeType.Should().Be(_issueContent.MimeType);
+            content.Id.Should().Be(id);
+            return this;
         }
 
-        internal static void ShouldHaveIssueContent(int id, string language, string mimeType, IDbConnection db)
+        public IssueContentAssert ShouldHaveIssueContent(int id, string language, string mimeType)
         {
-            var content = db.GetIssueContent(id);
+            var content = _issueRepository.GetIssueContent(id);
             content.Should().NotBeNull();
             content.Language.Should().Be(language);
             content.MimeType.Should().Be(mimeType);
+            return this;
         }
 
-        internal void ShouldHaveIssueContent(byte[] expected, IDbConnection db, IFileStorage fileStore)
+        public IssueContentAssert ShouldHaveIssueContent(byte[] expected)
         {
-            var content = db.GetIssueContent(_issueContent.Id);
+            var content = _issueRepository.GetIssueContent(_issueContent.Id);
             content.Should().NotBeNull();
 
             content.Language.Should().Be(_issueContent.Language);
@@ -89,74 +104,75 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             // TODO: Make sure the contents are correct
             //var file = fileStore.GetFile(content.FilePath, CancellationToken.None).Result;
             //file.Should().NotBeNull().And.Should().Be(expected);
+            return this;
         }
 
-        internal IssueContentAssert ShouldHaveUpdateLink()
+        public IssueContentAssert ShouldHaveUpdateLink()
         {
             _issueContent.UpdateLink()
                  .ShouldBePut()
-                 .EndingWith($"libraries/{_libraryId}/periodicals/{_issueContent.PeriodicalId}/volumes/{_issueContent.VolumeNumber}/issues/{_issueContent.IssueNumber}/contents");
+                 .EndingWith($"libraries/{_libraryId}/periodicals/{_issueContent.PeriodicalId}/volumes/{_issueContent.VolumeNumber}/issues/{_issueContent.IssueNumber}/contents/{_issueContent.Id}");
 
             return this;
         }
 
-        internal IssueContentAssert ShouldHaveCorrectLanguage(string locale)
+        public IssueContentAssert ShouldHaveCorrectLanguage(string locale)
         {
             _issueContent.Language.Should().Be(locale);
             return this;
         }
 
-        internal IssueContentAssert ShouldHaveCorrectMimeType(string mimeType)
+        public IssueContentAssert ShouldHaveCorrectMimeType(string mimeType)
         {
             _issueContent.MimeType.Should().Be(mimeType);
             return this;
         }
 
-        internal IssueContentAssert ShouldNotHaveUpdateLink()
+        public IssueContentAssert ShouldNotHaveUpdateLink()
         {
             _issueContent.UpdateLink().Should().BeNull();
             return this;
         }
 
-        internal IssueContentAssert ShouldHaveDefaultLibraryLanguage()
+        public IssueContentAssert ShouldHaveDefaultLibraryLanguage()
         {
             _issueContent.Language.Should().Be(_library.Language);
             return this;
         }
 
-        internal IssueContentAssert ShouldHaveCorrectLocationHeader()
+        public IssueContentAssert ShouldHaveCorrectLocationHeader()
         {
             var location = _response.Headers.Location.AbsoluteUri;
             location.Should().NotBeNull();
-            location.Should().EndWith($"libraries/{_libraryId}/periodicals/{_issueContent.PeriodicalId}/volumes/{_issueContent.VolumeNumber}/issues/{_issueContent.IssueNumber}/contents");
+            location.Should().EndWith($"libraries/{_libraryId}/periodicals/{_issueContent.PeriodicalId}/volumes/{_issueContent.VolumeNumber}/issues/{_issueContent.IssueNumber}/contents/{_issueContent.Id}");
             return this;
         }
 
-        internal IssueContentAssert ShouldHaveCorrectContents(byte[] expected, IFileStorage fileStorage, IDbConnection dbConnection, string newLanguage = null, string newMimeType = null)
+        public IssueContentAssert ShouldHaveCorrectContents(byte[] expected, string newLanguage = null, string newMimeType = null)
         {
-            var filePath = dbConnection.GetIssueContentPath(_issueContent.Id, newLanguage ?? _issueContent.Language, newMimeType ?? _issueContent.MimeType);
-            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = _issueRepository.GetIssueContentPath(_issueContent.Id, newLanguage ?? _issueContent.Language, newMimeType ?? _issueContent.MimeType);
+            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.Equal(expected);
             return this;
         }
 
-        internal IssueContentAssert ShouldHaveCorrectContentsForMimeType(byte[] expected, string mimeType, IFileStorage fileStorage, IDbConnection dbConnection)
+        public IssueContentAssert ShouldHaveCorrectContentsForMimeType(byte[] expected, string mimeType)
         {
-            var filePath = dbConnection.GetIssueContentPath(_issueContent.Id, _issueContent.Language, mimeType);
-            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = _issueRepository.GetIssueContentPath(_issueContent.Id, _issueContent.Language, mimeType);
+            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.Equal(expected);
             return this;
         }
 
-        internal IssueContentAssert ShouldHaveCorrectContentsForLanguage(byte[] expected, string language, IFileStorage fileStorage, IDbConnection dbConnection)
+        public IssueContentAssert ShouldHaveCorrectContentsForLanguage(byte[] expected, string language)
         {
-            var filePath = dbConnection.GetIssueContentPath(_issueContent.Id, language, _issueContent.MimeType);
-            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = _issueRepository.GetIssueContentPath(_issueContent.Id, language, _issueContent.MimeType);
+            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.Equal(expected);
             return this;
         }
 
-        internal IssueContentAssert ShouldHavePrivateDownloadLink()
+        public IssueContentAssert ShouldHavePrivateDownloadLink()
         {
             _issueContent.Link("download")
                            .ShouldBeGet();
@@ -164,7 +180,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal IssueContentAssert ShouldHavePublicDownloadLink()
+        public IssueContentAssert ShouldHavePublicDownloadLink()
         {
             _issueContent.Link("download")
                            .ShouldBeGet();
@@ -172,11 +188,11 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal IssueContentAssert ShouldHaveSavedIssueContent(IDbConnection dbConnection)
+        public IssueContentAssert ShouldHaveSavedIssueContent()
         {
-            var dbContent = dbConnection.GetIssueContent(_issueContent.Id);
+            var dbContent = _issueRepository.GetIssueContent(_issueContent.Id);
             dbContent.Should().NotBeNull();
-            var dbFile = dbConnection.GetFileById(dbContent.FileId);
+            var dbFile = _fileRepository.GetFileById(dbContent.FileId);
             _issueContent.Id.Should().Be(dbContent.Id);
             _issueContent.Language.Should().Be(dbContent.Language);
             _issueContent.MimeType.Should().Be(dbFile.MimeType);
@@ -184,22 +200,22 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal IssueContentAssert ShouldHaveDeleteLink()
+        public IssueContentAssert ShouldHaveDeleteLink()
         {
             _issueContent.DeleteLink()
                  .ShouldBeDelete()
-                 .EndingWith($"libraries/{_libraryId}/periodicals/{_issueContent.PeriodicalId}/volumes/{_issueContent.VolumeNumber}/issues/{_issueContent.IssueNumber}/contents");
+                 .EndingWith($"libraries/{_libraryId}/periodicals/{_issueContent.PeriodicalId}/volumes/{_issueContent.VolumeNumber}/issues/{_issueContent.IssueNumber}/contents/{_issueContent.Id}");
 
             return this;
         }
 
-        internal IssueContentAssert ShouldNotHaveDeleteLink()
+        public IssueContentAssert ShouldNotHaveDeleteLink()
         {
             _issueContent.DeleteLink().Should().BeNull();
             return this;
         }
 
-        internal IssueContentAssert ShouldHavePeriodicalLink()
+        public IssueContentAssert ShouldHavePeriodicalLink()
         {
             _issueContent.Link("periodical")
                 .ShouldBeGet()
@@ -208,7 +224,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal IssueContentAssert ShouldHaveIssueLink()
+        public IssueContentAssert ShouldHaveIssueLink()
         {
             _issueContent.Link("issue")
                 .ShouldBeGet()
@@ -216,29 +232,32 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
             return this;
         }
-        internal static void ShouldHaveDeletedContent(IDbConnection dbConnection, IssueFileDto content, string mimeType)
+
+        public IssueContentAssert ShouldHaveDeletedContent(IssueContentDto content, string mimeType)
         {
-            var dbContent = dbConnection.GetIssueContent(content.Id);
+            var dbContent = _issueRepository.GetIssueContent(content.Id);
             dbContent.Should().BeNull("Issue content should be deleted");
 
-            var dbFile = dbConnection.GetFileById(content.FileId);
+            var dbFile = _fileRepository.GetFileById(content.FileId);
             dbFile.Should().BeNull("Files for content should be deleted");
+
+            return this;
         }
 
-        internal static void ShouldHaveLocationHeader(RedirectResult result, int libraryId, int periodicalId, IssueFileDto content)
+        public IssueContentAssert ShouldHaveLocationHeader(RedirectResult result, int libraryId, int periodicalId, IssueFileDto content)
         {
-            var response = result as RedirectResult;
-            response.Url.Should().NotBeNull();
-            response.Url.Should().EndWith($"libraries/{libraryId}/periodicals/{periodicalId}/volumes/{content.VolumeNumber}/issues/{content.IssueNumber}/contents");
+            result.Url.Should().NotBeNull();
+            result.Url.Should().EndWith($"libraries/{libraryId}/periodicals/{periodicalId}/volumes/{content.VolumeNumber}/issues/{content.IssueNumber}/contents");
+            return this;
         }
 
-        internal IssueContentAssert ShouldMatch(IssueContentDto content, int contentId, IDbConnection dbConnection)
+        public IssueContentAssert ShouldMatch(IssueContentDto content, int contentId)
         {
             _issueContent.MimeType.Should().Be(content.MimeType);
             _issueContent.Id.Should().Be(contentId);
             _issueContent.Language.Should().Be(content.Language);
 
-            var dbFile = dbConnection.GetFileById(content.FileId);
+            var dbFile = _fileRepository.GetFileById(content.FileId);
             _issueContent.MimeType.Should().Be(dbFile.MimeType);
 
             return this;

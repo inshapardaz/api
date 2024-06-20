@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePageSequenceNumber
 
             _bookId = book.Id;
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{_bookId}/pages/{oldSequenceNumber}/sequenceNumber", new { SequenceNumber = _page.SequenceNumber });
-            _assert = BookPageAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<BookPageAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -59,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePageSequenceNumber
         [Test]
         public void ShouldHaveUpdatedThePageSequenceNumber()
         {
-            var savedPage = DatabaseConnection.GetBookPageById(_page.BookId, _page.Id);
+            var savedPage = BookPageTestRepository.GetBookPageById(_page.BookId, _page.Id);
             savedPage.Should().NotBeNull().And.Be(1);
         }
     }

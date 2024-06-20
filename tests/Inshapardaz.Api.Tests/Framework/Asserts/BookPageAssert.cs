@@ -1,13 +1,10 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using System;
-using System.Data;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 
@@ -15,32 +12,37 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
     public class BookPageAssert
     {
-        internal static BookPageAssert FromResponse(HttpResponseMessage response, int libraryId)
-        {
-            return new BookPageAssert(response) { _libraryId = libraryId };
-        }
-
-        public static BookPageAssert FromObject(BookPageView view)
-        {
-            return new BookPageAssert(view);
-        }
-
+        private readonly IBookPageTestRepository _bookPageRepository;
+        private readonly IFileTestRepository _fileRepository;
+        private readonly FakeFileStorage _fileStorage;
         public HttpResponseMessage _response;
         private BookPageView _bookPage;
         private int _libraryId;
 
-        public BookPageAssert(HttpResponseMessage response)
+        public BookPageAssert(IBookPageTestRepository bookPageRepository,
+            IFileTestRepository fileRepository,
+            FakeFileStorage fileStorage)
+        {
+            _fileRepository = fileRepository;
+            _fileStorage = fileStorage;
+            _bookPageRepository = bookPageRepository;
+        }
+
+
+        public BookPageAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _bookPage = response.GetContent<BookPageView>().Result;
+            return this;
         }
 
-        public BookPageAssert(BookPageView view)
+        public BookPageAssert ForView(BookPageView view)
         {
             _bookPage = view;
+            return this;
         }
 
-        public BookPageAssert InLibrary(int libraryId)
+        public BookPageAssert ForLibrary(int libraryId)
         {
             _libraryId = libraryId;
             return this;
@@ -54,44 +56,47 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static void ShouldHaveNoBookPage(int bookId, long pageId, int? imageId, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public BookPageAssert ShouldHaveNoBookPage(int bookId, long pageId, int? imageId)
         {
-            var page = databaseConnection.GetBookPageById(bookId, pageId);
+            var page = _bookPageRepository.GetBookPageById(bookId, pageId);
             page.Should().BeNull();
 
             if (imageId != null)
             {
-                var image = databaseConnection.GetFileById(imageId.Value);
+                var image = _fileRepository.GetFileById(imageId.Value);
                 image.Should().BeNull();
             }
+            return this;
         }
 
-        internal BookPageAssert ShouldHaveAssignedRecently()
+        public BookPageAssert ShouldHaveAssignedRecently()
         {
             _bookPage.WriterAssignTimeStamp.Should().NotBeNull();
             _bookPage.WriterAssignTimeStamp.Value.Should().BeWithin(TimeSpan.FromMinutes(1));
             return this;
         }
 
-        internal static void BookPageShouldExist(int bookId, int pageNumber, IDbConnection databaseConnection)
+        public BookPageAssert BookPageShouldExist(int bookId, int pageNumber)
         {
-            var page = databaseConnection.GetBookPageByNumber(bookId, pageNumber);
+            var page = _bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
             page.Should().NotBeNull();
 
             if (page.ImageId != null)
             {
-                var image = databaseConnection.GetFileById(page.ImageId.Value);
+                var image = _fileRepository.GetFileById(page.ImageId.Value);
                 image.Should().NotBeNull();
             }
+            return this;
         }
 
-        internal static void ShouldHaveNoBookPageImage(int bookId, int pageNumber, int imageId, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public BookPageAssert ShouldHaveNoBookPageImage(int bookId, int pageNumber, int imageId)
         {
-            var page = databaseConnection.GetBookPageByNumber(bookId, pageNumber);
+            var page = _bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
             page.ImageId.Should().BeNull();
 
-            var image = databaseConnection.GetFileById(imageId);
+            var image = _fileRepository.GetFileById(imageId);
             image.Should().BeNull();
+            return this;
         }
 
         public BookPageAssert ShouldNotHaveCorrectLocationHeader()
@@ -100,37 +105,41 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public void ShouldHaveSavedPage(IDbConnection databaseConnection)
+        public BookPageAssert ShouldHaveSavedPage()
         {
-            databaseConnection.GetBookPageByNumber(_bookPage.BookId, _bookPage.SequenceNumber);
+            _bookPageRepository.GetBookPageByNumber(_bookPage.BookId, _bookPage.SequenceNumber);
+            return this;
         }
 
-        internal static void ShouldHaveUpdatedBookPageImage(int bookId, int pageNumber, byte[] newImage, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public BookPageAssert ShouldHaveUpdatedBookPageImage(int bookId, int pageNumber, byte[] newImage)
         {
-            var page = databaseConnection.GetBookPageByNumber(bookId, pageNumber);
+            var page = _bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
             page.ImageId.Should().BeGreaterThan(0);
 
-            var image = databaseConnection.GetFileById(page.ImageId.Value);
+            var image = _fileRepository.GetFileById(page.ImageId.Value);
             image.Should().NotBeNull();
 
-            var content = fileStore.GetFile(image.FilePath, CancellationToken.None).Result;
+            var content = _fileStorage.GetFile(image.FilePath, CancellationToken.None).Result;
             content.Should().BeEquivalentTo(newImage);
+            return this;
         }
 
-        internal static void ShouldHaveCorrectImageLocationHeader(HttpResponseMessage response, int imageId)
+        public BookPageAssert ShouldHaveCorrectImageLocationHeader(HttpResponseMessage response, int imageId)
         {
             string location = response.Headers.Location.AbsoluteUri;
             location.Should().NotBeEmpty();
             location.Should().EndWith($"/files/{imageId}");
+            return this;
         }
 
-        internal static void ShouldHaveAddedBookPageImage(int bookId, int pageNumber, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public BookPageAssert ShouldHaveAddedBookPageImage(int bookId, int pageNumber)
         {
-            var page = databaseConnection.GetBookPageByNumber(bookId, pageNumber);
+            var page = _bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
             page.ImageId.Should().BeGreaterThan(0);
 
-            var image = databaseConnection.GetFileById(page.ImageId.Value);
+            var image = _fileRepository.GetFileById(page.ImageId.Value);
             image.Should().NotBeNull();
+            return this;
         }
 
         public BookPageAssert ShouldHaveSelfLink()
@@ -254,11 +263,12 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public void ShouldMatch(BookPageView view, int pageNumber = -1)
+        public BookPageAssert ShouldMatch(BookPageView view, int pageNumber = -1)
         {
             _bookPage.Text.Should().Be(view.Text);
             _bookPage.BookId.Should().Be(view.BookId);
             _bookPage.SequenceNumber.Should().Be(pageNumber >= 0 ? pageNumber : view.SequenceNumber);
+            return this;
         }
 
         public BookPageAssert ShouldMatch(BookPageDto dto)
@@ -269,30 +279,23 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal void ShouldHaveBookPageContent(string text, IDbConnection db, FakeFileStorage fileStore)
+        public BookPageAssert ShouldHaveBookPageContent(string text)
         {
-            var page = db.GetBookPageByNumber(_bookPage.BookId, _bookPage.SequenceNumber);
+            var page = _bookPageRepository.GetBookPageByNumber(_bookPage.BookId, _bookPage.SequenceNumber);
             page.ContentId.Should().NotBeNull();
 
-            var file = db.GetFileById(page.ContentId.Value);
-            var fileContents = fileStore.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            var file = _fileRepository.GetFileById(page.ContentId.Value);
+            var fileContents = _fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
             fileContents.Should().BeEquivalentTo(text);
+            return this;
         }
 
-        public static void ShouldHaveNoBookPageContent(int contentId, string filePath, IDbConnection db, FakeFileStorage fileStore)
+        public BookPageAssert ShouldHaveNoBookPageContent(int contentId, string filePath)
         {
-            var file = db.GetFileById(contentId);
+            var file = _fileRepository.GetFileById(contentId);
             file.Should().BeNull();
-            fileStore.DoesFileExists(filePath).Should().BeFalse();
-        }
-    }
-
-    public static class BookPageAssertionExtensions
-    {
-        public static BookPageAssert ShouldMatch(this BookPageView view, BookPageDto dto)
-        {
-            return BookPageAssert.FromObject(view)
-                               .ShouldMatch(dto);
+            _fileStorage.DoesFileExists(filePath).Should().BeFalse();
+            return this;
         }
     }
 }

@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         : TestBase
     {
         private HttpResponseMessage _response;
+        private ChapterAssert _assert;
         private ChapterDto _chapter;
         private AccountDto _reviewer;
 
@@ -28,6 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
             _reviewer = AccountBuilder.InLibrary(LibraryId).As(Role.Writer).Build();
             _chapter = ChapterBuilder.WithLibrary(LibraryId).WithContents().WithStatus(EditingStatus.InReview).WithoutAnyAssignment().Build();
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/assign", new { AccountId = _reviewer.Id, Type = "review" });
+            _assert = Services.GetService<ChapterAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -45,7 +48,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         [Test]
         public void ShouldAssignChapterToUser()
         {
-            ChapterAssert.FromResponse(_response, LibraryId)
+            _assert
                 .ShouldNotBeAssignedForWriting()
                 .ShouldBeAssignedToUserForReviewing(_reviewer);
         }
@@ -53,9 +56,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         [Test]
         public void ShouldUpdateDatabaseWithAssignment()
         {
-            ChapterAssert.FromResponse(_response, LibraryId)
-                .ShouldBeSavedNoAssignmentForWriting(DatabaseConnection)
-                .ShouldBeSavedAssignmentForReviewing(DatabaseConnection, _reviewer);
+            _assert
+                .ShouldBeSavedNoAssignmentForWriting()
+                .ShouldBeSavedAssignmentForReviewing(_reviewer);
         }
     }
 }

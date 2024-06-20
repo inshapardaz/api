@@ -2,10 +2,10 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
@@ -16,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
     public class WhenDeletingBookWithPermission : TestBase
     {
         private HttpResponseMessage _response;
-
+        private BookAssert _bookAssert;
         private BookDto _expected;
         private string _imageFilePath;
         private int _authorId;
@@ -39,8 +39,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
             _expected = books.PickRandom();
 
             
-            _imageFilePath = DatabaseConnection.GetFileById(_expected.ImageId.Value).FilePath;
+            _imageFilePath = FileTestRepository.GetFileById(_expected.ImageId.Value).FilePath;
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{_expected.Id}");
+            _bookAssert = Services.GetService<BookAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -58,42 +59,46 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         [Test]
         public void ShouldHaveDeletedBook()
         {
-            BookAssert.ShouldHaveDeletedBook(_expected.Id, DatabaseConnection);
+            _bookAssert.ShouldHaveDeletedBook(_expected.Id);
         }
 
         [Test]
         public void ShouldHaveDeletedTheBookImage()
         {
-            BookAssert.ShouldHaveDeletedBookImage(_expected.Id, _expected.ImageId, _imageFilePath, DatabaseConnection, FileStore);
+            _bookAssert.ShouldHaveDeletedBookImage(_expected.Id, _expected.ImageId, _imageFilePath);
         }
 
         [Test]
         public void ShouldNotHaveDeletedTheAuthor()
         {
-            AuthorAssert.ShouldNotHaveDeletedAuthor(_authorId, DatabaseConnection);
+            Services.GetService<AuthorAssert>()
+                .ShouldNotHaveDeletedAuthor(_authorId);
         }
 
         [Test]
         public void ShouldNotHaveDeletedTheSeries()
         {
-            SeriesAssert.ShouldNotHaveDeletedSeries(_expected.SeriesId.Value, DatabaseConnection);
+            Services.GetService<SeriesAssert>()
+                .ShouldNotHaveDeletedSeries(_expected.SeriesId.Value);
         }
 
         [Test]
         public void ShouldNotHaveDeletedTheCategory()
         {
-            var cats = DatabaseConnection.GetCategoriesByBook(_expected.Id);
-            cats.ForEach(cat => CategoryAssert.ShouldNotHaveDeletedCategory(LibraryId, cat.Id, DatabaseConnection));
+            var cats = CategoryTestRepository.GetCategoriesByBook(_expected.Id);
+            var catagoryAssert = Services.GetService<CategoryAssert>().ForLibrary(LibraryId);
+            cats.ForEach(cat => catagoryAssert.ShouldNotHaveDeletedCategory(cat.Id));
         }
 
         [Test]
         public void ShouldNotHaveDeletedAllChapters()
         {
             var chapters = BookBuilder.Chapters.Where(c => c.BookId == _expected.Id).ToList();
+            var chapterAssert = Services.GetService<ChapterAssert>().ForLibrary(LibraryId);
 
             foreach (var chapter in chapters)
             {
-                ChapterAssert.ShouldHaveDeletedChapter(chapter.Id, DatabaseConnection);
+                chapterAssert.ShouldHaveDeletedChapter(chapter.Id);
             }
         }
 
@@ -111,13 +116,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         [Test]
         public void ShouldBeDeletedFromTheFavoritesOfAllUsers()
         {
-            BookAssert.ShouldNotBeInFavorites(_expected.Id, AccountId, DatabaseConnection);
+            _bookAssert.ShouldNotBeInFavorites(_expected.Id, AccountId);
         }
 
         [Test]
         public void ShouldBeDeletedFromTheRecentReadBooks()
         {
-            BookAssert.ShouldHaveDeletedBookFromRecentReads(_expected.Id, DatabaseConnection);
+            _bookAssert.ShouldHaveDeletedBookFromRecentReads(_expected.Id);
         }
     }
 }

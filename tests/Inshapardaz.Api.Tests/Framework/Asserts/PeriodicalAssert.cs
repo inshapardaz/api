@@ -2,9 +2,9 @@
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
+using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Domain.Adapters.Repositories;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -19,23 +19,39 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         private PeriodicalView _view;
         private int _libraryId;
 
-        public PeriodicalAssert(HttpResponseMessage response)
+        private readonly IPeriodicalTestRepository _periodicalRepository;
+        private readonly IFileTestRepository _fileRepository;
+        private readonly ICategoryTestRepository _categoryRepository;
+        private readonly IIssueTestRepository _issueRepository;
+        private readonly FakeFileStorage _fileStorage;
+
+        public PeriodicalAssert(IPeriodicalTestRepository periodicalRepository,
+            IFileTestRepository fileRepository,
+            ICategoryTestRepository categoryRepository,
+            FakeFileStorage fileStorage,
+            IIssueTestRepository issueRepository)
+        {
+            _periodicalRepository = periodicalRepository;
+            _fileRepository = fileRepository;
+            _categoryRepository = categoryRepository;
+            _fileStorage = fileStorage;
+            _issueRepository = issueRepository;
+        }
+
+        public PeriodicalAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _view = response.GetContent<PeriodicalView>().Result;
+            return this;
         }
 
-        public PeriodicalAssert(PeriodicalView view)
+        public PeriodicalAssert ForView(PeriodicalView view)
         {
             _view = view;
+            return this;
         }
 
-        public static PeriodicalAssert WithResponse(HttpResponseMessage response)
-        {
-            return new PeriodicalAssert(response);
-        }
-
-        public PeriodicalAssert InLibrary(int libraryId)
+        public PeriodicalAssert ForLibrary(int libraryId)
         {
             _libraryId = libraryId;
             return this;
@@ -107,7 +123,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal PeriodicalAssert ShouldHaveImageLink()
+        public PeriodicalAssert ShouldHaveImageLink()
         {
             _view.Link("image").ShouldBeGet();
             return this;
@@ -143,15 +159,15 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal PeriodicalAssert ShouldHaveImageLocationHeader()
+        public PeriodicalAssert ShouldHaveImageLocationHeader()
         {
             _response.Headers.Location.AbsoluteUri.Should().NotBeEmpty();
             return this;
         }
 
-        internal PeriodicalAssert ShouldHaveSavedPeriodical(IDbConnection dbConnection)
+        public PeriodicalAssert ShouldHaveSavedPeriodical()
         {
-            var dbPeriodical = dbConnection.GetPeriodicalById(_view.Id);
+            var dbPeriodical = _periodicalRepository.GetPeriodicalById(_view.Id);
             dbPeriodical.Should().NotBeNull();
             _view.Title.Should().Be(dbPeriodical.Title);
             _view.Description.Should().Be(dbPeriodical.Description);
@@ -160,25 +176,28 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static void ShouldHaveDeletedPeriodical(IDbConnection dbConnection, int periodicalId)
+        public PeriodicalAssert ShouldHaveDeletedPeriodical(int periodicalId)
         {
-            var dbPeriodical = dbConnection.GetPeriodicalById(periodicalId);
+            var dbPeriodical = _periodicalRepository.GetPeriodicalById(periodicalId);
             dbPeriodical.Should().BeNull();
+            return this;
         }
 
-        internal static void ShouldHaveDeletedPeriodicalImage(IDbConnection dbConnection, int periodicalId)
+        public PeriodicalAssert ShouldHaveDeletedPeriodicalImage(int periodicalId)
         {
-            var periodicalImage = dbConnection.GetPeriodicalImage(periodicalId);
+            var periodicalImage = _periodicalRepository.GetPeriodicalImage(periodicalId);
             periodicalImage.Should().BeNull();
+            return this;
         }
 
-        internal static void ShouldHaveDeletedIssuesForPeriodical(IDbConnection dbConnection, int periodicalId)
+        public PeriodicalAssert ShouldHaveDeletedIssuesForPeriodical(int periodicalId)
         {
-            var issues = dbConnection.GetIssuesByPeriodical(periodicalId);
+            var issues = _issueRepository.GetIssuesByPeriodical(periodicalId);
             issues.Should().BeNullOrEmpty();
+            return this;
         }
 
-        internal PeriodicalAssert ShouldBeSameAs(PeriodicalView expected, int? issueCount, IDbConnection db)
+        public PeriodicalAssert ShouldBeSameAs(PeriodicalView expected, int? issueCount = null)
         {
             _view.Should().NotBeNull();
             _view.Title.Should().Be(expected.Title);
@@ -190,7 +209,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 _view.IssueCount.Should().Be(issueCount);
             }
 
-            var catergories = db.GetCategoriesByPeriodical(expected.Id);
+            var catergories = _categoryRepository.GetCategoriesByPeriodical(expected.Id);
             _view.Categories.Should().HaveSameCount(catergories);
 
             foreach (var catergory in catergories)
@@ -206,7 +225,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal PeriodicalAssert ShouldBeSameAs(PeriodicalDto expected, int? issueCount, IDbConnection db)
+        public PeriodicalAssert ShouldBeSameAs(PeriodicalDto expected, int? issueCount = null)
         {
             _view.Should().NotBeNull();
             _view.Title.Should().Be(expected.Title);
@@ -218,7 +237,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 _view.IssueCount.Should().Be(issueCount);
             }
 
-            var catergories = db.GetCategoriesByPeriodical(expected.Id);
+            var catergories = _categoryRepository.GetCategoriesByPeriodical(expected.Id);
             _view.Categories.Should().HaveSameCount(catergories);
 
             foreach (var catergory in catergories)
@@ -234,7 +253,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal PeriodicalAssert ShouldHaveSameCategories(IEnumerable<CategoryDto> categories)
+        public PeriodicalAssert ShouldHaveSameCategories(IEnumerable<CategoryDto> categories)
         {
             foreach (var catergory in categories)
             {
@@ -248,59 +267,48 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public PeriodicalAssert ShouldHaveCategories(List<CategoryDto> categories, IDbConnection databaseConnection, int? id = null)
+        public PeriodicalAssert ShouldHaveCategories(List<CategoryDto> categories, int? id = null)
         {
-            var savedCategories = databaseConnection.GetCategoriesByPeriodical(id ?? _view.Id).Select(c => new { c.Id, c.Name });
+            var savedCategories = _categoryRepository.GetCategoriesByPeriodical(id ?? _view.Id).Select(c => new { c.Id, c.Name });
             var extectedCategoried = categories.Select(c => new { c.Id, c.Name });
 
             savedCategories.Should().BeEquivalentTo(extectedCategoried);
             return this;
         }
 
-        internal static void ShouldNotHaveUpdatedPeriodicalImage(int periodicalId, byte[] oldImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        public PeriodicalAssert ShouldNotHaveUpdatedPeriodicalImage(int periodicalId, byte[] oldImage)
         {
-            var imageUrl = dbConnection.GetPeriodicalImageUrl(periodicalId);
+            var imageUrl = _periodicalRepository.GetPeriodicalImageUrl(periodicalId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().Equal(oldImage);
+            return this;
         }
 
-        internal static void ShouldHaveAddedPeriodicalImage(int periodicalId, IDbConnection dbConnection, IFileStorage fileStorage)
+        public PeriodicalAssert ShouldHaveAddedPeriodicalImage(int periodicalId)
         {
-            var imageUrl = dbConnection.GetPeriodicalImageUrl(periodicalId);
+            var imageUrl = _periodicalRepository.GetPeriodicalImageUrl(periodicalId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty();
+            return this;
         }
 
-        internal static void ShouldHaveUpdatedPeriodicalImage(int periodicalId, byte[] newImage, IDbConnection dbConnection, IFileStorage fileStorage)
+        public PeriodicalAssert ShouldHaveUpdatedPeriodicalImage(int periodicalId, byte[] newImage)
         {
-            var imageUrl = dbConnection.GetPeriodicalImageUrl(periodicalId);
+            var imageUrl = _periodicalRepository.GetPeriodicalImageUrl(periodicalId);
             imageUrl.Should().NotBeNull();
-            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
+            return this;
         }
 
-        internal static void ShouldHavePublicImage(int periodicalId, IDbConnection dbConnection)
+        public PeriodicalAssert ShouldHavePublicImage(int periodicalId)
         {
-            var image = dbConnection.GetPeriodicalImage(periodicalId);
+            var image = _periodicalRepository.GetPeriodicalImage(periodicalId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
-        }
-    }
-
-    public static class PeriodicalAssertionExtensions
-    {
-        public static PeriodicalAssert ShouldMatch(this PeriodicalView view, PeriodicalDto dto, int? issueCount, IDbConnection dbConnection, int? libraryId = null)
-        {
-            if (libraryId.HasValue)
-            {
-                return new PeriodicalAssert(view)
-                            .InLibrary(libraryId.Value)
-                           .ShouldBeSameAs(dto, issueCount, dbConnection);
-            }
-            return new PeriodicalAssert(view)
-                               .ShouldBeSameAs(dto, issueCount, dbConnection);
+            return this;
         }
     }
 }

@@ -3,7 +3,6 @@ using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System.Data;
 using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
@@ -14,53 +13,57 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         private CategoryView _category;
         private int _libraryId;
 
-        public CategoryAssert(CategoryView view)
+        private readonly ICategoryTestRepository _categoryRepository;
+        private readonly IFileTestRepository _fileRepository;
+
+        public CategoryAssert(IFileTestRepository fileRepository,
+            ICategoryTestRepository categoryRepository)
         {
-            _category = view;
+            _fileRepository = fileRepository;
+            _categoryRepository = categoryRepository;
         }
 
-        public CategoryAssert(HttpResponseMessage response)
+        public CategoryAssert ForView(CategoryView view)
+        {
+            _category = view;
+            return this;
+        }
+
+        public CategoryAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _category = response.GetContent<CategoryView>().Result;
+            return this;
         }
 
-        internal static CategoryAssert FromResponse(HttpResponseMessage response)
+        public CategoryAssert ForLibrary(int libraryId)
         {
-            return new CategoryAssert(response);
+            _libraryId = libraryId;
+            return this;
         }
 
-        internal static CategoryAssert FromObject(CategoryView view)
+        public CategoryAssert ShouldNotHaveDeletedCategory(int categoryId)
         {
-            return new CategoryAssert(view);
-        }
-
-        internal static void ShouldNotHaveDeletedCategory(int libraryId, int categoryId, IDbConnection dbConnection)
-        {
-            var author = dbConnection.GetCategoryById(libraryId, categoryId);
+            var author = _categoryRepository.GetCategoryById(_libraryId, categoryId);
             author.Should().NotBeNull();
+            return this;
         }
 
-        internal static void ShouldHaveDeletedCategory(int libraryId, int categoryId, IDbConnection dbConnection)
+        public CategoryAssert ShouldHaveDeletedCategory(int categoryId)
         {
-            var author = dbConnection.GetCategoryById(libraryId, categoryId);
+            var author = _categoryRepository.GetCategoryById(_libraryId, categoryId);
             author.Should().BeNull();
+            return this;
         }
 
-        internal CategoryAssert ShouldHaveCorrectLocationHeader()
+        public CategoryAssert ShouldHaveCorrectLocationHeader()
         {
             _response.Headers.Location.Should().NotBeNull();
             _response.Headers.Location.AbsolutePath.Should().EndWith($"libraries/{_libraryId}/categories/{_category.Id}");
             return this;
         }
 
-        internal CategoryAssert InLibrary(int libraryId)
-        {
-            _libraryId = libraryId;
-            return this;
-        }
-
-        internal CategoryAssert ShouldHaveBooksLink()
+        public CategoryAssert ShouldHaveBooksLink()
         {
             _category.Link("books")
                   .ShouldBeGet()
@@ -70,7 +73,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal CategoryAssert ShouldHaveDeleteLink()
+        public CategoryAssert ShouldHaveDeleteLink()
         {
             _category.DeleteLink()
                   .ShouldBeDelete()
@@ -78,42 +81,42 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal CategoryAssert ShouldNotHaveUpdateLink()
+        public CategoryAssert ShouldNotHaveUpdateLink()
         {
             _category.UpdateLink().Should().BeNull();
 
             return this;
         }
 
-        internal CategoryAssert ShouldNotHaveDeleteLink()
+        public CategoryAssert ShouldNotHaveDeleteLink()
         {
             _category.DeleteLink().Should().BeNull();
             return this;
         }
 
-        internal CategoryAssert WithReadOnlyLinks()
+        public CategoryAssert WithReadOnlyLinks()
         {
             ShouldNotHaveDeleteLink();
             ShouldNotHaveUpdateLink();
             return this;
         }
 
-        internal CategoryAssert ShouldHaveUpdatedCategory(IDbConnection dbConnection)
+        public CategoryAssert ShouldHaveUpdatedCategory()
         {
-            var dbCat = dbConnection.GetCategoryById(_libraryId, _category.Id);
+            var dbCat = _categoryRepository.GetCategoryById(_libraryId, _category.Id);
             dbCat.Should().NotBeNull();
             dbCat.Id.Should().Be(_category.Id);
             dbCat.Name.Should().Be(_category.Name);
             return this;
         }
 
-        internal CategoryAssert WithBookCount(int bookCount)
+        public CategoryAssert WithBookCount(int bookCount)
         {
             _category.BookCount.Should().Be(bookCount);
             return this;
         }
 
-        internal CategoryAssert ShouldHaveUpdateLink()
+        public CategoryAssert ShouldHaveUpdateLink()
         {
             _category.UpdateLink()
                   .ShouldBePut()
@@ -122,7 +125,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal CategoryAssert ShouldHaveSelfLink(string url)
+        public CategoryAssert ShouldHaveSelfLink(string url)
         {
             _category.SelfLink()
                   .ShouldBeGet()
@@ -131,7 +134,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal CategoryAssert ShouldHaveSelfLink()
+        public CategoryAssert ShouldHaveSelfLink()
         {
             _category.SelfLink()
                   .ShouldBeGet()
@@ -140,9 +143,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal CategoryAssert ShouldHaveCreatedCategory(IDbConnection dbConnection)
+        public CategoryAssert ShouldHaveCreatedCategory()
         {
-            var cat = dbConnection.GetCategoryById(_libraryId, _category.Id);
+            var cat = _categoryRepository.GetCategoryById(_libraryId, _category.Id);
             cat.Should().NotBeNull();
             return this;
         }
@@ -163,19 +166,6 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 _category.Links.Should().BeEquivalentTo(expected.Links);
             }
             return this;
-        }
-    }
-
-    public static class CategoryAssertionExtensions
-    {
-        public static CategoryAssert ShouldMatch(this CategoryView view, CategoryDto dto)
-        {
-            return CategoryAssert.FromObject(view).ShouldBeSameAs(dto);
-        }
-
-        public static CategoryAssert ShouldMatch(this CategoryView view, CategoryView expected)
-        {
-            return CategoryAssert.FromObject(view).ShouldBeSameAs(expected);
         }
     }
 }

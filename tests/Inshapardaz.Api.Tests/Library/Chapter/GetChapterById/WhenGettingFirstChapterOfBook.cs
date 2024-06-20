@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -27,7 +28,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
             _expected = ChapterBuilder.WithLibrary(LibraryId).Build(4).First();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_expected.BookId}/chapters/{_expected.ChapterNumber}");
-            _assert = ChapterAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<ChapterAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]

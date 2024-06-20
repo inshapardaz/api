@@ -1,6 +1,7 @@
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -26,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
             BookBuilder.WithLibrary(LibraryId).IsPublic().Build(3);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&favorite=true");
-            _assert = new PagingAssert<BookView>(_response);
+            _assert = Services.GetService<PagingAssert<BookView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]

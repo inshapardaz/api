@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -16,8 +17,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         private HttpResponseMessage _response;
         private string _newLanguage;
         private IssueDto _issue;
-        private IssueContentDto _file;
-        private byte[] _contents;
+        private IssueContentDto _content;
+        private byte[] _text;
         private IssueContentAssert _assert;
 
         public WhenUpdatingIssueContentWithDifferentLanguage()
@@ -31,12 +32,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
             _newLanguage = RandomData.Locale;
 
             _issue = IssueBuilder.WithLibrary(LibraryId).WithContents(2).WithContentLanguage($"{_newLanguage}_old").Build();
-            _file = IssueBuilder.Contents.PickRandom();
+            _content = IssueBuilder.Contents.PickRandom();
 
-            _contents = new Faker().Image.Random.Bytes(50);
+            _text = new Faker().Image.Random.Bytes(50);
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents",_contents, _newLanguage, _file.MimeType);
-            _assert = new IssueContentAssert(_response, LibraryId);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents/{_content.Id}?language={_newLanguage}",_text, _content.MimeType);
+            _assert = Services.GetService<IssueContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -70,13 +71,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         [Test]
         public void ShouldHaveCorrectMimeType()
         {
-            _assert.ShouldHaveCorrectMimeType(_file.MimeType);
+            _assert.ShouldHaveCorrectMimeType(_content.MimeType);
         }
 
         [Test]
         public void ShouldHaveCorrectContentSaved()
         {
-            _assert.ShouldHaveCorrectContents(_contents, FileStore, DatabaseConnection, newLanguage: _newLanguage);
+            _assert.ShouldHaveCorrectContents(_text, newLanguage: _newLanguage);
         }
     }
 }

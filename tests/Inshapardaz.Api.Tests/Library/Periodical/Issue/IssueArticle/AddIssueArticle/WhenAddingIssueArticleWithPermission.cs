@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles", _article);
 
-            _assert = IssueArticleAssert.FromResponse(_response, LibraryId, issue);
+            _assert = Services.GetService<IssueArticleAssert>().ForResponse(_response).ForDto(issue).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -57,7 +58,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
         [Test]
         public void ShouldSaveTheIssue()
         {
-            _assert.ShouldHaveSavedArticle(DatabaseConnection);
+            _assert.ShouldHaveSavedArticle();
         }
 
         [Test]

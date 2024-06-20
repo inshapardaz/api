@@ -7,6 +7,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
@@ -33,8 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
             ArticleBuilder.WithLibrary(LibraryId).WithCategories(_categories).WithAuthors(_authors).IsPublic().Build(30);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/articles?pageNumber=2&pageSize=10&query=itle");
-
-            _assert = new PagingAssert<ArticleView>(_response);
+            _assert = Services.GetService<PagingAssert<ArticleView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -78,12 +78,12 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
             {
                 var actual = _assert.Data.ElementAt(i);
                 var expected = expectedItems[i];
-                actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
+                Services.GetService<ArticleAssert>().ForArticleView(actual).ForLibrary(LibraryId)
                             .ShouldHaveSelfLink()
                             .WithReadOnlyLinks()
                             .ShouldHavePublicImageLink()
                             .ShouldHaveAddFavoriteLink()
-                            .ShouldBeSameAs(expected, DatabaseConnection);
+                            .ShouldBeSameAs(expected);
             }
         }
     }

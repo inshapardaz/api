@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -15,6 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.DeleteChapterContents
         : TestBase
     {
         private HttpResponseMessage _response;
+        private ChapterContentAssert _assert;
         private ChapterContentDto _content;
 
         public WhenDeletingChapterContentsWithPermission(Role role)
@@ -29,6 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.DeleteChapterContents
             _content = ChapterBuilder.Contents.Single(x => x.ChapterId == chapter.Id);
 
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.ChapterNumber}/contents?language={_content.Language}");
+            _assert = Services.GetService<ChapterContentAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -46,7 +49,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.DeleteChapterContents
         [Test]
         public void ShouldHaveDeletedChapterContent()
         {
-            ChapterContentAssert.ShouldHaveDeletedContent(DatabaseConnection, _content);
+            _assert.ShouldHaveDeletedContent(_content);
         }
     }
 }

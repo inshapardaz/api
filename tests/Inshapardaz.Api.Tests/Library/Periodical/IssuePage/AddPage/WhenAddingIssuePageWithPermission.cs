@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
             _page = new IssuePageView { Text = RandomData.Text, SequenceNumber = 1 };
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages", _page);
 
-            _assert = IssuePageAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<IssuePageAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -57,7 +58,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
         [Test]
         public void ShouldSavedThePage()
         {
-            _assert.ShouldHaveSavedPage(DatabaseConnection);
+            _assert.ShouldHaveSavedPage();
         }
 
         [Test]

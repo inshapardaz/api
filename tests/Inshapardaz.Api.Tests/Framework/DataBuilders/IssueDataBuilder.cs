@@ -6,12 +6,11 @@ using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
-using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using RandomData = Inshapardaz.Api.Tests.Framework.Helpers.RandomData;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Helpers;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
@@ -23,8 +22,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             public int AccountId { get; set; }
             public int? Count { get; set; }
         }
-
-        private readonly IDbConnection _connection;
 
         private readonly FakeFileStorage _fileStorage;
 
@@ -65,11 +62,26 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IEnumerable<IssueContentDto> Contents => _contents;
         public IEnumerable<IssueArticleContentDto> ArticleContents => _articleContents;
 
-        public IssueDataBuilder(IProvideConnection connectionProvider, IFileStorage fileStorage, AuthorsDataBuilder authorBuilder)
+        private IPeriodicalTestRepository _periodicalRepository;
+        private IIssueTestRepository _issueRepository;
+        private IIssuePageTestRepository _issuePageRepository;
+        private IIssueArticleTestRepository _issueArticleRepository;
+        private IFileTestRepository _fileRepository;
+        public IssueDataBuilder(IFileStorage fileStorage,
+               AuthorsDataBuilder authorBuilder,
+               IPeriodicalTestRepository periodicalRepository,
+               IFileTestRepository fileRepository,
+               IIssueTestRepository issueRepository,
+               IIssuePageTestRepository issuePageRepository,
+               IIssueArticleTestRepository issueArticleRepository)
         {
-            _connection = connectionProvider.GetConnection();
             _fileStorage = fileStorage as FakeFileStorage;
             _authorBuilder = authorBuilder;
+            _periodicalRepository = periodicalRepository;
+            _fileRepository = fileRepository;
+            _issueRepository = issueRepository;
+            _issuePageRepository = issuePageRepository;
+            _issueArticleRepository = issueArticleRepository;
         }
 
         internal IssueDataBuilder IsPublic(bool isPublic = true)
@@ -224,7 +236,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                     .With(b => b.Language, RandomData.Locale)
                     .Create();
 
-                _connection.AddPeriodical(periodical);
+                _periodicalRepository.AddPeriodical(periodical);
                 _periodicalId = periodical.Id;
             }
 
@@ -254,11 +266,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                    _connection.AddFile(issueImage);
+                    _fileRepository.AddFile(issueImage);
 
                     _files.Add(issueImage);
                     _fileStorage.SetupFileContents(issueImage.FilePath, RandomData.Bytes);
-                    _connection.AddFile(issueImage);
 
                     issue.ImageId = issueImage.Id;
                 }
@@ -279,10 +290,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .ToList();
                     _files.AddRange(files);
                     files.ForEach(f => _fileStorage.SetupFileContents(f.FilePath, RandomData.Bytes));
-                    _connection.AddFiles(files);
+                    _fileRepository.AddFiles(files);
                 }
 
-                _connection.AddIssue(issue);
+                _issueRepository.AddIssue(issue);
 
                 if (files != null)
                 {
@@ -294,7 +305,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         MimeType = f.MimeType,
                         FilePath = f.FilePath
                     }).ToList();
-                    _connection.AddIssueFiles(issue.Id, contents);
+                    _issueRepository.AddIssueFiles(issue.Id, contents);
                     _contents.AddRange(contents);
                 }
 
@@ -311,11 +322,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                            _connection.AddFile(pageImage);
+                            _fileRepository.AddFile(pageImage);
 
                             _files.Add(pageImage);
                             _fileStorage.SetupFileContents(pageImage.FilePath, RandomData.Bytes);
-                            _connection.AddFile(pageImage);
                         }
 
                         pages.Add(fixture.Build<IssuePageDto>()
@@ -366,7 +376,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         }
                     }
 
-                    _connection.AddIssuePages(pages);
+                    _issuePageRepository.AddIssuePages(pages);
                     _pages.AddRange(pages);
                 }
 
@@ -391,30 +401,47 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                             .Create();
 
                         articles.Add(article);
-                        _connection.AddIssueArticle(article);
+                        _issueArticleRepository.AddIssueArticle(article);
 
                         if (Author != null)
                         {
-                            _connection.AddIssueArticleAuthor(article.Id, Author.Id);
+                            _issueArticleRepository.AddIssueArticleAuthor(article.Id, Author.Id);
                         }
                         else
                         {
                             foreach (var author in _authors)
                             {
-                                _connection.AddIssueArticleAuthor(article.Id, author.Id);
+                                _issueArticleRepository.AddIssueArticleAuthor(article.Id, author.Id);
                             }
                         }
 
                         if (_articleContentCount > 0)
                         {
-                            var articleContent = fixture.Build<IssueArticleContentDto>()
+
+                            var articleContents = fixture.Build<IssueArticleContentDto>()
                                     .With(x => x.ArticleId, article.Id)
-                                    .With(x => x.Language, () => _articleContentLanguage ?? RandomData.String)
-                                    .With(x => x.Text, RandomData.String)
+                                    .With(x => x.Language, () => _articleContentLanguage ?? RandomData.NextLocale())
                                     .CreateMany(_articleContentCount);
 
-                            _connection.AddIssueArticleContents(articleContent);
-                            _articleContents.AddRange(articleContent);
+                            foreach (var articleContent in articleContents)
+                            {
+                                var fileName = FilePathHelper.GetIssueArticleContentFileName(articleContent.Language);
+                                var filePath = FilePathHelper.GetIssueArticleContentPath(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article.Id, fileName);
+                                var articleContentFile = fixture.Build<FileDto>()
+                                         .With(a => a.FilePath, filePath)
+                                         .With(a => a.IsPublic, false)
+                                         .With(a => a.MimeType, MimeTypes.Markdown)
+                                         .Create();
+                                _fileRepository.AddFile(articleContentFile);
+                                _files.Add(articleContentFile);
+
+                                var articleContentData = RandomData.Text;
+                                _fileStorage.SetupFileContents(articleContentFile.FilePath, articleContentData);
+                                articleContent.FileId = articleContentFile.Id;
+                            }   
+
+                            _issueArticleRepository.AddIssueArticleContents(articleContents);
+                            _articleContents.AddRange(articleContents);
                         }
                     }
 
@@ -422,39 +449,39 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 }
             }
 
-            if (_favoriteBooks.Any())
-            {
-                foreach (var f in _favoriteBooks)
-                {
-                    var booksToAddToFavorite = f.Count.HasValue ? _issues.PickRandom(f.Count.Value) : _issues;
-                    _connection.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), f.AccountId);
-                }
-            }
+            // if (_favoriteBooks.Any())
+            // {
+            //     foreach (var f in _favoriteBooks)
+            //     {
+            //         var booksToAddToFavorite = f.Count.HasValue ? _issues.PickRandom(f.Count.Value) : _issues;
+            //         _bookRepository.AddBooksToFavorites(_libraryId, booksToAddToFavorite.Select(b => b.Id), f.AccountId);
+            //     }
+            // }
 
-            if (_readBooks.Any())
-            {
-                foreach (var r in _readBooks)
-                {
-                    var booksToAddToRecent = r.Count.HasValue ? _issues.PickRandom(r.Count.Value) : _issues;
-                    foreach (var recentBook in booksToAddToRecent)
-                    {
-                        RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, AccountId = r.AccountId, DateRead = RandomData.Date };
-                        _connection.AddBookToRecentReads(recent);
-                        _recentBooks.Add(recent);
-                    }
-                }
-            }
+            // if (_readBooks.Any())
+            // {
+            //     foreach (var r in _readBooks)
+            //     {
+            //         var booksToAddToRecent = r.Count.HasValue ? _issues.PickRandom(r.Count.Value) : _issues;
+            //         foreach (var recentBook in booksToAddToRecent)
+            //         {
+            //             RecentBookDto recent = new RecentBookDto { LibraryId = _libraryId, BookId = recentBook.Id, AccountId = r.AccountId, DateRead = RandomData.Date };
+            //             _connection.AddBookToRecentReads(recent);
+            //             _recentBooks.Add(recent);
+            //         }
+            //     }
+            // }
 
             return _issues;
         }
 
         public void CleanUp()
         {
-            _connection.DeleteIssueArticles(_articles);
-            _connection.DeleteIssuePages(_pages);
-            _connection.DeleteIssues(_issues);
-            _connection.DeleteFiles(_files);
-            if (_periodicalId.HasValue) _connection.DeletePeriodical(_periodicalId.Value);
+            _issueArticleRepository.DeleteIssueArticles(_articles);
+            _issuePageRepository.DeleteIssuePages(_pages);
+            _issueRepository.DeleteIssues(_issues);
+            _fileRepository.DeleteFiles(_files);
+            if (_periodicalId.HasValue) _periodicalRepository.DeletePeriodical(_periodicalId.Value);
         }
     }
 }

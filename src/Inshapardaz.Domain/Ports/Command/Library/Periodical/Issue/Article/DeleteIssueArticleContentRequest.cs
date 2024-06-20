@@ -1,5 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,19 +30,30 @@ public class DeleteIssueArticleContentRequest : LibraryBaseCommand
 public class DeleteArticleContentRequestHandler : RequestHandlerAsync<DeleteIssueArticleContentRequest>
 {
     private readonly IIssueArticleRepository _articleRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public DeleteArticleContentRequestHandler(IIssueArticleRepository articleRepository)
+
+    public DeleteArticleContentRequestHandler(IIssueArticleRepository articleRepository, IAmACommandProcessor commandProcessor)
     {
         _articleRepository = articleRepository;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<DeleteIssueArticleContentRequest> HandleAsync(DeleteIssueArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var content = await _articleRepository.GetArticleContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, cancellationToken);
+        var content = await _articleRepository.GetArticleContent(command.LibraryId, new IssueArticleContentModel
+        {
+            PeriodicalId = command.PeriodicalId,
+            VolumeNumber = command.VolumeNumber,
+            IssueNumber = command.IssueNumber,
+            SequenceNumber = command.SequenceNumber,
+            Language = command.Language
+        }, cancellationToken);
 
         if (content != null)
         {
+            await _commandProcessor.SendAsync(new DeleteTextFileCommand(content.FileId), cancellationToken: cancellationToken);
             await _articleRepository.DeleteArticleContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
         }
 

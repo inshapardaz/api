@@ -5,6 +5,7 @@ using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
             BookShelfBuilder.WithLibrary(LibraryId).WithBooks(3).AsPublic().ForAccount(AccountId).Build(4);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/bookshelves?onlyPublic=true&pageNumber=1&pageSize=10");
-            _assert = new PagingAssert<BookShelfView>(_response);
+            _assert = Services.GetService<PagingAssert<BookShelfView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -62,10 +63,12 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                var assert = actual.ShouldMatch(item)
-                      .InLibrary(LibraryId)
-                      .WithBookCount(3)
-                      .ShouldHavePublicImageLink();
+                var assert = Services.GetService<BookShelfAssert>()
+                        .ForView(actual)
+                        .ForLibrary(LibraryId)
+                        .ShouldBeSameAs(item)
+                        .WithBookCount(3)
+                        .ShouldHavePublicImageLink();
                 if (item.AccountId == AccountId)
                 {
                     assert.WithEditableLinks();

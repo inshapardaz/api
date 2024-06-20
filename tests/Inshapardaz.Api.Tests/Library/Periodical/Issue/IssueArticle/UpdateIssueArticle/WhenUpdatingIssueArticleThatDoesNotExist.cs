@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -30,7 +31,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_newArticle.SequenceNumber + 1}", _newArticle);
 
-            _articleAssert = IssueArticleAssert.FromResponse(_response, LibraryId, issue);
+            _articleAssert = Services.GetService<IssueArticleAssert>().ForResponse(_response)
+                    .ForLibrary(LibraryId)
+                    .ForDto(issue);
         }
 
         [OneTimeTearDown]
@@ -54,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         [Test]
         public void ShouldSaveTheIssue()
         {
-            _articleAssert.ShouldHaveSavedArticle(DatabaseConnection);
+            _articleAssert.ShouldHaveSavedArticle();
         }
 
         [Test]

@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.BookShelf.UpdateBookShelf
@@ -31,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UpdateBookShelf
             _expected = new BookShelfView { Name = RandomData.Name, Description = RandomData.Text, IsPublic = false };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/bookshelves/{bookshelf.Id}", _expected);
-            _assert = BookShelfAssert.WithResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<BookShelfAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -49,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UpdateBookShelf
         [Test]
         public void ShouldHaveUpdatedTheBookShelf()
         {
-            _assert.ShouldHaveSavedBookShelf(DatabaseConnection, Account.Id);
+            _assert.ShouldHaveSavedBookShelf(Account.Id);
         }
     }
 }

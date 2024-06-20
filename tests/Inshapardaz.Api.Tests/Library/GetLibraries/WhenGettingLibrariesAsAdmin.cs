@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.GetLibraries
@@ -24,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
             LibraryBuilder.AssignToUser(AccountId).Build(1);
 
             _response = await Client.GetAsync($"/libraries");
-            _assert = new PagingAssert<LibraryView>(_response);
+            _assert = Services.GetService<PagingAssert<LibraryView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]

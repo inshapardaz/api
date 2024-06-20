@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssu
         : TestBase
     {
         private HttpResponseMessage _response;
+        private IssueArticleAssert _assert;
         private IssueArticleDto _expected;
 
         public WhenDeletingIssueArticleWithPermission(Role role)
@@ -29,6 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssu
             var articles = IssueBuilder.GetArticles(issue.Id);
             _expected = RandomData.PickRandom(articles);
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_expected.SequenceNumber}");
+            _assert = Services.GetService<IssueArticleAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -46,13 +49,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssu
         [Test]
         public void ShouldHaveDeletedArticle()
         {
-            IssueArticleAssert.ShouldHaveDeletedArticle(_expected.Id, DatabaseConnection);
+            _assert.ShouldHaveDeletedArticle(_expected.Id);
         }
 
         [Test]
         public void ShouldHaveDeletedTheChapterContents()
         {
-            IssueArticleAssert.ThatContentsAreDeletedForArticle(_expected.Id, DatabaseConnection);
+            _assert.ThatContentsAreDeletedForArticle(_expected.Id);
         }
     }
 }

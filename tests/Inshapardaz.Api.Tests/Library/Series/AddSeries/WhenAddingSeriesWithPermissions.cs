@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.AddSeries
@@ -28,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.AddSeries
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/series", series);
 
-            _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<SeriesAssert>().ForResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -52,7 +53,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.AddSeries
         [Test]
         public void ShouldSaveTheSeries()
         {
-            _assert.ShouldHaveSavedSeries(DatabaseConnection);
+            _assert.ShouldHaveSavedSeries();
         }
 
         [Test]

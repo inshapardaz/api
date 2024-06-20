@@ -1,75 +1,210 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Framework.Dto;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Models.Library;
 using System.Collections.Generic;
-using System.Data;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
-    public static class AccountDataHelper
+    public interface IAccountTestRepository
     {
-        private static DatabaseTypes _dbType => TestBase.DatabaseType;
-        public static AccountDto GetAccountByEmail(this IDbConnection connection, string email)
+        AccountDto GetAccountByEmail(string email);
+        AccountDto GetAccountById(int id);
+        void AddAccount(AccountDto account);
+        void RevokeRefreshToken(string refreshToken);
+        string GetRefreshToken(string email);
+
+        void DeleteAccount(int accountId);
+        void DeleteAccountByEmail(string email);
+        void AddAccountToLibrary(AccountDto account, int libraryId, Role role = Role.Reader);
+        IEnumerable<AccountLibraryDto> GetAccountLibraries(int accountId);
+    }
+
+    public class MySqlAccountTestRepository : IAccountTestRepository
+    {
+        private IProvideConnection _connectionProvider;
+
+        public MySqlAccountTestRepository(IProvideConnection connectionProvider)
         {
-            var sql = @"SELECT * FROM Accounts WHERE Email = @Email";
-            return connection.QuerySingleOrDefault<AccountDto>(sql, new { Email = email });
+            _connectionProvider = connectionProvider;
         }
 
-        public static AccountDto GetAccountById(this IDbConnection connection, int id)
+        public AccountDto GetAccountByEmail(string email)
         {
-            var sql = @"SELECT * FROM Accounts WHERE Id = @Id";
-            return connection.QuerySingleOrDefault<AccountDto>(sql, new { Id = id });
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT * FROM Accounts WHERE Email = @Email";
+                return connection.QuerySingleOrDefault<AccountDto>(sql, new { Email = email });
+            }
         }
 
-        public static void AddAccount(this IDbConnection connection, AccountDto account)
+        public AccountDto GetAccountById(int id)
         {
-            var sql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
-                        OUTPUT Inserted.Id VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);";
-            var mySql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT * FROM Accounts WHERE Id = @Id";
+                return connection.QuerySingleOrDefault<AccountDto>(sql, new { Id = id });
+            }
+        }
+
+        public void AddAccount(AccountDto account)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
                 VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);
                 SELECT LAST_INSERT_ID();";
-            var id = connection.ExecuteScalar<int>(_dbType == DatabaseTypes.SqlServer ? sql : mySql, account);
-            account.Id = id;
+                var id = connection.ExecuteScalar<int>(sql, account);
+                account.Id = id;
+            }
         }
 
-        public static void RevokeRefreshToken(this IDbConnection connection, string refreshToken)
+        public void RevokeRefreshToken(string refreshToken)
         {
-            var sql = @"UPDATE RefreshToken SET REVOKED = GETDATE() WHERE Token = @Token";
-            var mySql = @"UPDATE RefreshToken SET REVOKED = SYSDATE() WHERE Token = @Token";
-            connection.Execute(_dbType == DatabaseTypes.SqlServer ? sql : mySql, new { Token = refreshToken });
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"UPDATE RefreshToken SET REVOKED = SYSDATE() WHERE Token = @Token";
+                connection.Execute(sql, new { Token = refreshToken });
+            }
         }
 
-        public static string GetRefreshToken(this IDbConnection connection, string email)
+        public string GetRefreshToken(string email)
         {
-            var sql = @"SELECT TOP 1 r.Token
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT TOP 1 r.Token
                         FROM RefreshToken r
                         INNER JOIN Accounts a ON a.Id = r.AccountId
                         WHERE a.Email = @Email
                         ORDER BY r.Created";
-            return connection.QuerySingle<string>(sql, new { Email = email });
+                return connection.QuerySingle<string>(sql, new { Email = email });
+            }
         }
 
-        public static void DeleteAccount(this IDbConnection connection, int accountId)
+        public void DeleteAccount(int accountId)
         {
-            connection.Execute("Delete FROM Accounts Where Id = @AccountId", new { AccountId = accountId });
+            using (var connection = _connectionProvider.GetConnection())
+            { connection.Execute("Delete FROM Accounts Where Id = @AccountId", new { AccountId = accountId }); }
         }
 
-        public static void DeleteAccountByEmail(this IDbConnection connection, string email)
+        public void DeleteAccountByEmail(string email)
         {
-            connection.Execute("Delete FROM Accounts WHERE Email = @Email", new { Email = email });
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                connection.Execute("Delete FROM Accounts WHERE Email = @Email", new { Email = email });
+            }
         }
 
-        public static void AddAccountToLibrary(this IDbConnection connection, AccountDto account, int libraryId, Role role = Role.Reader)
+        public void AddAccountToLibrary(AccountDto account, int libraryId, Role role = Role.Reader)
         {
-            var sql = @"INSERT INTO AccountLibrary VALUES (@AccountId, @LibraryId, @Role)";
-            connection.Execute(sql, new { AccountId = account.Id, LibraryId = libraryId, Role = role });
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"INSERT INTO AccountLibrary VALUES (@AccountId, @LibraryId, @Role)";
+                connection.Execute(sql, new { AccountId = account.Id, LibraryId = libraryId, Role = role });
+            }
         }
 
-        public static IEnumerable<AccountLibraryDto> GetAccountLibraries(this IDbConnection connection, int accountId)
+        public IEnumerable<AccountLibraryDto> GetAccountLibraries(int accountId)
         {
-            var sql = @"SELECT * FROM AccountLibrary WHERE AccountId = @AccountId";
-            return connection.Query<AccountLibraryDto>(sql, new { AccountId = accountId });
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT * FROM AccountLibrary WHERE AccountId = @AccountId";
+                return connection.Query<AccountLibraryDto>(sql, new { AccountId = accountId });
+            }
+        }
+    }
+
+    public class SqlServerAccountTestRepository : IAccountTestRepository
+    {
+        private IProvideConnection _connectionProvider;
+        public SqlServerAccountTestRepository(IProvideConnection connectionProvider)
+        {
+            _connectionProvider = connectionProvider;
+        }
+
+
+        public AccountDto GetAccountByEmail(string email)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT * FROM Accounts WHERE Email = @Email";
+                return connection.QuerySingleOrDefault<AccountDto>(sql, new { Email = email });
+            }
+        }
+
+        public AccountDto GetAccountById(int id)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT * FROM Accounts WHERE Id = @Id";
+                return connection.QuerySingleOrDefault<AccountDto>(sql, new { Id = id });
+            }
+        }
+
+        public void AddAccount(AccountDto account)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
+                        OUTPUT Inserted.Id VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);";
+
+                var id = connection.ExecuteScalar<int>(sql, account);
+                account.Id = id;
+            }
+        }
+
+        public void RevokeRefreshToken(string refreshToken)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"UPDATE RefreshToken SET REVOKED = GETDATE() WHERE Token = @Token";
+                connection.Execute(sql, new { Token = refreshToken });
+            }
+        }
+
+        public string GetRefreshToken(string email)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT TOP 1 r.Token
+                        FROM RefreshToken r
+                        INNER JOIN Accounts a ON a.Id = r.AccountId
+                        WHERE a.Email = @Email
+                        ORDER BY r.Created";
+                return connection.QuerySingle<string>(sql, new { Email = email });
+            }
+        }
+
+        public void DeleteAccount(int accountId)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            { connection.Execute("Delete FROM Accounts Where Id = @AccountId", new { AccountId = accountId }); }
+        }
+
+        public void DeleteAccountByEmail(string email)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                connection.Execute("Delete FROM Accounts WHERE Email = @Email", new { Email = email });
+            }
+        }
+
+        public void AddAccountToLibrary(AccountDto account, int libraryId, Role role = Role.Reader)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"INSERT INTO AccountLibrary VALUES (@AccountId, @LibraryId, @Role)";
+                connection.Execute(sql, new { AccountId = account.Id, LibraryId = libraryId, Role = role });
+            }
+        }
+
+        public IEnumerable<AccountLibraryDto> GetAccountLibraries(int accountId)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT * FROM AccountLibrary WHERE AccountId = @AccountId";
+                return connection.Query<AccountLibraryDto>(sql, new { AccountId = accountId });
+            }
         }
     }
 }

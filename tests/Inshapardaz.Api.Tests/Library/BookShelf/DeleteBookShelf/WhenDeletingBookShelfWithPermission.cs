@@ -9,20 +9,19 @@ using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
+namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookShelf
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingSeriesWithPermission : TestBase
+    public class WhenDeletingBookShelfWithPermission : TestBase
     {
         private HttpResponseMessage _response;
-        private SeriesAssert _assert;
-        private SeriesDto _expected;
-
+        private BookShelfAssert _assert;
+        private BookShelfDto _expected;
         private string _filePath;
 
-        public WhenDeletingSeriesWithPermission(Role role)
+        public WhenDeletingBookShelfWithPermission(Role role)
             : base(role)
         {
         }
@@ -30,12 +29,12 @@ namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var series = SeriesBuilder.WithLibrary(LibraryId).WithBooks(3).Build(4);
-            _expected = series.PickRandom();
+            var bookShelf = BookShelfBuilder.WithLibrary(LibraryId).WithBooks(3).ForAccount(AccountId).Build(4);
+            _expected = bookShelf.PickRandom();
             _filePath = FileTestRepository.GetFileById(_expected.ImageId.Value)?.FilePath;
 
-            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/series/{_expected.Id}");
-            _assert = Services.GetService<SeriesAssert>().ForResponse(_response).InLibrary(LibraryId);
+            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/bookshelves/{_expected.Id}");
+            _assert = Services.GetService<BookShelfAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -51,22 +50,22 @@ namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
         }
 
         [Test]
-        public void ShouldHaveDeletedSeries()
+        public void ShouldHaveDeletedBookShelf()
         {
-            _assert.ShouldHaveDeletedSeries(_expected.Id);
+            _assert.ShouldHaveDeletedBookShelf(_expected.Id);
         }
 
         [Test]
-        public void ShouldHaveDeletedTheSeriesImage()
+        public void ShouldHaveDeletedTheBookShelfImage()
         {
-            _assert.ShouldHaveDeletedSeriesImage(_expected.Id, _expected.ImageId.Value, _filePath);
+            _assert.ShouldHaveDeletedBookShelfImage(_expected.Id, _expected.ImageId.Value, _filePath);
         }
 
         [Test]
-        public void ShouldNotDeleteSeriesBooks()
+        public void ShouldNotDeleteBooks()
         {
-            var seriesBooks = SeriesBuilder.Books.Where(b => b.SeriesId == _expected.Id);
-            foreach (var book in seriesBooks)
+            var books = BookShelfBuilder.BookShelvesBookList[_expected.Id];
+            foreach (var book in books)
             {
                 var b = BookTestRepository.GetBookById(book.Id);
                 b.SeriesId.Should().BeNull();

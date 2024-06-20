@@ -1,10 +1,10 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.DeletePeriodical
@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.DeletePeriodical
     public class WhenDeletingPeriodicalWithPermission : TestBase
     {
         private HttpResponseMessage _response;
-
+        private PeriodicalAssert _assert;
         private PeriodicalDto _expected;
 
         public WhenDeletingPeriodicalWithPermission(Role role) : base(role)
@@ -33,6 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.DeletePeriodical
             _expected = periodicals.PickRandom();
 
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{_expected.Id}");
+            _assert = Services.GetService<PeriodicalAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -50,26 +51,27 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.DeletePeriodical
         [Test]
         public void ShouldHaveDeletedPeriodical()
         {
-            PeriodicalAssert.ShouldHaveDeletedPeriodical(DatabaseConnection, _expected.Id);
+            _assert.ShouldHaveDeletedPeriodical(_expected.Id);
         }
 
         [Test]
         public void ShouldHaveDeletedThePriodicalImage()
         {
-            PeriodicalAssert.ShouldHaveDeletedPeriodicalImage(DatabaseConnection, _expected.Id);
+            _assert.ShouldHaveDeletedPeriodicalImage(_expected.Id);
         }
 
         [Test]
         public void ShouldNotHaveDeletedTheCategory()
         {
-            var cats = DatabaseConnection.GetCategoriesByBook(_expected.Id);
-            cats.ForEach(cat => CategoryAssert.ShouldNotHaveDeletedCategory(LibraryId, cat.Id, DatabaseConnection));
+            var cats = CategoryTestRepository.GetCategoriesByBook(_expected.Id);
+            var catAssert = Services.GetService<CategoryAssert>().ForLibrary(LibraryId);
+            cats.ForEach(cat => catAssert.ShouldNotHaveDeletedCategory(cat.Id));
         }
 
         [Test]
         public void ShouldBeDeleteIssuesForPeriodical()
         {
-            PeriodicalAssert.ShouldHaveDeletedIssuesForPeriodical(DatabaseConnection, _expected.Id);
+            _assert.ShouldHaveDeletedIssuesForPeriodical(_expected.Id);
         }
     }
 }

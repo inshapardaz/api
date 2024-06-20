@@ -5,8 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
 {
@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books/{_chapter.BookId}/chapters/{_chapter.ChapterNumber}/contents?language={_content.Language}");
 
-            _assert = new ChapterContentAssert(_response, LibraryId);
+            _assert = Services.GetService<ChapterContentAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -83,7 +83,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         [Test]
         public void ShouldHaveTextReturened()
         {
-            var file = DatabaseConnection.GetFileById(_content.FileId);
+            var file = FileTestRepository.GetFileById(_content.FileId);
             var contents = FileStore.GetTextFile(file.FilePath, CancellationToken.None).Result;
             _assert.ShouldHaveText(contents);
         }
@@ -91,7 +91,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         [Test]
         public void ShouldReturnCorrectChapterData()
         {
-            _assert.ShouldMatch(_content, _chapter.BookId, DatabaseConnection);
+            _assert.ShouldMatch(_content, _chapter.BookId);
         }
     }
 }

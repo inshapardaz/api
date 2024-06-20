@@ -7,20 +7,25 @@ using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    internal class PagingAssert<T>
+    public class PagingAssert<T>
     {
         private HttpResponseMessage _response;
         private PageView<T> _page;
 
         public IEnumerable<T> Data => _page.Data;
 
-        public PagingAssert(HttpResponseMessage response)
+        public PagingAssert()
+        {
+        }
+
+        public PagingAssert<T> ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _page = response.GetContent<PageView<T>>().Result;
+            return this;
         }
 
-        internal void ShouldHaveSelfLink(string endingWith, params KeyValuePair<string, string>[] parameters)
+        public PagingAssert<T> ShouldHaveSelfLink(string endingWith, params KeyValuePair<string, string>[] parameters)
         {
             _page.SelfLink()
                   .ShouldBeGet()
@@ -30,9 +35,10 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             {
                 _page.SelfLink().ShouldHaveQueryParameter<string>(param.Key, param.Value);
             }
+            return this;
         }
 
-        internal void ShouldHaveSelfLink(string format, int pageNumber, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
+        public PagingAssert<T> ShouldHaveSelfLink(string format, int pageNumber, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
         {
             var link = _page.SelfLink();
             link.ShouldBeGet()
@@ -44,24 +50,28 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             {
                 link.ShouldHaveQueryParameter<string>(param.Key, param.Value);
             }
+            return this;
         }
 
-        internal void ShouldNotHaveNextLink()
+        public PagingAssert<T> ShouldNotHaveNextLink()
         {
             _page.Links.AssertLinkNotPresent("next");
+            return this;
         }
 
-        internal void ShouldNotHavePreviousLink()
+        public PagingAssert<T> ShouldNotHavePreviousLink()
         {
             _page.Links.AssertLinkNotPresent("prev");
+            return this;
         }
 
-        internal void ShouldNotHaveCreateLink()
+        public PagingAssert<T> ShouldNotHaveCreateLink()
         {
             _page.Links.AssertLinkNotPresent("create");
+            return this;
         }
 
-        internal void ShouldHaveNextLink(string format, int? pageNumber = null, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
+        public PagingAssert<T> ShouldHaveNextLink(string format, int? pageNumber = null, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
         {
             var link = _page.Links.AssertLink("next");
             link.ShouldBeGet()
@@ -77,9 +87,10 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             {
                 link.ShouldHaveQueryParameter<string>(param.Key, param.Value);
             }
+            return this;
         }
 
-        internal void ShouldHavePreviousLink(string format, int? pageNumber = null, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
+        public PagingAssert<T> ShouldHavePreviousLink(string format, int? pageNumber = null, int pageSize = 10, params KeyValuePair<string, string>[] parameters)
         {
             var link = _page.Links.AssertLink("previous");
             link.ShouldBeGet()
@@ -95,55 +106,58 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             {
                 link.ShouldHaveQueryParameter<string>(param.Key, param.Value);
             }
+            return this;
         }
 
-        internal PagingAssert<T> ShouldHaveTotalCount(int totalCount)
+        public PagingAssert<T> ShouldHaveTotalCount(int totalCount)
         {
             _page.TotalCount.Should().Be(totalCount);
             return this;
         }
 
-        internal PagingAssert<T> ShouldHavePageCount(int pageCount)
+        public PagingAssert<T> ShouldHavePageCount(int pageCount)
         {
             _page.PageCount.Should().Be(pageCount);
             return this;
         }
 
 
-        internal PagingAssert<T> ShouldHaveItems(int itemCount)
+        public PagingAssert<T> ShouldHaveItems(int itemCount)
         {
             _page.Data.Count().Should().Be(itemCount);
             return this;
         }
 
-        internal PagingAssert<T> ShouldHaveSomeItems()
+        public PagingAssert<T> ShouldHaveSomeItems()
         {
             _page.Data.Should().NotBeEmpty();
             return this;
         }
 
-        internal PagingAssert<T> ShouldHavePageSize(int pageSize)
+        public PagingAssert<T> ShouldHavePageSize(int pageSize)
         {
             _page.PageSize.Should().Be(pageSize);
             return this;
         }
 
-        internal PagingAssert<T> ShouldHavePage(int pageNumber)
+        public PagingAssert<T> ShouldHavePage(int pageNumber)
         {
             _page.CurrentPageIndex.Should().Be(pageNumber);
             return this;
         }
 
-        internal void ShouldHaveCreateLink(string endingWith)
+        public PagingAssert<T> ShouldHaveCreateLink(string endingWith)
         {
             _page.CreateLink()
                   .ShouldBePost()
                   .ShouldHaveUrl(endingWith);
+            return this;
         }
 
-        internal void ShouldHaveNoData()
+        public PagingAssert<T> ShouldHaveNoData()
         {
             _page.Data.Should().BeEmpty();
+            return this;
         }
     }
 }

@@ -11,6 +11,7 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
@@ -56,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/articles/{article.Id}", _expected);
-            _assert = ArticleAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<ArticleAssert>().ForLibrary(LibraryId).ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -79,7 +80,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
             Method = "GET",
             Href = $"http://localhost/libraries/{LibraryId}/authors/{_expected.Authors.ElementAt(0).Id}"
             } };
-            _assert.ShouldBeSameAs(_expected, DatabaseConnection);
+            _assert.ShouldBeSameAs(_expected);
         }
 
         [Test]

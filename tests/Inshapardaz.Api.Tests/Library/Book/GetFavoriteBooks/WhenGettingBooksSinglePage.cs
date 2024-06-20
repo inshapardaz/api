@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -26,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
             BookBuilder.WithLibrary(LibraryId).IsPublic().AddToFavorites(AccountId).Build(5);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/books?pageNumber=1&pageSize=10&favorite=true");
-            _assert = new PagingAssert<BookView>(_response);
+            _assert = Services.GetService<PagingAssert<BookView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -76,8 +77,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
             {
                 var actual = _assert.Data.ElementAt(i);
                 var expected = expectedItems[i];
-                actual.ShouldMatch(expected, DatabaseConnection, LibraryId)
-                            .InLibrary(LibraryId)
+                Services.GetService<BookAssert>().ForView(actual).ForLibrary(LibraryId)
+                            .ShouldBeSameAs(expected)
                             .ShouldHaveCorrectLinks()
                             .ShouldNotHaveEditLinks()
                             .ShouldNotHaveImageUpdateLink()

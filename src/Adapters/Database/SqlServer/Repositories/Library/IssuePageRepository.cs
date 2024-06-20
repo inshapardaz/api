@@ -17,14 +17,14 @@ public class IssuePageRepository : IIssuePageRepository
         _connectionProvider = connectionProvider;
     }
 
-    public async Task<IssuePageModel> AddPage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string text, long? imageId, long? articleId, EditingStatus status, CancellationToken cancellationToken)
+    public async Task<IssuePageModel> AddPage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, long? fileId, long? imageId, long? articleId, EditingStatus status, CancellationToken cancellationToken)
     {
         int pageId;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO IssuePage(IssueId, SequenceNumber, Text, ImageId, ArticleId, Status)
+            var sql = @"INSERT INTO IssuePage(IssueId, SequenceNumber, FileId, ImageId, ArticleId, Status)
                             OUTPUT Inserted.Id
-                            SELECT Id, @SequenceNumber, @Text, @ImageId, @ArticleId, @Status
+                            SELECT Id, @SequenceNumber, @FileId, @ImageId, @ArticleId, @Status
                             FROM Issue WHERE PeriodicalId = @PeriodicalId AND Volumenumber = @VolumeNumber AND IssueNumber = @IssueNumber;";
             var command = new CommandDefinition(sql, new
             {
@@ -32,7 +32,7 @@ public class IssuePageRepository : IIssuePageRepository
                 VolumeNumber = volumeNumber,
                 IssueNumber = issueNumber,
                 SequenceNumber = sequenceNumber,
-                Text = text,
+                FileId = fileId,
                 ImageId = imageId,
                 Status = status,
                 ArticleId = articleId
@@ -48,7 +48,7 @@ public class IssuePageRepository : IIssuePageRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
+            var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.FileId, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                             p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
                             f.Id As ImageId, f.FilePath AS ImageUrl, ia.Id As ArticleId, ia.Title As ArticleTitle
                             FROM IssuePage AS p
@@ -103,14 +103,14 @@ public class IssuePageRepository : IIssuePageRepository
         }
     }
 
-    public async Task<IssuePageModel> UpdatePage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string text, long? imageId, long? articleId, EditingStatus status, CancellationToken cancellationToken)
+    public async Task<IssuePageModel> UpdatePage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, long? fileId, long? imageId, long? articleId, EditingStatus status, CancellationToken cancellationToken)
     {
         int pageId;
 
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
-                            SET p.Text = @Text, 
+                            SET p.FileId = @FileId, 
                                 p.ImageId = @ImageId, 
                                 Status = @Status,
                                 ArticleId = @ArticleId
@@ -126,7 +126,7 @@ public class IssuePageRepository : IIssuePageRepository
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
-                Text = text,
+                FileId = fileId,
                 ImageId = imageId,
                 PeriodicalId = periodicalId,
                 VolumeNumber = volumeNumber,
@@ -231,7 +231,7 @@ public class IssuePageRepository : IIssuePageRepository
                                    p.SequenceNumber, p.Status, 
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
-                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ArticleId, ia.Title As ArticleTitle
+                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.FileId, p.ArticleId, ia.Title As ArticleTitle
                             FROM IssuePage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN [IssueArticle] ia ON ia.Id = p.ArticleId
@@ -413,7 +413,7 @@ public class IssuePageRepository : IIssuePageRepository
             var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Status, 
                             p.WriterAccountId, p.WriterAssignTimeStamp, 
                             p.ReviewerAccountId, p.ReviewerAssignTimeStamp, 
-                            f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ArticleId, ia.Title As ArticleTitle
+                            f.Id As ImageId, f.FilePath AS ImageUrl, p.FileId, p.ArticleId, ia.Title As ArticleTitle
                             FROM IssuePage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN [Article] ia ON ia.Id = p.ArticleId
@@ -443,7 +443,7 @@ public class IssuePageRepository : IIssuePageRepository
             var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Status, 
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
-                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ArticleId, ia.Title As ArticleTitle
+                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.FileId, p.ArticleId, ia.Title As ArticleTitle
                             FROM IssuePage AS p
                             LEFT OUTER JOIN [File] f ON f.Id = p.ImageId
                             LEFT OUTER JOIN [IssueArticle] ia ON ia.Id = p.ArticleId
@@ -639,7 +639,7 @@ public class IssuePageRepository : IIssuePageRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
+            var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.FileId, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                             p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
                             f.Id As ImageId, f.FilePath AS ImageUrl, ia.Id As ArticleId, ia.Title As ArticleTitle
                             FROM IssuePage AS p

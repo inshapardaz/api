@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
     public class WhenUploadingBookImageWhenNoExistingImage : TestBase
     {
         private HttpResponseMessage _response;
-        private BookAssert _bookAssert;
+        private BookAssert _assert;
         private int _bookId;
 
         public WhenUploadingBookImageWhenNoExistingImage()
@@ -26,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
             _bookId = book.Id;
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_bookId}/image", RandomData.Bytes);
-            _bookAssert = BookAssert.WithResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<BookAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -45,19 +46,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
         [Test]
         public void ShouldHaveLocationHeader()
         {
-            _bookAssert.ShouldHaveCorrectImageLocationHeader(_bookId);
+            _assert.ShouldHaveCorrectImageLocationHeader(_bookId);
         }
 
         [Test]
         public void ShouldHaveAddedImageToBook()
         {
-            BookAssert.ShouldHaveAddedBookImage(_bookId, DatabaseConnection, FileStore);
-        }
-
-        [Test]
-        public void ShouldHavePublicImage()
-        {
-            BookAssert.ShouldHavePublicImage(_bookId, DatabaseConnection);
+            _assert.ShouldHaveAddedBookImage(_bookId);
         }
     }
 }

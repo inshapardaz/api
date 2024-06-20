@@ -1,9 +1,9 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -31,7 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
             _page = new BookPageView { BookId = _book.Id, Text = RandomData.Text };
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{_book.Id}/pages", _page);
 
-            _assert = BookPageAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<BookPageAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
         [Test]
         public void ShouldSavedThePageWithLastPageOfBook()
         {
-            var bookPageCount = DatabaseConnection.GetBookPageCount(_book.Id);
+            var bookPageCount = BookPageTestRepository.GetBookPageCount(_book.Id);
             _assert.ShouldHavePageNumber(bookPageCount);
         }
 
@@ -56,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
         [Test]
         public void ShouldHaveSavedTheContentFile()
         {
-            _assert.ShouldHaveBookPageContent(_page.Text, DatabaseConnection, FileStore);
+            _assert.ShouldHaveBookPageContent(_page.Text);
         }
 
     }

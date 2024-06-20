@@ -23,7 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         {
             var newContents = RandomData.Bytes;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{-RandomData.Number}/volumes/{-RandomData.Number}/issues/{-RandomData.Number}/contents", newContents, RandomData.Locale, RandomData.MimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{-RandomData.Number}/volumes/{-RandomData.Number}/issues/{-RandomData.Number}/contents/{-RandomData.Number}?language={RandomData.Locale}", newContents, RandomData.MimeType);
         }
 
         [OneTimeTearDown]

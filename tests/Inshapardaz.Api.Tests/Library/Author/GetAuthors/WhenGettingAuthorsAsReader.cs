@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
@@ -25,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
             AuthorBuilder.WithLibrary(LibraryId).WithBooks(3).WithoutImage().Build(4);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/authors");
-            _assert = new PagingAssert<AuthorView>(_response);
+            _assert = Services.GetService<PagingAssert<AuthorView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -66,11 +67,12 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthors
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item)
-                            .InLibrary(LibraryId)
-                            .WithBookCount(3)
-                            .WithReadOnlyLinks()
-                            .ShouldNotHaveImageLink();
+                Services.GetService<AuthorAssert>().ForView(actual)
+                    .ForLibrary(LibraryId)
+                    .ShouldBeSameAs(item)
+                    .WithBookCount(3)
+                    .WithReadOnlyLinks()
+                    .ShouldNotHaveImageLink();
             }
         }
     }

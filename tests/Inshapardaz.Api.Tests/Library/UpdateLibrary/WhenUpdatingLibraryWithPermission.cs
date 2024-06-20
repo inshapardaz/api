@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -37,7 +38,8 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}", _expectedLibrary);
-            _assert = LibraryAssert.FromResponse(_response, LibraryId);
+            var returnedView = await _response.GetContent<LibraryView>();
+            _assert = Services.GetService<LibraryAssert>().ForResponse(_response).ForLibrary(returnedView.Id);
         }
 
         [OneTimeTearDown]
@@ -58,8 +60,7 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
             if (_role == Role.Admin)
             {
                 _assert.ShouldBeSameAs(_expectedLibrary);
-            }
-            else
+            } else
             {
                 _assert.ShouldBeSameWithNoConfiguration(_expectedLibrary);
             }
@@ -70,11 +71,11 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
         {
             if (_role == Role.Admin)
             {
-                _assert.ShouldHaveUpdatedLibrary(DatabaseConnection);
+                _assert.ShouldHaveUpdatedLibrary();
             }
             else
             {
-                _assert.ShouldHaveUpdatedLibraryWithoutConfiguration(DatabaseConnection);
+                _assert.ShouldHaveUpdatedLibraryWithoutConfiguration();
             }
         }
     }

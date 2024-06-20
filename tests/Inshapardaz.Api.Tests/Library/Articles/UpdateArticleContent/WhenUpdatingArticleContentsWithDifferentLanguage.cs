@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
@@ -43,7 +44,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
                     Language = _newLanguge,
                     Layout = _newLayout
                 });
-            _assert = new ArticleContentAssert(_response, LibraryId);
+            _assert = Services.GetService<ArticleContentAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -76,13 +77,13 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
         [Test]
         public void ShouldHaveCreatedCorrectContents()
         {
-            _assert.ShouldHaveMatechingTextForLanguage(_newContents, _newLanguge, _newLayout, DatabaseConnection);
+            _assert.ShouldHaveMatechingTextForLanguage(_newContents, _newLanguge, _newLayout);
         }
 
         [Test]
         public void ShouldHaveOtherLanguageContents()
         {
-            ArticleContentAssert.ShouldHaveContent(DatabaseConnection, _article.Id, _content.Language);
+            _assert.ShouldHaveContent(_article.Id, _content.Language);
         }
     }
 }

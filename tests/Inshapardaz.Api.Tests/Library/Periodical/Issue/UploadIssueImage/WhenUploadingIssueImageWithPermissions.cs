@@ -1,7 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,6 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
     public class WhenUploadingIssueImageWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
+        private IssueAssert _assert;
         private int _issueId;
         private byte[] _newImage = RandomData.Bytes;
 
@@ -28,9 +29,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
             var issue = IssueBuilder.WithLibrary(LibraryId).Build();
             _issueId = issue.Id;
 
-            var imageUrl = DatabaseConnection.GetBookImageUrl(_issueId);
+            var imageUrl = BookTestRepository.GetBookImageUrl(_issueId);
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/image", _newImage);
+            _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -48,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
         [Test]
         public void ShouldHaveUpdatedImage()
         {
-            IssueAssert.ShouldHaveUpdatedIssueImage(DatabaseConnection, FileStore, _issueId, _newImage);
+            _assert.ShouldHaveUpdatedIssueImage(_issueId, _newImage);
         }
     }
 }

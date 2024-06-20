@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
             newChapter = new ChapterView { Title = RandomData.Name, BookId = chapter.BookId };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/books/{chapter.BookId}/chapters/{chapter.ChapterNumber}", newChapter);
-            _assert = ChapterAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<ChapterAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -50,7 +51,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         [Test]
         public void ShouldHaveUpdatedChater()
         {
-            _assert.ShouldHaveSavedChapter(DatabaseConnection);
+            _assert.ShouldHaveSavedChapter();
         }
     }
 }

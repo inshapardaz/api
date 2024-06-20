@@ -21,11 +21,11 @@ public interface IIssueArticleRepository
 
     Task<IssueArticleContentModel> GetArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken);
 
-    Task<IssueArticleContentModel> AddArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string content, CancellationToken cancellationToken);
+    Task<IssueArticleContentModel> AddArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken);
 
-    Task<IssueArticleContentModel> UpdateArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, string content, CancellationToken cancellationToken);
+    Task<IssueArticleContentModel> UpdateArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken);
 
-    Task<IssueArticleContentModel> GetArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken);
+    Task<IssueArticleContentModel> GetArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken);
 
     Task DeleteArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken);
     Task<IssueArticleModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken);

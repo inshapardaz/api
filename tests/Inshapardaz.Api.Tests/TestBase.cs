@@ -6,7 +6,6 @@ using Inshapardaz.Storage.Azure;
 using Inshapardaz.Adapters.Database.SqlServer.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using System.Data;
 using System.Linq;
 using System.Net.Http;
 using Inshapardaz.Domain.Models;
@@ -23,6 +22,7 @@ using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Adapters.Database.SqlServer;
 using Microsoft.Extensions.Options;
 using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Api.Tests.Framework.DataHelpers;
 
 namespace Inshapardaz.Api.Tests
 {
@@ -63,7 +63,6 @@ namespace Inshapardaz.Api.Tests
             });
 
             var settings = Services.GetService<IOptions<Settings>>().Value;
-            DatabaseConnection = _factory.Services.GetService<IProvideConnection>().GetConnection();
             AccountBuilder = _factory.Services.GetService<AccountDataBuilder>();
 
             if (role.HasValue)
@@ -96,21 +95,55 @@ namespace Inshapardaz.Api.Tests
                 services.Remove(new ServiceDescriptor(typeof(IFileStorage), typeof(AzureFileStorage), ServiceLifetime.Transient));
             }
             services.AddSingleton<IFileStorage>(new FakeFileStorage());
+            services.AddTransient<FakeFileStorage>(sp => sp.GetService<IFileStorage>() as FakeFileStorage);
 
             if (services.Any(x => x.ServiceType == typeof(ISmtpClient)))
             {
                 services.Remove(new ServiceDescriptor(typeof(ISmtpClient), typeof(SmtpClient), ServiceLifetime.Transient));
             }
             services.AddSingleton<ISmtpClient>(new FakeSmtpClient());
+            services.AddTransient<FakeSmtpClient>(sp => sp.GetService<ISmtpClient>() as FakeSmtpClient);
 
 
             if (DatabaseType == DatabaseTypes.SqlServer)
             {
                 services.AddTransient<IProvideConnection, SqlServerConnectionProvider>();
+                services.AddTransient<IAccountTestRepository, SqlServerAccountTestRepository>();
+                services.AddTransient<ILibraryTestRepository, SqlServerLibraryTestRepository>();
+                services.AddTransient<IArticleTestRepository, SqlServerArticleTestRepository>();
+                services.AddTransient<IAuthorTestRepository, SqlServerAuthorTestRepository>();
+                services.AddTransient<IBookTestRepository, SqlServerBookTestRepository>();
+                services.AddTransient<IBookPageTestRepository, SqlServerBookPageTestRepository>();
+                services.AddTransient<IBookShelfTestRepository, SqlServerBookShelfTestRepository>();
+                services.AddTransient<IChapterTestRepository, SqlServerChapterTestRepository>();
+                services.AddTransient<ICategoryTestRepository, SqlServerCategoryTestRepository>();
+                services.AddTransient<ISeriesTestRepository, SqlServerSeriesTestRepository>();
+                services.AddTransient<IPeriodicalTestRepository, SqlServerPeriodicalTestRepository>();
+                services.AddTransient<IIssueTestRepository, SqlServerIssueTestRepository>();
+                services.AddTransient<IIssuePageTestRepository, SqlServerIssuePageTestRepository>();
+                services.AddTransient<IIssueArticleTestRepository, SqlServerIssueArticleTestRepository>();
+                services.AddTransient<IFileTestRepository, SqlServerFileTestRepository>();
+                services.AddTransient<ICorrectionTestRepository, SqlServerCorrectionTestRepository>();
             }
             else if (DatabaseType == DatabaseTypes.MySql)
             {
                 services.AddTransient<IProvideConnection, MySqlConnectionProvider>();
+                services.AddTransient<IAccountTestRepository, MySqlAccountTestRepository>();
+                services.AddTransient<ILibraryTestRepository, MySqlLibraryTestRepository>();
+                services.AddTransient<IArticleTestRepository, MySqlArticleTestRepository>();
+                services.AddTransient<IAuthorTestRepository, MySqlAuthorTestRepository>();
+                services.AddTransient<IBookTestRepository, MySqlBookTestRepository>();
+                services.AddTransient<IBookPageTestRepository, MySqlBookPageTestRepository>();
+                services.AddTransient<IBookShelfTestRepository, MySqlBookShelfTestRepository>();
+                services.AddTransient<IChapterTestRepository, MySqlChapterTestRepository>();
+                services.AddTransient<ICategoryTestRepository, MySqlCategoryTestRepository>();
+                services.AddTransient<ISeriesTestRepository, MySqlSeriesTestRepository>();
+                services.AddTransient<IPeriodicalTestRepository, MySqlPeriodicalTestRepository>();
+                services.AddTransient<IIssueTestRepository, MySqlIssueTestRepository>();
+                services.AddTransient<IIssuePageTestRepository, MySqlIssuePageTestRepository>();
+                services.AddTransient<IIssueArticleTestRepository, MySqlIssueArticleTestRepository>();
+                services.AddTransient<IFileTestRepository, MySqlFileTestRepository>();
+                services.AddTransient<ICorrectionTestRepository, MySqlCorrectionTestRepository>();
             }
             else
             {
@@ -131,6 +164,29 @@ namespace Inshapardaz.Api.Tests
             .AddTransient<BookShelfDataBuilder>()
             .AddTransient<ArticlesDataBuilder>()
             .AddTransient<FileStoreAssert>();
+
+            services.AddTransient<ArticleAssert>()
+                    .AddTransient<ArticleAssert>()
+                    .AddTransient<ArticleContentAssert>()
+                    .AddTransient<AuthorAssert>()
+                    .AddTransient<BookAssert>()
+                    .AddTransient<BookContentAssert>()
+                    .AddTransient<BookPageAssert>()
+                    .AddTransient<BookShelfAssert>()
+                    .AddTransient<CategoryAssert>()
+                    .AddTransient<ChapterAssert>()
+                    .AddTransient<ChapterContentAssert>()
+                    .AddTransient<CorrectionAssert>()
+                    .AddTransient<FileStoreAssert>()
+                    .AddTransient<IssueArticleAssert>()
+                    .AddTransient<IssueArticleContentAssert>()
+                    .AddTransient<IssueAssert>()
+                    .AddTransient<IssueContentAssert>()
+                    .AddTransient<IssuePageAssert>()
+                    .AddTransient<LibraryAssert>()
+                    .AddTransient(typeof(PagingAssert<>), typeof(PagingAssert<>))
+                    .AddTransient<PeriodicalAssert>()
+                    .AddTransient<SeriesAssert>();           
         }
 
         protected void AuthenticateClientWithToken(string token)
@@ -149,8 +205,6 @@ namespace Inshapardaz.Api.Tests
         protected IServiceProvider Services => _factory.Services;
 
         protected LibraryDto Library { get; }
-
-        protected IDbConnection DatabaseConnection { get; private set; }
 
         protected FakeFileStorage FileStore => _factory.Services.GetService<IFileStorage>() as FakeFileStorage;
 
@@ -328,6 +382,23 @@ namespace Inshapardaz.Api.Tests
             }
         }
 
+        protected IAccountTestRepository AccountTestRepository => _factory.Services.GetService<IAccountTestRepository>();
+        protected IArticleTestRepository ArticleTestRepository => _factory.Services.GetService<IArticleTestRepository>();
+        protected IAuthorTestRepository AuthorTestRepository => _factory.Services.GetService<IAuthorTestRepository>();
+        protected ILibraryTestRepository LibraryTestRepository => _factory.Services.GetService<ILibraryTestRepository>();
+        protected IBookTestRepository BookTestRepository => _factory.Services.GetService<IBookTestRepository>();
+        protected IBookPageTestRepository BookPageTestRepository => _factory.Services.GetService<IBookPageTestRepository>();
+        protected IBookShelfTestRepository BookShelfTestRepository => _factory.Services.GetService<IBookShelfTestRepository>();
+        protected IChapterTestRepository ChapterTestRepository => _factory.Services.GetService<IChapterTestRepository>();
+        protected ICategoryTestRepository CategoryTestRepository => _factory.Services.GetService<ICategoryTestRepository>();
+        protected ISeriesTestRepository SeriesTestRepository => _factory.Services.GetService<ISeriesTestRepository>();
+        protected IPeriodicalTestRepository PeriodicalTestRepository => _factory.Services.GetService<IPeriodicalTestRepository>();
+        protected IIssueTestRepository IssueTestRepository => _factory.Services.GetService<IIssueTestRepository>();
+        protected IIssuePageTestRepository IssuePageTestRepository => _factory.Services.GetService<IIssuePageTestRepository>();
+        protected IIssueArticleTestRepository IssueArticleTestRepository => _factory.Services.GetService<IIssueArticleTestRepository>();
+        protected IFileTestRepository FileTestRepository => _factory.Services.GetService<IFileTestRepository>();
+        protected ICorrectionTestRepository CorrectionTestRepository => _factory.Services.GetService<ICorrectionTestRepository>();
+
         protected virtual void Cleanup()
         {
             _booksDataBuilder?.CleanUp();
@@ -342,7 +413,6 @@ namespace Inshapardaz.Api.Tests
             _bookshelfDataBuilder?.CleanUp();
             _libraryBuilder?.CleanUp();
             _correctionBuilder?.Cleanup();
-            DatabaseConnection.Dispose();
         }
     }
 }

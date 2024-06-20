@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
             _expected = new Faker().Image.Random.Bytes(50);
             _fileName = RandomData.FileName(_file.MimeType);
             _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_book.Id}/contents/{_file.Id}?language={_file.Language}", _expected, _file.MimeType, _fileName);
-            _assert = new BookContentAssert(_response, LibraryId);
+            _assert = Services.GetService<BookContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -55,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         [Test]
         public void ShouldHaveUpdatedFileContents()
         {
-            _assert.ShouldHaveBookContent(_expected, _fileName, DatabaseConnection, FileStore);
+            _assert.ShouldHaveBookContent(_expected, _fileName);
         }
     }
 }

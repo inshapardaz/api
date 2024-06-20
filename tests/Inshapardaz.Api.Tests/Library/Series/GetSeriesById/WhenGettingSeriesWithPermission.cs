@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
@@ -29,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
             _expected = series.PickRandom();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/series/{_expected.Id}");
-            _assert = SeriesAssert.WithResponse(_response).InLibrary(LibraryId);
+            _assert = Services.GetService<SeriesAssert>().ForResponse(_response).InLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -77,7 +78,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
         [Test]
         public void ShouldReturnCorrectSeriesData()
         {
-            _assert.ShouldHaveCorrectSeriesRetunred(_expected, DatabaseConnection);
+            _assert.ShouldHaveCorrectSeriesRetunred(_expected);
         }
     }
 }

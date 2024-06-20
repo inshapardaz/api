@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.DeletePage
     public class WhenDeletingIssuePageWithPermissions : TestBase
     {
         private HttpResponseMessage _response;
+        private IssuePageAssert _assert;
         private IssuePageDto _page;
         private int _issueId;
 
@@ -29,6 +31,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.DeletePage
             _page = IssueBuilder.GetPages(issue.Id).PickRandom();
             _issueId = issue.Id;
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/pages/{_page.SequenceNumber}");
+            _assert = Services.GetService<IssuePageAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -46,7 +49,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.DeletePage
         [Test]
         public void ShouldDeletePage()
         {
-            IssuePageAssert.ShouldHaveNoIssuePage(_issueId, _page.Id, _page.ImageId, DatabaseConnection, FileStore);
+            _assert.ShouldHaveNoIssuePage(_issueId, _page.Id, _page.ImageId);
         }
     }
 }

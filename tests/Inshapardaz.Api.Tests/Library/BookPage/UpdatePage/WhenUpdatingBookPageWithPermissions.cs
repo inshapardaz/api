@@ -3,8 +3,8 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using PDFiumSharp.Types;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -43,7 +43,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
 
             _bookId = book.Id;
             _response = await Client.PutObject($"/libraries/{LibraryId}/books/{_bookId}/pages/{_page.SequenceNumber}", _updatedPage);
-            _assert = BookPageAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<BookPageAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]
@@ -67,13 +67,13 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
         [Test]
         public void ShouldHaveSavedBookPage()
         {
-            _assert.ShouldHaveSavedPage(DatabaseConnection);
+            _assert.ShouldHaveSavedPage();
         }
 
         [Test]
         public void ShouldHaveSavedContents()
         {
-            _assert.ShouldHaveBookPageContent(_text, DatabaseConnection, FileStore);
+            _assert.ShouldHaveBookPageContent(_text);
         }
     }
 }

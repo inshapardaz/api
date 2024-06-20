@@ -8,6 +8,7 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
@@ -69,11 +70,12 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
             foreach (var item in _categories)
             {
                 var actual = _view.Data.FirstOrDefault(x => x.Id == item.Id);
-                actual.ShouldMatch(item)
-                      .InLibrary(LibraryId)
-                      .WithBookCount(3)
-                      .ShouldHaveUpdateLink()
-                      .ShouldHaveDeleteLink();
+                Services.GetService<CategoryAssert>().ForView(actual)
+                    .ForLibrary(LibraryId)
+                    .ShouldBeSameAs(item)
+                    .WithBookCount(3)
+                    .ShouldHaveUpdateLink()
+                    .ShouldHaveDeleteLink();
             }
         }
     }

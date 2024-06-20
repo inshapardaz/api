@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
@@ -32,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/articles/{_expected.Id}", _expected);
-            _assert = ArticleAssert.FromResponse(_response, LibraryId);
+            _assert = Services.GetService<ArticleAssert>().ForLibrary(LibraryId).ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -56,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         [Test]
         public void ShouldSaveTheArticle()
         {
-            _assert.ShouldHaveSavedArticle(DatabaseConnection);
+            _assert.ShouldHaveSavedArticle();
         }
 
         [Test]

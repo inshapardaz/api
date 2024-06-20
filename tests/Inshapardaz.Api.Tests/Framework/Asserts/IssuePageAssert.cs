@@ -5,7 +5,6 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using System;
-using System.Data;
 using System.Net.Http;
 using System.Threading;
 
@@ -13,32 +12,36 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
     public class IssuePageAssert
     {
-        internal static IssuePageAssert FromResponse(HttpResponseMessage response, int libraryId)
-        {
-            return new IssuePageAssert(response) { _libraryId = libraryId };
-        }
-
-        public static IssuePageAssert FromObject(IssuePageView view)
-        {
-            return new IssuePageAssert(view);
-        }
-
         public HttpResponseMessage _response;
         private IssuePageView _issuePage;
         private int _libraryId;
+        private readonly IIssuePageTestRepository _issuePageRepository;
+        private readonly IFileTestRepository _fileRepository;
+        private readonly FakeFileStorage _fileStorage;
 
-        public IssuePageAssert(HttpResponseMessage response)
+        public IssuePageAssert(IIssuePageTestRepository issuePageRepository,
+            IFileTestRepository fileRepository,
+            FakeFileStorage fileStorage)
+        {
+            _issuePageRepository = issuePageRepository;
+            _fileRepository = fileRepository;
+            _fileStorage = fileStorage;
+        }
+
+        public IssuePageAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
             _issuePage = response.GetContent<IssuePageView>().Result;
+            return this;
         }
 
-        public IssuePageAssert(IssuePageView view)
+        public IssuePageAssert ForView(IssuePageView view)
         {
             _issuePage = view;
+            return this;
         }
 
-        public IssuePageAssert InLibrary(int libraryId)
+        public IssuePageAssert ForLibrary(int libraryId)
         {
             _libraryId = libraryId;
             return this;
@@ -52,44 +55,50 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        internal static void ShouldHaveNoIssuePage(int issueId, long pageId, int? imageId, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public IssuePageAssert ShouldHaveNoIssuePage(int issueId, long pageId, int? imageId)
         {
-            var page = databaseConnection.GetIssuePageByIssueId(issueId, pageId);
+            var page = _issuePageRepository.GetIssuePageByIssueId(issueId, pageId);
             page.Should().BeNull();
 
             if (imageId != null)
             {
-                var image = databaseConnection.GetFileById(imageId.Value);
+                var image = _fileRepository.GetFileById(imageId.Value);
                 image.Should().BeNull();
             }
+
+            return this;
         }
 
-        internal IssuePageAssert ShouldHaveAssignedRecently()
+        public IssuePageAssert ShouldHaveAssignedRecently()
         {
             _issuePage.WriterAssignTimeStamp.Should().NotBeNull();
             _issuePage.WriterAssignTimeStamp.Value.Should().BeWithin(TimeSpan.FromMinutes(1));
             return this;
         }
 
-        internal static void IssuePageShouldExist(int issueId, int pageNumber, IDbConnection databaseConnection)
+        public IssuePageAssert IssuePageShouldExist(int issueId, int pageNumber)
         {
-            var page = databaseConnection.GetIssuePageByNumber(issueId, pageNumber);
+            var page = _issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
             page.Should().NotBeNull();
 
             if (page.ImageId != null)
             {
-                var image = databaseConnection.GetFileById(page.ImageId.Value);
+                var image = _fileRepository.GetFileById(page.ImageId.Value);
                 image.Should().NotBeNull();
             }
+
+            return this;
         }
 
-        internal static void ShouldHaveNoIssuePageImage(int issueId, int pageNumber, int imageId, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public IssuePageAssert ShouldHaveNoIssuePageImage(int issueId, int pageNumber, int imageId)
         {
-            var page = databaseConnection.GetIssuePageByNumber(issueId, pageNumber);
+            var page = _issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
             page.ImageId.Should().BeNull();
 
-            var image = databaseConnection.GetFileById(imageId);
+            var image = _fileRepository.GetFileById(imageId);
             image.Should().BeNull();
+
+            return this;
         }
 
         public IssuePageAssert ShouldNotHaveCorrectLocationHeader()
@@ -98,37 +107,43 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public void ShouldHaveSavedPage(IDbConnection databaseConnection)
+        public IssuePageAssert ShouldHaveSavedPage()
         {
-            databaseConnection.GetIssuePageByNumber(_issuePage.PeriodicalId, _issuePage.VolumeNumber, _issuePage.IssueNumber, _issuePage.SequenceNumber);
+            _issuePageRepository.GetIssuePageByNumber(_issuePage.PeriodicalId, _issuePage.VolumeNumber, _issuePage.IssueNumber, _issuePage.SequenceNumber);
+            return this;
         }
 
-        internal static void ShouldHaveUpdatedIssuePageImage(int issueId, int pageNumber, byte[] newImage, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public IssuePageAssert ShouldHaveUpdatedIssuePageImage(int issueId, int pageNumber, byte[] newImage)
         {
-            var page = databaseConnection.GetIssuePageByNumber(issueId, pageNumber);
+            var page = _issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
             page.ImageId.Should().BeGreaterThan(0);
 
-            var image = databaseConnection.GetFileById(page.ImageId.Value);
+            var image = _fileRepository.GetFileById(page.ImageId.Value);
             image.Should().NotBeNull();
 
-            var content = fileStore.GetFile(image.FilePath, CancellationToken.None).Result;
+            var content = _fileStorage.GetFile(image.FilePath, CancellationToken.None).Result;
             content.Should().BeEquivalentTo(newImage);
+
+            return this;
         }
 
-        internal static void ShouldHaveCorrectImageLocationHeader(HttpResponseMessage response, int imageId)
+        public IssuePageAssert ShouldHaveCorrectImageLocationHeader(HttpResponseMessage response, int imageId)
         {
             string location = response.Headers.Location.AbsoluteUri;
             location.Should().NotBeEmpty();
             location.Should().EndWith($"/files/{imageId}");
+            return this;
         }
 
-        internal static void ShouldHaveAddedIssuePageImage(int issueId, int pageNumber, IDbConnection databaseConnection, FakeFileStorage fileStore)
+        public IssuePageAssert ShouldHaveAddedIssuePageImage(int issueId, int pageNumber)
         {
-            var page = databaseConnection.GetIssuePageByNumber(issueId, pageNumber);
+            var page = _issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
             page.ImageId.Should().BeGreaterThan(0);
 
-            var image = databaseConnection.GetFileById(page.ImageId.Value);
+            var image = _fileRepository.GetFileById(page.ImageId.Value);
             image.Should().NotBeNull();
+
+            return this;
         }
 
         public IssuePageAssert ShouldHaveSelfLink()
@@ -254,7 +269,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public void ShouldMatch(IssuePageView view)
+        public IssuePageAssert ShouldMatch(IssuePageView view)
         {
             _issuePage.Text.Should().Be(view.Text);
             _issuePage.PeriodicalId.Should().Be(view.PeriodicalId);
@@ -284,6 +299,8 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _issuePage.ArticleId.Should().Be(view.ArticleId);
             _issuePage.ArticleName.Should().Be(view.ArticleName);
             _issuePage.Status.Should().Be(view.Status);
+
+            return this;
         }
 
         public IssuePageAssert ShouldMatch(IssuePageDto dto)
@@ -311,15 +328,6 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             }
 
             return this;
-        }
-    }
-
-    public static class IssuePageAssertionExtensions
-    {
-        public static IssuePageAssert ShouldMatch(this IssuePageView view, IssuePageDto dto)
-        {
-            return IssuePageAssert.FromObject(view)
-                               .ShouldMatch(dto);
         }
     }
 }

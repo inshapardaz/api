@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
 
             _response = await Client.PostContent($"/libraries/{LibraryId}/books/{book.Id}/contents?language={_locale}", _contents, _mimeType, _fileName);
 
-            _assert = new BookContentAssert(_response, LibraryId);
+            _assert = Services.GetService<BookContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
         [OneTimeTearDown]
@@ -74,7 +75,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.AddBookContent
         [Test]
         public void ShouldHaceCorrectContentSaved()
         {
-            _assert.ShouldHaveBookContent(_contents, _fileName ,DatabaseConnection, FileStore);
+            _assert.ShouldHaveBookContent(_contents, _fileName);
         }
     }
 }

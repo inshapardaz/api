@@ -561,6 +561,7 @@ public class Migrator
         var sourceDb = SourceRepositoryFactory.IssueArticleRepository;
         var destinationDb = DestinationRepositoryFactory.IssueArticleRepository;
         var articleMap = new Dictionary<int, int>();
+        var fileStore = new FileSystemStorage("../FileStore");
 
         var articles = await sourceDb.GetArticlesByIssue(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
         var options = new ProgressBarOptions
@@ -593,14 +594,23 @@ public class Migrator
                 {
                     content.PeriodicalId = periodicalId;
 
-                    // TODO: Migrate the content to file
-                    await destinationDb.AddArticleContent(newLibraryId,
-                        newPeriodicalId,
-                        content.VolumeNumber,
-                        content.IssueNumber,
-                        content.SequenceNumber,
-                        content.Language,
-                        content.Text,
+                    var fileName = FilePathHelper.GetIssueArticleContentFileName(content.Language);
+                    var filePath = await fileStore.StoreTextFile(FilePathHelper.GetIssueArticleContentPath(newPeriodicalId, volumeNumber, issueNumber, newArticle.Id, fileName), content.Text, cancellationToken);
+                    var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
+                    content.Text = string.Empty;
+                    content.FileId = file.Id;
+
+                    await destinationDb.AddArticleContent(
+                        newLibraryId,
+                        new IssueArticleContentModel
+                        {
+                            PeriodicalId = content.PeriodicalId,
+                            VolumeNumber = content.VolumeNumber,
+                            IssueNumber = content.IssueNumber,
+                            SequenceNumber = content.SequenceNumber,
+                            Language = content.Language,
+                            FileId = content.FileId,
+                        },
                     cancellationToken);
                 }
 

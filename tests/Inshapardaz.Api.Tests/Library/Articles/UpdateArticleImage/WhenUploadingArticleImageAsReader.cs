@@ -1,7 +1,7 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading;
@@ -13,6 +13,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleImage
     public class WhenUploadingArticleImageAsReader : TestBase
     {
         private HttpResponseMessage _response;
+        private ArticleAssert _assert;
         private long _articleId;
         private byte[] _oldImage;
 
@@ -26,10 +27,11 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleImage
         {
             var article = ArticleBuilder.WithLibrary(LibraryId).Build();
             _articleId = article.Id;
-            var imageUrl = DatabaseConnection.GetArticleImageUrl(_articleId);
+            var imageUrl = ArticleTestRepository.GetArticleImageUrl(_articleId);
             _oldImage = await FileStore.GetFile(imageUrl, CancellationToken.None);
 
             _response = await Client.PutFile($"/libraries/{LibraryId}/articles/{_articleId}/image", RandomData.Bytes);
+            _assert = Services.GetService<ArticleAssert>().ForLibrary(LibraryId).ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -48,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleImage
         [Test]
         public void ShouldNotHaveUpdatedArticleImage()
         {
-            ArticleAssert.ShouldNotHaveUpdatedArticleImage(_articleId, _oldImage, DatabaseConnection, FileStore);
+            _assert.ShouldNotHaveUpdatedArticleImage(_articleId, _oldImage);
         }
     }
 }

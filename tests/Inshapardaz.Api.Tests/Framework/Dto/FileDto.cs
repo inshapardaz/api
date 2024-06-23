@@ -4,7 +4,7 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
 {
     public class FileDto
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string MimeType { get; set; }
 

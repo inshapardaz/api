@@ -20,7 +20,7 @@ public interface IIssueRepository
 
     Task DeleteIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken);
 
-    Task<IssueContentModel> AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long fileId, string language, string mimeType, CancellationToken cancellationToken);
+    Task<IssueContentModel> AddIssueContent(int libraryId, IssueContentModel model, CancellationToken cancellationToken);
 
     Task<IEnumerable<IssueContentModel>> GetIssueContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken);
 
@@ -30,5 +30,5 @@ public interface IIssueRepository
 
     Task DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, CancellationToken cancellationToken);
 
-    Task UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string mimetype, string language, long contentid, CancellationToken cancellationToken);
+    Task<IssueContentModel> UpdateIssueContent(int libraryId, IssueContentModel model, CancellationToken cancellationToken);
 }

@@ -2,6 +2,7 @@
 using Inshapardaz.Domain.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.Helpers
 {
@@ -23,6 +24,9 @@ namespace Inshapardaz.Api.Tests.Framework.Helpers
 
         public static IEnumerable<T> PickRandom<T>(this IEnumerable<T> source, int count) =>
             new Faker().PickRandom<T>(source, count);
+        
+        public static T PickRandomExcept<T>(this IEnumerable<T> source, T excluding) =>
+            new Faker().PickRandom<T>(source.Where(x => !x.Equals(excluding)).ToList());
 
         internal static string Locale => PickRandom(Langs);
 
@@ -31,9 +35,11 @@ namespace Inshapardaz.Api.Tests.Framework.Helpers
         internal static string MimeType =>
             new Faker().PickRandom(new[] { MimeTypes.Markdown, MimeTypes.Pdf, MimeTypes.Epub, MimeTypes.Html, MimeTypes.Json, MimeTypes.MsWord, MimeTypes.Text });
 
-        internal static EditingStatus AsignableEditingStatus =>
-           new Faker().PickRandom(new[] { EditingStatus.Available, EditingStatus.Typing, EditingStatus.InReview, EditingStatus.Typed });
-
+        internal static IEnumerable<EditingStatus> AssignableEditingStatusList => new[] { EditingStatus.Available, EditingStatus.Typing, EditingStatus.InReview, EditingStatus.Typed };
+        internal static IEnumerable<EditingStatus> EditingStatusList => new[] { EditingStatus.Available, EditingStatus.Typing, EditingStatus.InReview, EditingStatus.Typed, EditingStatus.Completed };
+        internal static EditingStatus AssignableEditingStatus =>
+           new Faker().PickRandom(AssignableEditingStatusList);
+        internal static EditingStatus EditingStatus => new Faker().PickRandom(EditingStatusList);
         internal static int NumberBetween(int v1, int v2) => new Faker().Random.Number(v1, v2);
 
         private static string[] Langs = new[] { "en", "ur", "hi", "pn", "pr", "fr", "ar", "pr", "tr" };

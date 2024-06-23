@@ -5,6 +5,8 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 
@@ -215,12 +217,25 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssueArticleContentAssert ShouldHaveDeletedContent(IssueDto issue, IssueArticleDto article, IssueArticleContentDto content)
+        public IssueArticleContentAssert ShouldHaveDeletedContent(IssueDto issue, IssueArticleDto article, string language)
         {
-            var dbContent = _issueArticleRepository.GetIssueArticleContent(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article.SequenceNumber, content.Language);
+            var dbContent = _issueArticleRepository.GetIssueArticleContent(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article.SequenceNumber, language);
             dbContent.Should().BeNull("Article content should be deleted");
             return this;
         }
+
+        public IssueArticleContentAssert ShouldHaveDeletedContent(IEnumerable<IssueArticleContentDto> contents, IEnumerable<FileDto> files)
+        {
+            foreach (var content in contents)
+            {
+                var file = _fileRepository.GetFileById(content.FileId.Value);
+                file.Should().BeNull("File should be deleted");
+                file = files.Where(x => x.Id == content.FileId).FirstOrDefault();
+                _fileStorage.DoesFileExists(file.FilePath).Should().BeFalse("File should be deleted");
+            }
+            return this;
+        }
+
 
         public IssueArticleContentAssert ShouldHaveLocationHeader(RedirectResult result, int libraryId, int periodicalId, int volumeNumber, int issueNumber, ChapterContentDto content)
         {

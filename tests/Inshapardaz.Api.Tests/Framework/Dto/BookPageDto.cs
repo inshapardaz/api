@@ -28,11 +28,11 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
         public int BookId { get; set; }
 
         public string Text { get; set; }
-        public int? ContentId { get; set; }
+        public long? ContentId { get; set; }
 
         public int SequenceNumber { get; set; }
 
-        public int? ImageId { get; set; }
+        public long? ImageId { get; set; }
 
         public EditingStatus Status { get; set; }
         public int? WriterAccountId { get; set; }

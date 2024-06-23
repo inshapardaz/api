@@ -401,16 +401,16 @@ namespace Inshapardaz.Api.Tests
 
         protected virtual void Cleanup()
         {
+            _bookshelfDataBuilder?.CleanUp();
+            _chapterDataBuilder?.CleanUp();
             _booksDataBuilder?.CleanUp();
             _seriesDataBuilder?.CleanUp();
-            _chapterDataBuilder?.CleanUp();
-            _periodicalBuilder?.CleanUp();
             _issueDataBuilder?.CleanUp();
+            _periodicalBuilder?.CleanUp();
             _articleBuilder?.CleanUp();
             _accountBuilder?.CleanUp();
             _authorBuilder?.CleanUp();
             _categoriesDataBuilder?.CleanUp();
-            _bookshelfDataBuilder?.CleanUp();
             _libraryBuilder?.CleanUp();
             _correctionBuilder?.Cleanup();
         }

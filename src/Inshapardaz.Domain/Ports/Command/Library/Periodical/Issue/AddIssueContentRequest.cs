@@ -1,7 +1,9 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
 using System;
 using System.IO;
@@ -36,14 +38,12 @@ public class AddIssueContentRequest : LibraryBaseCommand
 public class AddIssueContentRequestHandler : RequestHandlerAsync<AddIssueContentRequest>
 {
     private readonly IIssueRepository _issueRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public AddIssueContentRequestHandler(IIssueRepository issueRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+    public AddIssueContentRequestHandler(IIssueRepository issueRepository, IAmACommandProcessor commandProcessor)
     {
         _issueRepository = issueRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -53,25 +53,29 @@ public class AddIssueContentRequestHandler : RequestHandlerAsync<AddIssueContent
 
         if (issue != null)
         {
-            var url = await StoreFile(issue.PeriodicalId, issue.Id, command.Content.FileName, command.Content.Contents, cancellationToken);
-            command.Content.FilePath = url;
-            command.Content.IsPublic = true;
-            var file = await _fileRepository.AddFile(command.Content, cancellationToken);
-            command.Result = await _issueRepository.AddIssueContent(command.LibraryId, issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, file.Id, command.Language, command.MimeType, cancellationToken);
+            var fileName = FilePathHelper.GetIssueContentFileName(command.Content.FileName);
+
+            var saveFileCommand = new SaveFileCommand(command.Content.FileName, FilePathHelper.GetIssueContentPath(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, fileName), command.Content.Contents)
+            {
+                MimeType = command.Content.MimeType,
+                IsPublic = command.Content.IsPublic
+            };
+
+            await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+
+            command.Result = await _issueRepository.AddIssueContent(command.LibraryId,
+                new IssueContentModel
+                {
+                    PeriodicalId = issue.PeriodicalId,
+                    VolumeNumber = issue.VolumeNumber,
+                    IssueNumber = issue.IssueNumber,
+                    FileId = saveFileCommand.Result.Id,
+                    Language = command.Language,
+                    MimeType = command.MimeType,
+                },
+                cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);
-    }
-
-    private async Task<string> StoreFile(int periodicalId, int issueId, string fileName, byte[] contents, CancellationToken cancellationToken)
-    {
-        var filePath = GetUniqueFileName(periodicalId, issueId, fileName);
-        return await _fileStorage.StoreFile(filePath, contents, cancellationToken);
-    }
-
-    private static string GetUniqueFileName(int periodicalId, int issueId, string fileName)
-    {
-        var fileNameWithoutExtension = Path.GetExtension(fileName).Trim('.');
-        return $"periodicals/{periodicalId}/issues/{issueId}/{Guid.NewGuid():N}.{fileNameWithoutExtension}";
     }
 }

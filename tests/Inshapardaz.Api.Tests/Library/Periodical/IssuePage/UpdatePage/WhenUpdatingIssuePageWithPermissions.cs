@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UpdatePage
 {
@@ -21,6 +22,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UpdatePage
         private IssuePageDto _page;
         private IssuePageView _updatedPage;
         private int _issueId;
+        private AccountDto _newWriter;
+        private AccountDto _newReviewer;
 
         public WhenUpdatingIssuePageWithPermissions(Role role)
             : base(role)
@@ -32,12 +35,17 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UpdatePage
         {
             _issue = IssueBuilder.WithLibrary(LibraryId).WithPages(3, true).Build();
             _page = IssueBuilder.GetPages(_issue.Id).PickRandom();
+            _newWriter = AccountBuilder.Build();
+            _newReviewer = AccountBuilder.Build();
 
             _updatedPage = new IssuePageView
             {
-                IssueNumber = _issue.IssueNumber,
                 Text = RandomData.Text,
-                SequenceNumber = _page.SequenceNumber
+                Status = RandomData.EditingStatus.ToDescription(),
+                ReviewerAccountId = _newReviewer.Id,
+                ReviewerAssignTimeStamp = RandomData.Date,
+                WriterAccountId = _newWriter.Id,
+                WriterAssignTimeStamp = RandomData.Date,
             };
 
             _issueId = _issue.Id;
@@ -67,11 +75,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UpdatePage
                 IssueNumber = _issue.IssueNumber,
                 SequenceNumber = _page.SequenceNumber,
                 Text = _updatedPage.Text,
-                Status = "Available",
-                ReviewerAccountId = _page.ReviewerAccountId,
-                ReviewerAssignTimeStamp = _page.ReviewerAssignTimeStamp,
-                WriterAccountId = _page.WriterAccountId,
-                WriterAssignTimeStamp = _page.WriterAssignTimeStamp
+                Status = _updatedPage.Status,
+                ReviewerAccountId = _updatedPage.ReviewerAccountId,
+                ReviewerAccountName = _newReviewer.Name,
+                ReviewerAssignTimeStamp = _updatedPage.ReviewerAssignTimeStamp,
+                WriterAccountId = _updatedPage.WriterAccountId,
+                WriterAccountName = _newWriter.Name,
+                WriterAssignTimeStamp = _updatedPage.WriterAssignTimeStamp
             });
         }
 

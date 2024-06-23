@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -87,8 +88,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.SequenceNumber == item.SequenceNumber);
-                Services.GetService<IssuePageAssert>().ForResponse(_response).ForLibrary(LibraryId)
-                        .ShouldMatch(item)
+                Services.GetService<IssuePageAssert>().ForView(actual).ForLibrary(LibraryId)
+                        .ShouldMatchWithoutText(item)
                         .ShouldHaveSelfLink()
                         .ShouldHavePeriodicalLink()
                         .ShouldHaveIssueLink()

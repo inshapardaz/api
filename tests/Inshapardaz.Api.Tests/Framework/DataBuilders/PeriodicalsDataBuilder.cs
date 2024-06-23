@@ -10,6 +10,8 @@ using RandomData = Inshapardaz.Api.Tests.Framework.Helpers.RandomData;
 using Inshapardaz.Domain.Models.Library;
 using Bogus;
 using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
@@ -130,26 +132,30 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             foreach (var periodical in _periodicals)
             {
-                FileDto bookImage = null;
+                FileDto periodicalImage = null;
+                _periodicalRepository.AddPeriodical(periodical);
                 if (_hasImage)
                 {
-                    bookImage = fixture.Build<FileDto>()
-                                         .With(a => a.FilePath, RandomData.FilePath)
+
+                    var fileName = FilePathHelper.GetPeriodicalImageFileName(RandomData.FileName(MimeTypes.Jpg));
+                    var filePath = FilePathHelper.GetPeriodicalImageFilePath(periodical.Id, fileName);
+                    periodicalImage = fixture.Build<FileDto>()
+                                         .With(a => a.FilePath, filePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                    _fileRepository.AddFile(bookImage);
+                    _fileRepository.AddFile(periodicalImage);
 
-                    _files.Add(bookImage);
-                    _fileStorage.SetupFileContents(bookImage.FilePath, RandomData.Bytes);
+                    _files.Add(periodicalImage);
+                    _fileStorage.SetupFileContents(periodicalImage.FilePath, RandomData.Bytes);
 
-                    periodical.ImageId = bookImage.Id;
+                    periodical.ImageId = periodicalImage.Id;
                 }
                 else
                 {
                     periodical.ImageId = null;
                 }
 
-                _periodicalRepository.AddPeriodical(periodical);
+                _periodicalRepository.UpdatePeriodical(periodical);
 
 
                 var issues = fixture.Build<IssueDto>()

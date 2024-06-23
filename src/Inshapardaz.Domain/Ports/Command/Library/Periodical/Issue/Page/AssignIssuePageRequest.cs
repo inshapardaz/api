@@ -5,6 +5,9 @@ using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Query.File;
+using Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue.Page;
+using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue.Page;
 
@@ -36,7 +39,7 @@ public class AssignIssuePageToUserRequest : LibraryBaseCommand
 public class AssignIssuePageToUserRequestHandler : RequestHandlerAsync<AssignIssuePageToUserRequest>
 {
     private readonly IIssuePageRepository _issuePageRepository;
-
+    
     public AssignIssuePageToUserRequestHandler(IIssuePageRepository issuePageRepository)
     {
         _issuePageRepository = issuePageRepository;
@@ -63,7 +66,6 @@ public class AssignIssuePageToUserRequestHandler : RequestHandlerAsync<AssignIss
         {
             throw new BadRequestException("Page status does not allow it to be assigned");
         }
-
 
         return await base.HandleAsync(command, cancellationToken);
     }

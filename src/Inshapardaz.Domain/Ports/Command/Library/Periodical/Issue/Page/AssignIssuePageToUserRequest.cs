@@ -54,11 +54,11 @@ public class AssignIssuePageRequestHandler : RequestHandlerAsync<AssignIssuePage
             throw new BadRequestException();
         }
 
-        if (page.Status == EditingStatus.Available || page.Status == EditingStatus.Typing)
+        if (page.Status is EditingStatus.Available or EditingStatus.Typing)
         {
             command.Result = await _issuePageRepository.UpdateWriterAssignment(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.AccountId, cancellationToken);
         }
-        else if (page.Status == EditingStatus.Typed || page.Status == EditingStatus.InReview)
+        else if (page.Status is EditingStatus.Typed or EditingStatus.InReview)
         {
             command.Result = await _issuePageRepository.UpdateReviewerAssignment(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.AccountId, cancellationToken);
         }

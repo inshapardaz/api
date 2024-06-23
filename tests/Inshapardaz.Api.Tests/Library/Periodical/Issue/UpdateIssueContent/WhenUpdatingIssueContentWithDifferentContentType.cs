@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
             _content = IssueBuilder.Contents.PickRandom();
 
             _contents = RandomData.Bytes;
-            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents/{_content.Id}?language={_content.Language}", _contents, _newMimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents/{_content.Id}?language={_content.Language}", _contents, _newMimeType, RandomData.FileName(_newMimeType));
             _assert = Services.GetService<IssueContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 

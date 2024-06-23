@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UploadPeriodicalImage
         }
 
         [Test]
-        public void ShouldHaveHttpResponseMessage()
+        public void ShouldHaveCreatedResponse()
         {
             _response.ShouldBeCreated();
         }

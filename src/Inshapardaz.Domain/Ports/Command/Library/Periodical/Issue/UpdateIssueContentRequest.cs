@@ -68,7 +68,7 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
 
             var saveContentCommand = new SaveFileCommand(fileName, filePath, command.Content.Contents)
             {
-                MimeType = MimeTypes.Markdown,
+                MimeType = command.MimeType,
                 ExistingFileId = issueContent?.FileId
             };
 
@@ -76,13 +76,25 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
 
             if (issueContent == null)
             {
-                command.Result.Content = await _issueRepository.AddIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, saveContentCommand.Result.Id, command.Language, command.MimeType, cancellationToken);
+                command.Result.Content = await _issueRepository.AddIssueContent(command.LibraryId,
+                    new IssueContentModel
+                    {
+                        PeriodicalId = issue.PeriodicalId,
+                        VolumeNumber = issue.VolumeNumber,
+                        IssueNumber = issue.IssueNumber,
+                        FileId = saveContentCommand.Result.Id,
+                        Language = command.Language,
+                        MimeType = command.MimeType,
+                    }, 
+                    cancellationToken);
                 command.Result.HasAddedNew = true;
             }
             else
             {
-                await _issueRepository.UpdateIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.MimeType, command.Language, saveContentCommand.Result.Id, cancellationToken);
-                command.Result.Content = issueContent;
+                issueContent.Language = command.Language;
+                issueContent.MimeType = command.MimeType;
+                issueContent.FileId = saveContentCommand.Result.Id;
+                command.Result.Content = await _issueRepository.UpdateIssueContent(command.LibraryId, issueContent, cancellationToken);
             }
         }
 

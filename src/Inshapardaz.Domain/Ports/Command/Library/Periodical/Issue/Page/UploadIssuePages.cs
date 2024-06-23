@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue.Page;
 
@@ -54,7 +55,7 @@ public class UploadIssuePagesHandler : RequestHandlerAsync<UploadIssuePages>
     {
         var pageNumber = await _issuePageRepository.GetLastPageNumberForIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
-        IEnumerable<FileModel> files = new List<FileModel>();
+        IEnumerable<FileModel> files;
         if (command.Files.Count() == 1 && command.Files.Single().MimeType == MimeTypes.Pdf)
         {
             var pages = _pdfConverter.ExtractImagePages(command.Files.Single().Contents);
@@ -78,7 +79,8 @@ public class UploadIssuePagesHandler : RequestHandlerAsync<UploadIssuePages>
         {
             var extension = Path.GetExtension(file.FileName).Trim('.');
             var sequenceNumber = ++pageNumber;
-            var url = await AddImageToFileStore(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, sequenceNumber, $"{sequenceNumber:0000}.{extension}", file.Contents, file.MimeType, cancellationToken);
+            var url = await AddImageToFileStore(command.PeriodicalId, command.VolumeNumber, command.IssueNumber,
+                sequenceNumber, $"{sequenceNumber:0000}.{extension}", file.Contents, file.MimeType, cancellationToken);
             var fileModel = await _fileRepository.AddFile(new FileModel
             {
                 IsPublic = false,
@@ -87,7 +89,17 @@ public class UploadIssuePagesHandler : RequestHandlerAsync<UploadIssuePages>
                 FileName = file.FileName,
                 MimeType = file.MimeType
             }, cancellationToken);
-            var bookPage = await _issuePageRepository.AddPage(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, pageNumber, null, fileModel.Id, null, EditingStatus.Available, cancellationToken);
+            var bookPage = await _issuePageRepository.AddPage(command.LibraryId, new IssuePageModel()
+            {
+                PeriodicalId = command.PeriodicalId,
+                VolumeNumber = command.VolumeNumber,
+                IssueNumber = command.IssueNumber,
+                SequenceNumber = pageNumber,
+                ImageId = null,
+                FileId = fileModel.Id,
+                ArticleId = null,
+                Status = EditingStatus.Available
+            }, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

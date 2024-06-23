@@ -22,7 +22,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssu
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(1).WithArticleContents(4).Build();
+            var issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(1).WithArticleContents(2).Build();
             var article = IssueBuilder.GetArticles(issue.Id).PickRandom();
             var content = IssueBuilder.ArticleContents.Where(x => x.ArticleId == article.Id).PickRandom();
 

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue;
+namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue.Article;
 
 public class UpdateIssueArticleSequenceRequest : LibraryBaseCommand
 {

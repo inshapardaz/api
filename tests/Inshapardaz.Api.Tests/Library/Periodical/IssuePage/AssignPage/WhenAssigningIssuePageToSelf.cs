@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using System;
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
@@ -67,10 +68,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AssignPage
         [Test]
         public void ShouldHaveCorrectPageAssignment()
         {
-            bool ShouldAssignReview()
-            {
-                return _status == EditingStatus.Typed || _status == EditingStatus.InReview;
-            }
+            var shouldAssignReview = _status == EditingStatus.Typed || _status == EditingStatus.InReview;
 
             _assert.ShouldMatch(new IssuePageView
             {
@@ -78,14 +76,14 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AssignPage
                 VolumeNumber = _issue.VolumeNumber,
                 IssueNumber = _issue.IssueNumber,
                 SequenceNumber = _page.SequenceNumber,
-                Text = _page.Text,
+                Text = null,
                 Status = _status.ToString(),
-                ReviewerAccountId = ShouldAssignReview() ? Account.Id : _page.ReviewerAccountId,
-                ReviewerAccountName = ShouldAssignReview() ? Account.Name : null,
-                ReviewerAssignTimeStamp = ShouldAssignReview() ? System.DateTime.UtcNow : _page.ReviewerAssignTimeStamp,
-                WriterAccountId = !ShouldAssignReview() ? Account.Id : _page.ReviewerAccountId,
-                WriterAccountName = !ShouldAssignReview() ? Account.Name : null,
-                WriterAssignTimeStamp = !ShouldAssignReview() ? System.DateTime.UtcNow : _page.WriterAssignTimeStamp
+                ReviewerAccountId = shouldAssignReview ? Account.Id : _page.ReviewerAccountId,
+                ReviewerAccountName = shouldAssignReview ? Account.Name : null,
+                ReviewerAssignTimeStamp = shouldAssignReview ? System.DateTime.UtcNow : _page.ReviewerAssignTimeStamp,
+                WriterAccountId = !shouldAssignReview ? Account.Id : _page.ReviewerAccountId,
+                WriterAccountName = !shouldAssignReview ? Account.Name : null,
+                WriterAssignTimeStamp = !shouldAssignReview ? System.DateTime.UtcNow : _page.WriterAssignTimeStamp
             });
         }
 

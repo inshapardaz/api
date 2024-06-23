@@ -244,6 +244,18 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
+        public IssueContentAssert ShouldHaveDeletedContent(IssueContentDto content, FileDto file)
+        {
+            var dbContent = _issueRepository.GetIssueContent(content.Id);
+            dbContent.Should().BeNull("Issue content should be deleted");
+
+            var dbFile = _fileRepository.GetFileById(content.FileId);
+            dbFile.Should().BeNull("Files for content should be deleted");
+
+            _fileStorage.DoesFileExists(file.FilePath).Should().BeFalse();
+            return this;
+        }
+
         public IssueContentAssert ShouldHaveLocationHeader(RedirectResult result, int libraryId, int periodicalId, IssueFileDto content)
         {
             result.Url.Should().NotBeNull();

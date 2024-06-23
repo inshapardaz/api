@@ -48,8 +48,8 @@ public class AddIssuePageRequestHandler : RequestHandlerAsync<AddIssuePageReques
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<AddIssuePageRequest> HandleAsync(AddIssuePageRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var Issue = await _issueRepository.GetIssue(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, cancellationToken);
-        if (Issue == null)
+        var issue = await _issueRepository.GetIssue(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, cancellationToken);
+        if (issue == null)
         {
             throw new BadRequestException();
         }
@@ -58,9 +58,9 @@ public class AddIssuePageRequestHandler : RequestHandlerAsync<AddIssuePageReques
 
         var fileName = FilePathHelper.IssuePageContentFileName;
         var filePath = FilePathHelper.GetIssuePageContentPath(command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, fileName);
-        var bookText = command.IssuePage.Text;
+        var pageText = command.IssuePage.Text;
 
-        var saveContentCommand = new SaveTextFileCommand(fileName, filePath, bookText)
+        var saveContentCommand = new SaveTextFileCommand(fileName, filePath, pageText)
         {
             MimeType = MimeTypes.Markdown,
             ExistingFileId = existingIssuePage?.FileId
@@ -68,17 +68,18 @@ public class AddIssuePageRequestHandler : RequestHandlerAsync<AddIssuePageReques
 
         await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
         command.IssuePage.FileId = saveContentCommand.Result.Id;
-
+        
         if (existingIssuePage == null)
         {
-            command.Result = await _issuePageRepository.AddPage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.FileId, null, command.IssuePage.ArticleId, command.IssuePage.Status, cancellationToken);
+            command.Result = await _issuePageRepository.AddPage(command.LibraryId, command.IssuePage, cancellationToken);
             command.IsAdded = true;
         }
         else
         {
-            command.Result = await _issuePageRepository.UpdatePage(command.LibraryId, command.IssuePage.PeriodicalId, command.IssuePage.VolumeNumber, command.IssuePage.IssueNumber, command.IssuePage.SequenceNumber, command.IssuePage.FileId, existingIssuePage.ImageId, command.IssuePage.ArticleId, command.IssuePage.Status, cancellationToken);
+            command.Result = await _issuePageRepository.UpdatePage(command.LibraryId, command.IssuePage, cancellationToken);
         }
 
+        command.Result.Text = pageText;
         return await base.HandleAsync(command, cancellationToken);
     }
 }

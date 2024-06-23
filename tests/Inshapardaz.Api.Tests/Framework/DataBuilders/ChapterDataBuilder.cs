@@ -119,7 +119,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                      .With(c => c.WriterAssignTimeStamp, _assignedWriterId.HasValue ? DateTime.Now : null)
                                      .With(c => c.ReviewerAccountId, _assignedReviewerId)
                                      .With(c => c.ReviewerAssignTimeStamp, _assignedReviewerId.HasValue ? DateTime.Now : null)
-                                     .With(c => c.Status, _status ?? RandomData.AsignableEditingStatus)
+                                     .With(c => c.Status, _status ?? RandomData.AssignableEditingStatus)
                                      .Create();
 
                 _chapterRepository.AddChapter(chapter);

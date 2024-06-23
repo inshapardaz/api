@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,8 +33,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var account = AccountBuilder.Build();
-            _issue = IssueBuilder.WithLibrary(LibraryId).WithPages(20).WithStatus(_status, 15).Build();
+            _issue = IssueBuilder.WithLibrary(LibraryId)
+                .WithPages(20)
+                .WithStatus(_status, 15)
+                .WithStatus(RandomData.PickRandomExcept(RandomData.EditingStatusList, _status), 5)
+                .Build();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages?pageSize=10&pageNumber=1&status={_status.ToDescription()}");
 
@@ -88,8 +92,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.SequenceNumber == item.SequenceNumber);
-                Services.GetService<IssuePageAssert>().ForResponse(_response).ForLibrary(LibraryId)
-                        .ShouldMatch(item)
+                Services.GetService<IssuePageAssert>().ForView(actual).ForLibrary(LibraryId)
+                        .ShouldMatchWithoutText(item)
                         .ShouldHaveSelfLink()
                         .ShouldHavePeriodicalLink()
                         .ShouldHaveIssueLink()

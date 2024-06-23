@@ -10,7 +10,7 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
 
         public string Description { get; set; }
 
-        public int? ImageId { get; set; }
+        public long? ImageId { get; set; }
 
         public int LibraryId { get; set; }
 

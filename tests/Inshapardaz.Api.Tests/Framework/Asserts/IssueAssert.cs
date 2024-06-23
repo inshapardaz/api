@@ -372,10 +372,11 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssueAssert ShouldHaveUpdatedIssueImage(int issueId, byte[] newImage)
+        public IssueAssert ShouldHaveUpdatedIssueImage(IssueDto issue, byte[] newImage)
         {
-            var imageUrl = _issueRepository.GetIssueImageUrl(issueId);
+            var imageUrl = _issueRepository.GetIssueImageUrl(issue.Id);
             imageUrl.Should().NotBeNull();
+            imageUrl.Should().EndWith($"periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/files/issue-image.jpg");
             var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
             return this;

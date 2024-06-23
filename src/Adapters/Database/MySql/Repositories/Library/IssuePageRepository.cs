@@ -17,33 +17,55 @@ public class IssuePageRepository : IIssuePageRepository
         _connectionProvider = connectionProvider;
     }
 
-    public async Task<IssuePageModel> AddPage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, long? fileId, long? imageId, long? articleId, EditingStatus status, CancellationToken cancellationToken)
+    public async Task<IssuePageModel> AddPage(int libraryId, IssuePageModel issuePage, CancellationToken cancellationToken)
     {
         int pageId;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO IssuePage(IssueId, SequenceNumber, FileId, ImageId, ArticleId, `Status`)
-                            SELECT Id, @SequenceNumber, @FileIf, @ImageId, @ArticleId, @Status
-                            FROM Issue 
+            var sql = @"INSERT INTO IssuePage(IssueId, 
+                                SequenceNumber, 
+                                FileId, 
+                                ImageId,
+                                ArticleId,
+                                `Status`,
+                                WriterAccountId,
+                                WriterAssignTimeStamp,
+                                ReviewerAccountId,
+                                ReviewerAssignTimeStamp)
+                            SELECT Id, @SequenceNumber, 
+                                @FileId,
+                                @ImageId,
+                                @ArticleId,
+                                @Status,
+                                @WriterAccountId,
+                                @WriterAssignTimeStamp,
+                                @ReviewerAccountId,
+                                @ReviewerAssignTimeStamp
+                            FROM `Issue` 
                             WHERE PeriodicalId = @PeriodicalId 
                                 AND Volumenumber = @VolumeNumber 
                                 AND IssueNumber = @IssueNumber;
                             SELECT LAST_INSERT_ID();";
             var command = new CommandDefinition(sql, new
             {
-                PeriodicalId = periodicalId,
-                VolumeNumber = volumeNumber,
-                IssueNumber = issueNumber,
-                SequenceNumber = sequenceNumber,
-                FileId = fileId,
-                ImageId = imageId,
-                Status = status,
-                ArticleId = articleId
+                PeriodicalId = issuePage.PeriodicalId,
+                VolumeNumber = issuePage.VolumeNumber,
+                IssueNumber = issuePage.IssueNumber,
+                SequenceNumber = issuePage.SequenceNumber,
+                FileId = issuePage.FileId,
+                ImageId = issuePage.ImageId,
+                Status = issuePage.Status,
+                ArticleId = issuePage.ArticleId,
+                WriterAccountId = issuePage.WriterAccountId,
+                WriterAssignTimeStamp = issuePage.WriterAssignTimeStamp,
+                ReviewerAccountId = issuePage.ReviewerAccountId,
+                ReviewerAssignTimeStamp = issuePage.ReviewerAssignTimeStamp
+                
             }, cancellationToken: cancellationToken);
             pageId = await connection.ExecuteScalarAsync<int>(command);
         }
 
-        await ReorderPages(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
+        await ReorderPages(libraryId, issuePage.PeriodicalId, issuePage.VolumeNumber, issuePage.IssueNumber, cancellationToken);
         return await GetPageById(pageId, cancellationToken);
     }
 
@@ -107,7 +129,7 @@ public class IssuePageRepository : IIssuePageRepository
         }
     }
 
-    public async Task<IssuePageModel> UpdatePage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, long? fileId, long? imageId, long? articleId, EditingStatus status, CancellationToken cancellationToken)
+    public async Task<IssuePageModel> UpdatePage(int libraryId, IssuePageModel issuePage, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -117,7 +139,11 @@ public class IssuePageRepository : IIssuePageRepository
                             SET p.FileId = @FileId, 
                                 p.ImageId = @ImageId, 
                                 p.`Status` = @Status,
-                                p.ArticleId = @ArticleId
+                                p.ArticleId = @ArticleId,
+                                p.WriterAccountId = @WriterAccountId,
+                                p.WriterAssignTimeStamp = @WriterAssignTimeStamp,
+                                p.ReviewerAccountId = @ReviewerAccountId,
+                                p.ReviewerAssignTimeStamp = @ReviewerAssignTimeStamp
                             WHERE pr.LibraryId = @LibraryId 
                                 AND i.PeriodicalId = @PeriodicalId 
                                 AND i.VolumeNumber = @VolumeNumber 
@@ -126,20 +152,23 @@ public class IssuePageRepository : IIssuePageRepository
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
-                FileId = fileId,
-                ImageId = imageId,
-                PeriodicalId = periodicalId,
-                VolumeNumber = volumeNumber,
-                IssueNumber = issueNumber,
-                SequenceNumber = sequenceNumber,
-                Status = status,
-                ArticleId = articleId
+                FileId = issuePage.FileId,
+                ImageId = issuePage.ImageId,
+                PeriodicalId = issuePage.PeriodicalId,
+                VolumeNumber = issuePage.VolumeNumber,
+                IssueNumber = issuePage.IssueNumber,
+                SequenceNumber = issuePage.SequenceNumber,
+                Status = issuePage.Status,
+                WriterAccountId = issuePage.WriterAccountId,
+                WriterAssignTimeStamp = issuePage.WriterAssignTimeStamp,
+                ReviewerAccountId = issuePage.ReviewerAccountId,
+                ReviewerAssignTimeStamp = issuePage.ReviewerAssignTimeStamp,
+                ArticleId = issuePage.ArticleId
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
 
-        return await GetPageBySequenceNumber(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
-
+        return await GetPageBySequenceNumber(libraryId, issuePage.PeriodicalId, issuePage.VolumeNumber, issuePage.IssueNumber, issuePage.SequenceNumber, cancellationToken);
     }
 
     public async Task<IssuePageModel> UpdatePageImage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, long imageId, CancellationToken cancellationToken)
@@ -200,7 +229,7 @@ public class IssuePageRepository : IIssuePageRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
 
         {
-            var sql = @"SELECT COUNT(p.*)
+            var sql = @"SELECT COUNT(p.Id)
                             FROM IssuePage p
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr ON pr.Id = i.PeriodicalId
@@ -450,7 +479,7 @@ public class IssuePageRepository : IIssuePageRepository
                             WHERE pr.LibraryId = @LibraryId 
                                 AND p.ReviewerAccountId = @AccountId OR p.WriterAccountId = @AccountId
                                 AND (@Status = -1 OR p.Status = @Status )
-                            ORDER BY i.IssueId, p.SequenceNumber
+                            ORDER BY i.Id, p.SequenceNumber
                             LIMIT @PageSize OFFSET @Offset";
             var command = new CommandDefinition(sql,
                                                 new
@@ -592,7 +621,7 @@ public class IssuePageRepository : IIssuePageRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT 1 As Status, Count(p.Id) As Count 
-                            FROM IsseuPage p 
+                            FROM issuepage p 
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId 
@@ -600,7 +629,7 @@ public class IssuePageRepository : IIssuePageRepository
                                 AND p.WriterAccountId = @AccountId
                         UNION
                             SELECT 2 As Status, Count(p.Id) As Count 
-                            FROM IsseuPage p 
+                            FROM issuepage p 
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId 
@@ -608,7 +637,7 @@ public class IssuePageRepository : IIssuePageRepository
                                 AND p.WriterAccountId = @AccountId
                         UNION
                             SELECT 3 As Status, Count(p.Id) As Count 
-                            FROM IsseuPage p 
+                            FROM issuepage p 
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId
@@ -616,7 +645,7 @@ public class IssuePageRepository : IIssuePageRepository
                                 AND p.ReviewerAccountId = @AccountId
                         UNION
                             SELECT 4 As Status, Count(p.Id) As Count 
-                            FROM IsseuPage p 
+                            FROM issuepage p 
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId

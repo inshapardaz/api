@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
     {
         private HttpResponseMessage _response;
         private IssueAssert _assert;
-        private int _issueId;
+        private IssueDto _issue;
         private byte[] _newImage = RandomData.Bytes;
 
         public WhenUploadingIssueImageWithPermissions(Role role)
@@ -26,12 +27,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var issue = IssueBuilder.WithLibrary(LibraryId).Build();
-            _issueId = issue.Id;
+            _issue = IssueBuilder.WithLibrary(LibraryId).Build();
 
-            var imageUrl = BookTestRepository.GetBookImageUrl(_issueId);
+            var imageUrl = BookTestRepository.GetBookImageUrl(_issue.Id);
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/image", _newImage);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/image", _newImage);
             _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
         [Test]
         public void ShouldHaveUpdatedImage()
         {
-            _assert.ShouldHaveUpdatedIssueImage(_issueId, _newImage);
+            _assert.ShouldHaveUpdatedIssueImage(_issue, _newImage);
         }
     }
 }

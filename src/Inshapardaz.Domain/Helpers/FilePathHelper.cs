@@ -51,7 +51,17 @@ public static class FilePathHelper
 
     public static string GetArticleImagePath(long articleId, string fileName) => $"articles/{articleId}/{fileName}";
 
+    // periodical image
+    public static string GetPeriodicalImageFileName(string fileName) => $"title{Path.GetExtension(fileName)}";
+
+    public static string GetPeriodicalImageFilePath(int periodicalId, string fileName) => $"periodicals/{periodicalId}/{fileName}";
+
     // Issue
+
+    public static string GetPeriodicalIssueImageFileName(string fileName) => $"issue-image{Path.GetExtension(fileName)}";
+
+    public static string GetPeriodicalIssueImageFilePath(int periodicalId, int volumeNumber, int issueNumber, string fileName) 
+        => $"periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/files/{fileName}";
 
     public static string GetIssueContentFileName(string fileName) => $"{Guid.NewGuid().ToString("N")}{Path.GetExtension(fileName)}";
 
@@ -60,8 +70,13 @@ public static class FilePathHelper
 
     public static string IssuePageContentFileName => $"page-content-{Guid.NewGuid().ToString("N")}.md";
 
-    internal static string GetIssuePageContentPath(int periodicalId, int volumeNumber, int issueNumber, string fileName) 
+    public static string GetIssuePageContentPath(int periodicalId, int volumeNumber, int issueNumber, string fileName)
         => $"periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{fileName}";
+
+    public static string GetIssuePageFileName(string fileName) => $"page-image-{Guid.NewGuid().ToString("N")}{Path.GetExtension(fileName)}";
+
+    public static string GetIssuePageFilePath(int periodicalId, int volumeNumber, int issueNumber, string fileName) 
+        => $"periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/{fileName}";
     // Issue Article
 
     public static string GetIssueArticleContentFileName(string language) => $"article-{language}.md";

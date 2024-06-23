@@ -29,14 +29,14 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _newLanguage = RandomData.Locale;
+            _newLanguage = RandomData.NextLocale();
 
             _issue = IssueBuilder.WithLibrary(LibraryId).WithContents(2).WithContentLanguage($"{_newLanguage}_old").Build();
             _content = IssueBuilder.Contents.PickRandom();
 
             _text = new Faker().Image.Random.Bytes(50);
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents/{_content.Id}?language={_newLanguage}",_text, _content.MimeType);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/contents/{_content.Id}?language={_newLanguage}",_text, _content.MimeType, RandomData.FileName(_content.MimeType));
             _assert = Services.GetService<IssueContentAssert>().ForResponse(_response).ForLibrary(Library);
         }
 
@@ -47,9 +47,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         }
 
         [Test]
-        public void ShouldHaveCreatedResult()
+        public void ShouldHaveOKResult()
         {
-            _response.ShouldBeCreated();
+            _response.ShouldBeOk();
         }
 
         [Test]

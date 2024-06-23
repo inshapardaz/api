@@ -110,7 +110,7 @@ public class BookPageRepository : IBookPageRepository
                 ChapterId = chapterId
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
-
+            await ReorderPages(libraryId, bookId, cancellationToken);
             return await GetPageBySequenceNumber(libraryId, bookId, sequenceNumber, cancellationToken);
         }
     }
@@ -402,7 +402,7 @@ public class BookPageRepository : IBookPageRepository
         }
     }
 
-    public async Task ReorderPages(int libraryId, int bookId, CancellationToken cancellationToken)
+    private async Task ReorderPages(int libraryId, int bookId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -431,18 +431,21 @@ public class BookPageRepository : IBookPageRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT @Id = Id
-                        FROM BookPage
-                        WHERE BookId = @BookId AND SequenceNumber = @oldPosition;
-
-                        SELECT @maxPosition = MAX(SequenceNumber) 
-                        FROM BookPage 
-                        WHERE BookId = @BookId;
-
-                        SET @newPosition = IF(@newPosition < 1, 1, @newPosition);
-                        SET @newPosition = IF(@newPosition > @maxPosition, @maxPosition, @newPosition);
-
-                        UPDATE BookPage 
+            var existingId = await connection.ExecuteScalarAsync<long>(
+                new CommandDefinition(
+                "SELECT Id from bookpage WHERE BookId = @BookId AND SequenceNumber = @oldPosition",
+                new
+                {
+                    BookId = bookId,
+                    oldPosition = oldSequenceNumber,
+                }, cancellationToken: cancellationToken));
+            var maxPosition = await connection.ExecuteScalarAsync<long>(
+                new CommandDefinition(
+                    "SELECT MAX(SequenceNumber) FROM BookPage WHERE BookId = @BookId",
+                    new { BookId = bookId }, cancellationToken: cancellationToken));
+            var newPosition = newSequenceNumber < 1 ? 1 :  newSequenceNumber > maxPosition ? maxPosition : newSequenceNumber;
+            
+            var sql = @"UPDATE BookPage 
                         SET SequenceNumber = CASE
                             WHEN Id = @Id THEN @newPosition
                             WHEN @oldPosition < @newPosition THEN SequenceNumber - 1
@@ -455,9 +458,8 @@ public class BookPageRepository : IBookPageRepository
             {
                 BookId = bookId,
                 oldPosition = oldSequenceNumber,
-                newPosition = newSequenceNumber,
-                maxPosition = 0,
-                Id = 0
+                newPosition = newPosition,
+                Id = existingId
             }, cancellationToken: cancellationToken);
 
             await connection.ExecuteAsync(command);

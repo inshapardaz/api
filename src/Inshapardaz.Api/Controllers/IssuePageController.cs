@@ -193,7 +193,10 @@ public class IssuePageController : Controller
         }
 
         var model = page.Map();
-
+        model.PeriodicalId = periodicalId;
+        model.VolumeNumber = volumeNumber;
+        model.IssueNumber = issueNumber;
+        model.SequenceNumber = sequenceNumber;
         var request = new UpdateIssuePageRequest(libraryId, model);
 
         await _commandProcessor.SendAsync(request, cancellationToken: token);

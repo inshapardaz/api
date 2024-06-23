@@ -24,17 +24,28 @@ public class DeleteIssueRequest : LibraryBaseCommand
 public class DeleteIssueRequestHandler : RequestHandlerAsync<DeleteIssueRequest>
 {
     private readonly IIssueRepository _issueRepository;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public DeleteIssueRequestHandler(IIssueRepository issueRepository)
+    public DeleteIssueRequestHandler(IIssueRepository issueRepository, IAmACommandProcessor commandProcessor)
     {
         _issueRepository = issueRepository;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<DeleteIssueRequest> HandleAsync(DeleteIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        await _issueRepository.DeleteIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+        var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+        if (issue != null)
+        {
+            var contents = await _issueRepository.GetIssueContents(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+            foreach (var content in contents)
+            {
+                await _commandProcessor.SendAsync(new DeleteIssueContentRequest(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, content.Id), cancellationToken: cancellationToken);
+            }
 
+            await _issueRepository.DeleteIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+        }
         return await base.HandleAsync(command, cancellationToken);
     }
 }

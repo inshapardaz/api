@@ -38,8 +38,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"INSERT INTO IssuePage (IssueId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
-                    VALUES (@IssueId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status);
+                var sql = @"INSERT INTO IssuePage (IssueId, Text, SequenceNumber, ImageId, FileId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
+                    VALUES (@IssueId, @Text, @SequenceNumber, @ImageId, @FileId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status);
                     SELECT LAST_INSERT_ID();";
                 var id = connection.ExecuteScalar<int>(sql, issuePage);
                 issuePage.Id = id;
@@ -139,9 +139,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"INSERT INTO IssuePage (IssueId, Text, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
+                var sql = @"INSERT INTO IssuePage (IssueId, Text, SequenceNumber, ImageId, FileId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
                     OUTPUT INSERTED.ID
-                    VALUES (@IssueId, @Text, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status)";
+                    VALUES (@IssueId, @Text, @SequenceNumber, @ImageId, @FileId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status)";
                 var id = connection.ExecuteScalar<int>(sql, issuePage);
                 issuePage.Id = id;
             }

@@ -13,6 +13,6 @@ public class IssueContentModel
 
     public string Language { get; set; }
 
-    public long FileId { get; internal set; }
+    public long FileId { get; set; }
     public int VolumeNumber { get; set; }
 }

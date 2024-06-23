@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.File;
 using Inshapardaz.Storage.FileSystem;
 using ShellProgressBar;
 
@@ -536,12 +537,15 @@ public class Migrator
 
                     var newFile = await CopyFile(content.FileId, cancellationToken);
                     await destinationDb.AddIssueContent(newLibraryId,
-                        newPeriodicalId,
-                        content.VolumeNumber,
-                        content.IssueNumber,
-                        newFile.Id,
-                        content.Language,
-                        content.MimeType,
+                        new IssueContentModel
+                        {
+                            PeriodicalId = issue.PeriodicalId,
+                            VolumeNumber = issue.VolumeNumber,
+                            IssueNumber = issue.IssueNumber,
+                            FileId = newFile.Id,
+                            Language = content.Language,
+                            MimeType = content.MimeType,
+                        },
                         cancellationToken);
                 }
 

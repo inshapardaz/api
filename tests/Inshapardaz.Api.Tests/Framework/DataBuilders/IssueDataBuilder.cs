@@ -6,6 +6,7 @@ using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using RandomData = Inshapardaz.Api.Tests.Framework.Helpers.RandomData;
 using Inshapardaz.Domain.Models;
@@ -61,12 +62,14 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IEnumerable<IssueDto> Issues => _issues;
         public IEnumerable<IssueContentDto> Contents => _contents;
         public IEnumerable<IssueArticleContentDto> ArticleContents => _articleContents;
+        public IEnumerable<FileDto> Files => _files;
 
         private IPeriodicalTestRepository _periodicalRepository;
         private IIssueTestRepository _issueRepository;
         private IIssuePageTestRepository _issuePageRepository;
         private IIssueArticleTestRepository _issueArticleRepository;
         private IFileTestRepository _fileRepository;
+
         public IssueDataBuilder(IFileStorage fileStorage,
                AuthorsDataBuilder authorBuilder,
                IPeriodicalTestRepository periodicalRepository,
@@ -226,7 +229,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         {
             var fixture = new Fixture();
 
-            Func<bool> isPublic = () => _isPublic ?? RandomData.Bool;
+            var isPublic = _isPublic ?? RandomData.Bool;
 
 
             if (!_periodicalId.HasValue)
@@ -259,13 +262,12 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             foreach (var issue in _issues)
             {
-                FileDto issueImage = null;
                 if (_hasImage)
                 {
-                    issueImage = fixture.Build<FileDto>()
-                                         .With(a => a.FilePath, RandomData.FilePath)
-                                         .With(a => a.IsPublic, true)
-                                         .Create();
+                    var issueImage = fixture.Build<FileDto>()
+                        .With(a => a.FilePath, RandomData.FilePath)
+                        .With(a => a.IsPublic, true)
+                        .Create();
                     _fileRepository.AddFile(issueImage);
 
                     _files.Add(issueImage);
@@ -281,9 +283,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 List<FileDto> files = null;
                 if (_contentCount > 0)
                 {
-                    var mimeType = _contentMimeType ?? RandomData.MimeType;
+                    var mimeType = MimeTypes.Jpg;
+                    var fileName = FilePathHelper.GetPeriodicalIssueImageFileName(RandomData.FileName(mimeType));
+                    var filePath = FilePathHelper.GetPeriodicalIssueImageFilePath(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, fileName);
                     files = fixture.Build<FileDto>()
-                                         .With(f => f.FilePath, RandomData.FilePath)
+                                         .With(f => f.FilePath, filePath)
                                          .With(f => f.IsPublic, false)
                                          .With(f => f.MimeType, mimeType)
                                          .CreateMany(_contentCount)
@@ -318,8 +322,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         FileDto pageImage = null;
                         if (_addPageImage)
                         {
+                            var mimeType = MimeTypes.Jpg;
+                            var fileName = FilePathHelper.GetIssuePageFileName(RandomData.FileName(mimeType));
+                            var filePath = FilePathHelper.GetIssuePageFilePath(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, fileName);
+
                             pageImage = fixture.Build<FileDto>()
-                                         .With(a => a.FilePath, RandomData.FilePath)
+                                         .With(a => a.FilePath, filePath)
+                                         .With(a => a.MimeType, mimeType)
                                          .With(a => a.IsPublic, true)
                                          .Create();
                             _fileRepository.AddFile(pageImage);
@@ -327,15 +336,30 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                             _files.Add(pageImage);
                             _fileStorage.SetupFileContents(pageImage.FilePath, RandomData.Bytes);
                         }
+                        
+                        var contentMimeType = MimeTypes.Markdown;
+                        var contentFileName = FilePathHelper.IssuePageContentFileName;
+                        var contentFilePath = FilePathHelper.GetIssuePageContentPath(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, contentFileName);
+
+                        var contentFile = fixture.Build<FileDto>()
+                            .With(a => a.FilePath, contentFilePath)
+                            .With(a => a.MimeType, contentMimeType)
+                            .With(a => a.IsPublic, true)
+                            .Create();
+                        _fileRepository.AddFile(contentFile);
+
+                        _files.Add(contentFile);
+                        _fileStorage.SetupFileContents(contentFile.FilePath, RandomData.String);
+                        
 
                         pages.Add(fixture.Build<IssuePageDto>()
                             .With(p => p.IssueId, issue.Id)
                             .With(p => p.SequenceNumber, i + 1)
-                            .With(p => p.Text, RandomData.Text)
+                            .With(p => p.FileId, contentFile.Id)
                             .With(p => p.ImageId, pageImage?.Id)
                             .With(p => p.WriterAccountId, (int?)null)
                             .With(p => p.ReviewerAccountId, (int?)null)
-                            .With(p => p.Status, EditingStatus.All)
+                            .With(p => p.Status, RandomData.EditingStatus )
                             .Create());
                     }
 
@@ -366,13 +390,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
                     if (_pageStatuses.Any())
                     {
+                        var index = 0;
                         foreach (var pageStatus in _pageStatuses)
                         {
-                            var pagesToSetStatus = RandomData.PickRandom(pages.Where(p => p.Status == EditingStatus.All), pageStatus.Value);
-                            foreach (var pageToSetStatus in pagesToSetStatus)
-                            {
-                                pageToSetStatus.Status = pageStatus.Key;
-                            }
+                            pages.Skip(index)
+                                .Take(pageStatus.Value)
+                                .ForEach(p => p.Status = pageStatus.Key);
+                            index += pageStatus.Value;
                         }
                     }
 

@@ -73,7 +73,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AssignPage
                 VolumeNumber = _issue.VolumeNumber,
                 IssueNumber = _issue.IssueNumber,
                 SequenceNumber = _page.SequenceNumber,
-                Text = _page.Text,
+                Text = null,
                 Status = _status.ToString(),
                 ReviewerAccountId = ShouldAssignReview() ? _secondAccount.Id : _page.ReviewerAccountId,
                 ReviewerAccountName = ShouldAssignReview() ? _secondAccount.Name : null,

@@ -6,7 +6,6 @@ using Inshapardaz.Domain.Models.Library;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -209,19 +208,23 @@ public class IssueRepository : IIssueRepository
         }
     }
 
-    public async Task<IssueContentModel> AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long fileId, string language, string mimeType, CancellationToken cancellationToken)
+    public async Task<IssueContentModel> AddIssueContent(int libraryId, IssueContentModel model, CancellationToken cancellationToken)
     {
-        var issue = await GetIssue(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
+        var issue = await GetIssue(libraryId, model.PeriodicalId, model.VolumeNumber, model.IssueNumber, cancellationToken);
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO IssueContent (IssueId, FileId, Language, MimeType)
                             VALUES (@IssueId, @FileId, @Language, @MimeType);
                         SELECT LAST_INSERT_ID();";
-            var command = new CommandDefinition(sql, new { FileId = fileId, IssueId = issue.Id, Language = language, MimeType = mimeType }, cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql, new { 
+                FileId = model.FileId, 
+                IssueId = issue.Id, 
+                Language = model.Language, 
+                MimeType = model.MimeType,
+            }, cancellationToken: cancellationToken);
             var id = await connection.ExecuteScalarAsync<long>(command);
             return await GetIssueContentById(connection, id, cancellationToken);
         }
-
     }
 
     public async Task<IEnumerable<IssueContentModel>> GetIssueContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
@@ -276,15 +279,16 @@ public class IssueRepository : IIssueRepository
         }
     }
 
-    public async Task UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string mimetype, string language, long contentId, CancellationToken cancellationToken)
+    public async Task<IssueContentModel> UpdateIssueContent(int libraryId, IssueContentModel model, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"UPDATE IssueContent
+            var sql = @"UPDATE IssueContent ic
                         INNER JOIN Issue i ON i.Id = ic.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
-                        SET Language = @Language,
-                            MimeType = @MimeType
+                        SET ic.Language = @Language,
+                            ic.MimeType = @MimeType,
+                            ic.FileId = @FileId 
                         WHERE p.LibraryId = @LibraryId 
                             AND i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
@@ -293,15 +297,18 @@ public class IssueRepository : IIssueRepository
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
-                PeriodicalId = periodicalId,
-                VolumeNumber = volumeNumber,
-                IssueNumber = issueNumber,
-                ContentId = contentId,
-                Language = language,
-                MimeType = mimetype
+                PeriodicalId = model.PeriodicalId,
+                VolumeNumber = model.VolumeNumber,
+                IssueNumber = model.IssueNumber,
+                ContentId = model.Id,
+                Language = model.Language,
+                MimeType = model.MimeType,
+                FileId = model.FileId,
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
+
+        return await GetIssueContent(libraryId, model.PeriodicalId, model.VolumeNumber, model.IssueNumber, model.Id, cancellationToken);
     }
 
     public async Task UpdateIssueContentUrl(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, string url, CancellationToken cancellationToken)

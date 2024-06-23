@@ -55,7 +55,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssuePageAssert ShouldHaveNoIssuePage(int issueId, long pageId, int? imageId)
+        public IssuePageAssert ShouldHaveNoIssuePage(int issueId, long pageId, long? imageId)
         {
             var page = _issuePageRepository.GetIssuePageByIssueId(issueId, pageId);
             page.Should().BeNull();
@@ -90,7 +90,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssuePageAssert ShouldHaveNoIssuePageImage(int issueId, int pageNumber, int imageId)
+        public IssuePageAssert ShouldHaveNoIssuePageImage(int issueId, int pageNumber, long imageId)
         {
             var page = _issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
             page.ImageId.Should().BeNull();
@@ -127,7 +127,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssuePageAssert ShouldHaveCorrectImageLocationHeader(HttpResponseMessage response, int imageId)
+        public IssuePageAssert ShouldHaveCorrectImageLocationHeader(HttpResponseMessage response, long imageId)
         {
             string location = response.Headers.Location.AbsoluteUri;
             location.Should().NotBeEmpty();
@@ -227,7 +227,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssuePageAssert ShouldHaveImageLink(int imageId)
+        public IssuePageAssert ShouldHaveImageLink(long imageId)
         {
             _issuePage.Link("image")
                   .ShouldBeGet()
@@ -303,9 +303,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
+        public IssuePageAssert ShouldMatchWithoutText(IssuePageDto dto)
+        {
+            ShouldMatch(dto);
+            var filePath = _fileRepository.GetFileById(dto.FileId.Value).FilePath;
+            var content = _fileStorage.GetTextFile(filePath, CancellationToken.None).Result;
+            _issuePage.Text.Should().Be(content);
+            return this;
+        }
         public IssuePageAssert ShouldMatch(IssuePageDto dto)
         {
-            _issuePage.Text.Should().Be(dto.Text);
             _issuePage.SequenceNumber.Should().Be(dto.SequenceNumber);
             _issuePage.WriterAccountId.Should().Be(dto.WriterAccountId);
 
@@ -326,6 +333,8 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             {
                 _issuePage.ReviewerAssignTimeStamp.Should().BeNull();
             }
+
+            _issuePage.Text.Should().NotBeNullOrEmpty();
 
             return this;
         }

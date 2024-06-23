@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -70,6 +71,27 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
         public void ShouldHaveDeletedTheImage()
         {
             _assert.ShouldHaveDeletedIssueImage(_expected.Id);
+        }
+
+
+        [Test]
+        public void ShouldHaveDeletedContents()
+        {
+            var issues = IssueBuilder.Issues.Where(x => x.Id == _expected.Id).ToList();
+            var contents = IssueBuilder.Contents.Where(x => x.IssueId == _expected.Id).ToList();
+
+            foreach (var content in contents)
+            {
+                var file = IssueBuilder.Files.FirstOrDefault(x => x.Id == content.FileId);
+                var assert = Services.GetService<IssueContentAssert>().ForLibrary(Library)
+                    .ShouldHaveDeletedContent(content, file);
+            }
+        }
+
+        [Test]
+        public void ShouldHaveDeletedArticles()
+        {
+            _assert.ShouldHaveDeletedArticlesForIssue(_expected.Id);
         }
     }
 }

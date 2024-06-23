@@ -5,6 +5,7 @@ using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Ports.Query.File;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue.Page;
 
@@ -39,14 +40,12 @@ public class GetIssuePagesQuery : LibraryBaseQuery<Page<IssuePageModel>>
 public class GetIssuePagesQueryHandler : QueryHandlerAsync<GetIssuePagesQuery, Page<IssuePageModel>>
 {
     private readonly IIssuePageRepository _issuePageRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IQueryProcessor _queryProcessor;
 
-    public GetIssuePagesQueryHandler(IIssuePageRepository issuePageRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+    public GetIssuePagesQueryHandler(IIssuePageRepository issuePageRepository, IQueryProcessor queryProcessor)
     {
         _issuePageRepository = issuePageRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _queryProcessor = queryProcessor;
     }
 
     public override async Task<Page<IssuePageModel>> ExecuteAsync(GetIssuePagesQuery query, CancellationToken cancellationToken = new CancellationToken())
@@ -56,13 +55,8 @@ public class GetIssuePagesQueryHandler : QueryHandlerAsync<GetIssuePagesQuery, P
         foreach (var page in pages.Data)
         {
             if (page.FileId.HasValue)
-            {
-                var file = await _fileRepository.GetFileById(page.FileId.Value, cancellationToken);
-                if (file != null)
-                {
-                    var fc = await _fileStorage.GetTextFile(file.FilePath, cancellationToken);
-                    page.Text = fc;
-                }
+            { 
+                page.Text = await _queryProcessor.ExecuteAsync(new GetTextFileQuery(page.FileId.Value), cancellationToken);
             }
         }
 

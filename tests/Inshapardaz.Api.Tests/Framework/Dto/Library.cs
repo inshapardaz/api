@@ -19,6 +19,6 @@
         public string DatabaseConnection { get; set; }
         public string FileStoreType { get; set; }
         public string FileStoreSource { get; set; }
-        public int? ImageId { get; set; }
+        public long? ImageId { get; set; }
     }
 }

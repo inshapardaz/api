@@ -19,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
 
         public int BookId { get; set; }
 
-        public int FileId { get; set; }
+        public long FileId { get; set; }
 
         public string Language { get; set; }
 

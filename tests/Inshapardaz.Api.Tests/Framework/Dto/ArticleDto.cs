@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
         public long Id { get; set; }
 
         public int LibraryId { get; set; }
-        public int? ImageId { get; set; }
+        public long? ImageId { get; set; }
 
         public string Title { get; set; }
         public bool IsPublic{ get; set; }

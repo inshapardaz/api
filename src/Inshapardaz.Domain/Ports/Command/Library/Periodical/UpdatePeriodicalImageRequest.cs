@@ -1,9 +1,9 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,14 +34,13 @@ public class UpdatePeriodicalImageRequest : LibraryBaseCommand
 public class UpdatePeriodicalImageRequestHandler : RequestHandlerAsync<UpdatePeriodicalImageRequest>
 {
     private readonly IPeriodicalRepository _periodicalRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
+    private readonly IAmACommandProcessor _commandProcessor;
 
-    public UpdatePeriodicalImageRequestHandler(IPeriodicalRepository PeriodicalRepository, IFileRepository fileRepository, IFileStorage fileStorage)
+    public UpdatePeriodicalImageRequestHandler(IPeriodicalRepository PeriodicalRepository, 
+        IAmACommandProcessor commandProcessor)
     {
         _periodicalRepository = PeriodicalRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -55,46 +54,26 @@ public class UpdatePeriodicalImageRequestHandler : RequestHandlerAsync<UpdatePer
             throw new NotFoundException();
         }
 
-        if (periodical.ImageId.HasValue)
-        {
-            command.Image.Id = periodical.ImageId.Value;
-            var existingImage = await _fileRepository.GetFileById(periodical.ImageId.Value, cancellationToken);
-            if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
-            {
-                await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
-            }
+        var fileName = FilePathHelper.GetPeriodicalImageFileName(command.Image.FileName);
+        var filePath = FilePathHelper.GetPeriodicalImageFilePath(command.PeriodicalId, fileName);
 
-            var url = await AddImageToFileStore(periodical.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
-            command.Image.FilePath = url;
-            command.Image.IsPublic = true;
-            await _fileRepository.UpdateFile(command.Image, cancellationToken);
-            command.Result.File = command.Image;
-            command.Result.File.Id = periodical.ImageId.Value;
-        }
-        else
+        var saveContentCommand = new SaveFileCommand(fileName, filePath, command.Image.Contents)
         {
-            command.Image.Id = default;
-            var url = await AddImageToFileStore(periodical.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
-            command.Image.FilePath = url;
-            command.Image.IsPublic = true;
-            command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
-            command.Result.HasAddedNew = true;
+            MimeType = command.Image.MimeType,
+            ExistingFileId = periodical.ImageId,
+            IsPublic = true
+        };
 
+        await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
+
+        command.Result.File = saveContentCommand.Result;
+
+        if (!periodical.ImageId.HasValue)
+        {
             await _periodicalRepository.UpdatePeriodicalImage(command.LibraryId, periodical.Id, command.Result.File.Id, cancellationToken);
+            command.Result.HasAddedNew = true;
         }
 
         return await base.HandleAsync(command, cancellationToken);
-    }
-
-    private async Task<string> AddImageToFileStore(int PeriodicalId, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
-    {
-        var filePath = GetUniqueFileName(PeriodicalId, fileName);
-        return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
-    }
-
-    private static string GetUniqueFileName(int PeriodicalId, string fileName)
-    {
-        var fileNameWithourExtension = Path.GetExtension(fileName).Trim('.');
-        return $"periodicals/{PeriodicalId}/title.{fileNameWithourExtension}";
     }
 }

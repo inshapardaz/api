@@ -202,15 +202,15 @@ public class IssueRepository : IIssueRepository
         }
     }
 
-    public async Task<IssueContentModel> AddIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long fileId, string language, string mimeType, CancellationToken cancellationToken)
+    public async Task<IssueContentModel> AddIssueContent(int libraryId, IssueContentModel issueContent, CancellationToken cancellationToken)
     {
-        var issue = await GetIssue(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
+        var issue = await GetIssue(libraryId, issueContent.PeriodicalId, issueContent.VolumeNumber, issueContent.IssueNumber, cancellationToken);
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO IssueContent (IssueId, FileId, Language, MimeType)
                         OUTPUT Inserted.Id
                         VALUES (@IssueId, @FileId, @Language, @MimeType)";
-            var command = new CommandDefinition(sql, new { FileId = fileId, IssueId = issue.Id, Language = language, MimeType = mimeType }, cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql, issueContent, cancellationToken: cancellationToken);
             var id = await connection.ExecuteScalarAsync<long>(command);
             return await GetIssueContentById(connection, id, cancellationToken);
         }
@@ -321,7 +321,7 @@ public class IssueRepository : IIssueRepository
         }
     }
 
-    public async Task UpdateIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, string mimetype, string language, long contentId, CancellationToken cancellationToken)
+    public async Task<IssueContentModel> UpdateIssueContent(int libraryId, IssueContentModel model, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -329,7 +329,8 @@ public class IssueRepository : IIssueRepository
                         INNER JOIN Issue i ON i.Id = ic.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                         SET Language = @Language,
-                            MimeType = @MimeType
+                            MimeType = @MimeType,
+                            FileId = @FileId
                         WHERE p.LibraryId = @LibraryId 
                             AND i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
@@ -338,15 +339,18 @@ public class IssueRepository : IIssueRepository
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
-                PeriodicalId = periodicalId,
-                VolumeNumber = volumeNumber,
-                IssueNumber = issueNumber,
-                ContentId = contentId,
-                Language = language,
-                MimeType = mimetype
+                PeriodicalId = model.PeriodicalId,
+                VolumeNumber = model.VolumeNumber,
+                IssueNumber = model.IssueNumber,
+                ContentId = model.Id,
+                Language = model.Language,
+                MimeType = model.MimeType,
+                FileId = model.FileId,
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
+
+        return await GetIssueContent(libraryId, model.PeriodicalId, model.VolumeNumber, model.IssueNumber, model.Id, cancellationToken);
     }
 
     private async Task<IssueModel> GetIssueById(int libraryId, int periodicalId, int issueId, CancellationToken cancellationToken)

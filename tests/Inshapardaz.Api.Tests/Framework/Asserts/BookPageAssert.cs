@@ -56,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public BookPageAssert ShouldHaveNoBookPage(int bookId, long pageId, int? imageId)
+        public BookPageAssert ShouldHaveNoBookPage(int bookId, long pageId, long? imageId)
         {
             var page = _bookPageRepository.GetBookPageById(bookId, pageId);
             page.Should().BeNull();
@@ -89,7 +89,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public BookPageAssert ShouldHaveNoBookPageImage(int bookId, int pageNumber, int imageId)
+        public BookPageAssert ShouldHaveNoBookPageImage(int bookId, int pageNumber, long imageId)
         {
             var page = _bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
             page.ImageId.Should().BeNull();
@@ -124,7 +124,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public BookPageAssert ShouldHaveCorrectImageLocationHeader(HttpResponseMessage response, int imageId)
+        public BookPageAssert ShouldHaveCorrectImageLocationHeader(HttpResponseMessage response, long imageId)
         {
             string location = response.Headers.Location.AbsoluteUri;
             location.Should().NotBeEmpty();
@@ -221,7 +221,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public BookPageAssert ShouldHaveImageLink(int imageId)
+        public BookPageAssert ShouldHaveImageLink(long imageId)
         {
             _bookPage.Link("image")
                   .ShouldBeGet()
@@ -290,7 +290,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public BookPageAssert ShouldHaveNoBookPageContent(int contentId, string filePath)
+        public BookPageAssert ShouldHaveNoBookPageContent(long contentId, string filePath)
         {
             var file = _fileRepository.GetFileById(contentId);
             file.Should().BeNull();

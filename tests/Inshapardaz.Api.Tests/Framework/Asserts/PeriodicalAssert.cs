@@ -280,6 +280,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         {
             var imageUrl = _periodicalRepository.GetPeriodicalImageUrl(periodicalId);
             imageUrl.Should().NotBeNull();
+            imageUrl.Should().Contain($"periodicals/{periodicalId}");
             var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().Equal(oldImage);
             return this;

@@ -14,7 +14,7 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
 
         public int LibraryId { get; set; }
 
-        public int? ImageId { get; set; }
+        public long? ImageId { get; set; }
 
         public DateTime IssueDate { get; set; }
 
@@ -39,7 +39,7 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
 
         public int IssueId { get; set; }
 
-        public int FileId { get; set; }
+        public long FileId { get; set; }
 
         public string Language { get; set; }
 

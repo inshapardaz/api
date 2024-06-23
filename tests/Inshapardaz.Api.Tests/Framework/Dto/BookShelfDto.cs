@@ -10,7 +10,7 @@
 
         public bool IsPublic { get; set; }
 
-        public int? ImageId { get; set; }
+        public long? ImageId { get; set; }
 
         public int AccountId { get; set; }
         public int LibraryId { get; set; }

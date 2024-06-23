@@ -47,7 +47,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePageSequenceNumber
         [OneTimeTearDown]
         public void Teardown()
         {
-            BookBuilder.CleanUp();
+            Cleanup();
         }
 
         [Test]
@@ -60,7 +60,8 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePageSequenceNumber
         public void ShouldHaveUpdatedThePageSequenceNumber()
         {
             var savedPage = BookPageTestRepository.GetBookPageById(_page.BookId, _page.Id);
-            savedPage.Should().NotBeNull().And.Be(1);
+            savedPage.Should().NotBeNull();
+            savedPage.SequenceNumber.Should().Be(1);
         }
     }
 }

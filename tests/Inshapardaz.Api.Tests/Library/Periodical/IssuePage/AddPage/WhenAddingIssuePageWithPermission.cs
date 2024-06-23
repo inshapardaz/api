@@ -62,7 +62,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
             _assert.ShouldMatch(new IssuePageView
             {

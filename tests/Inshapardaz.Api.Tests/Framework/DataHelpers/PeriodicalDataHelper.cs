@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
+using Namotion.Reflection;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         PeriodicalDto GetPeriodicalById(int id);
         string GetPeriodicalImageUrl(int id);
         FileDto GetPeriodicalImage(int id);
+        void UpdatePeriodical(PeriodicalDto periodical);
     }
 
     public class MySqlPeriodicalTestRepository : IPeriodicalTestRepository
@@ -38,7 +40,24 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 var id = connection.ExecuteScalar<int>(sql, periodical);
                 periodical.Id = id;
             }
+        } 
+        
+        public void UpdatePeriodical(PeriodicalDto periodical)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"UPDATE Periodical SET 
+                                Title = @Title, 
+                                `Description` = @Description, 
+                                `Language` = @Language, 
+                                ImageId = @ImageId, 
+                                LibraryId = @LibraryId, 
+                                Frequency = @Frequency
+                    WHERE Id = @Id";
+                connection.Execute(sql, periodical);
+            }
         }
+
         public void AddPeriodicals(IEnumerable<PeriodicalDto> Periodicals)
         {
             foreach (var periodical in Periodicals)
@@ -49,6 +68,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeletePeriodicals(IEnumerable<PeriodicalDto> periodicals)
         {
+            if (periodicals is null) return;
             using (var connection = _connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Periodical WHERE Id IN @Ids";
@@ -116,6 +136,23 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 periodical.Id = id;
             }
         }
+
+        public void UpdatePeriodical(PeriodicalDto periodical)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"UPDATE Periodical SET 
+                                Title = @Title, 
+                                [Description] = @Description, 
+                                [Language] = @Language, 
+                                ImageId = @ImageId, 
+                                LibraryId = @LibraryId, 
+                                Frequency = @Frequency
+                    WHERE Id = @Id";
+                connection.Execute(sql, periodical);
+            }
+        }
+
         public void AddPeriodicals(IEnumerable<PeriodicalDto> Periodicals)
         {
             foreach (var periodical in Periodicals)

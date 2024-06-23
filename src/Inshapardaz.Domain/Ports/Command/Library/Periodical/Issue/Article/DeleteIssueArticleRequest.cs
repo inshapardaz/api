@@ -23,21 +23,32 @@ public class DeleteIssueArticleRequest : LibraryBaseCommand
     public int SequenceNumber { get; }
 }
 
-public class DeleteArticleRequestHandler : RequestHandlerAsync<DeleteIssueArticleRequest>
+public class DeleteIssueArticleRequestHandler : RequestHandlerAsync<DeleteIssueArticleRequest>
 {
     private readonly IIssueArticleRepository _articleRepository;
-
-    public DeleteArticleRequestHandler(IIssueArticleRepository articleRepository)
+    private readonly IAmACommandProcessor _commandProcessor;
+    public DeleteIssueArticleRequestHandler(IIssueArticleRepository articleRepository, 
+        IAmACommandProcessor commandProcessor)
     {
         _articleRepository = articleRepository;
+        _commandProcessor = commandProcessor;
     }
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<DeleteIssueArticleRequest> HandleAsync(DeleteIssueArticleRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var contents = await _articleRepository.GetArticleContents(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+        var issue = await _articleRepository.GetArticle(command.PeriodicalId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber,
+            command.SequenceNumber, cancellationToken);
+        if (issue is not null)
+        {
+            var contents = await _articleRepository.GetArticleContents(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
 
-        await _articleRepository.DeleteArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+            foreach (var content in contents)  
+            {
+                await _commandProcessor.SendAsync(new DeleteIssueArticleContentRequest(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, content.Language), cancellationToken: cancellationToken);
+            }
+            await _articleRepository.DeleteArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+        }
 
         return await base.HandleAsync(command, cancellationToken);
     }

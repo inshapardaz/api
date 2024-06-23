@@ -44,10 +44,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteFiles(IEnumerable<FileDto> files)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            if (files != null && files.Any())
             {
-                var mySql = "Delete From `File` Where Id IN @Ids";
-                connection.Execute(mySql, new { Ids = files.Select(f => f.Id) });
+                using (var connection = _connectionProvider.GetConnection())
+                {
+                    var mySql = "Delete From `File` Where Id IN @Ids";
+                    connection.Execute(mySql, new { Ids = files.Select(f => f.Id) });
+                }
             }
         }
 

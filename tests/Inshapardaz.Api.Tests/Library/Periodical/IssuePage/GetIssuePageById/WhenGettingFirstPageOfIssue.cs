@@ -5,7 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Tests.Framework.Fakes;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePageById
 {

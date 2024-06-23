@@ -7,11 +7,7 @@ public static class RandomGenerator
 {
     public static string GenerateRandomString()
     {
-        using (var rngCryptoServiceProvider = new RNGCryptoServiceProvider())
-        {
-            var randomBytes = new byte[40];
-            rngCryptoServiceProvider.GetBytes(randomBytes);
-            return BitConverter.ToString(randomBytes).Replace("-", "");
-        }
+        var randomBytes = RandomNumberGenerator.GetBytes(40);
+        return BitConverter.ToString(randomBytes).Replace("-", "");
     }
 }

@@ -19,7 +19,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
         private HttpResponseMessage _response;
         private IssueContentAssert _assert;
         private IssueContentDto _expected;
-        private FileDto _file;
 
         public WhenDeletingIssueContentWithPermissions(Role role)
             : base(role)

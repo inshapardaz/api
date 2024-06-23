@@ -14,8 +14,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
     public class AccountDataBuilder
     {
-        private IDbConnection _connection;
-
         private Role? _role = null;
         public string _password = RandomData.String;
         private DateTime? _verified = null;

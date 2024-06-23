@@ -31,11 +31,11 @@ namespace Inshapardaz.Api.Tests
         public static DatabaseTypes DatabaseType => DatabaseTypes.MySql;
         protected readonly bool _periodicalsEnabled;
         protected readonly Role? _role;
-        private WebApplicationFactory<Program> _factory;
-        private AccountDto _account;
+        private readonly WebApplicationFactory<Program> _factory;
+        private readonly AccountDto _account;
 
         protected AccountAssert AccountAssert => Services.GetService<AccountAssert>();
-        public FakeSmtpClient SmtpClient => Services.GetService<ISmtpClient>() as FakeSmtpClient;
+        protected FakeSmtpClient SmtpClient => Services.GetService<ISmtpClient>() as FakeSmtpClient;
 
         public TestBase(Role? role = null, bool periodicalsEnabled = false, bool createLibrary = true)
         {
@@ -52,12 +52,6 @@ namespace Inshapardaz.Api.Tests
                 builder.ConfigureAppConfiguration((context, conf) =>
                 {
                     conf.AddJsonFile(configPath);
-
-                    if (!string.IsNullOrWhiteSpace(environment))
-                    {
-                        conf.AddJsonFile(Path.Combine(projectDir, $"appsettings.json"), true);
-                        //conf.AddJsonFile(Path.Combine(projectDir, $"appsettings.{environment}.json"), true);
-                    }
                 });
                 builder.ConfigureTestServices(services => ConfigureServices(services));
             });
@@ -186,7 +180,7 @@ namespace Inshapardaz.Api.Tests
                     .AddTransient<LibraryAssert>()
                     .AddTransient(typeof(PagingAssert<>), typeof(PagingAssert<>))
                     .AddTransient<PeriodicalAssert>()
-                    .AddTransient<SeriesAssert>();           
+                    .AddTransient<SeriesAssert>();
         }
 
         protected void AuthenticateClientWithToken(string token)

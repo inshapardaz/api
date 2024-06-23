@@ -19,9 +19,6 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         private readonly IChapterTestRepository _chapterRepository;
         private readonly IFileTestRepository _fileRepository;
-        private readonly IAuthorTestRepository _authorRepository;
-        private readonly ICategoryTestRepository _categoryRepository;
-        private readonly ISeriesTestRepository _seriesRepository;
         private readonly FakeFileStorage _fileStorage;
 
         public ChapterContentAssert(IFileTestRepository fileRepository,

@@ -2,7 +2,7 @@
   "profiles": {
     "Common": {
       "commandName": "Project",
-      "commandLineArgs": "-s \"data source=.;Database=Nawishta;integrated security=True;\" -st \"SqlServer\" -d \"Server=127.0.0.1;Database=nawishta;Uid=root;Pwd=Passw0rd;SslMode=none;\" -dt \"MySql\" -c -l 1",
+      "commandLineArgs": "-s \"data source=.;Database=db_a9426d_nawishta;integrated security=True;\" -st \"SqlServer\" -d \"Server=127.0.0.1;Database=nawishta;Uid=root;Pwd=Passw0rd;SslMode=none;\" -dt \"MySql\" -c -l 1",
       "hotReloadEnabled": false
     },
     "Adab-E-Alia": {

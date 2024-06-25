@@ -226,7 +226,7 @@ public class ArticleController : Controller
     }
 
     [HttpPut("libraries/{libraryId}/articles/{articleId}/contents", Name = nameof(ArticleController.UpdateArticleContent))]
-    public async Task<IActionResult> UpdateArticleContent(int libraryId, int articleId, [FromBody] ArticleContentView content, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> UpdateArticleContent(int libraryId, long articleId, [FromQuery] string language, [FromBody] ArticleContentView content, CancellationToken token = default(CancellationToken))
     {
         var contentPayload = content.Map();
         contentPayload.ArticleId = articleId;

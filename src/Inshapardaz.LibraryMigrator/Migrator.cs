@@ -46,7 +46,6 @@ public class Migrator
 
         using (var pbar = new ProgressBar(totalTicks, "Migration started", options))
         {
-
             Dictionary<int, int> _authorMap;
             Dictionary<int, int> _seriesMap;
             Dictionary<int, int> _categoriesMap;
@@ -67,7 +66,6 @@ public class Migrator
                 sourceLibrary.ImageId = libraryImage.Id;
             }
 
-
             var newLibrary = await destinationLibraryDb.AddLibrary(sourceLibrary, cancellationToken);
 
             var config = JsonSerializer.Deserialize<S3Configuration>(newLibrary.FileStoreSource);
@@ -83,7 +81,7 @@ public class Migrator
             pbar.Tick("Step 4 of 10 - Migrating Series");
             _seriesMap = await MigrateSeries(libraryId, newLibrary.Id, pbar, cancellationToken);
 
-            pbar.Tick("Step 5 of 10 - Migrating Categories"); 
+            pbar.Tick("Step 5 of 10 - Migrating Categories");
             _categoriesMap = await MigrateCategories(libraryId, newLibrary.Id, pbar, cancellationToken);
 
             pbar.Tick("Step 6 of 10 - Migrating Books");
@@ -323,7 +321,7 @@ public class Migrator
 
                 page = await sourceDb.GetBooks(libraryId, pageNumber++, 100, cancellationToken);
             }
-            while (page.Data.Count() > 0);
+            while (page.Data.Any());
         }
 
         return booksMap;
@@ -411,7 +409,7 @@ public class Migrator
 
         using (var child = pbar.Spawn(pages.Length, "Migrating Pages for book " + newBookId, options))
         {
-            
+
             int i = 0;
 
             foreach (var page in pages)

@@ -22,22 +22,36 @@ public class S3FileStorage : IFileStorage
 
     public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
     {
-        var client = GetClient();
-        var request = new GetObjectRequest();
-        request.Key = $"{_configuration.FolderName}/{filePath}";
-        request.BucketName = _configuration.BucketName;
-        var response = await client.GetObjectAsync(request, cancellationToken);
-        return await ReadAllContents(response.ResponseStream);
+        try
+        {
+            var client = GetClient();
+            var request = new GetObjectRequest();
+            request.Key = $"{_configuration.FolderName}/{filePath}";
+            request.BucketName = _configuration.BucketName;
+            var response = await client.GetObjectAsync(request, cancellationToken);
+            return await ReadAllContents(response.ResponseStream);
+        }
+        catch (AmazonS3Exception ex)
+        {
+            return null;
+        }
     }
 
     public async Task<string> GetTextFile(string filePath, CancellationToken cancellationToken)
     {
-        var client = GetClient();
-        var request = new GetObjectRequest();
-        request.Key = $"{_configuration.FolderName}/{filePath}";
-        request.BucketName = _configuration.BucketName;
-        var response = await client.GetObjectAsync(request, cancellationToken);
-        return await ReadAllText(response.ResponseStream);
+        try
+        {
+            var client = GetClient();
+            var request = new GetObjectRequest();
+            request.Key = $"{_configuration.FolderName}/{filePath}";
+            request.BucketName = _configuration.BucketName;
+            var response = await client.GetObjectAsync(request, cancellationToken);
+            return await ReadAllText(response.ResponseStream);
+        }
+        catch (AmazonS3Exception ex)
+        {
+            return null;
+        }
     }
 
     public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)

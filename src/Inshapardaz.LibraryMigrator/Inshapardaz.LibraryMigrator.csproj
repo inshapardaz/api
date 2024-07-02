@@ -18,6 +18,7 @@
     <ProjectReference Include="..\Adapters\Database\MySql\Inshapardaz.Adapters.Database.MySql.csproj" />
     <ProjectReference Include="..\Adapters\Database\SqlServer\Inshapardaz.Adapters.Database.SqlServer.csproj" />
     <ProjectReference Include="..\Adapters\Storage\FileSystem\Inshapardaz.Storage.FileSystem.csproj" />
+    <ProjectReference Include="..\Adapters\Storage\S3\Inshapardaz.Storage.S3.csproj" />
   </ItemGroup>
 
 </Project>

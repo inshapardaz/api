@@ -1,8 +1,9 @@
-﻿using Inshapardaz.Domain.Helpers;
+﻿using System.Text.Json;
+using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Domain.Ports.Command.File;
-using Inshapardaz.Storage.FileSystem;
+using Inshapardaz.Storage.S3;
 using ShellProgressBar;
 
 namespace Inshapardaz.LibraryMigrator;
@@ -11,6 +12,7 @@ public class Migrator
 {
     RepositoryFactory SourceRepositoryFactory { get; init; }
     RepositoryFactory DestinationRepositoryFactory { get; init; }
+    IFileStorage FileStore = null;
 
     public Migrator(string source, DatabaseTypes sourceType, string destination, DatabaseTypes destinationType)
     {
@@ -67,6 +69,9 @@ public class Migrator
 
 
             var newLibrary = await destinationLibraryDb.AddLibrary(sourceLibrary, cancellationToken);
+
+            var config = JsonSerializer.Deserialize<S3Configuration>(newLibrary.FileStoreSource);
+            FileStore = new S3FileStorage(config);
 
             pbar.Tick("Step 2 of 10 - Migrating Accounts");
 
@@ -328,7 +333,6 @@ public class Migrator
     {
         var sourceDb = SourceRepositoryFactory.ChapterRepository;
         var destinationDb = DestinationRepositoryFactory.ChapterRepository;
-        var fileStore = new FileSystemStorage("../FileStore");
 
         var chaptersMap = new Dictionary<long, long>();
         var chapters = (await sourceDb.GetChaptersByBook(libraryId, bookId, cancellationToken)).ToArray();
@@ -376,7 +380,7 @@ public class Migrator
                     content.ChapterId = newChapter.Id;
 
                     var fileName = FilePathHelper.BookChapterContentFileName;
-                    var filePath = await fileStore.StoreTextFile(FilePathHelper.GetBookChapterContentPath(bookId, fileName), content.Text, cancellationToken);
+                    var filePath = await FileStore.StoreTextFile(FilePathHelper.GetBookChapterContentPath(bookId, fileName), content.Text, cancellationToken);
                     var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                     content.Text = string.Empty;
                     content.FileId = file.Id;
@@ -395,7 +399,6 @@ public class Migrator
     {
         var sourceDb = SourceRepositoryFactory.BookPageRepository;
         var destinationDb = DestinationRepositoryFactory.BookPageRepository;
-        var fileStore = new FileSystemStorage("../FileStore");
 
         var pages = (await sourceDb.GetAllPagesByBook(libraryId, bookId, cancellationToken)).ToArray();
         var options = new ProgressBarOptions
@@ -443,7 +446,7 @@ public class Migrator
                 }
 
                 var fileName = FilePathHelper.BookPageContentFileName;
-                var filePath = await fileStore.StoreTextFile(FilePathHelper.GetBookContentPath(bookId, fileName), page.Text, cancellationToken);
+                var filePath = await FileStore.StoreTextFile(FilePathHelper.GetBookContentPath(bookId, fileName), page.Text, cancellationToken);
                 var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                 page.Text = string.Empty;
                 page.ContentId = file.Id;
@@ -565,7 +568,6 @@ public class Migrator
         var sourceDb = SourceRepositoryFactory.IssueArticleRepository;
         var destinationDb = DestinationRepositoryFactory.IssueArticleRepository;
         var articleMap = new Dictionary<int, int>();
-        var fileStore = new FileSystemStorage("../FileStore");
 
         var articles = await sourceDb.GetArticlesByIssue(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
         var options = new ProgressBarOptions
@@ -599,7 +601,7 @@ public class Migrator
                     content.PeriodicalId = periodicalId;
 
                     var fileName = FilePathHelper.GetIssueArticleContentFileName(content.Language);
-                    var filePath = await fileStore.StoreTextFile(FilePathHelper.GetIssueArticleContentPath(newPeriodicalId, volumeNumber, issueNumber, newArticle.Id, fileName), content.Text, cancellationToken);
+                    var filePath = await FileStore.StoreTextFile(FilePathHelper.GetIssueArticleContentPath(newPeriodicalId, volumeNumber, issueNumber, newArticle.Id, fileName), content.Text, cancellationToken);
                     var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                     content.Text = string.Empty;
                     content.FileId = file.Id;
@@ -672,7 +674,6 @@ public class Migrator
     {
         var sourceDb = SourceRepositoryFactory.ArticleRepository;
         var destinationDb = DestinationRepositoryFactory.ArticleRepository;
-        var fileStore = new FileSystemStorage("../FileStore");
 
         Dictionary<long, long> articlesMap = new Dictionary<long, long>();
         var articles = await sourceDb.GetAllArticles(libraryId, cancellationToken);
@@ -711,7 +712,7 @@ public class Migrator
                     content.ArticleId = newArticle.Id;
 
                     var fileName = FilePathHelper.GetArticleContentFileName(content.Language);
-                    var filePath = await fileStore.StoreTextFile(FilePathHelper.GetArticleContentPath(newArticle.Id, fileName), content.Text, cancellationToken);
+                    var filePath = await FileStore.StoreTextFile(FilePathHelper.GetArticleContentPath(newArticle.Id, fileName), content.Text, cancellationToken);
                     var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                     content.Text = string.Empty;
                     content.FileId = file.Id;

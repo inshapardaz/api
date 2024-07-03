@@ -20,7 +20,7 @@ public class CorrectionRepository : ICorrectionRepository
     {
         using (var connection = _connectionProvider.GetConnection())
         {
-            var sql = @"SELECT * FROM corrections 
+            var sql = @"SELECT * FROM Corrections 
                     WHERE `Language` = @Language 
                         AND `Profile` = @Profile";
             var command = new CommandDefinition(sql, new
@@ -72,7 +72,7 @@ public class CorrectionRepository : ICorrectionRepository
     {
         using (var connection = _connectionProvider.GetConnection())
         {
-            var sql = @"SELECT * FROM corrections 
+            var sql = @"SELECT * FROM Corrections 
                             WHERE Id = @Id
                                 AND `Language` = @Language 
                                 AND `Profile` = @Profile";
@@ -91,7 +91,7 @@ public class CorrectionRepository : ICorrectionRepository
     {
         using (var connection = _connectionProvider.GetConnection())
         {
-            var sql = @"SELECT * FROM corrections 
+            var sql = @"SELECT * FROM Corrections 
                             WHERE Id = @Id";
             var command = new CommandDefinition(sql, new
             {
@@ -155,7 +155,7 @@ public class CorrectionRepository : ICorrectionRepository
     {
         using (var connection = _connectionProvider.GetConnection())
         {
-            var sql = @"SELECT * FROM corrections ";
+            var sql = @"SELECT * FROM Corrections";
             var command = new CommandDefinition(sql, cancellationToken: cancellationToken);
 
             return await connection.QueryAsync<CorrectionModel>(command);

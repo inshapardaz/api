@@ -433,7 +433,7 @@ public class BookPageRepository : IBookPageRepository
         {
             var existingId = await connection.ExecuteScalarAsync<long>(
                 new CommandDefinition(
-                "SELECT Id from bookpage WHERE BookId = @BookId AND SequenceNumber = @oldPosition",
+                "SELECT Id from BookPage WHERE BookId = @BookId AND SequenceNumber = @oldPosition",
                 new
                 {
                     BookId = bookId,

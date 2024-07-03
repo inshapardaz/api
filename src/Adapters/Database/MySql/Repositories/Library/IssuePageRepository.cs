@@ -621,7 +621,7 @@ public class IssuePageRepository : IIssuePageRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT 1 As Status, Count(p.Id) As Count 
-                            FROM issuepage p 
+                            FROM IssuePage p 
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId 
@@ -629,7 +629,7 @@ public class IssuePageRepository : IIssuePageRepository
                                 AND p.WriterAccountId = @AccountId
                         UNION
                             SELECT 2 As Status, Count(p.Id) As Count 
-                            FROM issuepage p 
+                            FROM IssuePage p 
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId 
@@ -637,7 +637,7 @@ public class IssuePageRepository : IIssuePageRepository
                                 AND p.WriterAccountId = @AccountId
                         UNION
                             SELECT 3 As Status, Count(p.Id) As Count 
-                            FROM issuepage p 
+                            FROM IssuePage p 
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId
@@ -645,7 +645,7 @@ public class IssuePageRepository : IIssuePageRepository
                                 AND p.ReviewerAccountId = @AccountId
                         UNION
                             SELECT 4 As Status, Count(p.Id) As Count 
-                            FROM issuepage p 
+                            FROM IssuePage p 
                                 INNER JOIN Issue i ON i.Id = p.IssueId
                                 INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId

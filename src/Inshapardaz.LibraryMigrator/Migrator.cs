@@ -444,7 +444,7 @@ public class Migrator
                 }
 
                 var fileName = FilePathHelper.BookPageContentFileName;
-                var filePath = await FileStore.StoreTextFile(FilePathHelper.GetBookContentPath(bookId, fileName), page.Text, cancellationToken);
+                var filePath = await FileStore.StoreTextFile(FilePathHelper.GetBookPageContentPath(bookId, fileName), page.Text, cancellationToken);
                 var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                 page.Text = string.Empty;
                 page.ContentId = file.Id;
@@ -599,7 +599,7 @@ public class Migrator
                     content.PeriodicalId = periodicalId;
 
                     var fileName = FilePathHelper.GetIssueArticleContentFileName(content.Language);
-                    var filePath = await FileStore.StoreTextFile(FilePathHelper.GetIssueArticleContentPath(newPeriodicalId, volumeNumber, issueNumber, newArticle.Id, fileName), content.Text, cancellationToken);
+                    var filePath = await FileStore.StoreTextFile(FilePathHelper.GetIssueArticleContentPath(periodicalId, volumeNumber, issueNumber, article.Id, fileName), content.Text, cancellationToken);
                     var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                     content.Text = string.Empty;
                     content.FileId = file.Id;
@@ -710,7 +710,7 @@ public class Migrator
                     content.ArticleId = newArticle.Id;
 
                     var fileName = FilePathHelper.GetArticleContentFileName(content.Language);
-                    var filePath = await FileStore.StoreTextFile(FilePathHelper.GetArticleContentPath(newArticle.Id, fileName), content.Text, cancellationToken);
+                    var filePath = await FileStore.StoreTextFile(FilePathHelper.GetArticleContentPath(article.Id, fileName), content.Text, cancellationToken);
                     var file = await AddFile(fileName, filePath, MimeTypes.Markdown, cancellationToken);
                     content.Text = string.Empty;
                     content.FileId = file.Id;

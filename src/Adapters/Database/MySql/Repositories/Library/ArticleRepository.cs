@@ -169,7 +169,7 @@ public class ArticleRepository : IArticleRepository
                             LEFT JOIN Category c ON ac.CategoryId = c.Id
                             LEFT JOIN ArticleFavorite f On f.ArticleId= at.Id
                             LEFT JOIN ArticleRead r On at.Id = r.ArticleId
-                            Where at.LibraryId = @LibraryId
+                        WHERE at.LibraryId = @LibraryId
                             AND (at.Title Like @Query OR @Query IS NULL)
                             AND (@AccountId IS NOT NULL OR at.IsPublic = 1)
                             AND (at.`Type` = @TypeFilter OR @TypeFilter = 0 OR @TypeFilter IS NULL)
@@ -191,21 +191,21 @@ public class ArticleRepository : IArticleRepository
                                  FROM (
                                     SELECT at.Id
                                     FROM Article at
-                                    INNER JOIN ArticleAuthor aa ON at.Id = aa.ArticleId
-                                    INNER JOIN Author a On aa.AuthorId = a.Id
-                                    LEFT JOIN ArticleCategory ac ON at.Id = ac.ArticleId
-                                    LEFT JOIN Category c ON ac.CategoryId = c.Id
-                                    LEFT JOIN ArticleFavorite f On f.ArticleId= at.Id
-                                    LEFT JOIN ArticleRead r On at.Id = r.ArticleId
-                                    Where at.LibraryId = @LibraryId
-                                    AND (at.Title Like @Query OR @Query IS NULL)
-                                    AND (@AccountId IS NOT NULL OR at.IsPublic = 1)
-                                    AND (at.`Type` = @TypeFilter OR @TypeFilter = 0 OR @TypeFilter IS NULL)
-                                    AND (at.Status = @StatusFilter OR @StatusFilter = 0 OR @StatusFilter IS NULL)
-                                    AND (aa.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
-                                    AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
-                                    AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
-                                    AND (ac.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                        INNER JOIN ArticleAuthor aa ON at.Id = aa.ArticleId
+                                        INNER JOIN Author a On aa.AuthorId = a.Id
+                                        LEFT JOIN ArticleCategory ac ON at.Id = ac.ArticleId
+                                        LEFT JOIN Category c ON ac.CategoryId = c.Id
+                                        LEFT JOIN ArticleFavorite f On f.ArticleId= at.Id
+                                        LEFT JOIN ArticleRead r On at.Id = r.ArticleId
+                                    WHERE at.LibraryId = @LibraryId
+                                        AND (at.Title Like @Query OR @Query IS NULL)
+                                        AND (@AccountId IS NOT NULL OR at.IsPublic = 1)
+                                        AND (at.`Type` = @TypeFilter OR @TypeFilter = 0 OR @TypeFilter IS NULL)
+                                        AND (at.Status = @StatusFilter OR @StatusFilter = 0 OR @StatusFilter IS NULL)
+                                        AND (aa.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
+                                        AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
+                                        AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                                        AND (ac.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                                     GROUP BY at.Id) as articleCounts";
 
             var articleCount = await connection.QuerySingleAsync<long>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));

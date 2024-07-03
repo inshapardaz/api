@@ -73,14 +73,14 @@ public class BookRepository : IBookRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE Book 
-                            SET
+                        SET
                             Title = @Title, `Description` = @Description,
                             Publisher = @Publisher, Source = @Source, 
                             IsPublic = @IsPublic, IsPublished = @IsPublished,
                             `Language` = @Language, `Status` = @Status, SeriesId = @SeriesId,
                             SeriesIndex = @SeriesIndex, CopyRights = @CopyRights,
                             YearPublished = @YearPublished, DateUpdated = UTC_TIMESTAMP()
-                            WHERE LibraryId = @LibraryId AND Id = @Id";
+                        WHERE LibraryId = @LibraryId AND Id = @Id";
             var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
             await connection.ExecuteScalarAsync<int>(command);
 
@@ -136,11 +136,11 @@ public class BookRepository : IBookRepository
                 Offset = pageSize * (pageNumber - 1)
             };
             var sql = @"SELECT Id 
-                            FROM Book
-                            WHERE LibraryId = @LibraryId  
-                            ORDER BY Id
-                            LIMIT @PageSize
-                            OFFSET @Offset";
+                        FROM Book
+                        WHERE LibraryId = @LibraryId  
+                        ORDER BY Id
+                        LIMIT @PageSize
+                        OFFSET @Offset";
             var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
 
             var bookIds = await connection.QueryAsync(command);

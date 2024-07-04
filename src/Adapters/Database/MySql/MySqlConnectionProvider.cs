@@ -1,8 +1,8 @@
 ﻿using System.Data;
-using MySqlConnector;
 using Inshapardaz.Domain.Adapters.Configuration;
 using Microsoft.Extensions.Options;
 using Inshapardaz.Domain.Adapters;
+using MySql.Data.MySqlClient;
 
 namespace Inshapardaz.Adapters.Database.MySql;
 

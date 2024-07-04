@@ -22,9 +22,9 @@ namespace Inshapardaz.Database.Migrations.MySql.Tests
             var initialDatabaseVersion = startingMigrationState.LatestDatabaseVersion;
             var latestMigrationVersion = startingMigrationState.LatestAssemblyVersion;
 
-            Console.WriteLine($"Migrations to run: {migrationsToRun}");
-            Console.WriteLine($"Latest database version: {initialDatabaseVersion}");
-            Console.WriteLine($"Latest assembly version: {latestMigrationVersion}");
+            Console.WriteLine($"Migrations to run: {migrationsToRun}");
+            Console.WriteLine($"Latest database version: {initialDatabaseVersion}");
+            Console.WriteLine($"Latest assembly version: {latestMigrationVersion}");
 
             if (migrationsToRun)
             {

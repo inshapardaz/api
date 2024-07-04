@@ -13,10 +13,13 @@ namespace Inshapardaz.Database.Migrations.SqlServer.Tests
         {
             _serviceProvider = new ServiceCollection()
                                     .AddFluentMigratorCore()
-                                    .ConfigureRunner(builder => builder.AddSqlServer()
-                                    .ScanIn(typeof(Migrations).Assembly)
-                                    .For.Migrations()
-                                    .ConfigureGlobalProcessorOptions(x => x.ConnectionString = connectionString))
+                                    .ConfigureRunner(builder =>
+                                    {
+                                        builder.AddSqlServer()
+                                            .ScanIn(typeof(Migrations).Assembly)
+                                            .For.Migrations()
+                                            .ConfigureGlobalProcessorOptions(x => x.ConnectionString = connectionString);
+                                    })
                                     .Configure<RunnerOptions>(ro => 
                                     { 
                                         ro.Tags = new[] { "qa" }; 

@@ -313,7 +313,7 @@ public class ChapterRepository : IChapterRepository
             var sql = @"DELETE cc
                             FROM ChapterContent cc
                                 INNER JOIN Chapter c ON c.Id = cc.ChapterId
-                                INNER JOIN Book b ON b.Id = C.BookId
+                                INNER JOIN Book b ON b.Id = c.BookId
                             WHERE c.chapterNumber = @ChapterNumber 
                                 AND b.LibraryId = @LibraryId
                                 AND b.Id = @BookId 
@@ -333,7 +333,7 @@ public class ChapterRepository : IChapterRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT c.Id, row_number() OVER (ORDER BY c.ChapterNumber) AS 'ChapterNumber'
+            var sql = @"SELECT c.Id, ROW_NUMBER() over (order by c.ChapterNumber) AS 'ChapterNumber'
                             FROM Chapter c
                                 INNER JOIN Book b ON b.Id = c.BookId
                             WHERE c.BookId = @BookId 

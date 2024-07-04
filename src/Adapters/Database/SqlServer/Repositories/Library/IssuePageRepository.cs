@@ -569,7 +569,7 @@ public class IssuePageRepository : IIssuePageRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.Id, row_number() OVER (ORDER BY p.SequenceNumber) as 'SequenceNumber'
-                            From IssuePage p
+                            FROM IssuePage p
                             INNER JOIN Issue i ON i.Id = p.IssueId
                             INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
                             WHERE pr.LibraryId = @LibraryId 

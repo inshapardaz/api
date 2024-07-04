@@ -78,7 +78,7 @@ public class AccountRepository : IAccountRepository
     {
         using (var connection = _connectionProvider.GetConnection())
         {
-            var sql = @"SELECT  a.*, al.Role AS Role
+            var sql = @"SELECT  a.*, al.Role AS `Role`
                             FROM Accounts a
                             INNER JOIN AccountLibrary as al on a.Id = al.AccountId
                             WHERE al.LibraryId = @LibraryId
@@ -110,7 +110,7 @@ public class AccountRepository : IAccountRepository
     {
         using (var connection = _connectionProvider.GetConnection())
         {
-            var sql = @"SELECT a.*, al.Role AS Role
+            var sql = @"SELECT a.*, al.Role AS `Role`
                             FROM Accounts a
                             INNER JOIN AccountLibrary AS al ON a.Id = al.AccountId
                             WHERE al.LibraryId = @LibraryId
@@ -338,7 +338,7 @@ public class AccountRepository : IAccountRepository
     {
         using (var connection = _connectionProvider.GetConnection())
         {
-            var sql = @"Select a.*, al.Role as Role
+            var sql = @"Select a.*, al.Role as `Role`
                             FROM Accounts a
                             INNER JOIN AccountLibrary as al on a.Id = al.AccountId
                             WHERE Id = @AccountId AND al.LibraryId = @LibraryId";

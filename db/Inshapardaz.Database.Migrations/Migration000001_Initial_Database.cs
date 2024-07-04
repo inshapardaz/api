@@ -15,6 +15,9 @@ namespace Inshapardaz.Database.Migrations
             Create.Schema(Schemas.Library);
             Create.Schema(Schemas.Language);
 
+            // Set database collation
+            Execute.Sql("ALTER DATABASE CHARACTER SET utf16 COLLATE utf16_general_ci;");
+            
             //     Accounts
             //==========================================================================
             Create.Table(Tables.Accounts).

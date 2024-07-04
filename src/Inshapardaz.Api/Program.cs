@@ -20,10 +20,36 @@ using Inshapardaz.Domain.Ports.Query;
 using Inshapardaz.Api.Infrastructure.Configuration;
 using Inshapardaz.Api.Infrastructure.Middleware;
 using Inshapardaz.Domain.Ports.Query.Library;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//=====================================================================
+// Configura open telemetry
 
+const string serviceName = "Inshapardaz";
+
+builder.Logging.AddOpenTelemetry(options =>
+{
+    options
+        .SetResourceBuilder(
+            ResourceBuilder.CreateDefault()
+                .AddService(serviceName))
+        .AddConsoleExporter();
+});
+
+builder.Services.AddOpenTelemetry()
+      .ConfigureResource(resource => resource.AddService(serviceName))
+      .WithTracing(tracing => tracing
+          .AddAspNetCoreInstrumentation()
+          .AddConsoleExporter())
+      .WithMetrics(metrics => metrics
+          .AddAspNetCoreInstrumentation()
+          .AddConsoleExporter());
+          
 //=====================================================================
 // Add services to the container.
 

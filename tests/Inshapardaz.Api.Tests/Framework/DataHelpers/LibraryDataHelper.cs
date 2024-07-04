@@ -103,7 +103,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                connection.Execute("INSERT INTO AccountLibrary (LibraryId, AccountId, Role) VALUES (@LibraryId, @AccountId, @Role)",
+                connection.Execute("INSERT INTO AccountLibrary (LibraryId, AccountId, `Role`) VALUES (@LibraryId, @AccountId, @Role)",
                 libraries.Select(l => new { LibraryId = l.Id, AccountId = accountId, Role = role }));
             }
         }

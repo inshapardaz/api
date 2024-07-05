@@ -23,9 +23,9 @@ public class BookPageRepository : IBookPageRepository
         int pageId;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO BookPage(BookId, SequenceNumber, ContentId, `Status`, ImageId, ChapterId, 
+            var sql = @"INSERT INTO BookPage(BookId, SequenceNumber, ContentId, `Status`, `Text`, ImageId, ChapterId, 
                             WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp)
-                        VALUES(@BookId, @SequenceNumber, @ContentId, @Status, @ImageId, @ChapterId,
+                        VALUES(@BookId, @SequenceNumber, @ContentId, @Status, @Text, @ImageId, @ChapterId,
                             @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp);
                         SELECT LAST_INSERT_ID();";
             var command = new CommandDefinition(sql, new
@@ -36,6 +36,7 @@ public class BookPageRepository : IBookPageRepository
                 ChapterId = bookPage.ChapterId,
                 ContentId = bookPage.ContentId,
                 Status = bookPage.Status,
+                Text = bookPage.Text,
                 WriterAccountId = bookPage.WriterAccountId,
                 WriterAssignTimeStamp = bookPage.WriterAssignTimeStamp,
                 ReviewerAccountId = bookPage.ReviewerAccountId,

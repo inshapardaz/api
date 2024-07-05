@@ -62,8 +62,8 @@ public class ArticleRepository : IArticleRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"Insert Into ArticleContent (ArticleId, `Language`, FileId , Layout)
-                            VALUES (@ArticleId, @Language, @FileId, @Layout)";
+            var sql = @"Insert Into ArticleContent (ArticleId, `Language`, `Text`, FileId , Layout)
+                            VALUES (@ArticleId, @Language, @Text, @FileId, @Layout)";
             var command = new CommandDefinition(sql, content, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
 

@@ -239,9 +239,15 @@ public class ChapterRepository : IChapterRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"Insert Into ChapterContent (ChapterId, Language, Text)
-                            Values (@ChapterId, @Language, @Text)";
-            var command = new CommandDefinition(sql, new { ChapterId = content.ChapterId, Language = content.Language, Text = content.Text }, cancellationToken: cancellationToken);
+            var sql = @"Insert Into ChapterContent (ChapterId, Language, Text, FileId)
+                            Values (@ChapterId, @Language, @Text, @FileId)";
+            var command = new CommandDefinition(sql, new
+            {
+                ChapterId = content.ChapterId, 
+                Language = content.Language, 
+                Text = content.Text,
+                FileId = content.FileId
+            }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
 
             return await GetChapterContent(libraryId, content.BookId, content.ChapterNumber, content.Language, cancellationToken);

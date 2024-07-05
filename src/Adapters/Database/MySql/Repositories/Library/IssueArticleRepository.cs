@@ -313,8 +313,8 @@ public class IssueArticleRepository : IIssueArticleRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO  IssueArticleContent (ArticleId, `Language`, `FileId`)
-                            SELECT a.Id, @Language,  @FileId 
+            var sql = @"INSERT INTO  IssueArticleContent (ArticleId, `Language`, `Text`, `FileId`)
+                            SELECT a.Id, @Language, @Text, @FileId 
                             FROM IssueArticle a
                                 INNER JOIN Issue i ON i.Id = a.IssueId
                                 INNER JOIN Periodical p ON p.Id = i.PeriodicalId
@@ -332,7 +332,8 @@ public class IssueArticleRepository : IIssueArticleRepository
                 IssueNumber = content.IssueNumber,
                 SequenceNumber = content.SequenceNumber,
                 Language = content.Language,
-                FileId = content.FileId
+                FileId = content.FileId,
+                Text = content.Text
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
             return await GetArticleContentById(libraryId, content.PeriodicalId, content.VolumeNumber, content.IssueNumber, content.SequenceNumber, content.Language, cancellationToken);

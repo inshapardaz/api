@@ -14,9 +14,6 @@ namespace Inshapardaz.Database.Migrations
         {
             Create.Schema(Schemas.Library);
             Create.Schema(Schemas.Language);
-
-            // Set database collation
-            Execute.Sql("ALTER DATABASE CHARACTER SET utf16 COLLATE utf16_general_ci;");
             
             //     Accounts
             //==========================================================================
@@ -372,6 +369,10 @@ namespace Inshapardaz.Database.Migrations
                 .WithColumn(Columns.FileId).AsInt64().Nullable()
                     .ForeignKey("FK_ArticleContent_File", Schemas.Library, Tables.File, Columns.Id).OnDeleteOrUpdate(Rule.Cascade)
                 .WithColumn("Layout").AsString().Nullable();
+
+            Create.UniqueConstraint("UQ_ArticleContent")
+                .OnTable("ArticleContent").WithSchema(Schemas.Library)
+                .Columns("ArticleId", Columns.Language);
             //--------------------------------------------------------------------------------
 
             Create.Table("ArticleFavorite").InSchema(Schemas.Library)
@@ -437,7 +438,7 @@ namespace Inshapardaz.Database.Migrations
                     .WithColumn("IssueDate").AsDateTime2().NotNullable()
                     .WithColumn("IsPublic").AsBoolean().WithDefaultValue(true);
 
-            Create.UniqueConstraint("UNQ_VOLUME_ISSUE")
+            Create.UniqueConstraint("UQ_VOLUME_ISSUE")
                 .OnTable(Tables.Issue).WithSchema(Schemas.Library)
                 .Columns("PeriodicalId", "VolumeNumber", "IssueNumber");
             //--------------------------------------------------------------------------------
@@ -529,6 +530,8 @@ namespace Inshapardaz.Database.Migrations
                     .WithColumn("CorrectText").AsString().NotNullable()
                     .WithColumn("Usage").AsInt64().WithDefaultValue(0)
                     .WithColumn("CompleteWord").AsBoolean().WithDefaultValue(0);
+            
+            IfDatabase("mysql").Delegate(() => UpdateEncoding());
         }
 
         public override void Down()
@@ -575,6 +578,25 @@ namespace Inshapardaz.Database.Migrations
 
             Delete.Schema(Schemas.Library);
             Delete.Schema(Schemas.Language);
+        }
+
+        private void UpdateEncoding()
+        {
+            var encoding = "utf8mb4";
+            var collation = "utf8mb4_unicode_ci";
+
+            // Set database collation
+            Execute.Sql("ALTER DATABASE CHARACTER SET utf16 COLLATE utf16_general_ci;");
+
+            var UpdateEncoding = (string tableName, string columnName)
+                => Execute.Sql(
+                    $"ALTER TABLE {tableName} MODIFY COLUMN {columnName} LONGTEXT CHARACTER SET {encoding} COLLATE {collation};");
+
+            UpdateEncoding("ChapterContent", "Text");
+            UpdateEncoding("BookPage", "Text"); 
+            UpdateEncoding("ArticleContent", "Text");
+            UpdateEncoding("IssuePage", "Text"); 
+            UpdateEncoding("IssueArticleContent", "Text"); 
         }
     }
 }

@@ -23,9 +23,9 @@ public class BookPageRepository : IBookPageRepository
         int pageId;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"Insert Into BookPage(BookId, SequenceNumber, ContentId, Status, ImageId, ChapterId)
+            var sql = @"Insert Into BookPage(BookId, SequenceNumber, ContentId, Status, Text, ImageId, ChapterId)
                             OUTPUT Inserted.Id
-                            VALUES(@BookId, @SequenceNumber, @ContentId, @Status, @ImageId, @ChapterId);";
+                            VALUES(@BookId, @SequenceNumber, @ContentId, @Status, @Text, @ImageId, @ChapterId);";
             var command = new CommandDefinition(sql, new
             {
                 BookId = bookPage.BookId,
@@ -33,7 +33,8 @@ public class BookPageRepository : IBookPageRepository
                 ImageId = bookPage.ImageId,
                 ChapterId = bookPage.ChapterId,
                 ContentId = bookPage.ContentId,
-                Status = EditingStatus.Available
+                Status = EditingStatus.Available,
+                Text = bookPage.Text
             }, cancellationToken: cancellationToken);
             pageId = await connection.ExecuteScalarAsync<int>(command);
         }
@@ -163,7 +164,7 @@ public class BookPageRepository : IBookPageRepository
                             LEFT OUTER JOIN [Accounts] a ON a.Id = p.WriterAccountId
                             LEFT OUTER JOIN [Accounts] ar ON ar.Id = p.ReviewerAccountId
                             WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId
-                            AND (@Status = -1 OR p.Status = @Status )
+                            AND (@Status = 0 OR p.Status = @Status )
                             AND (
                                 ( @AssignmentFilter = 0 ) OR
                                 ( @AssignmentFilter = 1 AND p.WriterAccountId IS NOT NULL) OR
@@ -198,7 +199,7 @@ public class BookPageRepository : IBookPageRepository
             var sqlCount = @"SELECT Count(*)
                                 FROM BookPage p INNER JOIN Book b ON b.Id = p.BookId
                                 WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId
-                                AND (@Status = -1 OR p.Status = @Status )
+                                AND (@Status = 0 OR p.Status = @Status )
                                 AND (
                                     ( @AssignmentFilter = 0 ) OR
                                     ( @AssignmentFilter = 1 AND p.WriterAccountId IS NOT NULL) OR

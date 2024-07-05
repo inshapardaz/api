@@ -38,11 +38,17 @@ internal class Program
         { IsRequired = true };
         libraryIdOption.AddAlias("-l");
 
-        var correctionOption= new Option<bool>(
+        var correctionOption = new Option<bool>(
                         name: "--corrections",
                         description: "Set if want to migrate corrections only")
         { IsRequired = false };
         correctionOption.AddAlias("-c");
+        
+        var productionOption = new Option<bool>(
+                name: "--production",
+                description: "Set if want to migrate in production mode. It will start writing new files in file store.")
+            { IsRequired = false };
+        productionOption.AddAlias("-p");
 
         var rootCommand = new RootCommand("Nawishta library migration tool.");
         rootCommand.AddOption(sourceOption);
@@ -51,6 +57,7 @@ internal class Program
         rootCommand.AddOption(destinationTypeOption);
         rootCommand.AddOption(libraryIdOption);
         rootCommand.AddOption(correctionOption);
+        rootCommand.AddOption(productionOption);
 
         rootCommand.SetHandler(async (context) =>
         {
@@ -60,10 +67,12 @@ internal class Program
             var destinationType = Enum.Parse<DatabaseTypes>(context.ParseResult.GetValueForOption(destinationTypeOption), true);
             int libraryId = context.ParseResult.GetValueForOption(libraryIdOption);
             bool corrections = context.ParseResult.GetValueForOption(correctionOption);
+            bool production = context.ParseResult.GetValueForOption(productionOption);
 
             var token = context.GetCancellationToken();
 
-            await new Migrator(source, sourceType, destination, destinationType).Migrate(libraryId, corrections, token);
+            await new Migrator(source, sourceType, destination, destinationType)
+                .Migrate(libraryId, corrections, production, token);
         });
 
         await rootCommand.InvokeAsync(args);

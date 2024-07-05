@@ -3,6 +3,7 @@ using Inshapardaz.Database.Migrations;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using FluentMigrator.Runner.Initialization;
 
 namespace Inshapardaz.Adapters.Database.MySql;
 
@@ -26,6 +27,8 @@ public class MySqlDatabaseMigration : IMigrateDatabase
                 .AddMySql8()
                 .WithGlobalConnectionString(connectionString)
                 .ScanIn(typeof(Migrations).Assembly).For.Migrations())
+            .Configure<RunnerOptions>(opt => { 
+                opt.TransactionPerSession = true; })
             .AddLogging(lb => lb.AddFluentMigratorConsole())
             .BuildServiceProvider(false);
     }

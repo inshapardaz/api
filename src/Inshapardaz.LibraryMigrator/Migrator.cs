@@ -3,9 +3,7 @@ using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Storage.FileSystem;
 using Inshapardaz.Storage.S3;
-using ShellProgressBar;
 
 namespace Inshapardaz.LibraryMigrator;
 
@@ -25,119 +23,92 @@ public class Migrator
 
     public async Task Migrate(int libraryId, bool correctionsOnly, bool production, CancellationToken cancellationToken)
     {
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Yellow,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─',
-            ProgressBarOnBottom = true,
-            EnableTaskBarProgress = true
-        };
-        const int totalTicks = 10;
-        
-        if (correctionsOnly)
-        {
-            using var pBar1 = new ProgressBar(totalTicks, "Migration started", options);
-            
-            Console.WriteLine("Migration of correction started.");
+       if (correctionsOnly)
+       {
+           await MigrateCorrections(cancellationToken);
 
-            await MigrateCorrections(pBar1, cancellationToken);
+           await MigrateAllAccounts(cancellationToken);
+           
+           return;
+       }
+       
+       var sourceLibraryDb = SourceRepositoryFactory.LibraryRepository;
+       var destinationLibraryDb = DestinationRepositoryFactory.LibraryRepository;
 
-            await MigrateAllAccounts(pBar1, cancellationToken);
+       Console.WriteLine("Step 1 of 10 - Migrating Library");
+       var sourceLibrary = await sourceLibraryDb.GetLibraryById(libraryId, cancellationToken);
 
-            Console.WriteLine("Migration of correction finished.");
+       sourceLibrary.DatabaseConnection = string.Empty;
+       if (sourceLibrary.ImageId.HasValue)
+       {
+           var libraryImage = await CopyFile(sourceLibrary.ImageId.Value, cancellationToken);
+           sourceLibrary.ImageId = libraryImage.Id;
+       }
 
-            return;
-        }
+       var newLibrary = await destinationLibraryDb.AddLibrary(sourceLibrary, cancellationToken);
 
-        using var pBar = new ProgressBar(totalTicks, "Migration started", options);
-        var sourceLibraryDb = SourceRepositoryFactory.LibraryRepository;
-        var destinationLibraryDb = DestinationRepositoryFactory.LibraryRepository;
+       var config = JsonSerializer.Deserialize<S3Configuration>(newLibrary.FileStoreSource);
+       _fileStore =
+           //production ? 
+           new S3FileStorage(config); 
+       //: new FileSystemStorage("../FileStore");
 
-        pBar.Tick("Step 1 of 10 - Migrating Library");
-        var sourceLibrary = await sourceLibraryDb.GetLibraryById(libraryId, cancellationToken);
+       Console.WriteLine("Step 2 of 10 - Migrating Accounts");
 
-        sourceLibrary.DatabaseConnection = string.Empty;
-        if (sourceLibrary.ImageId.HasValue)
-        {
-            var libraryImage = await CopyFile(sourceLibrary.ImageId.Value, cancellationToken);
-            sourceLibrary.ImageId = libraryImage.Id;
-        }
+       var accountsMap = await MigrateLibraryAccounts(newLibrary.Id, cancellationToken);
 
-        var newLibrary = await destinationLibraryDb.AddLibrary(sourceLibrary, cancellationToken);
+       Console.WriteLine("Step 3 of 10 - Migrating Authors");
+       var authorMap = await MigrateAuthors(libraryId, newLibrary.Id, cancellationToken);
 
-        var config = JsonSerializer.Deserialize<S3Configuration>(newLibrary.FileStoreSource);
-        _fileStore =  production ? new S3FileStorage(config) : new FileSystemStorage("../FileStore");
+       Console.WriteLine("Step 4 of 10 - Migrating Series");
+       var seriesMap = await MigrateSeries(libraryId, newLibrary.Id, cancellationToken);
 
-        pBar.Tick("Step 2 of 10 - Migrating Accounts");
+       Console.WriteLine("Step 5 of 10 - Migrating Categories");
+       var categoriesMap = await MigrateCategories(libraryId, newLibrary.Id, cancellationToken);
 
-        var accountsMap = await MigrateLibraryAccounts(newLibrary.Id, pBar, cancellationToken);
+       Console.WriteLine("Step 6 of 10 - Migrating Books");
+       var booksMap = await MigrateBooks(libraryId, newLibrary.Id, authorMap, seriesMap, categoriesMap, accountsMap, cancellationToken);
 
-        pBar.Tick("Step 3 of 10 - Migrating Authors");
-        var authorMap = await MigrateAuthors(libraryId, newLibrary.Id, pBar, cancellationToken);
+       Console.WriteLine("Step 7 of 10 - Migrating Periodicals");
+       await MigratePeriodicals(libraryId, newLibrary.Id, authorMap, categoriesMap, accountsMap, cancellationToken);
 
-        pBar.Tick("Step 4 of 10 - Migrating Series");
-        var seriesMap = await MigrateSeries(libraryId, newLibrary.Id, pBar, cancellationToken);
+       Console.WriteLine("Step 8 of 10 - Migrating BookShelves");
+       await MigrateBookShelves(libraryId, newLibrary.Id, accountsMap, booksMap, cancellationToken);
 
-        pBar.Tick("Step 5 of 10 - Migrating Categories");
-        var categoriesMap = await MigrateCategories(libraryId, newLibrary.Id, pBar, cancellationToken);
+       Console.WriteLine("Step 9 of 10 - Migrating Articles");
+       await MigrateArticles(libraryId, newLibrary.Id, authorMap, categoriesMap, cancellationToken);
 
-        pBar.Tick("Step 6 of 10 - Migrating Books");
-        var booksMap = await MigrateBooks(libraryId, newLibrary.Id, authorMap, seriesMap, categoriesMap, accountsMap, pBar, cancellationToken);
-
-        pBar.Tick("Step 7 of 10 - Migrating Periodicals");
-        await MigratePeriodicals(libraryId, newLibrary.Id, authorMap, categoriesMap, accountsMap, pBar, cancellationToken);
-
-        pBar.Tick("Step 8 of 10 - Migrating BookShelves");
-        await MigrateBookShelves(libraryId, newLibrary.Id, accountsMap, booksMap, pBar, cancellationToken);
-
-        pBar.Tick("Step 9 of 10 - Migrating Articles");
-        await MigrateArticles(libraryId, newLibrary.Id, authorMap, categoriesMap, pBar, cancellationToken);
-
-        pBar.Tick("Step 10 of 10 - Migration Completed");
+       Console.WriteLine("Step 10 of 10 - Migration Completed");
     }
 
-    private async Task MigrateCorrections(ProgressBar pBar, CancellationToken cancellationToken)
+    private async Task MigrateCorrections(CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.CorrectionRepository;
         var destinationDb = DestinationRepositoryFactory.CorrectionRepository;
 
         var corrections = await sourceDb.GetAllCorrections(cancellationToken);
 
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─'
-        };
-
         var correctionModels = corrections as CorrectionModel[] ?? corrections.ToArray();
-        using var child = pBar.Spawn(correctionModels.Count(), "Migrating correction", options);
-        Console.WriteLine($"Migrating {correctionModels.Count()} correction.");
+        Console.WriteLine($"Started Migrating {correctionModels.Length} correction.");
         int i = 0;
 
         foreach (var correction in correctionModels)
         {
             await destinationDb.AddCorrection(correction, cancellationToken);
-            child.Tick($"Step {++i} of {correctionModels.Count()} - Correction(s) migrated.");
+            Console.Write($"\r{++i} of {correctionModels.Length} Correction(s) migrated.");
         }
+        
+        Console.WriteLine($"Completed migrating {correctionModels.Length} correction.");
     }
 
-    private async Task MigrateAllAccounts(ProgressBar pBar, CancellationToken cancellationToken)
+    private async Task MigrateAllAccounts(CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.AccountRepository;
         var destinationDb = DestinationRepositoryFactory.AccountRepository;
 
         var accounts = await sourceDb.GetAccounts(1, int.MaxValue, cancellationToken);
+        Console.WriteLine("Started migration of {accounts.TotalCount} Account(s).");
 
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─'
-        };
-
-        using var child = pBar.Spawn((int)accounts.TotalCount, "Migrating Accounts", options);
         int i = 0;
         foreach (var account in accounts.Data)
         {
@@ -148,11 +119,14 @@ public class Migrator
                 await destinationDb.AddAccount(account, cancellationToken);
             }
 
-            child.Tick($"Step {++i} of {accounts.TotalCount} - Account(s) migrated.");
+            Console.Write($"\r{++i} of {accounts.TotalCount} Account(s) migrated.");
         }
+        
+        Console.WriteLine();
+        Console.WriteLine("Completed. {accounts.TotalCount} Account(s) migrated.");
     }
 
-    private async Task<Dictionary<int, int>> MigrateLibraryAccounts(int newLibraryId, ProgressBar pBar, CancellationToken cancellationToken)
+    private async Task<Dictionary<int, int>> MigrateLibraryAccounts(int newLibraryId, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.AccountRepository;
         var destinationDb = DestinationRepositoryFactory.AccountRepository;
@@ -160,14 +134,7 @@ public class Migrator
         Dictionary<int, int> accountsMap = new Dictionary<int, int>();
         var accounts = await sourceDb.GetAccounts(1, int.MaxValue, cancellationToken);
 
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─'
-        };
-
-        using var child = pBar.Spawn((int)accounts.TotalCount, "Migrating Accounts", options);
+        Console.WriteLine($"Started migration of {accounts.TotalCount} library accounts.");
         int i = 0;
         foreach (var account in accounts.Data)
         {
@@ -181,29 +148,24 @@ public class Migrator
             await destinationDb.AddAccountToLibrary(newLibraryId, existingAccount.Id, existingAccount.Role, cancellationToken);
             accountsMap.Add(oldAccountId, existingAccount.Id);
 
-            child.Tick($"Step {++i} of {accounts.TotalCount} - Account(s) migrated.");
+            Console.Write($"\r{++i} of {accounts.TotalCount} Account(s) migrated.");
         }
+        
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {accounts.TotalCount} library accounts.");
 
         return accountsMap;
     }
 
-    private async Task<Dictionary<int, int>> MigrateAuthors(int libraryId, int newLibraryId, ProgressBar pBar, CancellationToken cancellationToken)
+    private async Task<Dictionary<int, int>> MigrateAuthors(int libraryId, int newLibraryId, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.AuthorRepository;
         var destinationDb = DestinationRepositoryFactory.AuthorRepository;
 
         Dictionary<int, int> authorMap = new Dictionary<int, int>();
         var authors = await sourceDb.GetAuthors(libraryId, null, 1, int.MaxValue, cancellationToken);
-
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─'
-        };
-
-        using var child = pBar.Spawn((int)authors.TotalCount, "Migrating Authors", options);
         int i = 0;
+        Console.WriteLine($"Started migration of {authors.TotalCount} Author(s).");
 
         foreach (var author in authors.Data)
         {
@@ -214,30 +176,24 @@ public class Migrator
             }
 
             var newAuthor = await destinationDb.AddAuthor(newLibraryId, author, cancellationToken);
-            child.Tick($"Step {++i} of {authors.TotalCount} - Author(s) migrated.");
+            Console.Write($"\r{++i} of {authors.TotalCount} Author(s) migrated.");
 
             authorMap.Add(author.Id, newAuthor.Id);
         }
 
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {authors.TotalCount} Author(s).");
         return authorMap;
     }
 
-    private async Task<Dictionary<int, int>> MigrateSeries(int libraryId, int newLibraryId, ProgressBar pBar, CancellationToken cancellationToken)
+    private async Task<Dictionary<int, int>> MigrateSeries(int libraryId, int newLibraryId, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.SeriesRepository;
         var destinationDb = DestinationRepositoryFactory.SeriesRepository;
 
         Dictionary<int, int> seriesMap = new Dictionary<int, int>();
         var series = await sourceDb.GetSeries(libraryId, 1, int.MaxValue, cancellationToken);
-
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─'
-        };
-
-        using var child = pBar.Spawn((int)series.TotalCount, "Migrating Series", options);
+        Console.WriteLine($"Started migration of {series.TotalCount} Series.");
         int i = 0;
 
         foreach (var s in series.Data)
@@ -249,43 +205,42 @@ public class Migrator
             }
 
             var newSeries = await destinationDb.AddSeries(newLibraryId, s, cancellationToken);
-            child.Tick($"{++i} of {series.TotalCount} Series(s) migrated.");
+            Console.Write($"\r{++i} of {series.TotalCount} Series migrated.");
 
             seriesMap.Add(s.Id, newSeries.Id);
         }
+        
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {series.TotalCount} Series.");
 
         return seriesMap;
     }
 
-    private async Task<Dictionary<int, int>> MigrateCategories(int libraryId, int newLibraryId, ProgressBar pBar, CancellationToken cancellationToken)
+    private async Task<Dictionary<int, int>> MigrateCategories(int libraryId, int newLibraryId, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.CategoryRepository;
         var destinationDb = DestinationRepositoryFactory.CategoryRepository;
 
         Dictionary<int, int> categoriesMap = new Dictionary<int, int>();
         var categories = (await sourceDb.GetCategories(libraryId, cancellationToken)).ToArray();
-
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─'
-        };
-
-        using var child = pBar.Spawn(categories.Length, "Migrating Series", options);
+        Console.WriteLine($"Started migration of {categories.Length} categories.");
+        
         int i = 0;
 
         foreach (var category in categories)
         {
             var newCategory = await destinationDb.AddCategory(newLibraryId, category, cancellationToken);
-            child.Tick($"{++i} of {categories.Length} Categories migrated.");
+            Console.Write($"\r{++i} of {categories.Length} Categories migrated.");
             categoriesMap.Add(category.Id, newCategory.Id);
         }
+        
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {categories.Length} Categories.");
 
         return categoriesMap;
     }
 
-    private async Task<Dictionary<int, int>> MigrateBooks(int libraryId, int newLibraryId, Dictionary<int, int> authorMap, Dictionary<int, int> seriesMap, Dictionary<int, int> categoriesMap, Dictionary<int, int> accountsMap, ProgressBar pBar, CancellationToken cancellationToken)
+    private async Task<Dictionary<int, int>> MigrateBooks(int libraryId, int newLibraryId, Dictionary<int, int> authorMap, Dictionary<int, int> seriesMap, Dictionary<int, int> categoriesMap, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.BookRepository;
         var destinationDb = DestinationRepositoryFactory.BookRepository;
@@ -294,16 +249,8 @@ public class Migrator
 
         var pageNumber = 1;
         var bookPage = await sourceDb.GetBooks(libraryId, pageNumber++, 100, cancellationToken);
-
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─',
-            CollapseWhenFinished = true
-        };
-
-        using var child = pBar.Spawn((int)bookPage.TotalCount, "Migrating Books", options);
+        
+        Console.WriteLine($"Started migration of {bookPage.TotalCount} Book(s)");
         int i = 0;
 
         do
@@ -329,8 +276,8 @@ public class Migrator
                 var newBook = await destinationDb.AddBook(newLibraryId, book, null, cancellationToken);
                 booksMap.Add(book.Id, newBook.Id);
 
-                var chaptersMap = await MigrateChapters(libraryId, newLibraryId, book.Id, newBook.Id, accountsMap, child, cancellationToken);
-                await MigrateBookPages(libraryId, newLibraryId, book.Id, newBook.Id, accountsMap, chaptersMap, child, cancellationToken);
+                var chaptersMap = await MigrateChapters(libraryId, newLibraryId, book.Id, newBook.Id, accountsMap, cancellationToken);
+                await MigrateBookPages(libraryId, newLibraryId, book.Id, newBook.Id, accountsMap, chaptersMap, cancellationToken);
 
                 var bookContents = await sourceDb.GetBookContents(libraryId, book.Id, cancellationToken);
                 foreach (var content in bookContents)
@@ -342,7 +289,7 @@ public class Migrator
                     await destinationDb.AddBookContent(newLibraryId, bookContent.Id, content.Language, cancellationToken);
                 }
 
-                child.Tick($"{++i} of {bookPage.TotalCount} Book(s) migrated.");
+                Console.Write($"\r{++i} of {bookPage.TotalCount} Book(s) migrated.");
 
             }
 
@@ -350,24 +297,22 @@ public class Migrator
         }
         while (bookPage.Data.Any());
 
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {bookPage.TotalCount} Book(s)");
+
         return booksMap;
     }
 
-    private async Task<Dictionary<long, long>> MigrateChapters(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, ChildProgressBar pBar, CancellationToken cancellationToken)
+    private async Task<Dictionary<long, long>> MigrateChapters(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.ChapterRepository;
         var destinationDb = DestinationRepositoryFactory.ChapterRepository;
 
         var chaptersMap = new Dictionary<long, long>();
         var chapters = (await sourceDb.GetChaptersByBook(libraryId, bookId, cancellationToken)).ToArray();
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.DarkRed,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─'
-        };
+        
 
-        using var child = pBar.Spawn(chapters.Length, "Migrating Chapters for book " + newBookId, options);
+        Console.WriteLine($"Starting migration {chapters.Length} Chapters for book {newBookId}");
         int i = 0;
 
         foreach (var chapter in chapters)
@@ -424,13 +369,16 @@ public class Migrator
                 await destinationDb.AddChapterContent(newLibraryId, content, cancellationToken);
             }
 
-            child.Tick($"{++i} of {chapters.Length} Chapters(s) migrated for book {newBookId}.");
+            Console.Write($"\r{++i} of {chapters.Length} Chapters(s) migrated for book {newBookId}.");
         }
+        
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration {chapters.Length} Chapters for book {newBookId}");
 
         return chaptersMap;
     }
 
-    private async Task MigrateBookPages(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, Dictionary<long, long> chaptersMap, ChildProgressBar pBar, CancellationToken cancellationToken)
+    private async Task MigrateBookPages(int libraryId, int newLibraryId, int bookId, int newBookId, Dictionary<int, int> accountsMap, Dictionary<long, long> chaptersMap, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.BookPageRepository;
         var destinationDb = DestinationRepositoryFactory.BookPageRepository;
@@ -438,15 +386,7 @@ public class Migrator
         var pageNumber = 1;
         var pagesPage = await sourceDb.GetPagesByBook(libraryId, bookId, pageNumber++, 10, EditingStatus.All,
             AssignmentFilter.All, AssignmentFilter.All, null, cancellationToken); 
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.DarkRed,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─',
-            CollapseWhenFinished = true
-        };
-
-        using var child = pBar.Spawn((int)pagesPage.TotalCount, "Migrating Pages for book " + newBookId, options);
+        Console.WriteLine($"Started migration of {pagesPage.TotalCount} pages for book {newBookId}");
         int i = 0;
         do
         {
@@ -505,33 +445,29 @@ public class Migrator
                 }
 
                 await destinationDb.AddPage(newLibraryId, page, cancellationToken);
-
-                child.Tick($"{++i} of {pagesPage.TotalCount} Pages(s) migrated for book {newBookId}.");
+                i++;
             }
+            
+            Console.Write($"\r{i} of {pagesPage.TotalCount} pages(s) migrated for book {newBookId}.");
             
             pagesPage = await sourceDb.GetPagesByBook(libraryId, bookId, pageNumber++, 10, EditingStatus.All,
                 AssignmentFilter.All, AssignmentFilter.All, null, cancellationToken);
         }
         while (pagesPage.Data.Any());
+
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {pagesPage.TotalCount} pages for book {newBookId}");
     }
 
     private async Task MigratePeriodicals(int libraryId, int newLibraryId, Dictionary<int, int> authorMap,
-        Dictionary<int, int> categoriesMap, Dictionary<int, int> accountsMap, ProgressBar pBar,
-        CancellationToken cancellationToken)
+        Dictionary<int, int> categoriesMap, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.PeriodicalRepository;
         var destinationDb = DestinationRepositoryFactory.PeriodicalRepository;
 
         var periodicals = await sourceDb.GetPeriodicals(libraryId, null, 1, int.MaxValue, new PeriodicalFilter(), PeriodicalSortByType.DateCreated, SortDirection.Ascending, cancellationToken);
 
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─'
-        };
-
-        using var child = pBar.Spawn((int)periodicals.TotalCount, "Migrating Periodicals", options);
+        Console.WriteLine($"Started migration of {periodicals.TotalCount} periodicals");
         int i = 0;
 
         foreach (var periodical in periodicals.Data)
@@ -548,29 +484,23 @@ public class Migrator
 
             var newPeriodical = await destinationDb.AddPeriodical(newLibraryId, periodical, cancellationToken);
 
-            await MigrateIssue(libraryId, newLibraryId, periodical.Id, newPeriodical.Id, authorMap, accountsMap, child, cancellationToken);
+            await MigrateIssue(libraryId, newLibraryId, periodical.Id, newPeriodical.Id, authorMap, accountsMap, cancellationToken);
                 
-            child.Tick($"{++i} of {periodicals.TotalCount} Periodical(s) migrated.");
+            Console.Write($"\r{++i} of {periodicals.TotalCount} Periodical(s) migrated.");
         }
+        
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {periodicals.TotalCount} periodicals");
     }
 
     private async Task MigrateIssue(int libraryId, int newLibraryId, int periodicalId, int newPeriodicalId,
-        Dictionary<int, int> authorMap, Dictionary<int, int> accountsMap, ChildProgressBar pBar,
-        CancellationToken cancellationToken)
+        Dictionary<int, int> authorMap, Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.IssueRepository;
         var destinationDb = DestinationRepositoryFactory.IssueRepository;
 
-        var issues = await sourceDb.GetIssues(libraryId, periodicalId, 1, int.MaxValue, new IssueFilter(), IssueSortByType.VolumeNumberAndIssueNumber, SortDirection.Ascending, cancellationToken);
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.DarkRed,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─',
-            CollapseWhenFinished = true
-        };
-
-        using var child = pBar.Spawn((int)issues.TotalCount, "Migrating Issues for periodical " + newPeriodicalId, options);
+        var issues = await sourceDb.GetIssues(libraryId, periodicalId, 1, int.MaxValue, new IssueFilter(), IssueSortByType.VolumeNumberAndIssueNumber, SortDirection.Ascending, cancellationToken); 
+        Console.WriteLine($"Started migration of {issues.TotalCount} Issues for periodical {newPeriodicalId}");
         int i = 0;
 
         foreach (var issue in issues.Data)
@@ -604,30 +534,26 @@ public class Migrator
             }
 
             //TODO:  migrate pages and move to files from content
-            await MigrateIssueArticle(libraryId, newLibraryId, periodicalId, newPeriodicalId, newIssue.Id, newIssue.VolumeNumber, newIssue.IssueNumber, authorMap, accountsMap, child, cancellationToken);
+            await MigrateIssueArticle(libraryId, newLibraryId, periodicalId, newPeriodicalId, newIssue.Id, newIssue.VolumeNumber, newIssue.IssueNumber, authorMap, accountsMap, cancellationToken);
 
-            child.Tick($"{++i} of {issues.TotalCount} Issues(s) migrated for periodical {periodicalId}.");
+            Console.Write($"\r{++i} of {issues.TotalCount} Issues(s) migrated for periodical {periodicalId}.");
         }
+        
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {issues.TotalCount} Issues for periodical {newPeriodicalId}");
     }
 
     private async Task MigrateIssueArticle(int libraryId, int newLibraryId, int periodicalId, int newPeriodicalId,
         int newIssueId, int volumeNumber, int issueNumber, Dictionary<int, int> authorMap,
-        Dictionary<int, int> accountsMap, ChildProgressBar pBar, CancellationToken cancellationToken)
+        Dictionary<int, int> accountsMap, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.IssueArticleRepository;
         var destinationDb = DestinationRepositoryFactory.IssueArticleRepository;
 
         var articles = await sourceDb.GetArticlesByIssue(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.DarkGreen,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─',
-            CollapseWhenFinished = true
-        };
-
+        
         var issueArticleModels = articles as IssueArticleModel[] ?? articles.ToArray();
-        using var child = pBar.Spawn(issueArticleModels.Count(), $"Migrating Articles for periodical {newPeriodicalId} volume {volumeNumber} issue {issueNumber}", options);
+        Console.WriteLine($"Started migration of {issueArticleModels.Length} articles for periodical {newPeriodicalId} volume {volumeNumber} issue {issueNumber}");
         int i = 0;
         foreach (var article in issueArticleModels)
         {
@@ -672,25 +598,22 @@ public class Migrator
                     cancellationToken);
             }
 
-            child.Tick($"{++i} of {issueArticleModels.Count()} Issues(s) migrated for periodical {newPeriodicalId} volume {volumeNumber} issue {issueNumber}.");
+            Console.Write($"\r{++i} of {issueArticleModels.Count()} Issues(s) migrated for periodical {newPeriodicalId} volume {volumeNumber} issue {issueNumber}.");
         }
+        
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {issueArticleModels.Length} articles for periodical {newPeriodicalId} volume {volumeNumber} issue {issueNumber}");
     }
 
     private async Task MigrateBookShelves(int libraryId, int newLibraryId, Dictionary<int, int> accountsMap,
-        Dictionary<int, int> booksMap, ProgressBar pBar, CancellationToken cancellationToken)
+        Dictionary<int, int> booksMap, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.BookShelfRepository;
         var destinationDb = DestinationRepositoryFactory.BookShelfRepository;
 
         var bookshelves = await sourceDb.GetAllBookShelves(libraryId, 1, int.MaxValue, cancellationToken);
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─'
-        };
-
-        using var child = pBar.Spawn((int)bookshelves.TotalCount, "Migrating Book shelves", options);
+        Console.WriteLine($"Started migration of {bookshelves.TotalCount} book shelve(s).");
+        
         int i = 0;
 
         foreach (var bookShelf in bookshelves.Data)
@@ -711,27 +634,24 @@ public class Migrator
                 await destinationDb.AddBookToBookShelf(newLibraryId, newBookshelf.Id, booksMap[book.BookId], book.Index, cancellationToken);
             }
 
-            child.Tick($"{++i} of {bookshelves.TotalCount} Book shelve(s) migrated.");
+            Console.Write($"\r{++i} of {bookshelves.TotalCount} book shelve(s) migrated.");
 
         }
+        
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {bookshelves.TotalCount} book shelve(s).");
     }
 
     private async Task MigrateArticles(int libraryId, int newLibraryId, Dictionary<int, int> authorMap,
-        Dictionary<int, int> categoriesMap, ProgressBar pBar, CancellationToken cancellationToken)
+        Dictionary<int, int> categoriesMap, CancellationToken cancellationToken)
     {
         var sourceDb = SourceRepositoryFactory.ArticleRepository;
         var destinationDb = DestinationRepositoryFactory.ArticleRepository;
         
         var articles = await sourceDb.GetAllArticles(libraryId, cancellationToken);
-        var options = new ProgressBarOptions
-        {
-            ForegroundColor = ConsoleColor.Green,
-            BackgroundColor = ConsoleColor.DarkYellow,
-            ProgressCharacter = '─'
-        };
 
         var articleModels = articles as ArticleModel[] ?? articles.ToArray();
-        using var child = pBar.Spawn(articleModels.Length, "Migrating Articles", options);
+        Console.WriteLine($"Started migration of {articleModels.Length} articles");
         int i = 0;
 
         foreach (var article in articleModels)
@@ -770,9 +690,12 @@ public class Migrator
                 await destinationDb.AddArticleContent(newLibraryId, content, cancellationToken);
             }
 
-            child.Tick($"{++i} of {articleModels.Count()} article(s) migrated.");
+            Console.Write($"\r{++i} of {articleModels.Count()} article(s) migrated.");
 
         }
+        
+        Console.WriteLine();
+        Console.WriteLine($"Completed migration of {articleModels.Length} articles");
     }
 
     private async Task<FileModel> AddFile(string fileName, string filePath, string mimeType, CancellationToken cancellationToken)
@@ -797,5 +720,4 @@ public class Migrator
         var file = await sourceDb.GetFileById(fileId, cancellationToken);
         return await destinationDb.AddFile(file, cancellationToken);
     }
-
 }

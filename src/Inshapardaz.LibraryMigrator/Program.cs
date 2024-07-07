@@ -67,7 +67,7 @@ internal class Program
             var destinationType = Enum.Parse<DatabaseTypes>(context.ParseResult.GetValueForOption(destinationTypeOption), true);
             int libraryId = context.ParseResult.GetValueForOption(libraryIdOption);
             bool corrections = context.ParseResult.GetValueForOption(correctionOption);
-            bool production = context.ParseResult.GetValueForOption(productionOption);
+            bool production = true;// context.ParseResult.GetValueForOption(productionOption);
 
             var token = context.GetCancellationToken();
 

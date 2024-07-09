@@ -20,12 +20,14 @@ using Inshapardaz.Domain.Ports.Query;
 using Inshapardaz.Api.Infrastructure.Configuration;
 using Inshapardaz.Api.Infrastructure.Middleware;
 using Inshapardaz.Domain.Ports.Query.Library;
+using Microsoft.AspNetCore.Http.Features;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseKestrel(o => o.Limits.MaxRequestBodySize = null);
 
 //=====================================================================
 // Configura open telemetry
@@ -73,6 +75,15 @@ builder.Services.AddControllers().AddJsonOptions(j =>
 {
     j.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     j.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, false));
+});
+
+builder.Services.Configure<FormOptions>(x =>
+{
+    x.ValueLengthLimit = int.MaxValue;
+    x.MultipartBodyLengthLimit = int.MaxValue;
+    x.MultipartBoundaryLengthLimit = int.MaxValue;
+    x.MultipartHeadersCountLimit = int.MaxValue;
+    x.MultipartHeadersLengthLimit = int.MaxValue;
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

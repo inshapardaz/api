@@ -1,6 +1,0 @@
-@Inshapardaz.Api_HostAddress = http://localhost:4000
-
-GET {{Inshapardaz.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -30,27 +30,39 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseKestrel(o => o.Limits.MaxRequestBodySize = null);
 
 //=====================================================================
-// Configura open telemetry
+// Configure open telemetry
 
 const string serviceName = "Inshapardaz";
 
-builder.Logging.AddOpenTelemetry(options =>
-{
-    options
-        .SetResourceBuilder(
-            ResourceBuilder.CreateDefault()
-                .AddService(serviceName))
-        .AddConsoleExporter();
-});
+string tracingOtlpEndpoint = builder.Configuration["OLTP_ENDPOINT_URL"];
+
+builder.Logging.AddOpenTelemetry(options => options
+    .SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService(serviceName))
+    .AddConsoleExporter());
 
 builder.Services.AddOpenTelemetry()
       .ConfigureResource(resource => resource.AddService(serviceName))
-      .WithTracing(tracing => tracing
-          .AddAspNetCoreInstrumentation()
-          .AddConsoleExporter())
       .WithMetrics(metrics => metrics
           .AddAspNetCoreInstrumentation()
-          .AddConsoleExporter());
+          .AddMeter("Microsoft.AspnetCore.Hosting")
+          .AddMeter("Microsoft.AspnetCore.Server.Kestrel")
+          .AddPrometheusExporter()
+          .AddConsoleExporter())
+      .WithTracing(tracing =>
+      {
+          tracing
+              .AddAspNetCoreInstrumentation()
+              .AddHttpClientInstrumentation();
+          if (tracingOtlpEndpoint != null)
+          {
+              tracing.AddOtlpExporter(opt => opt.Endpoint = new Uri(tracingOtlpEndpoint));
+          }
+          else
+          {
+              tracing.AddConsoleExporter();
+          }
+      });
           
 //=====================================================================
 // Add services to the container.
@@ -63,9 +75,9 @@ builder.Services.Configure<Settings>(configSection);
 //--------------------------------------------------------------------
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builder =>
+    options.AddDefaultPolicy(policyBuilder =>
     {
-        builder.WithOrigins("*")
+        policyBuilder.WithOrigins("*")
                .AllowAnyHeader()
                .AllowAnyMethod()
                .WithExposedHeaders(HeaderNames.Location, HeaderNames.ContentDisposition, HeaderNames.ContentType);
@@ -180,13 +192,13 @@ app.UseCors(x => x
                 .WithExposedHeaders(HeaderNames.Location, HeaderNames.ContentDisposition, HeaderNames.ContentType));
 
 app.UseHttpsRedirection();
+app.MapPrometheusScrapingEndpoint();
 
 app.UseAuthorization();
 app.UseRequestLogging();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<LibraryConfigurationMiddleware>();
 app.UseStatusCodeMiddleWare();
-
 app.UseMiddleware<JwtMiddleware>();
 
 app.MapControllers();

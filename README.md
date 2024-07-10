@@ -4,9 +4,7 @@ API for Inshapardaz
 
 # Build Status
 
-Master
-
-[![.NET](https://github.com/inshapardaz/api/actions/workflows/build_deploy.yml/badge.svg?branch=master)](https://github.com/inshapardaz/api/actions/workflows/build_deploy.yml)
+[![Docker Image CI](https://github.com/inshapardaz/api/actions/workflows/docker-image.yml/badge.svg)](https://github.com/inshapardaz/api/actions/workflows/docker-image.yml)
 
 # Components
 

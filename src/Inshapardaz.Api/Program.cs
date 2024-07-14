@@ -36,34 +36,37 @@ const string serviceName = "Inshapardaz";
 
 string tracingOtlpEndpoint = builder.Configuration["OLTP_ENDPOINT_URL"];
 
-builder.Logging.AddOpenTelemetry(options => options
-    .SetResourceBuilder(ResourceBuilder.CreateDefault()
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Logging.AddOpenTelemetry(options => options
+        .SetResourceBuilder(ResourceBuilder.CreateDefault()
             .AddService(serviceName))
-    .AddConsoleExporter());
+        .AddConsoleExporter());
 
-builder.Services.AddOpenTelemetry()
-      .ConfigureResource(resource => resource.AddService(serviceName))
-      .WithMetrics(metrics => metrics
-          .AddAspNetCoreInstrumentation()
-          .AddMeter("Microsoft.AspnetCore.Hosting")
-          .AddMeter("Microsoft.AspnetCore.Server.Kestrel")
-          .AddPrometheusExporter()
-          .AddConsoleExporter())
-      .WithTracing(tracing =>
-      {
-          tracing
-              .AddAspNetCoreInstrumentation()
-              .AddHttpClientInstrumentation();
-          if (tracingOtlpEndpoint != null)
-          {
-              tracing.AddOtlpExporter(opt => opt.Endpoint = new Uri(tracingOtlpEndpoint));
-          }
-          else
-          {
-              tracing.AddConsoleExporter();
-          }
-      });
-          
+    builder.Services.AddOpenTelemetry()
+        .ConfigureResource(resource => resource.AddService(serviceName))
+        .WithMetrics(metrics => metrics
+            .AddAspNetCoreInstrumentation()
+            .AddMeter("Microsoft.AspnetCore.Hosting")
+            .AddMeter("Microsoft.AspnetCore.Server.Kestrel")
+            .AddPrometheusExporter()
+            .AddConsoleExporter())
+        .WithTracing(tracing =>
+        {
+            tracing
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation();
+            if (tracingOtlpEndpoint != null)
+            {
+                tracing.AddOtlpExporter(opt => opt.Endpoint = new Uri(tracingOtlpEndpoint));
+            }
+            else
+            {
+                tracing.AddConsoleExporter();
+            }
+        });
+}
+
 //=====================================================================
 // Add services to the container.
 
@@ -183,6 +186,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.MapPrometheusScrapingEndpoint();
+}
 
 app.UseCors(x => x
                 .SetIsOriginAllowed(origin => true)
@@ -192,7 +199,6 @@ app.UseCors(x => x
                 .WithExposedHeaders(HeaderNames.Location, HeaderNames.ContentDisposition, HeaderNames.ContentType));
 
 app.UseHttpsRedirection();
-app.MapPrometheusScrapingEndpoint();
 
 app.UseAuthorization();
 app.UseRequestLogging();

@@ -69,7 +69,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
         }
 
         [Test]
-        public void ShouldReturExpectedBookPages()
+        public void ShouldReturnExpectedBookPages()
         {
             var expectedItems = BookBuilder.GetPages(_book.Id).OrderBy(p => p.SequenceNumber).Skip(10).Take(10);
             foreach (var item in expectedItems)

@@ -53,7 +53,7 @@ public class GetArticleContentQueryHandler : QueryHandlerAsync<GetIssueArticleCo
 
             command.Language = library.Language;
         }
-        var articleContent = await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, command.Language, cancellationToken);
+        var articleContent = await _articleRepository.GetIssueArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, command.Language, cancellationToken);
         if (articleContent is not null && articleContent.FileId.HasValue)
         {
             articleContent.Text = await _queryProcessor.ExecuteAsync(new GetTextFileQuery(articleContent.FileId.Value), cancellationToken);

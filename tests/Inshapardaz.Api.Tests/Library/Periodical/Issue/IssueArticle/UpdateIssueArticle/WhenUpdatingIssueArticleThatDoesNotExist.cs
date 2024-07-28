@@ -61,7 +61,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
             IssueArticleView expected = new IssueArticleView
             {

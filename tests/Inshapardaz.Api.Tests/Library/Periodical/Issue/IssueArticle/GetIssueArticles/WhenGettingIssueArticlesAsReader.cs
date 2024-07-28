@@ -1,3 +1,6 @@
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -7,20 +10,17 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIssue
+namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticles
 {
     [TestFixture]
-    public class WhenGettingArticlesByIssueAsReader : TestBase
+    public class WhenGettingIssueArticlesAsReader : TestBase
     {
         private IssueDto _issue;
         private HttpResponseMessage _response;
         private ListView<IssueArticleView> _view;
 
-        public WhenGettingArticlesByIssueAsReader()
+        public WhenGettingIssueArticlesAsReader()
             : base(Role.Reader)
         {
         }
@@ -77,6 +77,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIss
                     .ShouldBeSameAs(expected)
                     .WithReadOnlyLinks();
 
+                var authors = IssueBuilder.GetAuthorsForIssue(actual.Id);
+                foreach (var actualAuthor in actual.Authors)
+                {
+                    var expectedAuthor = authors.SingleOrDefault(x => x.Id == actualAuthor.Id);
+                    actualAuthor.Name.Should().Be(expectedAuthor.Name);
+                }
+                
                 //var contents = IssueBuilder.Contents.Where(c => c.IssueId == expected.Id);
                 //foreach (var content in contents)
                 //{

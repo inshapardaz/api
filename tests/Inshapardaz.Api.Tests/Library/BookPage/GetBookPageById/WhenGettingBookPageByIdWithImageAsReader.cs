@@ -47,7 +47,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
             _assert.ShouldMatch(_expected);
         }

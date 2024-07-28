@@ -61,7 +61,7 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
             var expected = new ChapterView { Title = _chapter.Title, BookId = _book.Id, ChapterNumber = 4, Status = "Available" };
             _assert.ShouldMatch(expected);

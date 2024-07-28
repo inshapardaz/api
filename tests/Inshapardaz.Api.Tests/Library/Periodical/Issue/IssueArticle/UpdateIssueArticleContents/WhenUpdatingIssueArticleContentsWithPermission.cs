@@ -1,18 +1,18 @@
-﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleContents
+namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssueArticleContents
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingArticleContentsWithPermission
+    public class WhenUpdatingIssueArticleContentsWithPermission
         : TestBase
     {
         private HttpResponseMessage _response;
@@ -21,7 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleCo
         private IssueArticleDto _article;
         private string _newContents;
 
-        public WhenUpdatingArticleContentsWithPermission(Role role)
+        public WhenUpdatingIssueArticleContentsWithPermission(Role role)
             : base(role)
         {
         }

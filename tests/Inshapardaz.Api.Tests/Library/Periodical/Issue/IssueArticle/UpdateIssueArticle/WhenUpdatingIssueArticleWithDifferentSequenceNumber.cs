@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using System.Linq;
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -24,9 +25,19 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         [OneTimeSetUp]
         public async Task Setup()
         {
+            
             var issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(5).Build();
 
-            _newArticle = new IssueArticleView { Title = RandomData.Name, SequenceNumber = 1 };
+            var newAuthors = AuthorBuilder.WithLibrary(LibraryId).Build(2);
+            _newArticle = new IssueArticleView { 
+                Title = RandomData.Name, 
+                SequenceNumber = 1, 
+                Authors = newAuthors.Select(a => new AuthorView
+                {
+                    Id = a.Id
+                })
+                
+            };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_newArticle.SequenceNumber}", _newArticle);
 

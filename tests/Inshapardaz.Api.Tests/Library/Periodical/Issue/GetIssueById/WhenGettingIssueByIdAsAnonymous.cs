@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
             _assert.ShouldBeSameAs(_expected, 3, 10);
         }

@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
 
         public int SequenceNumber { get; set; }
         public string SeriesName { get; set; }
-        public int SeriesIndex { get; set; }
+        public int? SeriesIndex { get; set; }
 
         public EditingStatus Status { get; set; }
         public int? WriterAccountId { get; set; }

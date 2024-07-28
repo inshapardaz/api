@@ -1,16 +1,16 @@
-﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleContents
+namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssueArticleContents
 {
     [TestFixture]
-    public class WhenUpdatingArticleContentsWithDifferentLanguage
+    public class WhenUpdatingIssueArticleContentsWithDifferentLanguage
         : TestBase
     {
         private HttpResponseMessage _response;
@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleCo
         private string _newArticleContentLanguage;
         private string _newContents;
 
-        public WhenUpdatingArticleContentsWithDifferentLanguage()
+        public WhenUpdatingIssueArticleContentsWithDifferentLanguage()
             : base(Role.Writer)
         {
         }

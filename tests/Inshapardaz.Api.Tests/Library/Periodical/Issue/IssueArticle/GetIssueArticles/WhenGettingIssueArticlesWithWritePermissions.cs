@@ -1,24 +1,32 @@
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIssue
+namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticles
 {
-    [TestFixture]
-    public class WhenGettingArticlesByIssueAsUnauthorized
+    [TestFixture(Role.Admin)]
+    [TestFixture(Role.LibraryAdmin)]
+    [TestFixture(Role.Writer)]
+    public class WhenGettingIssueArticlesWithWritePermissions
         : TestBase
     {
         private IssueDto _issue;
         private HttpResponseMessage _response;
         private ListView<IssueArticleView> _view;
+
+        public WhenGettingIssueArticlesWithWritePermissions(Role role)
+            : base(role)
+        {
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -51,12 +59,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIss
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
+        public void ShouldHaveCreateLink()
         {
-            _view.CreateLink().Should().BeNull();
+            _view.CreateLink()
+                .ShouldBePost()
+                .EndingWith($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles");
         }
 
-        [Test]
         public void ShouldHaveCorrectNumberOfArticles()
         {
             Assert.That(_view.Data.Count(), Is.EqualTo(5));
@@ -69,13 +78,22 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIss
             {
                 var actual = _view.Data.FirstOrDefault(x => x.Id == expected.Id);
                 var assert = Services.GetService<IssueArticleAssert>().ForView(actual).ForDto(_issue).ForLibrary(LibraryId)
-                        .ShouldBeSameAs(expected)
-                        .WithReadOnlyLinks();
+                    .ShouldBeSameAs(expected)
+                    .WithWriteableLinks();
 
-                //var contents = IssueBuilder.Contents.Where(c => c.IssueId == expected.Id);
+                var authors = IssueBuilder.GetAuthorsForIssue(actual.Id);
+                foreach (var actualAuthor in actual.Authors)
+                {
+                    var expectedAuthor = authors.SingleOrDefault(x => x.Id == actualAuthor.Id);
+                    actualAuthor.Name.Should().Be(expectedAuthor.Name);
+                }
+                
+                //var contents = ChapterBuilder.Contents.Where(c => c.ChapterId == expected.Id);
                 //foreach (var content in contents)
                 //{
                 //    assert.ShouldHaveContentLink(content);
+                //    assert.ShouldHaveUpdateChapterContentLink(content);
+                //    assert.ShouldHaveDeleteChapterContentLink(content);
                 //}
             }
         }

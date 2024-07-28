@@ -60,7 +60,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
             _assert.ShouldMatch(_page);
         }

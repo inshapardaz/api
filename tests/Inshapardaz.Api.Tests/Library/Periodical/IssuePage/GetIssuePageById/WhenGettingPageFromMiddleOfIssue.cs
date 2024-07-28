@@ -48,7 +48,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePageById
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
             _assert.ShouldMatch(_expected);
         }

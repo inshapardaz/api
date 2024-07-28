@@ -34,12 +34,12 @@ public class GetArticleByIdQueryHandler : QueryHandlerAsync<GetIssueArticleByIdQ
 
     public override async Task<IssueArticleModel> ExecuteAsync(GetIssueArticleByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var article = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+        var article = await _articleRepository.GetIssueArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
 
         if (article != null)
         {
-            article.PreviousArticle = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber - 1, cancellationToken);
-            article.NextArticle = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber + 1, cancellationToken);
+            article.PreviousArticle = await _articleRepository.GetIssueArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber - 1, cancellationToken);
+            article.NextArticle = await _articleRepository.GetIssueArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber + 1, cancellationToken);
         }
 
         return article;

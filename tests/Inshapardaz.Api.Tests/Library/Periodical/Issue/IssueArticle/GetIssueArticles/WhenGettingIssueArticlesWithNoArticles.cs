@@ -1,3 +1,5 @@
+using System.Net.Http;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -6,20 +8,18 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIssue
+namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticles
 {
     [TestFixture]
-    public class WhenGettingArticlesByIssueWithNoArticles
+    public class WhenGettingIssueArticlesWithNoArticles
         : TestBase
     {
         private IssueDto _issue;
         private HttpResponseMessage _response;
         private ListView<IssueArticleView> _view;
 
-        public WhenGettingArticlesByIssueWithNoArticles()
+        public WhenGettingIssueArticlesWithNoArticles()
             : base(Role.Writer)
         {
         }

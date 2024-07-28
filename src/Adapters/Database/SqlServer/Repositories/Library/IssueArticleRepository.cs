@@ -4,6 +4,7 @@ using Inshapardaz.Domain.Models.Library;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +19,7 @@ public class IssueArticleRepository : IIssueArticleRepository
         _connectionProvider = connectionProvider;
     }
 
-    public async Task<IssueArticleModel> AddArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IssueArticleModel article, CancellationToken cancellationToken)
+    public async Task<IssueArticleModel> AddIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IssueArticleModel issueArticle, CancellationToken cancellationToken)
     {
         int id;
         using (var connection = _connectionProvider.GetLibraryConnection())
@@ -27,35 +28,35 @@ public class IssueArticleRepository : IIssueArticleRepository
                             OUTPUT Inserted.Id VALUES (@Title, (SELECT Id FROM Issue WHERE VolumeNumber = @VolumeNumber AND IssueNumber = @IssueNumber), @Status, @SequenceNumber, @SeriesName, @SeriesIndex, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
             var command = new CommandDefinition(sql, new
             {
-                Title = article.Title,
+                Title = issueArticle.Title,
                 VolumeNumber = volumeNumber,
                 IssueNumber = issueNumber,
-                SequenceNumber = article.SequenceNumber,
-                Status = article.Status,
-                SeriesName = article.SeriesName,
-                SeriesIndex = article.SeriesIndex,
-                WriterAccountId = article.WriterAccountId,
-                WriterAssignTimeStamp = article.WriterAssignTimeStamp,
-                ReviewerAccountId = article.ReviewerAccountId,
-                ReviewerAssignTimeStamp = article.ReviewerAssignTimeStamp
+                SequenceNumber = issueArticle.SequenceNumber,
+                Status = issueArticle.Status,
+                SeriesName = issueArticle.SeriesName,
+                SeriesIndex = issueArticle.SeriesIndex,
+                WriterAccountId = issueArticle.WriterAccountId,
+                WriterAssignTimeStamp = issueArticle.WriterAssignTimeStamp,
+                ReviewerAccountId = issueArticle.ReviewerAccountId,
+                ReviewerAssignTimeStamp = issueArticle.ReviewerAssignTimeStamp
             }, cancellationToken: cancellationToken);
             id = await connection.ExecuteScalarAsync<int>(command);
 
             var sqlAuthor = @"Insert Into IssueArticleAuthor (ArticleId, AuthorId) Values (@ArticleId, @AuthorId);";
 
-            if (article.Authors != null && article.Authors.Any())
+            if (issueArticle.Authors != null && issueArticle.Authors.Any())
             {
-                var bookAuthors = article.Authors.Select(a => new { ArticleId = article.Id, AuthorId = a.Id });
+                var bookAuthors = issueArticle.Authors.Select(a => new { ArticleId = issueArticle.Id, AuthorId = a.Id });
                 var commandCategory = new CommandDefinition(sqlAuthor, bookAuthors, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(commandCategory);
             }
         }
 
         await ReorderArticles(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
-        return await GetArticleById(id, cancellationToken);
+        return await GetIssueArticleById(id, cancellationToken);
     }
 
-    public async Task UpdateArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IssueArticleModel article, CancellationToken cancellationToken)
+    public async Task<IssueArticleModel> UpdateIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IssueArticleModel issueArticle, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -66,8 +67,9 @@ public class IssueArticleRepository : IIssueArticleRepository
                             a.WriterAccountId = @WriterAccountId, 
                             a.WriterAssignTimeStamp = @WriterAssignTimeStamp, 
                             a.ReviewerAccountId = @ReviewerAccountId, 
-                            a.ReviewerAssignTimeStamp = @ReviewerAssignTimeStamp
-                            FROM IssueArticle a
+                            a.ReviewerAssignTimeStamp = @ReviewerAssignTimeStamp,
+                            a.Status = @Status
+                        FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             WHERE p.LibraryId = @LibraryId 
@@ -80,26 +82,28 @@ public class IssueArticleRepository : IIssueArticleRepository
                 PeriodicalId = periodicalId,
                 VolumeNumber = volumeNumber,
                 IssueNumber = issueNumber,
-                ArticleId = article.Id,
-                Title = article.Title,
-                SequenceNumber = article.SequenceNumber,
-                SeriesName = article.SeriesName,
-                SeriesIndex = article.SeriesIndex,
-                WriterAccountId = article.WriterAccountId,
-                WriterAssignTimeStamp = article.WriterAssignTimeStamp,
-                ReviewerAccountId = article.ReviewerAccountId,
-                ReviewerAssignTimeStamp = article.ReviewerAssignTimeStamp
+                ArticleId = issueArticle.Id,
+                Title = issueArticle.Title,
+                SequenceNumber = issueArticle.SequenceNumber,
+                SeriesName = issueArticle.SeriesName,
+                SeriesIndex = issueArticle.SeriesIndex,
+                Status = issueArticle.Status,
+                WriterAccountId = issueArticle.WriterAccountId,
+                WriterAssignTimeStamp = issueArticle.WriterAssignTimeStamp,
+                ReviewerAccountId = issueArticle.ReviewerAccountId,
+                ReviewerAssignTimeStamp = issueArticle.ReviewerAssignTimeStamp
             };
             var command = new CommandDefinition(sql, args, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
 
             await ReorderArticles(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
+            return await GetIssueArticleById(issueArticle.Id, cancellationToken);
         }
     }
 
-    public async Task DeleteArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+    public async Task DeleteIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
-        await DeleteArticleContent(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
+        await DeleteIssueArticleContent(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"DELETE a 
@@ -122,14 +126,16 @@ public class IssueArticleRepository : IIssueArticleRepository
         }
     }
 
-    public async Task<IssueArticleModel> GetArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+    public async Task<IssueArticleModel> GetIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             IssueArticleModel article = null;
-            var sql = @"SELECT a.*, ac.*
+            var sql = @"SELECT a.*, ac.*, au.*
                             FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
+                            LEFT OUTER JOIN IssueArticleAuthor iaa ON iaa.IssueArticleId = a.Id
+                            LEFT OUTER JOIN Author au On iaa.AuthorId = au.Id
                             LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
                             WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
@@ -142,11 +148,13 @@ public class IssueArticleRepository : IIssueArticleRepository
                 IssueNumber = issueNumber,
                 SequenceNumber = sequenceNumber
             }, cancellationToken: cancellationToken);
-            await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, IssueArticleModel>(command, (a, ac) =>
+            await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, AuthorModel, IssueArticleModel>(command, (a, ac, iaa) =>
             {
                 if (article == null)
                 {
                     article = a;
+                    article.Authors = new List<AuthorModel>();
+                    article.Contents = new List<IssueArticleContentModel>();
                 }
 
                 if (ac != null)
@@ -157,6 +165,15 @@ public class IssueArticleRepository : IIssueArticleRepository
                         article.Contents.Add(ac);
                     }
                 }
+                
+                if (iaa != null)
+                {
+                    var author = article.Authors.SingleOrDefault(x => x.Id == iaa.Id);
+                    if (author == null)
+                    {
+                        article.Authors.Add(iaa);
+                    }
+                }
 
                 return article;
             });
@@ -165,7 +182,7 @@ public class IssueArticleRepository : IIssueArticleRepository
         }
     }
 
-    public async Task<IssueArticleContentModel> GetArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken)
+    public async Task<IssueArticleContentModel> GetIssueArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -205,15 +222,17 @@ public class IssueArticleRepository : IIssueArticleRepository
         }
     }
 
-    public async Task<IEnumerable<IssueArticleModel>> GetArticlesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
+    public async Task<IEnumerable<IssueArticleModel>> GetIssueArticlesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var articles = new Dictionary<long, IssueArticleModel>();
 
-            var sql = @"SELECT a.*, at.*, i.*
+            var sql = @"SELECT a.*, at.*, i.*, au.*
                             FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
+                            LEFT OUTER JOIN IssueArticleAuthor iaa ON iaa.IssueArticleId = a.Id
+                            LEFT OUTER JOIN Author au On iaa.AuthorId = au.Id
                             LEFT OUTER JOIN IssueArticleContent at ON a.Id = at.ArticleId
                             WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
@@ -225,7 +244,7 @@ public class IssueArticleRepository : IIssueArticleRepository
                 VolumeNumber = volumeNumber,
                 IssueNumber = issueNumber,
             }, cancellationToken: cancellationToken);
-            await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, IssueModel, IssueArticleModel>(command, (a, at, i) =>
+            await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, IssueModel, AuthorModel, IssueArticleModel>(command, (a, at, i, iaa) =>
             {
                 if (!articles.TryGetValue(a.Id, out IssueArticleModel article))
                 {
@@ -245,6 +264,15 @@ public class IssueArticleRepository : IIssueArticleRepository
                     }
                 }
 
+                if (iaa != null)
+                {
+                    var author = article.Authors.SingleOrDefault(x => x.Id == iaa.Id);
+                    if (author == null)
+                    {
+                        article.Authors.Add(iaa);
+                    }
+                }
+
                 return article;
             });
 
@@ -252,7 +280,7 @@ public class IssueArticleRepository : IIssueArticleRepository
         }
     }
 
-    public async Task<IssueArticleContentModel> GetArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
+    public async Task<IssueArticleContentModel> GetIssueArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -279,7 +307,7 @@ public class IssueArticleRepository : IIssueArticleRepository
         }
     }
 
-    public async Task<IEnumerable<IssueArticleContentModel>> GetArticleContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+    public async Task<IEnumerable<IssueArticleContentModel>> GetIssueArticleContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -306,12 +334,12 @@ public class IssueArticleRepository : IIssueArticleRepository
         }
     }
 
-    public async Task<IssueArticleContentModel> AddArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
+    public async Task<IssueArticleContentModel> AddIssueArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO  IssueArticleContent (ArticleId, [Language], fileId, Text)
-                            (SELECT TOp 1 a.Id, @Language, @FileId,  @Text FROM IssueArticle a
+                            (SELECT TOP 1 a.Id, @Language, @FileId,  @Text FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             WHERE p.LibraryId =  @LibraryId
@@ -332,11 +360,11 @@ public class IssueArticleRepository : IIssueArticleRepository
                 FileId = content.FileId
             }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
-            return await GetArticleContentById(libraryId, content.PeriodicalId, content.VolumeNumber, content.IssueNumber, content.SequenceNumber, content.Language, cancellationToken);
+            return await GetIssueArticleContentById(libraryId, content.PeriodicalId, content.VolumeNumber, content.IssueNumber, content.SequenceNumber, content.Language, cancellationToken);
         }
     }
 
-    public async Task<IssueArticleContentModel> UpdateArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
+    public async Task<IssueArticleContentModel> UpdateIssueArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -360,10 +388,10 @@ public class IssueArticleRepository : IIssueArticleRepository
             await connection.ExecuteAsync(command);
         }
 
-        return await GetArticleContentById(libraryId, content.PeriodicalId, content.VolumeNumber, content.IssueNumber, content.SequenceNumber, content.Language, cancellationToken);
+        return await GetIssueArticleContentById(libraryId, content.PeriodicalId, content.VolumeNumber, content.IssueNumber, content.SequenceNumber, content.Language, cancellationToken);
     }
 
-    public async Task DeleteArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
+    public async Task DeleteIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -400,25 +428,29 @@ public class IssueArticleRepository : IIssueArticleRepository
         throw new NotImplementedException();
     }
 
-    private async Task<IssueArticleModel> GetArticleById(int articleId, CancellationToken cancellationToken)
+    private async Task<IssueArticleModel> GetIssueArticleById(long articleId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             IssueArticleModel article = null;
-            var sql = @"SELECT a.*, ac.*
+            var sql = @"SELECT a.*, ac.*, au.*
                             FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
+                            LEFT OUTER JOIN IssueArticleAuthor iaa ON iaa.IssueArticleId = a.Id
+                            LEFT OUTER JOIN Author au On iaa.AuthorId = au.Id
                             LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
                             WHERE a.Id = @Id";
             var command = new CommandDefinition(sql, new
             {
                 Id = articleId
             }, cancellationToken: cancellationToken);
-            await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, IssueArticleModel>(command, (a, ac) =>
+            await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, AuthorModel, IssueArticleModel>(command, (a, ac, ia) =>
             {
                 if (article == null)
                 {
                     article = a;
+                    article.Authors = new List<AuthorModel>();
+                    article.Contents = new List<IssueArticleContentModel>();
                 }
 
                 if (ac != null)
@@ -427,6 +459,15 @@ public class IssueArticleRepository : IIssueArticleRepository
                     if (content == null)
                     {
                         article.Contents.Add(ac);
+                    }
+                }
+
+                if (ia != null)
+                {
+                    var author = article.Authors.SingleOrDefault(x => x.Id == ia.Id);
+                    if (author == null)
+                    {
+                        article.Authors.Add(ia);
                     }
                 }
 

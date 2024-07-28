@@ -4,8 +4,11 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using Bogus;
+using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
@@ -17,10 +20,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         private IssueArticleView _issueArticle;
 
         private readonly IIssueArticleTestRepository _issueArticleRepository;
+        private readonly IAuthorTestRepository _authorTestRepository;
 
-        public IssueArticleAssert(IIssueArticleTestRepository issueArticleRepository)
+        public IssueArticleAssert(IIssueArticleTestRepository issueArticleRepository, 
+            IAuthorTestRepository authorTestRepository)
         {
             _issueArticleRepository = issueArticleRepository;
+            _authorTestRepository = authorTestRepository;
         }
 
         public IssueArticleAssert ForView(IssueArticleView view)
@@ -125,6 +131,39 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.Should().NotBeNull();
             _issueArticle.Title.Should().Be(dbArticle.Title);
+            _issueArticle.SeriesName.Should().Be(dbArticle.SeriesName);
+            _issueArticle.SeriesIndex.Should().Be(dbArticle.SeriesIndex);
+            _issueArticle.WriterAccountId.Should().Be(dbArticle.WriterAccountId);
+            if (dbArticle.WriterAssignTimeStamp.HasValue)
+            {
+                _issueArticle.WriterAssignTimeStamp.Should().BeCloseTo(dbArticle.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+            }
+            else
+            {
+                _issueArticle.WriterAssignTimeStamp.Should().BeNull();
+            }
+            _issueArticle.ReviewerAccountId.Should().Be(dbArticle.ReviewerAccountId);
+            if (dbArticle.ReviewerAssignTimeStamp.HasValue)
+            {
+                _issueArticle.ReviewerAssignTimeStamp.Should().BeCloseTo(dbArticle.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+            }
+            else
+            {
+                _issueArticle.ReviewerAssignTimeStamp.Should().BeNull();
+            }
+            _issueArticle.Status.Should().Be(dbArticle.Status.ToDescription());
+            _issueArticle.SequenceNumber.Should().Be(dbArticle.SequenceNumber );
+
+            var dbAuthors = _authorTestRepository.GetAuthorsByIssueArticle(dbArticle.Id).ToArray();
+            _issueArticle.Authors.Should().HaveSameCount(dbAuthors);
+            foreach (var issueAuthor in _issueArticle.Authors)
+            {
+                var dbAuthor = dbAuthors.SingleOrDefault(x => x.Id == issueAuthor.Id);
+                dbAuthor.Should().NotBeNull();
+                dbAuthor.Id.Should().Be(issueAuthor.Id);
+                dbAuthor.Name.Should().Be(issueAuthor.Name);
+            }
+            
             return this;
         }
 
@@ -364,7 +403,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssueArticleAssert ShouldMatch(IssueArticleDto dto)
+        public IssueArticleAssert ShouldMatch(IssueArticleDto dto, IEnumerable<AuthorDto> authors)
         {
             _issueArticle.Title.Should().Be(dto.Title);
             _issueArticle.SequenceNumber.Should().Be(dto.SequenceNumber);
@@ -392,6 +431,15 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _issueArticle.SeriesName.Should().Be(dto.SeriesName);
             _issueArticle.SeriesIndex.Should().Be(dto.SeriesIndex);
             _issueArticle.Status.Should().Be(dto.Status.ToString());
+
+            _issueArticle.Authors.Should().HaveSameCount(authors);
+
+            foreach (var author in _issueArticle.Authors)
+            {
+                var expectedAuthor = authors.SingleOrDefault(x => x.Id == author.Id);
+                author.Name.Should().Be(expectedAuthor.Name);
+            }
+            
             return this;
         }
 

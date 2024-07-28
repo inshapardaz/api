@@ -41,6 +41,6 @@ public class GetArticlesByIssueQuerytHandler : QueryHandlerAsync<GetIssueArticle
             return null;
         }
 
-        return await _articleRepository.GetArticlesByIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+        return await _articleRepository.GetIssueArticlesByIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
     }
 }

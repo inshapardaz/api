@@ -61,7 +61,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
             _assert.ShouldMatch(_newIssue);
         }

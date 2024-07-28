@@ -50,7 +50,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByYear
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
             var expectedSummary = _expected.GroupBy(x => x.IssueDate.Year)
                 .ToDictionary(x => x.Key, x => x.Count())

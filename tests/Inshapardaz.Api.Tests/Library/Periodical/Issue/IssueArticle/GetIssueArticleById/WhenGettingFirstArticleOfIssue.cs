@@ -25,7 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(5).Build();
+            var issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(5).WithAuthors(2).Build();
             _expected = IssueBuilder.GetArticles(issue.Id).First();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_expected.SequenceNumber}");
@@ -46,9 +46,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectSaved()
         {
-            _assert.ShouldMatch(_expected);
+            _assert.ShouldHaveSavedArticle();
+        }
+        
+        [Test]
+        public void ShouldHaveCorrectObjectReturned()
+        {
+            var authors = IssueBuilder.GetAuthorsForIssue(_expected.Id);
+            _assert.ShouldMatch(_expected, authors);
         }
 
         [Test]

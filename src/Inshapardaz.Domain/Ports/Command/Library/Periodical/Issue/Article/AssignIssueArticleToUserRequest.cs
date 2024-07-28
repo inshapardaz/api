@@ -55,7 +55,7 @@ public class AssignArticleToUserRequestHandler : RequestHandlerAsync<AssignIssue
             }
         }
 
-        var article = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+        var article = await _articleRepository.GetIssueArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
         if (article == null)
         {
             throw new BadRequestException();

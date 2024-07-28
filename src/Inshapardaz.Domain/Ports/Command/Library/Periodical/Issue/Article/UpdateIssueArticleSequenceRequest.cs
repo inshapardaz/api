@@ -41,7 +41,7 @@ public class UpdateIssueArticleSequenceRequestHandler : RequestHandlerAsync<Upda
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateIssueArticleSequenceRequest> HandleAsync(UpdateIssueArticleSequenceRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var articles = await _articleRepository.GetArticlesByIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+        var articles = await _articleRepository.GetIssueArticlesByIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
         if (articles != null)
         {
@@ -56,7 +56,7 @@ public class UpdateIssueArticleSequenceRequestHandler : RequestHandlerAsync<Upda
             }
 
             await _articleRepository.UpdateArticleSequence(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, articles, cancellationToken);
-            command.Result = await _articleRepository.GetArticlesByIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+            command.Result = await _articleRepository.GetIssueArticlesByIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

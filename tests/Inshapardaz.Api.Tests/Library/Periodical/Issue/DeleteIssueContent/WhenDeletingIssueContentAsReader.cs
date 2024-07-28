@@ -7,7 +7,7 @@ using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
+namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssueContent
 {
     [TestFixture]
     public class WhenDeletingIssueContentAsReader

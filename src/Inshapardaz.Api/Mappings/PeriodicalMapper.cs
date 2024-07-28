@@ -94,6 +94,7 @@ public static class PeriosicalMapper
             ReviewerAccountId = source.ReviewerAccountId,
             ReviewerAccountName = source.ReviewerAccountName,
             ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
+            Authors = source.Authors?.Select(x => x.Map()).ToList()
         };
 
     public static IssueArticleModel Map(this IssueArticleView source)
@@ -110,7 +111,8 @@ public static class PeriosicalMapper
             WriterAssignTimeStamp = source.WriterAssignTimeStamp,
             ReviewerAccountId = source.ReviewerAccountId,
             ReviewerAccountName = source.ReviewerAccountName,
-            ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp
+            ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
+            Authors = source.Authors?.Select(x => x.Map()).ToList()
         };
 
     public static IssueArticleModel Map(this SequenceView source)

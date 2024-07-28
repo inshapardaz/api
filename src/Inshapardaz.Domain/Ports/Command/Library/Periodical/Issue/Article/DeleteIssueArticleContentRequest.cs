@@ -42,7 +42,7 @@ public class DeleteArticleContentRequestHandler : RequestHandlerAsync<DeleteIssu
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<DeleteIssueArticleContentRequest> HandleAsync(DeleteIssueArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var content = await _articleRepository.GetArticleContent(command.LibraryId, new IssueArticleContentModel
+        var content = await _articleRepository.GetIssueArticleContent(command.LibraryId, new IssueArticleContentModel
         {
             PeriodicalId = command.PeriodicalId,
             VolumeNumber = command.VolumeNumber,
@@ -54,7 +54,7 @@ public class DeleteArticleContentRequestHandler : RequestHandlerAsync<DeleteIssu
         if (content != null)
         {
             await _commandProcessor.SendAsync(new DeleteTextFileCommand(content.FileId), cancellationToken: cancellationToken);
-            await _articleRepository.DeleteArticleContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+            await _articleRepository.DeleteIssueArticleContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

@@ -1,4 +1,5 @@
-﻿using Bogus;
+﻿using System.Linq;
+using Bogus;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
@@ -28,9 +29,15 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var issue = IssueBuilder.WithLibrary(LibraryId).Build();
+            var authors = AuthorBuilder.WithLibrary(LibraryId).Build(3);
+            var issue = IssueBuilder.WithLibrary(LibraryId)
+                .Build();
 
-            _article = new IssueArticleView { Title = new Faker().Random.Words(2) };
+            _article = new IssueArticleView
+            {
+                Title = new Faker().Random.Words(2),
+                Authors = authors.Select(x => new AuthorView { Id = x.Id })
+            };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles", _article);
 
@@ -62,13 +69,19 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
             _assert.ShouldMatch(new IssueArticleView { 
                 Title = _article.Title,
                 SequenceNumber = 1,
                 Status = "Available"
             });
+        }
+        
+        [Test]
+        public void ShouldHaveCorrectObjectSaved()
+        {
+            _assert.ShouldHaveSavedArticle();
         }
 
         [Test]

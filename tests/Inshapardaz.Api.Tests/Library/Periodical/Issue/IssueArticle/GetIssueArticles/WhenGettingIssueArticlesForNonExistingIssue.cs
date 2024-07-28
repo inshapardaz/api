@@ -1,18 +1,18 @@
+using System.Net.Http;
+using System.Threading.Tasks;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
-namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.GetArticleByIssue
+namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticles
 {
     [TestFixture]
-    public class WhenGettingArticlesForNonExistingIssue
+    public class WhenGettingIssueArticlesForNonExistingIssue
         : TestBase
     {
         private HttpResponseMessage _response;
 
-        public WhenGettingArticlesForNonExistingIssue()
+        public WhenGettingIssueArticlesForNonExistingIssue()
             : base(Role.Writer)
         {
         }

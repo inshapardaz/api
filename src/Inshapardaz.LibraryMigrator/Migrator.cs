@@ -550,7 +550,7 @@ public class Migrator
         var sourceDb = SourceRepositoryFactory.IssueArticleRepository;
         var destinationDb = DestinationRepositoryFactory.IssueArticleRepository;
 
-        var articles = await sourceDb.GetArticlesByIssue(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
+        var articles = await sourceDb.GetIssueArticlesByIssue(libraryId, periodicalId, volumeNumber, issueNumber, cancellationToken);
         
         var issueArticleModels = articles as IssueArticleModel[] ?? articles.ToArray();
         Console.WriteLine($"Started migration of {issueArticleModels.Length} articles for periodical {newPeriodicalId} volume {volumeNumber} issue {issueNumber}");
@@ -566,9 +566,9 @@ public class Migrator
             article.ReviewerAccountId = article.ReviewerAccountId.HasValue ? accountsMap[article.ReviewerAccountId.Value] : null;
             article.WriterAccountId = article.WriterAccountId.HasValue ? accountsMap[article.WriterAccountId.Value] : null;
 
-            var newArticle = await destinationDb.AddArticle(newLibraryId, newPeriodicalId, volumeNumber, issueNumber, article, cancellationToken);
+            var newArticle = await destinationDb.AddIssueArticle(newLibraryId, newPeriodicalId, volumeNumber, issueNumber, article, cancellationToken);
 
-            var contents = await sourceDb.GetArticleContents(libraryId, periodicalId, volumeNumber, issueNumber, article.SequenceNumber, cancellationToken);
+            var contents = await sourceDb.GetIssueArticleContents(libraryId, periodicalId, volumeNumber, issueNumber, article.SequenceNumber, cancellationToken);
 
             foreach (var content in contents)
             {
@@ -583,7 +583,7 @@ public class Migrator
                     content.Text = string.Empty;
                 }
 
-                await destinationDb.AddArticleContent(
+                await destinationDb.AddIssueArticleContent(
                     newLibraryId,
                     new IssueArticleContentModel
                     {

@@ -42,9 +42,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [Test]
-        public void ShouldHaveCorrectObjectRetured()
+        public void ShouldHaveCorrectObjectReturned()
         {
-            _assert.ShouldMatch(_expected);
+            var authors = IssueBuilder.GetAuthorsForIssue(_expected.Id);
+            _assert.ShouldMatch(_expected, authors);
         }
 
         [Test]

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
@@ -63,6 +62,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IEnumerable<IssueContentDto> Contents => _contents;
         public IEnumerable<IssueArticleContentDto> ArticleContents => _articleContents;
         public IEnumerable<FileDto> Files => _files;
+        
+        private Dictionary<long, IEnumerable<AuthorDto>> _issueArticleAuthors = new ();
 
         private IPeriodicalTestRepository _periodicalRepository;
         private IIssueTestRepository _issueRepository;
@@ -430,6 +431,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         if (Author != null)
                         {
                             _issueArticleRepository.AddIssueArticleAuthor(article.Id, Author.Id);
+                            _issueArticleAuthors.Add(article.Id, new [] { Author });
                         }
                         else
                         {
@@ -437,6 +439,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                             {
                                 _issueArticleRepository.AddIssueArticleAuthor(article.Id, author.Id);
                             }
+
+                            _issueArticleAuthors.Add(article.Id, _authors);
                         }
 
                         if (_articleContentCount > 0)
@@ -506,6 +510,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             _issueRepository.DeleteIssues(_issues);
             _fileRepository.DeleteFiles(_files);
             if (_periodicalId.HasValue) _periodicalRepository.DeletePeriodical(_periodicalId.Value);
+        }
+
+        public IEnumerable<AuthorDto> GetAuthorsForIssue(long issueId)
+        {
+            return _issueArticleAuthors[issueId];
         }
     }
 }

@@ -1,15 +1,16 @@
-﻿using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.Dto;
-using Inshapardaz.Api.Tests.Framework.Helpers;
-using NUnit.Framework;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.Dto;
+using Inshapardaz.Api.Tests.Framework.Helpers;
+using Inshapardaz.Domain.Models;
+using NUnit.Framework;
 
-namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleContents
+namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssueArticleContents
 {
     [TestFixture]
-    public class WhenUpdatingArticleContentsAsUnauthorised
+    public class WhenUpdatingIssueArticleContentsAsReader
         : TestBase
     {
         private HttpResponseMessage _response;
@@ -18,6 +19,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleCo
         private IssueArticleContentDto _content;
 
         private string _newContents;
+
+        public WhenUpdatingIssueArticleContentsAsReader()
+            : base(Role.Reader)
+        {
+        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,9 +44,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.Article.UpdateArticleCo
         }
 
         [Test]
-        public void ShouldHaveUnauthorizedResult()
+        public void ShouldHaveForbiddenResult()
         {
-            _response.ShouldBeUnauthorized();
+            _response.ShouldBeForbidden();
         }
     }
 }

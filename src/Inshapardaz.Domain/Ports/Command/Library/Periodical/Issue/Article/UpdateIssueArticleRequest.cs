@@ -10,13 +10,13 @@ namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue.Article;
 
 public class UpdateIssueArticleRequest : LibraryBaseCommand
 {
-    public UpdateIssueArticleRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int articleId, IssueArticleModel article)
+    public UpdateIssueArticleRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, IssueArticleModel article)
         : base(libraryId)
     {
         PeriodicalId = periodicalId;
         VolumeNumber = volumeNumber;
         IssueNumber = issueNumber;
-        ArticleId = articleId;
+        SequenceNumber = sequenceNumber;
         Article = article;
     }
 
@@ -24,7 +24,7 @@ public class UpdateIssueArticleRequest : LibraryBaseCommand
     public int PeriodicalId { get; }
     public int VolumeNumber { get; }
     public int IssueNumber { get; }
-    public int ArticleId { get; }
+    public int SequenceNumber { get; }
     public IssueArticleModel Article { get; }
 
     public class RequestResult
@@ -49,7 +49,7 @@ public class UpdateArticleRequestHandler : RequestHandlerAsync<UpdateIssueArticl
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateIssueArticleRequest> HandleAsync(UpdateIssueArticleRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var result = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ArticleId, cancellationToken);
+        var result = await _articleRepository.GetIssueArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
 
         if (result == null)
         {
@@ -62,14 +62,13 @@ public class UpdateArticleRequestHandler : RequestHandlerAsync<UpdateIssueArticl
 
             var article = command.Article;
             article.Id = default;
-            command.Result.Article = await _articleRepository.AddArticle(command.LibraryId, command.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article, cancellationToken);
+            command.Result.Article = await _articleRepository.AddIssueArticle(command.LibraryId, command.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article, cancellationToken);
             command.Result.HasAddedNew = true;
         }
         else
         {
-            await _articleRepository.UpdateArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Article, cancellationToken);
             command.Article.Id = result.Id;
-            command.Result.Article = command.Article;
+            command.Result.Article = await _articleRepository.UpdateIssueArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.Article, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

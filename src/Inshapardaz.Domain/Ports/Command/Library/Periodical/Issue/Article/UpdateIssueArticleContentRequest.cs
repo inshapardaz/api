@@ -62,7 +62,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssu
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateIssueArticleContentRequest> HandleAsync(UpdateIssueArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var article = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+        var article = await _articleRepository.GetIssueArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
 
         if (article == null)
         {
@@ -80,7 +80,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssu
             command.Language = library.Language;
         }
 
-        var content = await _articleRepository.GetArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, cancellationToken);
+        var content = await _articleRepository.GetIssueArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, cancellationToken);
 
         var fileName = FilePathHelper.GetIssueArticleContentFileName(command.Language);
         var saveFileCommand = new SaveTextFileCommand(
@@ -96,7 +96,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssu
 
         if (content == null)
         {
-            command.Result.Content = await _articleRepository.AddArticleContent(
+            command.Result.Content = await _articleRepository.AddIssueArticleContent(
                 command.LibraryId,
                 new IssueArticleContentModel
                 {
@@ -112,7 +112,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssu
         }
         else
         {
-            command.Result.Content = await _articleRepository.UpdateArticleContent(command.LibraryId,
+            command.Result.Content = await _articleRepository.UpdateIssueArticleContent(command.LibraryId,
                                                     new IssueArticleContentModel
                                                     {
                                                         Id = content.Id,

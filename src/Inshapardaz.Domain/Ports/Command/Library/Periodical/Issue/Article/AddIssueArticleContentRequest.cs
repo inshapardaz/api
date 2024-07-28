@@ -73,7 +73,7 @@ public class AddArticleContentRequestHandler : RequestHandlerAsync<AddIssueArtic
             throw new BadRequestException();
         }
 
-        var article = await _articleRepository.GetArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+        var article = await _articleRepository.GetIssueArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
 
         if (article != null)
         {
@@ -87,7 +87,7 @@ public class AddArticleContentRequestHandler : RequestHandlerAsync<AddIssueArtic
             };
             await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
 
-            command.Result = await _articleRepository.AddArticleContent(
+            command.Result = await _articleRepository.AddIssueArticleContent(
                 command.LibraryId,
                 new IssueArticleContentModel
                 {

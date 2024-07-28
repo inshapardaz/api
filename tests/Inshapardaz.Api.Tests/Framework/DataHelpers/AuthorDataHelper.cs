@@ -18,10 +18,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         FileDto GetAuthorImage(int id);
         IEnumerable<AuthorDto> GetAuthorsByBook(int bookId);
         IEnumerable<AuthorDto> GetAuthorsByArticle(long articleId);
+        IEnumerable<AuthorDto> GetAuthorsByIssueArticle(long issueArticleId);
     }
     public class MySqlAuthorTestRepository : IAuthorTestRepository
     {
-        private IProvideConnection _connectionProvider;
+        private readonly IProvideConnection _connectionProvider;
 
         public MySqlAuthorTestRepository(IProvideConnection connectionProvider)
         {
@@ -114,11 +115,22 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 return connection.Query<AuthorDto>(query, new { Id = articleId });
             }
         }
+
+        public IEnumerable<AuthorDto> GetAuthorsByIssueArticle(long issueArticleId)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var query = @"SELECT a.* From IssueArticleAuthor
+                    INNER JOIN Author a ON a.Id = IssueArticleAuthor.AuthorId
+                    WHERE IssueArticleAuthor.IssueArticleId = @Id";
+                return connection.Query<AuthorDto>(query, new { Id = issueArticleId });
+            }
+        }
     }
 
     public class SqlServerAuthorTestRepository : IAuthorTestRepository
     {
-        private IProvideConnection _connectionProvider;
+        private readonly IProvideConnection _connectionProvider;
 
         public SqlServerAuthorTestRepository(IProvideConnection connectionProvider)
         {
@@ -209,6 +221,17 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                     INNER JOIN Author a ON a.Id = ArticleAuthor.AuthorId
                     WHERE ArticleAuthor.ArticleId = @Id";
                 return connection.Query<AuthorDto>(query, new { Id = articleId });
+            }
+        }
+        
+        public IEnumerable<AuthorDto> GetAuthorsByIssueArticle(long issueArticleId)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var query = @"SELECT a.* From IssueArticleAuthor
+                    INNER JOIN Author a ON a.Id = IssueArticleAuthor.AuthorId
+                    WHERE IssueArticleAuthor.IssueArticleId = @Id";
+                return connection.Query<AuthorDto>(query, new { Id = issueArticleId });
             }
         }
     }

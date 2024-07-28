@@ -49,6 +49,7 @@ if (!builder.Environment.IsDevelopment())
             .AddAspNetCoreInstrumentation()
             .AddMeter("Microsoft.AspnetCore.Hosting")
             .AddMeter("Microsoft.AspnetCore.Server.Kestrel")
+            .AddMeter("System.Net.Http")
             .AddPrometheusExporter()
             .AddConsoleExporter())
         .WithTracing(tracing =>

@@ -54,6 +54,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         private Dictionary<int, int> _writerAssignments = new Dictionary<int, int>();
         private Dictionary<int, int> _reviewerAssignments = new Dictionary<int, int>();
         private Dictionary<EditingStatus, int> _pageStatuses = new Dictionary<EditingStatus, int>();
+        private Dictionary<EditingStatus, int> _articleStatuses = new Dictionary<EditingStatus, int>();
         private int _articleCount;
         private int? _year;
         private readonly AuthorsDataBuilder _authorBuilder;
@@ -179,6 +180,15 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             if (statuses != EditingStatus.All)
             {
                 _pageStatuses.TryAdd(statuses, count);
+            }
+            return this;
+        }
+        
+        public IssueDataBuilder WithArticleStatus(EditingStatus statuses, int count)
+        {
+            if (statuses != EditingStatus.All)
+            {
+                _articleStatuses.TryAdd(statuses, count);
             }
             return this;
         }
@@ -417,14 +427,30 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
                     for (int i = 0; i < _articleCount; i++)
                     {
+                        var status = RandomData.EditingStatus;
+                        if (_articleStatuses.Any())
+                        {
+                            var top = _articleStatuses.First();
+                            status = top.Key;
+                            if (top.Value == 1)
+                            {
+                                _articleStatuses.Remove(top.Key);
+                            }
+                            else
+                            {
+                                _articleStatuses[top.Key] = top.Value - 1;
+                            }
+                        }
                         var article = fixture.Build<IssueArticleDto>()
                             .With(p => p.IssueId, issue.Id)
                             .With(p => p.SequenceNumber, i + 1)
-                            .With(p => p.WriterAccountId, (int?)null)
-                            .With(p => p.ReviewerAccountId, (int?)null)
-                            .With(p => p.Status, EditingStatus.All)
+                            .With(p => p.Status, status)
+                            .Without(x => x.WriterAccountId)
+                            .Without(x => x.WriterAssignTimeStamp)
+                            .Without(x => x.ReviewerAccountId)
+                            .Without(x => x.ReviewerAssignTimeStamp)
                             .Create();
-
+                        
                         articles.Add(article);
                         _issueArticleRepository.AddIssueArticle(article);
 
@@ -472,7 +498,19 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                             _articleContents.AddRange(articleContents);
                         }
                     }
-
+                    
+                    // if (_articleStatuses.Any())
+                    // {
+                    //     var index = 0;
+                    //     foreach (var articleStatus in _articleStatuses)
+                    //     {
+                    //         articles.Skip(index)
+                    //             .Take(articleStatus.Value)
+                    //             .ForEach(p => p.Status = articleStatus.Key);
+                    //         index += articleStatus.Value;
+                    //     }
+                    // }
+                    
                     _articles.AddRange(articles);
                 }
             }

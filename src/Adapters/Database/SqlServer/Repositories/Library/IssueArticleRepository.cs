@@ -228,13 +228,17 @@ public class IssueArticleRepository : IIssueArticleRepository
         {
             var articles = new Dictionary<long, IssueArticleModel>();
 
-            var sql = @"SELECT a.*, at.*, i.*, au.*
-                            FROM IssueArticle a
+            var sql = @"SELECT a.*, at.*, i.*, au.*,
+                            aw.Name As WriterAccountName, 
+                            ar.Name As ReviewerAccountName
+                        FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             LEFT OUTER JOIN IssueArticleAuthor iaa ON iaa.IssueArticleId = a.Id
                             LEFT OUTER JOIN Author au On iaa.AuthorId = au.Id
                             LEFT OUTER JOIN IssueArticleContent at ON a.Id = at.ArticleId
-                            WHERE i.PeriodicalId = @PeriodicalId
+                            LEFT OUTER JOIN Accounts aw ON aw.Id = a.WriterAccountId
+                            LEFT OUTER JOIN Accounts ar ON ar.Id = a.ReviewerAccountId
+                        WHERE i.PeriodicalId = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
                             ORDER BY a.SequenceNumber";
@@ -244,10 +248,13 @@ public class IssueArticleRepository : IIssueArticleRepository
                 VolumeNumber = volumeNumber,
                 IssueNumber = issueNumber,
             }, cancellationToken: cancellationToken);
-            await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, IssueModel, AuthorModel, IssueArticleModel>(command, (a, at, i, iaa) =>
+            await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, IssueModel, AuthorModel, string, string, IssueArticleModel>(command, 
+                (a, at, i, iaa, WriterAccountName, ReviewerAccountName) =>
             {
                 if (!articles.TryGetValue(a.Id, out IssueArticleModel article))
                 {
+                    a.WriterAccountName = WriterAccountName;
+                    a.ReviewerAccountName = ReviewerAccountName;
                     articles.Add(a.Id, article = a);
                 }
 
@@ -418,14 +425,62 @@ public class IssueArticleRepository : IIssueArticleRepository
         }
     }
 
-    public Task<IssueArticleModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
+    public async Task<IssueArticleModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"UPDATE IssueArticle a
+                                INNER JOIN Issue i ON i.Id = a.IssueId
+                                INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            SET a.WriterAccountId = @WriterAccountId, 
+                                a.WriterAssignTimeStamp = UTC_TIMESTAMP()
+                            WHERE p.LibraryId = @LibraryId 
+                                AND p.Id = @PeriodicalId 
+                                AND i.VolumeNumber = @VolumeNumber 
+                                AND i.IssueNumber = @IssueNumber
+                                AND a.SequenceNumber = @SequenceNumber";
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId, 
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber, 
+                IssueNumber = issueNumber,
+                SequenceNumber = sequenceNumber,
+                WriterAccountId = accountId,
+            }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+
+            return await GetIssueArticle(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
+        }
     }
 
-    public Task<IssueArticleModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
+    public async Task<IssueArticleModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"UPDATE IssueArticle a
+                                INNER JOIN Issue i ON i.Id = a.IssueId
+                                INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                            SET a.ReviewerAccountId = @ReviewerAccountId, 
+                                a.ReviewerAssignTimeStamp = UTC_TIMESTAMP()
+                            WHERE p.LibraryId = @LibraryId 
+                                AND p.Id = @PeriodicalId 
+                                AND i.VolumeNumber = @VolumeNumber 
+                                AND i.IssueNumber = @IssueNumber
+                                AND a.SequenceNumber = @SequenceNumber";
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId, 
+                PeriodicalId = periodicalId,
+                VolumeNumber = volumeNumber, 
+                IssueNumber = issueNumber,
+                SequenceNumber = sequenceNumber,
+                ReviewerAccountId = accountId,
+            }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+
+            return await GetIssueArticle(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
+        }
     }
 
     private async Task<IssueArticleModel> GetIssueArticleById(long articleId, CancellationToken cancellationToken)
@@ -433,21 +488,28 @@ public class IssueArticleRepository : IIssueArticleRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             IssueArticleModel article = null;
-            var sql = @"SELECT a.*, ac.*, au.*
+            var sql = @"SELECT a.*, ac.*, au.*,
+                            aw.Name As WriterAccountName, 
+                            ar.Name As ReviewerAccountName
                             FROM IssueArticle a
                             INNER JOIN Issue i ON i.Id = a.IssueId
                             LEFT OUTER JOIN IssueArticleAuthor iaa ON iaa.IssueArticleId = a.Id
                             LEFT OUTER JOIN Author au On iaa.AuthorId = au.Id
                             LEFT OUTER JOIN IssueArticleContent ac ON a.Id = ac.ArticleId
+                            LEFT OUTER JOIN Accounts aw ON aw.Id = a.WriterAccountId
+                            LEFT OUTER JOIN Accounts ar ON ar.Id = a.ReviewerAccountId
                             WHERE a.Id = @Id";
             var command = new CommandDefinition(sql, new
             {
                 Id = articleId
             }, cancellationToken: cancellationToken);
-            await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, AuthorModel, IssueArticleModel>(command, (a, ac, ia) =>
+            await connection.QueryAsync<IssueArticleModel, IssueArticleContentModel, AuthorModel, string, string, IssueArticleModel>(command, 
+                (a, ac, ia, w, r) =>
             {
                 if (article == null)
                 {
+                    a.WriterAccountName = w;
+                    a.ReviewerAccountName = r;
                     article = a;
                     article.Authors = new List<AuthorModel>();
                     article.Contents = new List<IssueArticleContentModel>();
@@ -512,15 +574,15 @@ public class IssueArticleRepository : IIssueArticleRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"Update A Set A.SequenceNumber = @SequenceNumber
-                            From IssueArticle A
+            var sql = @"Update a Set a.SequenceNumber = @SequenceNumber
+                            From IssueArticle a
                             Inner Join Issue i On i.Id = A.IssueId
                             Inner Join Periodical p On p.Id = i.PeriodicalId
                             Where p.LibraryId = @LibraryId 
                             AND p.Id = @PeriodicalId 
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
-                            AND A.Id = @Id";
+                            AND a.Id = @Id";
             var args = articles.Select(a => new
             {
                 LibraryId = libraryId,

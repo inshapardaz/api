@@ -3,7 +3,6 @@ using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue;
 using Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue.Article;
 using Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue.Article;
 using Microsoft.AspNetCore.Mvc;

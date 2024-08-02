@@ -43,9 +43,10 @@ public class StatusCodeMiddleware
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             }
         }
-        catch (BadRequestException)
+        catch (BadRequestException ex)
         {
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await context.Response.WriteAsync(ex.Message);
         }
         catch (NotImplementedException)
         {

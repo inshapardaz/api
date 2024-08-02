@@ -49,7 +49,7 @@ public class AssignArticleToUserRequestHandler : RequestHandlerAsync<AssignIssue
         if (!command.IsAdmin)
         {
             var account = await _accountRepository.GetLibraryAccountById(command.LibraryId, command.AccountId.Value, cancellationToken);
-            if (account.Role != Role.LibraryAdmin && account.Role != Role.Writer)
+            if (account == null ||  account.Role != Role.LibraryAdmin && account.Role != Role.Writer)
             {
                 throw new BadRequestException("user cannot be assigned article");
             }

@@ -5,7 +5,7 @@ using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Mappings;
 
-public static class PeriosicalMapper
+public static class PeriodicalMapper
 {
     public static PeriodicalView Map(this PeriodicalModel source)
         => source == null ? null : new PeriodicalView
@@ -41,8 +41,8 @@ public static class PeriosicalMapper
             IssueNumber = source.IssueNumber,
             IssueDate = source.IssueDate,
             PageCount = source.PageCount,
-            Frequency = source.Frequency.ToDescription(),
-            ArticleCount = source.ArticleCount
+            ArticleCount = source.ArticleCount,
+            Status = source.Status.ToDescription()
         };
 
     public static IssueModel Map(this IssueView source)
@@ -54,7 +54,8 @@ public static class PeriosicalMapper
             IssueNumber = source.IssueNumber,
             IssueDate = source.IssueDate,
             PageCount = source.PageCount,
-            ArticleCount = source.ArticleCount
+            ArticleCount = source.ArticleCount,
+            Status = source.Status.ToEnum(StatusType.AvailableForTyping),
         };
 
     public static IssueContentView Map(this IssueContentModel source)

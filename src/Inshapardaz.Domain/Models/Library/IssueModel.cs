@@ -26,8 +26,7 @@ public class IssueModel
     public int ArticleCount { get; set; }
 
     public int PageCount { get; set; }
-    public PeriodicalFrequency Frequency { get; set; }
 
-
-    public List<IssueContentModel> Contents { get; set; } = new List<IssueContentModel>();
+    public List<IssueContentModel> Contents { get; set; } = new();
+    public StatusType Status { get; set; }
 }

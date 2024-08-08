@@ -32,7 +32,7 @@ public class IssueArticleRepository : IIssueArticleRepository
                 Title = issueArticle.Title,
                 VolumeNumber = volumeNumber,
                 IssueNumber = issueNumber,
-                SequenceNumber = issueArticle.SequenceNumber,
+                SequenceNumber = int.MaxValue,
                 Status = issueArticle.Status,
                 SeriesName = issueArticle.SeriesName,
                 SeriesIndex = issueArticle.SeriesIndex,

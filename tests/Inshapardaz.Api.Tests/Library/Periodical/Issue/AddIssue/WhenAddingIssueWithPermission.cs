@@ -69,7 +69,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssue
         [Test]
         public void ShouldHaveCorrectObjectReturned()
         {
-            _assert.ShouldMatch(_issue);
+            _assert.ShouldMatch(_issue)
+                .WithStatus(StatusType.AvailableForTyping);
         }
 
         [Test]

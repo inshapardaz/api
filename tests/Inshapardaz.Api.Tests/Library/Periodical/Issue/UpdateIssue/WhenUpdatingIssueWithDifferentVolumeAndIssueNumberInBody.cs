@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
 {
@@ -29,7 +30,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
             var issues = IssueBuilder.WithLibrary(LibraryId).Build(4);
             _oldIssue = issues.PickRandom();
 
-            _newIssue = new IssueView { IssueDate = RandomData.Date, VolumeNumber = _oldIssue.VolumeNumber + 3, IssueNumber = _oldIssue.IssueNumber + 5 };
+            _newIssue = new IssueView { 
+                IssueDate = RandomData.Date, 
+                VolumeNumber = _oldIssue.VolumeNumber + 3, 
+                IssueNumber = _oldIssue.IssueNumber + 5,
+                Status = RandomData.StatusType.ToDescription(),
+            };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_oldIssue.PeriodicalId}/volumes/{_oldIssue.VolumeNumber}/issues/{_oldIssue.IssueNumber}", _newIssue); _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_oldIssue.PeriodicalId}/volumes/{_oldIssue.VolumeNumber}/issues/{_oldIssue.IssueNumber}", _newIssue);
             _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
@@ -55,15 +61,15 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
                 PeriodicalId = _oldIssue.PeriodicalId,
                 VolumeNumber = _oldIssue.VolumeNumber,
                 IssueNumber = _oldIssue.IssueNumber,
-                IssueDate = _newIssue.IssueDate
-                
+                IssueDate = _newIssue.IssueDate,
+                Status = _newIssue.Status.ToEnum(StatusType.Unknown)
             };
             
             _assert.ShouldBeSameAs(issue);
         }
 
         [Test]
-        public void ShouldHaveUpdatedChater()
+        public void ShouldHaveUpdatedChapter()
         {
             _assert.ShouldHaveSavedIssue();
         }

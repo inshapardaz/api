@@ -448,9 +448,24 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _issueArticle.Title.Should().Be(dto.Title);
             _issueArticle.SequenceNumber.Should().Be(dto.SequenceNumber);
             _issueArticle.WriterAccountId.Should().Be(dto.WriterAccountId);
-            _issueArticle.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+            if (dto.WriterAssignTimeStamp.HasValue)
+            {
+                _issueArticle.WriterAssignTimeStamp.Should().BeCloseTo(dto.WriterAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+            }
+            else
+            {
+                _issueArticle.WriterAssignTimeStamp.Should().BeNull();
+            }
             _issueArticle.ReviewerAccountId.Should().Be(dto.ReviewerAccountId);
-            _issueArticle.ReviewerAssignTimeStamp.Should().BeCloseTo(dto.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+            if (dto.ReviewerAssignTimeStamp.HasValue)
+            {
+                _issueArticle.ReviewerAssignTimeStamp.Should()
+                    .BeCloseTo(dto.ReviewerAssignTimeStamp.Value, TimeSpan.FromSeconds(2));
+            }
+            else
+            {
+                _issueArticle.ReviewerAssignTimeStamp.Should().BeNull();
+            }
             _issueArticle.SeriesName.Should().Be(dto.SeriesName);
             _issueArticle.SeriesIndex.Should().Be(dto.SeriesIndex);
             _issueArticle.Status.Should().Be(dto.Status.ToString());

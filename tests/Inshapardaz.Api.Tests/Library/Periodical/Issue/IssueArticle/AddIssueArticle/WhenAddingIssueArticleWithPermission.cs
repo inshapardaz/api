@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
         public async Task Setup()
         {
             var authors = AuthorBuilder.WithLibrary(LibraryId).Build(3);
-            var issue = IssueBuilder.WithLibrary(LibraryId)
+            var issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(3)
                 .Build();
 
             _article = new IssueArticleView
@@ -73,7 +73,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
         {
             _assert.ShouldMatch(new IssueArticleView { 
                 Title = _article.Title,
-                SequenceNumber = 1,
+                SequenceNumber = 4,
                 Status = "Available"
             });
         }

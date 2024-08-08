@@ -49,8 +49,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"INSERT INTO Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate, IsPublic)
-                        VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @ImageId, @IssueDate, @IsPublic);
+                var sql = @"INSERT INTO Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate, IsPublic, Status)
+                        VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @ImageId, @IssueDate, @IsPublic, @Status);
                         SELECT LAST_INSERT_ID();";
                 var id = connection.ExecuteScalar<int>(sql, issue);
                 issue.Id = id;
@@ -216,9 +216,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"INSERT INTO Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate, IsPublic)
+                var sql = @"INSERT INTO Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate, IsPublic, Status)
                         OUTPUT INSERTED.ID
-                        VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @ImageId, @IssueDate, @IsPublic)";
+                        VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @ImageId, @IssueDate, @IsPublic, @Status)";
                 var id = connection.ExecuteScalar<int>(sql, issue);
                 issue.Id = id;
             }

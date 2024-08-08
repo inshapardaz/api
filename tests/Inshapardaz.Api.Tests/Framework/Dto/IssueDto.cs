@@ -1,4 +1,5 @@
 ﻿using System;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.Framework.Dto
 {
@@ -31,6 +32,7 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
         public int? ReviewerAccountId { get; set; }
 
         public DateTime? ReviewerAssignTimeStamp { get; set; }
+        public StatusType Status { get; set; }
     }
 
     public class IssueContentDto

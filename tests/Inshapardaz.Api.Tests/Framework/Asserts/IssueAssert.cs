@@ -8,6 +8,8 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
+using Inshapardaz.Api.Extensions;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
@@ -20,16 +22,19 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         private readonly IIssueTestRepository _issueRepository;
         private readonly IIssuePageTestRepository _issuePageRepository;
         private readonly IIssueArticleTestRepository _articleRepository;
+        private readonly IAuthorTestRepository _authorRepository;
         private readonly FakeFileStorage _fileStorage;
 
         public IssueAssert(IIssueTestRepository issueRepository,
             IIssueArticleTestRepository articleRepository,
             IIssuePageTestRepository pageRepository,
-            FakeFileStorage fileStorage)
+            FakeFileStorage fileStorage, 
+            IAuthorTestRepository authorRepository)
         {
             _issueRepository = issueRepository;
             _articleRepository = articleRepository;
             _fileStorage = fileStorage;
+            _authorRepository = authorRepository;
             _issuePageRepository = pageRepository;
         }
 
@@ -332,6 +337,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 _view.PageCount.Should().Be(pageCount);
             }
 
+            if (expected.Status is not null)
+            {
+                _view.Status.Should().Be(expected.Status.ToDescription());
+            }
+
+            return this;
+        }
+
+        public IssueAssert WithStatus(StatusType status)
+        {
             return this;
         }
 
@@ -350,6 +365,8 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             {
                 _view.PageCount.Should().Be(pageCount);
             }
+
+            _view.Status.Should().Be(expected.Status.ToDescription());
 
             return this;
         }

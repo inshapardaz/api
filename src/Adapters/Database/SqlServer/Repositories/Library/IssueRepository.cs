@@ -56,7 +56,6 @@ public class IssueRepository : IIssueRepository
             var issues = await connection.QueryAsync<IssueModel, PeriodicalModel, IssueModel>(command, (i, periodical) =>
             {
                 i.Periodical = periodical;
-                i.Frequency = periodical.Frequency;
                 return i;
             });
 
@@ -127,7 +126,6 @@ public class IssueRepository : IIssueRepository
             var result = await connection.QueryAsync<IssueModel, PeriodicalModel, string, int, int, IssueModel>(command, (i, p, iUrl, ac, pc) =>
             {
                 i.Periodical = p;
-                i.Frequency = p.Frequency;
                 i.ArticleCount = ac;
                 i.PageCount = pc;
                 i.ImageUrl = iUrl;
@@ -143,9 +141,9 @@ public class IssueRepository : IIssueRepository
         int id;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = "INSERT Into Issue (PeriodicalId, Volumenumber, IssueNumber, IsPublic, ImageId, IssueDate) " +
+            var sql = "INSERT Into Issue (PeriodicalId, Volumenumber, IssueNumber, IsPublic, ImageId, IssueDate, Status) " +
                       "OUTPUT Inserted.Id " +
-                      "VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @IsPublic, @ImageId, @IssueDate)";
+                      "VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @IsPublic, @ImageId, @IssueDate, @Status)";
             var parameter = new
             {
                 LibraryId = libraryId,
@@ -154,7 +152,8 @@ public class IssueRepository : IIssueRepository
                 IssueNumber = issue.IssueNumber,
                 IssueDate = issue.IssueDate,
                 IsPublic = issue.IsPublic,
-                ImageId = issue.ImageId
+                ImageId = issue.ImageId,
+                Status = issue.Status
             };
             var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
             id = await connection.ExecuteScalarAsync<int>(command);
@@ -168,19 +167,25 @@ public class IssueRepository : IIssueRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE Issue
-                            SET PeriodicalId = @PeriodicalId, Volumenumber = @Volumenumber, IssueNumber = @IssueNumber, 
-                                IssueDate = @IssueDate, IsPublic = @IsPublic, ImageId = @ImageId
+                            SET PeriodicalId = @PeriodicalId, 
+                                VolumeNumber = @VolumeNumber, 
+                                IssueNumber = @IssueNumber, 
+                                IssueDate = @IssueDate, 
+                                IsPublic = @IsPublic, 
+                                ImageId = @ImageId,
+                                Status = @Status
                             WHERE Id = @Id";
             var parameter = new
             {
                 Id = issue.Id,
                 LibraryId = libraryId,
                 PeriodicalId = periodicalId,
-                Volumenumber = issue.VolumeNumber,
+                VolumeNumber = issue.VolumeNumber,
                 IssueNumber = issue.IssueNumber,
                 IssueDate = issue.IssueDate,
                 IsPublic = issue.IsPublic,
-                ImageId = issue.ImageId
+                ImageId = issue.ImageId,
+                Status = issue.Status
             };
             var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
             await connection.ExecuteScalarAsync<int>(command);

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
 {
@@ -29,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
         {
             var issue = IssueBuilder.WithLibrary(LibraryId).Build();
 
-            _newIssue = new IssueView { IssueDate = RandomData.Date, VolumeNumber = issue.VolumeNumber, IssueNumber = issue.IssueNumber };
+            _newIssue = new IssueView { IssueDate = RandomData.Date, VolumeNumber = issue.VolumeNumber, IssueNumber = issue.IssueNumber, Status = RandomData.StatusType.ToDescription() };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}", _newIssue);
             _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);

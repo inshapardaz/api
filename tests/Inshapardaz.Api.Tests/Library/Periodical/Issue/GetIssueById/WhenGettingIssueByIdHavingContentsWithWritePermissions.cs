@@ -27,7 +27,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _expected = IssueBuilder.WithLibrary(LibraryId).WithContent().Build(4).First();
+            _expected = IssueBuilder.WithLibrary(LibraryId).WithContent().WithAuthors(2).Build(4).First();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_expected.PeriodicalId}/volumes/{_expected.VolumeNumber}/issues/{_expected.IssueNumber}");
             _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);

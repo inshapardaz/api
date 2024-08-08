@@ -46,7 +46,13 @@ public class AddArticleRequestHandler : RequestHandlerAsync<AddIssueArticleReque
             throw new BadRequestException();
         }
         
-        command.Result = await _articleRepository.AddIssueArticle(command.LibraryId, command.PeridicalId, command.VolumeNumber, command.IssueNumber, command.Article, cancellationToken);
+        command.Result = await _articleRepository.AddIssueArticle(
+            command.LibraryId, 
+            command.PeridicalId, 
+            command.VolumeNumber, 
+            command.IssueNumber, 
+            command.Article, 
+            cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);
     }

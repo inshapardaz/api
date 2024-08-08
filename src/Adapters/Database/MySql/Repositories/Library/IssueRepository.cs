@@ -55,7 +55,6 @@ public class IssueRepository : IIssueRepository
             var issues = await connection.QueryAsync<IssueModel, PeriodicalModel, IssueModel>(command, (i, periodical) =>
             {
                 i.Periodical = periodical;
-                i.Frequency = periodical.Frequency;
                 return i;
             });
 
@@ -127,7 +126,6 @@ public class IssueRepository : IIssueRepository
             var result = await connection.QueryAsync<IssueModel, PeriodicalModel, string, long, long, IssueModel>(command, (i, p, iUrl, ac, pc) =>
             {
                 i.Periodical = p;
-                i.Frequency = p.Frequency;
                 i.ArticleCount = (int)ac;
                 i.PageCount = (int)pc;
                 i.ImageUrl = iUrl;
@@ -143,8 +141,8 @@ public class IssueRepository : IIssueRepository
         int id;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO Issue (PeriodicalId, Volumenumber, IssueNumber, IsPublic, ImageId, IssueDate) 
-                        VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @IsPublic, @ImageId, @IssueDate);
+            var sql = @"INSERT INTO Issue (PeriodicalId, Volumenumber, IssueNumber, IsPublic, ImageId, IssueDate, Status) 
+                        VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @IsPublic, @ImageId, @IssueDate, @Status);
                         SELECT LAST_INSERT_ID();";
             var parameter = new
             {
@@ -154,7 +152,8 @@ public class IssueRepository : IIssueRepository
                 IssueNumber = issue.IssueNumber,
                 IssueDate = issue.IssueDate,
                 IsPublic = issue.IsPublic,
-                ImageId = issue.ImageId
+                ImageId = issue.ImageId,
+                Status = issue.Status
             };
             var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
             id = await connection.ExecuteScalarAsync<int>(command);
@@ -173,7 +172,8 @@ public class IssueRepository : IIssueRepository
                                 IssueNumber = @IssueNumber, 
                                 IssueDate = @IssueDate, 
                                 IsPublic = @IsPublic, 
-                                ImageId = @ImageId
+                                ImageId = @ImageId,
+                                Status = @Status
                             WHERE Id = @Id";
             var parameter = new
             {
@@ -184,7 +184,8 @@ public class IssueRepository : IIssueRepository
                 IssueNumber = issue.IssueNumber,
                 IssueDate = issue.IssueDate,
                 IsPublic = issue.IsPublic,
-                ImageId = issue.ImageId
+                ImageId = issue.ImageId,
+                Status = issue.Status,
             };
             var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
             await connection.ExecuteScalarAsync<int>(command);

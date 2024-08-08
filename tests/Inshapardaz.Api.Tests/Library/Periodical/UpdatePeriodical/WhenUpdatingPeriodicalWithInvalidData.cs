@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bogus;
+using FluentAssertions;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.DataBuilders;
+using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
@@ -53,7 +56,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
         public class AndUpdatingWithNonExistingCategory : TestBase
         {
             private HttpResponseMessage _response;
-            private PeriodicalAssert _assert;
             private PeriodicalDto _periodicalToUpdate;
             private CategoryDto _category;
 
@@ -77,7 +79,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
                 };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_periodicalToUpdate.Id}", periodical);
-                _assert = Services.GetService<PeriodicalAssert>().ForResponse(_response).ForLibrary(LibraryId);
             }
 
             [OneTimeTearDown]
@@ -87,7 +88,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             }
 
             [Test]
-            public void ShouldHaveBadReqestResult()
+            public void ShouldHaveBadRequestResult()
             {
                 _response.ShouldBeBadRequest();
             }
@@ -95,7 +96,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             [Test]
             public void ShouldNotUpdateTheCategories()
             {
-                _assert.ShouldHaveCategories(new List<CategoryDto> { _category }, _periodicalToUpdate.Id);
+                var existingPeriodicals = Services.GetService<ICategoryTestRepository>().GetCategoriesByPeriodical(_periodicalToUpdate.Id);
+                existingPeriodicals.Select(x => x.Id).Should().BeEquivalentTo(new List<int> { _category.Id });
             }
         }
 
@@ -106,7 +108,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             private PeriodicalDto _periodicalToUpdate;
             private CategoryDto _category;
             private LibraryDataBuilder _library2Builder;
-            private PeriodicalAssert _assert;
 
             public AndUpdatingWithCategoryFromOtherLibrary() : base(Role.Writer)
             {
@@ -131,7 +132,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
                     Categories = new[] { new CategoryView { Id = category.Id } } };
 
                 _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_periodicalToUpdate.Id}", periodical);
-                _assert = Services.GetService<PeriodicalAssert>().ForResponse(_response);
             }
 
             [OneTimeTearDown]
@@ -142,15 +142,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             }
 
             [Test]
-            public void ShouldHaveBadReqestResult()
+            public void ShouldHaveBadRequestResult()
             {
                 _response.ShouldBeBadRequest();
             }
 
             [Test]
-            public void ShouldNotUpdateTheCategoroes()
+            public void ShouldNotUpdateTheCategories()
             {
-                _assert.ShouldHaveCategories(new List<CategoryDto> { _category }, _periodicalToUpdate.Id);
+                var existingPeriodicals = Services.GetService<ICategoryTestRepository>().GetCategoriesByPeriodical(_periodicalToUpdate.Id);
+                existingPeriodicals.Select(x => x.Id).Should().BeEquivalentTo(new List<int> { _category.Id });
             }
         }
     }

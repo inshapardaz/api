@@ -268,6 +268,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                           .With(b => b.ImageId, _hasImage ? RandomData.Number : 0)
                           .With(b => b.IsPublic, isPublic)
                           .With(b => b.PeriodicalId, _periodicalId)
+                          .With(x => x.Status, RandomData.StatusType)
                           .CreateMany(numberOfIssues)
                           .ToList();
 

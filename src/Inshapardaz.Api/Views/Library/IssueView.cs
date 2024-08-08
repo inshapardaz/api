@@ -12,9 +12,9 @@ public class IssueView : ViewWithLinks
     public int PeriodicalId { get; set; }
     public int ArticleCount { get; set; }
     public int PageCount { get; set; }
-    public string Frequency { get; set; }
-
-    public List<AuthorView> Authors { get; set; }
+    
     public List<IssueContentView> Contents { get; set; }
     public string PeriodicalName { get; internal set; }
+    
+    public string Status { get; set; }
 }

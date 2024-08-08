@@ -40,6 +40,7 @@ namespace Inshapardaz.Api.Tests.Framework.Helpers
         internal static EditingStatus AssignableEditingStatus =>
            new Faker().PickRandom(AssignableEditingStatusList);
         internal static EditingStatus EditingStatus => new Faker().PickRandom(EditingStatusList);
+        internal static StatusType StatusType => new Faker().PickRandom<StatusType>();
         internal static int NumberBetween(int v1, int v2) => new Faker().Random.Number(v1, v2);
 
         private static string[] Langs = new[] { "en", "ur", "hi", "pn", "pr", "fr", "ar", "pr", "tr" };

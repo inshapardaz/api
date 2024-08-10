@@ -5,6 +5,7 @@ using Inshapardaz.Domain.Models.Library;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Bibliography;
 
 namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library;
 
@@ -556,60 +557,50 @@ public class IssuePageRepository : IIssuePageRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
 
-            var sql = @"DECLARE @maxPosition INT;
-                            DECLARE @Id INT;
-
-                            SELECT @Id = ip.Id
-                            FROM IssuePage ip
-                                INNER JOIN Issue i ON i.Id = ip.IssueId
-                                INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
-                            WHERE pr.LibraryId = @LibraryId 
-                                AND i.PeriodicalId = @PeriodicalId 
-                                AND i.VolumeNumber = @VolumeNumber 
-                                AND i.IssueNumber = @IssueNumber 
-                                AND ip.SequenceNumber = @oldPosition;
-
-                            SELECT @maxPosition = MAX(p.SequenceNumber) 
-                            FROM IssuePage p
-                                INNER JOIN Issue i ON i.Id = p.IssueId
-                                INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
-                            WHERE pr.LibraryId = @LibraryId 
-                                AND i.PeriodicalId = @PeriodicalId 
-                                AND i.VolumeNumber = @VolumeNumber 
-                                AND i.IssueNumber = @IssueNumber 
-
-                            IF (@newPosition < 1)
-                             SET @newPosition = 1
- 
-                            IF (@newPosition > @maxPosition)
-                             SET @newPosition = @maxPosition
-
-                            UPDATE ip 
-                            SET ip.SequenceNumber = CASE
-                                WHEN ip.Id = @Id THEN @newPosition
-                                WHEN @oldPosition < @newPosition THEN ip.SequenceNumber - 1
-                                WHEN @oldPosition > @newPosition THEN ip.SequenceNumber + 1
-                            END
-                            FROM IssuePage ip
-                                INNER JOIN Issue i ON i.Id = ip.IssueId
-                                INNER JOIN Periodical pr on pr.Id = i.PeriodicalId
-                            WHERE pr.LibraryId = @LibraryId 
-                                AND i.PeriodicalId = @PeriodicalId 
-                                AND i.VolumeNumber = @VolumeNumber 
-                                AND i.IssueNumber = @IssueNumber 
-                                AND ip.SequenceNumber BETWEEN
-                                    CASE WHEN @oldPosition < @newPosition THEN @oldPosition ELSE @newPosition END AND
-                                    CASE WHEN @oldPosition > @newPosition THEN @oldPosition ELSE @newPosition END;
-";
+            var issueId = await connection.ExecuteScalarAsync<long>(
+                new CommandDefinition(
+                    @"SELECT Id FROM Issue  
+                        WHERE VolumeNumber = @VolumeNumber
+                            AND IssueNumber = @IssueNumber",
+                    new
+                    {
+                        VolumeNumber = volumeNumber,
+                        IssueNumber = issueNumber,
+                    }, cancellationToken: cancellationToken));
+            var existingId = await connection.ExecuteScalarAsync<long>(
+                new CommandDefinition(
+                    @"SELECT Id FROM IssuePage 
+                        WHERE IssueId = @IssueId AND SequenceNumber = @oldPosition",
+                    new
+                    {
+                        IssueId = issueId,
+                        oldPosition = oldSequenceNumber,
+                    }, cancellationToken: cancellationToken));
+            var maxPosition = await connection.ExecuteScalarAsync<long>(
+                new CommandDefinition(
+                    @"SELECT MAX(SequenceNumber) FROM IssuePage
+                        WHERE IssueId = @IssueId",
+                    new
+                    {
+                        IssueId = issueId
+                    }, cancellationToken: cancellationToken));
+            var newPosition = newSequenceNumber < 1 ? 1 :  newSequenceNumber > maxPosition ? maxPosition : newSequenceNumber;
+            
+            var sql = @"UPDATE IssuePage 
+                        SET SequenceNumber = CASE
+                            WHEN Id = @Id THEN @newPosition
+                            WHEN @oldPosition < @newPosition THEN SequenceNumber - 1
+                            WHEN @oldPosition > @newPosition THEN SequenceNumber + 1
+                        END
+                        WHERE IssueId = @IssueId AND SequenceNumber BETWEEN
+                            LEAST(@oldPosition, @newPosition) AND
+                            GREATEST(@oldPosition, @newPosition);";
             var command = new CommandDefinition(sql, new
             {
-                LibraryId = libraryId,
-                PeriodicalId = periodicalId,
-                VolumeNumber = volumeNumber,
-                IssueNumber = issueNumber,
+                IssueId = issueId,
                 oldPosition = oldSequenceNumber,
-                newPosition = newSequenceNumber,
-
+                newPosition = newPosition,
+                Id = existingId
             }, cancellationToken: cancellationToken);
 
             await connection.ExecuteAsync(command);

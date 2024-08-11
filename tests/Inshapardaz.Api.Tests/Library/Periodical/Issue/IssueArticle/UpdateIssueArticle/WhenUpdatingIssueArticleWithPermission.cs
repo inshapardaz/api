@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using System.Linq;
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -6,6 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Inshapardaz.Api.Tests.Framework.DataHelpers;
+using Inshapardaz.Api.Tests.Framework.Dto;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssueArticle
 {
@@ -18,6 +22,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         private HttpResponseMessage _response;
         private IssueArticleAssert _articleAssert;
         private IssueArticleView _newArticle;
+        private IssueDto _issue;
+        private IssueArticleDto _oldArticle;
 
         public WhenUpdatingIssueArticleWithPermission(Role role)
             : base(role)
@@ -27,22 +33,22 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(5).Build();
+            _issue = IssueBuilder.WithLibrary(LibraryId).WithArticles(5).Build();
 
-            var oldArticle = IssueBuilder.GetArticles(issue.Id).PickRandom();
+            _oldArticle = IssueBuilder.GetArticles(_issue.Id).PickRandom();
 
             _newArticle = new IssueArticleView { 
                 Title = RandomData.Name,
-                SeriesName = oldArticle.SeriesName,
-                SeriesIndex = oldArticle.SeriesIndex,
-                SequenceNumber = oldArticle.SequenceNumber
+                SeriesName = _oldArticle.SeriesName,
+                SeriesIndex = _oldArticle.SeriesIndex,
+                SequenceNumber = _oldArticle.SequenceNumber
             };
 
-            _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_newArticle.SequenceNumber}", _newArticle);
+            _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{_newArticle.SequenceNumber}", _newArticle);
 
             _articleAssert = Services.GetService<IssueArticleAssert>().ForResponse(_response)
                     .ForLibrary(LibraryId)
-                    .ForDto(issue);
+                    .ForIssueDto(_issue);
         }
 
         [OneTimeTearDown]
@@ -75,6 +81,27 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         public void ShouldHaveUpdatedArticle()
         {
             _articleAssert.ShouldHaveSavedArticle();
+        }
+
+        [Test]
+        public void ShouldNotHaveUpdatedOtherArticles()
+        {
+            var articles = IssueBuilder.GetArticles(_issue.Id);
+            foreach (var article in articles.Where(x => x.Id != _oldArticle.Id))
+            {
+                var dbArticle = Services.GetService<IIssueArticleTestRepository>().GetIssueArticleById(article.Id);
+                article.Id.Should().Be(dbArticle.Id);
+                article.Title.Should().Be(dbArticle.Title);
+                article.Status.Should().Be(dbArticle.Status);
+                article.IssueId.Should().Be(dbArticle.IssueId);
+                article.SequenceNumber.Should().Be(dbArticle.SequenceNumber);
+                article.SeriesName.Should().Be(dbArticle.SeriesName);
+                article.SeriesIndex.Should().Be(dbArticle.SeriesIndex);
+                article.WriterAccountId.Should().Be(dbArticle.WriterAccountId);
+                article.WriterAssignTimeStamp.Should().Be(dbArticle.WriterAssignTimeStamp);
+                article.ReviewerAccountId.Should().Be(dbArticle.ReviewerAccountId);
+                article.ReviewerAssignTimeStamp.Should().Be(dbArticle.ReviewerAssignTimeStamp);
+            }
         }
     }
 }

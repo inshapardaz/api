@@ -26,7 +26,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
             _expected = RandomData.PickRandom(articles);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles/{_expected.SequenceNumber}");
-            _assert = Services.GetService<IssueArticleAssert>().ForResponse(_response).ForLibrary(LibraryId).ForDto(issue);
+            _assert = Services.GetService<IssueArticleAssert>().ForResponse(_response).ForLibrary(LibraryId).ForIssueDto(issue);
         }
 
         [OneTimeTearDown]

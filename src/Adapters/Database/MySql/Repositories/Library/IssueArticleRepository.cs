@@ -65,7 +65,6 @@ public class IssueArticleRepository : IIssueArticleRepository
                                 INNER JOIN Issue i ON i.Id = a.IssueId
                                 INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                             SET a.Title = @Title, 
-                                a.SequenceNumber = @SequenceNumber,
                                 a.SeriesName = @SeriesName, 
                                 a.SeriesIndex = @SeriesIndex,
                                 a.WriterAccountId = @WriterAccountId, 
@@ -76,7 +75,8 @@ public class IssueArticleRepository : IIssueArticleRepository
                             WHERE p.LibraryId = @LibraryId 
                                 AND p.Id = @PeriodicalId 
                                 AND i.VolumeNumber = @VolumeNumber 
-                                AND i.IssueNumber = @IssueNumber";
+                                AND i.IssueNumber = @IssueNumber
+                                AND a.SequenceNumber = @SequenceNumber";
             var args = new
             {
                 LibraryId = libraryId,

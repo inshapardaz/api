@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssueArticleAssert ForDto(IssueDto issue)
+        public IssueArticleAssert ForIssueDto(IssueDto issue)
         {
             _issue = issue;
             return this;

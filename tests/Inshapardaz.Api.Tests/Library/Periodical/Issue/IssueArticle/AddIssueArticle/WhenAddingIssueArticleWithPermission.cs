@@ -41,7 +41,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/articles", _article);
 
-            _assert = Services.GetService<IssueArticleAssert>().ForResponse(_response).ForDto(issue).ForLibrary(LibraryId);
+            _assert = Services.GetService<IssueArticleAssert>().ForResponse(_response).ForIssueDto(issue).ForLibrary(LibraryId);
         }
 
         [OneTimeTearDown]

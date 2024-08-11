@@ -77,7 +77,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
             foreach (var expected in IssueBuilder.GetArticles(_issue.Id))
             {
                 var actual = _view.Data.FirstOrDefault(x => x.Id == expected.Id);
-                var assert = Services.GetService<IssueArticleAssert>().ForView(actual).ForDto(_issue).ForLibrary(LibraryId)
+                var assert = Services.GetService<IssueArticleAssert>().ForView(actual).ForIssueDto(_issue).ForLibrary(LibraryId)
                     .ShouldBeSameAs(expected)
                     .WithWriteableLinks();
 

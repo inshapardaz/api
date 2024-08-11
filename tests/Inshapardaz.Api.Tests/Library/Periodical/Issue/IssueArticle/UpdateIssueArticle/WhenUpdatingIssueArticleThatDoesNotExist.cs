@@ -33,7 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
 
             _articleAssert = Services.GetService<IssueArticleAssert>().ForResponse(_response)
                     .ForLibrary(LibraryId)
-                    .ForDto(issue);
+                    .ForIssueDto(issue);
         }
 
         [OneTimeTearDown]

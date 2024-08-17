@@ -7,6 +7,9 @@ using MailKit.Net.Smtp;
 using Microsoft.Net.Http.Headers;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Elastic.Channels;
+using Elastic.Ingest.Elasticsearch;
+using Elastic.Serilog.Sinks;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Inshapardaz.Adapter.Ocr.Google;
 using Inshapardaz.Api.Helpers;
@@ -21,52 +24,13 @@ using Inshapardaz.Api.Infrastructure.Configuration;
 using Inshapardaz.Api.Infrastructure.Middleware;
 using Inshapardaz.Domain.Ports.Query.Library;
 using Microsoft.AspNetCore.Http.Features;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseKestrel(o => o.Limits.MaxRequestBodySize = null);
 
-//=====================================================================
-// Configure open telemetry
-
 const string serviceName = "Inshapardaz";
-
-string tracingOtlpEndpoint = builder.Configuration["OLTP_ENDPOINT_URL"];
-
-if (!builder.Environment.IsDevelopment())
-{
-    builder.Logging.AddOpenTelemetry(options => options
-        .SetResourceBuilder(ResourceBuilder.CreateDefault()
-            .AddService(serviceName))
-        .AddConsoleExporter());
-
-    builder.Services.AddOpenTelemetry()
-        .ConfigureResource(resource => resource.AddService(serviceName))
-        .WithMetrics(metrics => metrics
-            .AddAspNetCoreInstrumentation()
-            .AddMeter("Microsoft.AspnetCore.Hosting")
-            .AddMeter("Microsoft.AspnetCore.Server.Kestrel")
-            .AddMeter("System.Net.Http")
-            .AddPrometheusExporter()
-            .AddConsoleExporter())
-        .WithTracing(tracing =>
-        {
-            tracing
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation();
-            if (tracingOtlpEndpoint != null)
-            {
-                tracing.AddOtlpExporter(opt => opt.Endpoint = new Uri(tracingOtlpEndpoint));
-            }
-            else
-            {
-                tracing.AddConsoleExporter();
-            }
-        });
-}
 
 //=====================================================================
 // Add services to the container.
@@ -75,6 +39,32 @@ if (!builder.Environment.IsDevelopment())
 //--------------------------------------------------------------------
 var configSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<Settings>(configSection);
+
+builder.Host.UseSerilog((ctx, cfg) =>
+{
+    var config = cfg.Enrich.WithProperty("Application", serviceName)
+        .Enrich.WithProperty("Environment", ctx.HostingEnvironment.EnvironmentName)
+        .WriteTo.Console(new RenderedCompactJsonFormatter());
+
+    if (!string.IsNullOrEmpty(ctx.Configuration["elk"]))
+    {
+        config.WriteTo.Elasticsearch(new[] { new Uri(ctx.Configuration["elk"]) }, opts =>
+        {
+            opts.BootstrapMethod = BootstrapMethod.Failure;
+            opts.ConfigureChannel = channelOpts =>
+            {
+                channelOpts.BufferOptions = new BufferOptions
+                {
+                    ExportMaxConcurrency = 10
+                };
+            };
+        }, transport =>
+        {
+            // transport.Authentication(new BasicAuthentication(username, password)); // Basic Auth
+            // transport.Authentication(new ApiKey(base64EncodedApiKey)); // ApiKey
+        });
+    }
+});
 
 //--------------------------------------------------------------------
 builder.Services.AddCors(options =>
@@ -187,10 +177,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else
-{
-    app.MapPrometheusScrapingEndpoint();
-}
 
 app.UseCors(x => x
                 .SetIsOriginAllowed(origin => true)
@@ -203,6 +189,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseRequestLogging();
+app.UseSerilogRequestLogging();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<LibraryConfigurationMiddleware>();
 app.UseStatusCodeMiddleWare();

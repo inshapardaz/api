@@ -34,7 +34,7 @@ public class FileSystemStorage : IFileStorage
         return await File.ReadAllTextAsync(fullPath);
     }
 
-    public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
+    public async Task<string> StoreFile(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
     {
         var path = GetFullPath(name);
         new FileInfo(path).Directory.FullName.CreateIfDirectoryDoesNotExists();

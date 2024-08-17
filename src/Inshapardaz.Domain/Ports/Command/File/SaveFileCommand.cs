@@ -46,7 +46,7 @@ public class SaveFileCommandHandler : RequestHandlerAsync<SaveFileCommand>
         {
             var file = await _fileRepository.GetFileById(command.ExistingFileId.Value, cancellationToken);
             await _fileStorage.DeleteFile(file.FilePath, cancellationToken);
-            var url = await _fileStorage.StoreFile(command.Path, command.Contents, cancellationToken);
+            var url = await _fileStorage.StoreFile(command.Path, command.Contents, command.MimeType, cancellationToken);
             command.Result = await _fileRepository.UpdateFile(new FileModel
             {
                 Id = command.ExistingFileId.Value,
@@ -58,7 +58,7 @@ public class SaveFileCommandHandler : RequestHandlerAsync<SaveFileCommand>
         }
         else 
         {
-            var url = await _fileStorage.StoreFile(command.Path, command.Contents, cancellationToken);
+            var url = await _fileStorage.StoreFile(command.Path, command.Contents, command.MimeType, cancellationToken);
             command.Result = await _fileRepository.AddFile(new FileModel
             {
                 FileName = command.FileName,

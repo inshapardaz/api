@@ -13,7 +13,7 @@ public interface IFileStorage
 
     Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken);
 
-    Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken);
+    Task<string> StoreFile(string name, byte[] content, string mimeType,CancellationToken cancellationToken);
 
     Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken);
 

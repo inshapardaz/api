@@ -34,7 +34,7 @@ public class FileStorage : IFileStorage
         throw new NotImplementedException();
     }
 
-    public Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
+    public Task<string> StoreFile(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

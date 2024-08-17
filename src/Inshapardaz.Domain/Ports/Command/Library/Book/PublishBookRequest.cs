@@ -98,7 +98,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
     private async Task<FileModel> SaveFileToStorage(BookModel book, byte[] wordDocument, CancellationToken cancellationToken)
     {
         var fileName = $"{book.Title.ToSafeFilename()}.docx";
-        var url = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", wordDocument, cancellationToken);
+        var url = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", wordDocument, MimeTypes.MsWord, cancellationToken);
         var file = await _fileRepository.AddFile(new FileModel
         {
             FilePath = url,
@@ -118,7 +118,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
             await _fileStorage.DeleteFile(existingDocx.FilePath, cancellationToken);
         }
 
-        existingDocx.FilePath = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", file, cancellationToken);
+        existingDocx.FilePath = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", file, MimeTypes.MsWord, cancellationToken);
 
         await _fileRepository.UpdateFile(existingDocx, cancellationToken);
     }

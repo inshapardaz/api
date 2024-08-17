@@ -32,17 +32,17 @@ public class AddFileRequestHandler : RequestHandlerAsync<AddFileRequest>
 
     public override async Task<AddFileRequest> HandleAsync(AddFileRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var url = await AddImageToFileStore(command.File.FileName, command.File.Contents, cancellationToken);
+        var url = await AddImageToFileStore(command.File.FileName, command.File.Contents, command.File.MimeType, cancellationToken);
         command.File.FilePath = url;
         command.File.IsPublic = true;
         command.Response = await _fileRepository.AddFile(command.File, cancellationToken);
         return await base.HandleAsync(command, cancellationToken);
     }
 
-    private async Task<string> AddImageToFileStore(string fileName, byte[] contents, CancellationToken cancellationToken)
+    private async Task<string> AddImageToFileStore(string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
     {
         var filePath = GetUniqueFileName(fileName);
-        return await _fileStorage.StoreFile(filePath, contents, cancellationToken);
+        return await _fileStorage.StoreFile(filePath, contents, mimeType, cancellationToken);
     }
 
     private static string GetUniqueFileName(string fileName)

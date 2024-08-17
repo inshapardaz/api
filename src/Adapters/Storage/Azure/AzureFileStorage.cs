@@ -62,7 +62,7 @@ public class AzureFileStorage : IFileStorage
         return await blockBlob.DownloadTextAsync(cancellationToken);
     }
 
-    public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
+    public async Task<string> StoreFile(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
     {
         var container = GetContainer();
         var blockBlob = container.GetBlockBlobReference(name);

@@ -57,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Framework.Fakes
 
         public bool DoesFileExists(string filePath) => _contents.ContainsKey(GetUrl(filePath));
 
-        public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
+        public async Task<string> StoreFile(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
         {
             return await Task.FromResult(SetupFileContents(name, content));
         }

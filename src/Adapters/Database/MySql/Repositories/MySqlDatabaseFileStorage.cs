@@ -3,6 +3,7 @@ using Inshapardaz.Domain.Adapters.Repositories;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Adapters.Database.MySql.Repositories;
 
@@ -56,7 +57,7 @@ public class MySqlDatabaseFileStorage : IFileStorage
         return string.Empty;
     }
 
-    public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
+    public async Task<string> StoreFile(string name, byte[] content, string mimeType,CancellationToken cancellationToken)
     {
         var path = $"{Guid.NewGuid():N}/{name}";
         using (var connection = _connectionProvider.GetLibraryConnection())
@@ -72,12 +73,12 @@ public class MySqlDatabaseFileStorage : IFileStorage
 
     public Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
     {
-        return StoreFile(name, content, cancellationToken);
+        return StoreFile(name, content, MimeTypes.Jpg,cancellationToken);
     }
 
     public Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
     {
-        return StoreFile(name, System.Text.Encoding.Default.GetBytes(content), cancellationToken);
+        return StoreFile(name, System.Text.Encoding.Default.GetBytes(content), MimeTypes.Text, cancellationToken);
     }
 
     public async Task TryDeleteFile(string filePath, CancellationToken cancellationToken)

@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Storage.S3;
 
@@ -54,12 +55,12 @@ public class S3FileStorage : IFileStorage
         }
     }
 
-    public async Task<string> StoreFile(string name, byte[] content, CancellationToken cancellationToken)
+    public async Task<string> StoreFile(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
     {
         var client = GetClient();
         var request = new PutObjectRequest();
         request.BucketName = _configuration.BucketName;
-        request.ContentType = "";
+        request.ContentType = mimeType;
         request.InputStream = new MemoryStream(content);
         request.Key = $"{_configuration.FolderName}/{name}";
         request.CannedACL = "private";
@@ -72,7 +73,7 @@ public class S3FileStorage : IFileStorage
         var client = GetClient();
         var request = new PutObjectRequest();
         request.BucketName = _configuration.BucketName;
-        request.ContentType = mimeType;
+        request.ContentType = mimeType ?? MimeTypes.Text;
         request.InputStream = new MemoryStream(content);
         request.Key = $"{_configuration.FolderName}/{name}";
         request.CannedACL = "public-read";
@@ -85,7 +86,7 @@ public class S3FileStorage : IFileStorage
         var client = GetClient();
         var request = new PutObjectRequest();
         request.BucketName = _configuration.BucketName;
-        request.ContentType = "";
+        request.ContentType = MimeTypes.Text;
         request.ContentBody = content;
         request.Key = $"{_configuration.FolderName}/{name}";
         request.CannedACL = "private ";

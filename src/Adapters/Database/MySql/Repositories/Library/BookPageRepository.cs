@@ -53,7 +53,7 @@ public class BookPageRepository : IBookPageRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
-                                p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
+                                p.ReviewerAccountId, p.Text, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
                                 f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
                             FROM BookPage AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId

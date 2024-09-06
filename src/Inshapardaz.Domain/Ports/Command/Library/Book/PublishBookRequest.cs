@@ -62,7 +62,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
         foreach (var chapter in chapters)
         {
             var pages = await _bookPageRepository.GetPagesByBookChapter(command.LibraryId, command.BookId, chapter.Id, cancellationToken);
-            var finalText = CombinePages(pages);
+            var finalText = await CombinePages(pages, cancellationToken);
             chapterText.Add(finalText);
             if (chapter.Contents.Any(cc => cc.Language == book.Language))
             {
@@ -123,7 +123,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
 
     private char[] pageBreakSymbols = new char[] { '۔', ':', '“', '"', '\'', '!' };
 
-    private string CombinePages(IEnumerable<BookPageModel> pages)
+    private async Task<string> CombinePages(IEnumerable<BookPageModel> pages, CancellationToken cancellationToken)
     {
         StringBuilder builder = new StringBuilder();
 
@@ -135,6 +135,14 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
             }
 
             var separator = " ";
+            if (page.ContentId.HasValue)
+            {
+                var file = await _fileRepository.GetFileById(page.ContentId.Value, cancellationToken);
+                if (file != null)
+                {
+                    page.Text = await _fileStorage.GetTextFile(file.FilePath, cancellationToken);
+                }
+            }
             var finalText = page.Text.Trim();
             var lastCharacter = finalText.Last();
 

@@ -43,11 +43,11 @@ builder.Services.Configure<Settings>(configSection);
 builder.Host.UseSerilog((ctx, cfg) =>
 {
     var config = cfg.Enrich.WithProperty("Application", serviceName)
-        .Enrich.WithProperty("Environment", ctx.HostingEnvironment.EnvironmentName)
-        .WriteTo.Console(new RenderedCompactJsonFormatter());
+        .Enrich.WithProperty("Environment", ctx.HostingEnvironment.EnvironmentName);
 
     if (!string.IsNullOrEmpty(ctx.Configuration["elk"]))
     {
+        config.WriteTo.Console(new RenderedCompactJsonFormatter());
         config.WriteTo.Elasticsearch(new[] { new Uri(ctx.Configuration["elk"]) }, opts =>
         {
             opts.BootstrapMethod = BootstrapMethod.Failure;
@@ -63,6 +63,10 @@ builder.Host.UseSerilog((ctx, cfg) =>
             // transport.Authentication(new BasicAuthentication(username, password)); // Basic Auth
             // transport.Authentication(new ApiKey(base64EncodedApiKey)); // ApiKey
         });
+    }
+    else
+    {
+        config.WriteTo.Console();
     }
 });
 

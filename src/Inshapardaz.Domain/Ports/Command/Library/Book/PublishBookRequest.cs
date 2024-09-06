@@ -15,16 +15,14 @@ using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book;
 
-public class PublishBookRequest : RequestBase
+public class PublishBookRequest : LibraryBaseCommand
 {
-    public PublishBookRequest(int libraryId, int bookId)
+    public PublishBookRequest(int libraryId, int bookId) : base(libraryId)
     {
-        LibraryId = libraryId;
         BookId = bookId;
     }
 
     public string Result { get; set; }
-    public int LibraryId { get; }
     public int BookId { get; }
 }
 

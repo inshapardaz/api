@@ -114,7 +114,29 @@ public class ToolController : Controller
     [HttpPost("/tools/rekhtadownload", Name = nameof(DownloadRekhtaBook))]
     public async Task<IActionResult> DownloadRekhtaBook([FromBody] RekhtaDownloadView downloadView, CancellationToken cancellationToken = default(CancellationToken))
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         var request = new DownloadRekhtaBookRequest(downloadView.BookUrl) { CreatePdf = downloadView.ConvertToPdf };
+        await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
+
+        return new FileContentResult(request.DownloadResult.File, request.DownloadResult.MimeType)
+        {
+            FileDownloadName = request.DownloadResult.FileName
+        };
+    }
+    
+    [HttpPost("/tools/chughtaidownload", Name = nameof(DownloadChughtaiBook))]
+    public async Task<IActionResult> DownloadChughtaiBook([FromBody] ChughtaiDownloadView downloadView, CancellationToken cancellationToken = default(CancellationToken))
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var request = new DownloadChugtaiBookRequest(downloadView.BookUrl, downloadView.SessionId) { CreatePdf = downloadView.ConvertToPdf };
         await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
         return new FileContentResult(request.DownloadResult.File, request.DownloadResult.MimeType)

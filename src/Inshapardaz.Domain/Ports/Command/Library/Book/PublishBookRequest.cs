@@ -129,11 +129,6 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
 
         foreach (var page in pages)
         {
-            if (string.IsNullOrWhiteSpace(page.Text))
-            {
-                continue;
-            }
-
             var separator = " ";
             if (page.ContentId.HasValue)
             {
@@ -144,6 +139,11 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
                 }
             }
             var finalText = page.Text.Trim();
+            if (string.IsNullOrWhiteSpace(finalText))
+            {
+                continue;
+            }
+
             var lastCharacter = finalText.Last();
 
             if (pageBreakSymbols.Contains(lastCharacter))

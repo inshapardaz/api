@@ -418,6 +418,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                             .With(p => p.WriterAccountId, (int?)null)
                             .With(p => p.ReviewerAccountId, (int?)null)
                             .With(p => p.Status, EditingStatus.All)
+                            .With(p => p.ChapterId, _chapters.Any() ? _chapters.PickRandom().Id : null)
                             .With(p => p.Text, bookPageContentData)
                             .Create();
 

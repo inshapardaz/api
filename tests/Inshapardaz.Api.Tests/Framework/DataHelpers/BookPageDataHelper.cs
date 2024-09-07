@@ -15,6 +15,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         void DeleteBookPages(IEnumerable<BookPageDto> bookPages);
 
+        IEnumerable<BookPageDto> GetBookPages(int bookId);
         BookPageDto GetBookPageByNumber(int bookId, int sequenceNumber);
 
         BookPageDto GetBookPageById(int bookId, long pageId);
@@ -35,8 +36,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                var sql = @"INSERT INTO BookPage (BookId, ContentId, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
-                        VALUES (@BookId, @ContentId, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status);
+                var sql = @"INSERT INTO BookPage (BookId, ContentId, ChapterId, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
+                        VALUES (@BookId, @ContentId, @ChapterId, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status);
                     SELECT LAST_INSERT_ID();";
                 var id = connection.ExecuteScalar<int>(sql, bookPage);
                 bookPage.Id = id;
@@ -60,6 +61,19 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             }
         }
 
+        public IEnumerable<BookPageDto> GetBookPages(int bookId)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT *
+                        FROM BookPage
+                        WHERE BookId = @BookId";
+                var command = new CommandDefinition(sql, new { BookId = bookId });
+
+                return connection.Query<BookPageDto>(command);
+            }
+        }
+        
         public BookPageDto GetBookPageByNumber(int bookId, int sequenceNumber)
         {
             using (var connection = _connectionProvider.GetConnection())
@@ -148,6 +162,19 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 var command = new CommandDefinition(sql, new { BookId = bookId, SequenceNumber = sequenceNumber });
 
                 return connection.QuerySingleOrDefault<BookPageDto>(command);
+            }
+        }
+        
+        public IEnumerable<BookPageDto> GetBookPages(int bookId)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = @"SELECT *
+                        FROM BookPage
+                        WHERE BookId = @BookId";
+                var command = new CommandDefinition(sql, new { BookId = bookId });
+
+                return connection.Query<BookPageDto>(command);
             }
         }
 

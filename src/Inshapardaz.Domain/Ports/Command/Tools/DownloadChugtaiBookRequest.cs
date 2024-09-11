@@ -80,7 +80,7 @@ public class DownloadChugtaiBookRequestHandler : RequestHandlerAsync<DownloadChu
         if (book != null)
         {
             var bookContents = await _bookRepository.GetBookContents(_settings.DefaultLibraryId, book.Id, cancellationToken);
-            if (command.CreatePdf)
+            if (_saveBook && command.CreatePdf)
             {
                 if (bookContents.Any(c => c.MimeType == MimeTypes.Pdf))
                 {

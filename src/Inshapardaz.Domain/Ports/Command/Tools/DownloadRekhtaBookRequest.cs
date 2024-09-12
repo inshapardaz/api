@@ -77,6 +77,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
 
     public override async Task<DownloadRekhtaBookRequest> HandleAsync(DownloadRekhtaBookRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
+        _logger.BeginScope("Downloading {Url} for {Library}", command.Url, _settings.DefaultLibraryId);
         var book = await _bookRepository.GetBookBySource(_settings.DefaultLibraryId, command.Url, cancellationToken);
         if (book != null)
         {
@@ -221,7 +222,8 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
             await _bookPageRepository.DeletePage(_settings.DefaultLibraryId, book.Id, page.SequenceNumber, cancellationToken);
         }
     }
-    public async Task<BookModel> CreateNewBook(BookInfo bookInfo, string source, CancellationToken cancellationToken)
+
+    private async Task<BookModel> CreateNewBook(BookInfo bookInfo, string source, CancellationToken cancellationToken)
     {
         var authorName = bookInfo.Authors?.FirstOrDefault() ?? "Unknown";
         var authors = await _authorRepository.FindAuthors(_settings.DefaultLibraryId, authorName, AuthorTypes.Writer, 1, 1, cancellationToken);

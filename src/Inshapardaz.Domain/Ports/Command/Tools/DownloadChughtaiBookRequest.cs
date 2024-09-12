@@ -247,7 +247,8 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
             Title = bookInfo.Title,
             Authors = [author],
             Language = "ur",
-            Source = source
+            Source = source,
+            Status = StatusType.AvailableForTyping
         }, null, cancellationToken);
 
         if (bookInfo.Image != null && bookInfo.Image.Length > 0)

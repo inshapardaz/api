@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System;
+using Common;
 using Inshapardaz.Domain.Adapters.Configuration;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
@@ -16,6 +17,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Inshapardaz.Domain.Ports.Command.Tools;
 
@@ -51,8 +53,8 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
     private readonly Settings _settings;
     private readonly IFileRepository _fileRepository;
     private readonly IFileStorage _fileStorage;
+    private ILogger<DownloadRekhtaBookRequestHandler> _logger;
 
-    const bool _saveBook = false;
     public DownloadRekhtaBookRequestHandler(
         IAmACommandProcessor commandProcessor,
         IOptions<Settings> settings,
@@ -60,7 +62,8 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
         IBookPageRepository bookPageRepository,
         IFileRepository fileRepository,
         IFileStorage fileStorage,
-        IAuthorRepository authorRepository)
+        IAuthorRepository authorRepository, 
+        ILogger<DownloadRekhtaBookRequestHandler> logger)
     {
         _commandProcessor = commandProcessor;
         _settings = settings.Value;
@@ -69,6 +72,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
         _fileRepository = fileRepository;
         _fileStorage = fileStorage;
         _authorRepository = authorRepository;
+        _logger = logger;
     }
 
     public override async Task<DownloadRekhtaBookRequest> HandleAsync(DownloadRekhtaBookRequest command, CancellationToken cancellationToken = new CancellationToken())
@@ -158,8 +162,8 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
 
     private async Task DownloadBook(BookModel book, DownloadRekhtaBookRequest command, CancellationToken cancellationToken)
     {
-        var exporter = new RekhtaDownloader.BookExporter(new ConsoleLogger());
-        var path = $"../data/downloads";
+        var exporter = new RekhtaDownloader.BookExporter(_logger);
+        var path = $"../data/downloads/{Guid.NewGuid():D}";
         var filePath = await exporter.DownloadBook(command.Url, 10, command.CreatePdf ? RekhtaDownloader.OutputType.Pdf : RekhtaDownloader.OutputType.Images, path, cancellationToken);
         var bookInfo = await exporter.GetBookInformation(command.Url, cancellationToken);
 
@@ -179,7 +183,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
 
             if (command.CreatePdf)
             {
-                result.File = await System.IO.File.ReadAllBytesAsync(filePath);
+                result.File = await System.IO.File.ReadAllBytesAsync(filePath, cancellationToken);
 
                 await SaveBookPdfContents(book, filePath, result.File, cancellationToken);
             }
@@ -191,7 +195,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
                 {
                     zipFilePath.MakeSureFileDoesNotExist();
                     ZipFile.CreateFromDirectory(filePath, zipFilePath);
-                    result.File = await System.IO.File.ReadAllBytesAsync(zipFilePath);
+                    result.File = await System.IO.File.ReadAllBytesAsync(zipFilePath, cancellationToken);
                 }
                 finally
                 {
@@ -205,18 +209,13 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
         }
         finally
         {
-            if (command.CreatePdf)
-                filePath.TryDeleteFile();
-            else
-                filePath.TryDeleteDirectory();
+            path.TryDeleteDirectory();
         }
     }
 
 
     private async Task DeleteBookPages(BookModel book, IEnumerable<BookPageModel> pages, CancellationToken cancellationToken)
     {
-        if (!_saveBook) return;
-
         foreach (var page in pages.OrderByDescending(x => x.SequenceNumber))
         {
             await _bookPageRepository.DeletePage(_settings.DefaultLibraryId, book.Id, page.SequenceNumber, cancellationToken);
@@ -224,8 +223,6 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
     }
     public async Task<BookModel> CreateNewBook(BookInfo bookInfo, string source, CancellationToken cancellationToken)
     {
-        if (!_saveBook) return null;
-
         var authorName = bookInfo.Authors?.FirstOrDefault() ?? "Unknown";
         var authors = await _authorRepository.FindAuthors(_settings.DefaultLibraryId, authorName, AuthorTypes.Writer, 1, 1, cancellationToken);
         AuthorModel author = null;
@@ -247,14 +244,14 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
         var book = await _bookRepository.AddBook(_settings.DefaultLibraryId, new BookModel
         {
             Title = bookInfo.Title,
-            Authors = new List<AuthorModel>() { author },
+            Authors = [author],
             Language = "ur",
             Source = source
         }, null, cancellationToken);
 
         if (bookInfo.Image != null && bookInfo.Image.Length > 0)
         {
-            var updateImgRequest = new UpdateBookImageRequest(_settings.DefaultLibraryId, book.Id, null)
+            var updateImgRequest = new InternalUpdateBookImageRequest(_settings.DefaultLibraryId, book.Id, null)
             {
                 Image = new FileModel
                 {
@@ -264,7 +261,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
                 }
             };
 
-            await _commandProcessor.SendAsync(updateImgRequest);
+            await _commandProcessor.SendAsync(updateImgRequest, cancellationToken: cancellationToken);
         }
 
         return book;
@@ -272,9 +269,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
 
     public async Task SaveBookPdfContents(BookModel book, string filePath, byte[] contents, CancellationToken cancellationToken)
     {
-        if (!_saveBook) return;
-
-        var cmdAddBookContent = new AddBookContentRequest(_settings.DefaultLibraryId, book.Id, null, MimeTypes.Pdf, null)
+        var cmdAddBookContent = new InternalAddBookContentRequest(_settings.DefaultLibraryId, book.Id, null, MimeTypes.Pdf, null)
         {
             Content = new FileModel
             {
@@ -285,24 +280,22 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
         };
         await _commandProcessor.SendAsync(cmdAddBookContent, cancellationToken: cancellationToken);
 
-        var amdAddBookPages = new UploadBookPagesRequest(_settings.DefaultLibraryId, book.Id)
-        {
-            Files = new[] { new FileModel
-                    {
-                        MimeType = MimeTypes.Pdf,
-                        Contents = contents,
-                        FileName = Path.GetFileName(filePath)
-                    }}
-        };
-
-        await _commandProcessor.SendAsync(amdAddBookPages, cancellationToken: cancellationToken);
+        // var amdAddBookPages = new InternalUploadBookPagesRequest(_settings.DefaultLibraryId, book.Id)
+        // {
+        //     Files = new[] { new FileModel
+        //             {
+        //                 MimeType = MimeTypes.Pdf,
+        //                 Contents = contents,
+        //                 FileName = Path.GetFileName(filePath)
+        //             }}
+        // };
+        //
+        // await _commandProcessor.SendAsync(amdAddBookPages, cancellationToken: cancellationToken);
     }
 
     public async Task SaveBookPages(BookModel book, string filePath, CancellationToken cancellationToken)
     {
-        if (!_saveBook) return;
-
-        var _files = Directory.EnumerateFiles(filePath)
+        var files = Directory.EnumerateFiles(filePath)
                  .OrderBy(filename => filename)
                  .Select(f => new FileModel
                  {
@@ -311,9 +304,9 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
                      FileName = Path.GetFileName(f)
                  }).ToList();
 
-        var cmd = new UploadBookPagesRequest(_settings.DefaultLibraryId, book.Id)
+        var cmd = new InternalUploadBookPagesRequest(_settings.DefaultLibraryId, book.Id)
         {
-            Files = _files
+            Files = files
         };
 
         await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);

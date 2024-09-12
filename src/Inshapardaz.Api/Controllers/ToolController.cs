@@ -136,7 +136,7 @@ public class ToolController : Controller
             return BadRequest(ModelState);
         }
 
-        var request = new DownloadChugtaiBookRequest(downloadView.BookUrl, downloadView.SessionId) { CreatePdf = downloadView.ConvertToPdf };
+        var request = new DownloadChughtaiBookRequest(downloadView.BookUrl, downloadView.SessionId) { CreatePdf = downloadView.ConvertToPdf };
         await _commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
 
         return new FileContentResult(request.DownloadResult.File, request.DownloadResult.MimeType)

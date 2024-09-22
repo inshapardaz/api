@@ -127,7 +127,21 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
     {
         StringBuilder builder = new StringBuilder();
 
-        foreach (var page in pages)
+        var tasks = pages.Select(GetPageText).ToArray();
+        
+        Task.WaitAll(tasks); 
+        
+        foreach (var task in tasks)
+        {
+            var (separator, finalText) = task.Result;
+
+            builder.Append(separator);
+            builder.Append(finalText);
+        }
+
+        return builder.ToString().TrimStart();
+
+        async Task<(string separator, string finalText)> GetPageText(BookPageModel page)
         {
             var separator = " ";
             if (page.ContentId.HasValue)
@@ -141,7 +155,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
             var finalText = page.Text.Trim();
             if (string.IsNullOrWhiteSpace(finalText))
             {
-                continue;
+                return (separator, finalText);
             }
 
             var lastCharacter = finalText.Last();
@@ -151,10 +165,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
                 separator = Environment.NewLine;
             }
 
-            builder.Append(separator);
-            builder.Append(finalText);
+            return (separator, finalText);
         }
-
-        return builder.ToString().TrimStart();
     }
 }

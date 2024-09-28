@@ -5,6 +5,7 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.Tools;
 using Inshapardaz.Domain.Ports.Query.Tools;
+using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -112,6 +113,7 @@ public class ToolController : Controller
     }
 
     [HttpPost("/tools/rekhtadownload", Name = nameof(DownloadRekhtaBook))]
+    [RequestTimeout(500 * 1000)]
     public async Task<IActionResult> DownloadRekhtaBook([FromBody] RekhtaDownloadView downloadView, CancellationToken cancellationToken = default(CancellationToken))
     {
         if (!ModelState.IsValid)
@@ -129,6 +131,7 @@ public class ToolController : Controller
     }
     
     [HttpPost("/tools/chughtaidownload", Name = nameof(DownloadChughtaiBook))]
+    [RequestTimeout(500 * 1000)]
     public async Task<IActionResult> DownloadChughtaiBook([FromBody] ChughtaiDownloadView downloadView, CancellationToken cancellationToken = default(CancellationToken))
     {
         if (!ModelState.IsValid)

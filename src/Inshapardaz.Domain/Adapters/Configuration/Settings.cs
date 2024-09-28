@@ -15,4 +15,6 @@ public record Settings
     public string FrontEndUrl { get; init; }
 
     public int DefaultLibraryId { get; init; }
+
+    public bool SaveDownloadsToStorage { get; init; } = false;
 }

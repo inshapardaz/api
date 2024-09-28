@@ -170,11 +170,6 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
 
         try
         {
-            if (book == null)
-            {
-                book = await CreateNewBook(bookInfo, command.Url, cancellationToken);
-            }
-
             var result = new DownloadRekhtaBookRequest.Result()
             {
 
@@ -185,8 +180,6 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
             if (command.CreatePdf)
             {
                 result.File = await System.IO.File.ReadAllBytesAsync(filePath, cancellationToken);
-
-                await SaveBookPdfContents(book, filePath, result.File, cancellationToken);
             }
             else
             {
@@ -202,11 +195,27 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
                 {
                     zipFilePath.TryDeleteFile();
                 }
-
-                await SaveBookPages(book, filePath, cancellationToken);
             }
 
             command.DownloadResult = result;
+
+
+            if (_settings.SaveDownloadsToStorage)
+            {
+                if (book == null)
+                {
+                    book = await CreateNewBook(bookInfo, command.Url, cancellationToken);
+                }
+
+                if (command.CreatePdf)
+                {
+                    await SaveBookPdfContents(book, filePath, result.File, cancellationToken);
+                }
+                else
+                {
+                    await SaveBookPages(book, filePath, cancellationToken);
+                }
+            }
         }
         finally
         {

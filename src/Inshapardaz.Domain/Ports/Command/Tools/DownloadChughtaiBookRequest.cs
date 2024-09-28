@@ -165,19 +165,22 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
     {
         var exporter = new Chughtai.Downloader.BookDownloader(_logger);
         var path = $"../data/downloads/{Guid.NewGuid():D}";
-        var filePath = await exporter.DownloadBook(command.Url, 10, command.SessionId, command.CreatePdf ? OutputType.Pdf : OutputType.Images, path, cancellationToken);
+        string filePath = null;
+        if (string.IsNullOrWhiteSpace(command.SessionId))
+        {
+            filePath = await exporter.Download(command.Url, 10, command.CreatePdf ? OutputType.Pdf : OutputType.Images, path, cancellationToken);
+        }
+        else
+        {
+            filePath = await exporter.DownloadBook(command.Url, 10, command.SessionId, command.CreatePdf ? OutputType.Pdf : OutputType.Images, path, cancellationToken);
+        }
+        
         var bookInfo = await exporter.GetBookInformation(command.Url, cancellationToken);
 
         try
         {
-            if (book == null)
-            {
-                book = await CreateNewBook(bookInfo, command.Url, cancellationToken);
-            }
-
             var result = new DownloadChughtaiBookRequest.Result
             {
-
                 FileName = Path.GetFileName(filePath),
                 MimeType = command.CreatePdf ? MimeTypes.Pdf : MimeTypes.Zip
             };
@@ -185,8 +188,6 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
             if (command.CreatePdf)
             {
                 result.File = await System.IO.File.ReadAllBytesAsync(filePath, cancellationToken);
-
-                await SaveBookPdfContents(book, filePath, result.File, cancellationToken);
             }
             else
             {
@@ -202,11 +203,26 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
                 {
                     zipFilePath.TryDeleteFile();
                 }
-
-                await SaveBookPages(book, filePath, cancellationToken);
             }
 
             command.DownloadResult = result;
+
+            if (_settings.SaveDownloadsToStorage)
+            {
+                if (book == null)
+                {
+                    book = await CreateNewBook(bookInfo, command.Url, cancellationToken);
+                }
+
+                if (command.CreatePdf)
+                {
+                    await SaveBookPdfContents(book, filePath, result.File, cancellationToken);
+                }
+                else
+                {
+                    await SaveBookPages(book, filePath, cancellationToken);
+                }
+            }
         }
         finally
         {

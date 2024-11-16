@@ -19,7 +19,7 @@ public class S3FileStorage : IFileStorage
         _configuration = configuration;
     }
 
-    public bool SupportsPublicLink => true;
+    public bool SupportsPublicLink => false;
 
     public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
     {

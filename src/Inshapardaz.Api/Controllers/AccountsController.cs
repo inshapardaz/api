@@ -5,8 +5,10 @@ using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Views.Accounts;
 using Paramore.Brighter;
 using Inshapardaz.Api.Views;
+using Inshapardaz.Domain.Adapters.Configuration;
 using Inshapardaz.Domain.Ports.Command.Account;
 using Inshapardaz.Domain.Ports.Query.Account;
+using Microsoft.Extensions.Options;
 
 namespace Inshapardaz.Api.Controllers;
 
@@ -17,15 +19,18 @@ public class AccountsController : Controller
     private readonly IAmACommandProcessor _commandProcessor;
     private readonly IQueryProcessor _queryProcessor;
     private readonly IRenderAccount _accountRenderer;
+    private readonly Settings _settings;
 
     public AccountsController(
         IAmACommandProcessor commandProcessor,
         IQueryProcessor queryProcessor,
-        IRenderAccount accountRenderer)
+        IRenderAccount accountRenderer,
+        IOptions<Settings> settings)
     {
         _commandProcessor = commandProcessor;
         _queryProcessor = queryProcessor;
         _accountRenderer = accountRenderer;
+        _settings = settings.Value;
     }
 
 
@@ -37,7 +42,8 @@ public class AccountsController : Controller
     {
         var command = new AuthenticateCommand(model.Email, model.Password);
         await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
-        setTokenCookie(command.Response.RefreshToken);
+        SetRefreshTokenCookie(command.Response.RefreshToken);
+        SetAccessTokenCookie(command.Response.AccessToken);
 
         return Ok(_accountRenderer.Render(command.Response));
     }
@@ -51,7 +57,8 @@ public class AccountsController : Controller
         var refreshToken = model.RefreshToken ?? Request.Cookies["refreshToken"];
         var command = new RefreshTokenCommand(refreshToken);
         await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
-        setTokenCookie(command.Response.RefreshToken);
+        SetRefreshTokenCookie(command.Response.RefreshToken);
+        SetAccessTokenCookie(command.Response.AccessToken);
         return Ok(_accountRenderer.Render(command.Response));
     }
 
@@ -65,6 +72,8 @@ public class AccountsController : Controller
         var token = model.Token ?? Request.Cookies["refreshToken"];
         var command = new RevokeTokenCommand(token);
         await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        SetRefreshTokenCookie("expired-refresh-token", true);
+        SetAccessTokenCookie("expired-token", true);
         return Ok();
     }
 
@@ -179,7 +188,7 @@ public class AccountsController : Controller
         return Ok();
     }
 
-    [HttpGet(Name = nameof(AccountsController.GetAll))]
+    [HttpGet(Name = nameof(GetAll))]
     public async Task<IActionResult> GetAll(string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
     {
         var accountsQuery = new GetAccountsQuery(pageNumber, pageSize) { Query = query };
@@ -275,12 +284,13 @@ public class AccountsController : Controller
         return NotFound();
     }
 
-    private void setTokenCookie(string token)
+    private void SetRefreshTokenCookie(string token, bool expire = false)
     {
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Expires = DateTime.UtcNow.AddDays(7),
+            Expires = expire ? DateTimeOffset.MinValue : DateTime.UtcNow.AddDays(20),
+            Domain = _settings.Domain,
 #if DEBUG
             SameSite = SameSiteMode.Lax
 #else
@@ -289,5 +299,22 @@ public class AccountsController : Controller
 #endif
         };
         Response.Cookies.Append("refreshToken", token, cookieOptions);
+    }
+    
+    private void SetAccessTokenCookie(string token, bool expire = false)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = expire ? DateTimeOffset.MinValue : DateTime.UtcNow.AddHours(1),
+            Domain = _settings.Domain,
+#if DEBUG
+            SameSite = SameSiteMode.Lax
+#else
+            SameSite = SameSiteMode.None,
+            Secure = true
+#endif
+        };
+        Response.Cookies.Append("token", token, cookieOptions);
     }
 }

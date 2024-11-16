@@ -7,12 +7,12 @@ using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Infrastructure.Middleware;
 
-public class JwtMiddleware
+public class CookieAuthenticationMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly Settings _appSettings;
 
-    public JwtMiddleware(RequestDelegate next, IOptions<Settings> appSettings)
+    public CookieAuthenticationMiddleware(RequestDelegate next, IOptions<Settings> appSettings)
     {
         _next = next;
         _appSettings = appSettings.Value;
@@ -20,11 +20,14 @@ public class JwtMiddleware
 
     public async Task Invoke(HttpContext context, IAccountRepository accountRepository)
     {
-        var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-        if (token != null)
+        if (context.Items["AccountId"] is null)
         {
-            await AttachAccountToContext(context, token, accountRepository);
+            var token = context.Request.Cookies["token"];
+
+            if (token != null)
+            {
+                await AttachAccountToContext(context, token, accountRepository);
+            }
         }
 
         await _next(context);

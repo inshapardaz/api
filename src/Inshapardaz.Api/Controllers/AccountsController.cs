@@ -19,15 +19,18 @@ public class AccountsController : Controller
     private readonly IAmACommandProcessor _commandProcessor;
     private readonly IQueryProcessor _queryProcessor;
     private readonly IRenderAccount _accountRenderer;
+    private readonly Settings _settings;
 
     public AccountsController(
         IAmACommandProcessor commandProcessor,
         IQueryProcessor queryProcessor,
-        IRenderAccount accountRenderer)
+        IRenderAccount accountRenderer,
+        IOptions<Settings> settings)
     {
         _commandProcessor = commandProcessor;
         _queryProcessor = queryProcessor;
         _accountRenderer = accountRenderer;
+        _settings = settings.Value;
     }
 
 
@@ -39,6 +42,8 @@ public class AccountsController : Controller
     {
         var command = new AuthenticateCommand(model.Email, model.Password);
         await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        SetRefreshTokenCookie(command.Response.RefreshToken);
+        SetAccessTokenCookie(command.Response.AccessToken);
 
         return Ok(_accountRenderer.Render(command.Response));
     }
@@ -52,6 +57,8 @@ public class AccountsController : Controller
         var refreshToken = model.RefreshToken ?? Request.Cookies["refreshToken"];
         var command = new RefreshTokenCommand(refreshToken);
         await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        SetRefreshTokenCookie(command.Response.RefreshToken);
+        SetAccessTokenCookie(command.Response.AccessToken);
         return Ok(_accountRenderer.Render(command.Response));
     }
 
@@ -65,6 +72,8 @@ public class AccountsController : Controller
         var token = model.Token ?? Request.Cookies["refreshToken"];
         var command = new RevokeTokenCommand(token);
         await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        SetRefreshTokenCookie("expired-refresh-token", true);
+        SetAccessTokenCookie("expired-token", true);
         return Ok();
     }
 
@@ -273,5 +282,39 @@ public class AccountsController : Controller
         //_accountService.Delete(id);
         //return Ok(new { message = "Account deleted successfully" });
         return NotFound();
+    }
+
+    private void SetRefreshTokenCookie(string token, bool expire = false)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = expire ? DateTimeOffset.MinValue : DateTime.UtcNow.AddDays(20),
+            Domain = _settings.Domain,
+#if DEBUG
+            SameSite = SameSiteMode.Lax
+#else
+            SameSite = SameSiteMode.None,
+            Secure = true
+#endif
+        };
+        Response.Cookies.Append("refreshToken", token, cookieOptions);
+    }
+    
+    private void SetAccessTokenCookie(string token, bool expire = false)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = expire ? DateTimeOffset.MinValue : DateTime.UtcNow.AddHours(1),
+            Domain = _settings.Domain,
+#if DEBUG
+            SameSite = SameSiteMode.Lax
+#else
+            SameSite = SameSiteMode.None,
+            Secure = true
+#endif
+        };
+        Response.Cookies.Append("token", token, cookieOptions);
     }
 }

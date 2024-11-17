@@ -198,6 +198,7 @@ app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<LibraryConfigurationMiddleware>();
 app.UseStatusCodeMiddleWare();
 app.UseMiddleware<JwtMiddleware>();
+app.UseMiddleware<CookieAuthenticationMiddleware>();
 
 app.MapControllers();
 

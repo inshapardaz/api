@@ -17,6 +17,4 @@ public record Settings
     public int DefaultLibraryId { get; init; }
 
     public bool SaveDownloadsToStorage { get; init; } = false;
-    
-    public string? Domain { get; set; }
 }

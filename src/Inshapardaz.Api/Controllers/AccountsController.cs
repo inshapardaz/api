@@ -6,8 +6,10 @@ using Inshapardaz.Api.Views.Accounts;
 using Paramore.Brighter;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters.Configuration;
+using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Ports.Command.Account;
 using Inshapardaz.Domain.Ports.Query.Account;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
 namespace Inshapardaz.Api.Controllers;
@@ -67,13 +69,17 @@ public class AccountsController : Controller
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost("revoke-token")]
-    public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest model, CancellationToken cancellationToken)
+    public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest? model, CancellationToken cancellationToken)
     {
         var token = model.Token ?? Request.Cookies["refreshToken"];
-        var command = new RevokeTokenCommand(token);
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
-        SetRefreshTokenCookie("expired-refresh-token", true);
-        SetAccessTokenCookie("expired-token", true);
+        if (token is not null)
+        {
+            var command = new RevokeTokenCommand(token);
+            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        }
+        
+        SetRefreshTokenCookie("{}", true);
+        SetAccessTokenCookie("{}", true);
         return Ok();
     }
 
@@ -188,6 +194,23 @@ public class AccountsController : Controller
         return Ok();
     }
 
+    [HttpGet("user")]
+    public async Task<IActionResult> GetUser(CancellationToken cancellationToken)
+    {
+        if (!HttpContext.Items.ContainsKey("AccountId"))
+        {
+            return Unauthorized();
+        }
+        
+        if (int.TryParse(HttpContext.Items["AccountId"].ToString(), out var accountId))
+        {
+            var account = await _queryProcessor.ExecuteAsync(new GetAccountByIdQuery(accountId), cancellationToken);
+            return Ok(_accountRenderer.Render(account));
+        }
+
+        return BadRequest();
+    }
+
     [HttpGet(Name = nameof(GetAll))]
     public async Task<IActionResult> GetAll(string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
     {
@@ -203,7 +226,7 @@ public class AccountsController : Controller
         return new OkObjectResult(_accountRenderer.Render(args));
     }
 
-    [HttpGet("libraries/{libraryId}/users", Name = nameof(AccountsController.GetLibraryUsers))]
+    [HttpGet("/libraries/{libraryId}/users", Name = nameof(AccountsController.GetLibraryUsers))]
     [Produces(typeof(PageView<AccountView>))]
     public async Task<IActionResult> GetLibraryUsers(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
     {
@@ -288,7 +311,6 @@ public class AccountsController : Controller
     {
         var cookieOptions = new CookieOptions
         {
-            HttpOnly = true,
             Expires = expire ? DateTimeOffset.MinValue : DateTime.UtcNow.AddDays(20),
             Domain = _settings.Domain,
 #if DEBUG
@@ -305,13 +327,13 @@ public class AccountsController : Controller
     {
         var cookieOptions = new CookieOptions
         {
-            HttpOnly = true,
             Expires = expire ? DateTimeOffset.MinValue : DateTime.UtcNow.AddHours(1),
             Domain = _settings.Domain,
 #if DEBUG
             SameSite = SameSiteMode.Lax
 #else
             SameSite = SameSiteMode.None,
+            HttpOnly = true,
             Secure = true
 #endif
         };

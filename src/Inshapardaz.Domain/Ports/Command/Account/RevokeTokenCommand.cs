@@ -65,6 +65,7 @@ public class RevokeTokenCommandHandler : RequestHandlerAsync<RevokeTokenCommand>
             var ipAddress = _ipAddressGetter.GetIPAddressFromRequest();
 
             await _accountRepository.RevokeRefreshToken(refreshToken.Token, ipAddress, null, cancellationToken);
+            // Remove all access tokens for this user
         }
         else
         {

@@ -32,7 +32,7 @@ public class GetAccountByIdQueryHandler : QueryHandlerAsync<GetAccountByIdQuery,
         _userHelper = userHelper;
     }
 
-    [LibraryAuthorize(1, Role.Admin, Role.LibraryAdmin)]
+    // [LibraryAuthorize(1, Role.Admin, Role.LibraryAdmin)]
     public override async Task<AccountModel> ExecuteAsync(GetAccountByIdQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
         if (query.UserId != _userHelper.AccountId && !_userHelper.IsAdmin)

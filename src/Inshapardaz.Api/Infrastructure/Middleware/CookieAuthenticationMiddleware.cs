@@ -12,6 +12,13 @@ public class CookieAuthenticationMiddleware
     private readonly RequestDelegate _next;
     private readonly Settings _appSettings;
 
+    private readonly string[] _pathsToIgnore = new string[]
+    {
+        "/accounts/authenticate",
+        "/accounts/refresh-token",
+        "/accounts/revoke-token",
+    };
+    
     public CookieAuthenticationMiddleware(RequestDelegate next, IOptions<Settings> appSettings)
     {
         _next = next;
@@ -20,6 +27,11 @@ public class CookieAuthenticationMiddleware
 
     public async Task Invoke(HttpContext context, IAccountRepository accountRepository)
     {
+        if (_pathsToIgnore.Any(x => x.Equals(context.Request.Path, StringComparison.InvariantCultureIgnoreCase)))
+        {
+            await _next(context);
+        }
+        
         if (context.Items["AccountId"] is null)
         {
             var token = context.Request.Cookies["token"];

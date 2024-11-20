@@ -24,6 +24,10 @@ public class StatusCodeMiddleware
         {
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
         }
+        catch(UnauthorizedAccessException)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+        }
         catch (ForbiddenException)
         {
             context.Response.StatusCode = (int)HttpStatusCode.Forbidden;

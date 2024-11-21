@@ -78,8 +78,8 @@ public class AccountsController : Controller
             await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         }
         
-        SetRefreshTokenCookie("{}", true);
-        SetAccessTokenCookie("{}", true);
+        SetRefreshTokenCookie(token, true);
+        SetAccessTokenCookie(token, true);
         return Ok();
     }
 

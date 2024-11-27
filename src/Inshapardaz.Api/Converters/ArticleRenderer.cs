@@ -215,7 +215,7 @@ public class ArticleRenderer : IRenderArticle
             {
                 links.Add(_linkRenderer.Render(new Link
                 {
-                    ActionName = nameof(ArticleController.RemoveArtiucleFromFavorites),
+                    ActionName = nameof(ArticleController.RemoveArticleFromFavorites),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.RemoveFavorite,
                     Parameters = new { libraryId = libraryId, articleId = source.Id }

@@ -10,7 +10,8 @@ public static class CategoryMapper
         {
             Id = source.Id,
             Name = source.Name,
-            BookCount = source.BookCount
+            BookCount = source.BookCount,
+            ArticleCount = source.ArticleCount
         };
 
     public static CategoryModel Map(this CategoryView source)

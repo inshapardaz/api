@@ -281,8 +281,8 @@ public class ArticleController : Controller
         return new OkResult();
     }
 
-    [HttpDelete("libraries/{libraryId}/favorites/articles/{articleId}", Name = nameof(ArticleController.RemoveArtiucleFromFavorites))]
-    public async Task<IActionResult> RemoveArtiucleFromFavorites(int libraryId, int articleId, CancellationToken token)
+    [HttpDelete("libraries/{libraryId}/favorites/articles/{articleId}", Name = nameof(ArticleController.RemoveArticleFromFavorites))]
+    public async Task<IActionResult> RemoveArticleFromFavorites(int libraryId, int articleId, CancellationToken token)
     {
         var request = new RemoveArticleFromFavoriteRequest(libraryId, articleId, _userHelper.AccountId);
         await _commandProcessor.SendAsync(request, cancellationToken: token);

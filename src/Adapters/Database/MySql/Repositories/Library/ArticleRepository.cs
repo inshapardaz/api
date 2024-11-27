@@ -23,14 +23,15 @@ public class ArticleRepository : IArticleRepository
         int id;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO Article (LibraryId, `Title`, `Status`, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp) 
-                            VALUES (@LibraryId, @Title, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp);
+            var sql = @"INSERT INTO Article (LibraryId, `Title`, `Status`, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, `Type`) 
+                            VALUES (@LibraryId, @Title, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Type);
                             SELECT LAST_INSERT_ID();";
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
                 Title = article.Title,
                 Status = article.Status,
+                Type = article.Type,
                 WriterAccountId = article.WriterAccountId,
                 WriterAssignTimeStamp = article.WriterAssignTimeStamp,
                 ReviewerAccountId = article.ReviewerAccountId,

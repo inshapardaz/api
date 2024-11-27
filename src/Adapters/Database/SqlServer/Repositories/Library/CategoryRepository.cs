@@ -54,7 +54,8 @@ public class CategoryRepository : ICategoryRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"Select c.Id, c.Name,
-                            (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount
+                            (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount,
+                            (Select Count(*) From ArticleCategory ac Where ac.CategoryId = c.Id) AS ArticleCount
                             FROM Category AS c
                             Where LibraryId = @LibraryId";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId }, cancellationToken: cancellationToken);
@@ -68,7 +69,8 @@ public class CategoryRepository : ICategoryRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"Select c.Id, c.Name,
-                            (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount
+                            (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount,
+                            (Select Count(*) From ArticleCategory ac Where ac.CategoryId = c.Id) AS ArticleCount
                             FROM Category AS c
                             Where c.LibraryId = @LibraryId And c.Id = @Id";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryId }, cancellationToken: cancellationToken);
@@ -82,7 +84,8 @@ public class CategoryRepository : ICategoryRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"Select c.Id, c.Name,
-                            (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount
+                            (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount,
+                            (Select Count(*) From ArticleCategory ac Where ac.CategoryId = c.Id) AS ArticleCount
                             FROM Category AS c
                             Where c.LibraryId = @LibraryId And c.Id IN @Id";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryIds }, cancellationToken: cancellationToken);

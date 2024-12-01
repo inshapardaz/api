@@ -23,10 +23,12 @@ public class GetChapterByIdQuery : LibraryBaseQuery<ChapterModel>
 public class GetChapterByIdQueryHandler : QueryHandlerAsync<GetChapterByIdQuery, ChapterModel>
 {
     private readonly IChapterRepository _chapterRepository;
+    private readonly IBookPageRepository _bookPageRepository;
 
-    public GetChapterByIdQueryHandler(IChapterRepository chapterRepository)
+    public GetChapterByIdQueryHandler(IChapterRepository chapterRepository, IBookPageRepository bookPageRepository)
     {
         _chapterRepository = chapterRepository;
+        _bookPageRepository = bookPageRepository;
     }
 
     public override async Task<ChapterModel> ExecuteAsync(GetChapterByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
@@ -35,6 +37,8 @@ public class GetChapterByIdQueryHandler : QueryHandlerAsync<GetChapterByIdQuery,
 
         if (chapter != null)
         {
+            var firstPage = await _bookPageRepository.GetFirstPageIndexByChapterNumber(command.LibraryId, command.BookId, chapter.ChapterNumber, cancellationToken);
+            chapter.FirstPageIndex = firstPage?.SequenceNumber;
             chapter.PreviousChapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber - 1, cancellationToken);
             chapter.NextChapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber + 1, cancellationToken);
         }

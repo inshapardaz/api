@@ -19,4 +19,5 @@ public class BookPageView : ViewWithLinks
     public DateTime? ReviewerAssignTimeStamp { get; set; }
     public long? ChapterId { get; set; }
     public string ChapterTitle { get; set; }
+    public int? ChapterNumber { get; set; }
 }

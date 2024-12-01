@@ -17,6 +17,8 @@ public class BookPageModel
     public string ReviewerAccountName { get; set; }
     public DateTime? ReviewerAssignTimeStamp { get; set; }
     public long? ChapterId { get; set; }
+    
+    public int? ChapterNumber { get; set; }
 
     public string ChapterTitle { get; set; }
     public BookPageModel PreviousPage { get; set; }

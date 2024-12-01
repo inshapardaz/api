@@ -24,12 +24,14 @@ public class GetChaptersByBookQuerytHandler : QueryHandlerAsync<GetChaptersByBoo
     private readonly IBookRepository _bookRepository;
     private readonly IChapterRepository _chapterRepository;
     private readonly IUserHelper _userHelper;
+    private readonly IBookPageRepository _bookPageRepository;
 
-    public GetChaptersByBookQuerytHandler(IBookRepository bookRepository, IChapterRepository chapterRepository, IUserHelper userHelper)
+    public GetChaptersByBookQuerytHandler(IBookRepository bookRepository, IChapterRepository chapterRepository, IUserHelper userHelper, IBookPageRepository bookPageRepository)
     {
         _bookRepository = bookRepository;
         _chapterRepository = chapterRepository;
         _userHelper = userHelper;
+        _bookPageRepository = bookPageRepository;
     }
 
     public override async Task<IEnumerable<ChapterModel>> ExecuteAsync(GetChaptersByBookQuery command, CancellationToken cancellationToken = new CancellationToken())
@@ -37,6 +39,12 @@ public class GetChaptersByBookQuerytHandler : QueryHandlerAsync<GetChaptersByBoo
         var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, _userHelper.AccountId, cancellationToken);
         if (book == null) return null;
 
-        return await _chapterRepository.GetChaptersByBook(command.LibraryId, command.BookId, cancellationToken);
+        var chapters = await _chapterRepository.GetChaptersByBook(command.LibraryId, command.BookId, cancellationToken);
+        foreach (var chapter in chapters)
+        {
+            var firstPage = await _bookPageRepository.GetFirstPageIndexByChapterNumber(command.LibraryId, command.BookId, chapter.ChapterNumber, cancellationToken);
+            chapter.FirstPageIndex = firstPage?.SequenceNumber;
+        }
+        return chapters;
     }
 }

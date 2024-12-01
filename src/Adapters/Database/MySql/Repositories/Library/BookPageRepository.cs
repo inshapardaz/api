@@ -54,7 +54,7 @@ public class BookPageRepository : IBookPageRepository
         {
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, p.Text, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
-                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
+                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.ChapterNumber, c.Title As ChapterTitle
                             FROM BookPage AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId
@@ -169,7 +169,7 @@ public class BookPageRepository : IBookPageRepository
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status,
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
-                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.ContentId, p.ChapterId, c.Title As ChapterTitle
+                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.ContentId, p.ChapterId, c.ChapterNumber, c.Title As ChapterTitle
                             FROM BookPage AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId
@@ -283,6 +283,32 @@ public class BookPageRepository : IBookPageRepository
         }
     }
 
+    public async Task<BookPageModel> GetFirstPageIndexByChapterNumber(int libraryId, int bookId, int chapterNumber, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
+                                p.ReviewerAccountId, p.Text, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
+                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
+                            FROM BookPage AS p
+                                LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
+                                LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId
+                                INNER JOIN Book b ON b.Id = p.BookId
+                                LEFT OUTER JOIN Accounts a ON a.Id = p.WriterAccountId
+                                LEFT OUTER JOIN Accounts ar ON ar.Id = p.ReviewerAccountId
+                            WHERE b.LibraryId = @LibraryId 
+                                AND p.BookId = @BookId 
+                                AND c.ChapterNumber = @ChapterNumber
+                            ORDER BY p.SequenceNumber
+                            LIMIT 1";
+            var command = new CommandDefinition(sql,
+                new { LibraryId = libraryId, BookId = bookId, ChapterNumber = chapterNumber },
+                cancellationToken: cancellationToken);
+
+            return await connection.QuerySingleOrDefaultAsync<BookPageModel>(command);
+        }
+    }
+
     public async Task<int> GetLastPageNumberForBook(int libraryId, int bookId, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
@@ -307,7 +333,7 @@ public class BookPageRepository : IBookPageRepository
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId,
                                 p.WriterAccountId, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, p.ReviewerAssignTimeStamp, 
-                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
+                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.ChapterNumber, c.Title As ChapterTitle
                             FROM BookPage AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId
@@ -328,7 +354,7 @@ public class BookPageRepository : IBookPageRepository
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId,
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
-                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
+                                   f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.ChapterNumber, c.Title As ChapterTitle
                             FROM BookPage AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId
@@ -388,7 +414,7 @@ public class BookPageRepository : IBookPageRepository
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId,
                                 p.WriterAccountId, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, p.ReviewerAssignTimeStamp, 
-                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
+                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.ChapterNumber, c.Title As ChapterTitle
                             FROM BookPage AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId
@@ -501,7 +527,7 @@ public class BookPageRepository : IBookPageRepository
         {
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.ContentId, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
-                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.Title As ChapterTitle
+                                f.Id As ImageId, f.FilePath AS ImageUrl, p.ChapterId, c.ChapterNumber, c.Title As ChapterTitle
                             FROM BookPage AS p 
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN Chapter c ON c.Id = p.ChapterId

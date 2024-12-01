@@ -20,7 +20,8 @@ public static class ChapterMapper
             WriterAssignTimeStamp = source.WriterAssignTimeStamp,
             ReviewerAccountId = source.ReviewerAccountId,
             ReviewerAccountName = source.ReviewerAccountName,
-            ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp
+            ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
+            FirstPageIndex = source.FirstPageIndex
         };
 
     public static ChapterModel Map(this ChapterView source)

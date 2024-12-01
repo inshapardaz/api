@@ -25,4 +25,5 @@ public class ChapterModel
     public List<ChapterContentModel> Contents { get; set; } = new List<ChapterContentModel>();
     public ChapterModel PreviousChapter { get; internal set; }
     public ChapterModel NextChapter { get; internal set; }
+    public int? FirstPageIndex { get; set; }
 }

@@ -315,6 +315,16 @@ public class BookPageRenderer : IRenderBookPage
             }
         }
 
+        if (source.ChapterId.HasValue)
+        {
+            links.Add(_linkRenderer.Render(new Link
+            {
+                ActionName = nameof(ChapterController.GetChapterById),
+                Method = HttpMethod.Get,
+                Rel = RelTypes.Chapter,
+                Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
+            }));
+        }
         result.Links = links;
         return result;
     }

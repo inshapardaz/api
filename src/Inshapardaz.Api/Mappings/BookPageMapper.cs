@@ -40,6 +40,7 @@ public static class BookPageMapper
             ReviewerAccountName = model.ReviewerAccountName,
             ReviewerAssignTimeStamp = model.ReviewerAssignTimeStamp,
             ChapterId = model.ChapterId,
+            ChapterNumber = model.ChapterNumber,  
             ChapterTitle = model.ChapterTitle
         };
     }

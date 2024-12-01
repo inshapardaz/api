@@ -1,4 +1,6 @@
-﻿namespace Inshapardaz.Api.Views.Library;
+﻿using Inshapardaz.Domain.Models.Library;
+
+namespace Inshapardaz.Api.Views.Library;
 
 public class ChapterView : ViewWithLinks
 {
@@ -19,4 +21,5 @@ public class ChapterView : ViewWithLinks
     public DateTime? ReviewerAssignTimeStamp { get; set; }
 
     public IEnumerable<ChapterContentView> Contents { get; set; }
+    public int? FirstPageIndex { get; set; }
 }

@@ -8,4 +8,5 @@ public class CategoryModel
 
     public int BookCount { get; internal set; }
     public int ArticleCount { get; internal set; }
+    public int PeriodicalCategory { get; internal set; }
 }

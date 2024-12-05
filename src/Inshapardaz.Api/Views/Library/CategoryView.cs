@@ -8,5 +8,5 @@ public class CategoryView : ViewWithLinks
 
     public int BookCount { get; set; }
     public int ArticleCount { get; set; }
-    public int PeriodicalCategory { get; set; }
+    public int PeriodicalCount { get; set; }
 }

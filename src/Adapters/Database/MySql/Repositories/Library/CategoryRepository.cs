@@ -63,7 +63,7 @@ public class CategoryRepository : ICategoryRepository
             var sql = @"SELECT c.Id, c.Name,
                                 (SELECT Count(*) FROM BookCategory b WHERE b.CategoryId = c.Id) AS BookCount,
                                 (SELECT Count(*) FROM ArticleCategory ac WHERE ac.CategoryId = c.Id) AS ArticleCount,
-                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCategory
+                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount
                             FROM Category AS c
                             Where LibraryId = @LibraryId";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId }, cancellationToken: cancellationToken);
@@ -79,7 +79,7 @@ public class CategoryRepository : ICategoryRepository
             var sql = @"SELECT c.Id, c.Name,
                                 (SELECT Count(*) FROM BookCategory b WHERE b.CategoryId = c.Id) AS BookCount,
                                 (SELECT Count(*) FROM ArticleCategory ac WHERE ac.CategoryId = c.Id) AS ArticleCount,
-                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCategory
+                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount
                             FROM Category AS c
                             WHERE c.LibraryId = @LibraryId
                                 AND c.Id = @Id";
@@ -95,7 +95,8 @@ public class CategoryRepository : ICategoryRepository
         {
             var sql = @"SELECT c.Id, c.Name,
                                 (SELECT COUNT(*) FROM BookCategory b WHERE b.CategoryId = c.Id) AS BookCount,
-                                (SELECT Count(*) FROM ArticleCategory ac WHERE ac.CategoryId = c.Id) AS ArticleCount
+                                (SELECT Count(*) FROM ArticleCategory ac WHERE ac.CategoryId = c.Id) AS ArticleCount,
+                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount
                             FROM Category AS c
                             WHERE c.LibraryId = @LibraryId 
                                 AND c.Id IN @Id";

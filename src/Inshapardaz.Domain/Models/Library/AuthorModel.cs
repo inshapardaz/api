@@ -14,6 +14,7 @@ public class AuthorModel
 
     public int BookCount { get; set; }
     public int ArticleCount { get; set; }
+    public int PoetryCount { get; set; }
 
     public AuthorTypes AuthorType { get; set; }
 }

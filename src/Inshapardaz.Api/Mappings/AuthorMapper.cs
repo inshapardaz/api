@@ -14,6 +14,7 @@ public static class AuthorMapper
             Description = source.Description,
             BookCount = source.BookCount,
             ArticleCount = source.ArticleCount,
+            PoetryCount = source.PoetryCount,
             AuthorType = source.AuthorType.ToDescription()
         };
 

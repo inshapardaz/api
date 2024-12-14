@@ -12,6 +12,7 @@ public static class CategoryMapper
             Name = source.Name,
             BookCount = source.BookCount,
             ArticleCount = source.ArticleCount,
+            PoetryCount = source.PoetryCount,
             PeriodicalCount = source.PeriodicalCount
         };
 

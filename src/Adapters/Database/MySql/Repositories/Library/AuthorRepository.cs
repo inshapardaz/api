@@ -79,7 +79,8 @@ public class AuthorRepository : IAuthorRepository
         {
             var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                                 (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
-                                (SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = a.Id) AS ArticleCount
+                                (SELECT Count(*) FROM articleauthor INNER JOIN article on articleauthor.ArticleId = article.Id WHERE articleauthor.AuthorId = a.Id AND article.`Type` = 1) AS ArticleCount,
+                                (SELECT Count(*) FROM articleauthor INNER JOIN article on articleauthor.ArticleId = article.Id WHERE articleauthor.AuthorId = a.Id AND article.`Type` = 2) AS PoetryCount
                             FROM Author AS a
                                 LEFT OUTER JOIN `File` f ON f.Id = a.ImageId
                             WHERE a.LibraryId = @LibraryId
@@ -121,7 +122,8 @@ public class AuthorRepository : IAuthorRepository
         {
             var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType as AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                                 (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
-                                (SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = a.Id) AS ArticleCount
+                                (SELECT Count(*) FROM articleauthor INNER JOIN article on articleauthor.ArticleId = article.Id WHERE articleauthor.AuthorId = a.Id AND article.`Type` = 1) AS ArticleCount,
+                                (SELECT Count(*) FROM articleauthor INNER JOIN article on articleauthor.ArticleId = article.Id WHERE articleauthor.AuthorId = a.Id AND article.`Type` = 2) AS PoetryCount
                             FROM Author AS a
                                 LEFT OUTER JOIN `File` f ON f.Id = a.ImageId
                             WHERE a.LibraryId = @LibraryId
@@ -140,7 +142,8 @@ public class AuthorRepository : IAuthorRepository
         {
             var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                                 (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
-                                (SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = a.Id) AS ArticleCount
+                                (SELECT Count(*) FROM articleauthor INNER JOIN article on articleauthor.ArticleId = article.Id WHERE articleauthor.AuthorId = a.Id AND article.`Type` = 1) AS ArticleCount,
+                                (SELECT Count(*) FROM articleauthor INNER JOIN article on articleauthor.ArticleId = article.Id WHERE articleauthor.AuthorId = a.Id AND article.`Type` = 2) AS PoetryCount
                             FROM Author AS a
                                 LEFT OUTER JOIN `File` f ON f.Id = a.ImageId
                             WHERE a.LibraryId = @LibraryId
@@ -184,7 +187,8 @@ public class AuthorRepository : IAuthorRepository
         {
             var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                                 (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
-                                (SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = a.Id) AS ArticleCount
+                                (SELECT Count(*) FROM articleauthor INNER JOIN article on articleauthor.ArticleId = article.Id WHERE articleauthor.AuthorId = a.Id AND article.`Type` = 1) AS ArticleCount,
+                                (SELECT Count(*) FROM articleauthor INNER JOIN article on articleauthor.ArticleId = article.Id WHERE articleauthor.AuthorId = a.Id AND article.`Type` = 2) AS PoetryCount
                             FROM `Author` AS a
                                 LEFT OUTER JOIN `File` f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId

@@ -8,4 +8,5 @@ public class AuthorView : ViewWithLinks
     public int BookCount { get; set; }
     public string AuthorType { get; set; }
     public int ArticleCount { get; set; }
+    public int PoetryCount { get; set; }
 }

@@ -62,8 +62,9 @@ public class CategoryRepository : ICategoryRepository
         {
             var sql = @"SELECT c.Id, c.Name,
                                 (SELECT Count(*) FROM BookCategory b WHERE b.CategoryId = c.Id) AS BookCount,
-                                (SELECT Count(*) FROM ArticleCategory ac WHERE ac.CategoryId = c.Id) AS ArticleCount,
-                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount
+                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount,
+                                (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 1) AS ArticleCount,
+                                (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 2) AS PoetryCount
                             FROM Category AS c
                             Where LibraryId = @LibraryId";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId }, cancellationToken: cancellationToken);
@@ -78,8 +79,9 @@ public class CategoryRepository : ICategoryRepository
         {
             var sql = @"SELECT c.Id, c.Name,
                                 (SELECT Count(*) FROM BookCategory b WHERE b.CategoryId = c.Id) AS BookCount,
-                                (SELECT Count(*) FROM ArticleCategory ac WHERE ac.CategoryId = c.Id) AS ArticleCount,
-                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount
+                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount,
+                                (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 1) AS ArticleCount,
+                                (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 2) AS PoetryCount
                             FROM Category AS c
                             WHERE c.LibraryId = @LibraryId
                                 AND c.Id = @Id";
@@ -95,8 +97,9 @@ public class CategoryRepository : ICategoryRepository
         {
             var sql = @"SELECT c.Id, c.Name,
                                 (SELECT COUNT(*) FROM BookCategory b WHERE b.CategoryId = c.Id) AS BookCount,
-                                (SELECT Count(*) FROM ArticleCategory ac WHERE ac.CategoryId = c.Id) AS ArticleCount,
-                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount
+                                (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount,
+                                (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 1) AS ArticleCount,
+                                (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 2) AS PoetryCount
                             FROM Category AS c
                             WHERE c.LibraryId = @LibraryId 
                                 AND c.Id IN @Id";

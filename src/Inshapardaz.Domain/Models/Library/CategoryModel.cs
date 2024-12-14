@@ -7,6 +7,7 @@ public class CategoryModel
     public string Name { get; set; }
 
     public int BookCount { get; internal set; }
-    public int ArticleCount { get; internal set; }
     public int PeriodicalCount { get; internal set; }
+    public int ArticleCount { get; internal set; }
+    public int PoetryCount { get; internal set; }
 }

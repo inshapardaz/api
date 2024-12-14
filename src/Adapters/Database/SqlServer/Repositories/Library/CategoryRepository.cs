@@ -56,8 +56,8 @@ public class CategoryRepository : ICategoryRepository
             var sql = @"Select c.Id, c.Name,
                             (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount,
                             (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount,
-                            (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 1) AS ArticleCount,
-                            (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 2) AS PoetryCount
+                            (SELECT Count(*) FROM articlecategory INNER JOIN Article on articlecategory.ArticleId = Article.Id WHERE articlecategory.CategoryId = c.Id AND Article.`Type` = 1) AS ArticleCount,
+                            (SELECT Count(*) FROM articlecategory INNER JOIN Article on articlecategory.ArticleId = Article.Id WHERE articlecategory.CategoryId = c.Id AND Article.`Type` = 2) AS PoetryCount
                             FROM Category AS c
                             Where LibraryId = @LibraryId";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId }, cancellationToken: cancellationToken);
@@ -73,8 +73,8 @@ public class CategoryRepository : ICategoryRepository
             var sql = @"Select c.Id, c.Name,
                             (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount,
                             (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount,
-                            (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 1) AS ArticleCount,
-                            (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 2) AS PoetryCount
+                            (SELECT Count(*) FROM articlecategory INNER JOIN Article on articlecategory.ArticleId = Article.Id WHERE articlecategory.CategoryId = c.Id AND Article.`Type` = 1) AS ArticleCount,
+                            (SELECT Count(*) FROM articlecategory INNER JOIN Article on articlecategory.ArticleId = Article.Id WHERE articlecategory.CategoryId = c.Id AND Article.`Type` = 2) AS PoetryCount
                             FROM Category AS c
                             Where c.LibraryId = @LibraryId And c.Id = @Id";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryId }, cancellationToken: cancellationToken);
@@ -90,8 +90,8 @@ public class CategoryRepository : ICategoryRepository
             var sql = @"Select c.Id, c.Name,
                             (Select Count(*) From BookCategory b Where b.CategoryId = c.Id) AS BookCount,
                             (SELECT Count(*) FROM PeriodicalCategory pc WHERE pc.CategoryId = c.Id) AS PeriodicalCount,
-                            (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 1) AS ArticleCount,
-                            (SELECT Count(*) FROM articlecategory INNER JOIN article on articlecategory.ArticleId = article.Id WHERE articlecategory.CategoryId = c.Id AND article.`Type` = 2) AS PoetryCount
+                            (SELECT Count(*) FROM articlecategory INNER JOIN Article on articlecategory.ArticleId = Article.Id WHERE articlecategory.CategoryId = c.Id AND Article.`Type` = 1) AS ArticleCount,
+                            (SELECT Count(*) FROM articlecategory INNER JOIN Article on articlecategory.ArticleId = Article.Id WHERE articlecategory.CategoryId = c.Id AND Article.`Type` = 2) AS PoetryCount
                             FROM Category AS c
                             Where c.LibraryId = @LibraryId And c.Id IN @Id";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = categoryIds }, cancellationToken: cancellationToken);

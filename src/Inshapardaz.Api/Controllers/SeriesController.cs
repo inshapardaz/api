@@ -2,6 +2,7 @@
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.Library.Series;
 using Inshapardaz.Domain.Ports.Query.Library.Series;
@@ -30,9 +31,14 @@ public class SeriesController : Controller
     }
 
     [HttpGet("libraries/{libraryId}/series", Name = nameof(SeriesController.GetSeries))]
-    public async Task<IActionResult> GetSeries(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> GetSeries(int libraryId, string query, int pageNumber = 1, int pageSize = 10, SeriesSortByType sortby = SeriesSortByType.Name, SortDirection sortDirection = SortDirection.Ascending, CancellationToken token = default(CancellationToken))
     {
-        var seriesQuery = new GetSeriesQuery(libraryId, pageNumber, pageSize) { Query = query };
+        var seriesQuery = new GetSeriesQuery(libraryId, pageNumber, pageSize)
+        {
+            Query = query,
+            SortBy = sortby,
+            SortDirection = sortDirection
+        };
         var series = await _queryProcessor.ExecuteAsync(seriesQuery, cancellationToken: token);
 
         var args = new PageRendererArgs<SeriesModel>

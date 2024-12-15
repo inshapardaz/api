@@ -23,6 +23,8 @@ public class GetSeriesQuery : LibraryBaseQuery<Page<SeriesModel>>
     public int PageSize { get; private set; }
 
     public string Query { get; set; }
+    public SeriesSortByType SortBy { get; set; }
+    public SortDirection SortDirection { get; set; }
 }
 
 public class GetSeriesQueryHandler : QueryHandlerAsync<GetSeriesQuery, Page<SeriesModel>>
@@ -40,8 +42,8 @@ public class GetSeriesQueryHandler : QueryHandlerAsync<GetSeriesQuery, Page<Seri
     public override async Task<Page<SeriesModel>> ExecuteAsync(GetSeriesQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
         var series = string.IsNullOrWhiteSpace(query.Query)
-         ? await _seriesRepository.GetSeries(query.LibraryId, query.PageNumber, query.PageSize, cancellationToken)
-         : await _seriesRepository.FindSeries(query.LibraryId, query.Query, query.PageNumber, query.PageSize, cancellationToken);
+         ? await _seriesRepository.GetSeries(query.LibraryId, query.PageNumber, query.PageSize, query.SortBy, query.SortDirection, cancellationToken)
+         : await _seriesRepository.FindSeries(query.LibraryId, query.Query, query.PageNumber, query.PageSize, query.SortBy, query.SortDirection, cancellationToken);
 
         foreach (var author in series.Data)
         {

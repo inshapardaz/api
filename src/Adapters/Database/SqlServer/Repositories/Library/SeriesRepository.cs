@@ -55,16 +55,19 @@ public class SeriesRepository : ISeriesRepository
         }
     }
 
-    public async Task<Page<SeriesModel>> GetSeries(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Page<SeriesModel>> GetSeries(int libraryId, int pageNumber, int pageSize, SeriesSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
+            var sortByQuery = $"{GetSortByQuery(sortBy)}";
+            var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
+            
             var sql = @"SELECT  s.Id, s.Name, s.[Description], s.ImageId, f.FilePath AS ImageUrl, (Select Count(*) From Book b Where b.SeriesId = s.Id) AS BookCount
                             FROM Series AS s
                             LEFT OUTER JOIN [File] f ON f.Id = s.ImageId
-                            Where s.LibraryId = @LibraryId
-                            Order By s.Name
-                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            Where s.LibraryId = @LibraryId " +
+                            $" ORDER BY {sortByQuery} {sortDirection} " +
+                            @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
             var command = new CommandDefinition(sql,
                                                 new { LibraryId = libraryId, PageSize = pageSize, PageNumber = pageNumber },
@@ -85,17 +88,20 @@ public class SeriesRepository : ISeriesRepository
         }
     }
 
-    public async Task<Page<SeriesModel>> FindSeries(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Page<SeriesModel>> FindSeries(int libraryId, string query, int pageNumber, int pageSize, SeriesSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
+            var sortByQuery = $"{GetSortByQuery(sortBy)}";
+            var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
+            
             var sql = @"SELECT s.Id, s.Name, s.[Description], s.ImageId, f.FilePath AS ImageUrl, (Select Count(*) From Book b Where b.SeriesId = s.Id) AS BookCount
                             FROM Series AS s
                             LEFT OUTER JOIN [File] f ON f.Id = s.ImageId
                             Where s.LibraryId = @LibraryId AND
-                            s.Name LIKE @Query
-                            Order By s.Name
-                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            s.Name LIKE @Query " +
+                            $" ORDER BY {sortByQuery} {sortDirection} " +
+                            @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
             var command = new CommandDefinition(sql,
                                                 new { LibraryId = libraryId, Query = $"%{query}%", PageSize = pageSize, PageNumber = pageNumber },
@@ -137,6 +143,19 @@ public class SeriesRepository : ISeriesRepository
             var sql = @"Update Series Set ImageId = @ImageId Where Id = @Id AND LibraryId = @LibraryId ";
             var command = new CommandDefinition(sql, new { Id = seriesId, LibraryId = libraryId, ImageId = imageId }, cancellationToken: cancellationToken);
             await connection.ExecuteScalarAsync<int>(command);
+        }
+    }
+    
+    private static string GetSortByQuery(SeriesSortByType sortBy)
+    {
+        switch (sortBy)
+        {
+            case SeriesSortByType.Name:
+                return "s.`Name`";
+            case SeriesSortByType.BookCount:
+                return "BookCount";
+            default:
+                return "s.`Name`";
         }
     }
 }

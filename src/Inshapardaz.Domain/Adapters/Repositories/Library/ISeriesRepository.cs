@@ -13,9 +13,9 @@ public interface ISeriesRepository
 
     Task DeleteSeries(int libraryId, int seriesId, CancellationToken cancellationToken);
 
-    Task<Page<SeriesModel>> GetSeries(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
+    Task<Page<SeriesModel>> GetSeries(int libraryId, int pageNumber, int pageSize, SeriesSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
 
-    Task<Page<SeriesModel>> FindSeries(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken);
+    Task<Page<SeriesModel>> FindSeries(int libraryId, string query, int pageNumber, int pageSize, SeriesSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
 
     Task<SeriesModel> GetSeriesById(int libraryId, int seriesId, CancellationToken cancellationToken);
 

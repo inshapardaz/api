@@ -192,7 +192,7 @@ public class Migrator
         var destinationDb = DestinationRepositoryFactory.SeriesRepository;
 
         Dictionary<int, int> seriesMap = new Dictionary<int, int>();
-        var series = await sourceDb.GetSeries(libraryId, 1, int.MaxValue, cancellationToken);
+        var series = await sourceDb.GetSeries(libraryId, 1, int.MaxValue, SeriesSortByType.Name, SortDirection.Ascending, cancellationToken);
         Console.WriteLine($"Started migration of {series.TotalCount} Series.");
         int i = 0;
 

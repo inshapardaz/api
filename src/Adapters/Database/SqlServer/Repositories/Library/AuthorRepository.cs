@@ -60,20 +60,23 @@ public class AuthorRepository : IAuthorRepository
         }
     }
 
-    public async Task<Page<AuthorModel>> GetAuthors(int libraryId, AuthorTypes? authorType, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Page<AuthorModel>> GetAuthors(int libraryId, AuthorTypes? authorType, int pageNumber, int pageSize, AuthorSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
+            var sortByQuery = $"a.{GetSortByQuery(sortBy)}";
+            var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
+            
             var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
-                            (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
-                            (SELECT Count(*) FROM ArticleAuthor INNER JOIN Article on ArticleAuthor.ArticleId = Article.Id WHERE ArticleAuthor.AuthorId = a.Id AND Article.`Type` = 1) AS ArticleCount,
-                            (SELECT Count(*) FROM ArticleAuthor INNER JOIN Article on ArticleAuthor.ArticleId = Article.Id WHERE ArticleAuthor.AuthorId = a.Id AND Article.`Type` = 2) AS PoetryCount
+                                (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
+                                (SELECT Count(*) FROM ArticleAuthor INNER JOIN Article on ArticleAuthor.ArticleId = Article.Id WHERE ArticleAuthor.AuthorId = a.Id AND Article.`Type` = 1) AS ArticleCount,
+                                (SELECT Count(*) FROM ArticleAuthor INNER JOIN Article on ArticleAuthor.ArticleId = Article.Id WHERE ArticleAuthor.AuthorId = a.Id AND Article.`Type` = 2) AS PoetryCount
                             FROM Author AS a
-                            LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
+                                LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
-                            AND (@AuthorType IS NULL OR a.AuthorType = @AuthorType)
-                            Order By a.Name
-                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                                AND (@AuthorType IS NULL OR a.AuthorType = @AuthorType) " +
+                            $"ORDER BY {sortByQuery} {sortDirection} " +
+                            @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
             var command = new CommandDefinition(sql,
                                                 new
@@ -120,30 +123,42 @@ public class AuthorRepository : IAuthorRepository
         }
     }
 
-    public async Task<Page<AuthorModel>> FindAuthors(int libraryId, string query, AuthorTypes? authorType, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Page<AuthorModel>> FindAuthors(int libraryId, string query, AuthorTypes? authorType,
+        int pageNumber, int pageSize, AuthorSortByType sortBy, SortDirection direction,
+        CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
+            var sortByQuery = $"a.{GetSortByQuery(sortBy)}";
+            var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
+
             var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
-                            (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
-                            (SELECT Count(*) FROM ArticleAuthor INNER JOIN Article on ArticleAuthor.ArticleId = Article.Id WHERE ArticleAuthor.AuthorId = a.Id AND Article.`Type` = 1) AS ArticleCount,
-                            (SELECT Count(*) FROM ArticleAuthor INNER JOIN Article on ArticleAuthor.ArticleId = Article.Id WHERE ArticleAuthor.AuthorId = a.Id AND Article.`Type` = 2) AS PoetryCount
+                                (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
+                                (SELECT Count(*) FROM ArticleAuthor INNER JOIN Article on ArticleAuthor.ArticleId = Article.Id WHERE ArticleAuthor.AuthorId = a.Id AND Article.`Type` = 1) AS ArticleCount,
+                                (SELECT Count(*) FROM ArticleAuthor INNER JOIN Article on ArticleAuthor.ArticleId = Article.Id WHERE ArticleAuthor.AuthorId = a.Id AND Article.`Type` = 2) AS PoetryCount
                             FROM Author AS a
-                            LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
+                                LEFT OUTER JOIN [File] f ON f.Id = a.ImageId
                             Where a.LibraryId = @LibraryId
-                            AND a.Name LIKE @Query
-                            AND (@AuthorType IS NULL OR a.AuthorType = @AuthorType)
-                            Order By a.Name
-                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                                AND a.Name LIKE @Query
+                                AND (@AuthorType IS NULL OR a.AuthorType = @AuthorType) " +
+                            $"ORDER BY {sortByQuery} {sortDirection} " +
+                            @"OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
             var command = new CommandDefinition(sql,
-                                                new { LibraryId = libraryId, Query = $"%{query}%", AuthorType = authorType, PageSize = pageSize, PageNumber = pageNumber },
-                                                cancellationToken: cancellationToken);
+                new
+                {
+                    LibraryId = libraryId, Query = $"%{query}%", AuthorType = authorType, PageSize = pageSize,
+                    PageNumber = pageNumber
+                },
+                cancellationToken: cancellationToken);
 
             var authors = await connection.QueryAsync<AuthorModel>(command);
 
-            var sqlAuthorCount = "SELECT COUNT(*) FROM Author WHERE LibraryId = @LibraryId And Name LIKE @Query AND (@AuthorType IS NULL OR AuthorType = @AuthorType)";
-            var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, new { LibraryId = libraryId, Query = $"%{query}%", AuthorType = authorType }, cancellationToken: cancellationToken));
+            var sqlAuthorCount =
+                "SELECT COUNT(*) FROM Author WHERE LibraryId = @LibraryId And Name LIKE @Query AND (@AuthorType IS NULL OR AuthorType = @AuthorType)";
+            var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount,
+                new { LibraryId = libraryId, Query = $"%{query}%", AuthorType = authorType },
+                cancellationToken: cancellationToken));
 
             return new Page<AuthorModel>
             {
@@ -154,6 +169,7 @@ public class AuthorRepository : IAuthorRepository
             };
         }
     }
+    
 
     public async Task<IEnumerable<AuthorModel>> GetAuthorByIds(int libraryId, IEnumerable<int> authorIds, CancellationToken cancellationToken)
     {
@@ -168,10 +184,25 @@ public class AuthorRepository : IAuthorRepository
                             Where a.LibraryId = @LibraryId
                             And a.Id IN @AuthorIds";
             var command = new CommandDefinition(sql,
-                                                new { LibraryId = libraryId, AuthorIds = authorIds },
-                                                cancellationToken: cancellationToken);
+                new { LibraryId = libraryId, AuthorIds = authorIds },
+                cancellationToken: cancellationToken);
 
             return await connection.QueryAsync<AuthorModel>(command);
+        }
+    }
+
+    private static string GetSortByQuery(AuthorSortByType sortBy)
+    {
+        switch (sortBy)
+        {
+            case AuthorSortByType.Name:
+                return "`Name`";
+
+            case AuthorSortByType.AuthorType:
+                return "AuthorType";
+
+            default:
+                return "`Name`";
         }
     }
 }

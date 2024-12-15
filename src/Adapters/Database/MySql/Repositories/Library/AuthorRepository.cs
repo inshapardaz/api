@@ -73,10 +73,13 @@ public class AuthorRepository : IAuthorRepository
         }
     }
 
-    public async Task<Page<AuthorModel>> GetAuthors(int libraryId, AuthorTypes? authorType, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Page<AuthorModel>> GetAuthors(int libraryId, AuthorTypes? authorType, int pageNumber, int pageSize, AuthorSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
+            var sortByQuery = $"a.{GetSortByQuery(sortBy)}";
+            var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
+            
             var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                                 (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
                                 (SELECT Count(*) FROM ArticleAuthor INNER JOIN Article on ArticleAuthor.ArticleId = Article.Id WHERE ArticleAuthor.AuthorId = a.Id AND Article.`Type` = 1) AS ArticleCount,
@@ -84,10 +87,10 @@ public class AuthorRepository : IAuthorRepository
                             FROM Author AS a
                                 LEFT OUTER JOIN `File` f ON f.Id = a.ImageId
                             WHERE a.LibraryId = @LibraryId
-                                AND (@AuthorType IS NULL OR a.AuthorType = @AuthorType)
-                            ORDER BY a.Name
-                            LIMIT @PageSize
-                            OFFSET @Offset";
+                                AND (@AuthorType IS NULL OR a.AuthorType = @AuthorType) " + 
+                            $" ORDER BY {sortByQuery} {sortDirection} " +
+                            @"LIMIT @PageSize
+                              OFFSET @Offset";
             var command = new CommandDefinition(sql,
                                                 new
                                                 {
@@ -136,10 +139,13 @@ public class AuthorRepository : IAuthorRepository
         }
     }
 
-    public async Task<Page<AuthorModel>> FindAuthors(int libraryId, string query, AuthorTypes? authorType, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Page<AuthorModel>> FindAuthors(int libraryId, string query, AuthorTypes? authorType, int pageNumber, int pageSize, AuthorSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
+            var sortByQuery = $"a.{GetSortByQuery(sortBy)}";
+            var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
+            
             var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                                 (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
                                 (SELECT Count(*) FROM ArticleAuthor INNER JOIN Article on ArticleAuthor.ArticleId = Article.Id WHERE ArticleAuthor.AuthorId = a.Id AND Article.`Type` = 1) AS ArticleCount,
@@ -148,9 +154,9 @@ public class AuthorRepository : IAuthorRepository
                                 LEFT OUTER JOIN `File` f ON f.Id = a.ImageId
                             WHERE a.LibraryId = @LibraryId
                                 AND a.Name LIKE @Query
-                                AND (@AuthorType IS NULL OR a.AuthorType = @AuthorType)
-                            ORDER BY a.Name
-                            LIMIT @PageSize
+                                AND (@AuthorType IS NULL OR a.AuthorType = @AuthorType) " +
+                            $" ORDER BY {sortByQuery} {sortDirection} " +
+                            @"LIMIT @PageSize
                             OFFSET @Offset";
             var command = new CommandDefinition(sql, new
             {
@@ -198,6 +204,20 @@ public class AuthorRepository : IAuthorRepository
                                                 cancellationToken: cancellationToken);
 
             return await connection.QueryAsync<AuthorModel>(command);
+        }
+    }
+    private static string GetSortByQuery(AuthorSortByType sortBy)
+    {
+        switch (sortBy)
+        {
+            case AuthorSortByType.Name:
+                return "`Name`";
+
+            case AuthorSortByType.AuthorType:
+                return "AuthorType";
+
+            default:
+                return "`Name`";
         }
     }
 }

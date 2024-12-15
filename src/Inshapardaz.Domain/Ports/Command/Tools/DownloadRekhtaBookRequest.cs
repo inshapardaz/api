@@ -235,7 +235,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
     private async Task<BookModel> CreateNewBook(BookInfo bookInfo, string source, CancellationToken cancellationToken)
     {
         var authorName = bookInfo.Authors?.FirstOrDefault() ?? "Unknown";
-        var authors = await _authorRepository.FindAuthors(_settings.DefaultLibraryId, authorName, AuthorTypes.Writer, 1, 1, cancellationToken);
+        var authors = await _authorRepository.FindAuthors(_settings.DefaultLibraryId, authorName, AuthorTypes.Writer, 1, 1, AuthorSortByType.Name, SortDirection.Ascending, cancellationToken);
         AuthorModel author = null;
 
         if (!authors.Data.Any())

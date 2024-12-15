@@ -32,9 +32,22 @@ public class AuthorController : Controller
 
     // TODO : Add sorting
     [HttpGet("libraries/{libraryId}/authors", Name = nameof(AuthorController.GetAuthors))]
-    public async Task<IActionResult> GetAuthors(int libraryId, string query, AuthorTypes? authorType = null, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> GetAuthors(int libraryId, 
+        string query, 
+        AuthorTypes? authorType = null,
+        int pageNumber = 1, 
+        int pageSize = 10, 
+        [FromQuery] AuthorSortByType sortBy = AuthorSortByType.Name,
+        [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
+        CancellationToken token = default(CancellationToken))
     {
-        var authorsQuery = new GetAuthorsQuery(libraryId, pageNumber, pageSize) { Query = query, AuthorType = authorType };
+        var authorsQuery = new GetAuthorsQuery(libraryId, pageNumber, pageSize)
+        {
+            Query = query, 
+            AuthorType = authorType,
+            SortBy = sortBy,
+            SortDirection = sortDirection
+        };
         var result = await _queryProcessor.ExecuteAsync(authorsQuery, token);
 
         var args = new PageRendererArgs<AuthorModel>

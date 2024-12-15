@@ -25,6 +25,8 @@ public class GetAuthorsQuery : LibraryBaseQuery<Page<AuthorModel>>
     public string Query { get; set; }
 
     public AuthorTypes? AuthorType { get; set; }
+    public AuthorSortByType SortBy { get; set; }
+    public SortDirection SortDirection { get; set; }
 }
 
 public class GetAuthorsQueryHandler : QueryHandlerAsync<GetAuthorsQuery, Page<AuthorModel>>
@@ -42,8 +44,8 @@ public class GetAuthorsQueryHandler : QueryHandlerAsync<GetAuthorsQuery, Page<Au
     public override async Task<Page<AuthorModel>> ExecuteAsync(GetAuthorsQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
         var authors = string.IsNullOrWhiteSpace(query.Query)
-         ? await _authorRepository.GetAuthors(query.LibraryId, query.AuthorType, query.PageNumber, query.PageSize, cancellationToken)
-         : await _authorRepository.FindAuthors(query.LibraryId, query.Query, query.AuthorType, query.PageNumber, query.PageSize, cancellationToken);
+         ? await _authorRepository.GetAuthors(query.LibraryId, query.AuthorType, query.PageNumber, query.PageSize, query.SortBy, query.SortDirection, cancellationToken)
+         : await _authorRepository.FindAuthors(query.LibraryId, query.Query, query.AuthorType, query.PageNumber, query.PageSize, query.SortBy, query.SortDirection, cancellationToken);
 
         foreach (var author in authors.Data)
         {

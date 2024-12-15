@@ -163,7 +163,7 @@ public class Migrator
         var destinationDb = DestinationRepositoryFactory.AuthorRepository;
 
         Dictionary<int, int> authorMap = new Dictionary<int, int>();
-        var authors = await sourceDb.GetAuthors(libraryId, null, 1, int.MaxValue, cancellationToken);
+        var authors = await sourceDb.GetAuthors(libraryId, null, 1, int.MaxValue, AuthorSortByType.Name, SortDirection.Ascending, cancellationToken);
         int i = 0;
         Console.WriteLine($"Started migration of {authors.TotalCount} Author(s).");
 

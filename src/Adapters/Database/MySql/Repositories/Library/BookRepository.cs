@@ -207,7 +207,7 @@ public class BookRepository : IBookRepository
                                 AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead " +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
-                        @"LIMIT @PageSize OFFSET @Offset";
+                        "LIMIT @PageSize OFFSET @Offset";
             var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
 
             var bookIds = await connection.QueryAsync(command);

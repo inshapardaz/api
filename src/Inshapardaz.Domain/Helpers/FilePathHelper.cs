@@ -16,7 +16,7 @@ public static class FilePathHelper
     // series
     public static string GetSeriesImageFileName(string fileName) => $"image{Path.GetExtension(fileName)}";
 
-    public static string GetSeriesImagePath(int seriesId, string fileName) => $"/series/{seriesId}/{fileName}";
+    public static string GetSeriesImagePath(int seriesId, string fileName) => $"series/{seriesId}/{fileName}";
 
     // book image
     public static string GetBookImageFileName(string fileName) => $"title{Path.GetExtension(fileName)}";

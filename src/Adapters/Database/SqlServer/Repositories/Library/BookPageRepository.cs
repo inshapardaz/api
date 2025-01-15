@@ -149,11 +149,14 @@ public class BookPageRepository : IBookPageRepository
         }
     }
 
-    public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken)
+    public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize,
+        EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter,
+        SortDirection sortDirection, int? assignedTo, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
+            var sortDirectionValue = sortDirection == SortDirection.Descending ? "DESC" : "ASC";
+            var sql = @$"SELECT p.BookId, p.SequenceNumber, p.Status, 
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
                                    f.Id As ImageId, f.FilePath AS ImageUrl, p.Text, p.ChapterId, c.Title As ChapterTitle
@@ -177,7 +180,7 @@ public class BookPageRepository : IBookPageRepository
                                 ( @ReviewerAssignmentFilter = 2 AND p.ReviewerAccountId IS NULL) OR
                                 ( (@ReviewerAssignmentFilter = 3  OR @ReviewerAssignmentFilter = 4) AND p.ReviewerAccountId = @AccountId )
                             )
-                            ORDER BY p.SequenceNumber
+                            ORDER BY p.SequenceNumber {sortDirectionValue}
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
             var command = new CommandDefinition(sql,

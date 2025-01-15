@@ -27,6 +27,7 @@ public class GetBookPagesQuery : LibraryBaseQuery<Page<BookPageModel>>
     public AssignmentFilter AssignmentFilter { get; set; }
     public int? AccountId { get; set; }
     public AssignmentFilter ReviewerAssignmentFilter { get; set; }
+    public SortDirection SortDirection { get; set; }
 }
 
 public class GetBookPagesQueryHandler : QueryHandlerAsync<GetBookPagesQuery, Page<BookPageModel>>
@@ -46,7 +47,7 @@ public class GetBookPagesQueryHandler : QueryHandlerAsync<GetBookPagesQuery, Pag
 
     public override async Task<Page<BookPageModel>> ExecuteAsync(GetBookPagesQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
-        var pages = await _bookPageRepository.GetPagesByBook(query.LibraryId, query.BookId, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.ReviewerAssignmentFilter, query.AccountId, cancellationToken);
+        var pages = await _bookPageRepository.GetPagesByBook(query.LibraryId, query.BookId, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.ReviewerAssignmentFilter, query.SortDirection, query.AccountId, cancellationToken);
 
         foreach (var page in pages.Data)
         {

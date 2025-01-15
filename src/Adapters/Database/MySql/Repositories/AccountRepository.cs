@@ -160,9 +160,10 @@ public class AccountRepository : IAccountRepository
             var sql = @"Select a.* from Accounts as a
                             INNER JOIN AccountLibrary as al on a.Id = al.AccountId
                             WHERE al.LibraryId = @LibraryId AND al.Role IN (0, 1, 2) AND a.Name LIKE @Query";
-            var command = new CommandDefinition(sql, new { LibraryId = libraryId, Query = query }, cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, Query = $"%{query}%" }, cancellationToken: cancellationToken);
 
-            return await connection.QueryAsync<AccountModel>(command);
+            var result = await connection.QueryAsync<AccountModel>(command);
+            return result;
         }
     }
 

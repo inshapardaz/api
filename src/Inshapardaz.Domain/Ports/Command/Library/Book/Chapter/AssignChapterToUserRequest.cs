@@ -44,10 +44,9 @@ public class AssignChapterToUserRequestHandler : RequestHandlerAsync<AssignChapt
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<AssignChapterToUserRequest> HandleAsync(AssignChapterToUserRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var accountToAssign = command.AccountId ?? _userHelper.Account.Id;
-        if (!_userHelper.IsAdmin)
+        if (!_userHelper.IsAdmin && command.AccountId.HasValue)
         {
-            var account = await _accountRepository.GetLibraryAccountById(command.LibraryId, accountToAssign, cancellationToken);
+            var account = await _accountRepository.GetLibraryAccountById(command.LibraryId, command.AccountId.Value, cancellationToken);
             if (account.Role != Role.LibraryAdmin && account.Role != Role.Writer)
             {
                 throw new BadRequestException("user cannot be assigned chapter");
@@ -62,11 +61,11 @@ public class AssignChapterToUserRequestHandler : RequestHandlerAsync<AssignChapt
 
         if (chapter.Status == EditingStatus.Available || chapter.Status == EditingStatus.Typing)
         {
-            command.Result = await _chapterRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.ChapterNumber, accountToAssign, cancellationToken);
+            command.Result = await _chapterRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.ChapterNumber, command.AccountId, cancellationToken);
         }
         else if (chapter.Status == EditingStatus.Typed || chapter.Status == EditingStatus.InReview)
         {
-            command.Result = await _chapterRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.ChapterNumber, accountToAssign, cancellationToken);
+            command.Result = await _chapterRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.ChapterNumber, command.AccountId, cancellationToken);
         }
         else
         {

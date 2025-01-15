@@ -12,8 +12,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         : TestBase
     {
         private HttpResponseMessage _response;
-        private IssueArticleAssert _articleAssert;
-        private IssueArticleView _newArticle;
 
         public WhenUpdatingIssueArticleWriterAssignmentWithDifferentSequenceNumber()
             : base(Role.Writer)

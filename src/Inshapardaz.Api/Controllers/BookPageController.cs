@@ -44,6 +44,7 @@ public class BookPageController : Controller
         [FromQuery] EditingStatus status = EditingStatus.All,
         [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
         [FromQuery] AssignmentFilter reviewerAssignmentFilter = AssignmentFilter.All,
+        [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
         [FromQuery] int? assignmentTo = null,
         CancellationToken token = default(CancellationToken))
     {
@@ -52,6 +53,7 @@ public class BookPageController : Controller
             StatusFilter = status,
             AssignmentFilter = assignmentFilter,
             ReviewerAssignmentFilter = reviewerAssignmentFilter,
+            SortDirection = sortDirection,
             AccountId = assignmentFilter == AssignmentFilter.AssignedToMe || reviewerAssignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.AccountId : assignmentTo
         };
         var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);

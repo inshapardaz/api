@@ -94,8 +94,7 @@ public class BookPageRepository : IBookPageRepository
         {
             var sql = @"UPDATE BookPage p
                                 INNER JOIN Book b ON b.Id = p.BookId
-                            SET p.ImageId = @ImageId, 
-                                p.`Status` = @Status,
+                            SET p.`Status` = @Status,
                                 ChapterId = @ChapterId,
                                 ContentId = @ContentId   
                             WHERE b.LibraryId = @LibraryId 
@@ -162,11 +161,14 @@ public class BookPageRepository : IBookPageRepository
         }
     }
 
-    public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken)
+    public async Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize,
+        EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter,
+        SortDirection sortDirection, int? assignedTo, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status,
+            var sortDirectionValue = sortDirection == SortDirection.Descending ? "DESC" : "ASC";
+            var sql = @$"SELECT p.BookId, p.SequenceNumber, p.Status,
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
                                    p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp,
                                    f.Id As ImageId, f.FilePath AS ImageUrl, p.ContentId, p.ChapterId, c.ChapterNumber, c.Title As ChapterTitle
@@ -190,7 +192,7 @@ public class BookPageRepository : IBookPageRepository
                                 ( @ReviewerAssignmentFilter = 2 AND p.ReviewerAccountId IS NULL) OR
                                 ( (@ReviewerAssignmentFilter = 3  OR @ReviewerAssignmentFilter = 4) AND p.ReviewerAccountId = @AccountId )
                             )
-                            ORDER BY p.SequenceNumber
+                            ORDER BY p.SequenceNumber {sortDirectionValue}
                             LIMIT @PageSize
                             OFFSET @Offset";
             var command = new CommandDefinition(sql,

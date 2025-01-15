@@ -243,7 +243,7 @@ public class AccountsController : Controller
     }
 
     [HttpGet("/libraries/{libraryId}/writers", Name = nameof(AccountsController.GetWriters))]
-    public async Task<IActionResult> GetWriters(int libraryId, string query, CancellationToken token = default(CancellationToken))
+    public async Task<IActionResult> GetWriters(int libraryId, [FromQuery] string query, CancellationToken token = default(CancellationToken))
     {
         var writersQuery = new GetWritersQuery(libraryId, query);
         var writers = await _queryProcessor.ExecuteAsync(writersQuery, cancellationToken: token);

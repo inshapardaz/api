@@ -25,7 +25,9 @@ public interface IBookPageRepository
     Task DeletePageImage(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken);
     Task<IEnumerable<UserPageSummaryItem>> GetUserPageSummary(int libraryId, int accountId, CancellationToken cancellationToken);
     Task<int> GetPageCount(int libraryId, int bookId, int oldSequenceNumber, CancellationToken cancellationToken);
-    Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize, EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken);
+    Task<Page<BookPageModel>> GetPagesByBook(int libraryId, int bookId, int pageNumber, int pageSize,
+        EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter,
+        SortDirection sortDirection, int? assignedTo, CancellationToken cancellationToken);
     Task<Page<BookPageModel>> GetPagesByUser(int libraryId, int assignedTo, EditingStatus statusFilter, int pageNumber, int pageSize, CancellationToken cancellationToken);
     Task<IEnumerable<BookPageModel>> GetPagesByBookChapter(int libraryId, int bookId, long chapterId, CancellationToken cancellationToken);
 

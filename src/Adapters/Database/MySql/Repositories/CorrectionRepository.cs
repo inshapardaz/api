@@ -43,10 +43,13 @@ public class CorrectionRepository : ICorrectionRepository
                                 AND (IncorrectText LIKE @Query OR CorrectText LIKE @Query)
                                 AND `Profile` = @Profile
                             ORDER BY `Language`, `Profile`, IncorrectText
-                            LIMIT @PageSize
-                            OFFSET @PageSize * (@PageNumber - 1)";
-            var command = new CommandDefinition(sql,
-                                                new { Language = language, Query = $"%{query}%", Profile = profile, PageSize = pageSize, PageNumber = pageNumber },
+                            LIMIT @PageSize OFFSET @Offset";
+            var command = new CommandDefinition(sql, new { 
+                                                    Language = language, 
+                                                    Query = $"%{query}%", 
+                                                    Profile = profile, 
+                                                    PageSize = pageSize, 
+                                                    Offset = pageSize * (pageNumber - 1) },
                                                 cancellationToken: cancellationToken);
 
             var authors = await connection.QueryAsync<CorrectionModel>(command);

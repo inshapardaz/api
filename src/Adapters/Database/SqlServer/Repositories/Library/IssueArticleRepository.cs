@@ -25,10 +25,11 @@ public class IssueArticleRepository : IIssueArticleRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO IssueArticle (Title, IssueId, Status, SequenceNumber, SeriesName, SeriesIndex, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp) 
-                            OUTPUT Inserted.Id VALUES (@Title, (SELECT Id FROM Issue WHERE VolumeNumber = @VolumeNumber AND IssueNumber = @IssueNumber), @Status, @SequenceNumber, @SeriesName, @SeriesIndex, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
+                            OUTPUT Inserted.Id VALUES (@Title, (SELECT Id FROM Issue WHERE PeriodicalId = @PeriodicalId AND VolumeNumber = @VolumeNumber AND IssueNumber = @IssueNumber), @Status, @SequenceNumber, @SeriesName, @SeriesIndex, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
             var command = new CommandDefinition(sql, new
             {
                 Title = issueArticle.Title,
+                PeriodicalId = periodicalId,
                 VolumeNumber = volumeNumber,
                 IssueNumber = issueNumber,
                 SequenceNumber = issueArticle.SequenceNumber,

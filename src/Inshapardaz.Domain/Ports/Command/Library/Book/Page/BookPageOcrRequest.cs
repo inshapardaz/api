@@ -62,8 +62,6 @@ public class BookPageOcrRequestHandler : RequestHandlerAsync<BookPageOcrRequest>
                 var updateBookPageRequest = new UpdateBookPageRequest(command.LibraryId, bookPage.BookId, _userHelper.AccountId.Value, bookPage.SequenceNumber, bookPage);
                 await _commandProcessor.SendAsync(updateBookPageRequest, cancellationToken: cancellationToken);
                 
-                //await _bookPageRepository.UpdatePage(command.LibraryId, bookPage.BookId, bookPage.SequenceNumber, text, bookPage.ImageId.Value, bookPage.Status, bookPage.ChapterId, cancellationToken);
-                
                 return await base.HandleAsync(command, cancellationToken);
             }
         }

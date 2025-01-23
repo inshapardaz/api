@@ -215,7 +215,7 @@ public class BookPageRepository : IBookPageRepository
                                 FROM BookPage p 
                                     INNER JOIN Book b ON b.Id = p.BookId
                                 WHERE b.LibraryId = @LibraryId AND p.BookId = @BookId
-                                AND (@Status = -1 OR p.Status = @Status )
+                                AND (@Status = 0 OR p.Status = @Status )
                                 AND (
                                     ( @AssignmentFilter = 0 ) OR
                                     ( @AssignmentFilter = 1 AND p.WriterAccountId IS NOT NULL) OR

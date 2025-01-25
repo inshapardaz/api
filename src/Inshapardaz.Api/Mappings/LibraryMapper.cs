@@ -12,6 +12,7 @@ public static class LibraryMapper
         {
             Name = source.Name,
             OwnerEmail = source.OwnerEmail,
+            Description = source.Description,
             Language = source.Language,
             SupportsPeriodicals = source.SupportsPeriodicals,
             PrimaryColor = source.PrimaryColor,
@@ -26,6 +27,7 @@ public static class LibraryMapper
         => source == null ? null : new LibraryModel
         {
             Name = source.Name,
+            Description = source.Description,
             OwnerEmail = source.OwnerEmail,
             Language = source.Language,
             SupportsPeriodicals = source.SupportsPeriodicals,

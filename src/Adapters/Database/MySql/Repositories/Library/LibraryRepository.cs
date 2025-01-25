@@ -21,7 +21,7 @@ public class LibraryRepository : ILibraryRepository
     {
         using (var connection = _connectionProvider.GetConnection())
         {
-            var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
+            var sql = @"SELECT  Library.*, f.FilePath AS ImageUrl
                             FROM Library
                                 LEFT OUTER JOIN `File` f ON f.Id = ImageId
                             ORDER BY `Name`
@@ -31,17 +31,17 @@ public class LibraryRepository : ILibraryRepository
                                                 new { PageSize = pageSize, Offset = pageSize * (pageNumber - 1) },
                                                 cancellationToken: cancellationToken);
 
-            var series = await connection.QueryAsync<LibraryModel>(command);
+            var libraries = await connection.QueryAsync<LibraryModel>(command);
 
             var sqlAuthorCount = "SELECT COUNT(*) FROM Library";
-            var seriesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, cancellationToken: cancellationToken));
+            var librariesCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlAuthorCount, cancellationToken: cancellationToken));
 
             return new Page<LibraryModel>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                TotalCount = seriesCount,
-                Data = series
+                TotalCount = librariesCount,
+                Data = libraries
             };
         }
     }
@@ -50,7 +50,7 @@ public class LibraryRepository : ILibraryRepository
     {
         using (var connection = _connectionProvider.GetConnection())
         {
-            var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
+            var sql = @"SELECT  Library.*, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library
                                 LEFT OUTER JOIN `File` f ON f.Id = ImageId
                             WHERE `Name` LIKE @Query
@@ -283,12 +283,13 @@ public class LibraryRepository : ILibraryRepository
         int libraryId;
         using (var connection = _connectionProvider.GetConnection())
         {
-            var sql = @"INSERT INTO Library(`Name`, `Language`, SupportsPeriodicals, PrimaryColor, SecondaryColor, OwnerEmail, `Public`, DatabaseConnection, FileStoreType, FileStoreSource) 
-                            VALUES(@Name, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor, @OwnerEmail, @Public, @DatabaseConnection, @FileStoreType, @FileStoreSource);
+            var sql = @"INSERT INTO Library(`Name`, `Description`, `Language`, SupportsPeriodicals, PrimaryColor, SecondaryColor, OwnerEmail, `Public`, DatabaseConnection, FileStoreType, FileStoreSource) 
+                            VALUES(@Name, @Description, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor, @OwnerEmail, @Public, @DatabaseConnection, @FileStoreType, @FileStoreSource);
                             SELECT LAST_INSERT_ID();";
             var command = new CommandDefinition(sql, new
             {
                 Name = library.Name,
+                Description = library.Description,
                 Language = library.Language,
                 SupportsPeriodicals = library.SupportsPeriodicals,
                 PrimaryColor = library.PrimaryColor,
@@ -328,6 +329,7 @@ public class LibraryRepository : ILibraryRepository
         {
             var sql = @"UPDATE Library
                             SET `Name` = @Name,
+                                `Description` = @Description,
                                 `Language` = @Language,
                                 Description = @Description,
                                 SupportsPeriodicals = @SupportsPeriodicals,

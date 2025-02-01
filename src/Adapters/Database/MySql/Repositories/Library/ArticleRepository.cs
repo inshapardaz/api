@@ -361,6 +361,8 @@ public class ArticleRepository : IArticleRepository
 
             var sql = @"SElect at.*, fl.FilePath AS ImageUrl,
                             CASE WHEN af.ArticleId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
+                            aw.Name As WriterAccountName,
+                            arv.Name As ReviewerAccountName,
                             a.*, c.*, con.*, aw.*, arv.*
                             FROM Article at
                                 LEFT OUTER JOIN ArticleAuthor ara ON ara.ArticleId = at.Id
@@ -411,6 +413,8 @@ public class ArticleRepository : IArticleRepository
         var articles = new Dictionary<long, ArticleModel>();
         var sql3 = @"SELECT at.*, fl.FilePath AS ImageUrl,
                             CASE WHEN af.ArticleId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
+                            aw.Name As WriterAccountName,
+                            arv.Name As ReviewerAccountName,
                             a.*, c.*, con.*
                         FROM Article at
                             LEFT OUTER JOIN ArticleAuthor ara ON ara.ArticleId = at.Id
@@ -421,6 +425,8 @@ public class ArticleRepository : IArticleRepository
                                 AND (ar.AccountId = @AccountId OR @AccountId Is Null)
                             LEFT OUTER JOIN ArticleCategory ac ON at.Id = ac.ArticleId
                             LEFT OUTER JOIN Category c ON ac.CategoryId = c.Id
+                            LEFT OUTER JOIN Accounts aw ON aw.Id = WriterAccountId
+                            LEFT OUTER JOIN Accounts arv ON arv.Id = ReviewerAccountId
                             LEFT OUTER JOIN `File` fl ON fl.Id = at.ImageId
                             LEFT JOIN ArticleContent con ON con.ArticleId = at.Id
                         WHERE at.LibraryId = @LibraryId 

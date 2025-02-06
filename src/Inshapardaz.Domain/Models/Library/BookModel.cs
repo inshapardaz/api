@@ -53,7 +53,7 @@ public class BookModel
 
     public int ChapterCount { get; set; }
 
-    public IEnumerable<PageSummaryModel> PageStatus { get; set; }
+    public IEnumerable<PageStatusSummaryModel> PageStatus { get; set; }
 
     public string Source { get; set; }
     public string Publisher { get; set; }

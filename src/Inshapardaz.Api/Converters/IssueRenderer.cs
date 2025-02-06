@@ -184,6 +184,14 @@ public class IssueRenderer : IRenderIssue
                 Rel = RelTypes.ImageUpload,
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }));
+            
+            links.Add(_linkRenderer.Render(new Link
+            {
+                ActionName = nameof(IssueController.PublishIssue),
+                Method = HttpMethod.Post,
+                Rel = RelTypes.Publish,
+                Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
+            }));
 
             links.Add(_linkRenderer.Render(new Link
             {

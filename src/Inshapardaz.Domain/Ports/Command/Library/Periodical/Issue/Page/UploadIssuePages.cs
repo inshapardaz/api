@@ -95,9 +95,7 @@ public class UploadIssuePagesHandler : RequestHandlerAsync<UploadIssuePages>
                 VolumeNumber = command.VolumeNumber,
                 IssueNumber = command.IssueNumber,
                 SequenceNumber = pageNumber,
-                ImageId = null,
-                FileId = fileModel.Id,
-                ArticleId = null,
+                ImageId = fileModel.Id,
                 Status = EditingStatus.Available
             }, cancellationToken);
         }

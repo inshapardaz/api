@@ -69,7 +69,8 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
             var saveContentCommand = new SaveFileCommand(fileName, filePath, command.Content.Contents)
             {
                 MimeType = command.MimeType,
-                ExistingFileId = issueContent?.FileId
+                ExistingFileId = issueContent?.FileId,
+                FileName = command.Content.FileName
             };
 
             await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
@@ -83,6 +84,7 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
                         VolumeNumber = issue.VolumeNumber,
                         IssueNumber = issue.IssueNumber,
                         FileId = saveContentCommand.Result.Id,
+                        FileName = saveContentCommand.Result.FileName,
                         Language = command.Language,
                         MimeType = command.MimeType,
                     }, 
@@ -94,6 +96,7 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
                 issueContent.Language = command.Language;
                 issueContent.MimeType = command.MimeType;
                 issueContent.FileId = saveContentCommand.Result.Id;
+                issueContent.FileName = saveContentCommand.Result.FileName;
                 command.Result.Content = await _issueRepository.UpdateIssueContent(command.LibraryId, issueContent, cancellationToken);
             }
         }

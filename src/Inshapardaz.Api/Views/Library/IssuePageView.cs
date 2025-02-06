@@ -18,6 +18,6 @@ public class IssuePageView : ViewWithLinks
     public int? ReviewerAccountId { get; set; }
     public string ReviewerAccountName { get; set; }
     public DateTime? ReviewerAssignTimeStamp { get; set; }
-    public string ArticleName { get; internal set; }
-    public long? ArticleId { get; internal set; }
+    public string ArticleName { get;  set; }
+    public long? ArticleId { get; set; }
 }

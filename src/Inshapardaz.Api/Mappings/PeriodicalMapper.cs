@@ -42,7 +42,8 @@ public static class PeriodicalMapper
             IssueDate = source.IssueDate,
             PageCount = source.PageCount,
             ArticleCount = source.ArticleCount,
-            Status = source.Status.ToDescription()
+            Status = source.Status.ToDescription(),
+            PageStatus = source.PageStatus?.Select(ps => ps.Map()),
         };
 
     public static IssueModel Map(this IssueView source)
@@ -55,7 +56,8 @@ public static class PeriodicalMapper
             IssueDate = source.IssueDate,
             PageCount = source.PageCount,
             ArticleCount = source.ArticleCount,
-            Status = source.Status.ToEnum(StatusType.AvailableForTyping),
+            Status = source.Status.ToEnum(EditingStatus.Available),
+            PageStatus = source.PageStatus?.Select(ps => ps.Map()),
         };
 
     public static IssueContentView Map(this IssueContentModel source)
@@ -66,7 +68,9 @@ public static class PeriodicalMapper
             IssueNumber = source.IssueNumber,
             VolumeNumber = source.VolumeNumber,
             Language = source.Language,
-            MimeType = source.MimeType
+            MimeType = source.MimeType,
+            FileId = source.FileId,
+            FileName = source.FileName,
         };
 
     public static IssueContentModel Map(this IssueContentView source)

@@ -289,4 +289,13 @@ public class IssueController : Controller
         await _commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
+    
+    [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/publish", Name = nameof(PublishIssue))]
+    public async Task<IActionResult> PublishIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token)
+    {
+        var request = new PublishIssueRequest(libraryId, periodicalId, volumeNumber, issueNumber);
+        await _commandProcessor.SendAsync(request, cancellationToken: token);
+
+        return Ok();
+    }
 }

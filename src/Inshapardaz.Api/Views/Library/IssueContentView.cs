@@ -7,6 +7,8 @@ public class IssueContentView : ViewWithLinks
     public int PeriodicalId { get; set; }
 
     public string MimeType { get; set; }
+    public long FileId { get; set; }
+    public string FileName { get; set; }
 
     public string Language { get; set; }
     public int IssueNumber { get; set; }

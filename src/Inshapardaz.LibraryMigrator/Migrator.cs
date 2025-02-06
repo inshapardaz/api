@@ -385,7 +385,7 @@ public class Migrator
 
         var pageNumber = 1;
         var pagesPage = await sourceDb.GetPagesByBook(libraryId, bookId, pageNumber++, 10, EditingStatus.All,
-            AssignmentFilter.All, AssignmentFilter.All, null, cancellationToken); 
+            AssignmentFilter.All, AssignmentFilter.All, SortDirection.Ascending, null, cancellationToken); 
         Console.WriteLine($"Started migration of {pagesPage.TotalCount} pages for book {newBookId}");
         int i = 0;
         do
@@ -451,7 +451,7 @@ public class Migrator
             Console.Write($"\r{i} of {pagesPage.TotalCount} pages(s) migrated for book {newBookId}.");
             
             pagesPage = await sourceDb.GetPagesByBook(libraryId, bookId, pageNumber++, 10, EditingStatus.All,
-                AssignmentFilter.All, AssignmentFilter.All, null, cancellationToken);
+                AssignmentFilter.All, AssignmentFilter.All, SortDirection.Ascending, null, cancellationToken);
         }
         while (pagesPage.Data.Any());
 

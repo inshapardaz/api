@@ -71,6 +71,15 @@ public class AddIssuePageRequestHandler : RequestHandlerAsync<AddIssuePageReques
         
         if (existingIssuePage == null)
         {
+            var pageSequenceNumber = command.IssuePage.SequenceNumber == 0 ? issue.PageCount + 1 : command.IssuePage.SequenceNumber;
+
+            command.IssuePage.Text = string.Empty;
+
+            if (command.IssuePage.SequenceNumber == 0)
+            {
+                command.IssuePage.SequenceNumber = int.MaxValue;
+            }
+            
             command.Result = await _issuePageRepository.AddPage(command.LibraryId, command.IssuePage, cancellationToken);
             command.IsAdded = true;
         }

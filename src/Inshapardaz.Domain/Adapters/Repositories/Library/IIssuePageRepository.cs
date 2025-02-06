@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Models;
+﻿using System.Collections.Generic;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ public interface IIssuePageRepository
 {
     Task<Page<IssuePageModel>> GetPagesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int pageNumber, int pageSize, EditingStatus statusFilter, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? accountId, CancellationToken cancellationToken);
     Task<IssuePageModel> GetPageBySequenceNumber(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken);
+    Task<IEnumerable<IssuePageModel>> GetPagesByIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long articleId, CancellationToken cancellationToken);
     Task<IssuePageModel> AddPage(int libraryId, IssuePageModel issuePage, CancellationToken cancellationToken);
     Task<IssuePageModel> UpdatePage(int libraryId, IssuePageModel issuePage, CancellationToken cancellationToken);
     Task UpdatePageSequenceNumber(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int oldSequenceNumber, int newSequenceNumber, CancellationToken cancellationToken);

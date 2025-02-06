@@ -77,7 +77,7 @@ public static class BookMapper
             MimeType = source.MimeType
         };
 
-    public static PageSummaryView Map(this PageSummaryModel source)
+    public static PageSummaryView Map(this PageStatusSummaryModel source)
         => new PageSummaryView
         {
             Status = source.Status.ToDescription(),
@@ -85,8 +85,8 @@ public static class BookMapper
             Percentage = source.Percentage
         };
 
-    public static PageSummaryModel Map(this PageSummaryView source)
-        => new PageSummaryModel
+    public static PageStatusSummaryModel Map(this PageSummaryView source)
+        => new PageStatusSummaryModel
         {
             Status = source.Status.ToEnum(EditingStatus.Available),
             Count = source.Count,

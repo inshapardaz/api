@@ -28,5 +28,7 @@ public class IssueModel
     public int PageCount { get; set; }
 
     public List<IssueContentModel> Contents { get; set; } = new();
-    public StatusType Status { get; set; }
+    public EditingStatus Status { get; set; }
+    public IEnumerable<PageStatusSummaryModel> PageStatus { get; set; }
+    public decimal Progress { get; set; }
 }

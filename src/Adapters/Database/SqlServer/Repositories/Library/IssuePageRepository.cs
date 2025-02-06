@@ -16,6 +16,13 @@ public class IssuePageRepository : IIssuePageRepository
     {
         _connectionProvider = connectionProvider;
     }
+
+    public Task<IEnumerable<IssuePageModel>> GetPagesByIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long articleId,
+        CancellationToken cancellationToken)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public async Task<IssuePageModel> AddPage(int libraryId, IssuePageModel issuePage, CancellationToken cancellationToken)
     {
         int pageId;

@@ -70,6 +70,7 @@ public class AddIssueContentRequestHandler : RequestHandlerAsync<AddIssueContent
                     VolumeNumber = issue.VolumeNumber,
                     IssueNumber = issue.IssueNumber,
                     FileId = saveFileCommand.Result.Id,
+                    FileName = saveFileCommand.Result.FileName,
                     Language = command.Language,
                     MimeType = command.MimeType,
                 },

@@ -345,8 +345,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssueAssert WithStatus(StatusType status)
+        public IssueAssert WithStatus(EditingStatus status)
         {
+            _view.Status.Should().Be(status.ToDescription());
             return this;
         }
 

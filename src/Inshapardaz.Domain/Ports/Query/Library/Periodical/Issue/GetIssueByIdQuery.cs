@@ -4,6 +4,7 @@ using Paramore.Darker;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue;
 
@@ -37,6 +38,22 @@ public class GetIssueByIdQueryHandler : QueryHandlerAsync<GetIssueByIdQuery, Iss
 
         if (issue != null)
         {
+            var status = (await _issueRepository.GetIssuePageSummary(command.LibraryId, [issue.Id], cancellationToken)).FirstOrDefault();
+
+            if (status != null)
+            {
+                issue.PageStatus = status.Statuses;
+                if (status.Statuses.Any(s => s.Status == EditingStatus.Completed))
+                {
+                    decimal completedPages = status.Statuses.Single(s => s.Status == EditingStatus.Completed).Count;
+                    issue.Progress = completedPages / issue.PageCount;
+                }
+                else
+                {
+                    issue.Progress = 0.0M;
+                }
+            }
+            
             var contents = await _issueRepository.GetIssueContents(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
             issue.Contents = contents.ToList();

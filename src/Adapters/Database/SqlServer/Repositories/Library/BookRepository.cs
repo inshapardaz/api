@@ -661,11 +661,11 @@ public class BookRepository : IBookRepository
         }
     }
 
-    public async Task<IEnumerable<BookPageSummaryModel>> GetBookPageSummary(int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken)
+    public async Task<IEnumerable<PageSummaryModel>> GetBookPageSummary(int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var bookSummaries = new Dictionary<int, BookPageSummaryModel>();
+            var bookSummaries = new Dictionary<int, PageSummaryModel>();
             const string sql = @"Select bp.BookId, bp.[Status], Count(*),
                                 (Count(bp.Status)* 100 / (Select Count(*) From BookPage WHERE BookPage.BookId = bp.BookId)) as Percentage
                                 FROM BookPage bp
@@ -680,13 +680,13 @@ public class BookRepository : IBookRepository
 
             foreach (var result in results)
             {
-                var pageSummary = new PageSummaryModel { Status = result.Status, Count = result.Count, Percentage = result.Percentage };
-                if (!bookSummaries.TryGetValue(result.BookId, out BookPageSummaryModel bookSummary))
+                var pageSummary = new PageStatusSummaryModel { Status = result.Status, Count = result.Count, Percentage = result.Percentage };
+                if (!bookSummaries.TryGetValue(result.BookId, out PageSummaryModel bookSummary))
                 {
-                    bookSummaries.Add(result.BookId, new BookPageSummaryModel
+                    bookSummaries.Add(result.BookId, new PageSummaryModel
                     {
                         BookId = result.BookId,
-                        Statuses = new List<PageSummaryModel> { pageSummary }
+                        Statuses = new List<PageStatusSummaryModel> { pageSummary }
                     });
                 }
                 else

@@ -31,4 +31,5 @@ public interface IIssueRepository
     Task DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, CancellationToken cancellationToken);
 
     Task<IssueContentModel> UpdateIssueContent(int libraryId, IssueContentModel model, CancellationToken cancellationToken);
+    Task<IEnumerable<PageSummaryModel>> GetIssuePageSummary(int libraryId, int[] issues, CancellationToken cancellationToken);
 }

@@ -48,8 +48,30 @@ public class GetIssuesRequestHandler : QueryHandlerAsync<GetIssuesQuery, Page<Is
         var periodical = await _periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);
         if (periodical == null) return null;
         var issues = await _issueRepository.GetIssues(command.LibraryId, command.PeriodicalId, command.PageNumber, command.PageSize, command.Filter, command.SortBy, command.SortDirection, cancellationToken);
+        
+        var statuses = (await _issueRepository.GetIssuePageSummary(command.LibraryId, 
+            issues.Data.Select(x => x.Id).ToArray(), 
+            cancellationToken));
+        foreach (var status in statuses)
+        {
+            var issue = issues.Data.SingleOrDefault(b => b.Id == status.BookId);
+            if (issue != null)
+            {
+                issue.PageStatus = status.Statuses;
+                if (status.Statuses.Any(s => s.Status == EditingStatus.Completed))
+                {
+                    decimal completedPages = status.Statuses.Single(s => s.Status == EditingStatus.Completed).Count;
+                    issue.Progress = completedPages / issue.PageCount;
+                }
+                else
+                {
+                    issue.Progress = 0.0M;
+                }
+            }
+        }
         foreach (var issue in issues.Data)
         {
+            
             if (issue != null && issue.ImageUrl == null && issue.ImageId.HasValue)
             {
                 issue.ImageUrl = await ImageHelper.TryConvertToPublicFile(issue.ImageId.Value, _fileRepository, cancellationToken);

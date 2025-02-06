@@ -44,7 +44,7 @@ public class IssuePageController : Controller
         int pageNumber = 1,
         int pageSize = 10,
         [FromQuery] EditingStatus status = EditingStatus.All,
-        [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
+        [FromQuery] AssignmentFilter writerAssignmentFilter = AssignmentFilter.All,
         [FromQuery] AssignmentFilter reviewerAssignmentFilter = AssignmentFilter.All,
         [FromQuery] int? assignmentTo = null,
         CancellationToken token = default(CancellationToken))
@@ -52,9 +52,9 @@ public class IssuePageController : Controller
         var query = new GetIssuePagesQuery(libraryId, periodicalId, volumeNumber, issueNumber, pageNumber, pageSize)
         {
             StatusFilter = status,
-            AssignmentFilter = assignmentFilter,
+            WriterAssignmentFilter = writerAssignmentFilter,
             ReviewerAssignmentFilter = reviewerAssignmentFilter,
-            AccountId = assignmentFilter == AssignmentFilter.AssignedToMe || reviewerAssignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.AccountId : assignmentTo
+            AccountId = writerAssignmentFilter == AssignmentFilter.AssignedToMe || reviewerAssignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.AccountId : assignmentTo
         };
         var result = await _queryProcessor.ExecuteAsync(query, token);
 
@@ -62,7 +62,7 @@ public class IssuePageController : Controller
         {
             Page = result,
             RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-            Filters = new PageFilter { Status = status, AssignmentFilter = assignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
+            Filters = new PageFilter { Status = status, AssignmentFilter = writerAssignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
         };
 
         return new OkObjectResult(_issuePageRenderer.Render(args, libraryId, periodicalId, volumeNumber, issueNumber));
@@ -111,8 +111,7 @@ public class IssuePageController : Controller
         await _commandProcessor.SendAsync(request, cancellationToken: token);
 
         var renderResult = _issuePageRenderer.Render(request.Result, libraryId);
-
-        //TODO: Remove updation
+        
         if (request.IsAdded)
         {
             return Created(renderResult.Links.Self(), renderResult);

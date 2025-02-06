@@ -14,5 +14,7 @@ public class IssueContentModel
     public string Language { get; set; }
 
     public long FileId { get; set; }
+    public string FileName { get; set; }
+
     public int VolumeNumber { get; set; }
 }

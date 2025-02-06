@@ -1,4 +1,6 @@
-﻿namespace Inshapardaz.Api.Views.Library;
+﻿using Newtonsoft.Json;
+
+namespace Inshapardaz.Api.Views.Library;
 
 public class IssueView : ViewWithLinks
 {
@@ -17,4 +19,7 @@ public class IssueView : ViewWithLinks
     public string PeriodicalName { get; internal set; }
     
     public string Status { get; set; }
+    
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public IEnumerable<PageSummaryView> PageStatus { get; set; }
 }

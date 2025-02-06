@@ -43,7 +43,7 @@ public interface IBookRepository
 
     Task UpdateBookContent(int libraryId, int bookId, int contentId, string language, CancellationToken cancellationToken);
 
-    Task<IEnumerable<BookPageSummaryModel>> GetBookPageSummary(int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken);
+    Task<IEnumerable<PageSummaryModel>> GetBookPageSummary(int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken);
 
     #region for migration
     Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken);

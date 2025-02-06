@@ -231,7 +231,7 @@ public class IssueRepository : IIssueRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT ic.Id, ic.IssueId, i.PeriodicalId, i.VolumeNumber, i.IssueNumber, ic.Language, f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl
+            var sql = @"SELECT ic.Id, ic.IssueId, i.PeriodicalId, i.VolumeNumber, i.IssueNumber, ic.Language, f.MimeType, f.Id As FileId, f.FileName As FileName, f.FilePath AS ContentUrl
                             FROM IssueContent ic
                                 INNER JOIN Issue i ON i.Id = ic.IssueId
                                 INNER JOIN Periodical p ON p.Id = i.PeriodicalId
@@ -309,6 +309,45 @@ public class IssueRepository : IIssueRepository
         }
 
         return await GetIssueContent(libraryId, model.PeriodicalId, model.VolumeNumber, model.IssueNumber, model.Id, cancellationToken);
+    }
+
+    public async Task<IEnumerable<PageSummaryModel>> GetIssuePageSummary(int libraryId, int[] issues, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var bookSummaries = new Dictionary<int, PageSummaryModel>();
+            const string sql = @"SELECT ip.IssueId, ip.`Status`, Count(*),
+                                (Count(ip.Status)* 100 / (Select Count(*) From IssuePage WHERE IssuePage.IssueId = ip.IssueId)) as Percentage
+                                FROM IssuePage ip
+                                    INNER Join Issue i ON i.id = ip.IssueId
+                                    INNER Join Periodical p ON p.id = i.PeriodicalId
+                                WHERE p.LibraryId = @LibraryId
+                                    AND i.Id IN @IssueIds
+                                    AND i.Status <> 0
+                                GROUP By ip.IssueId, ip.`Status`";
+
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, IssueIds = issues }, cancellationToken: cancellationToken);
+            var results = await connection.QueryAsync<(int BookId, EditingStatus Status, int Count, decimal Percentage)>(command);
+
+            foreach (var result in results)
+            {
+                var pageSummary = new PageStatusSummaryModel { Status = result.Status, Count = result.Count, Percentage = result.Percentage };
+                if (!bookSummaries.TryGetValue(result.BookId, out PageSummaryModel bookSummary))
+                {
+                    bookSummaries.Add(result.BookId, new PageSummaryModel
+                    {
+                        BookId = result.BookId,
+                        Statuses = new List<PageStatusSummaryModel> { pageSummary }
+                    });
+                }
+                else
+                {
+                    bookSummary.Statuses.Add(pageSummary);
+                }
+            }
+
+            return bookSummaries.Values;
+        }
     }
 
     public async Task UpdateIssueContentUrl(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, string url, CancellationToken cancellationToken)

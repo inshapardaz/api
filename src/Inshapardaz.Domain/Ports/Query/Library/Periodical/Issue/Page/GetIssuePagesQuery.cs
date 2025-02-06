@@ -32,7 +32,7 @@ public class GetIssuePagesQuery : LibraryBaseQuery<Page<IssuePageModel>>
     public int PageNumber { get; private set; }
     public int PageSize { get; private set; }
     public EditingStatus StatusFilter { get; set; }
-    public AssignmentFilter AssignmentFilter { get; set; }
+    public AssignmentFilter WriterAssignmentFilter { get; set; }
     public int? AccountId { get; set; }
     public AssignmentFilter ReviewerAssignmentFilter { get; set; }
 }
@@ -50,15 +50,15 @@ public class GetIssuePagesQueryHandler : QueryHandlerAsync<GetIssuePagesQuery, P
 
     public override async Task<Page<IssuePageModel>> ExecuteAsync(GetIssuePagesQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
-        var pages = await _issuePageRepository.GetPagesByIssue(query.LibraryId, query.PeriodicalId, query.VolumeNumber, query.IssueNumber, query.PageNumber, query.PageSize, query.StatusFilter, query.AssignmentFilter, query.ReviewerAssignmentFilter, query.AccountId, cancellationToken);
+        var pages = await _issuePageRepository.GetPagesByIssue(query.LibraryId, query.PeriodicalId, query.VolumeNumber, query.IssueNumber, query.PageNumber, query.PageSize, query.StatusFilter, query.WriterAssignmentFilter, query.ReviewerAssignmentFilter, query.AccountId, cancellationToken);
 
-        foreach (var page in pages.Data)
-        {
-            if (page.FileId.HasValue)
-            { 
-                page.Text = await _queryProcessor.ExecuteAsync(new GetTextFileQuery(page.FileId.Value), cancellationToken);
-            }
-        }
+        // foreach (var page in pages.Data)
+        // {
+        //     if (page.FileId.HasValue)
+        //     { 
+        //         page.Text = await _queryProcessor.ExecuteAsync(new GetTextFileQuery(page.FileId.Value), cancellationToken);
+        //     }
+        // }
 
         return pages;
     }

@@ -118,6 +118,7 @@ namespace Inshapardaz.Api.Tests
                 services.AddTransient<IIssueArticleTestRepository, SqlServerIssueArticleTestRepository>();
                 services.AddTransient<IFileTestRepository, SqlServerFileTestRepository>();
                 services.AddTransient<ICorrectionTestRepository, SqlServerCorrectionTestRepository>();
+                services.AddTransient<ICommonWordsTestRepository, SqlServerCommonWordsTestRepository>();
             }
             else if (DatabaseType == DatabaseTypes.MySql)
             {
@@ -138,6 +139,7 @@ namespace Inshapardaz.Api.Tests
                 services.AddTransient<IIssueArticleTestRepository, MySqlIssueArticleTestRepository>();
                 services.AddTransient<IFileTestRepository, MySqlFileTestRepository>();
                 services.AddTransient<ICorrectionTestRepository, MySqlCorrectionTestRepository>();
+                services.AddTransient<ICommonWordsTestRepository, MySqlCommonWordsTestRepository>();
             }
             else
             {
@@ -155,6 +157,7 @@ namespace Inshapardaz.Api.Tests
             .AddTransient<IssueDataBuilder>()
             .AddTransient<AccountAssert>()
             .AddTransient<CorrectionBuilder>()
+            .AddTransient<CommonWordBuilder>()
             .AddTransient<BookShelfDataBuilder>()
             .AddTransient<ArticlesDataBuilder>()
             .AddTransient<FileStoreAssert>();
@@ -180,6 +183,7 @@ namespace Inshapardaz.Api.Tests
                     .AddTransient<LibraryAssert>()
                     .AddTransient(typeof(PagingAssert<>), typeof(PagingAssert<>))
                     .AddTransient<PeriodicalAssert>()
+                    .AddTransient<CommonWordAssert>()
                     .AddTransient<SeriesAssert>();
         }
 
@@ -212,6 +216,7 @@ namespace Inshapardaz.Api.Tests
         protected IssueDataBuilder _issueDataBuilder;
         private PeriodicalsDataBuilder _periodicalBuilder;
         protected CorrectionBuilder _correctionBuilder;
+        protected CommonWordBuilder _commonWordBuilder;
         private BookShelfDataBuilder _bookshelfDataBuilder;
         private ArticlesDataBuilder _articleBuilder;
         private FileStoreAssert _fileStoreAssert;
@@ -362,6 +367,19 @@ namespace Inshapardaz.Api.Tests
                 return _correctionBuilder;
             }
         }
+        
+        protected CommonWordBuilder CommonWordBuilder
+        {
+            get
+            {
+                if (_commonWordBuilder == null)
+                {
+                    _commonWordBuilder = _factory.Services.GetService<CommonWordBuilder>();
+                }
+
+                return _commonWordBuilder;
+            }
+        }
 
         protected FileStoreAssert FileAssert
         {
@@ -392,6 +410,7 @@ namespace Inshapardaz.Api.Tests
         protected IIssueArticleTestRepository IssueArticleTestRepository => _factory.Services.GetService<IIssueArticleTestRepository>();
         protected IFileTestRepository FileTestRepository => _factory.Services.GetService<IFileTestRepository>();
         protected ICorrectionTestRepository CorrectionTestRepository => _factory.Services.GetService<ICorrectionTestRepository>();
+        protected ICommonWordsTestRepository CommonWordsTestRepository => _factory.Services.GetService<ICommonWordsTestRepository>();
 
         protected virtual void Cleanup()
         {
@@ -407,6 +426,7 @@ namespace Inshapardaz.Api.Tests
             _categoriesDataBuilder?.CleanUp();
             _libraryBuilder?.CleanUp();
             _correctionBuilder?.Cleanup();
+            _commonWordBuilder?.Cleanup();
         }
     }
 }

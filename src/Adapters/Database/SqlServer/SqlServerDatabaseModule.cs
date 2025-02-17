@@ -23,5 +23,6 @@ public static class SqlServerDatabaseModule
             .AddTransient<IssueRepository>()
             .AddTransient<LibraryRepository>()
             .AddTransient<PeriodicalRepository>()
-            .AddTransient<SeriesRepository>();
+            .AddTransient<SeriesRepository>()
+            .AddTransient<CommonWordsRepository>();
 }

@@ -133,6 +133,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
 .AddTransient<IRenderBookPage, BookPageRenderer>()
 .AddTransient<IRenderCorrection, CorrectionRenderer>()
 .AddTransient<IRenderBookSelf, BookShelfRenderer>()
+.AddTransient<IRenderCommonWord, CommonWordRenderer>()
 .AddTransient<IConvertPdf, PdfConverter>()
 .AddTransient<IOpenZip, ZipReader>()
 .AddTransient<IProvideOcr, GoogleOcr>()
@@ -163,7 +164,8 @@ builder.Services.AddSqlServer()
     .AddScoped<IAccountRepository>(DatabaseFactory.GetAccountRepository)
     .AddScoped<ICorrectionRepository>(DatabaseFactory.GetCorrectionRepository)
     .AddScoped<IIssuePageRepository>(DatabaseFactory.GetIssuePageRepository)
-    .AddScoped<IBookShelfRepository>(DatabaseFactory.GetBookShelfRepository);
+    .AddScoped<IBookShelfRepository>(DatabaseFactory.GetBookShelfRepository)
+    .AddScoped<ICommonWordsRepository>(DatabaseFactory.GetCommonWordsRepository);
 
 //=====================================================================
 var app = builder.Build();

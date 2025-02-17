@@ -5,6 +5,7 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.Tools;
 using Inshapardaz.Domain.Ports.Query.Tools;
+using Inshapardaz.Domain.Ports.Query.Tools.CommonWords;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -24,7 +25,7 @@ public class ToolController : Controller
         _queryProcessor = queryProcessor;
         _correctionRenderer = correctionRenderer;
     }
-
+    
     [HttpGet("/tools/{language}/spellchecker/{profile}", Name = nameof(GetAllCorrections))]
     public async Task<IActionResult> GetAllCorrections(string language, string profile, CancellationToken cancellationToken)
     {

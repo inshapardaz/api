@@ -42,6 +42,9 @@ public static class DatabaseFactory
     public static ICorrectionRepository GetCorrectionRepository(IServiceProvider provider) =>
                 GetRepository<ICorrectionRepository, SqlServerRepoisotires.CorrectionRepository, MySqlRepositories.CorrectionRepository>(provider);
 
+    public static ICommonWordsRepository GetCommonWordsRepository(IServiceProvider provider) =>
+                GetRepository<ICommonWordsRepository, SqlServerRepoisotires.CommonWordsRepository, MySqlRepositories.CommonWordsRepository>(provider);
+
     public static IIssueArticleRepository GetIssueArticleRepository(IServiceProvider provider) =>
                 GetRepository<IIssueArticleRepository, SqlServerRepoisotires.Library.IssueArticleRepository, MySqlRepositories.Library.IssueArticleRepository>(provider);
 

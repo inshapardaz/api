@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Adapters.Database.MySql.Repositories;
 using Inshapardaz.Adapters.Database.MySql.Repositories.Library;
+using Inshapardaz.Domain.Adapters.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inshapardaz.Adapters.Database.MySql;
@@ -23,5 +24,6 @@ public static class MySqlDatabaseModule
             .AddTransient<IssueRepository>()
             .AddTransient<LibraryRepository>()
             .AddTransient<PeriodicalRepository>()
-            .AddTransient<SeriesRepository>();
+            .AddTransient<SeriesRepository>()
+            .AddTransient<CommonWordsRepository>();
 }

@@ -107,8 +107,7 @@ public class BookShelfRepository : IBookShelfRepository
                                 WHERE BookShelfId = b.Id) AS BookCount
                             FROM BookShelf AS b
                                 LEFT OUTER JOIN `File` f ON f.Id = b.ImageId
-                            WHERE b.LibraryId = @LibraryId
-                                AND b.IsPublic = @Public 
+                            WHERE b.LibraryId = @LibraryId 
                                 AND ((@Public = 1 AND b.AccountId <> @AccountId) 
                                     OR (@Public = 0 AND  b.AccountId = @AccountId))
                             ORDER BY b.Name

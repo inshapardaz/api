@@ -71,6 +71,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IFileTestRepository _fileRepository;
         public IChapterTestRepository _chapterRepository;
         public ICategoryTestRepository _categoryRepository;
+        public IBookShelfTestRepository _bookShelfTestRepository;
+        private int? _bookshelfId;
 
         public BooksDataBuilder(IFileStorage fileStorage,
                                 AuthorsDataBuilder authorBuilder,
@@ -80,7 +82,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                 IFileTestRepository fileRepository,
                                 IChapterTestRepository chapterRepository,
                                 IBookPageTestRepository bookPageRepository,
-                                ICategoryTestRepository categoryRepository)
+                                ICategoryTestRepository categoryRepository, 
+                                IBookShelfTestRepository bookShelfTestRepository)
         {
             _fileStorage = fileStorage as FakeFileStorage;
             _authorBuilder = authorBuilder;
@@ -91,6 +94,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             _chapterRepository = chapterRepository;
             _bookPageRepository = bookPageRepository;
             _categoryRepository = categoryRepository;
+            _bookShelfTestRepository = bookShelfTestRepository;
         }
 
         public BooksDataBuilder HavingSeries()
@@ -162,6 +166,12 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public BooksDataBuilder WithSeries(SeriesDto series)
         {
             _series = series;
+            return this;
+        }
+        
+        public BooksDataBuilder InBookShelf(int bookshelfId)
+        {
+            _bookshelfId = bookshelfId;
             return this;
         }
 
@@ -493,6 +503,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 }
             }
 
+            if (_bookshelfId.HasValue)
+            {
+                    _bookShelfTestRepository.AddBooksToBookShelf(_bookshelfId.Value, _books.Select(x => x.Id));
+            }
             return _books;
         }
 

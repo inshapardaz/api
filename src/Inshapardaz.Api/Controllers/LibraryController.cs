@@ -66,7 +66,6 @@ public class LibraryController : Controller
     }
 
     [HttpPost("libraries", Name = nameof(LibraryController.CreateLibrary))]
-    //[Authorize(Role.Admin)]
     public async Task<IActionResult> CreateLibrary([FromBody] LibraryView library, CancellationToken token)
     {
         if (!ModelState.IsValid)

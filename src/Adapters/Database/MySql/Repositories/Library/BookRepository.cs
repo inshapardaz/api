@@ -185,7 +185,8 @@ public class BookRepository : IBookRepository
                 CategoryFilter = filter.CategoryId,
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
-                StatusFilter = filter.Status
+                StatusFilter = filter.Status,
+                BookShelfId = filter.BookShelfId
             };
             var sql = @"SELECT b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
                             FROM Book b
@@ -197,6 +198,7 @@ public class BookRepository : IBookRepository
                                 LEFT JOIN Category c ON bc.CategoryId = c.Id
                                 LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
                                 LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
+                                LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
                             WHERE b.LibraryId = @LibraryId
                                 AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
                                 AND (b.Status = @StatusFilter OR @StatusFilter = 0)
@@ -205,6 +207,7 @@ public class BookRepository : IBookRepository
                                 AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                                 AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                                 AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                                AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
                             GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead " +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
                         "LIMIT @PageSize OFFSET @Offset";
@@ -222,6 +225,7 @@ public class BookRepository : IBookRepository
                                 LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
                                 LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
                                 LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
+                                LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
                             WHERE b.LibraryId = @LibraryId
                                 AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
                                 AND (b.Status = @StatusFilter OR @StatusFilter = 0)
@@ -230,6 +234,7 @@ public class BookRepository : IBookRepository
                                 AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                                 AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                                 AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                                AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
                             GROUP BY b.Id) AS bkcnt";
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
@@ -263,7 +268,8 @@ public class BookRepository : IBookRepository
                 CategoryFilter = filter.CategoryId,
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
-                StatusFilter = filter.Status
+                StatusFilter = filter.Status,
+                BookShelfId = filter.BookShelfId
             };
 
             var sql = @"SELECT b.Id, b.Title, b.seriesIndex, b.DateAdded
@@ -276,6 +282,7 @@ public class BookRepository : IBookRepository
                                 LEFT JOIN Category c ON bc.CategoryId = c.Id
                                 LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id
                                 LEFT JOIN RecentBooks r On b.Id = r.BookId
+                                LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
                             WHERE b.LibraryId = @LibraryId
                                 AND b.Title Like @Query
                                 AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
@@ -285,6 +292,7 @@ public class BookRepository : IBookRepository
                                 AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                                 AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                                 AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
                             GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded " +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
                         @"LIMIT @PageSize OFFSET @Offset";
@@ -303,6 +311,7 @@ public class BookRepository : IBookRepository
                                 LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
                                 LEFT OUTER JOIN FavoriteBooks fb On fb.BookId = b.Id
                                 LEFT OUTER JOIN RecentBooks r On b.Id = r.BookId
+                                LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
                             WHERE b.LibraryId = @LibraryId
                                 AND b.Title Like @Query
                                 AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
@@ -312,6 +321,7 @@ public class BookRepository : IBookRepository
                                 AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                                 AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                                 AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
                             GROUP BY b.Id) AS bkcnt";
 
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));

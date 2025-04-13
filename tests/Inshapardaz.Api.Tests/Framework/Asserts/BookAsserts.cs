@@ -103,6 +103,22 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
             return this;
         }
+        
+        public BookAssert ShouldHaveRemoveFromBookShelfImageLink(int bookShelfId)
+        {
+            _book.Link(RelTypes.RemoveBookFromBookShelf)
+                  .ShouldBeDelete()
+                  .EndingWith($"libraries/{_libraryId}/bookshelves/{bookShelfId}/books/{_book.Id}");
+
+            return this;
+        }
+        
+        public BookAssert ShouldNotHaveRemoveFromBookShelfImageLink()
+        {
+            _book.Link(RelTypes.RemoveBookFromBookShelf).Should().BeNull();
+
+            return this;
+        }
 
         public BookAssert ShouldNotHaveRemoveFavoriteLink()
         {

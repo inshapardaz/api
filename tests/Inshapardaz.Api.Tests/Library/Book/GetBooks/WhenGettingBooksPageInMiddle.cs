@@ -77,7 +77,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
                             .ShouldNotHaveAddContentLink()
                             .ShouldHaveChaptersLink()
                             .ShouldHaveAddFavoriteLink()
-                            .ShouldHavePublicImageLink();
+                            .ShouldHavePublicImageLink()
+                            .ShouldNotHaveRemoveFromBookShelfImageLink();
             }
         }
     }

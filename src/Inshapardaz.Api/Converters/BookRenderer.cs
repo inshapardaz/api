@@ -14,9 +14,9 @@ public interface IRenderBook
 {
     BookContentView Render(BookContentModel source, int libraryId);
 
-    BookView Render(BookModel source, int libraryId);
+    BookView Render(BookModel source, int libraryId, BookShelfModel bookShelf = null);
 
-    PageView<BookView> Render(PageRendererArgs<BookModel, BookFilter> source, int id);
+    PageView<BookView> Render(PageRendererArgs<BookModel, BookFilter> source, int id, BookShelfModel bookShelf = null);
 }
 
 public class BookRenderer : IRenderBook
@@ -36,11 +36,11 @@ public class BookRenderer : IRenderBook
         _fileStorage = fileStorage;
     }
 
-    public PageView<BookView> Render(PageRendererArgs<BookModel, BookFilter> source, int libraryId)
+    public PageView<BookView> Render(PageRendererArgs<BookModel, BookFilter> source, int libraryId, BookShelfModel bookShelf = null)
     {
         var page = new PageView<BookView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
         {
-            Data = source.Page.Data?.Select(x => Render(x, libraryId))
+            Data = source.Page.Data?.Select(x => Render(x, libraryId, bookShelf))
         };
 
         var links = new List<LinkView>();
@@ -144,7 +144,7 @@ public class BookRenderer : IRenderBook
         return queryString;
     }
 
-    public BookView Render(BookModel source, int libraryId)
+    public BookView Render(BookModel source, int libraryId, BookShelfModel bookShelf = null)
     {
         var result = source.Map();
         var links = new List<LinkView>
@@ -184,6 +184,19 @@ public class BookRenderer : IRenderBook
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Series,
                 Parameters = new { libraryId = libraryId, seriesId = source.SeriesId }
+            }));
+        }
+
+        if (bookShelf is not null)
+        {
+            result.BookShelf = bookShelf.Map();
+
+            links.Add(_linkRenderer.Render(new Link
+            {
+                ActionName = nameof(BookShelfController.DeleteBookInBookShelf),
+                Method = HttpMethod.Delete,
+                Rel = RelTypes.RemoveBookFromBookShelf,
+                Parameters = new { libraryId = libraryId, bookShelfId = bookShelf.Id, bookId = source.Id }
             }));
         }
 

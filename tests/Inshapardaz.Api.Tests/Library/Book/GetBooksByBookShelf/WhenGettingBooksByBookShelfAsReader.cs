@@ -98,7 +98,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByBookShelf
                             .ShouldNotHaveCreateChaptersLink()
                             .ShouldNotHaveAddContentLink()
                             .ShouldHaveChaptersLink()
-                            .ShouldHavePublicImageLink();
+                            .ShouldHavePublicImageLink()
+                            .ShouldHaveRemoveFromBookShelfImageLink(_bookShelf.Id);
             }
         }
     }

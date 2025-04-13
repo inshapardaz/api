@@ -251,10 +251,15 @@ public class BookShelfRepository : IBookShelfRepository
         }
     }
 
-    public async Task AddBookToBookShelf(int libraryId, int bookshelfId, int bookId, int index, CancellationToken cancellationToken)
+    public async Task AddBookToBookShelf(int libraryId, int bookshelfId, int bookId, int index = -1, CancellationToken cancellationToken = default)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
+            if (index < 0)
+            {
+                var bookCount = await GetBookShelfBookCount(bookId, cancellationToken);
+                index = bookCount + 1;
+            }
             var sql = @"INSERT INTO BookShelfBook (BookId, BookShelfId, `Index`) 
                             VALUES (@BookId, @BookShelfId, @Index)";
             var command = new CommandDefinition(sql, new
@@ -331,6 +336,17 @@ public class BookShelfRepository : IBookShelfRepository
                             AND BookId = @BookId";
             var command = new CommandDefinition(sql, new { BookShelfId = bookShelfId, BookId = bookId }, cancellationToken: cancellationToken);
             return await connection.QuerySingleOrDefaultAsync<BookShelfBook>(command);
+        }
+    }
+    
+    private async Task<int> GetBookShelfBookCount(int bookShelfId, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT COUNT(*) FROM BookShelfBook
+                            WHERE BookShelfId = @BookShelfId";
+            var command = new CommandDefinition(sql, new { BookShelfId = bookShelfId }, cancellationToken: cancellationToken);
+            return await connection.ExecuteScalarAsync<int>(command);
         }
     }
 

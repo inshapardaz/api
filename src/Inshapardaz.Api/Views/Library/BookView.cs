@@ -54,4 +54,7 @@ public class BookView : ViewWithLinks
 
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public IEnumerable<PageSummaryView> PageStatus { get; set; }
+
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public BookShelfView BookShelf { get; set; }
 }

@@ -7,6 +7,7 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.Library.Book;
 using Inshapardaz.Domain.Ports.Query.Library.Book;
+using Inshapardaz.Domain.Ports.Query.Library.BookShelf;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 using Paramore.Darker;
@@ -62,6 +63,12 @@ public class BookController : Controller
             Status = status,
             AssignmentStatus = assignedFor
         };
+
+        BookShelfModel bookShelf = null;
+        if (bookShelfId.HasValue)
+        {
+            bookShelf = await _queryProcessor.ExecuteAsync(new GetBookShelfByIdQuery(libraryId, bookShelfId.Value), token);
+        };
         var request = new GetBooksQuery(libraryId, pageNumber, pageSize, _userHelper.AccountId)
         {
             Query = query,
@@ -71,7 +78,7 @@ public class BookController : Controller
         };
 
         var books = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
-
+        
         var args = new PageRendererArgs<BookModel, BookFilter>
         {
             Page = books,
@@ -86,7 +93,7 @@ public class BookController : Controller
             Filters = filter,
         };
 
-        return new OkObjectResult(_bookRenderer.Render(args, libraryId));
+        return new OkObjectResult(_bookRenderer.Render(args, libraryId, bookShelf));
     }
 
     [HttpGet("libraries/{libraryId}/books/{bookId}", Name = nameof(BookController.GetBookById))]

@@ -386,7 +386,8 @@ public class BookRepository : IBookRepository
         }
     }
 
-    public async Task<BookModel> GetBookById(int libraryId, int bookId, int? AccountId, CancellationToken cancellationToken)
+    public async Task<BookModel> GetBookById(int libraryId, long bookId, int? AccountId,
+        CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
@@ -471,56 +472,25 @@ public class BookRepository : IBookRepository
         }
     }
 
-    public async Task<BookModel> GetBookByPublisher(int libraryId, string publisher, CancellationToken cancellationToken)
+    public async Task<ReadProgressModel> AddRecentBook(int libraryId, int AccountId, int bookId,
+        ReadProgressModel progress,
+        CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            BookModel book = null;
-            var sql = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
-                            (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
-                            (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.id) As ChapterCount,
-                            a.*, c.*
-                            from Book b
-                            Left Outer Join BookAuthor ba ON b.Id = ba.BookId
-                            Left Outer Join Author a On ba.AuthorId = a.Id
-                            Left Outer Join Series s On b.SeriesId = s.id
-                            Left Outer Join BookCategory bc ON b.Id = bc.BookId
-                            Left Outer Join Category c ON bc.CategoryId = c.Id
-                            LEFT OUTER JOIN [File] fl ON fl.Id = b.ImageId
-                            Where b.LibraryId = @LibraryId AND b.Publisher= @Publisher";
-            await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(sql, (b, a, c) =>
+            var sql = @"REPLACE Into RecentBooks (BookId, AccountId, DateRead, LibraryId, ProgressType, ProgressId, ProgressValue)
+                            VALUES (@BookId, @AccountId, GETDATE(), @LibraryId, @ProgressType, @ProgressId, @ProgressValue);
+                        SELECT LAST_INSERT_ID()";
+            var command = new CommandDefinition(sql, new
             {
-                if (book == null)
-                {
-                    book = b;
-                }
-
-                if (!book.Authors.Any(x => x.Id == a.Id))
-                {
-                    book.Authors.Add(a);
-                }
-
-                if (c != null && !book.Categories.Any(x => x.Id == c.Id))
-                {
-                    book.Categories.Add(c);
-                }
-
-                return book;
-            }, new { LibraryId = libraryId, Publisher = publisher });
-
-            return book;
-        }
-    }
-
-    public async Task AddRecentBook(int libraryId, int AccountId, int bookId, CancellationToken cancellationToken)
-    {
-        using (var connection = _connectionProvider.GetLibraryConnection())
-        {
-            // TODO :  Delete to old records
-            var sql = @"Delete From RecentBooks Where LibraryId = @LibraryId And BookId = @BookId And AccountId = @AccountId;
-                            Insert Into RecentBooks (BookId, AccountId, DateRead, LibraryId) VALUES (@BookId, @AccountId, GETDATE(), @LibraryId);";
-            var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, AccountId = AccountId }, cancellationToken: cancellationToken);
-            await connection.ExecuteAsync(command);
+                LibraryId = libraryId, 
+                BookId = bookId, 
+                AccountId = AccountId,
+                ProgressType = progress.ProgressType, 
+                ProgressId = progress.ProgressId, 
+                ProgressValue = progress.ProgressValue
+            }, cancellationToken: cancellationToken);
+            return await connection.ExecuteScalarAsync<ReadProgressModel>(command);
         }
     }
 

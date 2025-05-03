@@ -18,11 +18,12 @@ public interface IBookRepository
 
     Task<Page<BookModel>> SearchBooks(int libraryId, string searchText, int pageNumber, int pageSize, int? accountId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken);
 
-    Task<BookModel> GetBookById(int libraryId, int bookId, int? accountId, CancellationToken cancellationToken);
+    Task<BookModel> GetBookById(int libraryId, long bookId, int? accountId, CancellationToken cancellationToken);
 
     Task<BookModel> GetBookBySource(int libraryId, string source, CancellationToken cancellationToken);
 
-    Task AddRecentBook(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
+    Task<ReadProgressModel> AddRecentBook(int libraryId, int accountId, int bookId, ReadProgressModel progress,
+        CancellationToken cancellationToken);
 
     Task DeleteBookFromRecent(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
 

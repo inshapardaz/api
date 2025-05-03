@@ -70,7 +70,13 @@ public class GetBookContentQueryHandler : QueryHandlerAsync<GetBookContentQuery,
         {
             if (command.AccountId.HasValue)
             {
-                await _bookRepository.AddRecentBook(command.LibraryId, command.AccountId.Value, command.BookId, cancellationToken);
+                await _bookRepository.AddRecentBook(command.LibraryId, command.AccountId.Value, command.BookId, new ReadProgressModel()
+                {
+                    ProgressType = ProgressType.File,
+                    ProgressId = command.ContentId,
+                    ProgressValue = 0.0,
+                    
+                }, cancellationToken);
             }
 
             if (book.IsPublic)

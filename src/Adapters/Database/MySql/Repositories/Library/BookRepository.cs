@@ -21,15 +21,17 @@ public class BookRepository : IBookRepository
         _connectionProvider = connectionProvider;
     }
 
-    public async Task<BookModel> AddBook(int libraryId, BookModel book, int? AccountId, CancellationToken cancellationToken)
+    public async Task<BookModel> AddBook(int libraryId, BookModel book, int? accountId, CancellationToken cancellationToken)
     {
         int bookId;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             book.LibraryId = libraryId;
-            var sql = @"INSERT INTO Book (Title, `Description`, Publisher, Source, ImageId, LibraryId, IsPublic, IsPublished, `Language`, `Status`, SeriesId, SeriesIndex, CopyRights, YearPublished, DateAdded, DateUpdated) 
-                            VALUES(@Title, @Description, @Publisher, @Source, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, UTC_TIMESTAMP(), UTC_TIMESTAMP());
-                            SELECT LAST_INSERT_ID();";
+            var sql = """
+                      INSERT INTO Book (Title, `Description`, Publisher, Source, ImageId, LibraryId, IsPublic, IsPublished, `Language`, `Status`, SeriesId, SeriesIndex, CopyRights, YearPublished, DateAdded, DateUpdated) 
+                                                  VALUES(@Title, @Description, @Publisher, @Source, @ImageId, @LibraryId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @CopyRights, @YearPublished, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+                                                  SELECT LAST_INSERT_ID();
+                      """;
             var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
             bookId = await connection.ExecuteScalarAsync<int>(command);
 
@@ -38,8 +40,10 @@ public class BookRepository : IBookRepository
                 new { BookId = book.Id },
                 cancellationToken: cancellationToken));
 
-            var sqlAuthor = @"INSERT INTO BookAuthor (BookId, AuthorId) 
-                                  VALUES (@BookId, @AuthorId);";
+            var sqlAuthor = """
+                            INSERT INTO BookAuthor (BookId, AuthorId) 
+                                                              VALUES (@BookId, @AuthorId);
+                            """;
 
             if (book.Authors != null && book.Authors.Any())
             {
@@ -53,8 +57,10 @@ public class BookRepository : IBookRepository
                 new { BookId = book.Id },
                 cancellationToken: cancellationToken));
 
-            var sqlCategory = @"INSERT INTO BookCategory (BookId, CategoryId) 
-                                    VALUES (@BookId, @CategoryId);";
+            var sqlCategory = """
+                              INSERT INTO BookCategory (BookId, CategoryId) 
+                                                                  VALUES (@BookId, @CategoryId);
+                              """;
 
             if (book.Categories != null && book.Categories.Any())
             {
@@ -63,7 +69,7 @@ public class BookRepository : IBookRepository
                 await connection.ExecuteAsync(commandCategory);
             }
 
-            return await GetBookById(libraryId, bookId, AccountId, cancellationToken);
+            return await GetBookById(libraryId, bookId, accountId, cancellationToken);
         }
     }
 
@@ -72,15 +78,17 @@ public class BookRepository : IBookRepository
         book.LibraryId = libraryId;
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"UPDATE Book 
-                        SET
-                            Title = @Title, `Description` = @Description,
-                            Publisher = @Publisher, Source = @Source, 
-                            IsPublic = @IsPublic, IsPublished = @IsPublished,
-                            `Language` = @Language, `Status` = @Status, SeriesId = @SeriesId,
-                            SeriesIndex = @SeriesIndex, CopyRights = @CopyRights,
-                            YearPublished = @YearPublished, DateUpdated = UTC_TIMESTAMP()
-                        WHERE LibraryId = @LibraryId AND Id = @Id";
+            var sql = """
+                      UPDATE Book 
+                                              SET
+                                                  Title = @Title, `Description` = @Description,
+                                                  Publisher = @Publisher, Source = @Source, 
+                                                  IsPublic = @IsPublic, IsPublished = @IsPublished,
+                                                  `Language` = @Language, `Status` = @Status, SeriesId = @SeriesId,
+                                                  SeriesIndex = @SeriesIndex, CopyRights = @CopyRights,
+                                                  YearPublished = @YearPublished, DateUpdated = UTC_TIMESTAMP()
+                                              WHERE LibraryId = @LibraryId AND Id = @Id
+                      """;
             var command = new CommandDefinition(sql, book, cancellationToken: cancellationToken);
             await connection.ExecuteScalarAsync<int>(command);
 
@@ -89,8 +97,10 @@ public class BookRepository : IBookRepository
                                 new { BookId = book.Id },
                                 cancellationToken: cancellationToken));
 
-            var sqlAuthor = @"INSERT INTO BookAuthor (BookId, AuthorId) 
-                                  VALUES (@BookId, @AuthorId);";
+            var sqlAuthor = """
+                            INSERT INTO BookAuthor (BookId, AuthorId) 
+                                                              VALUES (@BookId, @AuthorId);
+                            """;
 
             if (book.Authors != null && book.Authors.Any())
             {
@@ -135,19 +145,23 @@ public class BookRepository : IBookRepository
                 PageSize = pageSize,
                 Offset = pageSize * (pageNumber - 1)
             };
-            var sql = @"SELECT Id 
-                        FROM Book
-                        WHERE LibraryId = @LibraryId  
-                        ORDER BY Id
-                        LIMIT @PageSize
-                        OFFSET @Offset";
+            var sql = """
+                      SELECT Id 
+                                              FROM Book
+                                              WHERE LibraryId = @LibraryId  
+                                              ORDER BY Id
+                                              LIMIT @PageSize
+                                              OFFSET @Offset
+                      """;
             var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
 
             var bookIds = await connection.QueryAsync(command);
 
-            var sqlCount = @"SELECT Count(*)
-                            FROM Book
-                            WHERE LibraryId = @LibraryId";
+            var sqlCount = """
+                           SELECT Count(*)
+                                                       FROM Book
+                                                       WHERE LibraryId = @LibraryId
+                           """;
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
             var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
@@ -188,54 +202,58 @@ public class BookRepository : IBookRepository
                 StatusFilter = filter.Status,
                 BookShelfId = filter.BookShelfId
             };
-            var sql = @"SELECT b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
-                            FROM Book b
-                                LEFT JOIN Series s On b.SeriesId = s.id
-                                LEFT JOIN FavoriteBooks f On b.Id = f.BookId
-                                INNER JOIN BookAuthor ba ON b.Id = ba.BookId
-                                INNER JOIN Author a On ba.AuthorId = a.Id
-                                LEFT JOIN BookCategory bc ON b.Id = bc.BookId
-                                LEFT JOIN Category c ON bc.CategoryId = c.Id
-                                LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
-                                LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
-                                LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
-                            WHERE b.LibraryId = @LibraryId
-                                AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
-                                AND (b.Status = @StatusFilter OR @StatusFilter = 0)
-                                AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
-                                AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
-                                AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
-                                AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
-                                AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
-                                AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
-                            GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead " +
+            var sql = """
+                      SELECT b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
+                                                  FROM Book b
+                                                      LEFT JOIN Series s On b.SeriesId = s.id
+                                                      LEFT JOIN FavoriteBooks f On b.Id = f.BookId
+                                                      INNER JOIN BookAuthor ba ON b.Id = ba.BookId
+                                                      INNER JOIN Author a On ba.AuthorId = a.Id
+                                                      LEFT JOIN BookCategory bc ON b.Id = bc.BookId
+                                                      LEFT JOIN Category c ON bc.CategoryId = c.Id
+                                                      LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
+                                                      LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
+                                                      LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
+                                                  WHERE b.LibraryId = @LibraryId
+                                                      AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
+                                                      AND (b.Status = @StatusFilter OR @StatusFilter = 0)
+                                                      AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
+                                                      AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
+                                                      AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                                      AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
+                                                      AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                                                      AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
+                                                  GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead 
+                      """ +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
                         "LIMIT @PageSize OFFSET @Offset";
             var command = new CommandDefinition(sql, param, cancellationToken: cancellationToken);
 
             var bookIds = await connection.QueryAsync(command);
 
-            var sqlCount = @"SELECT Count(*) FROM (Select b.Id
-                            FROM Book b
-                                INNER JOIN BookAuthor ba ON b.Id = ba.BookId
-                                INNER JOIN Author a On ba.AuthorId = a.Id
-                                LEFT OUTER JOIN Series s On b.SeriesId = s.id
-                                LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId
-                                LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
-                                LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
-                                LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
-                                LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
-                                LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
-                            WHERE b.LibraryId = @LibraryId
-                                AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
-                                AND (b.Status = @StatusFilter OR @StatusFilter = 0)
-                                AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
-                                AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
-                                AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
-                                AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
-                                AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
-                                AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
-                            GROUP BY b.Id) AS bkcnt";
+            var sqlCount = """
+                           SELECT Count(*) FROM (Select b.Id
+                                                       FROM Book b
+                                                           INNER JOIN BookAuthor ba ON b.Id = ba.BookId
+                                                           INNER JOIN Author a On ba.AuthorId = a.Id
+                                                           LEFT OUTER JOIN Series s On b.SeriesId = s.id
+                                                           LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId
+                                                           LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
+                                                           LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
+                                                           LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
+                                                           LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
+                                                           LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
+                                                       WHERE b.LibraryId = @LibraryId
+                                                           AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
+                                                           AND (b.Status = @StatusFilter OR @StatusFilter = 0)
+                                                           AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
+                                                           AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
+                                                           AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                                           AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
+                                                           AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                                                           AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
+                                                       GROUP BY b.Id) AS bkcnt
+                           """;
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
             var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
@@ -272,28 +290,30 @@ public class BookRepository : IBookRepository
                 BookShelfId = filter.BookShelfId
             };
 
-            var sql = @"SELECT b.Id, b.Title, b.seriesIndex, b.DateAdded
-                            FROM Book b
-                                LEFT JOIN Series s On b.SeriesId = s.id
-                                LEFT JOIN FavoriteBooks f On b.Id = f.BookId
-                                INNER JOIN BookAuthor ba ON b.Id = ba.BookId
-                                INNER JOIN Author a On ba.AuthorId = a.Id
-                                LEFT JOIN BookCategory bc ON b.Id = bc.BookId
-                                LEFT JOIN Category c ON bc.CategoryId = c.Id
-                                LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id
-                                LEFT JOIN RecentBooks r On b.Id = r.BookId
-                                LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
-                            WHERE b.LibraryId = @LibraryId
-                                AND b.Title Like @Query
-                                AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
-                                AND (b.Status = @StatusFilter OR @StatusFilter = 0)
-                                AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
-                                AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
-                                AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
-                                AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
-                                AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
-                                AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
-                            GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded " +
+            var sql = """
+                      SELECT b.Id, b.Title, b.seriesIndex, b.DateAdded
+                                                  FROM Book b
+                                                      LEFT JOIN Series s On b.SeriesId = s.id
+                                                      LEFT JOIN FavoriteBooks f On b.Id = f.BookId
+                                                      INNER JOIN BookAuthor ba ON b.Id = ba.BookId
+                                                      INNER JOIN Author a On ba.AuthorId = a.Id
+                                                      LEFT JOIN BookCategory bc ON b.Id = bc.BookId
+                                                      LEFT JOIN Category c ON bc.CategoryId = c.Id
+                                                      LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id
+                                                      LEFT JOIN RecentBooks r On b.Id = r.BookId
+                                                      LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
+                                                  WHERE b.LibraryId = @LibraryId
+                                                      AND b.Title Like @Query
+                                                      AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
+                                                      AND (b.Status = @StatusFilter OR @StatusFilter = 0)
+                                                      AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
+                                                      AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
+                                                      AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
+                                                      AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                                                      AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                                      AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
+                                                  GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded 
+                      """ +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
                         @"LIMIT @PageSize OFFSET @Offset";
 
@@ -301,28 +321,30 @@ public class BookRepository : IBookRepository
 
             var bookIds = await connection.QueryAsync(command);
 
-            var sqlCount = @"SELECT Count(*) FROM (Select b.Id
-                            FROM Book b
-                                INNER JOIN BookAuthor ba ON b.Id = ba.BookId
-                                INNER JOIN Author a On ba.AuthorId = a.Id
-                                LEFT OUTER JOIN Series s On b.SeriesId = s.id
-                                LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId
-                                LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
-                                LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
-                                LEFT OUTER JOIN FavoriteBooks fb On fb.BookId = b.Id
-                                LEFT OUTER JOIN RecentBooks r On b.Id = r.BookId
-                                LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
-                            WHERE b.LibraryId = @LibraryId
-                                AND b.Title Like @Query
-                                AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
-                                AND (b.Status = @StatusFilter OR @StatusFilter = 0)
-                                AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
-                                AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
-                                AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
-                                AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
-                                AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
-                                AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
-                            GROUP BY b.Id) AS bkcnt";
+            var sqlCount = """
+                           SELECT Count(*) FROM (Select b.Id
+                                                       FROM Book b
+                                                           INNER JOIN BookAuthor ba ON b.Id = ba.BookId
+                                                           INNER JOIN Author a On ba.AuthorId = a.Id
+                                                           LEFT OUTER JOIN Series s On b.SeriesId = s.id
+                                                           LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId
+                                                           LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
+                                                           LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
+                                                           LEFT OUTER JOIN FavoriteBooks fb On fb.BookId = b.Id
+                                                           LEFT OUTER JOIN RecentBooks r On b.Id = r.BookId
+                                                           LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
+                                                       WHERE b.LibraryId = @LibraryId
+                                                           AND b.Title Like @Query
+                                                           AND (@AccountId IS NOT NULL OR b.IsPublic = 1)
+                                                           AND (b.Status = @StatusFilter OR @StatusFilter = 0)
+                                                           AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
+                                                           AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
+                                                           AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
+                                                           AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                                                           AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                                           AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
+                                                       GROUP BY b.Id) AS bkcnt
+                           """;
 
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
@@ -362,12 +384,14 @@ public class BookRepository : IBookRepository
                 StatusFilter = status
             };
 
-            var sql = @"SELECT DISTINCT b.Id, b.Title
-                            FROM Book b
-                                LEFT JOIN BookPage bp ON bp.BookId = b.Id
-                                LEFT JOIN Chapter c ON c.BookId = b.Id
-                            WHERE b.LibraryId = @LibraryId
-                                AND b.Status = @StatusFilter " +
+            var sql = """
+                      SELECT DISTINCT b.Id, b.Title
+                                                  FROM Book b
+                                                      LEFT JOIN BookPage bp ON bp.BookId = b.Id
+                                                      LEFT JOIN Chapter c ON c.BookId = b.Id
+                                                  WHERE b.LibraryId = @LibraryId
+                                                      AND b.Status = @StatusFilter 
+                      """ +
                         assignmentfilter +
                         $" ORDER BY {sortByQuery}, b.Id {sortDirection} " +
                         @"LIMIT @PageSize OFFSET @Offset";
@@ -376,12 +400,14 @@ public class BookRepository : IBookRepository
 
             var bookIds = await connection.QueryAsync(command);
 
-            var sqlCount = @"SELECT COUNT(DISTINCT b.Id)
-                            FROM Book b
-                                LEFT JOIN BookPage bp ON bp.BookId = b.Id
-                                LEFT JOIN Chapter c ON c.BookId = b.Id
-                            WHERE b.LibraryId = @LibraryId
-                                AND b.Status = @StatusFilter " +
+            var sqlCount = """
+                           SELECT COUNT(DISTINCT b.Id)
+                                                       FROM Book b
+                                                           LEFT JOIN BookPage bp ON bp.BookId = b.Id
+                                                           LEFT JOIN Chapter c ON c.BookId = b.Id
+                                                       WHERE b.LibraryId = @LibraryId
+                                                           AND b.Status = @StatusFilter 
+                           """ +
                         assignmentfilter;
 
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
@@ -398,46 +424,61 @@ public class BookRepository : IBookRepository
         }
     }
 
-    public async Task<BookModel> GetBookById(int libraryId, int bookId, int? AccountId, CancellationToken cancellationToken)
+    public async Task<BookModel> GetBookById(int libraryId, long bookId, int? AccountId,
+        CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             BookModel book = null;
-            var sql = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
-                                CASE WHEN fb.BookId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
-                                (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
-                                (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.id) As ChapterCount,
-                                a.*, c.*
-                            FROM Book b
-                                LEFT OUTER JOIN BookAuthor ba ON b.Id = ba.BookId
-                                LEFT OUTER JOIN Author a On ba.AuthorId = a.Id
-                                LEFT OUTER JOIN Series s On b.SeriesId = s.id
-                                LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId AND (f.AccountId = @AccountId OR @AccountId Is Null)
-                                LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
-                                LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
-                                LEFT OUTER JOIN FavoriteBooks fb On fb.BookId = b.Id
-                                LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
-                            WHERE b.LibraryId = @LibraryId 
-                                AND b.Id = @Id";
-            await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(sql, (b, a, c) =>
-            {
-                if (book == null)
-                {
-                    book = b;
-                }
+            var sql = """
+                      SELECT b.*, s.Name AS SeriesName, fl.FilePath AS ImageUrl,
+                                                     CASE WHEN fb.BookId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
+                                                     (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.Id) AS PageCount,
+                                                     (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.Id) AS ChapterCount,
+                                                     a.*, c.*, r.*
+                                              FROM Book b
+                                                   LEFT OUTER JOIN BookAuthor ba ON b.Id = ba.BookId
+                                                   LEFT OUTER JOIN Author a ON ba.AuthorId = a.Id
+                                                   LEFT OUTER JOIN Series s ON b.SeriesId = s.Id
+                                                   LEFT OUTER JOIN FavoriteBooks f ON b.Id = f.BookId AND (f.AccountId = @AccountId OR @AccountId IS NULL)
+                                                   LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
+                                                   LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
+                                                   LEFT OUTER JOIN FavoriteBooks fb ON fb.BookId = b.Id
+                                                   LEFT JOIN RecentBooks r ON b.Id = r.BookId
+                                                   LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
+                                              WHERE b.LibraryId = @LibraryId 
+                                                    AND b.Id = @Id
+                      """;
 
-                if (!book.Authors.Any(x => x.Id == a.Id))
+            await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, ReadProgressModel, BookModel>(
+                sql,
+                (b, a, c, r) =>
                 {
-                    book.Authors.Add(a);
-                }
+                    if (book == null)
+                    {
+                        book = b;
+                    }
 
-                if (c != null && !book.Categories.Any(x => x.Id == c.Id))
-                {
-                    book.Categories.Add(c);
-                }
+                    if (a != null && !book.Authors.Any(x => x.Id == a.Id))
+                    {
+                        book.Authors.Add(a);
+                    }
 
-                return book;
-            }, new { LibraryId = libraryId, Id = bookId, AccountId = AccountId });
+                    if (c != null && !book.Categories.Any(x => x.Id == c.Id))
+                    {
+                        book.Categories.Add(c);
+                    }
+
+                    if (r != null && (r.ProgressType != null || r.ProgressId != 0 || r.DateRead != null))
+                    {
+                        book.ReadProgress = r;
+                    }
+
+                    return book;
+                },
+                new { LibraryId = libraryId, Id = bookId, AccountId = AccountId },
+                splitOn: "Id,Id,ProgressType"
+            );
 
             return book;
         }
@@ -448,19 +489,21 @@ public class BookRepository : IBookRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             BookModel book = null;
-            var sql = @"SELECT b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
-                                (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
-                                (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.id) As ChapterCount,
-                                a.*, c.*
-                            FROM Book b
-                                LEFT OUTER JOIN BookAuthor ba ON b.Id = ba.BookId
-                                LEFT OUTER JOIN Author a On ba.AuthorId = a.Id
-                                LEFT OUTER JOIN Series s On b.SeriesId = s.id
-                                LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
-                                LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
-                                LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
-                            WHERE b.LibraryId = @LibraryId 
-                                AND b.Source= @Source";
+            var sql = """
+                      SELECT b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
+                                                      (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
+                                                      (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.id) As ChapterCount,
+                                                      a.*, c.*
+                                                  FROM Book b
+                                                      LEFT OUTER JOIN BookAuthor ba ON b.Id = ba.BookId
+                                                      LEFT OUTER JOIN Author a On ba.AuthorId = a.Id
+                                                      LEFT OUTER JOIN Series s On b.SeriesId = s.id
+                                                      LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
+                                                      LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
+                                                      LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
+                                                  WHERE b.LibraryId = @LibraryId 
+                                                      AND b.Source= @Source
+                      """;
             await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(sql, (b, a, c) =>
             {
                 if (book == null)
@@ -485,58 +528,41 @@ public class BookRepository : IBookRepository
         }
     }
 
-    public async Task<BookModel> GetBookByPublisher(int libraryId, string publisher, CancellationToken cancellationToken)
+    public async Task<ReadProgressModel> AddRecentBook(int libraryId, int accountId, int bookId,
+        ReadProgressModel progress,
+        CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            BookModel book = null;
-            var sql = @"SELECT b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
-                                (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
-                                (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.id) As ChapterCount,
-                                a.*, c.*
-                            FROM Book b
-                                LEFT OUTER JOIN BookAuthor ba ON b.Id = ba.BookId
-                                LEFT OUTER JOIN Author a On ba.AuthorId = a.Id
-                                LEFT OUTER JOIN Series s On b.SeriesId = s.id
-                                LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
-                                LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
-                                LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
-                            WHERE b.LibraryId = @LibraryId 
-                                AND b.Publisher= @Publisher";
-            await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(sql, (b, a, c) =>
+            var sql = """
+                      REPLACE INTO RecentBooks (BookId, AccountId, DateRead, LibraryId, ProgressType, ProgressId, ProgressValue)
+                                                  VALUES (@BookId, @AccountId, UTC_TIMESTAMP(), @LibraryId, @ProgressType, @ProgressId, @ProgressValue)
+                      """;
+            var command = new CommandDefinition(sql, new
             {
-                if (book == null)
-                {
-                    book = b;
-                }
-
-                if (!book.Authors.Any(x => x.Id == a.Id))
-                {
-                    book.Authors.Add(a);
-                }
-
-                if (c != null && !book.Categories.Any(x => x.Id == c.Id))
-                {
-                    book.Categories.Add(c);
-                }
-
-                return book;
-            }, new { LibraryId = libraryId, Publisher = publisher });
-
-            return book;
-        }
-    }
-
-    public async Task AddRecentBook(int libraryId, int AccountId, int bookId, CancellationToken cancellationToken)
-    {
-        using (var connection = _connectionProvider.GetLibraryConnection())
-        {
-            // TODO :  Delete to old records
-            var sql = @"DELETE FROM RecentBooks WHERE LibraryId = @LibraryId AND BookId = @BookId AND AccountId = @AccountId;
-                            INSERT INTO RecentBooks (BookId, AccountId, DateRead, LibraryId) 
-                            VALUES (@BookId, @AccountId, UTC_TIMESTAMP(), @LibraryId);";
-            var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, AccountId = AccountId }, cancellationToken: cancellationToken);
+                LibraryId = libraryId, 
+                BookId = bookId, 
+                AccountId = accountId,
+                ProgressType = progress.ProgressType, 
+                ProgressId = progress.ProgressId, 
+                ProgressValue = progress.ProgressValue
+            }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
+            
+            return await connection.QuerySingleOrDefaultAsync<ReadProgressModel>(
+                new CommandDefinition(
+                    """
+                    SELECT * FROM RecentBooks 
+                    WHERE BookId = @BookId 
+                      AND AccountId = @AccountId 
+                      AND LibraryId = @LibraryId
+                    """, 
+                new
+            {
+                LibraryId = libraryId, 
+                BookId = bookId, 
+                AccountId = accountId
+            }, cancellationToken: cancellationToken));
         }
     }
 
@@ -580,13 +606,15 @@ public class BookRepository : IBookRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"DELETE bc
-                            FROM BookContent bc
-                                INNER JOIN Book b ON b.Id = bc.BookId
-                                INNER JOIN `File` f ON bc.FileId = f.Id
-                            WHERE b.LibraryId = @LibraryId 
-                                AND b.Id = @BookId 
-                                AND bc.id= @Id";
+            var sql = """
+                      DELETE bc
+                                                  FROM BookContent bc
+                                                      INNER JOIN Book b ON b.Id = bc.BookId
+                                                      INNER JOIN `File` f ON bc.FileId = f.Id
+                                                  WHERE b.LibraryId = @LibraryId 
+                                                      AND b.Id = @BookId 
+                                                      AND bc.id= @Id
+                      """;
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = contentId, BookId = bookId }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
@@ -596,14 +624,16 @@ public class BookRepository : IBookRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
-                            FROM BookContent bc
-                                INNER JOIN Book b ON b.Id = bc.BookId
-                                INNER JOIN `File` f ON bc.FileId = f.Id
-                            WHERE b.LibraryId = @LibraryId 
-                                AND bc.BookId = @BookId 
-                                AND bc.Language = @Language 
-                                AND f.MimeType = @MimeType";
+            var sql = """
+                      SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
+                                                  FROM BookContent bc
+                                                      INNER JOIN Book b ON b.Id = bc.BookId
+                                                      INNER JOIN `File` f ON bc.FileId = f.Id
+                                                  WHERE b.LibraryId = @LibraryId 
+                                                      AND bc.BookId = @BookId 
+                                                      AND bc.Language = @Language 
+                                                      AND f.MimeType = @MimeType
+                      """;
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, Language = language, MimeType = mimeType }, cancellationToken: cancellationToken);
             return await connection.QuerySingleOrDefaultAsync<BookContentModel>(command);
         }
@@ -613,13 +643,15 @@ public class BookRepository : IBookRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
-                            FROM BookContent bc
-                                INNER JOIN Book b ON b.Id = bc.BookId
-                                INNER JOIN `File` f ON bc.FileId = f.Id
-                            WHERE b.LibraryId = @LibraryId 
-                                AND bc.BookId = @BookId 
-                                AND bc.Id = @Id";
+            var sql = """
+                      SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
+                                                  FROM BookContent bc
+                                                      INNER JOIN Book b ON b.Id = bc.BookId
+                                                      INNER JOIN `File` f ON bc.FileId = f.Id
+                                                  WHERE b.LibraryId = @LibraryId 
+                                                      AND bc.BookId = @BookId 
+                                                      AND bc.Id = @Id
+                      """;
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, Id = contentId }, cancellationToken: cancellationToken);
             return await connection.QuerySingleOrDefaultAsync<BookContentModel>(command);
         }
@@ -629,12 +661,14 @@ public class BookRepository : IBookRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
-                            FROM BookContent bc
-                                INNER JOIN Book b ON b.Id = bc.BookId
-                                INNER JOIN `File` f ON bc.FileId = f.Id
-                            WHERE b.LibraryId = @LibraryId 
-                                AND bc.BookId = @BookId";
+            var sql = """
+                      SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
+                                                  FROM BookContent bc
+                                                      INNER JOIN Book b ON b.Id = bc.BookId
+                                                      INNER JOIN `File` f ON bc.FileId = f.Id
+                                                  WHERE b.LibraryId = @LibraryId 
+                                                      AND bc.BookId = @BookId
+                      """;
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
             return await connection.QueryAsync<BookContentModel>(command);
         }
@@ -644,12 +678,14 @@ public class BookRepository : IBookRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"UPDATE BookContent bc 
-                               INNER JOIN Book b ON b.Id = bc.BookId
-                            SET bc.Language = @Language
-                            WHERE b.LibraryId = @LibraryId 
-                                AND b.Id = @BookId 
-                                AND bc.Id = @Id";
+            var sql = """
+                      UPDATE BookContent bc 
+                                                     INNER JOIN Book b ON b.Id = bc.BookId
+                                                  SET bc.Language = @Language
+                                                  WHERE b.LibraryId = @LibraryId 
+                                                      AND b.Id = @BookId 
+                                                      AND bc.Id = @Id
+                      """;
             var command = new CommandDefinition(sql, new
             {
                 LibraryId = libraryId,
@@ -665,9 +701,11 @@ public class BookRepository : IBookRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO BookContent (BookId, FileId, Language)
-                            VALUES (@BookId, @FileId, @Language);
-                            SELECT LAST_INSERT_ID();";
+            var sql = """
+                      INSERT INTO BookContent (BookId, FileId, Language)
+                                                  VALUES (@BookId, @FileId, @Language);
+                                                  SELECT LAST_INSERT_ID();
+                      """;
             var command = new CommandDefinition(sql, new { FileId = fileId, BookId = bookId, Language = language }, cancellationToken: cancellationToken);
             return await connection.ExecuteScalarAsync<int>(command);
         }
@@ -677,10 +715,12 @@ public class BookRepository : IBookRepository
     {
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
-            var sql = @"UPDATE Book
-                            SET ImageId = @ImageId
-                            WHERE Id = @BookId 
-                                AND LibraryId = @LibraryId;";
+            var sql = """
+                      UPDATE Book
+                                                  SET ImageId = @ImageId
+                                                  WHERE Id = @BookId 
+                                                      AND LibraryId = @LibraryId;
+                      """;
             var command = new CommandDefinition(sql, new { ImageId = imageId, BookId = bookId, LibraryId = libraryId }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
@@ -691,14 +731,16 @@ public class BookRepository : IBookRepository
         using (var connection = _connectionProvider.GetLibraryConnection())
         {
             var bookSummaries = new Dictionary<int, PageSummaryModel>();
-            const string sql = @"SELECT bp.BookId, bp.`Status`, Count(*),
-                                (Count(bp.Status)* 100 / (Select Count(*) From BookPage WHERE BookPage.BookId = bp.BookId)) as Percentage
-                                FROM BookPage bp
-                                    INNER Join Book b ON b.id = bp.BookId
-                                WHERE b.LibraryId = @LibraryId
-                                    AND b.Id IN @BookIds
-                                    AND b.Status <> 0
-                                GROUP By bp.BookId, bp.`Status`";
+            const string sql = """
+                               SELECT bp.BookId, bp.`Status`, Count(*),
+                                                               (Count(bp.Status)* 100 / (Select Count(*) From BookPage WHERE BookPage.BookId = bp.BookId)) as Percentage
+                                                               FROM BookPage bp
+                                                                   INNER Join Book b ON b.id = bp.BookId
+                                                               WHERE b.LibraryId = @LibraryId
+                                                                   AND b.Id IN @BookIds
+                                                                   AND b.Status <> 0
+                                                               GROUP By bp.BookId, bp.`Status`
+                               """;
 
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookIds = bookIds }, cancellationToken: cancellationToken);
             var results = await connection.QueryAsync<(int BookId, EditingStatus Status, int Count, decimal Percentage)>(command);
@@ -727,42 +769,54 @@ public class BookRepository : IBookRepository
     private async Task<IEnumerable<BookModel>> GetBooks(IDbConnection connection, int libraryId, List<int> bookIds, CancellationToken cancellationToken)
     {
         var books = new Dictionary<int, BookModel>();
-        var sql3 = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
-                                CASE WHEN fb.BookId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
-                                (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.Id) As PageCount,
-                                (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.Id) As ChapterCount,
-                                a.*, c.*
-                            FROM Book b
-                                LEFT JOIN Series s On b.SeriesId = s.id
-                                LEFT JOIN FavoriteBooks f On b.Id = f.BookId
-                                INNER JOIN BookAuthor ba ON b.Id = ba.BookId
-                                INNER JOIN Author a On ba.AuthorId = a.Id
-                                LEFT JOIN BookCategory bc ON b.Id = bc.BookId
-                                LEFT JOIN Category c ON bc.CategoryId = c.Id
-                                LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id
-                                LEFT JOIN RecentBooks r On b.Id = r.BookId
-                                LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
-                            WHERE b.LibraryId = @LibraryId
-                                AND b.Id IN @BookList";
-        var command3 = new CommandDefinition(sql3, new { LibraryId = libraryId, BookList = bookIds }, cancellationToken: cancellationToken);
+        var sql = """
+                  SELECT b.*, s.Name AS SeriesName, fl.FilePath AS ImageUrl,
+                                         CASE WHEN fb.BookId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
+                                         (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.Id) AS PageCount,
+                                         (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.Id) AS ChapterCount,
+                                         a.*, c.*, r.*
+                                  FROM Book b
+                                       LEFT JOIN Series s ON b.SeriesId = s.Id
+                                       LEFT JOIN FavoriteBooks f ON b.Id = f.BookId
+                                       INNER JOIN BookAuthor ba ON b.Id = ba.BookId
+                                       INNER JOIN Author a ON ba.AuthorId = a.Id
+                                       LEFT JOIN BookCategory bc ON b.Id = bc.BookId
+                                       LEFT JOIN Category c ON bc.CategoryId = c.Id
+                                       LEFT JOIN FavoriteBooks fb ON fb.BookId = b.Id
+                                       LEFT JOIN RecentBooks r ON b.Id = r.BookId
+                                       LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
+                                  WHERE b.LibraryId = @LibraryId
+                                        AND b.Id IN @BookList
+                  """;
 
-        await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(command3, (b, a, c) =>
-        {
-            if (!books.TryGetValue(b.Id, out BookModel book))
-                books.Add(b.Id, book = b);
+        var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookList = bookIds }, cancellationToken: cancellationToken);
 
-            if (!book.Authors.Any(x => x.Id == a.Id))
+        await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, ReadProgressModel, BookModel>(
+            command,
+            (b, a, c, r) =>
             {
-                book.Authors.Add(a);
-            }
+                if (!books.TryGetValue(b.Id, out BookModel book))
+                    books.Add(b.Id, book = b);
 
-            if (c != null && !book.Categories.Any(x => x.Id == c.Id))
-            {
-                book.Categories.Add(c);
-            }
+                if (!book.Authors.Any(x => x.Id == a.Id))
+                {
+                    book.Authors.Add(a);
+                }
 
-            return book;
-        });
+                if (c != null && !book.Categories.Any(x => x.Id == c.Id))
+                {
+                    book.Categories.Add(c);
+                }
+
+                if (r != null && (r.ProgressType != null || r.ProgressId != 0 || r.DateRead != null))
+                {
+                    book.ReadProgress = r;
+                }
+
+                return book;
+            },
+            splitOn: "Id,Id,ProgressType"
+        );
 
         return books.Values.OrderBy(b => bookIds.IndexOf(b.Id)).ToList();
     }

@@ -59,6 +59,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
 
         void AddBooksAuthor(IEnumerable<int> bookIds, int authorId);
+        ReadProgressDto GetBookProgress(int bookId, int accountId);
 
     }
 
@@ -343,6 +344,15 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 AddBookAuthor(bookId, authorId);
             }
         }
+
+        public ReadProgressDto GetBookProgress(int bookId, int accountId)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                var sql = "SELECT * FROM RecentBooks WHERE BookId = @BookId AND AccountId = @AccountId";
+                return connection.QueryFirstOrDefault<ReadProgressDto>(sql, new { BookId = bookId, AccountId = accountId });
+            }
+        }
     }
 
     public class SqlServerBookTestRepository : IBookTestRepository
@@ -625,6 +635,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             {
                 AddBookAuthor(bookId, authorId);
             }
+        }
+
+        public ReadProgressDto GetBookProgress(int bookId, int accountId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

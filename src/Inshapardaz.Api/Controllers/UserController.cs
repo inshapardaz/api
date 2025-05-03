@@ -1,10 +1,12 @@
-﻿using Inshapardaz.Api.Converters;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Command.Library.Book;
 using Inshapardaz.Domain.Ports.Query.Library;
 using Inshapardaz.Domain.Ports.Query.Library.Book;
 using Inshapardaz.Domain.Ports.Query.Library.Book.Page;
@@ -125,5 +127,29 @@ public class UserController : Controller
         };
 
         return new OkObjectResult(_bookRenderer.Render(args, libraryId));
+    }
+    
+    [HttpPost("libraries/{libraryId}/my/books/{bookId}", Name = nameof(UpdateUserBookProgress))]
+    [Produces(typeof(ReadProgressView))]
+    public async Task<IActionResult> UpdateUserBookProgress(int libraryId, 
+        int bookId,
+        [FromBody] ReadProgressView readStatus,
+        CancellationToken token = default)
+    {
+        
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        var updateBookProgressCommand = new UpdateBookProgressRequest(libraryId, _userHelper.AccountId ?? 0, bookId, readStatus.Map());
+        await _commandProcessor.SendAsync(updateBookProgressCommand, cancellationToken: token);
+    
+        if (updateBookProgressCommand.Result?.Progress == null)
+        {
+            return NotFound();
+        }
+    
+        return new OkObjectResult(updateBookProgressCommand.Result.Progress.Map());
     }
 }

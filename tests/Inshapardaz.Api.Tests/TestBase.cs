@@ -184,6 +184,7 @@ namespace Inshapardaz.Api.Tests
                     .AddTransient(typeof(PagingAssert<>), typeof(PagingAssert<>))
                     .AddTransient<PeriodicalAssert>()
                     .AddTransient<CommonWordAssert>()
+                    .AddTransient<ReadProgressAssert>()
                     .AddTransient<SeriesAssert>();
         }
 

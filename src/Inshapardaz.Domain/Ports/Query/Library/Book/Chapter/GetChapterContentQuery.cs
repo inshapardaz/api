@@ -84,7 +84,16 @@ public class GetChapterContentQueryHandler : QueryHandlerAsync<GetChapterContent
             }
             if (_userHelper.AccountId.HasValue)
             {
-                await _bookRepository.AddRecentBook(command.LibraryId, _userHelper.AccountId.Value, command.BookId, cancellationToken);
+                await _bookRepository.AddRecentBook(
+                    command.LibraryId, 
+                    _userHelper.AccountId.Value, 
+                    command.BookId, new ReadProgressModel()
+                    {
+                        ProgressType = ProgressType.Chapter,
+                        ProgressId = command.ChapterNumber,
+                        ProgressValue = 0.0
+                    }, 
+                    cancellationToken);
             }
         }
 

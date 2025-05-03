@@ -57,4 +57,5 @@ public class BookModel
 
     public string Source { get; set; }
     public string Publisher { get; set; }
+    public ReadProgressModel ReadProgress { get; set; }
 }

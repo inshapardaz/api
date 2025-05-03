@@ -31,6 +31,7 @@ public static class BookMapper
         Publisher = source.Publisher,
         PageStatus = source.PageStatus?.Select(ps => ps.Map()),
         Authors = source.Authors?.Select(c => c.Map()),
+        ReadProgress = source.ReadProgress.Map()
     };
 
     public static BookModel Map(this BookView source) => new BookModel
@@ -56,6 +57,7 @@ public static class BookMapper
         ChapterCount = source.ChapterCount,
         PageStatus = source.PageStatus?.Select(ps => ps.Map()),
         Authors = source.Authors?.Select(c => c.Map()).ToList() ?? new System.Collections.Generic.List<AuthorModel>(),
+        ReadProgress = source.ReadProgress.Map()
     };
 
     public static BookContentView Map(this BookContentModel source)
@@ -91,5 +93,21 @@ public static class BookMapper
             Status = source.Status.ToEnum(EditingStatus.Available),
             Count = source.Count,
             Percentage = source.Percentage
+        };
+
+    public static ReadProgressView Map(this ReadProgressModel source)
+        => source == null ? null : new ReadProgressView
+        {
+            ProgressType = source.ProgressType.ToDescription(),
+            ProgressId = source.ProgressId,
+            ProgressValue = source.ProgressValue
+        };
+
+    public static ReadProgressModel Map(this ReadProgressView source)
+        => source == null ? null : new ReadProgressModel
+        {
+            ProgressType = source.ProgressType.ToEnum(ProgressType.Unknown),
+            ProgressId = source.ProgressId,
+            ProgressValue = source.ProgressValue
         };
 }

@@ -6,6 +6,7 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.Tools;
 using Inshapardaz.Domain.Ports.Query.Tools;
 using Inshapardaz.Domain.Ports.Query.Tools.CommonWords;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;

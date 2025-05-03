@@ -75,6 +75,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
         _logger = logger;
     }
 
+    [AuthorizeAdmin(1)]
     public override async Task<DownloadRekhtaBookRequest> HandleAsync(DownloadRekhtaBookRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         _logger.BeginScope("Downloading {Url} for {Library}", command.Url, _settings.DefaultLibraryId);

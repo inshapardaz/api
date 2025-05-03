@@ -76,6 +76,7 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
         _logger = logger;
     }
 
+    [AuthorizeAdmin(1)]
     public override async Task<DownloadChughtaiBookRequest> HandleAsync(DownloadChughtaiBookRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         var book = await _bookRepository.GetBookBySource(_settings.DefaultLibraryId, command.Url, cancellationToken);

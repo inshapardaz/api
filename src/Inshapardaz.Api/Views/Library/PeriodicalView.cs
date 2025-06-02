@@ -17,6 +17,7 @@ public class PeriodicalView : ViewWithLinks
     public string Language { get; set; }
 
     public IEnumerable<CategoryView> Categories { get; set; }
+    public IEnumerable<TagView> Tags { get; set; }
 
     [Required]
     public string Frequency { get; set; }

@@ -54,6 +54,28 @@ public class ArticleRepository : IArticleRepository
                 var commandCategory = new CommandDefinition(sqlCategory, articleCategories, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(commandCategory);
             }
+            
+            if (article.Tags != null && article.Tags.Any())
+            {
+                foreach (var tag in article.Tags)
+                {
+                    var tagId = await connection.ExecuteScalarAsync<int>(
+                        new CommandDefinition(
+                            @"INSERT INTO Tag (Name, LibraryId) 
+                              VALUES (@Name, @LibraryId) 
+                              ON DUPLICATE KEY UPDATE Name=@Name; 
+                              SELECT Id FROM Tag WHERE Name = @Name AND  LibraryId = @LibraryId;",
+                            new { Name = tag.Name, LibraryId = libraryId },
+                            cancellationToken: cancellationToken));
+            
+                    // Associate tag with book
+                    await connection.ExecuteAsync(
+                        new CommandDefinition(
+                            "INSERT INTO ArticleTag (ArticleId, TagId) VALUES (@ArticleId, @TagId);",
+                            new { ArticleId = id, TagId = tagId },
+                            cancellationToken: cancellationToken));
+                }
+            }
         }
 
         return await GetArticleById(libraryId, id, accountId, cancellationToken);
@@ -157,6 +179,7 @@ public class ArticleRepository : IArticleRepository
                 AuthorFilter = filter.AuthorId,
                 TypeFilter = filter.Type == ArticleType.Unknown ? (ArticleType?)null : filter.Type,
                 CategoryFilter = filter.CategoryId,
+                TagFilter = filter.TagId,
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
                 StatusFilter = filter.Status
@@ -168,6 +191,8 @@ public class ArticleRepository : IArticleRepository
                             INNER JOIN Author a On aa.AuthorId = a.Id
                             LEFT JOIN ArticleCategory ac ON at.Id = ac.ArticleId
                             LEFT JOIN Category c ON ac.CategoryId = c.Id
+                            LEFT OUTER JOIN ArticleTag att ON at.Id = att.ArticleId
+                            LEFT OUTER JOIN Tag t ON att.TagId = t.Id
                             LEFT JOIN ArticleFavorite f On f.ArticleId= at.Id
                             LEFT JOIN ArticleRead r On at.Id = r.ArticleId
                         WHERE at.LibraryId = @LibraryId
@@ -179,6 +204,7 @@ public class ArticleRepository : IArticleRepository
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             AND (ac.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                            AND (att.TagId = @TagFilter OR @TagFilter IS NULL)
                             GROUP BY at.Id, at.Title, at.LastModified " +
                         $" ORDER BY {sortByQuery} " +
                         @"LIMIT @PageSize 
@@ -196,6 +222,8 @@ public class ArticleRepository : IArticleRepository
                                         INNER JOIN Author a On aa.AuthorId = a.Id
                                         LEFT JOIN ArticleCategory ac ON at.Id = ac.ArticleId
                                         LEFT JOIN Category c ON ac.CategoryId = c.Id
+                                        LEFT OUTER JOIN ArticleTag att ON at.Id = att.ArticleId
+                                        LEFT OUTER JOIN Tag t ON att.TagId = t.Id
                                         LEFT JOIN ArticleFavorite f On f.ArticleId= at.Id
                                         LEFT JOIN ArticleRead r On at.Id = r.ArticleId
                                     WHERE at.LibraryId = @LibraryId
@@ -284,6 +312,33 @@ public class ArticleRepository : IArticleRepository
                 var commandCategory = new CommandDefinition(sqlCategory, categories, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(commandCategory);
             }
+            
+            await connection.ExecuteAsync(new CommandDefinition(
+                "DELETE FROM ArticleTag WHERE ArticleId = @ArticleId",
+                new { ArticleId = article.Id },
+                cancellationToken: cancellationToken));
+            
+            if (article.Tags != null && article.Tags.Any())
+            {
+                foreach (var tag in article.Tags)
+                {
+                    var tagId = await connection.ExecuteScalarAsync<int>(
+                        new CommandDefinition(
+                            @"INSERT INTO Tag (Name, LibraryId) 
+                              VALUES (@Name, @LibraryId) 
+                              ON DUPLICATE KEY UPDATE Name=@Name; 
+                              SELECT Id FROM Tag WHERE Name = @Name AND  LibraryId = @LibraryId;",
+                            new { Name = tag.Name, LibraryId = libraryId },
+                            cancellationToken: cancellationToken));
+            
+                    // Associate tag with book
+                    await connection.ExecuteAsync(
+                        new CommandDefinition(
+                            "INSERT INTO ArticleTag (ArticleId, TagId) VALUES (@ArticleId, @TagId);",
+                            new { ArticleId = article.Id, TagId = tagId },
+                            cancellationToken: cancellationToken));
+                }
+            }
         }
 
         return await GetArticleById(libraryId, article.Id, null, cancellationToken);
@@ -363,7 +418,7 @@ public class ArticleRepository : IArticleRepository
                             CASE WHEN af.ArticleId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                             aw.Name As WriterAccountName,
                             arv.Name As ReviewerAccountName,
-                            a.*, c.*, con.*, aw.*, arv.*
+                            a.*, c.*, con.*, aw.*, arv.*, t.*
                             FROM Article at
                                 LEFT OUTER JOIN ArticleAuthor ara ON ara.ArticleId = at.Id
                                 LEFT OUTER JOIN Author a ON ara.AuthorId = a.Id
@@ -371,12 +426,14 @@ public class ArticleRepository : IArticleRepository
                                 LEFT OUTER JOIN ArticleRead ar On at.Id = ar.ArticleId AND (ar.AccountId = @AccountId OR @AccountId Is Null)
                                 LEFT OUTER JOIN ArticleCategory ac ON at.Id = ac.ArticleId
                                 LEFT OUTER JOIN Category c ON ac.CategoryId = c.Id
+                                LEFT OUTER JOIN ArticleTag att ON at.Id = att.ArticleId
+                                LEFT OUTER JOIN Tag t ON att.TagId = t.Id
                                 LEFT JOIN ArticleContent con ON con.ArticleId = at.Id
                                 LEFT OUTER JOIN Accounts aw ON aw.Id = WriterAccountId
                                 LEFT OUTER JOIN Accounts arv ON arv.Id = ReviewerAccountId
                                 LEFT OUTER JOIN `File` fl ON fl.Id = at.ImageId
                             WHERE at.LibraryId = @LibraryId AND at.Id = @Id";
-            await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, AccountModel, AccountModel, ArticleModel>(sql, (ar, a, c, con, writer, reviewer) =>
+            await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, AccountModel, AccountModel, TagModel, ArticleModel>(sql, (ar, a, c, con, writer, reviewer, t) =>
             {
                 if (article == null)
                 {
@@ -393,6 +450,11 @@ public class ArticleRepository : IArticleRepository
                 if (c != null && !article.Categories.Any(x => x.Id == c.Id))
                 {
                     article.Categories.Add(c);
+                }
+
+                if (t != null && !article.Tags.Any(x => x.Id == t.Id))
+                {
+                    article.Tags.Add(t);
                 }
 
                 if (con != null && !article.Contents.Any(x => x.Id == con.Id))
@@ -415,7 +477,7 @@ public class ArticleRepository : IArticleRepository
                             CASE WHEN af.ArticleId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                             aw.Name As WriterAccountName,
                             arv.Name As ReviewerAccountName,
-                            a.*, c.*, con.*
+                            a.*, c.*, con.*, t.*
                         FROM Article at
                             LEFT OUTER JOIN ArticleAuthor ara ON ara.ArticleId = at.Id
                             LEFT OUTER JOIN Author a On ara.AuthorId = a.Id
@@ -425,6 +487,8 @@ public class ArticleRepository : IArticleRepository
                                 AND (ar.AccountId = @AccountId OR @AccountId Is Null)
                             LEFT OUTER JOIN ArticleCategory ac ON at.Id = ac.ArticleId
                             LEFT OUTER JOIN Category c ON ac.CategoryId = c.Id
+                            LEFT OUTER JOIN ArticleTag att ON at.Id = att.ArticleId
+                            LEFT OUTER JOIN Tag t ON att.TagId = t.Id
                             LEFT OUTER JOIN Accounts aw ON aw.Id = WriterAccountId
                             LEFT OUTER JOIN Accounts arv ON arv.Id = ReviewerAccountId
                             LEFT OUTER JOIN `File` fl ON fl.Id = at.ImageId
@@ -438,7 +502,7 @@ public class ArticleRepository : IArticleRepository
             AccountId = accountId
         }, cancellationToken: cancellationToken);
 
-        await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, ArticleModel>(command3, (at, a, c, con) =>
+        await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, TagModel, ArticleModel>(command3, (at, a, c, con, t) =>
         {
             if (!articles.TryGetValue(at.Id, out ArticleModel article))
                 articles.Add(at.Id, article = at);
@@ -451,6 +515,11 @@ public class ArticleRepository : IArticleRepository
             if (c != null && !article.Categories.Any(x => x.Id == c.Id))
             {
                 article.Categories.Add(c);
+            }
+            
+            if (t != null && !article.Tags.Any(x => x.Id == t.Id))
+            {
+                article.Tags.Add(t);
             }
 
             if (con != null && !article.Contents.Any(x => x.Id == con.Id))
@@ -488,7 +557,6 @@ public class ArticleRepository : IArticleRepository
             await connection.ExecuteAsync(command);
         }
     }
-
 
     public async Task AddArticleToFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken)
     {
@@ -528,7 +596,7 @@ public class ArticleRepository : IArticleRepository
         {
             var sql = @"SELECT at.*, fl.FilePath AS ImageUrl,
                             CASE WHEN af.ArticleId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
-                            a.*, c.*, con.*
+                            a.*, c.*, con.*, t.*
                         FROM Article at
                             LEFT OUTER JOIN ArticleAuthor ara ON ara.ArticleId = at.Id
                             LEFT OUTER JOIN Author a On ara.AuthorId = a.Id
@@ -538,6 +606,8 @@ public class ArticleRepository : IArticleRepository
                                 AND (ar.AccountId = @AccountId OR @AccountId Is Null)
                             LEFT OUTER JOIN ArticleCategory ac ON at.Id = ac.ArticleId
                             LEFT OUTER JOIN Category c ON ac.CategoryId = c.Id
+                            LEFT OUTER JOIN ArticleTag att ON at.Id = att.ArticleId
+                            LEFT OUTER JOIN Tag t ON att.TagId = t.Id
                             LEFT OUTER JOIN `File` fl ON fl.Id = at.ImageId
                             LEFT JOIN ArticleContent con ON con.ArticleId = at.Id
                         WHERE at.LibraryId = @LibraryId";
@@ -550,7 +620,7 @@ public class ArticleRepository : IArticleRepository
 
             var articles = new Dictionary<long, ArticleModel>();
 
-            await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, ArticleModel>(command, (at, a, c, con) =>
+            await connection.QueryAsync<ArticleModel, AuthorModel, CategoryModel, ArticleContentModel, TagModel, ArticleModel>(command, (at, a, c, con, t) =>
             {
                 if (!articles.TryGetValue(at.Id, out ArticleModel article))
                     articles.Add(at.Id, article = at);
@@ -563,6 +633,11 @@ public class ArticleRepository : IArticleRepository
                 if (c != null && !article.Categories.Any(x => x.Id == c.Id))
                 {
                     article.Categories.Add(c);
+                }
+                
+                if (t != null && !article.Tags.Any(x => x.Id == t.Id))
+                {
+                    article.Tags.Add(t);
                 }
 
                 if (con != null && !article.Contents.Any(x => x.Id == con.Id))

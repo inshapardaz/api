@@ -34,7 +34,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
                 Title = RandomData.Name, 
                 Description = RandomData.Words(20),
                 Language = RandomData.Locale,
-                Frequency = new Faker().PickRandom<PeriodicalFrequency>().ToDescription()
+                Frequency = new Faker().PickRandom<PeriodicalFrequency>().ToDescription(),
+                Tags = new [] {
+                    new TagView { Name = RandomData.Name },
+                    new TagView { Name = RandomData.Name }
+                }
             };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/periodicals", periodical);

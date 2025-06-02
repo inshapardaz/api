@@ -9,4 +9,5 @@ public class IssueFilter
     public StatusType Status { get; set; }
 
     public AssignmentStatus AssignmentStatus { get; set; }
+    public int? TagId { get; set; }
 }

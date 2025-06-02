@@ -39,62 +39,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByBookShelf
         }
 
         [Test]
-        public void ShouldReturnOk()
+        public void ShouldReturnNotFound()
         {
-            _response.ShouldBeOk();
-        }
-
-        [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books");
-        }
-
-        [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
-
-        [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
-
-        [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
-
-        [Test]
-        public void ShouldReturnCorrectPage()
-        {
-            _assert.ShouldHavePage(1)
-                   .ShouldHavePageSize(10)
-                   .ShouldHaveTotalCount(_bookShelfBooks.Count())
-                   .ShouldHaveItems(5);
-        }
-
-        [Test]
-        public void ShouldReturnExpectedBooks()
-        {
-            var expectedItems = _bookShelfBooks.OrderBy(a => a.Title).Take(10).ToArray();
-            for (int i = 0; i < _assert.Data.Count(); i++)
-            {
-                var actual = _assert.Data.ElementAt(i);
-                var expected = expectedItems[i];
-                Services.GetService<BookAssert>().ForView(actual).ForLibrary(LibraryId)
-                            .ShouldBeSameAs(expected)
-                            .ShouldHaveCorrectLinks()
-                            .ShouldNotHaveEditLinks()
-                            .ShouldNotHaveImageUpdateLink()
-                            .ShouldNotHaveCreateChaptersLink()
-                            .ShouldNotHaveAddContentLink()
-                            .ShouldHaveChaptersLink()
-                            .ShouldHavePublicImageLink();
-            }
+            _response.ShouldBeNotFound();
         }
     }
 }

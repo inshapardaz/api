@@ -328,6 +328,9 @@ public class ArticleRenderer : IRenderArticle
 
             if (source.Filters.CategoryId.HasValue)
                 queryString.Add("categoryid", source.Filters.CategoryId.Value.ToString());
+            
+            if (source.Filters.TagId.HasValue)
+                queryString.Add("tagId", source.Filters.TagId.Value.ToString());
 
             if (source.Filters.Favorite.HasValue)
                 queryString.Add("favorite", bool.TrueString);

@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -23,18 +24,21 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         private readonly IIssuePageTestRepository _issuePageRepository;
         private readonly IIssueArticleTestRepository _articleRepository;
         private readonly IAuthorTestRepository _authorRepository;
+        private readonly ITagTestRepository _tagsRepository;
         private readonly FakeFileStorage _fileStorage;
 
         public IssueAssert(IIssueTestRepository issueRepository,
             IIssueArticleTestRepository articleRepository,
             IIssuePageTestRepository pageRepository,
             FakeFileStorage fileStorage, 
-            IAuthorTestRepository authorRepository)
+            IAuthorTestRepository authorRepository, 
+            ITagTestRepository tagsRepository)
         {
             _issueRepository = issueRepository;
             _articleRepository = articleRepository;
             _fileStorage = fileStorage;
             _authorRepository = authorRepository;
+            _tagsRepository = tagsRepository;
             _issuePageRepository = pageRepository;
         }
 
@@ -290,6 +294,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _view.IssueNumber.Should().Be(dbIssue.IssueNumber);
             _view.IssueDate.Should().BeCloseTo(dbIssue.IssueDate, TimeSpan.FromSeconds(2));
 
+            if (_view?.Tags is not null && _view.Tags.Any())
+            {
+                var tags = _tagsRepository.GetTagsByIssue(_view.Id);
+                _view.Tags.Select(x => x.Name).ToList()
+                    .Should().BeEquivalentTo(tags.Select(x => x.Name).ToList());
+            }
+
             return this;
         }
 
@@ -342,16 +353,28 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 _view.Status.Should().Be(expected.Status.ToDescription());
             }
 
+            if (expected.Tags is not null && expected.Tags.Any())
+            {
+                var tags = _tagsRepository.GetTagsByIssue(_view.Id);
+                _view.Tags.Should().HaveSameCount(tags);
+                foreach (var tag in tags)
+                {
+                    var actual = expected.Tags.SingleOrDefault(a => a.Name == tag.Name);
+                    actual.Name.Should().Be(tag.Name);
+                }
+            }
+            
+
             return this;
         }
 
-        public IssueAssert WithStatus(EditingStatus status)
+        public IssueAssert WithStatus(StatusType status)
         {
             _view.Status.Should().Be(status.ToDescription());
             return this;
         }
 
-        public IssueAssert ShouldBeSameAs(IssueDto expected, int? articleCount = null, int? pageCount = null)
+        public IssueAssert ShouldBeSameAs(IssueDto expected, int? articleCount = null, int? pageCount = null, IEnumerable<TagDto> tags = null)
         {
             _view.Should().NotBeNull();
             _view.VolumeNumber.Should().Be(expected.VolumeNumber);
@@ -368,6 +391,17 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             }
 
             _view.Status.Should().Be(expected.Status.ToDescription());
+            
+            if (tags is not null && tags.Any())
+            {
+                _view.Tags.Should().HaveSameCount(tags);
+                _view.Tags.Select(c => c.Name).ToList()
+                    .Should().BeEquivalentTo(tags.Select(c => c.Name).ToList());
+            }
+            else
+            {
+                _view.Tags.Should().BeNullOrEmpty();
+            }
 
             return this;
         }
@@ -405,6 +439,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             var image = _issueRepository.GetIssueImage(issueId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
+            return this;
+        }
+
+        public IssueAssert ShouldBeSameTags(IEnumerable<TagView> newTags)
+        {
+            var tags = _tagsRepository.GetTagsByIssue(_view.Id);
+            _view.Tags.Should().HaveSameCount(tags);
+            _view.Tags.Select(c => c.Name).ToList()
+                .Should().BeEquivalentTo(newTags.Select(c => c.Name).ToList());
+            
             return this;
         }
     }

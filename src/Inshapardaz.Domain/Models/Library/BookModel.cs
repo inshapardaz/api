@@ -15,6 +15,8 @@ public class BookModel
 
     public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
 
+    public List<TagModel> Tags { get; set; } = new List<TagModel>();
+
     public List<BookContentModel> Contents { get; set; } = new List<BookContentModel>();
 
     public string Language { get; set; }

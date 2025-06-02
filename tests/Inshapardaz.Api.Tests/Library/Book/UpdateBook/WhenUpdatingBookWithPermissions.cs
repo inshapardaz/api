@@ -24,6 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         private BookView _expected;
         private BookAssert _bookAssert;
         private IEnumerable<CategoryDto> _otherCategories;
+        private List<TagView> _newTags;
 
         public WhenUpdatingBookWithPermissions(Role role)
             : base(role)
@@ -41,10 +42,17 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                                     .HavingSeries()
                                     .AddToFavorites(AccountId)
                                     .AddToRecentReads(AccountId)
+                                    .WithTags(3)
                                     .Build(1);
 
             var selectedBook = books.PickRandom();
 
+            _newTags = new List<TagView>()
+            {
+                new TagView { Name = "tag1" },
+                new TagView { Name = "Tag2" },
+            };
+            
             var fake = new Faker();
             _expected = new BookView
             {
@@ -61,7 +69,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
                 IsPublished = fake.Random.Bool(),
                 Source = RandomData.String,
                 Publisher = RandomData.String,
-                Categories = _otherCategories.Select(c => new CategoryView { Id = c.Id })
+                Categories = _otherCategories.Select(c => new CategoryView { Id = c.Id }),
+                Tags = _newTags
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/books/{selectedBook.Id}", _expected);
@@ -95,6 +104,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         public void ShouldReturnCorrectCategories()
         {
             _bookAssert.ShouldBeSameCategories(_otherCategories);
+        }
+        
+        [Test]
+        public void ShouldReturnCorrectTags()
+        {
+            _bookAssert.ShouldHaveMatchingTags(_newTags);
         }
     }
 }

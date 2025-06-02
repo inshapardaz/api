@@ -16,7 +16,8 @@ public static class PeriodicalMapper
             IssueCount = source.IssueCount,
             Language = source.Language,
             Frequency = source.Frequency.ToDescription(),
-            Categories = source.Categories?.Select(c => c.Map())
+            Categories = source.Categories?.Select(c => c.Map()),
+            Tags = source.Tags?.Select(c => c.Map())
         };
 
     public static PeriodicalModel Map(this PeriodicalView source)
@@ -28,7 +29,8 @@ public static class PeriodicalMapper
             IssueCount = source.IssueCount,
             Language = source.Language,
             Frequency = source.Frequency.ToEnum(PeriodicalFrequency.Unknown),
-            Categories = source.Categories?.Select(c => c.Map()).ToList()
+            Categories = source.Categories?.Select(c => c.Map()).ToList(),
+            Tags = source.Tags?.Select(c => c.Map()).ToList(),
         };
 
     public static IssueView Map(this IssueModel source)
@@ -44,6 +46,7 @@ public static class PeriodicalMapper
             ArticleCount = source.ArticleCount,
             Status = source.Status.ToDescription(),
             PageStatus = source.PageStatus?.Select(ps => ps.Map()),
+            Tags = source.Tags?.Select(c => c.Map())
         };
 
     public static IssueModel Map(this IssueView source)
@@ -56,8 +59,9 @@ public static class PeriodicalMapper
             IssueDate = source.IssueDate,
             PageCount = source.PageCount,
             ArticleCount = source.ArticleCount,
-            Status = source.Status.ToEnum(EditingStatus.Available),
+            Status = source.Status.ToEnum(StatusType.AvailableForTyping),
             PageStatus = source.PageStatus?.Select(ps => ps.Map()),
+            Tags = source.Tags?.Select(c => c.Map()).ToList(),
         };
 
     public static IssueContentView Map(this IssueContentModel source)

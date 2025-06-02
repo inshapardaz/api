@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -20,6 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleById
         private ArticleDto _expected;
         private ArticleAssert _assert;
         private IEnumerable<CategoryDto> _categories;
+        private IEnumerable<TagDto> _tags;
 
         public WhenGettingArticleByIdWithPermission(Role role) : base(role)
         {
@@ -29,8 +31,10 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleById
         public async Task Setup()
         {
             _categories = CategoryBuilder.WithLibrary(LibraryId).Build(2);
+            _tags = TagBuilder.WithLibrary(LibraryId).Build(2);
             var articles = ArticleBuilder.WithLibrary(LibraryId)
                                         .WithCategories(_categories)
+                                        .WithTags(_tags)
                                         .WithContent()
                                         .Build(4);
             _expected = articles.PickRandom();

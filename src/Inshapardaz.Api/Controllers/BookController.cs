@@ -42,6 +42,7 @@ public class BookController : Controller
         int pageSize = 10,
         [FromQuery] int? authorId = null,
         [FromQuery] int? categoryId = null,
+        [FromQuery] int? tagId = null,
         [FromQuery] int? seriesId = null,
         [FromQuery] int? bookShelfId = null,
         [FromQuery] bool? favorite = null,
@@ -56,6 +57,7 @@ public class BookController : Controller
         {
             AuthorId = authorId,
             CategoryId = categoryId,
+            TagId = tagId,
             SeriesId = seriesId,
             BookShelfId = bookShelfId,
             Favorite = favorite,

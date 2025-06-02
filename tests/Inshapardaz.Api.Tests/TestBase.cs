@@ -111,6 +111,7 @@ namespace Inshapardaz.Api.Tests
                 services.AddTransient<IBookShelfTestRepository, SqlServerBookShelfTestRepository>();
                 services.AddTransient<IChapterTestRepository, SqlServerChapterTestRepository>();
                 services.AddTransient<ICategoryTestRepository, SqlServerCategoryTestRepository>();
+                services.AddTransient<ITagTestRepository, SqlServerTagTestRepository>();
                 services.AddTransient<ISeriesTestRepository, SqlServerSeriesTestRepository>();
                 services.AddTransient<IPeriodicalTestRepository, SqlServerPeriodicalTestRepository>();
                 services.AddTransient<IIssueTestRepository, SqlServerIssueTestRepository>();
@@ -132,6 +133,7 @@ namespace Inshapardaz.Api.Tests
                 services.AddTransient<IBookShelfTestRepository, MySqlBookShelfTestRepository>();
                 services.AddTransient<IChapterTestRepository, MySqlChapterTestRepository>();
                 services.AddTransient<ICategoryTestRepository, MySqlCategoryTestRepository>();
+                services.AddTransient<ITagTestRepository, MySqlTagTestRepository>();
                 services.AddTransient<ISeriesTestRepository, MySqlSeriesTestRepository>();
                 services.AddTransient<IPeriodicalTestRepository, MySqlPeriodicalTestRepository>();
                 services.AddTransient<IIssueTestRepository, MySqlIssueTestRepository>();
@@ -148,6 +150,7 @@ namespace Inshapardaz.Api.Tests
 
             services.AddTransient<LibraryDataBuilder>()
             .AddTransient<CategoriesDataBuilder>()
+            .AddTransient<TagsDataBuilder>()
             .AddTransient<SeriesDataBuilder>()
             .AddTransient<AuthorsDataBuilder>()
             .AddTransient<BooksDataBuilder>()
@@ -171,6 +174,7 @@ namespace Inshapardaz.Api.Tests
                     .AddTransient<BookPageAssert>()
                     .AddTransient<BookShelfAssert>()
                     .AddTransient<CategoryAssert>()
+                    .AddTransient<TagAssert>()
                     .AddTransient<ChapterAssert>()
                     .AddTransient<ChapterContentAssert>()
                     .AddTransient<CorrectionAssert>()
@@ -212,6 +216,7 @@ namespace Inshapardaz.Api.Tests
         protected AuthorsDataBuilder _authorBuilder;
         protected SeriesDataBuilder _seriesDataBuilder;
         protected CategoriesDataBuilder _categoriesDataBuilder;
+        protected TagsDataBuilder _tagDataBuilder;
         protected BooksDataBuilder _booksDataBuilder;
         protected ChapterDataBuilder _chapterDataBuilder;
         protected IssueDataBuilder _issueDataBuilder;
@@ -275,6 +280,19 @@ namespace Inshapardaz.Api.Tests
                 }
 
                 return _categoriesDataBuilder;
+            }
+        }
+        
+        protected TagsDataBuilder TagBuilder
+        {
+            get
+            {
+                if (_tagDataBuilder == null)
+                {
+                    _tagDataBuilder = _factory.Services.GetService<TagsDataBuilder>();
+                }
+
+                return _tagDataBuilder;
             }
         }
 
@@ -404,6 +422,7 @@ namespace Inshapardaz.Api.Tests
         protected IBookShelfTestRepository BookShelfTestRepository => _factory.Services.GetService<IBookShelfTestRepository>();
         protected IChapterTestRepository ChapterTestRepository => _factory.Services.GetService<IChapterTestRepository>();
         protected ICategoryTestRepository CategoryTestRepository => _factory.Services.GetService<ICategoryTestRepository>();
+        protected ITagTestRepository TagTestRepository => _factory.Services.GetService<ITagTestRepository>();
         protected ISeriesTestRepository SeriesTestRepository => _factory.Services.GetService<ISeriesTestRepository>();
         protected IPeriodicalTestRepository PeriodicalTestRepository => _factory.Services.GetService<IPeriodicalTestRepository>();
         protected IIssueTestRepository IssueTestRepository => _factory.Services.GetService<IIssueTestRepository>();

@@ -21,6 +21,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         private readonly IFileTestRepository _fileRepository;
         private readonly IAuthorTestRepository _authorRepository;
         private readonly ICategoryTestRepository _categoryRepository;
+        private readonly ITagTestRepository _tagsRepository;
         private readonly FakeFileStorage _fileStorage;
         private ArticleView _article;
 
@@ -28,6 +29,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             IFileTestRepository fileRepository,
             IAuthorTestRepository authorRepository,
             ICategoryTestRepository categoryRepository,
+            ITagTestRepository tagsRepository, 
             FakeFileStorage fileStorage)
         {
             _articleRepository = articleRepository;
@@ -35,6 +37,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _authorRepository = authorRepository;
             _categoryRepository = categoryRepository;
             _fileStorage = fileStorage;
+            _tagsRepository = tagsRepository;
         }
 
         public ArticleAssert ForArticleView(ArticleView view)
@@ -587,7 +590,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             }
 
             var categories = _categoryRepository.GetCategoriesByArticle(_expected.Id);
-            _article.Authors.Should().HaveSameCount(categories);
+            _article.Categories.Should().HaveSameCount(categories);
             foreach (var category in categories)
             {
                 var actual = _article.Categories.SingleOrDefault(a => a.Id == category.Id);
@@ -597,6 +600,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                       .ShouldBeGet()
                       .EndingWith($"libraries/{_libraryId}/categories/{category.Id}");
 
+                return this;
+            }
+            
+            var tags = _tagsRepository.GetTagsByArticle(_expected.Id);
+            _article.Tags.Should().HaveSameCount(tags);
+            foreach (var tag in tags)
+            {
+                var actual = _article.Tags.SingleOrDefault(a => a.Id == tag.Id);
+                actual.Name.Should().Be(tag.Name);
+                
                 return this;
             }
 
@@ -611,6 +624,12 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
                 actual.Should().BeEquivalentTo(category, config => config.ExcludingMissingMembers());
             }
+            return this;
+        }
+        
+        public ArticleAssert ShouldBeSameTags(IEnumerable<TagView> tags)
+        {
+            _article.Tags.Select(x => x.Name).Should().BeEquivalentTo(tags.Select(x => x.Name));
             return this;
         }
 

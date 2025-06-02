@@ -25,6 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         private ArticleView _expected;
         private ArticleAssert _assert;
         private IEnumerable<CategoryDto> _otherCategories;
+        private TagView[] _newTags;
 
         public WhenUpdatingArticleWithPermissions(Role role)
             : base(role)
@@ -38,12 +39,18 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
             _otherCategories = CategoryBuilder.WithLibrary(LibraryId).Build(3);
             var article = ArticleBuilder.WithLibrary(LibraryId)
                                     .WithCategories(1)
+                                    .WithTags(2)
                                     .AddToFavorites(AccountId)
                                     .AddToRecentReads(AccountId)
                                     .Build(1)
                                     .Single();
 
             var fake = new Faker();
+            _newTags = new []
+            {
+                new TagView() { Name = RandomData.Name }, 
+                new TagView() { Name = RandomData.Name }
+            };
             _expected = new ArticleView
             {
                 Id = article.Id,
@@ -52,6 +59,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
                 IsPublic = fake.Random.Bool(),
                 Authors = otherAuthors.Select(x => new AuthorView { Id = x.Id, Name = x.Name }),
                 Categories = _otherCategories.Select(c => new CategoryView { Id = c.Id }),
+                Tags = _newTags,
                 WriterAccountId = AccountId,
                 WriterAssignTimeStamp = DateTime.UtcNow,
                 ReviewerAccountId = AccountId,
@@ -89,6 +97,12 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         public void ShouldReturnCorrectCategories()
         {
             _assert.ShouldBeSameCategories(_otherCategories.ToList());
+        }
+        
+        [Test]
+        public void ShouldReturnCorrectTags()
+        {
+            _assert.ShouldBeSameTags(_newTags.ToList());
         }
     }
 }

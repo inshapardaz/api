@@ -21,21 +21,18 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         public HttpResponseMessage _response;
         
         private readonly IBookTestRepository _bookRepository;
-        private readonly IFileTestRepository _fileRepository;
         private readonly IAuthorTestRepository _authorRepository;
         private readonly ICategoryTestRepository _categoryRepository;
         private readonly ISeriesTestRepository _seriesRepository;
         private readonly FakeFileStorage _fileStorage;
 
         public BookAssert(IBookTestRepository bookRepository,
-            IFileTestRepository fileRepository,
             IAuthorTestRepository authorRepository,
             ICategoryTestRepository categoryRepository,
             FakeFileStorage fileStorage,
             ISeriesTestRepository seriesRepository)
         {
             _bookRepository = bookRepository;
-            _fileRepository = fileRepository;
             _authorRepository = authorRepository;
             _categoryRepository = categoryRepository;
             _fileStorage = fileStorage;
@@ -395,6 +392,20 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
                 return this;
             }
+            
+            // var tags = _categoryRepository.GetCategoriesByBook(expected.Id);
+            // _book.Categories.Should().HaveSameCount(catergories);
+            // foreach (var catergory in catergories)
+            // {
+            //     var actual = _book.Categories.SingleOrDefault(a => a.Id == catergory.Id);
+            //     actual.Name.Should().Be(catergory.Name);
+            //
+            //     actual.Link("self")
+            //           .ShouldBeGet()
+            //           .EndingWith($"libraries/{_libraryId}/categories/{catergory.Id}");
+            //
+            //     return this;
+            // }
 
             return this;
         }
@@ -444,6 +455,17 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 category.Should().NotBeNull();
                 category.Id.Should().Be(expectedCategory.Id);
                 category.Name.Should().Be(expectedCategory.Name);
+            }
+            return this;
+        }
+        
+        public BookAssert ShouldHaveMatchingTags(IEnumerable<TagView> expectedTags)
+        {
+            expectedTags.Should().HaveSameCount(_book.Tags);
+            foreach (var expectedTag in expectedTags)
+            {
+                var tag = _book.Tags.SingleOrDefault(c => c.Name == expectedTag.Name);
+                tag.Should().NotBeNull();
             }
             return this;
         }

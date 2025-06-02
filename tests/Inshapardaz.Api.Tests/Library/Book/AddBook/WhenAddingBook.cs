@@ -37,7 +37,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
                 Source = RandomData.String,
                 Publisher = RandomData.String,
                 Language = RandomData.Locale,
-                Categories = RandomData.PickRandom(categories, 2).Select(c => new CategoryView { Id = c.Id })
+                Categories = RandomData.PickRandom(categories, 2).Select(c => new CategoryView { Id = c.Id }),
+                Tags = new []{ new TagView() { Name = "tag1"}, new TagView() { Name = "Tag2" } }
             };
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/books", book);

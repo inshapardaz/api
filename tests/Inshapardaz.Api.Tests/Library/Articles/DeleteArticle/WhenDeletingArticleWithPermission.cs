@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.DataBuilders;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -22,6 +23,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticle
         private ArticleDto _expected;
         private IEnumerable<ArticleContentDto> _contents;
         private int _authorId;
+        private IEnumerable<TagDto> _expectedTags;
 
         public WhenDeletingArticleWithPermission(Role role) : base(role)
         {
@@ -35,9 +37,11 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticle
                                     .AddToFavorites(AccountId)
                                     .AddToRecentReads(AccountId)
                                     .WithContents(2)
+                                    .WithTags(2)
                                     .Build(1)
                                     .Single();
 
+            _expectedTags = TagTestRepository.GetTagsByArticle(_expected.Id);
             _contents = ArticleTestRepository.GetArticleContents(_expected.Id);
             _authorId = ArticleBuilder.Authors.First().Id;
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/articles/{_expected.Id}");
@@ -74,6 +78,21 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticle
             var cats = CategoryTestRepository.GetCategoriesByArticle(_expected.Id);
             var catAssert = Services.GetService<CategoryAssert>().ForLibrary(LibraryId);
             cats.ForEach(cat => catAssert.ShouldNotHaveDeletedCategory(cat.Id));
+        }
+        
+        [Test]
+        public void ShouldHaveDeletedArticleTags()
+        {
+            var tags = TagTestRepository.GetTagsByArticle(_expected.Id);
+            tags.Should().BeNullOrEmpty();
+        }
+        
+        [Test]
+        public void ShouldNotHaveDeletedTheTags()
+        {
+            var tags = TagTestRepository.GetTags(_expectedTags.Select(x => x.Id).ToArray());
+            var tagAssert = Services.GetService<TagAssert>().ForLibrary(LibraryId);
+            tags.ForEach(cat => tagAssert.ShouldNotHaveDeletedTag(cat.Id));
         }
 
         [Test]

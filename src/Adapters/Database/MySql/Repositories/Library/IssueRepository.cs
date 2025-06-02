@@ -29,10 +29,12 @@ public class IssueRepository : IIssueRepository
             var sql = @"SELECT i.*, f.FilePath as ImageUrl,
                                 (SELECT COUNT(*) FROM IssueArticle WHERE IssueId = i.id) As ArticleCount,
                                 (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As `PageCount`,
-                                p.*
+                                p.*, t.*
                             FROM Issue AS i
                                 INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                                 LEFT OUTER JOIN `File` f ON f.Id = i.ImageId
+                                LEFT OUTER JOIN IssueTag it ON i.Id = it.IssueId
+                                LEFT OUTER JOIN Tag t ON t.Id = it.TagId
                             WHERE p.LibraryId = @LibraryId
                                 AND p.Id = @PeriodicalId
                                 AND (@Year IS NULL OR YEAR(i.IssueDate) = @Year)
@@ -52,9 +54,18 @@ public class IssueRepository : IIssueRepository
 
                                                 cancellationToken: cancellationToken);
 
-            var issues = await connection.QueryAsync<IssueModel, PeriodicalModel, IssueModel>(command, (i, periodical) =>
+            var issues = new Dictionary<long, IssueModel>();
+            await connection.QueryAsync<IssueModel, PeriodicalModel, TagModel, IssueModel>(command, (i, periodical, tag) =>
             {
-                i.Periodical = periodical;
+                if (!issues.TryGetValue(i.Id, out IssueModel issue))
+                    issues.Add(i.Id, issue = i);
+                
+                issue.Periodical = periodical;
+                
+                if (tag != null && !issue.Tags.Any(x => x.Id == tag.Id))
+                {
+                    issue.Tags.Add(tag);
+                }
                 return i;
             });
 
@@ -70,7 +81,7 @@ public class IssueRepository : IIssueRepository
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 TotalCount = totalCount,
-                Data = issues
+                Data = issues.Values
             };
         }
     }
@@ -106,10 +117,13 @@ public class IssueRepository : IIssueRepository
         {
             var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
                                 (SELECT COUNT(*) FROM IssueArticle WHERE IssueId = i.id) As ArticleCount,
-                                (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As `PageCount`
+                                (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As `PageCount`,
+                                 t.*
                             FROM Issue as i
                                 INNER JOIN Periodical p ON p.Id = i.PeriodicalId
                                 LEFT OUTER JOIN `File` f ON f.Id = i.ImageId
+                                LEFT OUTER JOIN IssueTag it ON i.Id = it.IssueId
+                                LEFT OUTER JOIN Tag t ON t.Id = it.TagId
                             WHERE p.LibraryId = @LibraryId
                                 AND p.Id = @PeriodicalId
                                 AND i.IssueNumber = @IssueNumber
@@ -123,16 +137,27 @@ public class IssueRepository : IIssueRepository
             };
             var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
 
-            var result = await connection.QueryAsync<IssueModel, PeriodicalModel, string, long, long, IssueModel>(command, (i, p, iUrl, ac, pc) =>
+            IssueModel issue = null;
+            await connection.QueryAsync<IssueModel, PeriodicalModel, string, long, long, TagModel, IssueModel>(command, (i, p, iUrl, ac, pc, t) =>
             {
-                i.Periodical = p;
-                i.ArticleCount = (int)ac;
-                i.PageCount = (int)pc;
-                i.ImageUrl = iUrl;
-                return i;
-            }, splitOn: "Id, ImageUrl, ArticleCount, PageCount");
+                if (issue == null)
+                {
+                    issue = i;
+                }
 
-            return result.SingleOrDefault();
+                issue.Periodical = p;
+                issue.ArticleCount = (int)ac;
+                issue.PageCount = (int)pc;
+                issue.ImageUrl = iUrl;
+                
+                if (t != null && i.Tags.All(x => x.Id != t.Id))
+                {
+                    issue.Tags.Add(t);
+                }
+                return issue;
+            }, splitOn: "Id, ImageUrl, ArticleCount, PageCount, Id");
+
+            return issue;
         }
     }
 
@@ -157,6 +182,28 @@ public class IssueRepository : IIssueRepository
             };
             var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
             id = await connection.ExecuteScalarAsync<int>(command);
+            
+            if (issue.Tags != null && issue.Tags.Any())
+            {
+                foreach (var tag in issue.Tags)
+                {
+                    var tagId = await connection.ExecuteScalarAsync<int>(
+                        new CommandDefinition(
+                            @"INSERT INTO Tag (Name, LibraryId) 
+                              VALUES (@Name, @LibraryId) 
+                              ON DUPLICATE KEY UPDATE Name=@Name; 
+                              SELECT Id FROM Tag WHERE Name = @Name AND  LibraryId = @LibraryId;",
+                            new { Name = tag.Name, LibraryId = libraryId },
+                            cancellationToken: cancellationToken));
+            
+                    // Associate tag with periodical
+                    await connection.ExecuteAsync(
+                        new CommandDefinition(
+                            "INSERT INTO IssueTag (IssueId, TagId) VALUES (@IssuesId, @TagId);",
+                            new { IssuesId = id, TagId = tagId },
+                            cancellationToken: cancellationToken));
+                }
+            }
         }
 
         return await GetIssueById(libraryId, periodicalId, id, cancellationToken);
@@ -189,6 +236,33 @@ public class IssueRepository : IIssueRepository
             };
             var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
             await connection.ExecuteScalarAsync<int>(command);
+            
+            await connection.ExecuteAsync(new CommandDefinition(
+                "DELETE FROM IssueTag WHERE IssueId = @IssueId",
+                new { IssueId = issue.Id },
+                cancellationToken: cancellationToken));
+            
+            if (issue.Tags != null && issue.Tags.Any())
+            {
+                foreach (var tag in issue.Tags)
+                {
+                    var tagId = await connection.ExecuteScalarAsync<int>(
+                        new CommandDefinition(
+                            @"INSERT INTO Tag (Name, LibraryId) 
+                              VALUES (@Name, @LibraryId) 
+                              ON DUPLICATE KEY UPDATE Name=@Name; 
+                              SELECT Id FROM Tag WHERE Name = @Name AND  LibraryId = @LibraryId;",
+                            new { Name = tag.Name, LibraryId = libraryId },
+                            cancellationToken: cancellationToken));
+            
+                    // Associate tag with issue
+                    await connection.ExecuteAsync(
+                        new CommandDefinition(
+                            "INSERT INTO IssueTag (IssueId, TagId) VALUES (@IssueId, @TagId);",
+                            new { IssueId = issue.Id, TagId = tagId },
+                            cancellationToken: cancellationToken));
+                }
+            }
         }
     }
 
@@ -205,6 +279,43 @@ public class IssueRepository : IIssueRepository
                                 AND i.IssueNumber = @IssueNumber";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, PeriodicalId = periodicalId, VolumeNumber = volumeNumber, IssueNumber = issueNumber }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
+        }
+    }
+
+    private async Task<IssueModel> GetIssueById(int libraryId, int periodicalId, int issueId, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
+                                (SELECT COUNT(*) FROM IssueArticle WHERE IssueId = i.id) As ArticleCount,
+                                (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As `PageCount`,
+                                t.*
+                            FROM Issue as i
+                                INNER JOIN Periodical p ON p.Id = i.PeriodicalId
+                                LEFT OUTER JOIN `File` f ON f.Id = i.ImageId
+                                LEFT OUTER JOIN IssueTag it ON i.Id = it.IssueId
+                                LEFT OUTER JOIN Tag t ON t.Id = it.TagId
+                            WHERE p.LibraryId = @LibraryId
+                                AND p.Id = @PeriodicalId
+                                AND i.Id = @IssueId";
+            var parameter = new
+            {
+                LibraryId = libraryId,
+                PeriodicalId = periodicalId,
+                IssueId = issueId
+            };
+            var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
+
+            var result = await connection.QueryAsync<IssueModel, PeriodicalModel, string, long, long, TagModel, IssueModel>(command, (i, p, iUrl, ac, pc, t) =>
+            {
+                i.Periodical = p;
+                i.ArticleCount = (int)ac;
+                i.PageCount = (int)pc;
+                i.ImageUrl = iUrl;
+                return i;
+            }, splitOn: "Id, ImageUrl, ArticleCount, PageCount, Id");
+
+            return result.SingleOrDefault();
         }
     }
 
@@ -400,40 +511,6 @@ public class IssueRepository : IIssueRepository
                 },
                 cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
-        }
-    }
-
-    private async Task<IssueModel> GetIssueById(int libraryId, int periodicalId, int issueId, CancellationToken cancellationToken)
-    {
-        using (var connection = _connectionProvider.GetLibraryConnection())
-        {
-            var sql = @"SELECT i.*, p.*, f.FilePath as ImageUrl,
-                                (SELECT COUNT(*) FROM IssueArticle WHERE IssueId = i.id) As ArticleCount,
-                                (SELECT COUNT(*) FROM IssuePage WHERE IssueId = i.id) As `PageCount`
-                            FROM Issue as i
-                                INNER JOIN Periodical p ON p.Id = i.PeriodicalId
-                                LEFT OUTER JOIN `File` f ON f.Id = i.ImageId
-                            WHERE p.LibraryId = @LibraryId
-                                AND p.Id = @PeriodicalId
-                                AND i.Id = @IssueId";
-            var parameter = new
-            {
-                LibraryId = libraryId,
-                PeriodicalId = periodicalId,
-                IssueId = issueId
-            };
-            var command = new CommandDefinition(sql, parameter, cancellationToken: cancellationToken);
-
-            var result = await connection.QueryAsync<IssueModel, PeriodicalModel, string, long, long, IssueModel>(command, (i, p, iUrl, ac, pc) =>
-            {
-                i.Periodical = p;
-                i.ArticleCount = (int)ac;
-                i.PageCount = (int)pc;
-                i.ImageUrl = iUrl;
-                return i;
-            }, splitOn: "Id, ImageUrl, ArticleCount, PageCount");
-
-            return result.SingleOrDefault();
         }
     }
 

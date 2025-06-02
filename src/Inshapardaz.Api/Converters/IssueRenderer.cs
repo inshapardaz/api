@@ -401,6 +401,10 @@ public class IssueRenderer : IRenderIssue
 
         if (source.Filters != null)
         {
+                        
+            if (source.Filters.TagId.HasValue)
+                queryString.Add("tag", source.Filters.TagId.Value.ToString());
+            
             if (source.Filters.Year.HasValue)
                 queryString.Add("year", source.Filters.Year.Value.ToString());
 

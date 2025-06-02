@@ -18,6 +18,8 @@ public class BookView : ViewWithLinks
     public IEnumerable<AuthorView> Authors { get; set; }
 
     public IEnumerable<CategoryView> Categories { get; set; }
+    
+    public IEnumerable<TagView> Tags { get; set; }
 
     public IEnumerable<BookContentView> Contents { get; set; }
 

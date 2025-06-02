@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using System.Collections.Generic;
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,8 @@ using NUnit.Framework;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
 {
@@ -18,6 +21,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
         private HttpResponseMessage _response;
         private IssueAssert _assert;
         private IssueDto _expected;
+        private IEnumerable<TagDto> _expectedTags;
 
         public WhenDeletingIssueWithPermission(Role role)
             : base(role)
@@ -29,9 +33,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
         {
             _expected = IssueBuilder.WithLibrary(LibraryId)
                 .WithArticles(2)
+                .WithTags(2)
                 .WithPages()
                 .WithContents(2)
                 .Build();
+
+            _expectedTags = TagTestRepository.GetTagsByIssue(_expected.Id);
 
             _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{_expected.PeriodicalId}/volumes/{_expected.VolumeNumber}/issues/{_expected.IssueNumber}");
             _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
@@ -92,6 +99,22 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
         public void ShouldHaveDeletedArticles()
         {
             _assert.ShouldHaveDeletedArticlesForIssue(_expected.Id);
+        }
+        
+        
+        [Test]
+        public void ShouldHaveDeletedArticleTags()
+        {
+            var tags = TagTestRepository.GetTagsByIssue(_expected.Id);
+            tags.Should().BeNullOrEmpty();
+        }
+        
+        [Test]
+        public void ShouldNotHaveDeletedTheTags()
+        {
+            var tags = TagTestRepository.GetTags(_expectedTags.Select(x => x.Id).ToArray());
+            var tagAssert = Services.GetService<TagAssert>().ForLibrary(LibraryId);
+            tags.ForEach(cat => tagAssert.ShouldNotHaveDeletedTag(cat.Id));
         }
     }
 }

@@ -16,4 +16,5 @@ public class ArticleFilter
 
     public AssignmentStatus AssignmentStatus { get; set; }
     public ArticleType Type { get; set; }
+    public int? TagId { get; set; }
 }

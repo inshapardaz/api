@@ -22,5 +22,5 @@ public class PeriodicalModel
     public PeriodicalFrequency Frequency { get; set; }
 
     public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
-
+    public List<TagModel> Tags { get; set; } = new List<TagModel>();
 }

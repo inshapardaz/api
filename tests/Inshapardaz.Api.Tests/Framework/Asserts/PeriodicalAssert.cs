@@ -24,18 +24,21 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         private readonly ICategoryTestRepository _categoryRepository;
         private readonly IIssueTestRepository _issueRepository;
         private readonly FakeFileStorage _fileStorage;
+        private readonly ITagTestRepository _tagRepository;
 
         public PeriodicalAssert(IPeriodicalTestRepository periodicalRepository,
             IFileTestRepository fileRepository,
             ICategoryTestRepository categoryRepository,
             FakeFileStorage fileStorage,
-            IIssueTestRepository issueRepository)
+            IIssueTestRepository issueRepository, 
+            ITagTestRepository tagRepository)
         {
             _periodicalRepository = periodicalRepository;
             _fileRepository = fileRepository;
             _categoryRepository = categoryRepository;
             _fileStorage = fileStorage;
             _issueRepository = issueRepository;
+            _tagRepository = tagRepository;
         }
 
         public PeriodicalAssert ForResponse(HttpResponseMessage response)
@@ -173,6 +176,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _view.Description.Should().Be(dbPeriodical.Description);
             _view.Language.Should().Be(dbPeriodical.Language);
             _view.Frequency.Should().Be(dbPeriodical.Frequency.ToDescription());
+            
+            var tags = _tagRepository.GetTagsByPeriodical(_view.Id);
+            _view.Tags.Select(x => x.Name).Should().BeEquivalentTo(tags.Select(x => x.Name));
             return this;
         }
 
@@ -266,6 +272,19 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             }
             return this;
         }
+        
+        
+        public PeriodicalAssert ShouldHaveMatchingTags(IEnumerable<TagView> expectedTags)
+        {
+            expectedTags.Should().HaveSameCount(_view.Tags);
+            foreach (var expectedTag in expectedTags)
+            {
+                var tag = _view.Tags.SingleOrDefault(c => c.Name == expectedTag.Name);
+                tag.Should().NotBeNull();
+            }
+            return this;
+        }
+
 
         public PeriodicalAssert ShouldHaveCategories(List<CategoryDto> categories, int? id = null)
         {

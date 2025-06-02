@@ -215,6 +215,9 @@ public class PeriodicalRenderer : IRenderPeriodical
 
             if (source.Filters.CategoryId.HasValue)
                 queryString.Add("category", source.Filters.CategoryId.Value.ToString());
+            
+            if (source.Filters.TagId.HasValue)
+                queryString.Add("tag", source.Filters.TagId.Value.ToString());
         }
 
         if (source.RouteArguments.SortBy != PeriodicalSortByType.Title)

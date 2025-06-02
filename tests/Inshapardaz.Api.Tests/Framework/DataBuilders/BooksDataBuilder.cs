@@ -27,6 +27,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         private readonly AuthorsDataBuilder _authorBuilder;
         private readonly SeriesDataBuilder _seriesBuilder;
         private readonly CategoriesDataBuilder _categoriesBuilder;
+        private readonly TagsDataBuilder _tagsBuilder;
 
         private readonly FakeFileStorage _fileStorage;
 
@@ -40,11 +41,12 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         private bool _hasSeries, _hasImage = true;
         private bool? _isPublic = null;
-        private int _chapterCount, _categoriesCount, _contentCount;
+        private int _chapterCount, _categoriesCount, _tagsCount, _contentCount;
         private string _contentMimeType;
 
-        public AuthorDto Author { get; set; }
+        private AuthorDto Author { get; set; }
         private List<CategoryDto> _categories = new List<CategoryDto>();
+        private List<TagDto> _tags = new List<TagDto>();
         private SeriesDto _series;
         private int _libraryId;
         private List<AccountItemCountSpec> _favoriteBooks = new List<AccountItemCountSpec>();
@@ -71,6 +73,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IFileTestRepository _fileRepository;
         public IChapterTestRepository _chapterRepository;
         public ICategoryTestRepository _categoryRepository;
+        public ITagTestRepository _tagRepository;
         public IBookShelfTestRepository _bookShelfTestRepository;
         private int? _bookshelfId;
 
@@ -78,22 +81,26 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                 AuthorsDataBuilder authorBuilder,
                                 SeriesDataBuilder seriesDataBuilder,
                                 CategoriesDataBuilder categoriesBuilder,
+                                TagsDataBuilder tagsBuilder,
                                 IBookTestRepository bookRepository,
                                 IFileTestRepository fileRepository,
                                 IChapterTestRepository chapterRepository,
                                 IBookPageTestRepository bookPageRepository,
                                 ICategoryTestRepository categoryRepository, 
+                                ITagTestRepository tagRepository, 
                                 IBookShelfTestRepository bookShelfTestRepository)
         {
             _fileStorage = fileStorage as FakeFileStorage;
             _authorBuilder = authorBuilder;
             _seriesBuilder = seriesDataBuilder;
             _categoriesBuilder = categoriesBuilder;
+            _tagsBuilder = tagsBuilder;
             _bookRepository = bookRepository;
             _fileRepository = fileRepository;
             _chapterRepository = chapterRepository;
             _bookPageRepository = bookPageRepository;
             _categoryRepository = categoryRepository;
+            _tagRepository = tagRepository;
             _bookShelfTestRepository = bookShelfTestRepository;
         }
 
@@ -118,6 +125,17 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public BooksDataBuilder WithCategories(IEnumerable<CategoryDto> categories)
         {
             _categories = categories.ToList();
+            return this;
+        }
+
+        public BooksDataBuilder WithTags(int tagsCount)
+        {
+            _tagsCount = tagsCount;
+            return this;
+        }
+        public BooksDataBuilder WithTags(IEnumerable<TagDto> tags)
+        {
+            _tags = tags.ToList();
             return this;
         }
 
@@ -154,6 +172,12 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public BooksDataBuilder WithCategory(CategoryDto category)
         {
             _categories.Add(category);
+            return this;
+        }
+        
+        public BooksDataBuilder WithTag(TagDto tag)
+        {
+            _tags.Add(tag);
             return this;
         }
 
@@ -252,6 +276,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                           .With(b => b.SeriesId, series.Id)
                           .With(b => b.SeriesIndex, RandomData.Number)
                           .With(b => b.Categories, _categories.Any() ? _categories.Select(c => c.ToView()) : new CategoryView[0])
+                          .With(b => b.Tags, _tags.Any() ? _tags.Select(c => c.ToView()) : new TagView[0])
                           .With(b => b.Language, RandomData.Locale)
                           .Create();
         }
@@ -293,6 +318,17 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             else
             {
                 categories = _categories;
+            }
+            
+            IEnumerable<TagDto> tags;
+
+            if (_tagsCount > 0 && !_tags.Any())
+            {
+                tags = _tagsBuilder.WithLibrary(_libraryId).Build(_tagsCount);
+            }
+            else
+            {
+                tags = _tags;
             }
 
             foreach (var book in _books)
@@ -360,6 +396,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
                 if (categories != null && categories.Any())
                     _categoryRepository.AddBookToCategories(book.Id, categories);
+
+                if (tags != null && tags.Any())
+                    _tagRepository.AddBookToTags(book.Id, tags);
 
                 if (files != null)
                 {

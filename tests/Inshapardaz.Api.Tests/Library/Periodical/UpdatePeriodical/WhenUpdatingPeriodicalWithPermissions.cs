@@ -24,6 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
         private PeriodicalView _expected;
         private PeriodicalAssert _periodicalAssert;
         private IEnumerable<CategoryDto> _otherCategories;
+        private List<TagView> _newTags;
 
         public WhenUpdatingPeriodicalWithPermissions(Role role)
             : base(role)
@@ -36,8 +37,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             var otherAuthor = AuthorBuilder.WithLibrary(LibraryId).Build();
             _otherCategories = CategoryBuilder.WithLibrary(LibraryId).Build(3);
             var otherSeries = SeriesBuilder.WithLibrary(LibraryId).Build();
+            
+            _newTags = new List<TagView>()
+            {
+                new TagView { Name = "tag1" },
+                new TagView { Name = "Tag2" },
+            };
+            
             var periodical = PeriodicalBuilder.WithLibrary(LibraryId)
                                     .WithCategories(3)
+                                    .WithTags(3)
                                     .WithIssues(4)
                                     .Build(1);
 
@@ -51,7 +60,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
                 Description = fake.Random.Words(5),
                 Language = RandomData.Locale,
                 Frequency = new Faker().PickRandom<PeriodicalFrequency>().ToDescription(),
-                Categories = _otherCategories.Select(c => new CategoryView { Id = c.Id })
+                Categories = _otherCategories.Select(c => new CategoryView { Id = c.Id }),
+                Tags = _newTags
             };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{selectedPeriodical.Id}", _expected);
@@ -80,6 +90,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
         public void ShouldReturnCorrectCategories()
         {
             _periodicalAssert.ShouldHaveSameCategories(_otherCategories);
+        }
+        
+        [Test]
+        public void ShouldReturnCorrectTags()
+        {
+            _periodicalAssert.ShouldHaveMatchingTags(_newTags);
         }
     }
 }

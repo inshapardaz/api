@@ -69,6 +69,14 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.DeletePeriodical
         }
 
         [Test]
+        public void ShouldNotHaveDeletedTheTag()
+        {
+            var tags = TagTestRepository.GetTagsByPeriodical(_expected.Id);
+            var tagAssert = Services.GetService<TagAssert>().ForLibrary(LibraryId);
+            tags.ForEach(cat => tagAssert.ShouldNotHaveDeletedTag(cat.Id));
+        }
+        
+        [Test]
         public void ShouldBeDeleteIssuesForPeriodical()
         {
             _assert.ShouldHaveDeletedIssuesForPeriodical(_expected.Id);

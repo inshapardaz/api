@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using System.Collections.Generic;
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         private HttpResponseMessage _response;
         private IssueDto _expected;
         private IssueAssert _assert;
+        private IEnumerable<TagDto> _tags;
 
         public WhenGettingIssueByIdHavingContentsWithWritePermissions(Role role)
             : base(role)
@@ -27,7 +29,14 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         [OneTimeSetUp]
         public async Task Setup()
         {
-            _expected = IssueBuilder.WithLibrary(LibraryId).WithContent().WithAuthors(2).Build(4).First();
+            _tags = TagBuilder.WithLibrary(LibraryId)
+                .Build(2);
+            _expected = IssueBuilder.WithLibrary(LibraryId)
+                .WithContent()
+                .WithAuthors(2)
+                .WithTags(_tags)
+                .Build(4)
+                .First();
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_expected.PeriodicalId}/volumes/{_expected.VolumeNumber}/issues/{_expected.IssueNumber}");
             _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
@@ -48,7 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         [Test]
         public void ShouldHaveCorrectObjectReturned()
         {
-            _assert.ShouldBeSameAs(_expected);
+            _assert.ShouldBeSameAs(_expected, tags: _tags);
         }
 
         [Test]

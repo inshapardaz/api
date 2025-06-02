@@ -59,6 +59,7 @@ public class UpdateIssueRequestHandler : RequestHandlerAsync<UpdateIssueRequest>
             result.Status = command.Issue.Status;
             result.IsPublic = command.Issue.IsPublic;
             result.ImageId = command.Issue.ImageId;
+            result.Tags = command.Issue.Tags;
 
             await _issueRepository.UpdateIssue(command.LibraryId, command.Issue.PeriodicalId, result, cancellationToken);
             command.Result.Issue = result;

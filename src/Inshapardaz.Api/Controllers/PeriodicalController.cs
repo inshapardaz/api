@@ -36,6 +36,7 @@ public class PeriodicalController : Controller
         int pageNumber = 1,
         int pageSize = 10,
         [FromQuery] int? category = null,
+        [FromQuery] int? tag = null,
         [FromQuery] PeriodicalFrequency? frequency = null,
         [FromQuery] PeriodicalSortByType sortBy = PeriodicalSortByType.Title,
         [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
@@ -44,6 +45,7 @@ public class PeriodicalController : Controller
         var filter = new PeriodicalFilter
         {
             CategoryId = category,
+            TagId = tag,
             Frequency = frequency
         };
 

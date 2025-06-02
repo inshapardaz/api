@@ -52,11 +52,6 @@ public class BookRepository : IBookRepository
                 await connection.ExecuteAsync(commandCategory);
             }
 
-            await connection.ExecuteAsync(new CommandDefinition(
-                "DELETE FROM BookCategory WHERE BookId = @BookId",
-                new { BookId = book.Id },
-                cancellationToken: cancellationToken));
-
             var sqlCategory = """
                               INSERT INTO BookCategory (BookId, CategoryId) 
                                                                   VALUES (@BookId, @CategoryId);
@@ -65,8 +60,31 @@ public class BookRepository : IBookRepository
             if (book.Categories != null && book.Categories.Any())
             {
                 var bookCategories = book.Categories.Select(c => new { BookId = bookId, CategoryId = c.Id });
-                var commandCategory = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
+                var commandCategory =
+                    new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(commandCategory);
+            }
+            
+            if (book.Tags != null && book.Tags.Any())
+            {
+                foreach (var tag in book.Tags)
+                {
+                    var tagId = await connection.ExecuteScalarAsync<int>(
+                        new CommandDefinition(
+                            @"INSERT INTO Tag (Name, LibraryId) 
+                              VALUES (@Name, @LibraryId) 
+                              ON DUPLICATE KEY UPDATE Name=@Name; 
+                              SELECT Id FROM Tag WHERE Name = @Name AND  LibraryId = @LibraryId;",
+                            new { Name = tag.Name, LibraryId = libraryId },
+                            cancellationToken: cancellationToken));
+            
+                    // Associate tag with book
+                    await connection.ExecuteAsync(
+                        new CommandDefinition(
+                            "INSERT INTO BookTag (BookId, TagId) VALUES (@BookId, @TagId);",
+                            new { BookId = bookId, TagId = tagId },
+                            cancellationToken: cancellationToken));
+                }
             }
 
             return await GetBookById(libraryId, bookId, accountId, cancellationToken);
@@ -121,6 +139,36 @@ public class BookRepository : IBookRepository
                 var bookCategories = book.Categories.Select(c => new { BookId = book.Id, CategoryId = c.Id });
                 var commandCategory = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(commandCategory);
+            }
+            
+            // Clean up old tag associations
+            await connection.ExecuteAsync(new CommandDefinition(
+                "DELETE FROM BookTag WHERE BookId = @BookId",
+                new { BookId = book.Id },
+                cancellationToken: cancellationToken));
+            
+            // Insert new tags if they don't exist and associate them
+            if (book.Tags != null && book.Tags.Any())
+            {
+                foreach (var tag in book.Tags)
+                {
+                    // Insert tag if not exists
+                    var tagId = await connection.ExecuteScalarAsync<int>(
+                        new CommandDefinition(
+                            @"INSERT INTO Tag (Name, LibraryId) 
+                              VALUES (@Name, @LibraryId) 
+                              ON DUPLICATE KEY UPDATE Id=LAST_INSERT_ID(Id); 
+                              SELECT Id FROM Tag WHERE Name = @Name AND  LibraryId = @LibraryId;",
+                            new { Name = tag.Name, LibraryId = libraryId },
+                            cancellationToken: cancellationToken));
+            
+                    // Associate tag with book
+                    await connection.ExecuteAsync(
+                        new CommandDefinition(
+                            "INSERT INTO BookTag (BookId, TagId) VALUES (@BookId, @TagId);",
+                            new { BookId = book.Id, TagId = tagId },
+                            cancellationToken: cancellationToken));
+                }
             }
         }
     }
@@ -197,6 +245,7 @@ public class BookRepository : IBookRepository
                 AuthorFilter = filter.AuthorId,
                 SeriesFilter = filter.SeriesId,
                 CategoryFilter = filter.CategoryId,
+                TagFilter = filter.TagId,
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
                 StatusFilter = filter.Status,
@@ -211,6 +260,8 @@ public class BookRepository : IBookRepository
                                                       INNER JOIN Author a On ba.AuthorId = a.Id
                                                       LEFT JOIN BookCategory bc ON b.Id = bc.BookId
                                                       LEFT JOIN Category c ON bc.CategoryId = c.Id
+                                                      LEFT JOIN BookTag bt ON b.Id = bt.BookId
+                                                      LEFT JOIN Tag t ON bt.TagId = c.Id
                                                       LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
                                                       LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
                                                       LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
@@ -220,6 +271,7 @@ public class BookRepository : IBookRepository
                                                       AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                                                       AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
                                                       AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                                      AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
                                                       AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                                                       AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                                                       AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
@@ -240,6 +292,8 @@ public class BookRepository : IBookRepository
                                                            LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId
                                                            LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
                                                            LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
+                                                           LEFT JOIN BookTag bt ON b.Id = bt.BookId
+                                                           LEFT JOIN Tag t ON bt.TagId = c.Id
                                                            LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
                                                            LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
                                                            LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
@@ -249,6 +303,7 @@ public class BookRepository : IBookRepository
                                                            AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                                                            AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
                                                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                                           AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
                                                            AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                                                            AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                                                            AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
@@ -284,6 +339,7 @@ public class BookRepository : IBookRepository
                 AuthorFilter = filter.AuthorId,
                 SeriesFilter = filter.SeriesId,
                 CategoryFilter = filter.CategoryId,
+                TagFilter = filter.TagId,
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
                 StatusFilter = filter.Status,
@@ -299,6 +355,8 @@ public class BookRepository : IBookRepository
                                                       INNER JOIN Author a On ba.AuthorId = a.Id
                                                       LEFT JOIN BookCategory bc ON b.Id = bc.BookId
                                                       LEFT JOIN Category c ON bc.CategoryId = c.Id
+                                                      LEFT JOIN BookTag bt ON b.Id = bt.BookId
+                                                      LEFT JOIN Tag t ON bt.TagId = c.Id
                                                       LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id
                                                       LEFT JOIN RecentBooks r On b.Id = r.BookId
                                                       LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
@@ -311,6 +369,7 @@ public class BookRepository : IBookRepository
                                                       AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                                                       AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                                                       AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                                      AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
                                                       AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
                                                   GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded 
                       """ +
@@ -330,6 +389,8 @@ public class BookRepository : IBookRepository
                                                            LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId
                                                            LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
                                                            LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
+                                                           LEFT JOIN BookTag bt ON b.Id = bt.BookId
+                                                           LEFT JOIN Tag t ON bt.TagId = c.Id
                                                            LEFT OUTER JOIN FavoriteBooks fb On fb.BookId = b.Id
                                                            LEFT OUTER JOIN RecentBooks r On b.Id = r.BookId
                                                            LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
@@ -342,6 +403,7 @@ public class BookRepository : IBookRepository
                                                            AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                                                            AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                                                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                                           AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
                                                            AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
                                                        GROUP BY b.Id) AS bkcnt
                            """;
@@ -435,7 +497,7 @@ public class BookRepository : IBookRepository
                                                      CASE WHEN fb.BookId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                                                      (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.Id) AS PageCount,
                                                      (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.Id) AS ChapterCount,
-                                                     a.*, c.*, r.*
+                                                     a.*, c.*, r.*, t.*
                                               FROM Book b
                                                    LEFT OUTER JOIN BookAuthor ba ON b.Id = ba.BookId
                                                    LEFT OUTER JOIN Author a ON ba.AuthorId = a.Id
@@ -443,6 +505,8 @@ public class BookRepository : IBookRepository
                                                    LEFT OUTER JOIN FavoriteBooks f ON b.Id = f.BookId AND (f.AccountId = @AccountId OR @AccountId IS NULL)
                                                    LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
                                                    LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
+                                                   LEFT OUTER JOIN BookTag bt ON b.Id = bt.BookId
+                                                   LEFT OUTER JOIN Tag t ON bt.TagId = t.Id
                                                    LEFT OUTER JOIN FavoriteBooks fb ON fb.BookId = b.Id
                                                    LEFT JOIN RecentBooks r ON b.Id = r.BookId
                                                    LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
@@ -450,9 +514,9 @@ public class BookRepository : IBookRepository
                                                     AND b.Id = @Id
                       """;
 
-            await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, ReadProgressModel, BookModel>(
+            await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, ReadProgressModel, TagModel,BookModel>(
                 sql,
-                (b, a, c, r) =>
+                (b, a, c, r, t) =>
                 {
                     if (book == null)
                     {
@@ -468,6 +532,11 @@ public class BookRepository : IBookRepository
                     {
                         book.Categories.Add(c);
                     }
+                    
+                    if (t != null && !book.Tags.Any(x => x.Id == t.Id))
+                    {
+                        book.Tags.Add(t);
+                    }
 
                     if (r != null && (r.ProgressType != null || r.ProgressId != 0 || r.DateRead != null))
                     {
@@ -477,7 +546,7 @@ public class BookRepository : IBookRepository
                     return book;
                 },
                 new { LibraryId = libraryId, Id = bookId, AccountId = AccountId },
-                splitOn: "Id,Id,ProgressType"
+                splitOn: "Id,Id,ProgressType,Id"
             );
 
             return book;
@@ -774,7 +843,7 @@ public class BookRepository : IBookRepository
                                          CASE WHEN fb.BookId IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                                          (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.Id) AS PageCount,
                                          (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.Id) AS ChapterCount,
-                                         a.*, c.*, r.*
+                                         a.*, c.*, r.*, t.*
                                   FROM Book b
                                        LEFT JOIN Series s ON b.SeriesId = s.Id
                                        LEFT JOIN FavoriteBooks f ON b.Id = f.BookId
@@ -782,6 +851,8 @@ public class BookRepository : IBookRepository
                                        INNER JOIN Author a ON ba.AuthorId = a.Id
                                        LEFT JOIN BookCategory bc ON b.Id = bc.BookId
                                        LEFT JOIN Category c ON bc.CategoryId = c.Id
+                                       LEFT JOIN BookTag bt ON b.Id = bt.BookId
+                                       LEFT JOIN Tag t ON bt.TagId = t.Id
                                        LEFT JOIN FavoriteBooks fb ON fb.BookId = b.Id
                                        LEFT JOIN RecentBooks r ON b.Id = r.BookId
                                        LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
@@ -791,9 +862,9 @@ public class BookRepository : IBookRepository
 
         var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookList = bookIds }, cancellationToken: cancellationToken);
 
-        await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, ReadProgressModel, BookModel>(
+        await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, ReadProgressModel, TagModel, BookModel>(
             command,
-            (b, a, c, r) =>
+            (b, a, c, r, t) =>
             {
                 if (!books.TryGetValue(b.Id, out BookModel book))
                     books.Add(b.Id, book = b);
@@ -807,6 +878,11 @@ public class BookRepository : IBookRepository
                 {
                     book.Categories.Add(c);
                 }
+                
+                if (t != null && !book.Tags.Any(x => x.Id == t.Id))
+                {
+                    book.Tags.Add(t);
+                }
 
                 if (r != null && (r.ProgressType != null || r.ProgressId != 0 || r.DateRead != null))
                 {
@@ -815,7 +891,7 @@ public class BookRepository : IBookRepository
 
                 return book;
             },
-            splitOn: "Id,Id,ProgressType"
+            splitOn: "Id,Id,ProgressType,Id"
         );
 
         return books.Values.OrderBy(b => bookIds.IndexOf(b.Id)).ToList();

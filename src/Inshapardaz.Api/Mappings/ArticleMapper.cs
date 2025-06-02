@@ -23,6 +23,7 @@ public static class ArticleMapper
             ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
             Authors = source.Authors?.Select(a => a.Map()),
             Categories = source.Categories?.Select(c => c.Map()),
+            Tags = source.Tags?.Select(c => c.Map()),
             Contents = source?.Contents?.Select(c => c.Map()).ToList(),
             LastModified = source?.LastModified
         };
@@ -43,6 +44,7 @@ public static class ArticleMapper
             ReviewerAssignTimeStamp = source.ReviewerAssignTimeStamp,
             Authors = source.Authors?.Select(x => x.Map()).ToList(),
             Categories = source.Categories?.Select(x => x.Map()).ToList(),
+            Tags = source.Tags?.Select(x => x.Map()).ToList(),
             Contents = source?.Contents?.Select(c => c.Map()).ToList(),
             LastModified = source?.LastModified
         };

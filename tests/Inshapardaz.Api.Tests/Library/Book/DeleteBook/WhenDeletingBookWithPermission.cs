@@ -30,6 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         {
             var books = BookBuilder.WithLibrary(LibraryId)
                                     .WithCategories(1)
+                                    .WithTags(1)
                                     .HavingSeries()
                                     .AddToFavorites(AccountId)
                                     .AddToRecentReads(AccountId)
@@ -88,6 +89,14 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
             var cats = CategoryTestRepository.GetCategoriesByBook(_expected.Id);
             var catagoryAssert = Services.GetService<CategoryAssert>().ForLibrary(LibraryId);
             cats.ForEach(cat => catagoryAssert.ShouldNotHaveDeletedCategory(cat.Id));
+        }
+        
+        [Test]
+        public void ShouldNotHaveDeletedTheTag()
+        {
+            var tags = TagTestRepository.GetTagsByBook(_expected.Id);
+            var tagAssert = Services.GetService<TagAssert>().ForLibrary(LibraryId);
+            tags.ForEach(cat => tagAssert.ShouldNotHaveDeletedTag(cat.Id));
         }
 
         [Test]

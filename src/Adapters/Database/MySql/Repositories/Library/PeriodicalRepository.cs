@@ -33,6 +33,7 @@ public class PeriodicalRepository : IPeriodicalRepository
                 PageSize = pageSize,
                 Offset = pageSize * (pageNumber - 1),
                 CategoryFilter = filter.CategoryId,
+                TagFilter = filter.TagId,
                 Frequency = filter.Frequency
             };
             var sql = @"Select p.Id, p.Title
@@ -40,8 +41,11 @@ public class PeriodicalRepository : IPeriodicalRepository
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN PeriodicalCategory pc ON p.Id = pc.PeriodicalId
                                 LEFT OUTER JOIN Category c ON c.Id = pc.PeriodicalId
+                                LEFT OUTER JOIN PeriodicalTag pt ON p.Id = pt.PeriodicalId
+                                LEFT OUTER JOIN Tag t ON t.Id = pt.PeriodicalId
                             WHERE p.LibraryId = @LibraryId 
                                 AND (@CategoryFilter IS NULL OR pc.CategoryId = @CategoryFilter)
+                                AND (@TagFilter IS NULL OR pt.TagId = @TagFilter)
                                 AND (@Query IS NULL OR p.Title LIKE @Query)
                                 AND (p.Frequency = @Frequency OR @Frequency IS NULL)
                             GROUP BY p.Id, p.Title " +
@@ -55,8 +59,11 @@ public class PeriodicalRepository : IPeriodicalRepository
                             FROM Periodical p
                                 LEFT OUTER JOIN PeriodicalCategory pc ON p.Id = pc.PeriodicalId
                                 LEFT OUTER JOIN Category c ON c.Id = pc.PeriodicalId
+                                LEFT OUTER JOIN PeriodicalTag pt ON p.Id = pt.PeriodicalId
+                                LEFT OUTER JOIN Tag t ON t.Id = pt.PeriodicalId
                             WHERE p.LibraryId = @LibraryId
                                 AND (pc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                                AND (@TagFilter IS NULL OR pt.TagId = @TagFilter)
                                 AND (@Query IS NULL OR p.Title LIKE @Query)
                                 AND (p.Frequency = @Frequency OR @Frequency IS NULL)
                             GROUP BY p.Id) AS pcnt";
@@ -81,17 +88,19 @@ public class PeriodicalRepository : IPeriodicalRepository
             var sql = @"SELECT p.*, 
                                 f.FilePath as ImageUrl, 
                                 (SELECT Count(*) FROM Issue i WHERE i.PeriodicalId = p.Id) AS IssueCount,
-                                c.*
+                                c.*, t.*
                             FROM Periodical AS p
                                 LEFT OUTER JOIN `File` f ON f.Id = p.ImageId
                                 LEFT OUTER JOIN PeriodicalCategory pc ON p.Id = pc.PeriodicalId
                                 LEFT OUTER JOIN Category c ON c.Id = pc.CategoryId
+                                LEFT OUTER JOIN PeriodicalTag pt ON p.Id = pt.PeriodicalId
+                                LEFT OUTER JOIN Tag t ON t.Id = pt.TagId
                             WHERE p.LibraryId = @LibraryId
                                 AND p.Id = @Id";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = periodicalId }, cancellationToken: cancellationToken);
 
             PeriodicalModel periodical = null;
-            await connection.QueryAsync<PeriodicalModel, CategoryModel, PeriodicalModel>(command, (p, c) =>
+            await connection.QueryAsync<PeriodicalModel, CategoryModel, TagModel, PeriodicalModel>(command, (p, c, t) =>
             {
                 if (periodical == null)
                 {
@@ -101,6 +110,11 @@ public class PeriodicalRepository : IPeriodicalRepository
                 if (c != null && !periodical.Categories.Any(x => x.Id == c.Id))
                 {
                     periodical.Categories.Add(c);
+                }
+
+                if (t != null && !periodical.Tags.Any(x => x.Id == t.Id))
+                {
+                    periodical.Tags.Add(t);
                 }
 
                 return periodical;
@@ -137,6 +151,28 @@ public class PeriodicalRepository : IPeriodicalRepository
                 var periodicalCategories = periodical.Categories.Select(c => new { PeriodicalId = id, CategoryId = c.Id });
                 var commandCategory = new CommandDefinition(sqlCategory, periodicalCategories, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(commandCategory);
+            }
+            
+            if (periodical.Tags != null && periodical.Tags.Any())
+            {
+                foreach (var tag in periodical.Tags)
+                {
+                    var tagId = await connection.ExecuteScalarAsync<int>(
+                        new CommandDefinition(
+                            @"INSERT INTO Tag (Name, LibraryId) 
+                              VALUES (@Name, @LibraryId) 
+                              ON DUPLICATE KEY UPDATE Name=@Name; 
+                              SELECT Id FROM Tag WHERE Name = @Name AND  LibraryId = @LibraryId;",
+                            new { Name = tag.Name, LibraryId = libraryId },
+                            cancellationToken: cancellationToken));
+            
+                    // Associate tag with periodical
+                    await connection.ExecuteAsync(
+                        new CommandDefinition(
+                            "INSERT INTO PeriodicalTag (PeriodicalId, TagId) VALUES (@PeriodicalId, @TagId);",
+                            new { PeriodicalId = id, TagId = tagId },
+                            cancellationToken: cancellationToken));
+                }
             }
         }
 
@@ -179,6 +215,33 @@ public class PeriodicalRepository : IPeriodicalRepository
                 var commandCategory = new CommandDefinition(sqlCategory, periodicalCategories, cancellationToken: cancellationToken);
                 await connection.ExecuteAsync(commandCategory);
             }
+            
+            await connection.ExecuteAsync(new CommandDefinition(
+                "DELETE FROM PeriodicalTag WHERE PeriodicalId = @PeriodicalId",
+                new { PeriodicalId = periodical.Id },
+                cancellationToken: cancellationToken));
+            
+            if (periodical.Tags != null && periodical.Tags.Any())
+            {
+                foreach (var tag in periodical.Tags)
+                {
+                    var tagId = await connection.ExecuteScalarAsync<int>(
+                        new CommandDefinition(
+                            @"INSERT INTO Tag (Name, LibraryId) 
+                              VALUES (@Name, @LibraryId) 
+                              ON DUPLICATE KEY UPDATE Name=@Name; 
+                              SELECT Id FROM Tag WHERE Name = @Name AND  LibraryId = @LibraryId;",
+                            new { Name = tag.Name, LibraryId = libraryId },
+                            cancellationToken: cancellationToken));
+            
+                    // Associate tag with periodical
+                    await connection.ExecuteAsync(
+                        new CommandDefinition(
+                            "INSERT INTO PeriodicalTag (PeriodicalId, TagId) VALUES (@PeriodicalId, @TagId);",
+                            new { PeriodicalId = periodical.Id, TagId = tagId },
+                            cancellationToken: cancellationToken));
+                }
+            }
         }
 
         return await GetPeriodicalById(libraryId, periodical.Id, cancellationToken);
@@ -218,16 +281,18 @@ public class PeriodicalRepository : IPeriodicalRepository
         var periodicals = new Dictionary<int, PeriodicalModel>();
         var sql = @"Select p.*, fl.FilePath AS ImageUrl,
                                 (SELECT COUNT(*) FROM Issue WHERE Issue.PeriodicalId = p.id) As IssueCount,
-                                c.*
+                                c.*, t.*
                             FROM Periodical p
                                 LEFT OUTER JOIN PeriodicalCategory pc ON p.Id = pc.PeriodicalId
                                 LEFT OUTER JOIN Category c ON c.Id = pc.CategoryId
+                                LEFT OUTER JOIN PeriodicalTag pt ON p.Id = pt.PeriodicalId
+                                LEFT OUTER JOIN Tag t ON t.Id = pt.PeriodicalId
                                 LEFT OUTER JOIN `File` fl ON fl.Id = p.ImageId
                             WHERE p.LibraryId = @LibraryId
                                 AND p.Id IN @PerioidcalList";
         var command = new CommandDefinition(sql, new { LibraryId = libraryId, PerioidcalList = periodicalIds }, cancellationToken: cancellationToken);
 
-        await connection.QueryAsync<PeriodicalModel, CategoryModel, PeriodicalModel>(command, (p, c) =>
+        await connection.QueryAsync<PeriodicalModel, CategoryModel, TagModel, PeriodicalModel>(command, (p, c, t) =>
         {
             if (!periodicals.TryGetValue(p.Id, out PeriodicalModel periodical))
                 periodicals.Add(p.Id, periodical = p);
@@ -235,6 +300,11 @@ public class PeriodicalRepository : IPeriodicalRepository
             if (c != null && !periodical.Categories.Any(x => x.Id == c.Id))
             {
                 periodical.Categories.Add(c);
+            }
+            
+            if (t != null && !periodical.Tags.Any(x => x.Id == t.Id))
+            {
+                periodical.Tags.Add(t);
             }
 
             return periodical;

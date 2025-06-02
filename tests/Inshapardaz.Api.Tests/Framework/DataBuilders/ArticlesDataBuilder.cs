@@ -27,22 +27,24 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         private readonly ICategoryTestRepository _categoryRepository;
         private readonly IArticleTestRepository _articleRepository;
+        private readonly ITagTestRepository _tagRepository;
         private readonly IFileTestRepository _fileRepository;
         private readonly AuthorsDataBuilder _authorBuilder;
         private readonly CategoriesDataBuilder _categoriesBuilder;
+        private readonly TagsDataBuilder _tagsBuilder;
         private readonly FakeFileStorage _fileStorage;
 
-        private List<ArticleDto> _articles = new();
+        private readonly List<ArticleDto> _articles = new();
         private readonly List<FileDto> _files = new();
         private List<AuthorDto> _authors = new();
 
         private bool _hasImage = true;
         private bool? _isPublic = null;
-        private int _categoriesCount, _contentCount;
-        private string _contentMimeType;
+        private int _categoriesCount, _tagsCount, _contentCount;
 
-        public AuthorDto Author { get; set; }
+        private AuthorDto Author { get; set; }
         private List<CategoryDto> _categories = new();
+        private List<TagDto> _tags = new List<TagDto>();
         private int _libraryId;
         private List<AccountItemCountSpec> _favoriteArticlesSpec = new();
         private List<AccountItemCountSpec> _readArticlesSpec = new();
@@ -54,6 +56,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         private int? _assignedWriterId, _assignedReviewerId;
         private EditingStatus? _status;
         private ArticleType? _articleType;
+        private Dictionary<long, List<int>> _articleTags = new();
+        private Dictionary<long, List<int>> _articleCategories = new();
 
         public IEnumerable<AuthorDto> Authors => _authors;
         public IEnumerable<ArticleDto> Articles => _articles;
@@ -61,19 +65,25 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IEnumerable<ArticleContentDto> Contents => _contents;
         public IEnumerable<FileDto> Files => _files;
         public IEnumerable<RecentArticleDto> RecentReads => _recentArticles;
+        public Dictionary<long, List<int>> ArticleCategories => _articleCategories;
+        public Dictionary<long, List<int>> ArticleTags => _articleTags;
 
         public ArticlesDataBuilder(
             ICategoryTestRepository categoryRepository,
             IArticleTestRepository articleRepository,
+            TagsDataBuilder tagsBuilder,
             IFileStorage fileStorage, 
             IFileTestRepository fileRepository,
+            ITagTestRepository tagRepository, 
             AuthorsDataBuilder authorBuilder, 
             CategoriesDataBuilder categoriesBuilder)
         {
             _fileStorage = fileStorage as FakeFileStorage;
             _categoryRepository = categoryRepository;
+            _tagsBuilder = tagsBuilder;
             _articleRepository = articleRepository;
             _fileRepository = fileRepository;
+            _tagRepository = tagRepository;
             _authorBuilder = authorBuilder;
             _categoriesBuilder = categoriesBuilder;
         }
@@ -102,6 +112,25 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             return this;
         }
 
+        public ArticlesDataBuilder WithTags(int tagsCount)
+        {
+            _tagsCount = tagsCount;
+            return this;
+        }
+        
+        public ArticlesDataBuilder WithTag(TagDto tag)
+        {
+            _tags.Add(tag);
+            return this;
+        }
+        
+        
+        public ArticlesDataBuilder WithTags(IEnumerable<TagDto> tags)
+        {
+            _tags = tags.ToList();
+            return this;
+        }
+        
         public ArticlesDataBuilder WithNoImage()
         {
             _hasImage = false;
@@ -163,10 +192,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             return this;
         }
 
-        public ArticlesDataBuilder WithContents(int contentCount, string mimeType = null)
+        public ArticlesDataBuilder WithContents(int contentCount)
         {
             _contentCount = contentCount;
-            _contentMimeType = mimeType;
             return this;
         }
 
@@ -201,6 +229,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             return fixture.Build<ArticleView>()
                           .With(a => a.Authors, new List<AuthorView> { new AuthorView { Id = Author.Id } })
                           .With(a => a.Categories, _categories.Any() ? _categories.Select(c => c.ToView()) : new CategoryView[0])
+                          .With(b => b.Tags, _tags.Any() ? _tags.Select(c => c.ToView()) : new TagView[0])
                           .Create();
         }
 
@@ -248,6 +277,18 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             {
                 categories = _categories;
             }
+            
+            IEnumerable<TagDto> tags;
+
+            if (_tagsCount > 0 && !_tags.Any())
+            {
+                tags = _tagsBuilder.WithLibrary(_libraryId).Build(_tagsCount);
+            }
+            else
+            {
+                tags = _tags;
+            }
+            
 
             foreach (var article in articles)
             {
@@ -287,6 +328,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 if (categories != null && categories.Any())
                 {
                     _categoryRepository.AddArticleToCategories(article.Id, categories);
+                    _articleCategories.Add(article.Id, categories.Select(x => x.Id).ToList());
+                }
+
+                if (tags != null && tags.Any())
+                {
+                    _tagRepository.AddArticleToTags(article.Id, tags);
+                    _articleTags.Add(article.Id, tags.Select(x => x.Id).ToList());
                 }
 
                 if (_contentCount > 0)

@@ -25,6 +25,7 @@ public static class BookMapper
         IsPublished = source.IsPublished,
         Progress = source.Progress,
         Categories = source.Categories?.Select(c => c.Map()),
+        Tags = source.Tags?.Select(c => c.Map()),
         PageCount = source.PageCount,
         ChapterCount = source.ChapterCount,
         Source = source.Source,
@@ -53,10 +54,11 @@ public static class BookMapper
         Publisher = source.Publisher,
         Progress = source.Progress,
         Categories = source.Categories?.Select(c => c.Map()).ToList(),
+        Tags = source.Tags?.Select(c => c.Map()).ToList(),
         PageCount = source.PageCount,
         ChapterCount = source.ChapterCount,
         PageStatus = source.PageStatus?.Select(ps => ps.Map()),
-        Authors = source.Authors?.Select(c => c.Map()).ToList() ?? new System.Collections.Generic.List<AuthorModel>(),
+        Authors = source.Authors?.Select(c => c.Map()).ToList() ?? new List<AuthorModel>(),
         ReadProgress = source.ReadProgress.Map()
     };
 

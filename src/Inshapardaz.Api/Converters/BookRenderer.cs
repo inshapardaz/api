@@ -123,6 +123,9 @@ public class BookRenderer : IRenderBook
             if (source.Filters.CategoryId.HasValue)
                 queryString.Add("categoryid", source.Filters.CategoryId.Value.ToString());
 
+            if (source.Filters.TagId.HasValue)
+                queryString.Add("tagId", source.Filters.TagId.Value.ToString());
+
             if (source.Filters.BookShelfId.HasValue)
                 queryString.Add("bookShelfId", source.Filters.BookShelfId.Value.ToString());
 

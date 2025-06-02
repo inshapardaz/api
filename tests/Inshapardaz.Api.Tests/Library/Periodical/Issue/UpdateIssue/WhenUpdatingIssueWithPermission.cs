@@ -19,6 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
         private HttpResponseMessage _response;
         private IssueView _newIssue;
         private IssueAssert _assert;
+        private TagView[] _newTags;
 
         public WhenUpdatingIssueWithPermission(Role role)
             : base(role)
@@ -28,9 +29,21 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
         [OneTimeSetUp]
         public async Task Setup()
         {
-            var issue = IssueBuilder.WithLibrary(LibraryId).Build();
-
-            _newIssue = new IssueView { IssueDate = RandomData.Date, VolumeNumber = issue.VolumeNumber, IssueNumber = issue.IssueNumber, Status = RandomData.StatusType.ToDescription() };
+            var issue = IssueBuilder.WithLibrary(LibraryId).WithTags(2).Build();
+            
+            _newTags = new []
+            {
+                new TagView() { Name = RandomData.Name }, 
+                new TagView() { Name = RandomData.Name }
+            };
+            _newIssue = new IssueView
+            {
+                IssueDate = RandomData.Date, 
+                VolumeNumber = issue.VolumeNumber, 
+                IssueNumber = issue.IssueNumber, 
+                Status = RandomData.StatusType.ToDescription(),
+                Tags = _newTags,
+            };
 
             _response = await Client.PutObject($"/libraries/{LibraryId}/periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}", _newIssue);
             _assert = Services.GetService<IssueAssert>().ForResponse(_response).ForLibrary(LibraryId);
@@ -49,15 +62,22 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
         }
 
         [Test]
-        public void ShouldHaveReturnedUpdatedChapter()
+        public void ShouldHaveReturnedUpdatedIssue()
         {
             _assert.ShouldMatch(_newIssue);
         }
 
         [Test]
-        public void ShouldHaveUpdatedChater()
+        public void ShouldHaveUpdatedIssue()
         {
             _assert.ShouldHaveSavedIssue();
+        }
+        
+        
+        [Test]
+        public void ShouldReturnCorrectTags()
+        {
+            _assert.ShouldBeSameTags(_newTags);
         }
     }
 }

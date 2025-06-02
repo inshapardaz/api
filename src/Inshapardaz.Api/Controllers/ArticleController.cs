@@ -41,6 +41,7 @@ public class ArticleController : Controller
         int pageSize = 10,
         [FromQuery] int? authorId = null,
         [FromQuery] int? categoryId = null,
+        [FromQuery] int? tagId = null,
         [FromQuery] bool? favorite = null,
         [FromQuery] bool? read = null,
         [FromQuery] EditingStatus status = EditingStatus.All,
@@ -54,6 +55,7 @@ public class ArticleController : Controller
         {
             AuthorId = authorId,
             CategoryId = categoryId,
+            TagId = tagId,
             Favorite = favorite,
             Read = read,
             Status = status,

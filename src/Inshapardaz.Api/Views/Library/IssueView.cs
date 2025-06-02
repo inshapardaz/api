@@ -22,4 +22,6 @@ public class IssueView : ViewWithLinks
     
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public IEnumerable<PageSummaryView> PageStatus { get; set; }
+
+    public IEnumerable<TagView> Tags { get; set; }
 }

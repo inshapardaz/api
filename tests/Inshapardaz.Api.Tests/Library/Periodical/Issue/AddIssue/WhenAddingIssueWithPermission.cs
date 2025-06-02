@@ -70,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssue
         public void ShouldHaveCorrectObjectReturned()
         {
             _assert.ShouldMatch(_issue)
-                .WithStatus(EditingStatus.Available);
+                .WithStatus(StatusType.AvailableForTyping);
         }
 
         [Test]

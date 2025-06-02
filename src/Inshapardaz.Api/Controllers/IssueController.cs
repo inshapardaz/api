@@ -40,6 +40,7 @@ public class IssueController : Controller
         int pageSize = 10,
         [FromQuery] int? year = null,
         [FromQuery] int? volumeNumber = null,
+        [FromQuery] int? tagId = null,
         [FromQuery] StatusType status = StatusType.Unknown,
         [FromQuery] IssueSortByType sortBy = IssueSortByType.IssueDate,
         [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
@@ -51,6 +52,7 @@ public class IssueController : Controller
             Year = year,
             VolumeNumber = volumeNumber,
             AssignmentStatus = assignedFor,
+            TagId = tagId,
             Status = status
         };
         var issuesQuery = new GetIssuesQuery(libraryId, periodicalId, pageNumber, pageSize)

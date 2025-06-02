@@ -36,6 +36,11 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticle
                 Title = RandomData.Name,
                 Authors = authors.PickRandom(2).Select(c => new AuthorView { Id = c.Id }),
                 Categories = categories.PickRandom(2).Select(c => new CategoryView { Id = c.Id }),
+                Tags = new []
+                {
+                    new TagView() { Name = RandomData.Name }, 
+                    new TagView() { Name = RandomData.Name }
+                },
                 IsPublic = true,
                 WriterAccountId = writer.Id,
                 WriterAccountName = writer.Name,

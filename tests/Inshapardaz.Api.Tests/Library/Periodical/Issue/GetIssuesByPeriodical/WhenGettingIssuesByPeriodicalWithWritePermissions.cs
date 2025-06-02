@@ -34,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
         public async Task Setup()
         {
             _periodical = PeriodicalBuilder.WithLibrary(LibraryId).Build();
-            _issues = IssueBuilder.WithLibrary(LibraryId).WithPeriodical(_periodical.Id).WithContent().Build(5);
+            _issues = IssueBuilder.WithLibrary(LibraryId).WithPeriodical(_periodical.Id).WithTags(2).WithContent().Build(5);
 
             _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/issues");
             _view = _response.GetContent<PageView<IssueView>>().Result;
@@ -80,9 +80,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
             foreach (var expected in _issues)
             {
                 var actual = _view.Data.FirstOrDefault(x => x.Id == expected.Id);
+                var expectedTags = IssueBuilder.IssueTags[expected.Id];
                 var pages = IssueBuilder.GetPages(expected.Id);
                 var assert = Services.GetService<IssueAssert>().ForView(actual).ForLibrary(LibraryId)
-                    .ShouldBeSameAs(expected)
+                    .ShouldBeSameAs(expected, tags: expectedTags.AsEnumerable())
                     .ShouldHaveUpdateLink()
                     .ShouldHaveDeleteLink()
                     .ShouldHaveCreateArticlesLink()

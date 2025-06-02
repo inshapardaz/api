@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Inshapardaz.Domain.Models.Library;
@@ -12,6 +13,7 @@ public class ArticleModel
     public bool IsPublic { get; set; }
     public List<AuthorModel> Authors { get; set; } = new List<AuthorModel>();
     public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
+    public List<TagModel> Tags { get; set; } = new List<TagModel>();
     public List<ArticleContentModel> Contents { get; set; } = new List<ArticleContentModel>();
     public bool IsRead { get; set; }
     public bool IsFavorite { get; set; }
@@ -30,5 +32,4 @@ public class ArticleModel
     public int SourceType { get; set; }
     public int SourceId { get; set; }
     public DateTime? LastModified { get; set; }
-
 }

@@ -7,6 +7,7 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
+using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,13 +16,13 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Book.PublishBook
 {
     [TestFixture]
-    public class WhenPublishingBook : TestBase
+    public class WhenPublishingBookToEpub : TestBase
     {
         private BookDto _book;
         private HttpResponseMessage _response;
         private PagingAssert<BookPageView> _assert;
 
-        public WhenPublishingBook()
+        public WhenPublishingBookToEpub()
             : base(Role.LibraryAdmin)
         {
         }
@@ -31,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.PublishBook
         {
             _book = BookBuilder.WithLibrary(LibraryId).WithChapters(3).WithPages(13).Build();
 
-            _response = await Client.PostAsync($"/libraries/{LibraryId}/books/{_book.Id}/publish", null);
+            _response = await Client.PostObject($"/libraries/{LibraryId}/books/{_book.Id}/publish", new PublishBookRequestView(MimeTypes.Epub));
 
             _assert = Services.GetService<PagingAssert<BookPageView>>().ForResponse(_response);
         }
@@ -83,6 +84,26 @@ namespace Inshapardaz.Api.Tests.Library.Book.PublishBook
                 expectedChapterContent.Should().NotBeNull();
                 expectedChapterContent.Content.Should().Be(content);
             }
+        }
+
+        [Test]
+        public void ShouldHaveSavedEPubFile()
+        {
+            var bookRepository = Services.GetService<IBookTestRepository>();
+            var fileRepository = Services.GetService<IFileTestRepository>();
+            var fileStorage = Services.GetService<FakeFileStorage>();
+
+            var bookContent = bookRepository.GetBookContents(_book.Id)
+                .SingleOrDefault(x => x.MimeType == MimeTypes.Epub);
+
+            bookContent.Should().NotBeNull();
+            var file = fileRepository.GetFileById(bookContent.FileId);
+            file.Should().NotBeNull();
+            file.FilePath.Should().NotBeNullOrWhiteSpace();
+            file.MimeType.Should().Be(MimeTypes.Epub);
+
+            var content = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
+            content.Should().NotBeNullOrEmpty();
         }
     }
 }

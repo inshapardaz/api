@@ -22,8 +22,10 @@ public class PublishBookRequest : LibraryBaseCommand
         BookId = bookId;
     }
 
+    public string OutputType { get; set; }
     public string Result { get; set; }
     public int BookId { get; }
+    public bool OnlyPublishFile { get; set; }
 }
 
 public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
@@ -57,13 +59,19 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
     public override async Task<PublishBookRequest> HandleAsync(PublishBookRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
+        var bookImage = book.ImageId.HasValue ? await _fileRepository.GetFileById(book.ImageId.Value, cancellationToken) : null;
         var chapters = await _chapterRepository.GetChaptersByBook(command.LibraryId, command.BookId, cancellationToken);
-        var chapterText = new List<string>();
+        var chapterTexts = new Dictionary<string, string>();
         foreach (var chapter in chapters)
         {
             var pages = await _bookPageRepository.GetPagesByBookChapter(command.LibraryId, command.BookId, chapter.Id, cancellationToken);
             var finalText = await CombinePages(pages, cancellationToken);
-            chapterText.Add(finalText);
+            chapterTexts.Add(chapter.Title, finalText);
+            
+            if (command.OnlyPublishFile)
+            {
+                continue;
+            }
             if (chapter.Contents.Any(cc => cc.Language == book.Language))
             {
                 var cmd = new UpdateChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber, finalText, book.Language);               
@@ -76,31 +84,66 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
             }
         }
 
-        var wordDocument = _wordDocumentWriter.ConvertMarkdownToWord(chapterText);
+        byte[] outputFile = null;
+        if (command.OutputType == MimeTypes.MsWord)
+        {
+            outputFile = _wordDocumentWriter.ConvertMarkdownToWord(chapterTexts.Values);
+        }
+        else if (command.OutputType == MimeTypes.Epub)
+        {
+            var converter = new MarkdownToEpubConverter();
+            outputFile = converter.CreateEpub("book.epub", 
+                chapters.Select(x => 
+                    new MarkdownToEpubConverter.Chapter(
+                        x.Title,
+                        chapterTexts.TryGetValue(x.Title, out var text) ? text : string.Empty
+                    )).ToList(), 
+                book.Title,
+                book.Authors.Select(x => x.Name).ToArray(),
+                book.Language,
+                bookImage?.Contents
+            );
+        }
+        else
+        {
+            throw new NotSupportedException($"Output type '{command.OutputType}' is not supported.");
+        }
 
         var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, book.Language, MimeTypes.MsWord, cancellationToken);
 
         if (bookContent == null)
         {
-            FileModel file = await SaveFileToStorage(book, wordDocument, cancellationToken);
+            FileModel file = await SaveFileToStorage(book, outputFile, command.OutputType, cancellationToken);
             await _bookRepository.AddBookContent(command.BookId, file.Id, book.Language, cancellationToken);
         }
         else
         {
-            await UpdateFileInStorage(book, bookContent.FileId, wordDocument, cancellationToken);
+            await UpdateFileInStorage(book, bookContent.FileId, outputFile, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);
     }
 
-    private async Task<FileModel> SaveFileToStorage(BookModel book, byte[] wordDocument, CancellationToken cancellationToken)
+    private async Task<FileModel> SaveFileToStorage(BookModel book, byte[] contents, string mimeType, CancellationToken cancellationToken)
     {
-        var fileName = $"{book.Title.ToSafeFilename()}.docx";
-        var url = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", wordDocument, MimeTypes.MsWord, cancellationToken);
+        string fileName = null;
+        switch (mimeType)
+        {
+            case MimeTypes.MsWord:
+                fileName = $"{book.Title.ToSafeFilename()}.docx";
+                break;
+            case MimeTypes.Epub:
+                fileName = $"{book.Title.ToSafeFilename()}.epub";
+                break;
+            default:
+                throw new NotSupportedException($"Mime type '{mimeType}' is not supported.");
+            
+        }
+        var url = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", contents, mimeType, cancellationToken);
         var file = await _fileRepository.AddFile(new FileModel
         {
             FilePath = url,
-            MimeType = MimeTypes.MsWord,
+            MimeType = mimeType,
             FileName = fileName,
             IsPublic = false
         }, cancellationToken);

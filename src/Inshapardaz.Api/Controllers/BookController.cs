@@ -316,9 +316,18 @@ public class BookController : Controller
     }
 
     [HttpPost("libraries/{libraryId}/books/{bookId}/publish", Name = nameof(PublishBook))]
-    public async Task<IActionResult> PublishBook(int libraryId, int bookId, CancellationToken token)
+    public async Task<IActionResult> PublishBook(int libraryId, int bookId, [FromBody] PublishBookRequestView publishBookRequest, CancellationToken token)
     {
-        var request = new PublishBookRequest(libraryId, bookId);
+        if (!ModelState.IsValid)
+        {
+            return new BadRequestObjectResult(ModelState);
+        }
+        
+        var request = new PublishBookRequest(libraryId, bookId)
+        {
+            OutputType = publishBookRequest.OutputType,
+            OnlyPublishFile = publishBookRequest.OnlyPublishFile,
+        };
         await _commandProcessor.SendAsync(request, cancellationToken: token);
 
         return Ok();

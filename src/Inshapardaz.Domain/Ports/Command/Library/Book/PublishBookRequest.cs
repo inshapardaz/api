@@ -62,25 +62,42 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
         var bookImage = book.ImageId.HasValue ? await _fileRepository.GetFileById(book.ImageId.Value, cancellationToken) : null;
         var chapters = await _chapterRepository.GetChaptersByBook(command.LibraryId, command.BookId, cancellationToken);
         var chapterTexts = new Dictionary<string, string>();
+
         foreach (var chapter in chapters)
         {
-            var pages = await _bookPageRepository.GetPagesByBookChapter(command.LibraryId, command.BookId, chapter.Id, cancellationToken);
-            var finalText = await CombinePages(pages, cancellationToken);
-            chapterTexts.Add(chapter.Title, finalText);
-            
             if (command.OnlyPublishFile)
             {
-                continue;
-            }
-            if (chapter.Contents.Any(cc => cc.Language == book.Language))
-            {
-                var cmd = new UpdateChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber, finalText, book.Language);               
-                await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+                string finalContent = string.Empty;
+                var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, book.Id, chapter.ChapterNumber, book.Language,
+                    cancellationToken);
+                if (chapterContent != null && chapterContent.FileId.HasValue)
+                {
+                    var file = await _fileRepository.GetFileById(chapterContent.FileId.Value, cancellationToken);
+                    finalContent = await _fileStorage.GetTextFile(file.FilePath, cancellationToken);
+                }
+                
+                chapterTexts.Add(chapter.Title, finalContent ?? string.Empty);
             }
             else
             {
-                var cmd = new AddChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber, finalText, book.Language); ;
-                await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+                var pages = await _bookPageRepository.GetPagesByBookChapter(command.LibraryId, command.BookId,
+                    chapter.Id, cancellationToken);
+                var finalText = await CombinePages(pages, cancellationToken);
+                chapterTexts.Add(chapter.Title, finalText);
+
+                if (chapter.Contents.Any(cc => cc.Language == book.Language))
+                {
+                    var cmd = new UpdateChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber,
+                        finalText, book.Language);
+                    await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+                }
+                else
+                {
+                    var cmd = new AddChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber,
+                        finalText, book.Language);
+                    ;
+                    await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+                }
             }
         }
 
@@ -106,10 +123,10 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
         }
         else
         {
-            throw new NotSupportedException($"Output type '{command.OutputType}' is not supported.");
+            return await base.HandleAsync(command, cancellationToken);
         }
 
-        var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, book.Language, MimeTypes.MsWord, cancellationToken);
+        var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, book.Language, command.OutputType, cancellationToken);
 
         if (bookContent == null)
         {

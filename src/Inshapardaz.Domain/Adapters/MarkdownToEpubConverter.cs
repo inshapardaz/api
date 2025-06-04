@@ -20,6 +20,7 @@ public class MarkdownToEpubConverter
         string language = "ur",
         byte[] coverImage = null)
     {
+        var direction = language == "ur" ? "rtl" : "ltr";
         string epubFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Directory.CreateDirectory(epubFolder);
 
@@ -52,13 +53,12 @@ public class MarkdownToEpubConverter
 
             string xhtml = $@"<?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='{language}' dir='rtl'>
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='{language}' dir='{direction}'>
   <head>
     <title>{chapter.Title}</title>
     <link rel='stylesheet' type='text/css' href='styles.css'/>
   </head>
   <body>
-    <h1>{chapter.Title}</h1>
     {html}
   </body>
 </html>";
@@ -71,15 +71,29 @@ public class MarkdownToEpubConverter
             navItems.AppendLine($"      <li><a href='{fileName}'>{chapter.Title}</a></li>");
         }
 
+        var rtlBullets = direction == "rtl"
+          ? @"ul, ol { 
+              direction: ltr;
+              unicode-bidi: embed;
+              text-align: left;
+              margin-left: 1.5em;
+            }
+            ul li, ol li {
+              direction: rtl;
+              text-align: right;
+            }"
+        : "";
         // Step 4: styles.css
-        File.WriteAllText(Path.Combine(oebpsDir, "styles.css"), @"
-body {
-  direction: rtl;
+        File.WriteAllText(Path.Combine(oebpsDir, "styles.css"), $@"
+body {{
+  direction: {direction};
   unicode-bidi: embed;
   font-family: serif;
   line-height: 1.6;
   text-align: right;
-}");
+}}
+{rtlBullets}
+");
 
         manifest.AppendLine("    <item id='css' href='styles.css' media-type='text/css'/>");
 
@@ -107,7 +121,7 @@ body {
   <manifest>
 {manifest.ToString().TrimEnd()}
   </manifest>
-  <spine page-progression-direction='rtl'>
+  <spine page-progression-direction='{direction}'>
 {spine.ToString().TrimEnd()}
   </spine>
 </package>";

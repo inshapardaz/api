@@ -28,7 +28,7 @@ public class FileController : Controller
             return new NotFoundResult();
         }
 
-        return File(file.Contents, file.MimeType);
+        return File(file.Contents, file.MimeType, file.FileName);
     }
 
     [HttpGet("libraries/{libraryId}/files/{fileId}", Name = nameof(FileController.GetLibraryFile))]
@@ -42,7 +42,7 @@ public class FileController : Controller
             return new NotFoundResult();
         }
 
-        return File(file.Contents, file.MimeType);
+        return File(file.Contents, file.MimeType, file.FileName);
     }
 
     [HttpDelete("files/{fileId}", Name = nameof(FileController.DeleteFile))]

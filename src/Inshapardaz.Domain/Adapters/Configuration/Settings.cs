@@ -18,5 +18,5 @@ public record Settings
 
     public bool SaveDownloadsToStorage { get; init; } = false;
     
-    public string? Domain { get; set; }
+    public string Domain { get; set; }
 }

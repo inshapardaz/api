@@ -59,7 +59,15 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
     public override async Task<PublishBookRequest> HandleAsync(PublishBookRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
-        var bookImage = book.ImageId.HasValue ? await _fileRepository.GetFileById(book.ImageId.Value, cancellationToken) : null;
+        byte[] bookImage = null;
+        if (book.ImageId.HasValue)
+        {
+            var file = await _fileRepository.GetFileById(book.ImageId.Value, cancellationToken);
+            if (file != null)
+            {
+                bookImage = await _fileStorage.GetFile(file.FilePath, cancellationToken);
+            }
+        }
         var chapters = await _chapterRepository.GetChaptersByBook(command.LibraryId, command.BookId, cancellationToken);
         var chapterTexts = new Dictionary<string, string>();
 
@@ -118,7 +126,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
                 book.Title,
                 book.Authors.Select(x => x.Name).ToArray(),
                 book.Language,
-                bookImage?.Contents
+                bookImage
             );
         }
         else

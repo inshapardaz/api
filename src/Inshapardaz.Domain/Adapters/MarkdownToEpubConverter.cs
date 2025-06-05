@@ -54,41 +54,51 @@ public class MarkdownToEpubConverter
         return epubBytes;
     }
 
-    private static byte[] CreateEPubFile(string outputFilePath, string epubFolder)
+    private static void WriteMimeType(string epubFolder)
     {
-      if (File.Exists(outputFilePath))
-        File.Delete(outputFilePath);
-
-      ZipFile.CreateFromDirectory(epubFolder, outputFilePath, CompressionLevel.Optimal, false);
-
-      byte []  epubBytes = File.ReadAllBytes(outputFilePath);
-      return epubBytes;
+      File.WriteAllText(Path.Combine(epubFolder, "mimetype"), "application/epub+zip", new UTF8Encoding(false));
     }
 
-    private static void WriteContentOpf(string title, string[] authors, string language, string coverItem,
-      StringBuilder manifest, string direction, StringBuilder spine, string oebpsDir)
+    private static void WriteContainerXml(string metaInfDir)
     {
-      string authorsXml = string.Join("\n", authors.Select(a => $"<dc:creator>{a}</dc:creator>"));
-      string opfContent = $@"<?xml version='1.0' encoding='utf-8'?>
-<package version='3.0' xmlns='http://www.idpf.org/2007/opf' unique-identifier='{Guid.NewGuid()}' xml:lang='{language}'>
-  <metadata xmlns:dc='http://purl.org/dc/elements/1.1/'>
-    <dc:identifier id='bookid'>urn:uuid:{Guid.NewGuid()}</dc:identifier>
-    <dc:title>{title}</dc:title>
-    <dc:language>{language}</dc:language>
-    {authorsXml}
-    {coverItem}
-  </metadata>
-  <manifest>
-{manifest.ToString().TrimEnd()}
-  </manifest>
-  <spine page-progression-direction='{direction}'>
-{spine.ToString().TrimEnd()}
-  </spine>
-</package>";
-
-      File.WriteAllText(Path.Combine(oebpsDir, "content.opf"), opfContent, Encoding.UTF8);
+      File.WriteAllText(Path.Combine(metaInfDir, "container.xml"), 
+        @"<?xml version='1.0' encoding='utf-8'?>
+          <container version='1.0' xmlns='urn:oasis:names:tc:opendocument:xmlns:container'>
+            <rootfiles>
+              <rootfile full-path='OEBPS/content.opf' media-type='application/oebps-package+xml'/>
+            </rootfiles>
+          </container>");
     }
+    
+    private static void WriteCss(string direction, string oebpsDir, StringBuilder manifest)
+    {
+      var rtlBullets = direction == "rtl"
+        ? @"ul, ol { 
+              direction: ltr;
+              unicode-bidi: embed;
+              text-align: left;
+              margin-left: 1.5em;
+            }
+            ul li, ol li {
+              direction: rtl;
+              text-align: right;
+            }"
+        : "";
+      // Step 4: styles.css
+      File.WriteAllText(Path.Combine(oebpsDir, "styles.css"), $@"
+body {{
+  direction: {direction};
+  unicode-bidi: embed;
+  font-family: serif;
+  line-height: 1.6;
+  text-align: right;
+}}
+{rtlBullets}
+");
 
+      manifest.AppendLine("    <item id='css' href='styles.css' media-type='text/css'/>");
+    }
+    
     private static string WriteCoverImage(byte[] coverImage, string oebpsDir, StringBuilder manifest,
       StringBuilder spine)
     {
@@ -130,62 +140,6 @@ public class MarkdownToEpubConverter
       return coverItem;
     }
     
-    private static void WriteCss(string direction, string oebpsDir, StringBuilder manifest)
-    {
-      var rtlBullets = direction == "rtl"
-        ? @"ul, ol { 
-              direction: ltr;
-              unicode-bidi: embed;
-              text-align: left;
-              margin-left: 1.5em;
-            }
-            ul li, ol li {
-              direction: rtl;
-              text-align: right;
-            }"
-        : "";
-      // Step 4: styles.css
-      File.WriteAllText(Path.Combine(oebpsDir, "styles.css"), $@"
-body {{
-  direction: {direction};
-  unicode-bidi: embed;
-  font-family: serif;
-  line-height: 1.6;
-  text-align: right;
-}}
-{rtlBullets}
-");
-
-      manifest.AppendLine("    <item id='css' href='styles.css' media-type='text/css'/>");
-    }
-
-    private static void WriteNavigation(List<Chapter> chapters, string oebpsDir, StringBuilder manifest,
-      StringBuilder spine)
-    {
-      StringBuilder toc = new StringBuilder();
-      toc.AppendLine(@"<?xml version=""1.0"" encoding=""utf-8""?>
-          <!DOCTYPE html>
-          <html xmlns=""http://www.w3.org/1999/xhtml"" 
-                xmlns:epub=""http://www.idpf.org/2007/ops""
-                xml:lang=""ur"" dir=""rtl"">
-          <head><title>TOC</title></head>
-          <body>
-          <nav epub:type=""toc"" id=""toc"">
-          <h1>فہرست مضامین</h1>
-          <ol>");
-
-      for (int i = 0; i < chapters.Count; i++)
-      {
-        toc.AppendLine($"<li><a href=\"chapter{i + 1}.xhtml\">{chapters[i].Title}</a></li>");
-      }
-
-      toc.AppendLine("</ol></nav></body></html>");
-      File.WriteAllText(Path.Combine(oebpsDir, "nav.xhtml"), toc.ToString(), Encoding.UTF8);
-
-      manifest.AppendLine("    <item id='nav' href='nav.xhtml' media-type='application/xhtml+xml' properties='nav' />");
-      spine.AppendLine("    <itemref idref=\"nav\" />\n");
-    }
-
     private static void WriteChapters(List<Chapter> chapters, string language, string direction, string oebpsDir,
       StringBuilder manifest, StringBuilder spine, StringBuilder navItems)
     {
@@ -216,20 +170,68 @@ body {{
       }
     }
 
-    private static void WriteMimeType(string epubFolder)
+    private static void WriteNavigation(List<Chapter> chapters, string oebpsDir, StringBuilder manifest,
+      StringBuilder spine)
     {
-      File.WriteAllText(Path.Combine(epubFolder, "mimetype"), "application/epub+zip", new UTF8Encoding(false));
+      StringBuilder toc = new StringBuilder();
+      toc.AppendLine(@"<?xml version=""1.0"" encoding=""utf-8""?>
+          <!DOCTYPE html>
+          <html xmlns=""http://www.w3.org/1999/xhtml"" 
+                xmlns:epub=""http://www.idpf.org/2007/ops""
+                xml:lang=""ur"" dir=""rtl"">
+          <head><title>TOC</title></head>
+          <body>
+          <nav epub:type=""toc"" id=""toc"">
+          <h1>فہرست مضامین</h1>
+          <ol>");
+
+      for (int i = 0; i < chapters.Count; i++)
+      {
+        toc.AppendLine($"<li><a href=\"chapter{i + 1}.xhtml\">{chapters[i].Title}</a></li>");
+      }
+
+      toc.AppendLine("</ol></nav></body></html>");
+      File.WriteAllText(Path.Combine(oebpsDir, "nav.xhtml"), toc.ToString(), Encoding.UTF8);
+
+      manifest.AppendLine("    <item id='nav' href='nav.xhtml' media-type='application/xhtml+xml' properties='nav' />");
+      spine.AppendLine("    <itemref idref=\"nav\" />\n");
+    }
+    
+    private static void WriteContentOpf(string title, string[] authors, string language, string coverItem,
+      StringBuilder manifest, string direction, StringBuilder spine, string oebpsDir)
+    {
+      string authorsXml = string.Join("\n", authors.Select(a => $"<dc:creator>{a}</dc:creator>"));
+      string opfContent = $@"<?xml version='1.0' encoding='utf-8'?>
+<package version='3.0' xmlns='http://www.idpf.org/2007/opf' unique-identifier='{Guid.NewGuid()}' xml:lang='{language}'>
+  <metadata xmlns:dc='http://purl.org/dc/elements/1.1/'>
+    <dc:identifier id='bookid'>urn:uuid:{Guid.NewGuid()}</dc:identifier>
+    <dc:title>{title}</dc:title>
+    <dc:language>{language}</dc:language>
+    {authorsXml}
+    {coverItem}
+  </metadata>
+  <manifest>
+{manifest.ToString().TrimEnd()}
+  </manifest>
+  <spine page-progression-direction='{direction}'>
+{spine.ToString().TrimEnd()}
+  </spine>
+</package>";
+
+      File.WriteAllText(Path.Combine(oebpsDir, "content.opf"), opfContent, Encoding.UTF8);
     }
 
-    private static void WriteContainerXml(string metaInfDir)
+    
+    private static byte[] CreateEPubFile(string outputFilePath, string epubFolder)
     {
-      File.WriteAllText(Path.Combine(metaInfDir, "container.xml"), 
-        @"<?xml version='1.0' encoding='utf-8'?>
-          <container version='1.0' xmlns='urn:oasis:names:tc:opendocument:xmlns:container'>
-            <rootfiles>
-              <rootfile full-path='OEBPS/content.opf' media-type='application/oebps-package+xml'/>
-            </rootfiles>
-          </container>");
+      if (File.Exists(outputFilePath))
+        File.Delete(outputFilePath);
+
+      ZipFile.CreateFromDirectory(epubFolder, outputFilePath, CompressionLevel.Optimal, false);
+
+      byte []  epubBytes = File.ReadAllBytes(outputFilePath);
+      return epubBytes;
     }
+    
 }
 

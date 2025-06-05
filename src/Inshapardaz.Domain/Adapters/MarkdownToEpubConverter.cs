@@ -4,8 +4,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using Inshapardaz.Domain.Helpers;
 using Markdig;
-using SkiaSharp;
 
 namespace Inshapardaz.Domain.Adapters;
 
@@ -70,7 +70,7 @@ public class MarkdownToEpubConverter
     {
       string authorsXml = string.Join("\n", authors.Select(a => $"<dc:creator>{a}</dc:creator>"));
       string opfContent = $@"<?xml version='1.0' encoding='utf-8'?>
-<package version='3.0' xmlns='http://www.idpf.org/2007/opf' unique-identifier='bookid' xml:lang='{language}'>
+<package version='3.0' xmlns='http://www.idpf.org/2007/opf' unique-identifier='{Guid.NewGuid()}' xml:lang='{language}'>
   <metadata xmlns:dc='http://purl.org/dc/elements/1.1/'>
     <dc:identifier id='bookid'>urn:uuid:{Guid.NewGuid()}</dc:identifier>
     <dc:title>{title}</dc:title>
@@ -95,8 +95,8 @@ public class MarkdownToEpubConverter
       string coverItem = "";
       if (coverImage != null)
       {
-        var mimeType = GetImageMimeType(coverImage);
-        string fileName = $"cover.{GetFileExtensionFromMimeType(mimeType)}";
+        var mimeType = coverImage.GetImageMimeType();
+        string fileName = $"cover.{mimeType.GetFileExtensionFromMimeType()}";
         File.WriteAllBytes(Path.Combine(oebpsDir, fileName), coverImage);
         manifest.AppendLine($"    <item id='cover' href='{fileName}' media-type='{mimeType}' properties='cover-image'/>");
         coverItem = "<meta name='cover' content='cover'/>";
@@ -183,7 +183,7 @@ body {{
       File.WriteAllText(Path.Combine(oebpsDir, "nav.xhtml"), toc.ToString(), Encoding.UTF8);
 
       manifest.AppendLine("    <item id='nav' href='nav.xhtml' media-type='application/xhtml+xml' properties='nav' />");
-      spine.AppendLine("    <itemref idref=\"nav\" media-type=\"application/xhtml+xml\" properties=\"nav\"/>\n");
+      spine.AppendLine("    <itemref idref=\"nav\" />\n");
     }
 
     private static void WriteChapters(List<Chapter> chapters, string language, string direction, string oebpsDir,
@@ -230,46 +230,6 @@ body {{
               <rootfile full-path='OEBPS/content.opf' media-type='application/oebps-package+xml'/>
             </rootfiles>
           </container>");
-    }
-  
-    public static string GetImageMimeType(byte[] imageBytes)
-    {
-      using var codec = SKCodec.Create(new SKMemoryStream(imageBytes));
-      if (codec == null) return "application/octet-stream";
-      return codec.EncodedFormat switch
-      {
-        SKEncodedImageFormat.Jpeg => "image/jpeg",
-        SKEncodedImageFormat.Png => "image/png",
-        SKEncodedImageFormat.Gif => "image/gif",
-        SKEncodedImageFormat.Bmp => "image/bmp",
-        SKEncodedImageFormat.Webp => "image/webp",
-        SKEncodedImageFormat.Wbmp => "image/vnd.wap.wbmp",
-        SKEncodedImageFormat.Pkm => "image/x-pkm",
-        SKEncodedImageFormat.Ktx => "image/ktx",
-        SKEncodedImageFormat.Heif => "image/heif",
-        SKEncodedImageFormat.Ico => "image/x-icon",
-        SKEncodedImageFormat.Avif => "image/avif",
-        _ => "application/octet-stream"
-      };
-    }
-    
-    private static string GetFileExtensionFromMimeType(string mimeType)
-    {
-      return mimeType switch
-      {
-        "image/jpeg" => "jpg",
-        "image/png" => "png",
-        "image/gif" => "gif",
-        "image/bmp" => "bmp",
-        "image/webp" => "webp",
-        "image/vnd.wap.wbmp" => "wbmp",
-        "image/x-pkm" => "pkm",
-        "image/ktx" => "ktx",
-        "image/heif" => "heif",
-        "image/x-icon" => "ico",
-        "image/avif" => "avif",
-        _ => throw new NotSupportedException($"Mime type '{mimeType}' is not supported.")
-      };
     }
 }
 

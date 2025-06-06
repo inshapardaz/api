@@ -5,6 +5,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using Inshapardaz.Domain.Helpers;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Markdig;
 
 namespace Inshapardaz.Domain.Adapters;
@@ -14,14 +16,12 @@ public class MarkdownToEpubConverter
     public record Chapter(string Title, string MarkdownContent);
     
     public byte[] CreateEpub(
-        string outputFilePath,
+        BookModel book,
         List<Chapter> chapters,
-        string title,
-        string[] authors,
-        string language = "ur",
+        string outputFilePath,
         byte[] coverImage = null)
     {
-        var direction = language == "ur" ? "rtl" : "ltr";
+        var direction = book.Language == "ur" ? "rtl" : "ltr";
         string epubFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         string oebpsDir = Path.Combine(epubFolder, "OEBPS");
         string metaInfDir = Path.Combine(epubFolder, "META-INF");
@@ -41,11 +41,13 @@ public class MarkdownToEpubConverter
         
         var coverItem = WriteCoverImage(coverImage, oebpsDir, manifest, spine);
         
-        WriteChapters(chapters, language, direction, oebpsDir, manifest, spine, navItems);
+        WriteChapters(chapters, book.Language, direction, oebpsDir, manifest, spine, navItems);
 
         WriteNavigation(chapters, oebpsDir, manifest, spine);
 
-        WriteContentOpf(title, authors, language, coverItem, manifest, direction, spine, oebpsDir);
+        WriteLegacyNavigation(book, chapters, oebpsDir, manifest, spine);
+
+        WriteContentOpf(book, coverItem, manifest, direction, spine, oebpsDir);
 
         var epubBytes = CreateEPubFile(outputFilePath, epubFolder);
 
@@ -197,30 +199,88 @@ body {{
       spine.AppendLine("    <itemref idref=\"nav\" />\n");
     }
     
-    private static void WriteContentOpf(string title, string[] authors, string language, string coverItem,
+    private static void WriteLegacyNavigation(BookModel book, List<Chapter> chapters, string oebpsDir, StringBuilder manifest,
+      StringBuilder spine)
+    {
+      StringBuilder toc = new StringBuilder();
+      toc.AppendLine(@$"<ncx xmlns=""http://www.daisy.org/z3986/2005/ncx/"" version=""2005-1"" xml:lang=""{book.Language}"" >
+             <head>
+              <meta content=""50414388-9c89-4506-b7da-a33e4c46c07b"" name=""dtb:uid""/>
+              <meta content=""2"" name=""dtb:depth""/>
+              <meta content=""Nawishta"" name=""dtb:generator""/>
+            </head>
+            <docTitle>
+              <text>{book.Title}</text>
+            </docTitle>
+            <navMap>");
+
+      for (int i = 0; i < chapters.Count; i++)
+      {
+        toc.AppendLine(@$"<navPoint id=""{StringExtentions.GenerateEpubUniqueId()}"" playOrder=""{i+1}"">
+                <navLabel>
+                  <text>{chapters[i].Title}</text>
+                </navLabel>
+                <content src=""chapter{i + 1}.xhtml""/>
+            </navPoint>");
+      }
+
+      toc.AppendLine("</navMap>\n</ncx>");
+      File.WriteAllText(Path.Combine(oebpsDir, "toc.ncx"), toc.ToString(), Encoding.UTF8);
+
+      manifest.AppendLine("    <item href=\"toc.ncx\" id=\"ncx\" media-type=\"application/x-dtbncx+xml\"/>");
+    }
+    
+    private static void WriteContentOpf(BookModel book, string coverItem,
       StringBuilder manifest, string direction, StringBuilder spine, string oebpsDir)
     {
+      var authors = book.Authors.Select(x => x.Name).ToArray();
       string authorsXml = string.Join("\n", authors.Select(a => $"<dc:creator>{a}</dc:creator>"));
+      string categoriesXml = book.Categories != null
+        ? string.Join("\n", book.Categories.Select(c => $"<dc:subject>{c.Name}</dc:subject>"))
+        : "";
+      string publisherXml = !string.IsNullOrEmpty(book.Publisher)
+        ? $"<dc:publisher>{book.Publisher}</dc:publisher>"
+        : "";
+      string seriesMeta = !string.IsNullOrEmpty(book.SeriesName)
+        ? $"<meta property='belongs-to-collection'>{book.SeriesName}</meta>"
+        : "";
+      
+      string seriesIndexMeta = book.SeriesIndex.HasValue
+        ? $"<meta property='group-position'>{book.SeriesIndex.Value}</meta>"
+        : "";
+      string generatorMeta = "<meta name='generator' content='Nawishta'/>";
+      
+      string rightsXml = book.Copyrights != CopyrightStatuses.Open
+        ? $"<dc:rights>{System.Security.SecurityElement.Escape(book.Copyrights.ToString())}</dc:rights>"
+        : "";
+      
+      var uniqueIdentifier = StringExtentions.GenerateEpubUniqueId();
       string opfContent = $@"<?xml version='1.0' encoding='utf-8'?>
-<package version='3.0' xmlns='http://www.idpf.org/2007/opf' unique-identifier='{Guid.NewGuid()}' xml:lang='{language}'>
+<package version='3.0' xmlns='http://www.idpf.org/2007/opf' unique-identifier='{uniqueIdentifier}' xml:lang='{book.Language}'>
   <metadata xmlns:dc='http://purl.org/dc/elements/1.1/'>
     <dc:identifier id='bookid'>urn:uuid:{Guid.NewGuid()}</dc:identifier>
-    <dc:title>{title}</dc:title>
-    <dc:language>{language}</dc:language>
+    <dc:identifier xmlns:opf=""http://www.idpf.org/2007/opf"" id=""{uniqueIdentifier}"" opf:scheme=""uuid"">{uniqueIdentifier}</dc:identifier>
+    <dc:title>{book.Title}</dc:title>
+    <dc:language>{book.Language}</dc:language>
     {authorsXml}
+    {categoriesXml}
+    {publisherXml}
+    {rightsXml}
+    {seriesMeta}
+    {seriesIndexMeta}
+    {generatorMeta}
     {coverItem}
   </metadata>
   <manifest>
 {manifest.ToString().TrimEnd()}
   </manifest>
-  <spine page-progression-direction='{direction}'>
+  <spine toc=""ncx"" page-progression-direction='{direction}'>
 {spine.ToString().TrimEnd()}
   </spine>
 </package>";
 
       File.WriteAllText(Path.Combine(oebpsDir, "content.opf"), opfContent, Encoding.UTF8);
     }
-
     
     private static byte[] CreateEPubFile(string outputFilePath, string epubFolder)
     {
@@ -232,6 +292,5 @@ body {{
       byte []  epubBytes = File.ReadAllBytes(outputFilePath);
       return epubBytes;
     }
-    
 }
 

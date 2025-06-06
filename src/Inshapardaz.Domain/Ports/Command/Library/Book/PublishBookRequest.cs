@@ -117,15 +117,14 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
         else if (command.OutputType == MimeTypes.Epub)
         {
             var converter = new MarkdownToEpubConverter();
-            outputFile = converter.CreateEpub("book.epub", 
+            outputFile = converter.CreateEpub(
+                book, 
                 chapters.Select(x => 
                     new MarkdownToEpubConverter.Chapter(
                         x.Title,
                         chapterTexts.TryGetValue(x.Title, out var text) ? text : string.Empty
                     )).ToList(), 
-                book.Title,
-                book.Authors.Select(x => x.Name).ToArray(),
-                book.Language,
+                $"{book.Title.ToSafeFilename()}.epub",
                 bookImage
             );
         }

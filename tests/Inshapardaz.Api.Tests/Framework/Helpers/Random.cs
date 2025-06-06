@@ -2,6 +2,9 @@
 using Inshapardaz.Domain.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.Helpers
@@ -18,6 +21,22 @@ namespace Inshapardaz.Api.Tests.Framework.Helpers
         public static string Email => new Faker().Internet.Email();
         public static string Name => new Faker().Name.FullName();
         public static byte[] Bytes => new Faker().Random.Bytes(10);
+        public static byte[] ImageBytes
+        {
+            get
+            {
+                using (var bmp = new Bitmap(1, 1))
+                using (var ms = new MemoryStream())
+                {
+                    using (var g = Graphics.FromImage(bmp))
+                    {
+                        g.Clear(Color.AliceBlue);
+                    }
+                    bmp.Save(ms, ImageFormat.Png);
+                    return ms.ToArray();
+                }
+            }
+        }
 
         public static T PickRandom<T>(this IEnumerable<T> source) =>
             new Faker().PickRandom<T>(source);

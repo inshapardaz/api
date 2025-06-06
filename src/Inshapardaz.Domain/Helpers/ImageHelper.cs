@@ -67,7 +67,7 @@ public static class ImageHelper
             imageData[2] == 0x00 && imageData[3] == 0x2A)
             return "image/tiff";
 
-        return "application/octet-stream";
+        return "image/jpeg";
     }
     
     public static string GetFileExtensionFromMimeType(this string mimeType)

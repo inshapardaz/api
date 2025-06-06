@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -68,5 +69,17 @@ public static class StringExtentions
         }
 
         return result.ToArray();
+    }
+    
+    public static string GenerateEpubUniqueId(int length = 22)
+    {
+        const string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        const string alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var random = new Random();
+        var sb = new StringBuilder(length);
+        sb.Append(letters[random.Next(letters.Length)]);
+        for (int i = 1; i < length; i++)
+            sb.Append(alphanum[random.Next(alphanum.Length)]);
+        return sb.ToString();
     }
 }

@@ -157,6 +157,48 @@ public class BookRepository : IBookRepository
         }
     }
 
+    public async Task<Page<string>> FindPublishers(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        using (var connection = _connectionProvider.GetLibraryConnection())
+        {
+            var parameters = new
+                        {
+                            LibraryId = libraryId,
+                            Query = $"%{query}%",
+                            PageNumber= pageNumber,
+                            PageSize = pageSize,
+                        };
+            
+            var sql = @"Select Publisher 
+                            From Book
+                            Where LibraryId = @LibraryId
+                            AND Publisher Like @Query
+                            ORDER BY Publisher
+                            OFFSET @PageSize * (@PageNumber - 1) ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+            
+            var command = new CommandDefinition(sql, parameters, cancellationToken: cancellationToken);
+
+            var result = await connection.QueryAsync<string>(command);
+            
+            var sql2 = @"Select Count(*) 
+                            From Book
+                            Where LibraryId = @LibraryId
+                            AND Publisher Like @Query";
+            
+            var command2 = new CommandDefinition(sql2, parameters, cancellationToken: cancellationToken);
+            var count = await connection.ExecuteScalarAsync<int>(command2);
+            
+            return new Page<string>()
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = count,
+                Data = result.ToList()
+            };
+        }
+    }
+
     public async Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, int? AccountId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
         using (var connection = _connectionProvider.GetLibraryConnection())

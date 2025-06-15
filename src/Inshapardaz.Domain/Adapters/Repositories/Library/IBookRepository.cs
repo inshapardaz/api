@@ -49,4 +49,7 @@ public interface IBookRepository
     #region for migration
     Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken);
     #endregion
+
+    Task<Page<string>> FindPublishers(int libraryId, string query, int pageNumber, int pageSize,
+        CancellationToken cancellationToken);
 }

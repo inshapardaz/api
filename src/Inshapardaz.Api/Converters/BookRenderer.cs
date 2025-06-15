@@ -17,6 +17,7 @@ public interface IRenderBook
     BookView Render(BookModel source, int libraryId, BookShelfModel bookShelf = null);
 
     PageView<BookView> Render(PageRendererArgs<BookModel, BookFilter> source, int id, BookShelfModel bookShelf = null);
+    PageView<string> Render(int libraryId, PageRendererArgs<string> source);
 }
 
 public class BookRenderer : IRenderBook
@@ -90,6 +91,72 @@ public class BookRenderer : IRenderBook
             links.Add(_linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookController.GetBooks),
+                Method = HttpMethod.Get,
+                Rel = RelTypes.Previous,
+                Parameters = new { libraryId = libraryId },
+                QueryString = pageQuery
+            }));
+        }
+
+        page.Links = links;
+        return page;
+    }
+
+    public PageView<string> Render(int libraryId, PageRendererArgs<string> source)
+    {
+        Dictionary<string, string> GetQuery()
+        {
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            if (!string.IsNullOrWhiteSpace(source.RouteArguments.Query))
+            {
+                dictionary.Add("query", source.RouteArguments.Query);
+            }
+
+            return dictionary;
+        }
+
+        var page = new PageView<string>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
+        {
+            Data = source.Page.Data
+        };
+
+        var links = new List<LinkView>();
+
+        var query = GetQuery();
+        query.Add("pageNumber", (page.CurrentPageIndex).ToString());
+        links.Add(_linkRenderer.Render(new Link
+        {
+            ActionName = nameof(BookController.GetPublishers),
+            Method = HttpMethod.Get,
+            Rel = RelTypes.Self,
+            Parameters = new { libraryId = libraryId },
+            QueryString = query
+        }));
+        
+
+        if (page.CurrentPageIndex < page.PageCount)
+        {
+            var pageQuery = GetQuery();;
+            pageQuery.Add("pageNumber", (page.CurrentPageIndex + 1).ToString());
+
+            links.Add(_linkRenderer.Render(new Link
+            {
+                ActionName = nameof(BookController.GetPublishers),
+                Method = HttpMethod.Get,
+                Rel = RelTypes.Next,
+                Parameters = new { libraryId = libraryId },
+                QueryString = pageQuery
+            }));
+        }
+
+        if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
+        {
+            var pageQuery = GetQuery();
+            pageQuery.Add("pageNumber", (page.CurrentPageIndex - 1).ToString());
+
+            links.Add(_linkRenderer.Render(new Link
+            {
+                ActionName = nameof(BookController.GetPublishers),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Previous,
                 Parameters = new { libraryId = libraryId },

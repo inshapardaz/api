@@ -6,6 +6,7 @@ using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.Library.Book;
+using Inshapardaz.Domain.Ports.Query.Library;
 using Inshapardaz.Domain.Ports.Query.Library.Book;
 using Inshapardaz.Domain.Ports.Query.Library.BookShelf;
 using Microsoft.AspNetCore.Mvc;
@@ -332,4 +333,28 @@ public class BookController : Controller
 
         return Ok();
     }
+    
+    [HttpGet("libraries/{libraryId}/publishers", Name = nameof(GetPublishers))]
+    public async Task<IActionResult> GetPublishers(
+        int libraryId, 
+        string query,
+        int pageNumber = 1,
+        int pageSize = 10,
+        CancellationToken token = default)
+    {
+        var request = new GetPublishersQuery(libraryId, query, pageNumber, pageSize);
+        var result = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
+
+        return Ok(_bookRenderer.Render(libraryId, new PageRendererArgs<string>
+            {
+                Page = result,
+                RouteArguments = new PagedRouteArgs
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    Query = query
+                }
+            }));
+    }
+
 }

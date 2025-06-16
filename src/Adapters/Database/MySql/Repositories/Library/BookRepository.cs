@@ -237,7 +237,7 @@ public class BookRepository : IBookRepository
                 Offset = pageSize * (pageNumber - 1),
             };
             
-            var sql = @"Select Publisher 
+            var sql = @"Select DISTINCT Publisher 
                             From Book
                             Where LibraryId = @LibraryId
                             AND Publisher Like @Query
@@ -248,7 +248,7 @@ public class BookRepository : IBookRepository
 
             var result = await connection.QueryAsync<string>(command);
             
-            var sql2 = @"Select Count(*) 
+            var sql2 = @"Select COUNT(DISTINCT Publisher) 
                             From Book
                             Where LibraryId = @LibraryId
                             AND Publisher Like @Query";

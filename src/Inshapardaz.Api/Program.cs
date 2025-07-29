@@ -25,6 +25,7 @@ using Inshapardaz.Api.Infrastructure.Middleware;
 using Inshapardaz.Domain.Ports.Query.Library;
 using Microsoft.AspNetCore.Http.Features;
 using Serilog;
+using Serilog.Events;
 using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,30 +45,17 @@ builder.Host.UseSerilog((ctx, cfg) =>
 {
     var config = cfg.Enrich.WithProperty("Application", serviceName)
         .Enrich.WithProperty("Environment", ctx.HostingEnvironment.EnvironmentName);
-
-    if (!string.IsNullOrEmpty(ctx.Configuration["elk"]))
-    {
-        config.WriteTo.Console(new RenderedCompactJsonFormatter());
-        config.WriteTo.Elasticsearch(new[] { new Uri(ctx.Configuration["elk"]) }, opts =>
-        {
-            opts.BootstrapMethod = BootstrapMethod.Failure;
-            opts.ConfigureChannel = channelOpts =>
-            {
-                channelOpts.BufferOptions = new BufferOptions
-                {
-                    ExportMaxConcurrency = 10
-                };
-            };
-        }, transport =>
-        {
-            // transport.Authentication(new BasicAuthentication(username, password)); // Basic Auth
-            // transport.Authentication(new ApiKey(base64EncodedApiKey)); // ApiKey
-        });
-    }
-    else
-    {
-        config.WriteTo.Console();
-    }
+    
+    config
+        .ReadFrom.Configuration(builder.Configuration)
+        .MinimumLevel.Debug()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+        .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Error)
+        .MinimumLevel.Override("Microsoft.AspNetCore.Hosting", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning)
+        .MinimumLevel.Override("Paramore", LogEventLevel.Error)
+        .WriteTo.Console();
 });
 
 //--------------------------------------------------------------------
@@ -195,7 +183,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseRequestLogging();
-app.UseSerilogRequestLogging();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<LibraryConfigurationMiddleware>();
 app.UseStatusCodeMiddleWare();

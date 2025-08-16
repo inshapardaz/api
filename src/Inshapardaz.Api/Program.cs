@@ -1,29 +1,29 @@
-using Inshapardaz.Api.Infrastructure;
-using Inshapardaz.Api.Infrastructure.Factories;
-using Inshapardaz.Api.Infrastructure.Services;
-using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Adapters.Configuration;
-using MailKit.Net.Smtp;
-using Microsoft.Net.Http.Headers;
-using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Elastic.Channels;
 using Elastic.Ingest.Elasticsearch;
 using Elastic.Serilog.Sinks;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Inshapardaz.Adapter.Ocr.Google;
-using Inshapardaz.Api.Helpers;
-using Inshapardaz.Api.Converters;
-using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
-using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Adapters.Database.MySql;
 using Inshapardaz.Adapters.Database.SqlServer;
-using Inshapardaz.Domain.Ports.Query;
+using Inshapardaz.Api.Converters;
+using Inshapardaz.Api.Helpers;
+using Inshapardaz.Api.Infrastructure;
 using Inshapardaz.Api.Infrastructure.Configuration;
+using Inshapardaz.Api.Infrastructure.Factories;
 using Inshapardaz.Api.Infrastructure.Middleware;
+using Inshapardaz.Api.Infrastructure.Services;
+using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Adapters.Configuration;
+using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Ports.Query;
 using Inshapardaz.Domain.Ports.Query.Library;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Net.Http.Headers;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
@@ -45,7 +45,7 @@ builder.Host.UseSerilog((ctx, cfg) =>
 {
     var config = cfg.Enrich.WithProperty("Application", serviceName)
         .Enrich.WithProperty("Environment", ctx.HostingEnvironment.EnvironmentName);
-    
+
     config
         .ReadFrom.Configuration(builder.Configuration)
         .MinimumLevel.Debug()
@@ -166,11 +166,9 @@ if (!string.IsNullOrEmpty(basePath))
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors(x => x
                 .SetIsOriginAllowed(origin => true)

@@ -123,7 +123,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishIssueRequest
 
         var tasks = pages.Select(GetPageText).ToArray();
         
-        Task.WaitAll(tasks); 
+        await Task.WhenAll(tasks); 
         
         foreach (var task in tasks)
         {

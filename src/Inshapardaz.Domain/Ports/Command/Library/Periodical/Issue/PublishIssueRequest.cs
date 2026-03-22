@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
-using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue.Article;
@@ -33,7 +32,7 @@ public class PublishIssueRequest : LibraryBaseCommand
 
 }
 
-public class PublishBookRequestHandler : RequestHandlerAsync<PublishIssueRequest>
+public class PublishIssueRequestHandler : RequestHandlerAsync<PublishIssueRequest>
 {
     private readonly IPeriodicalRepository _periodicalRepository;
     private readonly IIssueRepository _issueRepository;
@@ -43,7 +42,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishIssueRequest
     private readonly IFileRepository _fileRepository;
     private readonly IAmACommandProcessor _commandProcessor;
 
-    public PublishBookRequestHandler(IPeriodicalRepository periodicalRepository,
+    public PublishIssueRequestHandler(IPeriodicalRepository periodicalRepository,
         IIssueRepository issueRepository,
         IIssuePageRepository issuePageRepository,
         IIssueArticleRepository issueArticleRepository,
@@ -85,34 +84,6 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishIssueRequest
         }
 
         return await base.HandleAsync(command, cancellationToken);
-    }
-
-    private async Task<FileModel> SaveFileToStorage(BookModel book, byte[] wordDocument, CancellationToken cancellationToken)
-    {
-        var fileName = $"{book.Title.ToSafeFilename()}.docx";
-        var url = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", wordDocument, MimeTypes.MsWord, cancellationToken);
-        var file = await _fileRepository.AddFile(new FileModel
-        {
-            FilePath = url,
-            MimeType = MimeTypes.MsWord,
-            FileName = fileName,
-            IsPublic = false
-        }, cancellationToken);
-        return file;
-    }
-
-    private async Task UpdateFileInStorage(BookModel book, long fileId, byte[] file, CancellationToken cancellationToken)
-    {
-        var fileName = $"{book.Title.ToSafeFilename()}.docx";
-        var existingDocx = await _fileRepository.GetFileById(fileId, cancellationToken);
-        if (existingDocx != null && !string.IsNullOrWhiteSpace(existingDocx.FilePath))
-        {
-            await _fileStorage.DeleteFile(existingDocx.FilePath, cancellationToken);
-        }
-
-        existingDocx.FilePath = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", file, MimeTypes.MsWord, cancellationToken);
-
-        await _fileRepository.UpdateFile(existingDocx, cancellationToken);
     }
 
     private char[] pageBreakSymbols = new char[] { '۔', ':', '“', '"', '\'', '!' };

@@ -1,10 +1,12 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
-using System;
+﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Storage.Azure;
 
@@ -22,9 +24,9 @@ public class AzureFileStorage : IFileStorage
     public async Task DeleteFile(string filePath, CancellationToken cancellationToken)
     {
         var container = GetContainer();
-        string name = new CloudBlockBlob(new Uri(filePath)).Name;
-        var blockBlob = container.GetBlockBlobReference(name);
-        await blockBlob.DeleteAsync(cancellationToken);
+        string name = GetBlobName(filePath);
+        var blobClient = container.GetBlobClient(name);
+        await blobClient.DeleteAsync(cancellationToken: cancellationToken);
     }
 
     public async Task TryDeleteFile(string filePath, CancellationToken cancellationToken)
@@ -33,7 +35,7 @@ public class AzureFileStorage : IFileStorage
         {
             await DeleteFile(filePath, cancellationToken);
         }
-        catch (StorageException e)
+        catch (RequestFailedException e)
         {
             Console.WriteLine(e);
         }
@@ -42,52 +44,60 @@ public class AzureFileStorage : IFileStorage
     public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
     {
         var container = GetContainer(GetContainerName(filePath));
-        string name = new CloudBlockBlob(new Uri(filePath)).Name;
-        var blockBlob = container.GetBlockBlobReference(name);
+        string name = GetBlobName(filePath);
+        var blobClient = container.GetBlobClient(name);
 
         using (var stream = new MemoryStream())
         {
-            await blockBlob.DownloadToStreamAsync(stream, cancellationToken);
-
-            return stream.GetBuffer();
+            await blobClient.DownloadToAsync(stream, cancellationToken);
+            return stream.ToArray();
         }
     }
 
     public async Task<string> GetTextFile(string filePath, CancellationToken cancellationToken)
     {
         var container = GetContainer();
-        string name = new CloudBlockBlob(new Uri(filePath)).Name;
-        var blockBlob = container.GetBlockBlobReference(name);
+        string name = GetBlobName(filePath);
+        var blobClient = container.GetBlobClient(name);
 
-        return await blockBlob.DownloadTextAsync(cancellationToken);
+        BlobDownloadResult result = await blobClient.DownloadContentAsync(cancellationToken);
+        return result.Content.ToString();
     }
 
     public async Task<string> StoreFile(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
     {
         var container = GetContainer();
-        var blockBlob = container.GetBlockBlobReference(name);
+        var blobClient = container.GetBlobClient(name);
         using (Stream stream = new MemoryStream(content))
         {
-            await blockBlob.UploadFromStreamAsync(stream, cancellationToken);
+            await blobClient.UploadAsync(stream, new BlobUploadOptions
+            {
+                HttpHeaders = new BlobHttpHeaders { ContentType = mimeType }
+            }, cancellationToken);
         }
 
-        return blockBlob.Uri.AbsolutePath;
+        return blobClient.Uri.AbsolutePath;
     }
 
     public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
     {
         var container = GetContainer();
-        var blockBlob = container.GetBlockBlobReference(name);
-        await blockBlob.UploadTextAsync(content, cancellationToken);
+        var blobClient = container.GetBlobClient(name);
+        using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(content)))
+        {
+            await blobClient.UploadAsync(stream, new BlobUploadOptions
+            {
+                HttpHeaders = new BlobHttpHeaders { ContentType = "text/plain; charset=utf-8" }
+            }, cancellationToken);
+        }
 
-        return blockBlob.Uri.AbsolutePath;
+        return blobClient.Uri.AbsolutePath;
     }
 
-    private CloudBlobContainer GetContainer(string container = "library")
+    private BlobContainerClient GetContainer(string container = "library")
     {
-        var storageAccount = CloudStorageAccount.Parse(_storageConnectionString);
-        var blobClient = storageAccount.CreateCloudBlobClient();
-        return blobClient.GetContainerReference(container);
+        var serviceClient = new BlobServiceClient(_storageConnectionString);
+        return serviceClient.GetBlobContainerClient(container);
     }
 
     private string GetContainerName(string url)
@@ -95,24 +105,39 @@ public class AzureFileStorage : IFileStorage
         return new Uri(url).Segments[1].Trim('/');
     }
 
+    private string GetBlobName(string filePath)
+    {
+        var uri = new Uri(filePath);
+        // Skip the first two segments (/ and container name) to get the blob name
+        var segments = uri.Segments;
+        if (segments.Length > 2)
+        {
+            return string.Join("", segments, 2, segments.Length - 2).TrimStart('/');
+        }
+        return segments.Length > 1 ? segments[^1].TrimStart('/') : filePath;
+    }
+
     public async Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
     {
         var container = GetContainer("images");
-        var blockBlob = container.GetBlockBlobReference(name);
+        var blobClient = container.GetBlobClient(name);
         using (Stream stream = new MemoryStream(content))
         {
-            await blockBlob.UploadFromStreamAsync(stream, cancellationToken);
+            await blobClient.UploadAsync(stream, new BlobUploadOptions
+            {
+                HttpHeaders = new BlobHttpHeaders { ContentType = mimeType }
+            }, cancellationToken);
         }
 
-        return blockBlob.Uri.AbsolutePath;
+        return blobClient.Uri.AbsolutePath;
     }
 
     public async Task DeleteImage(string filePath, CancellationToken cancellationToken)
     {
         var container = GetContainer("images");
-        string name = new CloudBlockBlob(new Uri(filePath)).Name;
-        var blockBlob = container.GetBlockBlobReference(name);
-        await blockBlob.DeleteAsync(cancellationToken);
+        string name = GetBlobName(filePath);
+        var blobClient = container.GetBlobClient(name);
+        await blobClient.DeleteAsync(cancellationToken: cancellationToken);
     }
 
     public async Task TryDeleteImage(string filePath, CancellationToken cancellationToken)
@@ -121,7 +146,7 @@ public class AzureFileStorage : IFileStorage
         {
             await DeleteImage(filePath, cancellationToken);
         }
-        catch (StorageException e)
+        catch (RequestFailedException e)
         {
             Console.WriteLine(e);
         }

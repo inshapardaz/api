@@ -4,7 +4,7 @@ Nawishta is an electronic books cataloging and publishing platform. This is the 
 
 ## Technology Stack
 
-- **.NET 8.0** / ASP.NET Core Web API
+- **.NET 9.0** / ASP.NET Core Web API
 - **Minimal hosting model** (top-level statements in `Program.cs`, no `Startup.cs`)
 - **CQRS** via [Paramore Brighter](https://github.com/BrighterCommand/Brighter) (commands) and [Paramore Darker](https://github.com/BrighterCommand/Darker) (queries)
 - **Dapper** micro-ORM for data access (not Entity Framework)
@@ -14,7 +14,7 @@ Nawishta is an electronic books cataloging and publishing platform. This is the 
 - **BCrypt** for password hashing, custom JWT authentication
 - **Newtonsoft.Json** for JSON serialization
 - **NUnit 4** + FluentAssertions + AutoFixture + Bogus for testing
-- **Docker** multi-stage build targeting `mcr.microsoft.com/dotnet/aspnet:8.0`
+- **Docker** multi-stage build targeting `mcr.microsoft.com/dotnet/aspnet:9.0`
 
 ## Solution Structure
 

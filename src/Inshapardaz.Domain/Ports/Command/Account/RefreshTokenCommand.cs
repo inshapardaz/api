@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Configuration;
 using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,7 @@ public class RefreshTokenCommand(string token) : RequestBase
 
 public class RefreshTokenCommandHandler(
     IAccountRepository accountRepository,
+    ILibraryRepository libraryRepository,
     IOptions<Settings> settings,
     IGenerateToken tokenGenerator,
     IGetIPAddress ipAddressGetter,
@@ -58,10 +60,11 @@ public class RefreshTokenCommandHandler(
 
         await accountRepository.RemoveOldRefreshTokens(account, _settings.Security.RefreshTokenTTLInDays, cancellationToken);
 
-        var accessToken = tokenGenerator.GenerateAccessToken(account);
+        var libraries = await libraryRepository.GetLibrariesByAccountId(account.Id, cancellationToken);
+        var accessToken = tokenGenerator.GenerateAccessToken(account, libraries);
 
         var accessTokenExpiry = DateTime.UtcNow.AddMinutes(_settings.Security.AccessTokenTTLInMinutes);
-        var refreshTokenExpiry = DateTime.UtcNow.AddMinutes(_settings.Security.RefreshTokenTTLInDays);
+        var refreshTokenExpiry = DateTime.UtcNow.AddDays(_settings.Security.RefreshTokenTTLInDays);
 
         command.Response = new TokenResponse
         {

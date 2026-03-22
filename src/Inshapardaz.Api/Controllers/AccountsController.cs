@@ -185,18 +185,14 @@ public class AccountsController(
     [HttpGet("user")]
     public async Task<IActionResult> GetUser(CancellationToken cancellationToken)
     {
-        if (!HttpContext.Items.ContainsKey("AccountId"))
+        var idClaim = HttpContext.User?.FindFirst("id")?.Value;
+        if (idClaim == null || !int.TryParse(idClaim, out var accountId))
         {
             return Unauthorized();
         }
-        
-        if (int.TryParse(HttpContext.Items["AccountId"].ToString(), out var accountId))
-        {
-            var account = await queryProcessor.ExecuteAsync(new GetAccountByIdQuery(accountId), cancellationToken);
-            return Ok(accountRenderer.Render(account));
-        }
 
-        return BadRequest();
+        var account = await queryProcessor.ExecuteAsync(new GetAccountByIdQuery(accountId), cancellationToken);
+        return Ok(accountRenderer.Render(account));
     }
 
     [HttpGet(Name = nameof(GetAll))]
@@ -299,7 +295,8 @@ public class AccountsController(
     {
         var cookieOptions = new CookieOptions
         {
-            Expires = expire ? DateTimeOffset.MinValue : DateTime.UtcNow.AddDays(20),
+            HttpOnly = true,
+            Expires = expire ? DateTimeOffset.MinValue : DateTime.UtcNow.AddDays(_settings.Security.RefreshTokenTTLInDays),
             Domain = _settings.Domain,
 #if DEBUG
             SameSite = SameSiteMode.Lax
@@ -315,13 +312,13 @@ public class AccountsController(
     {
         var cookieOptions = new CookieOptions
         {
-            Expires = expire ? DateTimeOffset.MinValue : DateTime.UtcNow.AddHours(1),
+            HttpOnly = true,
+            Expires = expire ? DateTimeOffset.MinValue : DateTime.UtcNow.AddMinutes(_settings.Security.AccessTokenTTLInMinutes),
             Domain = _settings.Domain,
 #if DEBUG
             SameSite = SameSiteMode.Lax
 #else
             SameSite = SameSiteMode.None,
-            HttpOnly = true,
             Secure = true
 #endif
         };

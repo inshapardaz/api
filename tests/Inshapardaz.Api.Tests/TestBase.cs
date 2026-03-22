@@ -72,7 +72,12 @@ namespace Inshapardaz.Api.Tests
 
             if (_account != null)
             {
-                var token = TokenBuilder.GenerateToken(settings, _account.Id);
+                var token = TokenBuilder.GenerateToken(settings, _account.Id,
+                    isSuperAdmin: _account.IsSuperAdmin,
+                    name: _account.Name,
+                    email: _account.Email,
+                    libraryId: Library?.Id,
+                    role: _role);
                 Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
         }

@@ -22,7 +22,7 @@ public class LibraryAuthorizeHandler<TRequest>(IUserHelper userHelper, ILibraryR
         _roles = (Role[])initializerList[1];
     }
 
-    public override Task<TRequest> HandleAsync(TRequest command, CancellationToken cancellationToken = default)
+    public override async Task<TRequest> HandleAsync(TRequest command, CancellationToken cancellationToken = default)
     {
         var account = userHelper.Account;
         var isAuthenticated = userHelper.IsAuthenticated;
@@ -32,20 +32,20 @@ public class LibraryAuthorizeHandler<TRequest>(IUserHelper userHelper, ILibraryR
             throw new UnauthorizedException();
         }
 
-        var libraries = libraryRepository.GetLibrariesByAccountId(account.Id).Result;
+        var libraries = await libraryRepository.GetLibrariesByAccountId(account.Id, cancellationToken);
         var library = libraries.SingleOrDefault(l => l.Id == command.LibraryId);
 
         if (account.IsSuperAdmin)
         {
-            return base.HandleAsync(command, cancellationToken);
+            return await base.HandleAsync(command, cancellationToken);
         }
         else if (!_roles.Any() && isAuthenticated)
         {
-            return base.HandleAsync(command, cancellationToken);
+            return await base.HandleAsync(command, cancellationToken);
         }
         else if (library != null && _roles.Contains(library.Role))
         {
-            return base.HandleAsync(command, cancellationToken);
+            return await base.HandleAsync(command, cancellationToken);
         }
 
         throw new ForbiddenException();

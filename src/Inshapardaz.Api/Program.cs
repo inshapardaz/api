@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Inshapardaz.Adapter.Ocr.Google;
@@ -18,8 +19,10 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Query;
 using Inshapardaz.Domain.Ports.Query.Library;
 using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Serilog;
 using Serilog.Events;
@@ -81,6 +84,46 @@ builder.Services.Configure<FormOptions>(x =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//-------------------------------------------------------------------
+// Authentication & Authorization
+//-------------------------------------------------------------------
+var securitySettings = configSection.GetSection("Security").Get<Security>();
+var jwtKey = Encoding.ASCII.GetBytes(securitySettings.Secret);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
+        ValidateIssuer = true,
+        ValidIssuer = TokenGenerator.Issuer,
+        ValidateAudience = true,
+        ValidAudience = TokenGenerator.Audience,
+        ClockSkew = TimeSpan.FromMinutes(1)
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            // Fall back to cookie if no Authorization header present
+            if (string.IsNullOrEmpty(context.Token))
+            {
+                context.Token = context.Request.Cookies["token"];
+            }
+            return Task.CompletedTask;
+        }
+    };
+});
+builder.Services.AddAuthorization();
 
 //-------------------------------------------------------------------
 builder.Services.AddTransient<DatabaseMigrationFactory>();
@@ -175,13 +218,12 @@ app.UseCors(x => x
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseRequestLogging();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<LibraryConfigurationMiddleware>();
 app.UseStatusCodeMiddleWare();
-app.UseMiddleware<JwtMiddleware>();
-app.UseMiddleware<CookieAuthenticationMiddleware>();
 
 app.MapControllers();
 

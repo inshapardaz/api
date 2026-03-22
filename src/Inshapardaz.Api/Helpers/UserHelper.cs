@@ -1,29 +1,53 @@
-﻿using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using System.Security.Claims;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Helpers;
 
-public class UserHelper(IHttpContextAccessor contextAccessor, ILibraryRepository libraryRepository)
+public class UserHelper(IHttpContextAccessor contextAccessor)
     : IUserHelper
 {
-    public bool IsAuthenticated => Account != null;
+    private ClaimsPrincipal User => contextAccessor.HttpContext?.User;
 
-    public bool IsAdmin => IsAuthenticated && IsUserInRole(Role.Admin);
+    public bool IsAuthenticated => User?.Identity?.IsAuthenticated ?? false;
 
-    public bool IsLibraryAdmin(int libraryId) => IsAuthenticated && (IsAdmin || IsUserInRole(Role.LibraryAdmin, libraryId));
+    public bool IsAdmin => IsAuthenticated && IsSuperAdmin;
 
-    public bool IsWriter(int libraryId) => IsAuthenticated && (IsLibraryAdmin(libraryId) || IsUserInRole(Role.Writer, libraryId));
+    public bool IsLibraryAdmin(int libraryId) =>
+        IsAuthenticated && (IsAdmin || HasLibraryRole(libraryId, Role.LibraryAdmin));
 
+    public bool IsWriter(int libraryId) =>
+        IsAuthenticated && (IsLibraryAdmin(libraryId) || HasLibraryRole(libraryId, Role.Writer));
 
-    public AccountModel Account => (AccountModel)contextAccessor.HttpContext.Items["Account"];
-
-    public bool IsUserInRole(Role role, int? libraryId = null)
+    public AccountModel Account
     {
-        var account = (AccountModel)contextAccessor.HttpContext.Items["Account"];
-        if (role == Role.Admin && account.IsSuperAdmin) return true;
+        get
+        {
+            if (!IsAuthenticated) return null;
 
-        var libraries = libraryRepository.GetUserLibraries(account.Id, 1, 100, CancellationToken.None).Result;
-        return libraries.Data.Any(l => l.Id == libraryId && l.Role == role);
+            var idClaim = User.FindFirst("id")?.Value;
+            if (idClaim == null || !int.TryParse(idClaim, out var id)) return null;
+
+            return new AccountModel
+            {
+                Id = id,
+                Name = User.FindFirst(ClaimTypes.Name)?.Value,
+                Email = User.FindFirst(ClaimTypes.Email)?.Value,
+                IsSuperAdmin = IsSuperAdmin
+            };
+        }
+    }
+
+    private bool IsSuperAdmin =>
+        bool.TryParse(User?.FindFirst("isSuperAdmin")?.Value, out var isSuperAdmin) && isSuperAdmin;
+
+    private bool HasLibraryRole(int libraryId, Role role)
+    {
+        if (IsSuperAdmin) return true;
+
+        var roleClaim = User?.FindFirst($"lib:{libraryId}:role")?.Value;
+        if (roleClaim == null) return false;
+
+        return Enum.TryParse<Role>(roleClaim, out var claimRole) && claimRole == role;
     }
 }

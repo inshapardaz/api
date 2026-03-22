@@ -31,7 +31,7 @@ public class LibraryAuthorizeDecorator<TQuery, TResult>(IUserHelper userHelper, 
 
         }
 
-        var libraries = libraryRepository.GetLibrariesByAccountId(account.Id).Result;
+        var libraries = libraryRepository.GetLibrariesByAccountId(account.Id).GetAwaiter().GetResult();
         var library = libraries.SingleOrDefault(l => l.Id == libraryQuery.LibraryId);
 
         if (account.IsSuperAdmin)
